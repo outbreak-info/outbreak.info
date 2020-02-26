@@ -194,7 +194,6 @@ export default Vue.extend({
 <style lang="scss">
 .epi-axis text {
     font-size: 12pt;
-    font-family: $font-family;
 }
 
 .epi-line {

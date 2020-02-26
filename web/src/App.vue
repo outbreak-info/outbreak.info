@@ -23,6 +23,10 @@
     color: #2c3e50;
 }
 
+#app text {
+    font-family: $font-family;
+}
+
 #outbreak-header {
     display: flex;
     align-items: center;
