@@ -1,9 +1,5 @@
 <template>
-<div class="home">
-  <div v-for="group, idx in data" v-bind:key="idx">
-  <EpiCurve v-bind:country="group.metadata.country" v-bind:data="group.data" />
-</div>
-</div>
+  <EpiCurve v-bind:data="data" />
 </template>
 
 <script>
@@ -20,7 +16,7 @@ export default {
   data() {
     return {
       mymsg: "",
-      countries: ["Iran"],
+      countries: ["Iran", "Italy", "Japan", "South Korea", "Others"],
       data: null
     }
   },
@@ -52,10 +48,19 @@ export default {
               "cases": +d[timepoint]
             })
           })
+
+          keys.forEach(timepoint => delete d[timepoint]);
+
+          d['data'].sort((a,b) => a.date - b.date);
+
           d['metadata'] = metadata;
+          d['metadata']['currentCases'] = d.data.slice(-1)[0].cases;
         });
 
-        this.data = data.filter(d => this.countries.includes(d.metadata.country))
+
+
+        this.data = data
+          .filter(d => this.countries.includes(d.metadata.country))
           .map(d => {
             return ({
               data: d['data'],
@@ -63,12 +68,22 @@ export default {
             })
           });
 
+
+
+        // const nested = d3.nest()
+        //   .key(d => d.metadata.country)
+        //   .rollup(values => {
+        //
+        //   })
+        //   .entries(this.data);
+        // console.log('nested')
+        // console.log(nested)
+
         console.log(this.data);
       });
     }
   },
   mounted() {
-    console.log("hi epi!")
     this.getData();
   }
 };
