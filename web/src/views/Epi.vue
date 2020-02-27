@@ -15,15 +15,15 @@ export default {
   },
   data() {
     return {
-      mymsg: "",
-      countries: ["Iran", "Italy", "Japan", "South Korea", "Others"],
+      dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
+      countries: ["Italy", "South Korea"],
       data: null
     }
   },
   methods: {
     getData: function() {
       console.log("grabbing the data")
-      d3.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv").then(data => {
+      d3.csv(this.dataUrl).then(data => {
         const parseDate = d3.timeParse("%m/%d/%y");
         console.log(data)
 
