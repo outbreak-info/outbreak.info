@@ -43,9 +43,10 @@ export default {
 
           d['data'] = keys.map(timepoint => {
             return ({
-              "date_string": timepoint,
+              "date_string": timepoint.replace(/\//g, "_"),
               "date": parseDate(timepoint),
-              "cases": +d[timepoint]
+              "cases": +d[timepoint],
+              "id": `${metadata.country.replace(/\s/g, "_")}`
             })
           })
 

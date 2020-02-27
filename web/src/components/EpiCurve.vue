@@ -21,7 +21,7 @@ const radius = 2.5;
 const margin = {
   top: 10,
   right: 100,
-  bottom: 25,
+  bottom: 75,
   left: 60
 }
 
@@ -61,6 +61,30 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
+    tooltipOn: function(d) {
+      d3.select(`#tooltip-${d.id}-${d.date_string}`)
+      .attr("display", "block");
+
+      d3.select(`#${d.id}-${d.date_string}`).select("circle")
+      .attr("r", this.radius*2);
+
+      d3.selectAll(`.epi-region`)
+      .style("opacity", 0.35);
+
+      d3.selectAll(`#${d.id}`)
+      .style("opacity", 1);
+
+    },
+    tooltipOff: function(d) {
+      d3.selectAll(".tooltip--epi-curve")
+      .attr("display", "none");
+
+      d3.selectAll("circle")
+      .attr("r", this.radius);
+
+      d3.selectAll(`.epi-region`)
+      .style("opacity", 1);
+    },
     updatePlot: function() {
       if (this.data) {
         this.setupPlot();
@@ -72,10 +96,7 @@ export default Vue.extend({
       this.svg = d3.select("svg");
       this.chart = d3.select("#epi-curve");
       this.line = d3.line()
-        .x((d: any) => {
-          console.log(d)
-          return (this.x(d.date))
-        })
+        .x((d: any) => this.x(d.date))
         .y((d: any) => this.y(d.cases));
     },
     createScales: function() {
@@ -107,6 +128,7 @@ export default Vue.extend({
     },
     drawDots: function() {
       const t1 = d3.transition().duration(4000);
+      const formatDate = d3.timeFormat("%d %b %Y");
 
       // --- create groups for each region ---
       const regionGroups = this.chart
@@ -120,13 +142,13 @@ export default Vue.extend({
       const regionsEnter = regionGroups.enter()
         .append("g")
         .attr("class", "epi-region")
-        .attr("id", d => d.metadata.country)
+        .attr("id", d => d.metadata.country.replace(/\s/g, "_"))
         .attr("fill", d => this.colorScale(d.metadata.country))
         .attr("stroke", d => this.colorScale(d.metadata.country));
 
       // --- region annotation ---
       regionsEnter.append("text")
-        .attr('class', 'annotation--region-name')
+        .attr("class", d => `annotation--region-name ${d.id}`)
         .attr('dx', 8)
         // .attr('x', 0)
         // .attr('y', this.y(0))
@@ -143,14 +165,11 @@ export default Vue.extend({
       const groupPaths = this.chart
         .selectAll(".epi-region")
         .selectAll(".epi-line");
-      //   .data(d => d.data);
-      //
-      // groupPaths.exit().remove();
-      //
+
       regionsEnter
         .append("path")
         .datum(d => d.data)
-        .attr("class", "epi-line epi-line--all")
+        .attr("class", d => `epi-line ${d.id}`)
         .attr("d", this.line);
 
 
@@ -162,14 +181,97 @@ export default Vue.extend({
 
       dots.exit().remove();
 
-      const dotEnter = dots.enter()
+      const dotGroupEnter = dots.enter()
+        .append("g")
+        .attr("class", d => `epi-point-group ${d.id}`)
+        .attr("id", d => `${d.id}-${d.date_string}`);
+
+      const dotEnter = dotGroupEnter
         .append("circle")
-        .attr("class", 'epi-point')
+        .attr("class", d => `epi-point ${d.id}`)
         .attr("r", this.radius);
 
       dots.merge(dotEnter)
         .attr("cx", d => this.x(d.date))
         .attr("cy", d => this.y(d.cases));
+
+      // --- tooltips ---
+      const tooltipEnter = dotGroupEnter
+        .append("g")
+        .attr("class", "tooltip--epi-curve")
+        .attr("transform", "translate(5,5)")
+        .attr("id", d => `tooltip-${d.id}-${d.date_string}`)
+        .attr("display", "none");
+
+      dots.merge(tooltipEnter);
+
+      const tooltipRect = dots.select(".tooltip--rect");
+
+
+      const tooltipRectEnter = tooltipEnter
+        .append("rect")
+        .attr("class", "tooltip--rect");
+
+      tooltipRect.merge(tooltipRectEnter)
+        .attr("x", d => this.x(d.date))
+        .attr("y", d => this.y(d.cases))
+        .attr("width", 100)
+        .attr("height", 40)
+        .attr("stroke-dasharray", "100, 180")
+        .attr("stroke-width", "3")
+        .attr("fill-opacity", 0.4)
+
+      const tooltipText = dots.select(".tooltip--text");
+
+      const tooltipTextEnter = tooltipEnter
+        .append("text")
+        .attr("class", "tooltip--text")
+        .attr("transform", "translate(5,5)");
+
+      // const tooltipCtryEnter = tooltipTextEnter.append("tspan")
+      //   .attr("class", "tooltip--country");
+      //
+      // tooltipText.merge(tooltipCtryEnter)
+      //   .attr("x", d => this.x(d.date))
+      //   .attr("y", d => this.y(d.cases))
+      //   .text(d => d.id.replace(/_/g, " "))
+
+      const tooltipDateEnter = tooltipTextEnter.append("tspan")
+        .attr("class", "tooltip--date");
+
+      tooltipText.merge(tooltipDateEnter)
+        .attr("x", d => this.x(d.date))
+        .attr("y", d => this.y(d.cases))
+        // .attr("dy", "1.1em")
+        .text(d => formatDate(d.date))
+
+      const tooltipCasesEnter = tooltipTextEnter.append("tspan")
+        .attr("class", "tooltip--case-count");
+
+      tooltipText.merge(tooltipCasesEnter)
+        .attr("x", d => this.x(d.date))
+        .attr("y", d => this.y(d.cases))
+        .attr("dy", "1.1em")
+        // .attr("dy", "2.2em")
+        .text(d => `${d.cases} cases`)
+
+      console.log(tooltipRect)
+      // dynamically adjust the width of the rect
+      // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
+      // .attr("width", function(d: any) {
+      //   console.log(d3.select(this.parentNode));
+      //   return(500)
+      // })
+      dots.select(".tooltip--rect").attr("width", d => 500)
+        // `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
+        .attr("height", (d: any) => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
+
+      // event listener
+      d3.selectAll("circle")
+        .on("mouseover", d => this.tooltipOn(d))
+        .on("mouseout", d => this.tooltipOff(d))
+
+
 
       // --- transition: trace the curves ---
       this.chart.append("rect")
@@ -205,5 +307,17 @@ export default Vue.extend({
 
 .annotation--region-name {
     dominant-baseline: middle;
+}
+
+.tooltip--text {
+    dominant-baseline: hanging;
+}
+
+.tooltip--date {
+    font-weight: 300;
+}
+
+.tooltip--case-count {
+    font-weight: 500;
 }
 </style>
