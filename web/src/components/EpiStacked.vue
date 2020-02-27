@@ -1,8 +1,9 @@
 <template>
 <div class="epidemiology">
   <h3>Cumulative number of COVID-19 cases by region</h3>
+  
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-summary">
-    <g :transform="`translate(${margin.left},${-margin.top})`" id="epi-summary"></g>
+    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-summary"></g>
     <g :transform="`translate(${margin.left},${-margin.top})`" id="legend"></g>
   </svg>
 </div>
@@ -99,7 +100,7 @@ export default Vue.extend({
 
       this.svg.append('g')
         .attr('class', 'epi-axis axis--x')
-        .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
+        .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height + 2})`)
         .call(this.xAxis);
 
       this.yAxis = d3.axisLeft(this.y);
