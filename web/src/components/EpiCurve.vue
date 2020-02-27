@@ -1,15 +1,19 @@
 <template>
-<div class="epidemiology">
+<div class="epidemiology flex-column align-left">
   <h1 v-if="country">{{ country }}</h1>
-  <h3>Cumulative number of COVID-19 cases</h3>
+  <h3 class="plot-title">Cumulative number of COVID-19 cases</h3>
+  <DataUpdated />
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
   </svg>
+  <DataSource />
 </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import DataUpdated from "@/components/DataUpdated.vue";
+import DataSource from "@/components/DataSource.vue";
 
 import * as d3 from 'd3';
 import {
@@ -28,6 +32,10 @@ const margin = {
 
 export default Vue.extend({
   name: "EpiCurve",
+  components: {
+    DataUpdated,
+    DataSource
+  },
   props: {
     country: String,
     data: Array
@@ -64,27 +72,27 @@ export default Vue.extend({
   methods: {
     tooltipOn: function(d) {
       d3.select(`#tooltip-${d.id}-${d.date_string}`)
-      .attr("display", "block");
+        .attr("display", "block");
 
       d3.select(`#${d.id}-${d.date_string}`).select("circle")
-      .attr("r", this.radius*2);
+        .attr("r", this.radius * 2);
 
       d3.selectAll(`.epi-region`)
-      .style("opacity", 0.35);
+        .style("opacity", 0.35);
 
       d3.selectAll(`#${d.id}`)
-      .style("opacity", 1);
+        .style("opacity", 1);
 
     },
     tooltipOff: function(d) {
       d3.selectAll(".tooltip--epi-curve")
-      .attr("display", "none");
+        .attr("display", "none");
 
       d3.selectAll("circle")
-      .attr("r", this.radius);
+        .attr("r", this.radius);
 
       d3.selectAll(`.epi-region`)
-      .style("opacity", 1);
+        .style("opacity", 1);
     },
     updatePlot: function() {
       if (this.data) {

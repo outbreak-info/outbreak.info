@@ -1,25 +1,20 @@
 <template>
   <div>
-    <DataUpdated />
     <EpiCurve v-bind:data="data" />
-    <DataSource />
+
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import EpiCurve from "@/components/EpiCurve.vue";
-import DataSource from "@/components/DataSource.vue";
-import DataUpdated from "@/components/DataUpdated.vue";
 
 import * as d3 from 'd3';
 
 export default {
   name: "Epidemiology",
   components: {
-    EpiCurve,
-    DataSource,
-    DataUpdated
+    EpiCurve
   },
   data() {
     return {

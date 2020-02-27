@@ -46,4 +46,26 @@
         }
     }
 }
+
+// layout
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.align-left {
+  align-items: flex-start;
+}
+
+// d3-constants
+.plot-title {
+  margin: 0 !important;
+}
+
 </style>
