@@ -1,22 +1,27 @@
 <template>
-  <EpiCurve v-bind:data="data" />
+  <div>
+    <EpiCurve v-bind:data="data" />
+    <DataSource />
+  </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import EpiCurve from "@/components/EpiCurve.vue";
+import DataSource from "@/components/DataSource.vue";
 
 import * as d3 from 'd3';
 
 export default {
   name: "Epidemiology",
   components: {
-    EpiCurve
+    EpiCurve,
+    DataSource
   },
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
-      countries: ["Italy", "South Korea"],
+      countries: ["Italy", "South Korea", "Others", "Iran", "Japan"],
       data: null
     }
   },

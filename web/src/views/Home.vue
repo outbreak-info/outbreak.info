@@ -3,17 +3,21 @@
   <!-- <EpiStacked v-bind:data="data" /> -->
   <EpiStacked v-bind:data="nested" />
   <!-- <EpiStacked v-bind:data="noChina" /> -->
+  <DataSource />
+
 </div>
 </template>
 
 <script>
 import EpiStacked from "@/components/EpiStacked.vue";
+import DataSource from "@/components/DataSource.vue";
 import * as d3 from 'd3';
 
 export default {
   name: "Home",
   components: {
-    EpiStacked
+    EpiStacked,
+    DataSource
   },
   computed: {
     noChina() {
