@@ -1,6 +1,8 @@
 <template>
 <div class="home">
-  <EpiStacked v-bind:data="data" />
+  <!-- <EpiStacked v-bind:data="data" /> -->
+  <EpiStacked v-bind:data="nested" />
+  <!-- <EpiStacked v-bind:data="noChina" /> -->
 </div>
 </template>
 
@@ -13,16 +15,28 @@ export default {
   components: {
     EpiStacked
   },
+  computed: {
+    noChina() {
+      return this.nest(this.data.filter(d => d.region != 'China'));
+    },
+    nested() {
+      return this.nest(this.data);
+    }
+  },
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
       countries: ["Iran", "Italy", "Japan", "South Korea", "Others"],
       data: null,
       regionDict: [{
-          region: "Asia",
-          countries: ["Mainland China", "Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
+          region: "Asia (outside China)",
+          countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
             "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India"
           ]
+        },
+        {
+          region: "China",
+          countries: ["Mainland China", ]
         },
         {
           region: "North America",
@@ -34,7 +48,9 @@ export default {
         },
         {
           region: "Europe",
-          countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland"]
+          countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
+            "Romania"
+          ]
         },
         {
           region: "Africa",
@@ -46,7 +62,7 @@ export default {
         },
         {
           region: "Middle East",
-          countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", ]
+          countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan"]
         },
         {
           region: "Australia/Oceania",
@@ -99,46 +115,38 @@ export default {
 
 
         // pull out the relevant variables
-        data = data
-          .map(d => {
-            return ({
-              data: d['data'],
-              currentCases: d.data.slice(-1)[0].cases,
-              country: d.metadata.country,
-              province: d.metadata.province,
-              region: this.getRegion(d.metadata.country)
-            })
-          });
+        data.forEach(areaData => areaData.data.forEach(d => {
+          d['country'] = areaData.metadata.country;
+          d['province'] = areaData.metadata.province;
+          d['region'] = this.getRegion(areaData.metadata.country);
+        }))
 
+        this.data = data.flatMap(d => d.data).filter(d => d.region != "China");
 
-        // nest one: group into regions
+      });
+    },
+    nest: function(data) {
+      if (data) {
+        // nest by date
         const regionNest = d3.nest()
+          .key(d => d.date)
           .key(d => d.region)
-          .rollup(values => values.flatMap(d => d.data))
+          .rollup(values => d3.sum(values, d => d.cases))
           .entries(data);
 
-        this.data = regionNest.map(region => {
+        const nested = regionNest.map(d => {
+          const obj = {};
+          obj['date'] = d3.isoParse(d.key);
 
-          const nested = d3.nest()
-            .key(d => d.date)
-            .rollup(values => d3.sum(values, d => d.cases))
-            .entries(region.value)
-            .sort((a, b) => a.key - b.key);
-
-          nested.forEach(d => d.key = d3.isoParse(d.key))
-
-          return ({
-            region: region.key,
-            data: nested,
-            currentCases: nested.slice(-1)[0].value
+          d.values.forEach(value => {
+            obj[value.key] = value.value;
           })
+
+          return (obj)
         })
+        return (nested);
+      }
 
-        // sort date data by number of current cases
-        this.data.sort((a, b) => b.currentCases - a.currentCases);
-
-        console.log(this.data);
-      });
     }
   },
   mounted() {
