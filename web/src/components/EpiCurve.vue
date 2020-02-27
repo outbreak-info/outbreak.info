@@ -1,6 +1,7 @@
 <template>
 <div class="epidemiology">
   <h1 v-if="country">{{ country }}</h1>
+  <h3>Cumulative number of COVID-19 cases</h3>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
   </svg>

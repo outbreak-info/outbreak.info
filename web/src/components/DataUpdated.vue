@@ -28,7 +28,6 @@ export default Vue.extend({
     getDateUpdated() {
       const apiUrl = `${this.ghAPI}${this.filePath}&page=1&per_page=1`;
       axios.get(apiUrl).then((response) => {
-        console.log(response.data)
         this.dateUpdated = isoParse(response.data[0].commit.author.date);
         const updatedDiff = (new Date() - this.dateUpdated) / (60 * 60 * 1000);
 
