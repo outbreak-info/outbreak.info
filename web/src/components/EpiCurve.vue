@@ -29,6 +29,7 @@ const margin = {
   bottom: 75,
   left: 60
 }
+const transitionDuration = 3000;
 
 export default Vue.extend({
   name: "EpiCurve",
@@ -46,6 +47,7 @@ export default Vue.extend({
       height,
       margin,
       radius,
+      transitionDuration,
       // axes
       x: d3.scaleTime(),
       y: d3.scaleLinear(),
@@ -136,7 +138,7 @@ export default Vue.extend({
 
     },
     drawDots: function() {
-      const t1 = d3.transition().duration(4000);
+      const t1 = d3.transition().duration(this.transitionDuration);
       const formatDate = d3.timeFormat("%d %b %Y");
 
       // --- create groups for each region ---
@@ -158,17 +160,17 @@ export default Vue.extend({
       // --- region annotation ---
       regionsEnter.append("text")
         .attr("class", d => `annotation--region-name ${d.id}`)
+        .style("stroke", "none")
         .attr('dx', 8)
         // .attr('x', 0)
         // .attr('y', this.y(0))
         .attr('x', this.width)
         .attr('y', d => this.y(d.metadata.currentCases))
         .text(d => d.metadata.country)
-        .style("fill-opacity", 1e-6)
+        .style("opacity", 1e-6)
         .transition(t1)
         .delay(1000)
-
-        .style("fill-opacity", 1);
+        .style("opacity", 1);
 
       // --- path ---
       const groupPaths = this.chart
@@ -234,7 +236,7 @@ export default Vue.extend({
 
       const tooltipTextEnter = tooltipEnter
         .append("text")
-        .attr("class", "tooltip--text")
+        .attr("class", "tooltip--text default-black")
         .attr("transform", "translate(5,5)");
 
       // const tooltipCtryEnter = tooltipTextEnter.append("tspan")
@@ -320,6 +322,7 @@ export default Vue.extend({
 
 .tooltip--text {
     dominant-baseline: hanging;
+    stroke: none !important;
 }
 
 .tooltip--date {

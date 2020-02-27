@@ -25,7 +25,10 @@
 
 #app text {
     font-family: $font-family;
-    fill: $standard-text;
+}
+
+.default-black, .axis--x text, .axis--y text {
+  fill: $standard-text;
 }
 
 #outbreak-header {
