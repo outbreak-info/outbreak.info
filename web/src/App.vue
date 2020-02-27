@@ -20,11 +20,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
+    color: $standard-text;
 }
 
 #app text {
     font-family: $font-family;
+    fill: $standard-text;
 }
 
 #outbreak-header {

@@ -1,6 +1,6 @@
 <template>
 <div class="source">
-<small>Data is kindly provided by the <a :href="dataSourceUrl" target="_blank" rel="noreferrer">{{dataSourceName}}</a></small>
+<small>Data is kindly provided by the <a :href="dataSourceUrl" target="_blank" rel="noreferrer">{{dataSourceName}}</a> and updates roughly every day.</small>
 </div>
 </template>
 

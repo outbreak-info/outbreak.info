@@ -1,6 +1,7 @@
 <template>
 <div class="home">
   <!-- <EpiStacked v-bind:data="data" /> -->
+  <DataUpdated />
   <EpiStacked v-bind:data="nested" />
   <!-- <EpiStacked v-bind:data="noChina" /> -->
   <DataSource />
@@ -11,13 +12,15 @@
 <script>
 import EpiStacked from "@/components/EpiStacked.vue";
 import DataSource from "@/components/DataSource.vue";
+import DataUpdated from "@/components/DataUpdated.vue";
 import * as d3 from 'd3';
 
 export default {
   name: "Home",
   components: {
     EpiStacked,
-    DataSource
+    DataSource,
+    DataUpdated
   },
   computed: {
     noChina() {
