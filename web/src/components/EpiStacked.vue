@@ -18,7 +18,6 @@ import {
 
 const width = 500;
 const height = 300;
-const radius = 3;
 const margin = {
   top: 10,
   right: 100,
@@ -37,7 +36,6 @@ export default Vue.extend({
       width,
       height,
       margin,
-      radius,
       series: null,
       // axes
       x: d3.scaleTime(),
@@ -78,7 +76,6 @@ export default Vue.extend({
     },
     createScales: function() {
       const keys = Object.keys(this.data[0]).filter(d => d !== "date");
-      console.log(keys)
 
       this.series = d3.stack()
         .keys(keys)
@@ -138,9 +135,9 @@ export default Vue.extend({
         .selectAll(".legend-group")
         .data(this.series);
 
-        const legendEnter = legendData.enter().append("g").attr("class", "legend-group");
+      const legendEnter = legendData.enter().append("g").attr("class", "legend-group");
 
-        legendEnter.append("rect")
+      legendEnter.append("rect")
         .attr("y", (d, i) => i * (legendRectWidth + 4) + legendRectWidth)
         .attr("x", 10)
         .attr("width", legendRectWidth)
@@ -149,8 +146,8 @@ export default Vue.extend({
           key
         }) => this.colorScale(key));
 
-        legendEnter.append("text")
-        .attr("y", (d, i) => i * (legendRectWidth + 4) + legendRectWidth*1.5)
+      legendEnter.append("text")
+        .attr("y", (d, i) => i * (legendRectWidth + 4) + legendRectWidth * 1.5)
         .attr("x", 10 + legendRectWidth)
         .attr("dx", 8)
         .attr("class", "legend-name")
@@ -167,22 +164,12 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .legend-name {
-  font-size: 10px;
-  dominant-baseline: middle;
+    font-size: 10px;
+    dominant-baseline: middle;
 }
 
 .epi-axis text {
     font-size: 12pt;
-}
-
-.epi-line {
-    fill: none;
-    stroke: red;
-    stroke-width: 2;
-}
-
-.epi-point {
-    // opacity: 0.4;
 }
 
 .annotation--region-name {

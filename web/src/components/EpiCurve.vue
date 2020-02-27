@@ -17,7 +17,7 @@ import {
 
 const width = 500;
 const height = 300;
-const radius = 3;
+const radius = 2.5;
 const margin = {
   top: 10,
   right: 100,
@@ -106,7 +106,7 @@ export default Vue.extend({
 
     },
     drawDots: function() {
-      const t1 = d3.transition().duration(2000);
+      const t1 = d3.transition().duration(4000);
 
       // --- create groups for each region ---
       const regionGroups = this.chart
@@ -121,36 +121,38 @@ export default Vue.extend({
         .append("g")
         .attr("class", "epi-region")
         .attr("id", d => d.metadata.country)
-        .attr("fill", d => this.colorScale(d.metadata.country));
+        .attr("fill", d => this.colorScale(d.metadata.country))
+        .attr("stroke", d => this.colorScale(d.metadata.country));
 
       // --- region annotation ---
       regionsEnter.append("text")
-      .attr('class', 'annotation--region-name')
-      .attr('dx', 8)
-      .attr('x', 0)
-      .attr('y', this.y(0))
-      .text(d => d.metadata.country)
-      // .style("fill-opacity", 1e-6)
-      .transition(t1)
-      .attr('x', this.width)
-      .attr('y', d => this.y(d.metadata.currentCases))
-      // .style("fill-opacity", 1);
+        .attr('class', 'annotation--region-name')
+        .attr('dx', 8)
+        // .attr('x', 0)
+        // .attr('y', this.y(0))
+        .attr('x', this.width)
+        .attr('y', d => this.y(d.metadata.currentCases))
+        .text(d => d.metadata.country)
+        .style("fill-opacity", 1e-6)
+        .transition(t1)
+        .delay(1000)
+
+        .style("fill-opacity", 1);
 
       // --- path ---
-      // const groupPaths = this.chart
-      //   .selectAll(".epi-region")
-      //   .selectAll(".epi-line")
+      const groupPaths = this.chart
+        .selectAll(".epi-region")
+        .selectAll(".epi-line");
       //   .data(d => d.data);
       //
       // groupPaths.exit().remove();
       //
-      // const pathEnter = this.chart.selectAll(".epi-line").enter()
-      //   .append("path")
-      //   .datum(this.data.map(d => d.data))
-      //   .attr("class", "epi-line epi-line--all")
-      //
-      // groupPaths.merge(pathEnter)
-      //   .attr("d", this.line);
+      regionsEnter
+        .append("path")
+        .datum(d => d.data)
+        .attr("class", "epi-line epi-line--all")
+        .attr("d", this.line);
+
 
       // --- dots ---
       const dots = this.chart
@@ -166,25 +168,21 @@ export default Vue.extend({
         .attr("r", this.radius);
 
       dots.merge(dotEnter)
-        .attr('cx', 0)
-        .attr('cy', this.y(0))
-        .transition(t1)
         .attr("cx", d => this.x(d.date))
         .attr("cy", d => this.y(d.cases));
 
-      // --- paths ---
-      const paths = this.chart
-        .selectAll(".epi-region");
+      // --- transition: trace the curves ---
+      this.chart.append("rect")
+        .attr("class", "transition-curtain")
+        .attr("width", this.width + this.radius + this.margin.right)
+        .attr("height", this.height + this.margin.top + this.radius * 2)
+        .attr("x", -this.radius)
+        .attr("y", -this.margin.top)
+        .style("fill", "white")
+        .transition(t1)
+        .ease(d3.easeLinear)
+        .attr("x", this.width + this.margin.right)
 
-      paths.exit().remove();
-
-      const pathEnter = paths
-        .append("path")
-        .datum(d => d.data)
-        .attr("class", 'epi-line');
-
-      paths.merge(pathEnter)
-        .attr("d", this.line);
     }
   }
 });
@@ -198,7 +196,6 @@ export default Vue.extend({
 
 .epi-line {
     fill: none;
-    stroke: red;
     stroke-width: 2;
 }
 
