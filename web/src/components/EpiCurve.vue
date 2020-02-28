@@ -29,7 +29,7 @@ const margin = {
   bottom: 75,
   left: 60
 }
-const transitionDuration = 3000;
+const transitionDuration = 3500;
 
 export default Vue.extend({
   name: "EpiCurve",

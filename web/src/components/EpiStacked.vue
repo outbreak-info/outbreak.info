@@ -61,7 +61,6 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      console.log('data changed!')
       console.log(this.data);
       this.updatePlot();
     }
@@ -87,7 +86,12 @@ export default Vue.extend({
 
       this.series = d3.stack()
         .keys(keys)
-        .order(d3.stackOrderInsideOut)
+        // .order(d3.stackOrderDescending)
+        // .order(d3.stackOrderAscending)
+        // .order(d3.stackOrderAppearance)
+        // .order(d3.stackOrderNone)
+        .order(d3.stackOrderReverse)
+        // .order(d3.stackOrderInsideOut)
         (this.data);
 
       console.log(this.series)

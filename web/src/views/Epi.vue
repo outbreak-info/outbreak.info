@@ -19,13 +19,12 @@ export default {
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
-      countries: ["Italy", "South Korea", "Others", "Iran", "Japan"],
+      countries: ["Italy", "South Korea", "UK", "Iran", "Japan", "Germany"],
       data: null
     }
   },
   methods: {
     getData: function() {
-      console.log("grabbing the data")
       d3.csv(this.dataUrl).then(data => {
         const parseDate = d3.timeParse("%m/%d/%y");
         console.log(data)
