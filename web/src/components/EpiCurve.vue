@@ -49,8 +49,8 @@ export default Vue.extend({
       radius,
       transitionDuration,
       // axes
-      x: d3.scaleTime(),
-      y: d3.scaleLinear(),
+      x: d3.scaleTime().range([0, width]),
+      y: d3.scaleLinear().range([height, 0]),
       colorScale: d3.scaleOrdinal(schemeTableau10),
       xAxis: null,
       yAxis: null,
@@ -69,6 +69,7 @@ export default Vue.extend({
     }
   },
   mounted() {
+    this.setupPlot();
     this.updatePlot();
   },
   methods: {
@@ -98,25 +99,30 @@ export default Vue.extend({
     },
     updatePlot: function() {
       if (this.data) {
-        this.setupPlot();
-        this.createScales();
+        this.updateScales();
         this.drawDots();
       }
     },
     setupPlot: function() {
-      this.svg = d3.select("svg");
+      this.svg = d3.select("svg.epi-curve");
       this.chart = d3.select("#epi-curve");
       this.line = d3.line()
         .x((d: any) => this.x(d.date))
         .y((d: any) => this.y(d.cases));
+
+      this.svg.append('g')
+        .attr('class', 'epi-axis axis--x')
+        .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`);
+
+      this.svg.append('g')
+        .attr('class', 'epi-axis axis--y')
+        .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
     },
-    createScales: function() {
+    updateScales: function() {
       this.x = this.x
-        .domain(d3.extent(this.data.flatMap(d => d.data).map(d => d.date)))
-        .range([0, this.width]);
+        .domain(d3.extent(this.data.flatMap(d => d.data).map(d => d.date)));
 
       this.y = this.y
-        .range([this.height, 0])
         .domain([0, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
 
       this.colorScale = this.colorScale
@@ -124,18 +130,13 @@ export default Vue.extend({
 
       this.xAxis = d3.axisBottom(this.x).ticks(9);
 
-      this.svg.append('g')
-        .attr('class', 'epi-axis axis--x')
-        .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
+      d3.select(".axis--x")
         .call(this.xAxis);
 
       this.yAxis = d3.axisLeft(this.y);
 
-      this.svg.append('g')
-        .attr('class', 'epi-axis axis--y')
-        .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
+      d3.select(".axis--y")
         .call(this.yAxis);
-
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
@@ -152,18 +153,25 @@ export default Vue.extend({
       // -- enter --
       const regionsEnter = regionGroups.enter()
         .append("g")
-        .attr("class", "epi-region")
+        .attr("class", "epi-region");
+
+      regionGroups.merge(regionsEnter)
         .attr("id", d => d.metadata.country.replace(/\s/g, "_"))
         .attr("fill", d => this.colorScale(d.metadata.country))
         .attr("stroke", d => this.colorScale(d.metadata.country));
 
       // --- region annotation ---
-      regionsEnter.append("text")
-        .attr("class", d => `annotation--region-name ${d.id}`)
+      const countrySelector = this.chart.selectAll(".epi-region")
+        .select(".annotation--region-name");
+
+      const textEnter = regionsEnter.append("text")
         .style("stroke", "none")
-        .attr('dx', 8)
+        .attr('dx', 8);
+
+      countrySelector.merge(textEnter)
         // .attr('x', 0)
         // .attr('y', this.y(0))
+        .attr("class", d => `annotation--region-name ${d.id}`)
         .attr('x', this.width)
         .attr('y', d => this.y(d.metadata.currentCases))
         .text(d => d.metadata.country)
@@ -173,36 +181,44 @@ export default Vue.extend({
         .style("opacity", 1);
 
       // --- path ---
-      const groupPaths = this.chart
-        .selectAll(".epi-region")
-        .selectAll(".epi-line");
-
-      regionsEnter
+      const pathEnter = regionsEnter
         .append("path")
+        .attr("class", "epi-line");
+
+      const pathSelector = this.chart
+        .selectAll(".epi-region")
+        .select(".epi-line");
+
+      pathSelector.merge(pathEnter)
         .datum(d => d.data)
-        .attr("class", d => `epi-line ${d.id}`)
+        // .attr("class", d => `epi-line ${d.id}`)
         .attr("d", this.line);
 
 
       // --- dots ---
       const dots = this.chart
         .selectAll(".epi-region")
-        .selectAll(".epi-point")
+        .selectAll(".epi-point-group")
         .data(d => d.data);
 
       dots.exit().remove();
 
       const dotGroupEnter = dots.enter()
-        .append("g")
+        .append("g");
+
+      dots.merge(dotGroupEnter)
         .attr("class", d => `epi-point-group ${d.id}`)
         .attr("id", d => `${d.id}-${d.date_string}`);
 
+      const dotSelector = this.chart.selectAll(".epi-point");
+
       const dotEnter = dotGroupEnter
         .append("circle")
-        .attr("class", d => `epi-point ${d.id}`)
-        .attr("r", this.radius);
+        .attr("r", this.radius)
+        .attr("class", "epi-point");
 
       dots.merge(dotEnter)
+        .attr("class", d => `epi-point ${d.id}`)
         .attr("cx", d => this.x(d.date))
         .attr("cy", d => this.y(d.cases));
 
@@ -211,10 +227,10 @@ export default Vue.extend({
         .append("g")
         .attr("class", "tooltip--epi-curve")
         .attr("transform", "translate(5,5)")
-        .attr("id", d => `tooltip-${d.id}-${d.date_string}`)
         .attr("display", "none");
 
-      dots.merge(tooltipEnter);
+      dots.merge(tooltipEnter)
+        .attr("id", d => `tooltip-${d.id}-${d.date_string}`);
 
       const tooltipRect = dots.select(".tooltip--rect");
 
@@ -266,7 +282,6 @@ export default Vue.extend({
         // .attr("dy", "2.2em")
         .text(d => `${d.cases} cases`)
 
-      console.log(tooltipRect)
       // dynamically adjust the width of the rect
       // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
       // .attr("width", function(d: any) {
@@ -275,13 +290,12 @@ export default Vue.extend({
       // })
       dots.select(".tooltip--rect").attr("width", d => 500)
         // `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
-        .attr("height", (d: any) => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
+        // .attr("height", (d: any) => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
 
       // event listener
       d3.selectAll("circle")
         .on("mouseover", d => this.tooltipOn(d))
         .on("mouseout", d => this.tooltipOff(d))
-
 
 
       // --- transition: trace the curves ---
