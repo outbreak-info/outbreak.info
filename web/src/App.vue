@@ -37,6 +37,20 @@
     justify-content: space-between;
 }
 
+button {
+    line-height: 1.5em;
+    font-size: 1em;
+    border-radius: 1em;
+    fill: white;
+    font-family: $font-family;
+    margin-right: 0.25em;
+    margin-left: 0.25em;
+    border-color: $grey-40;
+    &:focus {
+      outline: none !important;
+    }
+}
+
 #nav {
     padding: 30px;
 
