@@ -2,7 +2,7 @@ import {
   timeParse,
   isoParse,
   nest,
-  sum
+  sum, timeFormat
 } from 'd3';
 
 export function getRegion(country) {
@@ -63,6 +63,7 @@ export function cleanEpi(data) {
   data.forEach(d => {
     const metadata = {
       'province': d['Province/State'],
+      'placeName': d['Province/State'],
       'country': d['Country/Region'],
       'region': getRegion(d['Country/Region']),
       id: d['Country/Region'].replace(/\s/g, "_"),
@@ -80,6 +81,8 @@ export function cleanEpi(data) {
         "date_string": timepoint,
         "date": parseDate(timepoint),
         "cases": +d[timepoint],
+        "country": metadata.country,
+        "region": metadata.region,
         "id": `${metadata.country.replace(/\s/g, "_")}`
       })
     });
@@ -96,12 +99,54 @@ export function cleanEpi(data) {
   return (data);
 }
 
-export function nestEpi(data, nestingVar) {
+export function nestEpiTrace(data, nestingVar, nestingType) {
+  const formatDate = timeFormat("%m-%d-%y")
   if (data) {
     // nest by date
     const regionNest = nest()
-      .key(d => d.date)
       .key(d => d[nestingVar])
+      .key(d => d.date)
+      .rollup(values => {
+        return({
+          cases: sum(values, d => d.cases),
+          countries: values.map(d => d.country),
+          region: values[0].region
+         })
+      })
+      .entries(data);
+
+    console.log(regionNest)
+
+    regionNest.forEach(d => {
+      d['metadata'] = {};
+      d['metadata']['placeName'] = d.key;
+      d['metadata']['id'] = d.key.replace(/\s/g, "_");
+      d.values.forEach(timepoint => {
+      timepoint['id'] = d.metadata.id;
+      timepoint['date'] = isoParse(timepoint.key);
+      timepoint['date_string'] = formatDate(timepoint.date);
+      timepoint['cases'] = timepoint.value.cases;
+      })
+
+      d['data'] = d.values;
+      d['metadata']['currentCases'] = d.data.slice(-1)[0].cases;
+      d['metadata']['countries'] = d.data[0].value.countries;
+      d['metadata']['region'] = d.data[0].value.region;
+      d['metadata']['nestingType'] = nestingType;
+    })
+
+    console.log(regionNest)
+
+    return (regionNest);
+  }
+}
+
+export function prep4Stacked(data, nestingVar) {
+  if (data) {
+    // nest by date
+    const regionNest = nest()
+      .key(d => d[nestingVar])
+      .key(d => d.date)
       .rollup(values => sum(values, d => d.cases))
       .entries(data);
 
@@ -115,7 +160,5 @@ export function nestEpi(data, nestingVar) {
 
       return (obj)
     })
-    console.log(nested)
-    return (nested);
   }
 }

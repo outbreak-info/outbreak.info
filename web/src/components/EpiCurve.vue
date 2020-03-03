@@ -1,7 +1,6 @@
 <template>
 <div class="epidemiology flex-column align-left">
   <button @click="switchAxes()">common axis</button>
-  <h1 v-if="country">{{ country }}</h1>
   <h3 class="plot-title">Cumulative number of COVID-19 cases</h3>
   <DataUpdated />
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
@@ -28,7 +27,7 @@ const height = 300;
 const radius = 2.5;
 const margin = {
   top: 10,
-  right: 100,
+  right: 170,
   bottom: 75,
   left: 60
 }
@@ -41,7 +40,6 @@ export default Vue.extend({
     DataSource
   },
   props: {
-    country: String,
     data: Array
   },
   data() {
@@ -110,8 +108,8 @@ export default Vue.extend({
 
         regionGroups.merge(regionsEnter)
           .attr("id", d => d.metadata.id)
-          .attr("fill", d => this.colorScale(d.metadata.country))
-          .attr("stroke", d => this.colorScale(d.metadata.country));
+          .attr("fill", d => this.colorScale(d.metadata.placeName))
+          .attr("stroke", d => this.colorScale(d.metadata.placeName));
 
         // --- region annotation ---
         const countrySelector = this.chart.selectAll(".epi-region")
@@ -131,7 +129,7 @@ export default Vue.extend({
           .attr("class", d => `annotation--region-name ${d.metadata.id}`)
           .attr('x', this.width)
           .attr('y', d => this.y(d.metadata.currentCases))
-          .text(d => d.metadata.country)
+          .text(d => d.metadata.placeName)
           .style("opacity", 1e-6)
           .transition(t1)
           .delay(1000)
@@ -185,8 +183,8 @@ export default Vue.extend({
         const tooltipGroupEnter = tooltipGroupSelector.enter()
           .append("g")
           .attr("class", "epi-tooltip-group")
-          .attr("fill", d => this.colorScale(d.metadata.country))
-          .attr("stroke", d => this.colorScale(d.metadata.country));
+          .attr("fill", d => this.colorScale(d.metadata.placeName))
+          .attr("stroke", d => this.colorScale(d.metadata.placeName));
 
         tooltipGroupSelector.merge(tooltipGroupEnter)
           .attr("class", d => `epi-tooltip-group ${d.metadata.id}`);
@@ -351,7 +349,7 @@ export default Vue.extend({
         .domain([0, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
 
       this.colorScale = this.colorScale
-        .domain(this.data.flatMap(d => d.metadata).map(d => d.country))
+        .domain(this.data.flatMap(d => d.metadata).map(d => d.placeName))
 
       this.xAxis = d3.axisBottom(this.x).ticks(9);
 
@@ -382,8 +380,8 @@ export default Vue.extend({
 
       regionGroups.merge(regionsEnter)
         .attr("id", d => d.metadata.id)
-        .attr("fill", d => this.colorScale(d.metadata.country))
-        .attr("stroke", d => this.colorScale(d.metadata.country));
+        .attr("fill", d => this.colorScale(d.metadata.placeName))
+        .attr("stroke", d => this.colorScale(d.metadata.placeName));
 
       // --- region annotation ---
       const countrySelector = this.chart.selectAll(".epi-region")
@@ -403,7 +401,7 @@ export default Vue.extend({
         .attr("class", d => `annotation--region-name ${d.metadata.id}`)
         .attr('x', this.width)
         .attr('y', d => this.y(d.metadata.currentCases))
-        .text(d => d.metadata.country)
+        .text(d => d.metadata.placeName)
         .style("opacity", 1e-6)
         .transition(t1)
         .delay(1000)
@@ -457,8 +455,8 @@ export default Vue.extend({
       const tooltipGroupEnter = tooltipGroupSelector.enter()
         .append("g")
         .attr("class", "epi-tooltip-group")
-        .attr("fill", d => this.colorScale(d.metadata.country))
-        .attr("stroke", d => this.colorScale(d.metadata.country));
+        .attr("fill", d => this.colorScale(d.metadata.placeName))
+        .attr("stroke", d => this.colorScale(d.metadata.placeName));
 
       tooltipGroupSelector.merge(tooltipGroupEnter)
         .attr("class", d => `epi-tooltip-group ${d.metadata.id}`);

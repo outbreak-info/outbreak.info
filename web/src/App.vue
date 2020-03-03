@@ -40,7 +40,6 @@
 button {
     line-height: 1.5em;
     font-size: 1em;
-    border-radius: 1em;
     fill: white;
     font-family: $font-family;
     margin-right: 0.25em;
@@ -48,6 +47,9 @@ button {
     border-color: $grey-40;
     &:focus {
       outline: none !important;
+    }
+    &.chip {
+      border-radius: 1em;
     }
 }
 

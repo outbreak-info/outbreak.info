@@ -1,20 +1,19 @@
 <template>
 <div>
-  <div id="presetCountries">
-    <button v-for="country, idx in presetGroups" v-bind:key="idx" @click="selectGroup(country)">
-      select {{country.label}}
+  <div id="presetLocations">
+    <button v-for="place, idx in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
+      select {{place.label}}
     </button>
   </div>
 
-  <div id="selectedCountries">
-    <button v-for="country in selectedCountries" v-bind:key="country" @click="removeRegion(country)">
-      {{country}}
+  <div id="selectedPlaces">
+    <button class="chip" v-for="place in selectedPlaces" v-bind:key="place" @click="removeRegion(place)">
+      {{place}}
       <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" /></button>
   </div>
-  <FilterEpi v-bind:countries="allCountries" v-model="selectedCountries" />
 
-  <select v-model="selectedCountries" multiple id="country-selector">
-    <option v-for="country in allCountries" v-bind:key="country" :value="country">{{country}}</option>
+  <select v-model="selectedPlaces" multiple id="country-selector">
+    <option v-for="place in allPlaces" v-bind:key="place" :value="place">{{place}}</option>
   </select>
 
   <EpiCurve v-bind:data="data" />
@@ -26,8 +25,10 @@
 // @ is an alias to /src
 import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
-import FilterEpi from "@/components/FilterEpi.vue";
-import { cleanEpi, nestEpi } from "@/js/importEpi.js";
+import {
+  cleanEpi,
+  nestEpiTrace
+} from "@/js/importEpi.js";
 
 import {
   FontAwesomeIcon
@@ -48,61 +49,67 @@ export default {
   components: {
     EpiCurve,
     EpiTable,
-    FilterEpi,
     FontAwesomeIcon
   },
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
-      allCountries: [],
+      allPlaces: [],
       allData: null,
       data: null,
-      presetGroups: [
-        {label: "top 5 case counts", countries: ["Mainland China", "South Korea", "Italy", "Iran", "Japan"]},
-        {label: "top 5 case increases", countries: ["South Korea", "Iran", "Italy", "France", "Spain"]},
-        {label: "Iran cluster", countries: ["Iran", "Iraq"]},
-        {label: "Italy cluster", countries: ["Italy", "Germany", "UK", "France", "Spain"]}
+      presetGroups: [{
+          label: "top 5 case counts",
+          locations: ["Mainland China", "South Korea", "Italy", "Iran", "Japan"]
+        },
+        {
+          label: "top 5 case increases",
+          locations: ["South Korea", "Iran", "Italy", "France", "Spain"]
+        },
+        {
+          label: "Iran cluster",
+          locations: ["Iran", "Iraq"]
+        },
+        {
+          label: "Italy cluster",
+          locations: ["Italy", "Germany", "UK", "France", "Spain"]
+        }
       ],
-      selectedCountries: ["South Korea", "Iran", "Italy", "France", "Spain"]
+      selectedPlaces: ["South Korea", "Iran", "Italy", "France", "Spain"]
     }
   },
   watch: {
-    selectedCountries: function() {
-      console.log("watch triggered");
+    selectedPlaces: function() {
       this.filterData();
     }
   },
   methods: {
-    selectGroup: function(country) {
-      this.selectedCountries = country.countries;
+    selectGroup: function(locationGroup) {
+      this.selectedPlaces = locationGroup.locations;
     },
-    removeRegion: function(country) {
-      this.selectedCountries = this.selectedCountries.filter(d => d !== country);
+    removeRegion: function(location) {
+      this.selectedPlaces = this.selectedPlaces.filter(d => d !== location);
     },
     filterData: function() {
-      this.data = this.allData.filter(d => this.selectedCountries.includes(d.metadata.country));
+      this.data = this.allData.filter(d => this.selectedPlaces.includes(d.metadata.placeName));
     },
     getData: function() {
       d3.csv(this.dataUrl).then(data => {
 
-        const cleanedData = cleanEpi(data);
+        const rawCleaned = cleanEpi(data);
 
-        this.allCountries = [...new Set(cleanedData.map(d => d.metadata.country))];
+        let cleanedData = [];
+        cleanedData = cleanedData.concat(nestEpiTrace(rawCleaned.flatMap(d => d.data), "region", "region"));
+        cleanedData = cleanedData.concat(nestEpiTrace(rawCleaned.flatMap(d => d.data), "country", "country"));
+        rawCleaned.forEach(d => {
+          d['metadata']['nestingType'] = "sub-national";
+        })
+        cleanedData = cleanedData.concat(rawCleaned);
+
+        this.allPlaces = [...new Set(cleanedData.map(d => d.metadata.placeName))];
 
         this.allData = cleanedData;
 
         this.filterData();
-
-
-        // const nested = d3.nest()
-        //   .key(d => d.metadata.country)
-        //   .rollup(values => {
-        //
-        //   })
-        //   .entries(this.data);
-        // console.log('nested')
-        // console.log(nested)
-
       });
     }
   },

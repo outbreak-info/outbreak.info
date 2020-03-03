@@ -4,7 +4,7 @@
   <table>
     <tr>
       <th>
-        country
+        location
       </th>
       <th>
         total cases
@@ -19,21 +19,21 @@
         date
       </th>
     </tr>
-    <tr v-for="row in cases" v-bind:key="row.metadata.country">
+    <tr v-for="row in cases" v-bind:key="row.metadata.placeName">
       <td>
-        {{ row.metadata.country}}
+        {{ row.metadata.placeName}}
       </td>
       <td>
         {{ row.totalNum}}
       </td>
       <td>
-        {{ row.numIncrease}}
+        {{ row.numIncrease.toLocaleString() }}
       </td>
       <td>
-        {{ row.pctIncrease}}
+        {{ row.pctIncrease }}
       </td>
       <td>
-        {{ row.currentDate}}
+        {{ row.currentDate }}
       </td>
     </tr>
   </table>
@@ -81,10 +81,10 @@ export default Vue.extend({
 
       this.cases.forEach(d => {
         const last2 = d.data.slice(-2);
-        d['numIncrease'] = last2[1].cases - last2[0].cases;
+        d['numIncrease'] = (last2[1].cases - last2[0].cases).toLocaleString();
         d['pctIncrease'] = formatPercent(d.numIncrease / last2[0].cases);
         d['currentDate'] = formatDate(last2[1].date);
-        d['totalNum'] = last2[1].cases;
+        d['totalNum'] = last2[1].cases.toLocaleString();
       });
 
       this.cases.sort((a, b) => b.numIncrease - a.numIncrease);
