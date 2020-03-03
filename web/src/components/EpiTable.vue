@@ -42,8 +42,13 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { cloneDeep } from "lodash";
-import { format, timeFormat } from "d3";
+import {
+  cloneDeep
+} from "lodash";
+import {
+  format,
+  timeFormat
+} from "d3";
 
 const formatDate = timeFormat("%a %d %b %Y");
 const formatPercent = format(".0%");
@@ -62,13 +67,13 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      console.log('data changed!')
-      console.log(this.data);
       this.prepData();
     }
   },
   mounted() {
-    console.log()
+    if (this.data) {
+      this.prepData();
+    }
   },
   methods: {
     prepData() {
