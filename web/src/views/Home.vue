@@ -1,24 +1,36 @@
 <template>
-<div class="home">
-  <!-- <EpiStacked v-bind:data="data" /> -->
-  <EpiStacked v-bind:data="nested" />
-  <!-- <EpiStacked v-bind:data="noChina" /> -->
+<div class="home flex-column align-left">
+  <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
+  <DataUpdated />
+  <div class="flex">
+    <EpiStacked v-bind:data="nested" v-bind:id="'all-data'" />
+    <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'"  />  
+  </div>
 
+  <DataSource />
 </div>
 </template>
 
 <script>
 import EpiStacked from "@/components/EpiStacked.vue";
+import DataUpdated from "@/components/DataUpdated.vue";
+import DataSource from "@/components/DataSource.vue";
 import * as d3 from 'd3';
 
 export default {
   name: "Home",
   components: {
     EpiStacked,
+    DataUpdated,
+    DataSource
   },
   computed: {
     noChina() {
-      return this.nest(this.data.filter(d => d.region != 'China'));
+      if(this.data) {
+        return this.nest(this.data.filter(d => d.region != 'China'));
+      } else {
+        return (null)
+      }
     },
     nested() {
       return this.nest(this.data);
@@ -122,7 +134,7 @@ export default {
           d['region'] = this.getRegion(areaData.metadata.country);
         }))
 
-        this.data = data.flatMap(d => d.data).filter(d => d.region != "China");
+        this.data = data.flatMap(d => d.data);
 
       });
     },

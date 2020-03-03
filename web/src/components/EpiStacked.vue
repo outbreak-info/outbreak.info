@@ -1,19 +1,15 @@
 <template>
-<div class="epidemiology flex-column align-left">
-  <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
-  <DataUpdated />
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-summary">
-    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-summary"></g>
-    <g :transform="`translate(${margin.left},${-margin.top})`" id="legend"></g>
+<div class="epidemiology">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-summary-svg" :id="id">
+    <g :transform="`translate(${margin.left},${margin.top})`" class="epi-summary"></g>
+    <g :transform="`translate(${margin.left},${-margin.top})`" class="legend"></g>
   </svg>
-  <DataSource />
+
 </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import DataUpdated from "@/components/DataUpdated.vue";
-import DataSource from "@/components/DataSource.vue";
 
 import * as d3 from 'd3';
 import {
@@ -26,17 +22,15 @@ const margin = {
   top: 10,
   right: 100,
   bottom: 25,
-  left: 60
+  left: 70
 }
 
 export default Vue.extend({
   name: "EpiStacked",
   components: {
-    DataUpdated,
-    DataSource
   },
   props: {
-    country: String,
+    id: String,
     data: Array
   },
   data() {
@@ -77,9 +71,9 @@ export default Vue.extend({
       }
     },
     setupPlot: function() {
-      this.svg = d3.select("svg");
-      this.chart = d3.select("#epi-summary");
-      this.legend = d3.select("#legend");
+      this.svg = d3.select(`#${this.id}`);
+      this.chart = this.svg.select(".epi-summary");
+      this.legend = this.svg.select(".legend");
     },
     createScales: function() {
       const keys = Object.keys(this.data[0]).filter(d => d !== "date");
