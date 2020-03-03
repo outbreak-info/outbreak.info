@@ -115,8 +115,6 @@ export function nestEpiTrace(data, nestingVar, nestingType) {
       })
       .entries(data);
 
-    console.log(regionNest)
-
     regionNest.forEach(d => {
       d['metadata'] = {};
       d['metadata']['placeName'] = d.key;
