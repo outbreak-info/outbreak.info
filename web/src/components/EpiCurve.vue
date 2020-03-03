@@ -167,7 +167,11 @@ export default Vue.extend({
 
       const textEnter = regionsEnter.append("text")
         .style("stroke", "none")
-        .attr('dx', 8);
+        .attr('dx', 8)
+        .style("opacity", 1e-6)
+              .transition(t1)
+              .delay(1000)
+              .style("opacity", 1)
 
       countrySelector.merge(textEnter)
         // .attr('x', 0)
