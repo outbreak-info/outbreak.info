@@ -4,7 +4,7 @@
   <DataUpdated />
   <div class="flex">
     <EpiStacked v-bind:data="nested" v-bind:id="'all-data'" />
-    <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'"  />  
+    <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'"  />
   </div>
 
   <DataSource />
@@ -39,12 +39,13 @@ export default {
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
-      countries: ["Iran", "Italy", "Japan", "South Korea", "Others"],
+
+
       data: null,
       regionDict: [{
           region: "Asia (outside China)",
           countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
-            "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India"
+            "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
           ]
         },
         {
@@ -53,21 +54,21 @@ export default {
         },
         {
           region: "North America",
-          countries: ["US", "Canada", ]
+          countries: ["US", "Canada", "Mexico", "Dominican Republic"]
         },
         {
           region: "South America",
-          countries: ["Brazil"]
+          countries: ["Brazil", "Ecuador"]
         },
         {
           region: "Europe",
           countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
-            "Romania"
+            "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland", "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia"
           ]
         },
         {
           region: "Africa",
-          countries: ["Algeria", ]
+          countries: ["Algeria", "Nigeria", "Morocco", "Senegal"]
         },
         {
           region: "Diamond Princess Cruise",
@@ -75,11 +76,11 @@ export default {
         },
         {
           region: "Middle East",
-          countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan"]
+          countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
         },
         {
           region: "Australia/Oceania",
-          countries: ["Australia", ]
+          countries: ["Australia", "New Zealand"]
         }
       ]
 
@@ -134,7 +135,10 @@ export default {
           d['region'] = this.getRegion(areaData.metadata.country);
         }))
 
+        console.log(data)
+
         this.data = data.flatMap(d => d.data);
+        console.log(this.data)
 
       });
     },

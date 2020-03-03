@@ -9,7 +9,7 @@ export function getRegion(country) {
   const regionDict = [{
       region: "Asia (outside China)",
       countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
-        "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India"
+        "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
       ]
     },
     {
@@ -18,21 +18,21 @@ export function getRegion(country) {
     },
     {
       region: "North America",
-      countries: ["US", "Canada", ]
+      countries: ["US", "Canada", "Mexico", "Dominican Republic"]
     },
     {
       region: "South America",
-      countries: ["Brazil"]
+      countries: ["Brazil", "Ecuador"]
     },
     {
       region: "Europe",
       countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
-        "Romania"
+        "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland", "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia"
       ]
     },
     {
       region: "Africa",
-      countries: ["Algeria", ]
+      countries: ["Algeria", "Nigeria", "Morocco", "Senegal"]
     },
     {
       region: "Diamond Princess Cruise",
@@ -40,7 +40,7 @@ export function getRegion(country) {
     },
     {
       region: "Middle East",
-      countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan"]
+      countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
     },
     {
       region: "Australia/Oceania",
