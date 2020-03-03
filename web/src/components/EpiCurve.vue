@@ -107,9 +107,9 @@ export default Vue.extend({
           .attr("class", "epi-region");
 
         regionGroups.merge(regionsEnter)
-          .attr("id", d => d.metadata.id)
-          .attr("fill", d => this.colorScale(d.metadata.placeName))
-          .attr("stroke", d => this.colorScale(d.metadata.placeName));
+          .attr("id", d => d.id)
+          .attr("fill", d => this.colorScale(d.placeName))
+          .attr("stroke", d => this.colorScale(d.placeName));
 
         // --- region annotation ---
         const countrySelector = this.chart.selectAll(".epi-region")
@@ -126,10 +126,10 @@ export default Vue.extend({
         countrySelector.merge(textEnter)
           // .attr('x', 0)
           // .attr('y', this.y(0))
-          .attr("class", d => `annotation--region-name ${d.metadata.id}`)
+          .attr("class", d => `annotation--region-name ${d.id}`)
           .attr('x', this.width)
-          .attr('y', d => this.y(d.metadata.currentCases))
-          .text(d => d.metadata.placeName)
+          .attr('y', d => this.y(d.currentCases))
+          .text(d => d.placeName)
           .style("opacity", 1e-6)
           .transition(t1)
           .delay(1000)
@@ -183,11 +183,11 @@ export default Vue.extend({
         const tooltipGroupEnter = tooltipGroupSelector.enter()
           .append("g")
           .attr("class", "epi-tooltip-group")
-          .attr("fill", d => this.colorScale(d.metadata.placeName))
-          .attr("stroke", d => this.colorScale(d.metadata.placeName));
+          .attr("fill", d => this.colorScale(d.placeName))
+          .attr("stroke", d => this.colorScale(d.placeName));
 
         tooltipGroupSelector.merge(tooltipGroupEnter)
-          .attr("class", d => `epi-tooltip-group ${d.metadata.id}`);
+          .attr("class", d => `epi-tooltip-group ${d.id}`);
 
         // INNER GROUPS: one per timepoint
         const tooltipSelector = this.chart
@@ -349,7 +349,7 @@ export default Vue.extend({
         .domain([0, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
 
       this.colorScale = this.colorScale
-        .domain(this.data.flatMap(d => d.metadata).map(d => d.placeName))
+        .domain(this.data.map(d => d.placeName))
 
       this.xAxis = d3.axisBottom(this.x).ticks(9);
 
@@ -379,9 +379,9 @@ export default Vue.extend({
         .attr("class", "epi-region");
 
       regionGroups.merge(regionsEnter)
-        .attr("id", d => d.metadata.id)
-        .attr("fill", d => this.colorScale(d.metadata.placeName))
-        .attr("stroke", d => this.colorScale(d.metadata.placeName));
+        .attr("id", d => d.id)
+        .attr("fill", d => this.colorScale(d.placeName))
+        .attr("stroke", d => this.colorScale(d.placeName));
 
       // --- region annotation ---
       const countrySelector = this.chart.selectAll(".epi-region")
@@ -398,10 +398,10 @@ export default Vue.extend({
       countrySelector.merge(textEnter)
         // .attr('x', 0)
         // .attr('y', this.y(0))
-        .attr("class", d => `annotation--region-name ${d.metadata.id}`)
+        .attr("class", d => `annotation--region-name ${d.id}`)
         .attr('x', this.width)
-        .attr('y', d => this.y(d.metadata.currentCases))
-        .text(d => d.metadata.placeName)
+        .attr('y', d => this.y(d.currentCases))
+        .text(d => d.placeName)
         .style("opacity", 1e-6)
         .transition(t1)
         .delay(1000)
@@ -455,11 +455,11 @@ export default Vue.extend({
       const tooltipGroupEnter = tooltipGroupSelector.enter()
         .append("g")
         .attr("class", "epi-tooltip-group")
-        .attr("fill", d => this.colorScale(d.metadata.placeName))
-        .attr("stroke", d => this.colorScale(d.metadata.placeName));
+        .attr("fill", d => this.colorScale(d.placeName))
+        .attr("stroke", d => this.colorScale(d.placeName));
 
       tooltipGroupSelector.merge(tooltipGroupEnter)
-        .attr("class", d => `epi-tooltip-group ${d.metadata.id}`);
+        .attr("class", d => `epi-tooltip-group ${d.id}`);
 
       // INNER GROUPS: one per timepoint
       const tooltipSelector = this.chart

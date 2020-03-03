@@ -19,9 +19,9 @@
         date
       </th>
     </tr>
-    <tr v-for="row in cases" v-bind:key="row.metadata.placeName">
+    <tr v-for="row in cases" v-bind:key="row.placeName">
       <td>
-        {{ row.metadata.placeName}}
+        {{ row.placeName}}
       </td>
       <td>
         {{ row.totalNum}}

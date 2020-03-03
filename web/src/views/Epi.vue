@@ -6,6 +6,10 @@
     </button>
   </div>
 
+  <div class="filter-locations">
+
+  </div>
+
   <select v-model="selectedPlaces" multiple id="country-selector">
     <option v-for="place in allPlaces" v-bind:key="place" :value="place">{{place}}</option>
   </select>
@@ -68,12 +72,16 @@ export default {
           locations: ["South Korea", "Iran", "Italy", "France", "Spain"]
         },
         {
-          label: "Iran cluster",
-          locations: ["Iran", "Iraq"]
+          label: "Middle East",
+          locations: ["United Arab Emirates", "Iran", "Lebanon", "Iraq", "Bahrain", "Kuwait", "Saudi Arabia"]
         },
         {
-          label: "Italy cluster",
+          label: "Europe",
           locations: ["Italy", "Germany", "UK", "France", "Spain"]
+        },
+        {
+          label: "United States",
+          locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX", "Omaha, NE (From Diamond Princess)", "Travis, CA (From Diamond Princess)", "Lackland, TX (From Diamond Princess)", "Humboldt County, CA", "Sacramento County, CA", "Unassigned Location (From Diamond Princess)", "Portland, OR", "Snohomish County, WA", "Providence, RI", "Grafton County, NH", "Hillsborough, FL", "New York City, NY", "Placer County, CA", "San Mateo, CA", "Sarasota, FL", "Sonoma County, CA", "Umatilla, OR"]
         }
       ],
       selectedPlaces: ["South Korea", "Iran", "Italy", "France", "Spain"]
@@ -92,7 +100,7 @@ export default {
       this.selectedPlaces = this.selectedPlaces.filter(d => d !== location);
     },
     filterData: function() {
-      this.data = this.allData.filter(d => this.selectedPlaces.includes(d.metadata.placeName));
+      this.data = this.allData.filter(d => this.selectedPlaces.includes(d.placeName));
     },
     getData: function() {
       d3.csv(this.dataUrl).then(data => {
@@ -104,10 +112,13 @@ export default {
         cleanedData = cleanedData.concat(nestEpiTrace(rawCleaned.flatMap(d => d.data), "country", "country"));
         rawCleaned.forEach(d => {
           d['locationType'] = "sub-national";
+          d['countries'] = [d.data[0].country];
+          d['region'] = d.data[0].region;
+          d['id'] = d.placeName.replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_");
         })
-        cleanedData = cleanedData.concat(rawCleaned);
+        cleanedData = cleanedData.concat(rawCleaned.filter(d => d.placeName !== ""));
 
-        this.allPlaces = [...new Set(cleanedData.map(d => d.metadata.placeName))];
+        this.allPlaces = [...new Set(cleanedData.map(d => d.placeName))];
 
         this.allData = cleanedData;
 
