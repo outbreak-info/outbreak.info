@@ -1,5 +1,11 @@
 <template>
 <div>
+  <div id="presetCountries">
+    <button v-for="country, idx in presetGroups" v-bind:key="idx" @click="selectGroup(country)">
+      select {{country.label}}
+    </button>
+  </div>
+
   <div id="selectedCountries">
     <button v-for="country in selectedCountries" v-bind:key="country" @click="removeRegion(country)">
       {{country}}
@@ -47,14 +53,16 @@ export default {
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
-      countries: ["Italy", "South Korea", "UK", "Iran", "Japan", "Germany"],
       allCountries: [],
       allData: null,
       data: null,
-      selectedCountries: ["Iran", "Italy"]
-      // selectedCountries: ["Germany", "Norway", "Sweden", "Italy"]
-      // selectedCountries: ["Singapore", "Macau", "Taiwan", "Hong Kong"]
-      // selectedCountries: ["Italy", "South Korea", "UK", "Iran", "Japan"]
+      presetGroups: [
+        {label: "top 5 case counts", countries: ["Mainland China", "South Korea", "Italy", "Iran", "Japan"]},
+        {label: "top 5 case increases", countries: ["South Korea", "Iran", "Italy", "France", "Spain"]},
+        {label: "Iran cluster", countries: ["Iran", "Iraq"]},
+        {label: "Italy cluster", countries: ["Italy", "Germany", "UK", "France", "Spain"]}
+      ],
+      selectedCountries: ["South Korea", "Iran", "Italy", "France", "Spain"]
     }
   },
   watch: {
@@ -64,6 +72,9 @@ export default {
     }
   },
   methods: {
+    selectGroup: function(country) {
+      this.selectedCountries = country.countries;
+    },
     removeRegion: function(country) {
       this.selectedCountries = this.selectedCountries.filter(d => d !== country);
     },
