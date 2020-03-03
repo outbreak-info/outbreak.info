@@ -1,7 +1,8 @@
 <template>
 <div>
   <div id="selectedCountries">
-    <button v-for="country in selectedCountries" v-bind:key="country">{{country}}
+    <button v-for="country in selectedCountries" v-bind:key="country" @click="removeRegion(country)">
+      {{country}}
       <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" /></button>
   </div>
   <FilterEpi v-bind:countries="allCountries" v-model="selectedCountries" />
@@ -63,6 +64,9 @@ export default {
     }
   },
   methods: {
+    removeRegion: function(country) {
+      this.selectedCountries = this.selectedCountries.filter(d => d !== country);
+    },
     filterData: function() {
       this.data = this.allData.filter(d => this.selectedCountries.includes(d.metadata.country));
     },
