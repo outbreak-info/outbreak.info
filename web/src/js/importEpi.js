@@ -132,7 +132,7 @@ export function nestEpiTrace(data, nestingVar, nestingType) {
       d['metadata']['currentCases'] = d.data.slice(-1)[0].cases;
       d['metadata']['countries'] = d.data[0].value.countries;
       d['metadata']['region'] = d.data[0].value.region;
-      d['metadata']['nestingType'] = nestingType;
+      d['locationType'] = nestingType;
     })
 
     console.log(regionNest)

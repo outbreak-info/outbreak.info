@@ -6,15 +6,17 @@
     </button>
   </div>
 
+  <select v-model="selectedPlaces" multiple id="country-selector">
+    <option v-for="place in allPlaces" v-bind:key="place" :value="place">{{place}}</option>
+  </select>
+
   <div id="selectedPlaces">
     <button class="chip" v-for="place in selectedPlaces" v-bind:key="place" @click="removeRegion(place)">
       {{place}}
       <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" /></button>
   </div>
 
-  <select v-model="selectedPlaces" multiple id="country-selector">
-    <option v-for="place in allPlaces" v-bind:key="place" :value="place">{{place}}</option>
-  </select>
+
 
   <EpiCurve v-bind:data="data" />
   <EpiTable v-bind:data="data" />
@@ -101,7 +103,7 @@ export default {
         cleanedData = cleanedData.concat(nestEpiTrace(rawCleaned.flatMap(d => d.data), "region", "region"));
         cleanedData = cleanedData.concat(nestEpiTrace(rawCleaned.flatMap(d => d.data), "country", "country"));
         rawCleaned.forEach(d => {
-          d['metadata']['nestingType'] = "sub-national";
+          d['locationType'] = "sub-national";
         })
         cleanedData = cleanedData.concat(rawCleaned);
 
