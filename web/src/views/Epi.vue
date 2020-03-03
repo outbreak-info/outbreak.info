@@ -27,6 +27,7 @@
 import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import FilterEpi from "@/components/FilterEpi.vue";
+import { cleanEpi, nestEpi } from "@/js/importEpi.js";
 
 import {
   FontAwesomeIcon
@@ -83,49 +84,12 @@ export default {
     },
     getData: function() {
       d3.csv(this.dataUrl).then(data => {
-        const parseDate = d3.timeParse("%m/%d/%y");
-        console.log(data)
 
-        data.forEach(d => {
-          const metadata = {
-            'province': d['Province/State'],
-            'country': d['Country/Region'],
-            id: d['Country/Region'].replace(/\s/g, "_"),
-            lat: d["Lat"],
-            lon: d["Long"]
-          };
-          delete d['Province/State'];
-          delete d['Country/Region'];
-          delete d['Lat'];
-          delete d['Long'];
-          const keys = Object.keys(d);
+        const cleanedData = cleanEpi(data);
 
-          d['data'] = keys.map(timepoint => {
-            return ({
-              "date_string": timepoint.replace(/\//g, "_"),
-              "date": parseDate(timepoint),
-              "cases": +d[timepoint],
-              "id": `${metadata.country.replace(/\s/g, "_")}`
-            })
-          })
+        this.allCountries = [...new Set(cleanedData.map(d => d.metadata.country))];
 
-          keys.forEach(timepoint => delete d[timepoint]);
-
-          d['data'].sort((a, b) => a.date - b.date);
-
-          d['metadata'] = metadata;
-          d['metadata']['currentCases'] = d.data.slice(-1)[0].cases;
-        });
-
-        this.allCountries = [...new Set(data.map(d => d.metadata.country))];
-
-        this.allData = data
-          .map(d => {
-            return ({
-              data: d['data'],
-              metadata: d['metadata']
-            })
-          });
+        this.allData = cleanedData;
 
         this.filterData();
 
