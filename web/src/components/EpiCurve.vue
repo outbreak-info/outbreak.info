@@ -254,7 +254,7 @@ export default Vue.extend({
           .attr("y", d => this.y(d.cases))
           .attr("dy", "1.1em")
           // .attr("dy", "2.2em")
-          .text(d => `${d.cases} cases`)
+          .text(d => `${d.cases.toLocaleString()} cases`)
 
         // dynamically adjust the width of the rect
         // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
@@ -526,7 +526,7 @@ export default Vue.extend({
         .attr("y", d => this.y(d.cases))
         .attr("dy", "1.1em")
         // .attr("dy", "2.2em")
-        .text(d => `${d.cases} cases`)
+        .text(d => `${d.cases.toLocaleString()} cases`)
 
       // dynamically adjust the width of the rect
       // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
