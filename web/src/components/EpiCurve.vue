@@ -5,6 +5,7 @@
   <DataUpdated />
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
+    <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
   <DataSource />
 </div>
@@ -77,7 +78,7 @@ export default Vue.extend({
       d3.select(`#tooltip-${d.id}-${d.date_string}`)
         .attr("display", "block");
 
-      d3.select(`#${d.id}-${d.date_string}`).select("circle")
+      d3.select(`#${d.id}-${d.date_string}`)
         .attr("r", this.radius * 2);
 
       d3.selectAll(`.epi-region`)
@@ -156,7 +157,7 @@ export default Vue.extend({
         .attr("class", "epi-region");
 
       regionGroups.merge(regionsEnter)
-        .attr("id", d => d.metadata.country.replace(/\s/g, "_"))
+        .attr("id", d => d.metadata.id)
         .attr("fill", d => this.colorScale(d.metadata.country))
         .attr("stroke", d => this.colorScale(d.metadata.country));
 
@@ -171,7 +172,7 @@ export default Vue.extend({
       countrySelector.merge(textEnter)
         // .attr('x', 0)
         // .attr('y', this.y(0))
-        .attr("class", d => `annotation--region-name ${d.id}`)
+        .attr("class", d => `annotation--region-name ${d.metadata.id}`)
         .attr('x', this.width)
         .attr('y', d => this.y(d.metadata.currentCases))
         .text(d => d.metadata.country)
@@ -191,48 +192,67 @@ export default Vue.extend({
 
       pathSelector.merge(pathEnter)
         .datum(d => d.data)
-        // .attr("class", d => `epi-line ${d.id}`)
+        .attr("id", d => `epi-line ${d[0].id}`)
         .attr("d", this.line);
 
 
       // --- dots ---
-      const dots = this.chart
+      const dotGroupSelector = this.chart
         .selectAll(".epi-region")
-        .selectAll(".epi-point-group")
+        .selectAll(".epi-point")
         .data(d => d.data);
 
-      dots.exit().remove();
+      dotGroupSelector.exit().remove();
 
-      const dotGroupEnter = dots.enter()
-        .append("g");
-
-      dots.merge(dotGroupEnter)
-        .attr("class", d => `epi-point-group ${d.id}`)
-        .attr("id", d => `${d.id}-${d.date_string}`);
-
-      const dotSelector = this.chart.selectAll(".epi-point");
-
-      const dotEnter = dotGroupEnter
+      const dotGroupEnter = dotGroupSelector.enter()
         .append("circle")
         .attr("r", this.radius)
         .attr("class", "epi-point");
 
-      dots.merge(dotEnter)
+      dotGroupSelector.merge(dotGroupEnter)
         .attr("class", d => `epi-point ${d.id}`)
+        .attr("id", d => `${d.id}-${d.date_string}`)
         .attr("cx", d => this.x(d.date))
         .attr("cy", d => this.y(d.cases));
 
       // --- tooltips ---
-      const tooltipEnter = dotGroupEnter
+      // need to be outside the path/dot groups, so they're on top of all the curves.
+      // OUTER GROUP: one per country
+      const tooltipGroupSelector = this.chart
+        .selectAll(".epi-tooltip-group")
+        .data(this.data);
+
+      // -- exit --
+      tooltipGroupSelector.exit().remove();
+
+      // -- enter --
+      const tooltipGroupEnter = tooltipGroupSelector.enter()
+        .append("g")
+        .attr("class", "epi-tooltip-group")
+        .attr("fill", d => this.colorScale(d.metadata.country))
+        .attr("stroke", d => this.colorScale(d.metadata.country));
+
+      tooltipGroupSelector.merge(tooltipGroupEnter)
+        .attr("class", d => `epi-tooltip-group ${d.metadata.id}`);
+
+      // INNER GROUPS: one per timepoint
+      const tooltipSelector = this.chart
+        .selectAll(".epi-tooltip-group")
+        .selectAll(".tooltip--epi-curve")
+        .data(d => d.data);
+
+      tooltipSelector.exit().remove();
+
+      const tooltipEnter = tooltipSelector.enter()
         .append("g")
         .attr("class", "tooltip--epi-curve")
         .attr("transform", "translate(5,5)")
         .attr("display", "none");
 
-      dots.merge(tooltipEnter)
+      tooltipSelector.merge(tooltipEnter)
         .attr("id", d => `tooltip-${d.id}-${d.date_string}`);
 
-      const tooltipRect = dots.select(".tooltip--rect");
+      const tooltipRect = tooltipSelector.select(".tooltip--rect");
 
 
       const tooltipRectEnter = tooltipEnter
@@ -248,7 +268,7 @@ export default Vue.extend({
         .attr("stroke-width", "3")
         .attr("fill-opacity", 0.4)
 
-      const tooltipText = dots.select(".tooltip--text");
+      const tooltipText = tooltipSelector.select(".tooltip--text");
 
       const tooltipTextEnter = tooltipEnter
         .append("text")
@@ -258,7 +278,7 @@ export default Vue.extend({
       // const tooltipCtryEnter = tooltipTextEnter.append("tspan")
       //   .attr("class", "tooltip--country");
       //
-      // tooltipText.merge(tooltipCtryEnter)
+      // tooltipText.select(".tooltip--country").merge(tooltipCtryEnter)
       //   .attr("x", d => this.x(d.date))
       //   .attr("y", d => this.y(d.cases))
       //   .text(d => d.id.replace(/_/g, " "))
@@ -266,7 +286,7 @@ export default Vue.extend({
       const tooltipDateEnter = tooltipTextEnter.append("tspan")
         .attr("class", "tooltip--date");
 
-      tooltipText.merge(tooltipDateEnter)
+      tooltipText.select(".tooltip--date").merge(tooltipDateEnter)
         .attr("x", d => this.x(d.date))
         .attr("y", d => this.y(d.cases))
         // .attr("dy", "1.1em")
@@ -275,7 +295,7 @@ export default Vue.extend({
       const tooltipCasesEnter = tooltipTextEnter.append("tspan")
         .attr("class", "tooltip--case-count");
 
-      tooltipText.merge(tooltipCasesEnter)
+      tooltipText.select(".tooltip--case-count").merge(tooltipCasesEnter)
         .attr("x", d => this.x(d.date))
         .attr("y", d => this.y(d.cases))
         .attr("dy", "1.1em")
@@ -288,9 +308,9 @@ export default Vue.extend({
       //   console.log(d3.select(this.parentNode));
       //   return(500)
       // })
-      dots.select(".tooltip--rect").attr("width", d => 500)
-        // `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
-        // .attr("height", (d: any) => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
+      // dots.select(".tooltip--rect").attr("width", d => 500)
+      // `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
+      // .attr("height", (d: any) => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
 
       // event listener
       d3.selectAll("circle")
@@ -299,13 +319,20 @@ export default Vue.extend({
 
 
       // --- transition: trace the curves ---
-      this.chart.append("rect")
+      const curtainSelector = this.svg.select("#transition-mask").selectAll(".transition-curtain").data([0]);
+
+      curtainSelector.exit().remove();
+
+      const curtainEnter = curtainSelector
+        .enter().append("rect")
         .attr("class", "transition-curtain")
-        .attr("width", this.width + this.radius + this.margin.right)
-        .attr("height", this.height + this.margin.top + this.radius * 2)
-        .attr("x", -this.radius)
-        .attr("y", -this.margin.top)
         .style("fill", "white")
+        .attr("y", -this.margin.top)
+        .attr("width", this.width + this.radius + this.margin.right)
+        .attr("height", this.height + this.margin.top + this.radius * 2);
+
+      curtainSelector.merge(curtainEnter)
+        .attr("x", -this.radius)
         .transition(t1)
         .ease(d3.easeLinear)
         .attr("x", this.width + this.margin.right)

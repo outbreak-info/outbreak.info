@@ -75,6 +75,7 @@ export default {
           const metadata = {
             'province': d['Province/State'],
             'country': d['Country/Region'],
+            id: d['Country/Region'].replace(/\s/g, "_"),
             lat: d["Lat"],
             lon: d["Long"]
           };
