@@ -6,9 +6,17 @@
     </button>
   </div>
 
-  <div class="filter-locations">
+  <template>
+    <div class="autocomplete filter-locations">
+      <!-- <input type="text"  v-model="locationQuery" @input="onChange" @keyup.enter="onSubmit"/>
+      <ul class="autocomplete-results">
+        <li class="autocomplete-result">
+        </li>
+      </ul> -->
 
-  </div>
+      <Autocomplete :items="allPlaces" v-model="test"/>
+    </div>
+  </template>
 
   <select v-model="selectedPlaces" multiple id="country-selector">
     <option v-for="place in allPlaces" v-bind:key="place" :value="place">{{place}}</option>
@@ -31,6 +39,7 @@
 // @ is an alias to /src
 import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
+import Autocomplete from "@/components/Autocomplete.vue";
 import {
   cleanEpi,
   nestEpiTrace
@@ -55,7 +64,8 @@ export default {
   components: {
     EpiCurve,
     EpiTable,
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    Autocomplete
   },
   data() {
     return {
@@ -63,6 +73,8 @@ export default {
       allPlaces: [],
       allData: null,
       data: null,
+      test: null,
+      locationQuery: null,
       presetGroups: [{
           label: "top 5 case counts",
           locations: ["Mainland China", "South Korea", "Italy", "Iran", "Japan"]
@@ -90,6 +102,9 @@ export default {
   watch: {
     selectedPlaces: function() {
       this.filterData();
+    },
+    test: function() {
+      this.selectedPlaces.push(this.test)
     }
   },
   methods: {
@@ -101,6 +116,13 @@ export default {
     },
     filterData: function() {
       this.data = this.allData.filter(d => this.selectedPlaces.includes(d.placeName));
+    },
+    onChange: function () {
+      console.log('changed!')
+    },
+    onSubmit: function () {
+      console.log('submitted!');
+      this.selectedPlaces = [this.locationQuery];
     },
     getData: function() {
       d3.csv(this.dataUrl).then(data => {
