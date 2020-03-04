@@ -39,6 +39,7 @@
     justify-content: space-between;
 }
 
+// buttons
 button {
     line-height: 1.5em;
     font-size: 1em;
@@ -55,10 +56,19 @@ button {
         display: flex;
         align-items: center;
         padding: 2px 8px;
+        cursor: pointer;
         & .remove-btn {
             margin-left: 0.25em;
         }
     }
+}
+
+.all-selected, button.chip:hover {
+  background-color: $grey-90;
+  color: white;
+  & .remove-btn {
+    color: $warning-color;
+  }
 }
 
 #nav {

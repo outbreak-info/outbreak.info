@@ -79,8 +79,7 @@ export default Vue.extend({
       // this.selected = this.selected.filter(d => d !== item);
     },
     onChange() {
-      // Let's warn the parent that a change was made
-      // this.$emit('input', this.search);
+      this.isSelectAll = false;
 
       // Is the data given by an outside ajax request?
       if (this.isAsync) {
@@ -139,6 +138,7 @@ export default Vue.extend({
       this.isSelectAll = true;
     },
     handleClickOutside(evt) {
+      this.isSelectAll = false;
       if (!this.$el.contains(evt.target)) {
         this.isOpen = false;
         this.arrowCounter = -1;
@@ -190,14 +190,6 @@ export default Vue.extend({
     border: 1px solid $grey-40;
     border-radius: 0.25em;
     padding: 0.5em;
-}
-
-.all-selected {
-  background-color: $grey-90;
-  color: white;
-  & .remove-btn {
-    color: $warning-color;
-  }
 }
 
 input {
