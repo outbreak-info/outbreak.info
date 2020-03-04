@@ -10,8 +10,11 @@
     <Autocomplete :items="allPlaces" :selected="selectedPlaces" @selected="updateSelected" />
   </template>
 
-  <EpiCurve v-bind:data="data" />
-  <EpiTable v-bind:data="data" />
+  <div class="flex">
+    <EpiCurve v-bind:data="data" />
+    <EpiTable v-bind:data="data" />
+  </div>
+
 </div>
 </template>
 
