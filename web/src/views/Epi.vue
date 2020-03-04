@@ -7,16 +7,8 @@
   </div>
 
   <template>
-      <Autocomplete :items="allPlaces" v-model="test"/>
+    <Autocomplete :items="allPlaces" :selected="selectedPlaces" @selected="updateSelected" />
   </template>
-
-  <div id="selectedPlaces">
-    <button class="chip" v-for="place in selectedPlaces" v-bind:key="place" @click="removeRegion(place)">
-      {{place}}
-      <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" /></button>
-  </div>
-
-
 
   <EpiCurve v-bind:data="data" />
   <EpiTable v-bind:data="data" />
@@ -33,18 +25,6 @@ import {
   nestEpiTrace
 } from "@/js/importEpi.js";
 
-import {
-  FontAwesomeIcon
-} from '@fortawesome/vue-fontawesome'
-import {
-  library
-} from '@fortawesome/fontawesome-svg-core';
-import {
-  faTimesCircle
-} from '@fortawesome/free-regular-svg-icons';
-
-library.add(faTimesCircle);
-
 import * as d3 from 'd3';
 
 export default {
@@ -52,7 +32,6 @@ export default {
   components: {
     EpiCurve,
     EpiTable,
-    FontAwesomeIcon,
     Autocomplete
   },
   data() {
@@ -61,8 +40,6 @@ export default {
       allPlaces: [],
       allData: null,
       data: null,
-      test: null,
-      locationQuery: null,
       presetGroups: [{
           label: "top 5 case counts",
           locations: ["Mainland China", "South Korea", "Italy", "Iran", "Japan"]
@@ -81,7 +58,10 @@ export default {
         },
         {
           label: "United States",
-          locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX", "Omaha, NE (From Diamond Princess)", "Travis, CA (From Diamond Princess)", "Lackland, TX (From Diamond Princess)", "Humboldt County, CA", "Sacramento County, CA", "Unassigned Location (From Diamond Princess)", "Portland, OR", "Snohomish County, WA", "Providence, RI", "Grafton County, NH", "Hillsborough, FL", "New York City, NY", "Placer County, CA", "San Mateo, CA", "Sarasota, FL", "Sonoma County, CA", "Umatilla, OR"]
+          locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX",
+            "Omaha, NE (From Diamond Princess)", "Travis, CA (From Diamond Princess)", "Lackland, TX (From Diamond Princess)", "Humboldt County, CA", "Sacramento County, CA", "Unassigned Location (From Diamond Princess)", "Portland, OR",
+            "Snohomish County, WA", "Providence, RI", "Grafton County, NH", "Hillsborough, FL", "New York City, NY", "Placer County, CA", "San Mateo, CA", "Sarasota, FL", "Sonoma County, CA", "Umatilla, OR"
+          ]
         }
       ],
       selectedPlaces: ["South Korea", "Iran", "Italy", "France", "US"]
@@ -91,16 +71,13 @@ export default {
     selectedPlaces: function() {
       this.filterData();
     },
-    test: function() {
-      this.selectedPlaces.push(this.test)
-    }
   },
   methods: {
+    updateSelected: function(selected) {
+      this.selectedPlaces = selected;
+    },
     selectGroup: function(locationGroup) {
       this.selectedPlaces = locationGroup.locations;
-    },
-    removeRegion: function(location) {
-      this.selectedPlaces = this.selectedPlaces.filter(d => d !== location);
     },
     filterData: function() {
       this.data = this.allData.filter(d => this.selectedPlaces.map(d => d.toLowerCase()).includes(d.placeName.toLowerCase()));

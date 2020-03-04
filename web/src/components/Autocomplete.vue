@@ -1,6 +1,12 @@
 <template>
 <div class="autocomplete">
-  <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" />
+  <div :content="selected" class="autocomplete-input flex">
+    <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" />
+    <button class="chip" v-for="(item, idx) in selected" v-bind:key="idx" @click="removeChip(item)">
+      {{item}}
+      <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" /></button>
+  </div>
+
   <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
     <li class="loading" v-if="isLoading">
       Loading results...
@@ -16,10 +22,27 @@
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from "vue";
 
+import {
+  FontAwesomeIcon
+} from '@fortawesome/vue-fontawesome'
+import {
+  library
+} from '@fortawesome/fontawesome-svg-core';
+import {
+  faTimesCircle
+} from '@fortawesome/free-regular-svg-icons';
+
+library.add(faTimesCircle);
+
 export default Vue.extend({
   name: "Autocomplete",
   props: {
     items: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    selected: {
       type: Array,
       required: false,
       default: () => [],
@@ -30,10 +53,14 @@ export default Vue.extend({
       default: false,
     }
   },
+  components: {
+    FontAwesomeIcon
+  },
   data() {
     return {
       isOpen: false,
       results: [],
+
       search: '',
       isLoading: false,
       arrowCounter: 0,
@@ -46,6 +73,10 @@ export default Vue.extend({
     document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
+    removeChip(item) {
+      this.$emit('selected', this.selected.filter(d => d !== item));
+      // this.selected = this.selected.filter(d => d !== item);
+    },
     onChange() {
       // Let's warn the parent that a change was made
       // this.$emit('input', this.search);
@@ -59,7 +90,6 @@ export default Vue.extend({
         this.isOpen = true;
       }
     },
-
     filterResults() {
       // first uncapitalize all the things
       this.results = this.items.filter((item) => {
@@ -67,7 +97,9 @@ export default Vue.extend({
       });
     },
     setResult(result) {
-      this.$emit('input', result);
+      // this.$emit('input', result);
+      this.selected.push(result);
+      this.$emit('selected', this.selected);
       this.search = "";
       this.isOpen = false;
     },
@@ -84,7 +116,9 @@ export default Vue.extend({
     onEnter() {
       // Let's warn the parent that a change was made
       const result = this.results[this.arrowCounter] ? this.results[this.arrowCounter] : this.search;
-      this.$emit('input', result);
+      // this.$emit('input', result);
+      this.selected.push(result);
+      this.$emit('input', this.selected);
       this.search = "";
       this.isOpen = false;
       this.arrowCounter = -1;
@@ -134,5 +168,21 @@ export default Vue.extend({
 .autocomplete-result:hover {
     background-color: #4AAE9B;
     color: white;
+}
+
+.autocomplete-input {
+    border: 1px solid grey;
+    padding: 0.5em;
+}
+
+input {
+    flex-grow: 2;
+    border: none;
+    font-size: 1em;
+}
+
+input:focus {
+    /* removing the input focus blue box. Put this on the form if you like. */
+    outline: none;
 }
 </style>
