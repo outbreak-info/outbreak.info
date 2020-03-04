@@ -67,7 +67,8 @@ export default Vue.extend({
       });
     },
     setResult(result) {
-      this.search = result;
+      this.$emit('input', result);
+      this.search = "";
       this.isOpen = false;
     },
     onArrowDown(evt) {
@@ -82,9 +83,9 @@ export default Vue.extend({
     },
     onEnter() {
       // Let's warn the parent that a change was made
-      this.$emit('input', this.search);
-
-      this.search = this.results[this.arrowCounter];
+      const result = this.results[this.arrowCounter] ? this.results[this.arrowCounter] : this.search;
+      this.$emit('input', result);
+      this.search = "";
       this.isOpen = false;
       this.arrowCounter = -1;
     },

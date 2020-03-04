@@ -7,20 +7,8 @@
   </div>
 
   <template>
-    <div class="autocomplete filter-locations">
-      <!-- <input type="text"  v-model="locationQuery" @input="onChange" @keyup.enter="onSubmit"/>
-      <ul class="autocomplete-results">
-        <li class="autocomplete-result">
-        </li>
-      </ul> -->
-
       <Autocomplete :items="allPlaces" v-model="test"/>
-    </div>
   </template>
-
-  <select v-model="selectedPlaces" multiple id="country-selector">
-    <option v-for="place in allPlaces" v-bind:key="place" :value="place">{{place}}</option>
-  </select>
 
   <div id="selectedPlaces">
     <button class="chip" v-for="place in selectedPlaces" v-bind:key="place" @click="removeRegion(place)">
@@ -96,7 +84,7 @@ export default {
           locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX", "Omaha, NE (From Diamond Princess)", "Travis, CA (From Diamond Princess)", "Lackland, TX (From Diamond Princess)", "Humboldt County, CA", "Sacramento County, CA", "Unassigned Location (From Diamond Princess)", "Portland, OR", "Snohomish County, WA", "Providence, RI", "Grafton County, NH", "Hillsborough, FL", "New York City, NY", "Placer County, CA", "San Mateo, CA", "Sarasota, FL", "Sonoma County, CA", "Umatilla, OR"]
         }
       ],
-      selectedPlaces: ["South Korea", "Iran", "Italy", "France", "Spain"]
+      selectedPlaces: ["South Korea", "Iran", "Italy", "France", "US"]
     }
   },
   watch: {
@@ -116,13 +104,6 @@ export default {
     },
     filterData: function() {
       this.data = this.allData.filter(d => this.selectedPlaces.includes(d.placeName));
-    },
-    onChange: function () {
-      console.log('changed!')
-    },
-    onSubmit: function () {
-      console.log('submitted!');
-      this.selectedPlaces = [this.locationQuery];
     },
     getData: function() {
       d3.csv(this.dataUrl).then(data => {
