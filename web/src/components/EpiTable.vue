@@ -3,28 +3,32 @@
   <h5>Most recent cases</h5>
   <table>
     <tr>
-      <th>
+      <th class="align-left">
         location
       </th>
-      <th>
-        total cases
+      <th class="px-3">
+        cases
       </th>
-      <th>
-        new cases
-      </th>
-      <th>
-        percent increase
-      </th>
-      <th>
+      <th class="px-3">
         date
       </th>
+      <th class="px-2">
+        new cases
+      </th>
+      <th class="px-2">
+        increase
+      </th>
+
     </tr>
     <tr v-for="row in cases" v-bind:key="row.placeName">
-      <td>
+      <td class="align-left location color-bar">
         {{ row.placeName}}
       </td>
       <td>
         {{ row.totalNum}}
+      </td>
+      <td>
+        {{ row.currentDate }}
       </td>
       <td>
         {{ row.numIncrease.toLocaleString() }}
@@ -32,9 +36,7 @@
       <td>
         {{ row.pctIncrease }}
       </td>
-      <td>
-        {{ row.currentDate }}
-      </td>
+
     </tr>
   </table>
 </div>
@@ -96,4 +98,35 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+.align-left {
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+    font-size: 0.85em;
+}
+
+tr {
+    border-bottom: 1px solid #ececec;
+    // border-bottom: 1px solid $grey-40;
+}
+
+td {
+    padding: 5px 0;
+}
+
+th {
+    font-size: 0.95em;
+    font-weight: 400;
+    color: $grey-70;
+}
+
+.color-bar {
+    border-left: 4px #00BCD4 solid;
+    padding-left: 5px !important;
+    // background: #00BCD4;
+    // width: 4px;
+    // height: 100%;
+}
 </style>

@@ -65,12 +65,13 @@ button {
     }
 }
 
-.all-selected, button.chip:hover {
-  background-color: $grey-90;
-  color: white;
-  & .remove-btn {
-    color: $warning-color;
-  }
+.all-selected,
+button.chip:hover {
+    background-color: $grey-90;
+    color: white;
+    & .remove-btn {
+        color: $warning-color;
+    }
 }
 
 #nav {
@@ -105,5 +106,19 @@ button {
 // d3-constants
 .plot-title {
     margin: 0 !important;
+}
+
+// padding
+.py-3 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+.px-3 {
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 </style>
