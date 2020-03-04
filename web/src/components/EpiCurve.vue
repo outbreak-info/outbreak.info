@@ -84,13 +84,10 @@ export default Vue.extend({
       this.y = d3.scaleLog().range([height, 0])
         .domain([1, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
 
-console.log(this.y)
       this.yAxis = d3.axisLeft(this.y);
 
       d3.select(".axis--y")
         .call(this.yAxis);
-
-        console.log(this.data)
 
         this.data.forEach(d => {
           d['data'] = d.data.filter(x => x.cases > 0)
@@ -324,6 +321,9 @@ console.log(this.y)
       d3.select(`#${d.id}-${d.date_string}`)
         .attr("r", this.radius * 2);
 
+      d3.select(`#${d.id}`).select("text")
+        .style("font-weight", 700);
+
       d3.selectAll(`.epi-region`)
         .style("opacity", 0.35);
 
@@ -337,6 +337,9 @@ console.log(this.y)
 
       d3.selectAll("circle")
         .attr("r", this.radius);
+
+      d3.selectAll(".annotation--region-name")
+        .style("font-weight", 400);
 
       d3.selectAll(`.epi-region`)
         .style("opacity", 1);
