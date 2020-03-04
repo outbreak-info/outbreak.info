@@ -10,7 +10,7 @@
         cases
       </th>
       <th class="px-3">
-        date
+        updated
       </th>
       <th class="px-2">
         new cases
