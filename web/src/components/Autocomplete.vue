@@ -1,10 +1,11 @@
 <template>
 <div class="autocomplete">
   <div :content="selected" class="autocomplete-input flex">
-    <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" />
-    <button class="chip" v-for="(item, idx) in selected" v-bind:key="idx" @click="removeChip(item)">
+    <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)">
       {{item}}
-      <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" /></button>
+      <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" />
+    </button>
+    <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keyup.delete="onBackspace" @keyup.ctrl.65="onSelectAll" />
   </div>
 
   <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
@@ -60,9 +61,9 @@ export default Vue.extend({
     return {
       isOpen: false,
       results: [],
-
       search: '',
       isLoading: false,
+      isSelectAll: false,
       arrowCounter: 0,
     }
   },
@@ -123,6 +124,20 @@ export default Vue.extend({
       this.isOpen = false;
       this.arrowCounter = -1;
     },
+    onBackspace() {
+      if (this.search === "") {
+        this.search = this.selected.pop();
+      }
+
+      if (this.isSelectAll) {
+        this.search = "";
+        this.$emit('selected', []);
+        this.isSelectAll = false;
+      }
+    },
+    onSelectAll() {
+      this.isSelectAll = true;
+    },
     handleClickOutside(evt) {
       if (!this.$el.contains(evt.target)) {
         this.isOpen = false;
@@ -146,6 +161,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .autocomplete {
     position: relative;
+    max-width: 700px;
 }
 
 .autocomplete-results {
@@ -166,13 +182,19 @@ export default Vue.extend({
 
 .autocomplete-result.is-active,
 .autocomplete-result:hover {
-    background-color: #4AAE9B;
+    background-color: $primary-color;
     color: white;
 }
 
 .autocomplete-input {
-    border: 1px solid grey;
+    border: 1px solid $grey-40;
+    border-radius: 0.25em;
     padding: 0.5em;
+}
+
+.all-selected {
+  background-color: $primary-color;
+  color: white;
 }
 
 input {
