@@ -5,7 +5,7 @@
       {{item}}
       <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" />
     </button>
-    <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keyup.delete="onBackspace" @keyup.ctrl.65="onSelectAll" />
+    <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
   </div>
 
   <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
