@@ -103,7 +103,7 @@ export default {
       this.selectedPlaces = this.selectedPlaces.filter(d => d !== location);
     },
     filterData: function() {
-      this.data = this.allData.filter(d => this.selectedPlaces.includes(d.placeName));
+      this.data = this.allData.filter(d => this.selectedPlaces.map(d => d.toLowerCase()).includes(d.placeName.toLowerCase()));
     },
     getData: function() {
       d3.csv(this.dataUrl).then(data => {
