@@ -193,8 +193,11 @@ export default Vue.extend({
 }
 
 .all-selected {
-  background-color: $primary-color;
+  background-color: $grey-90;
   color: white;
+  & .remove-btn {
+    color: $warning-color;
+  }
 }
 
 input {

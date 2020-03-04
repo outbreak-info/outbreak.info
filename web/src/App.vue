@@ -20,15 +20,17 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: $standard-text;
+    color: $base-grey;
 }
 
 #app text {
     font-family: $font-family;
 }
 
-.default-black, .axis--x text, .axis--y text {
-  fill: $standard-text;
+.axis--x text,
+.axis--y text,
+.default-black {
+    fill: $base-grey;
 }
 
 #outbreak-header {
@@ -46,10 +48,16 @@ button {
     margin-left: 0.25em;
     border-color: $grey-40;
     &:focus {
-      outline: none !important;
+        outline: none !important;
     }
     &.chip {
-      border-radius: 1em;
+        border-radius: 1em;
+        display: flex;
+        align-items: center;
+        padding: 2px 8px;
+        & .remove-btn {
+            margin-left: 0.25em;
+        }
     }
 }
 
@@ -68,23 +76,22 @@ button {
 
 // layout
 .flex {
-  display: flex;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .flex-column {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
 }
 
 .align-left {
-  align-items: flex-start;
+    align-items: flex-start;
 }
 
 // d3-constants
 .plot-title {
-  margin: 0 !important;
+    margin: 0 !important;
 }
-
 </style>

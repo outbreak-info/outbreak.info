@@ -1,10 +1,14 @@
 // color palette
 $primary-color: #42b983;
-$standard-text: #2c3e50;
+
+// greys
+$base-grey: #2c3e50;
 // #272727;
  // #2c3e50
-$grey-60: lighten($standard-text, 40%);
-$grey-40: lighten($standard-text, 60%);
+$grey-90: lighten($base-grey, 10%);
+$grey-80: lighten($base-grey, 20%);
+$grey-60: lighten($base-grey, 40%);
+$grey-40: lighten($base-grey, 60%);
 
 // fonts
 $font-family: 'Noto Sans KR','Mada','DM Sans','Public Sans', Avenir, Helvetica, Arial, sans-serif;
@@ -13,3 +17,6 @@ $font-family: 'Noto Sans KR','Mada','DM Sans','Public Sans', Avenir, Helvetica, 
 // font-family: 'Public Sans', ;
 // font-family: 'Noto Sans KR', ;
 // font-family: 'DM Sans',;
+
+// accent colors
+$warning-color: red;
