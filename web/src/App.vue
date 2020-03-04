@@ -21,10 +21,12 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: $base-grey;
+    font-weight: 300;
 }
 
 #app text {
     font-family: $font-family;
+    font-weight: 400;
 }
 
 .axis--x text,
