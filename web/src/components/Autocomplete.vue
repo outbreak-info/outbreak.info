@@ -167,7 +167,9 @@ export default Vue.extend({
 .autocomplete-results {
     padding: 0;
     margin: 0;
-    border: 1px solid #eeeeee;
+    border: 1px solid $grey-40;
+    background: $grey-30;
+    box-shadow: 1px 1px 2px 2px $grey-alpha15;
     height: 120px;
     overflow: auto;
     width: 100%;
