@@ -30,6 +30,8 @@ import {
 
 import * as d3 from 'd3';
 
+import store from '@/store';
+
 export default {
   name: "Epidemiology",
   components: {
@@ -84,6 +86,8 @@ export default {
     },
     filterData: function() {
       this.data = this.allData.filter(d => this.selectedPlaces.map(d => d.toLowerCase()).includes(d.placeName.toLowerCase()));
+
+      store.commit('setLocations', this.data.map(d => d.placeName));
     },
     getData: function() {
       d3.csv(this.dataUrl).then(data => {

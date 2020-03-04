@@ -1,9 +1,9 @@
 <template>
 <div class="autocomplete">
   <div :content="selected" class="autocomplete-input flex">
-    <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)">
+    <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)" v-bind:style="{background: lightColorScale(item)}">
       {{item}}
-      <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" />
+      <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{color: colorScale(item)}" />
     </button>
     <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
   </div>
@@ -23,6 +23,10 @@
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from "vue";
 
+// --- store / Vuex ---
+import store from '@/store';
+
+// --- font awesome --
 import {
   FontAwesomeIcon
 } from '@fortawesome/vue-fontawesome'
@@ -74,6 +78,12 @@ export default Vue.extend({
     document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
+    lightColorScale: function(item) {
+      return store.getters.getLightColor(item)
+    },
+    colorScale: function(item) {
+      return store.getters.getDarkColor(item)
+    },
     removeChip(item) {
       this.$emit('selected', this.selected.filter(d => d !== item));
       // this.selected = this.selected.filter(d => d !== item);

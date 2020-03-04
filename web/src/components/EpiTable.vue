@@ -21,7 +21,7 @@
 
     </tr>
     <tr v-for="row in cases" v-bind:key="row.placeName">
-      <td class="align-left location color-bar">
+      <td class="align-left location color-bar" v-bind:style="{'border-color': row.color}">
         {{ row.placeName}}
       </td>
       <td>
@@ -51,6 +51,8 @@ import {
   format,
   timeFormat
 } from "d3";
+
+import store from '@/store';
 
 const formatDate = timeFormat("%a %d %b %Y");
 const formatPercent = format(".0%");
@@ -87,10 +89,14 @@ export default Vue.extend({
         d['pctIncrease'] = formatPercent(d.numIncrease / last2[0].cases);
         d['currentDate'] = formatDate(last2[1].date);
         d['totalNum'] = last2[1].cases.toLocaleString();
+        d['color'] = this.colorScale(d.placeName);
       });
 
       this.cases.sort((a, b) => b.numIncrease - a.numIncrease);
 
+    },
+    colorScale: function(location) {
+      return store.getters.getColor(location)
     }
   }
 });
@@ -123,7 +129,8 @@ th {
 }
 
 .color-bar {
-    border-left: 4px #00BCD4 solid;
+    border-left-width: 4px;
+    border-left-style: solid;
     padding-left: 5px !important;
     // background: #00BCD4;
     // width: 4px;

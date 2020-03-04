@@ -67,10 +67,10 @@ button {
 
 .all-selected,
 button.chip:hover {
-    background-color: $grey-90;
+    background: $grey-80 !important;
     color: white;
     & .remove-btn {
-        color: $warning-color;
+        color: $warning-color !important;
     }
 }
 

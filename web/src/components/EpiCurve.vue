@@ -27,6 +27,8 @@ import {
   cloneDeep
 } from "lodash";
 
+import store from '@/store';
+
 const width = 500;
 const height = 300;
 const radius = 2.5;
@@ -58,7 +60,6 @@ export default Vue.extend({
       // axes
       x: d3.scaleTime().range([0, width]),
       y: d3.scaleLinear().range([height, 0]),
-      colorScale: d3.scaleOrdinal(schemeTableau10),
       xAxis: null,
       yAxis: null,
       logY: false,
@@ -80,6 +81,9 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
+    colorScale: function(location) {
+      return store.getters.getColor(location)
+    },
     changeScale: function() {
       this.y = d3.scaleLog().range([height, 0])
         .domain([1, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
@@ -375,9 +379,6 @@ export default Vue.extend({
 
       this.y = this.y
         .domain([0, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
-
-      this.colorScale = this.colorScale
-        .domain(this.data.map(d => d.placeName))
 
       this.xAxis = d3.axisBottom(this.x).ticks(9);
 
