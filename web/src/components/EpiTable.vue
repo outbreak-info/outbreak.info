@@ -13,10 +13,10 @@
         updated
       </th>
       <th class="px-2">
-        new cases
+        new cases today
       </th>
       <th class="px-2">
-        increase
+        increase from yesterday
       </th>
 
     </tr>
