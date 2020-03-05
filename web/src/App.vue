@@ -49,6 +49,7 @@ button {
     font-family: $font-family;
     margin-right: 0.25em;
     margin-left: 0.25em;
+    margin-bottom: 0.25em;
     border-color: $grey-40;
     &:focus {
         outline: none !important;

@@ -93,7 +93,11 @@ export function cleanEpi(data) {
 
     d['placeName'] = metadata.placeName;
     d['province'] = metadata.province;
-    d['currentCases'] = d.data.slice(-1)[0].cases;
+    const last2 = d.data.slice(-2);
+    d['numIncrease'] = (last2[1].cases - last2[0].cases);
+    d['pctIncrease'] = d.numIncrease / last2[0].cases;
+    d['currentDate'] = last2[1].date;
+    d['currentCases'] = last2[1].cases;
   });
 
   return (data);
@@ -126,7 +130,11 @@ export function nestEpiTrace(data, nestingVar, nestingType) {
       })
 
       d['data'] = d.values;
-      d['currentCases'] = d.data.slice(-1)[0].cases;
+      const last2 = d.data.slice(-2);
+      d['numIncrease'] = (last2[1].cases - last2[0].cases);
+      d['pctIncrease'] = d.numIncrease / last2[0].cases;
+      d['currentDate'] = last2[1].date;
+      d['currentCases'] = last2[1].cases;
       d['countries'] = d.data[0].value.countries;
       d['region'] = d.data[0].value.region;
       d['locationType'] = nestingType;

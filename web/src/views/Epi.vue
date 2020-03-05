@@ -2,7 +2,7 @@
 <div>
   <div id="presetLocations">
     <button v-for="place, idx in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
-      select {{place.label}}
+      {{place.label}}
     </button>
   </div>
 
@@ -45,22 +45,8 @@ export default {
       allPlaces: [],
       allData: null,
       data: null,
-      presetGroups: [{
-          label: "top 5 case counts",
-          locations: ["Mainland China", "South Korea", "Italy", "Iran", "Japan"]
-        },
-        {
-          label: "top 5 case increases",
-          locations: ["South Korea", "Iran", "Italy", "France", "Spain"]
-        },
-        {
-          label: "Middle East",
-          locations: ["United Arab Emirates", "Iran", "Lebanon", "Iraq", "Bahrain", "Kuwait", "Saudi Arabia"]
-        },
-        {
-          label: "Europe",
-          locations: ["Italy", "Germany", "UK", "France", "Spain"]
-        },
+      topX: 6,
+      presetGroups: [
         {
           label: "United States",
           locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX",
@@ -69,7 +55,7 @@ export default {
           ]
         }
       ],
-      selectedPlaces: ["South Korea", "Iran", "Italy", "France", "US"]
+      selectedPlaces: []
     }
   },
   watch: {
@@ -106,6 +92,28 @@ export default {
         cleanedData = cleanedData.concat(rawCleaned.filter(d => d.placeName !== ""));
 
         this.allPlaces = [...new Set(cleanedData.map(d => d.placeName))];
+
+        const top5 = cleanedData.filter(d => d.locationType == "country").sort((a, b) => b.currentCases - a.currentCases).slice(0, this.topX).map(d => d.placeName);
+        const top5Pct = cleanedData.filter(d => d.locationType == "country" && isFinite(d.pctIncrease)).sort((a, b) => b.pctIncrease - a.pctIncrease).slice(0, this.topX).map(d => d.placeName);
+        this.selectedPlaces = cleanedData.filter(d => d.locationType == "country").sort((a, b) => b.numIncrease - a.numIncrease).slice(0, this.topX).map(d => d.placeName);
+        const newCases = cleanedData.filter(d => d.locationType == "country" && !isFinite(d.pctIncrease)).sort((a, b) => b.numIncrease - a.numIncrease).slice(0, this.topX).map(d => d.placeName);
+
+        this.presetGroups.push({
+          label: "largest number of cases",
+          locations: top5
+        })
+        this.presetGroups.push({
+          label: "largest increase in cases",
+          locations: this.selectedPlaces
+        })
+        this.presetGroups.push({
+          label: "largest percent increases",
+          locations: top5Pct
+        })
+        this.presetGroups.push({
+          label: "new first cases",
+          locations: newCases
+        })
 
         this.allData = cleanedData;
 
