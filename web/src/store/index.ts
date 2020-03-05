@@ -41,6 +41,10 @@ export default new Vuex.Store({
         ]
       },
       {
+        region: "Middle East",
+        countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
+      },
+      {
         region: "Africa",
         countries: ["Algeria", "Nigeria", "Morocco", "Senegal"]
       },
@@ -48,10 +52,7 @@ export default new Vuex.Store({
         region: "Diamond Princess Cruise",
         countries: ["Others",]
       },
-      {
-        region: "Middle East",
-        countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
-      },
+
       {
         region: "Australia/Oceania",
         countries: ["Australia", "New Zealand"]
