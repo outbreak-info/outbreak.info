@@ -8,47 +8,50 @@ import {
 } from 'd3';
 
 export function getRegion(country) {
-  const regionDict = [{
+  const regionDict = [
+    {
+      region: "China",
+      countries: ["Mainland China",]
+    },
+    {
       region: "Asia (outside China)",
       countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
         "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
       ]
     },
     {
-      region: "China",
-      countries: ["Mainland China", ]
-    },
-    {
       region: "North America",
-      countries: ["US", "Canada", "Mexico", "Dominican Republic"]
+      countries: ["US", "Canada", "Mexico", "Dominican Republic", "Saint Barthelemy"]
     },
     {
       region: "South America",
-      countries: ["Brazil", "Ecuador"]
+      countries: ["Brazil", "Ecuador", "Chile", "Argentina"]
     },
     {
       region: "Europe",
       countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
-        "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland", "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia"
+        "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland",
+        "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia", "Hungary", "Liechtenstein", "Poland", "Gibraltar", "Faroe Islands", "Ukraine"
       ]
     },
     {
+      region: "Middle East",
+      countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia", "Jordan"]
+    },
+    {
       region: "Africa",
-      countries: ["Algeria", "Nigeria", "Morocco", "Senegal"]
+      countries: ["Algeria", "Nigeria", "Morocco", "Senegal", "Tunisia"]
     },
     {
       region: "Diamond Princess Cruise",
-      countries: ["Others", ]
+      countries: ["Others",]
     },
-    {
-      region: "Middle East",
-      countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
-    },
+
     {
       region: "Australia/Oceania",
       countries: ["Australia", "New Zealand"]
     }
-  ];
+  ]
 
   const region = regionDict.filter(d => d.countries.includes(country));
 
