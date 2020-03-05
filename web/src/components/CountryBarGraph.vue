@@ -103,9 +103,14 @@ export default Vue.extend({
         .attr('class', 'bar-axis axis--y')
         .attr('transform', `translate(${this.margin.left + this.width + this.margin.right - 10}, ${this.margin.top})`);
 
-      this.line = d3.line()
+      // this.line = d3.line()
+      //   .x((d: any) => this.xSpark(d.date))
+      //   .y((d: any) => d.y);
+
+      this.line = d3.area()
         .x((d: any) => this.xSpark(d.date))
-        .y((d: any) => d.y);
+        .y0((d: any) => d.y0)
+        .y1((d: any) => d.y);
     },
     prepData: function() {
       this.data.forEach(d => {
@@ -115,6 +120,7 @@ export default Vue.extend({
 
         d.data.forEach(datum => {
           datum['y'] = y(datum.cases);
+          datum['y0'] = y(0);
         })
       })
     },
@@ -164,6 +170,7 @@ export default Vue.extend({
       grpSelector.merge(grpEnter)
         .attr("id", d => `${d.placeName}`)
         .attr("class", d => `${d.region}`)
+        .style("fill", d => this.colorScale(d.region))
         .style("stroke", d => this.colorScale(d.region));
 
 
@@ -210,7 +217,8 @@ export default Vue.extend({
       // merge
       sparkSelector.merge(sparkEnter)
         .datum(d => d.data)
-        .style("stroke-opacity", (d, i) => this.opacityScale(i))
+        .join("path")
+        .style("fill-opacity", (d, i) => this.opacityScale(i))
         .attr("d", this.line);
 
 
@@ -241,8 +249,8 @@ export default Vue.extend({
 }
 
 .sparkline {
-    fill: none;
-    stroke-width: 3;
+    // fill: none;
+    stroke-width: 0.5;
     stroke-linecap: round;
 }
 
