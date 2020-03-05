@@ -137,10 +137,12 @@ export default Vue.extend({
       }
     },
     prepData: function() {
-      this.logData = cloneDeep(this.data)
-      this.logData.forEach(d => {
-        d['data'] = d.data.filter(x => x.cases > 0)
-      });
+      if (this.data) {
+        this.logData = cloneDeep(this.data)
+        this.logData.forEach(d => {
+          d['data'] = d.data.filter(x => x.cases > 0)
+        });
+      }
     },
     setupPlot: function() {
       this.prepData();
