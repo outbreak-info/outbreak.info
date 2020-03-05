@@ -1,15 +1,15 @@
 <template>
 <div class="epidemiology flex-column align-left">
-  <button @click="switchAxes()">common axis</button>
+  <!-- <button @click="switchAxes()">common axis</button> -->
   <h3 class="plot-title">Cumulative number of COVID-19 cases</h3>
   <DataUpdated />
-  <a class="align-right" @click="changeScale()">
-    log scale
-  </a>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
+  <a class="align-right" @click="changeScale()">
+    switch to {{isLogY ? "linear" : "log"}} scale
+  </a>
   <DataSource />
 </div>
 </template>
@@ -54,12 +54,16 @@ export default Vue.extend({
       radius,
       transitionDuration,
 
+      // data
+      logData: null,
+      plottedData: null,
+
       // axes
       x: d3.scaleTime().range([0, width]),
       y: d3.scaleLinear().range([height, 0]),
       xAxis: null,
       yAxis: null,
-      logY: false,
+      isLogY: false,
       // refs
       svg: null,
       chart: null,
@@ -70,6 +74,7 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
+      this.prepData();
       this.updatePlot();
     }
   },
@@ -82,238 +87,10 @@ export default Vue.extend({
       return store.getters.getColor(location)
     },
     changeScale: function() {
-      this.y = d3.scaleLog().range([height, 0])
-        .domain([1, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
+      console.log("changing")
+      this.isLogY = !this.isLogY;
 
-      this.yAxis = d3.axisLeft(this.y);
-
-      d3.select(".axis--y")
-        .call(this.yAxis);
-
-        this.data.forEach(d => {
-          d['data'] = d.data.filter(x => x.cases > 0)
-        })
-
-      this.drawDots();
-    },
-    switchAxes: function() {
-      const filteredData = cloneDeep(this.data);
-      filteredData.forEach(d => {
-        d['data'] = d.data.filter(x => x.cases);
-      });
-
-
-      const dayMax = d3.max(filteredData.map(d => d.data.length));
-
-      this.x = d3.scaleLinear().range([0, width])
-        .domain([0, dayMax]);
-
-      this.xAxis = d3.axisBottom(this.x);
-
-      d3.select(".axis--x")
-        .call(this.xAxis);
-
-      const t1 = d3.transition().duration(this.transitionDuration);
-      const formatDate = d3.timeFormat("%d %b %Y");
-
-      // --- create groups for each region ---
-      const regionGroups = this.chart
-        .selectAll(".epi-region")
-        .data(filteredData);
-
-      // -- exit --
-      regionGroups.exit().remove();
-
-      // -- enter --
-      const regionsEnter = regionGroups.enter()
-        .append("g")
-        .attr("class", "epi-region");
-
-      regionGroups.merge(regionsEnter)
-        .attr("id", d => d.id)
-        .attr("fill", d => this.colorScale(d.placeName))
-        .attr("stroke", d => this.colorScale(d.placeName));
-
-      // --- region annotation ---
-      const countrySelector = this.chart.selectAll(".epi-region")
-        .select(".annotation--region-name");
-
-      const textEnter = regionsEnter.append("text")
-        .style("stroke", "none")
-        .attr('dx', 8)
-        .style("opacity", 1e-6)
-        .transition(t1)
-        .delay(1000)
-        .style("opacity", 1)
-
-      countrySelector.merge(textEnter)
-        // .attr('x', 0)
-        // .attr('y', this.y(0))
-        .attr("class", d => `annotation--region-name ${d.id}`)
-        .attr('x', this.width)
-        .attr('y', d => this.y(d.currentCases))
-        .text(d => d.placeName)
-        .style("opacity", 1e-6)
-        .transition(t1)
-        .delay(1000)
-        .style("opacity", 1);
-
-      // --- path ---
-      const pathEnter = regionsEnter
-        .append("path")
-        .attr("class", "epi-line");
-
-      const pathSelector = this.chart
-        .selectAll(".epi-region")
-        .select(".epi-line");
-
-      pathSelector.merge(pathEnter)
-        .datum(d => d.data)
-        .attr("id", d => `epi-line ${d[0].id}`)
-        .attr("d", this.line2);
-
-
-      // --- dots ---
-      const dotGroupSelector = this.chart
-        .selectAll(".epi-region")
-        .selectAll(".epi-point")
-        .data(d => d.data);
-
-      dotGroupSelector.exit().remove();
-
-      const dotGroupEnter = dotGroupSelector.enter()
-        .append("circle")
-        .attr("r", this.radius)
-        .attr("class", "epi-point");
-
-      dotGroupSelector.merge(dotGroupEnter)
-        .attr("class", d => `epi-point ${d.id}`)
-        .attr("id", d => `${d.id}-${d.date_string}`)
-        .attr("cx", (d, i) => this.x(i))
-        .attr("cy", d => this.y(d.cases));
-
-      // --- tooltips ---
-      // need to be outside the path/dot groups, so they're on top of all the curves.
-      // OUTER GROUP: one per country
-      const tooltipGroupSelector = this.chart
-        .selectAll(".epi-tooltip-group")
-        .data(filteredData);
-
-      // -- exit --
-      tooltipGroupSelector.exit().remove();
-
-      // -- enter --
-      const tooltipGroupEnter = tooltipGroupSelector.enter()
-        .append("g")
-        .attr("class", "epi-tooltip-group")
-        .attr("fill", d => this.colorScale(d.placeName))
-        .attr("stroke", d => this.colorScale(d.placeName));
-
-      tooltipGroupSelector.merge(tooltipGroupEnter)
-        .attr("class", d => `epi-tooltip-group ${d.id}`);
-
-      // INNER GROUPS: one per timepoint
-      const tooltipSelector = this.chart
-        .selectAll(".epi-tooltip-group")
-        .selectAll(".tooltip--epi-curve")
-        .data(d => d.data);
-
-      tooltipSelector.exit().remove();
-
-      const tooltipEnter = tooltipSelector.enter()
-        .append("g")
-        .attr("class", "tooltip--epi-curve")
-        .attr("transform", "translate(5,5)")
-        .attr("display", "none");
-
-      tooltipSelector.merge(tooltipEnter)
-        .attr("id", d => `tooltip-${d.id}-${d.date_string}`);
-
-      const tooltipRect = tooltipSelector.select(".tooltip--rect");
-
-
-      const tooltipRectEnter = tooltipEnter
-        .append("rect")
-        .attr("class", "tooltip--rect");
-
-      tooltipRect.merge(tooltipRectEnter)
-        .attr("x", (d, i) => this.x(i))
-        .attr("y", d => this.y(d.cases))
-        .attr("width", 100)
-        .attr("height", 40)
-        .attr("stroke-dasharray", "100, 180")
-        .attr("stroke-width", "3")
-        .attr("fill-opacity", 0.4)
-
-      const tooltipText = tooltipSelector.select(".tooltip--text");
-
-      const tooltipTextEnter = tooltipEnter
-        .append("text")
-        .attr("class", "tooltip--text default-black")
-        .attr("transform", "translate(5,5)");
-
-      // const tooltipCtryEnter = tooltipTextEnter.append("tspan")
-      //   .attr("class", "tooltip--country");
-      //
-      // tooltipText.select(".tooltip--country").merge(tooltipCtryEnter)
-      //   .attr("x", d => this.x(d.date))
-      //   .attr("y", d => this.y(d.cases))
-      //   .text(d => d.id.replace(/_/g, " "))
-
-      const tooltipDateEnter = tooltipTextEnter.append("tspan")
-        .attr("class", "tooltip--date");
-
-      tooltipText.select(".tooltip--date").merge(tooltipDateEnter)
-        .attr("x", (d, i) => this.x(i))
-        .attr("y", d => this.y(d.cases))
-        // .attr("dy", "1.1em")
-        .text(d => formatDate(d.date))
-
-      const tooltipCasesEnter = tooltipTextEnter.append("tspan")
-        .attr("class", "tooltip--case-count");
-
-      tooltipText.select(".tooltip--case-count").merge(tooltipCasesEnter)
-        .attr("x", (d, i) => this.x(i))
-        .attr("y", d => this.y(d.cases))
-        .attr("dy", "1.1em")
-        // .attr("dy", "2.2em")
-        .text(d => `${d.cases.toLocaleString()} cases`)
-
-      // dynamically adjust the width of the rect
-      // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
-      // .attr("width", function(d: any) {
-      //   console.log(d3.select(this.parentNode));
-      //   return(500)
-      // })
-      // dots.select(".tooltip--rect").attr("width", d => 500)
-      // `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
-      // .attr("height", (d: any) => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
-
-      // event listener
-      d3.selectAll("circle")
-        .on("mouseover", d => this.tooltipOn(d))
-        .on("mouseout", d => this.tooltipOff(d))
-
-
-      // --- transition: trace the curves ---
-      const curtainSelector = this.svg.select("#transition-mask").selectAll(".transition-curtain").data([0]);
-
-      curtainSelector.exit().remove();
-
-      const curtainEnter = curtainSelector
-        .enter().append("rect")
-        .attr("class", "transition-curtain")
-        .style("fill", "white")
-        .attr("y", -this.margin.top)
-        .attr("width", this.width + this.radius + this.margin.right)
-        .attr("height", this.height + this.margin.top + this.radius * 2);
-
-      curtainSelector.merge(curtainEnter)
-        .attr("x", -this.radius)
-        .transition(t1)
-        .ease(d3.easeLinear)
-        .attr("x", this.width + this.margin.right)
-
+      this.updatePlot();
     },
     tooltipOn: function(d) {
       d3.select(`#tooltip-${d.id}-${d.date_string}`)
@@ -347,11 +124,26 @@ export default Vue.extend({
     },
     updatePlot: function() {
       if (this.data) {
+        if (this.isLogY) {
+          this.plottedData = this.logData;
+        } else {
+          this.plottedData = this.data;
+        }
+        console.log(this.logData)
+        console.log(this.plottedData)
+
         this.updateScales();
         this.drawDots();
       }
     },
+    prepData: function() {
+      this.logData = cloneDeep(this.data)
+      this.logData.forEach(d => {
+        d['data'] = d.data.filter(x => x.cases > 0)
+      });
+    },
     setupPlot: function() {
+      this.prepData();
       this.svg = d3.select("svg.epi-curve");
       this.chart = d3.select("#epi-curve");
       this.line = d3.line()
@@ -372,10 +164,17 @@ export default Vue.extend({
     },
     updateScales: function() {
       this.x = this.x
-        .domain(d3.extent(this.data.flatMap(d => d.data).map(d => d.date)));
+        .domain(d3.extent(this.plottedData.flatMap(d => d.data).map(d => d.date)));
 
-      this.y = this.y
-        .domain([0, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
+      if (this.isLogY) {
+        this.y = d3.scaleLog()
+          .range([height, 0])
+          .domain([1, d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))]);
+      } else {
+        this.y = d3.scaleLinear()
+          .range([height, 0])
+          .domain([0, d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))]);
+      }
 
       this.xAxis = d3.axisBottom(this.x).ticks(9);
 
@@ -394,7 +193,7 @@ export default Vue.extend({
       // --- create groups for each region ---
       const regionGroups = this.chart
         .selectAll(".epi-region")
-        .data(this.data);
+        .data(this.plottedData);
 
       // -- exit --
       regionGroups.exit().remove();
@@ -472,7 +271,7 @@ export default Vue.extend({
       // OUTER GROUP: one per country
       const tooltipGroupSelector = this.chart
         .selectAll(".epi-tooltip-group")
-        .data(this.data);
+        .data(this.plottedData);
 
       // -- exit --
       tooltipGroupSelector.exit().remove();
