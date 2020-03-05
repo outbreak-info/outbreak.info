@@ -1,6 +1,6 @@
 <template>
-<div class="country-bar-graph flex-column align-left">
-  <h4 class="plot-title">Current COVID-19 cases</h4>
+<div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`">
+  <h4 class="plot-title">Current COVID-19 cases in {{region}}</h4>
 
   <svg :width="width + margin.left + margin.right + sparkWidth + 2*margin.gap" :height="height + margin.top + margin.bottom" class="case-counts">
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
@@ -19,7 +19,7 @@ import {
 import store from '@/store';
 
 const width = 250;
-const sparkWidth = 50;
+const sparkWidth = 75;
 const innerPadding = 0.25;
 const margin = {
   top: 5,
@@ -34,7 +34,8 @@ export default Vue.extend({
   name: "CountryBarGraph",
   components: {},
   props: {
-    region: String
+    region: String,
+    id: Number
   },
   data() {
     return {
@@ -46,6 +47,7 @@ export default Vue.extend({
       height: 0,
       barHeight: 0,
       data: null,
+      allData: [],
 
       // axes
       x: d3.scaleLinear().range([width, 0]),
@@ -56,7 +58,6 @@ export default Vue.extend({
       yAxis: null,
       // refs
       svg: null,
-      sparklines: null,
       chart: null,
       // methods
       line: null
@@ -64,40 +65,46 @@ export default Vue.extend({
   },
   watch: {
     region: function() {
+      console.log('watching')
       this.data = this.getData(this.region);
-      this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
-      this.updatePlot();
+      // this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
+      // this.updatePlot();
+    },
+    allData: function() {
+      console.log('data@');
+      console.log(this.allData)
     }
   },
   mounted() {
-    this.data = store.getters.getCountryCases(this.region);
+    // this.data = store.getters.getCountryCases(this.region);
+    // console.log(this.region)
+    // console.log(this.data)
     this.barHeight = store.getters.getBarHeight;
-    this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
+    this.allData = store.getters.getCountryCases;
+    // this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
     this.setupPlot();
     this.updatePlot();
   },
   methods: {
     getData: function(region) {
-      return (store.state.getCountryCases(region));
+      this.data = this.allData.filter(d => d.region === region);
     },
     colorScale: function(location) {
       return store.getters.getRegionColor(location);
     },
     updatePlot: function() {
+      this.getData(this.region);
+
       if (this.data) {
+        this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
         this.updateScales();
         this.prepData();
         this.drawPlot();
       }
     },
     setupPlot: function() {
-      this.svg = d3.select("svg.case-counts");
-      this.chart = d3.select("#case-counts");
-      this.sparklines = d3.select("#case-sparklines");
-
-      this.svg.append('g')
-        .attr('class', 'bar-axis axis--x')
-        .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`);
+      this.svg = d3.select(`#region-graphs-${this.id}`).select("svg.case-counts");
+      this.chart = this.svg.select("#case-counts");
 
       this.svg.append('g')
         .attr('class', 'bar-axis axis--y')
@@ -115,8 +122,8 @@ export default Vue.extend({
     prepData: function() {
       this.data.forEach(d => {
         const y = d3.scaleLinear()
-        .range([this.y.bandwidth()*0.8, 0])
-        .domain([0, d3.max(d.data.map(d => d.cases))]);
+          .range([this.y.bandwidth() * 0.8, 0])
+          .domain([0, d3.max(d.data.map(d => d.cases))]);
 
         d.data.forEach(datum => {
           datum['y'] = y(datum.cases);
@@ -146,11 +153,11 @@ export default Vue.extend({
 
       this.yAxis = d3.axisRight(this.y);
 
-      d3.select(".axis--y")
+      this.svg.select(".axis--y")
         .call(this.yAxis);
     },
     drawPlot: function() {
-      console.log(this.data)
+      // console.log(this.data)
       const t1 = d3.transition().duration(1000);
 
       // --- group ---
@@ -211,7 +218,7 @@ export default Vue.extend({
       const sparkSelector = grpSelector.select(".sparkline");
 
       const sparkEnter = grpEnter.append("path")
-        .attr("transform", d => `translate(${this.width + this.margin.gap + this.margin.right}, ${this.y(d.id.replace("_", " "))})`)
+        .attr("transform", d => `translate(${this.width + this.margin.gap + this.margin.right}, ${this.y(d.id.replace(/_/g, " "))})`)
         .attr("class", "sparkline");
 
       // merge
@@ -246,6 +253,7 @@ export default Vue.extend({
     dominant-baseline: central;
     text-anchor: end;
     stroke: none;
+    font-weight: 700 !important;
 }
 
 .sparkline {
@@ -257,5 +265,4 @@ export default Vue.extend({
 rect.country-count {
     shape-rendering: crispedges;
 }
-
 </style>

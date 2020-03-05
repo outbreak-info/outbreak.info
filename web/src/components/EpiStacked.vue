@@ -28,8 +28,7 @@ const margin = {
 
 export default Vue.extend({
   name: "EpiStacked",
-  components: {
-  },
+  components: {},
   props: {
     id: String,
     data: Array
@@ -62,6 +61,24 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
+    handleClick: function($event, key) {
+      console.log("click")
+      console.log()
+    },
+    handleMouseover: function(key) {
+      this.$emit("regionSelected", {
+        region: key,
+        display: true,
+        x: d3.event.x + 10,
+        y: d3.event.y + 10
+      })
+    },
+    handleMouseout: function(key) {
+      this.$emit("regionSelected", {
+        region: key,
+        display: false
+      })
+    },
     colorScale: function(location) {
       return store.getters.getRegionColor(location)
     },
@@ -87,8 +104,8 @@ export default Vue.extend({
         // .order(d3.stackOrderAppearance)
         // .order(d3.stackOrderNone)
         .order(d3.stackOrderReverse)
-        // .order(d3.stackOrderInsideOut)
-        (this.data);
+      // .order(d3.stackOrderInsideOut)
+      (this.data);
 
       this.x = this.x
         .domain(d3.extent(this.data.map(d => d.date)))
@@ -126,11 +143,12 @@ export default Vue.extend({
         .style("fill", ({
           key
         }) => this.colorScale(key))
+        .attr("class", "stacked-area-chart")
         .attr("d", this.area)
         .append("title")
         .text(({
           key
-        }) => key);
+        }) => key)
 
       const legendRectWidth = 15;
 
@@ -158,6 +176,17 @@ export default Vue.extend({
           key
         }) => key)
 
+      // --- tooltips ---
+      this.chart.selectAll("path.stacked-area-chart")
+        .on("mouseover", (d) => this.handleMouseover(d.key))
+        .on("mouseout", (d) => this.handleMouseout(d.key))
+        .on("click", (d) => this.handleClick(d.key));
+
+      this.legend.selectAll(".legend-group")
+        .on("mouseover", (d) => this.handleMouseover(d.key))
+        .on("mouseout", (d) => this.handleMouseout(d.key))
+        .on("click", (d) => this.handleClick(d.key));
+
 
     }
   }
@@ -179,4 +208,8 @@ export default Vue.extend({
     dominant-baseline: middle;
 }
 
+.legend-group,
+path.stacked-area-chart {
+    cursor: pointer;
+}
 </style>

@@ -1,11 +1,13 @@
 <template>
 <div class="home flex-column align-left">
-  <CountryBarGraph :region="'Australia/Oceania'" />
+  <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
+    <CountryBarGraph :region="region.region" :id="idx" :style="{visibility: region.display ? 'visible' : 'hidden', left: region.x + 'px', top: region.y + 'px'}" class="tooltip-countries" />
+  </div>
   <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
   <DataUpdated />
   <div class="flex">
-    <EpiStacked v-bind:data="nested" v-bind:id="'all-data'" />
-    <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'"  />
+    <EpiStacked v-bind:data="nested" v-bind:id="'all-data'" @regionSelected="handleTooltip" />
+    <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" @regionSelected="handleTooltip" />
   </div>
 
   <DataSource />
@@ -17,7 +19,13 @@ import EpiStacked from "@/components/EpiStacked.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import CountryBarGraph from "@/components/CountryBarGraph.vue";
-import { csv, nest, timeParse, sum, isoParse } from 'd3';
+import {
+  csv,
+  nest,
+  timeParse,
+  sum,
+  isoParse
+} from 'd3';
 import store from "@/store";
 
 export default {
@@ -30,7 +38,7 @@ export default {
   },
   computed: {
     noChina() {
-      if(this.data) {
+      if (this.data) {
         return this.nest(this.data.filter(d => d.region != 'China'));
       } else {
         return (null)
@@ -40,7 +48,12 @@ export default {
       return this.nest(this.data);
     },
     regionDict() {
-      return store.state.regionDict;
+      const regions = store.state.regionDict;
+
+      // regions.forEach(d => {
+      //   d['display'] = true;
+      // })
+      return regions;
     }
   },
   data() {
@@ -51,6 +64,10 @@ export default {
     }
   },
   methods: {
+    handleTooltip(selected) {
+      console.log(selected)
+      store.commit('setRegionTooltip', selected)
+    },
     getRegion: function(country) {
       const region = this.regionDict.filter(d => d.countries.includes(country));
 
@@ -132,3 +149,14 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.tooltip-countries {
+    background: white;
+    position: absolute;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    padding: 10px;
+    z-index: 1000;
+    pointer-events: none;
+}
+</style>

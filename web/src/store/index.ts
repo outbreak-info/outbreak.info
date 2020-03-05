@@ -19,44 +19,53 @@ export default new Vuex.Store({
     countryBarHeight: 15,
     regionDict: [
       {
+        display: false,
         region: "China",
         countries: ["Mainland China",]
       },
       {
+        display: false,
         region: "Asia (outside China)",
         countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
           "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
         ]
       },
       {
+        display: false,
         region: "North America",
         countries: ["US", "Canada", "Mexico", "Dominican Republic", "Saint Barthelemy"]
       },
       {
+        display: false,
         region: "South America",
-        countries: ["Brazil", "Ecuador"]
+        countries: ["Brazil", "Ecuador", "Chile", "Argentina"]
       },
       {
+        display: false,
         region: "Europe",
         countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
           "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland",
-          "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia", "Hungary", "Liechtenstein", "Poland", "Gibraltar", "Faroe Islands"
+          "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia", "Hungary", "Liechtenstein", "Poland", "Gibraltar", "Faroe Islands", "Ukraine"
         ]
       },
       {
+        display: false,
         region: "Middle East",
-        countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
+        countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia", "Jordan"]
       },
       {
+        display: false,
         region: "Africa",
-        countries: ["Algeria", "Nigeria", "Morocco", "Senegal"]
+        countries: ["Algeria", "Nigeria", "Morocco", "Senegal", "Tunisia"]
       },
       {
+        display: false,
         region: "Diamond Princess Cruise",
         countries: ["Others",]
       },
 
       {
+        display: false,
         region: "Australia/Oceania",
         countries: ["Australia", "New Zealand"]
       }
@@ -72,14 +81,22 @@ export default new Vuex.Store({
     },
     setCountryCases(state, payload) {
       state.countryCases = payload;
+    },
+    setRegionTooltip(state: any, payload: Record<string, boolean>) {
+      const idx = state.regionDict.findIndex((d: any) => d.region === payload['region']);
+      if (idx > -1) {
+        state.regionDict[idx]['display'] = payload['display'];
+        state.regionDict[idx]['x'] = payload['x'];
+        state.regionDict[idx]['y'] = payload['y'];
+      }
     }
   },
   getters: {
     getLocations: state => state.epiLocations,
     getBarHeight: state => state.countryBarHeight,
-    getCountryCases: state => (region: string) => {
-      return(state.countryCases.filter(d => d.region === region))
-    },
+    getCountryCases: state => state.countryCases,
+    //   return(state.countryCases.filter(d => d.region === region))
+    // },
     // Pretty sure I'm meant to have used a mixin/plugin, but this works so sticking with it for now...
     getColor: state => (location: string) => {
       return state.scale ? state.scale(location) : null;
