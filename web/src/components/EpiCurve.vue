@@ -4,12 +4,14 @@
   <h3 class="plot-title">Cumulative number of COVID-19 cases</h3>
   <DataUpdated />
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
+    <defs>
+      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+      </marker>
+    </defs>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
-  <a class="align-right" @click="changeScale()">
-    switch to {{isLogY ? "linear" : "log"}} scale
-  </a>
   <DataSource />
 </div>
 </template>
@@ -67,6 +69,7 @@ export default Vue.extend({
       // refs
       svg: null,
       chart: null,
+      switchBtn: null,
       // methods
       line: null,
       line2: null
@@ -87,7 +90,6 @@ export default Vue.extend({
       return store.getters.getColor(location)
     },
     changeScale: function() {
-      console.log("changing")
       this.isLogY = !this.isLogY;
 
       this.updatePlot();
@@ -129,8 +131,6 @@ export default Vue.extend({
         } else {
           this.plottedData = this.data;
         }
-        console.log(this.logData)
-        console.log(this.plottedData)
 
         this.updateScales();
         this.drawDots();
@@ -161,6 +161,43 @@ export default Vue.extend({
       this.svg.append('g')
         .attr('class', 'epi-axis axis--y')
         .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+
+      this.switchBtn = this.svg.append("g")
+        .attr("class", "switch-button-group");
+
+      const dySwitch = -10;
+      const xSwoop = 30;
+      const ySwoop = -35;
+      const swoopOffset = 10;
+
+      this.switchBtn.append("rect")
+        .attr("class", "switch-button-rect")
+        .attr("x", 0)
+        .attr("y", this.margin.top + this.height + this.margin.bottom - 28)
+        .attr("width", 0)
+        .attr("height", 0);
+
+      this.switchBtn.append("path")
+        .attr("class", "swoopy-arrow")
+        .attr("id", "switch-btn-swoopy-arrow")
+        .attr("marker-end", "url(#arrow)")
+        // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
+        .attr("d",
+          `M ${xSwoop} ${this.margin.top + this.height + this.margin.bottom + ySwoop}
+          C ${xSwoop + swoopOffset} ${this.margin.top + this.height + this.margin.bottom + ySwoop},
+          ${this.margin.left + ySwoop + 20} ${ this.height + this.margin.top + 15 + swoopOffset},
+          ${this.margin.left + ySwoop + 20} ${ this.height + this.margin.top + 15}`
+          // `M ${xSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${xSwoop + 5} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 55}, ${this.margin.left - 25 - dxSwoop} ${ this.height + this.margin.top }, ${this.margin.left - 25} ${ this.height + this.margin.top }`
+          // `M ${dxSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${dxSwoop+15} ${this.margin.top + this.height + this.margin.bottom - 20}, ${this.margin.left - 13} ${this.height + this.margin.top + 25}, ${this.margin.left - 13} ${this.height + this.margin.top + 10}`
+        );
+
+      this.switchBtn.append("text")
+        .attr("class", "switch-button")
+        .attr("x", 5)
+        .attr("y", this.margin.top + this.height + this.margin.bottom + dySwitch)
+        .on("mouseover", () => this.switchBtn.select("rect").classed("switch-button-hover", true))
+        .on("mouseout", () => this.switchBtn.select("rect").classed("switch-button-hover", false))
+        .on("click", () => this.changeScale());
     },
     updateScales: function() {
       this.x = this.x
@@ -185,6 +222,15 @@ export default Vue.extend({
 
       d3.select(".axis--y")
         .call(this.yAxis);
+
+      // --- update y-scale switch button ---
+      this.switchBtn
+        .select("text")
+        .text(`switch to ${this.isLogY ? "linear" : "log"} scale`);
+
+      this.switchBtn.select("rect")
+        .attr("width", this.switchBtn.select("text").node().getBBox().width + 10)
+        .attr("height", this.switchBtn.select("text").node().getBBox().height + 5);
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
@@ -423,5 +469,43 @@ export default Vue.extend({
 
 .tooltip--case-count {
     font-weight: 500;
+}
+
+.switch-button {
+    cursor: pointer;
+    dominant-baseline: text-after-edge;
+    // fill: $grey-90 !important;
+    font-weight: 300 !important;
+    font-size: 0.85em;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.swoopy-arrow,
+.swoopy-arrowhead {
+    stroke: $grey-70;
+    fill: none;
+    stroke-width: 0.8;
+}
+.swoopy-arrowhead {
+    stroke-width: 1;
+}
+
+.switch-button-rect {
+    fill-opacity: 0.15;
+    rx: 4;
+    ry: 4;
+    stroke: $grey-60;
+    stroke-width: 0.5;
+    shape-rendering: crispedges;
+    &:hover {
+        fill-opacity: 0.25;
+    }
+}
+
+.switch-button-hover {
+    fill-opacity: 0.25;
 }
 </style>
