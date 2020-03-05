@@ -14,6 +14,37 @@
 </div>
 </template>
 
+<script>
+import {
+  cleanEpi,
+  nestEpiTrace
+} from "@/js/importEpi.js";
+import {
+  csv
+} from "d3";
+import store from "@/store";
+
+export default ({
+  name: "App",
+  data() {
+    return {
+      dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
+    }
+  },
+  methods: {
+    getData: function() {
+      csv(this.dataUrl).then(data => {
+        const rawCleaned = cleanEpi(data);
+        store.commit("setCases", rawCleaned);
+        store.commit("setCountryCases", nestEpiTrace(rawCleaned.flatMap(d => d.data), "country", "country"));
+      })
+    }
+  },
+  mounted() {
+    this.getData();
+  }
+})
+</script>
 <style lang="scss">
 #app {
     font-family: $font-family;

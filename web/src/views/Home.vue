@@ -1,5 +1,6 @@
 <template>
 <div class="home flex-column align-left">
+  <CountryBarGraph :region="'Africa'" />
   <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
   <DataUpdated />
   <div class="flex">
@@ -15,6 +16,7 @@
 import EpiStacked from "@/components/EpiStacked.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
+import CountryBarGraph from "@/components/CountryBarGraph.vue";
 import { csv, nest, timeParse, sum, isoParse } from 'd3';
 import store from "@/store";
 
@@ -23,7 +25,8 @@ export default {
   components: {
     EpiStacked,
     DataUpdated,
-    DataSource
+    DataSource,
+    CountryBarGraph
   },
   computed: {
     noChina() {
@@ -96,10 +99,7 @@ export default {
           d['region'] = this.getRegion(areaData.metadata.country);
         }))
 
-        console.log(data)
-
         this.data = data.flatMap(d => d.data);
-        console.log(this.data)
 
       });
     },

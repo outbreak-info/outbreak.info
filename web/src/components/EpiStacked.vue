@@ -55,7 +55,6 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      console.log(this.data);
       this.updatePlot();
     }
   },
@@ -90,8 +89,6 @@ export default Vue.extend({
         .order(d3.stackOrderReverse)
         // .order(d3.stackOrderInsideOut)
         (this.data);
-
-      console.log(this.series)
 
       this.x = this.x
         .domain(d3.extent(this.data.map(d => d.date)))

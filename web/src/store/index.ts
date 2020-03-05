@@ -14,6 +14,9 @@ export default new Vuex.Store({
   state: {
     epiLocations: [],
     scale: blankFunc,
+    cases: [],
+    countryCases: [],
+    countryBarHeight: 15,
     regionDict: [
       {
         region: "China",
@@ -63,10 +66,20 @@ export default new Vuex.Store({
     setLocations(state, payload) {
       state.epiLocations = payload;
       state.scale = scaleOrdinal(schemeTableau10).domain(state.epiLocations);
+    },
+    setCases(state, payload) {
+      state.cases = payload;
+    },
+    setCountryCases(state, payload) {
+      state.countryCases = payload;
     }
   },
   getters: {
     getLocations: state => state.epiLocations,
+    getBarHeight: state => state.countryBarHeight,
+    getCountryCases: state => (region: string) => {
+      return(state.countryCases.filter(d => d.region === region))
+    },
     // Pretty sure I'm meant to have used a mixin/plugin, but this works so sticking with it for now...
     getColor: state => (location: string) => {
       return state.scale ? state.scale(location) : null;
