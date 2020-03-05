@@ -10,6 +10,7 @@
     <Autocomplete :items="allPlaces" :selected="selectedPlaces" @selected="updateSelected" />
   </template>
 
+<h2 v-if="region">{{region}} region</h2>
   <div class="flex">
     <EpiCurve v-bind:data="data" />
     <EpiTable v-bind:data="data" />
@@ -39,6 +40,9 @@ export default {
     EpiTable,
     Autocomplete
   },
+  props: {
+    region: String
+  },
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
@@ -46,22 +50,20 @@ export default {
       allData: null,
       data: null,
       topX: 6,
-      presetGroups: [
-        {
-          label: "United States",
-          locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX",
-            "Omaha, NE (From Diamond Princess)", "Travis, CA (From Diamond Princess)", "Lackland, TX (From Diamond Princess)", "Humboldt County, CA", "Sacramento County, CA", "Unassigned Location (From Diamond Princess)", "Portland, OR",
-            "Snohomish County, WA", "Providence, RI", "Grafton County, NH", "Hillsborough, FL", "New York City, NY", "Placer County, CA", "San Mateo, CA", "Sarasota, FL", "Sonoma County, CA", "Umatilla, OR"
-          ]
-        }
-      ],
+      presetGroups: [{
+        label: "United States",
+        locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX",
+          "Omaha, NE (From Diamond Princess)", "Travis, CA (From Diamond Princess)", "Lackland, TX (From Diamond Princess)", "Humboldt County, CA", "Sacramento County, CA", "Unassigned Location (From Diamond Princess)", "Portland, OR",
+          "Snohomish County, WA", "Providence, RI", "Grafton County, NH", "Hillsborough, FL", "New York City, NY", "Placer County, CA", "San Mateo, CA", "Sarasota, FL", "Sonoma County, CA", "Umatilla, OR"
+        ]
+      }],
       selectedPlaces: []
     }
   },
   watch: {
     selectedPlaces: function() {
       this.filterData();
-    },
+    }
   },
   methods: {
     updateSelected: function(selected) {
@@ -117,7 +119,17 @@ export default {
 
         this.allData = cleanedData;
 
-        this.filterData();
+        if (this.region) {
+          console.log(this.region)
+          console.log(cleanedData)
+          this.data = cleanedData.filter(d => d.region === this.region && d.locationType != "region");
+          console.log(this.data)
+          this.selectedPlaces = this.data.map(d => d.placeName);
+        } else {
+          this.filterData();
+        }
+
+
       });
     }
   },

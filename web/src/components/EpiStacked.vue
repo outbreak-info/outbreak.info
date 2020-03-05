@@ -61,9 +61,18 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
-    handleClick: function($event, key) {
-      console.log("click")
-      console.log()
+    handleClick: function(key) {
+      this.$router.push({
+        path: 'epidemiology',
+        query: {
+          region: key
+        }
+      })
+
+      this.$emit("regionSelected", {
+        region: key,
+        display: false
+      })
     },
     handleMouseover: function(key) {
       this.$emit("regionSelected", {
@@ -180,7 +189,7 @@ export default Vue.extend({
       this.chart.selectAll("path.stacked-area-chart")
         .on("mouseover", (d) => this.handleMouseover(d.key))
         .on("mouseout", (d) => this.handleMouseout(d.key))
-        .on("click", (d) => this.handleClick(d.key));
+        .on("click", (d) => this.handleClick(d));
 
       this.legend.selectAll(".legend-group")
         .on("mouseover", (d) => this.handleMouseover(d.key))

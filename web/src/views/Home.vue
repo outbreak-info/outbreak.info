@@ -65,7 +65,6 @@ export default {
   },
   methods: {
     handleTooltip(selected) {
-      console.log(selected)
       store.commit('setRegionTooltip', selected)
     },
     getRegion: function(country) {
