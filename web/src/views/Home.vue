@@ -1,6 +1,6 @@
 <template>
 <div class="home flex-column align-left">
-  <CountryBarGraph :region="'Africa'" />
+  <CountryBarGraph :region="'Australia/Oceania'" />
   <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
   <DataUpdated />
   <div class="flex">

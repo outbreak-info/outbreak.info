@@ -18,14 +18,14 @@ import {
 
 import store from '@/store';
 
-const width = 500;
-const sparkWidth = 100;
-const innerPadding = 0.2;
+const width = 250;
+const sparkWidth = 50;
+const innerPadding = 0.25;
 const margin = {
   top: 5,
   right: 100,
   bottom: 10,
-  left: 20,
+  left: 35,
   gap: 10
 }
 const transitionDuration = 3500;
@@ -51,7 +51,6 @@ export default Vue.extend({
       x: d3.scaleLinear().range([width, 0]),
       y: d3.scaleBand().paddingInner(innerPadding),
       xSpark: d3.scaleTime().range([0, sparkWidth]),
-      ySpark: d3.scaleLinear(),
       opacityScale: d3.scaleLinear().range([0.5, 1]),
       xAxis: null,
       yAxis: null,
@@ -87,6 +86,7 @@ export default Vue.extend({
     updatePlot: function() {
       if (this.data) {
         this.updateScales();
+        this.prepData();
         this.drawPlot();
       }
     },
@@ -105,7 +105,18 @@ export default Vue.extend({
 
       this.line = d3.line()
         .x((d: any) => this.xSpark(d.date))
-        .y((d: any) => this.ySpark(d.cases));
+        .y((d: any) => d.y);
+    },
+    prepData: function() {
+      this.data.forEach(d => {
+        const y = d3.scaleLinear()
+        .range([this.y.bandwidth()*0.8, 0])
+        .domain([0, d3.max(d.data.map(d => d.cases))]);
+
+        d.data.forEach(datum => {
+          datum['y'] = y(datum.cases);
+        })
+      })
     },
     updateScales: function() {
       this.data.sort((a, b) => a.currentCases - b.currentCases);
@@ -118,11 +129,6 @@ export default Vue.extend({
 
       this.xSpark = this.xSpark
         .domain(d3.extent(this.data.flatMap(d => d.data).map(d => d.date)));
-
-      this.ySpark = this.ySpark
-        .range([this.y.bandwidth(), 0])
-        .domain([0, d3.max(this.data.flatMap(d => d.data).map(d => d.cases))]);
-
 
       this.opacityScale = this.opacityScale
         .domain([0, this.data.length - 1]);
@@ -142,7 +148,6 @@ export default Vue.extend({
       const t1 = d3.transition().duration(1000);
 
       // --- group ---
-
       const grpSelector = this.chart
         .selectAll(".country-count-group")
         .data(this.data);
@@ -192,19 +197,20 @@ export default Vue.extend({
         .attr("dx", "-0.5em")
         .attr("y", d => this.y(d.placeName) + this.y.bandwidth() / 2)
         .style("font-size", this.y.bandwidth())
-        .text(d => d.currentCases)
+        .text(d => d.currentCases.toLocaleString())
 
 
       // --- sparklines ---
       const sparkSelector = grpSelector.select(".sparkline");
 
       const sparkEnter = grpEnter.append("path")
-      .attr("transform", d => `translate(${this.width + this.margin.gap + this.margin.right}, ${this.y(d.id)})`)
+        .attr("transform", d => `translate(${this.width + this.margin.gap + this.margin.right}, ${this.y(d.id.replace("_", " "))})`)
         .attr("class", "sparkline");
 
       // merge
       sparkSelector.merge(sparkEnter)
         .datum(d => d.data)
+        .style("stroke-opacity", (d, i) => this.opacityScale(i))
         .attr("d", this.line);
 
 
@@ -239,4 +245,9 @@ export default Vue.extend({
     stroke-width: 3;
     stroke-linecap: round;
 }
+
+rect.country-count {
+    shape-rendering: crispedges;
+}
+
 </style>
