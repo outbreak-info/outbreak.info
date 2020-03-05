@@ -21,9 +21,6 @@ import DataSource from "@/components/DataSource.vue";
 
 import * as d3 from 'd3';
 import {
-  schemeTableau10
-} from 'd3-scale-chromatic';
-import {
   cloneDeep
 } from "lodash";
 
