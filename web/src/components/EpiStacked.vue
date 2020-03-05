@@ -15,6 +15,7 @@ import * as d3 from 'd3';
 import {
   schemeTableau10
 } from 'd3-scale-chromatic';
+import store from "@/store";
 
 const width = 500;
 const height = 300;
@@ -42,7 +43,6 @@ export default Vue.extend({
       // axes
       x: d3.scaleTime(),
       y: d3.scaleLinear(),
-      colorScale: d3.scaleOrdinal(schemeTableau10),
       xAxis: null,
       yAxis: null,
       // refs
@@ -63,6 +63,9 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
+    colorScale: function(location) {
+      return store.getters.getRegionColor(location)
+    },
     updatePlot: function() {
       if (this.data) {
         this.setupPlot();
@@ -97,9 +100,6 @@ export default Vue.extend({
       this.y = this.y
         .range([this.height, 0])
         .domain([0, d3.max(this.series, d => d3.max(d, d => d[1]))]).nice();
-
-      this.colorScale = this.colorScale
-        .domain(keys)
 
       this.xAxis = d3.axisBottom(this.x).ticks(9);
 

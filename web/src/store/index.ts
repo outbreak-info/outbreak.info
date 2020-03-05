@@ -13,7 +13,50 @@ const blankFunc = function(location: string) {
 export default new Vuex.Store({
   state: {
     epiLocations: [],
-    scale: blankFunc
+    scale: blankFunc,
+    regionDict: [
+      {
+        region: "China",
+        countries: ["Mainland China",]
+      },
+      {
+        region: "Asia (outside China)",
+        countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
+          "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
+        ]
+      },
+      {
+        region: "North America",
+        countries: ["US", "Canada", "Mexico", "Dominican Republic", "Saint Barthelemy"]
+      },
+      {
+        region: "South America",
+        countries: ["Brazil", "Ecuador"]
+      },
+      {
+        region: "Europe",
+        countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
+          "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland",
+          "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia", "Hungary", "Liechtenstein", "Poland", "Gibraltar", "Faroe Islands"
+        ]
+      },
+      {
+        region: "Africa",
+        countries: ["Algeria", "Nigeria", "Morocco", "Senegal"]
+      },
+      {
+        region: "Diamond Princess Cruise",
+        countries: ["Others",]
+      },
+      {
+        region: "Middle East",
+        countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
+      },
+      {
+        region: "Australia/Oceania",
+        countries: ["Australia", "New Zealand"]
+      }
+    ]
   },
   mutations: {
     setLocations(state, payload) {
@@ -34,6 +77,10 @@ export default new Vuex.Store({
     getDarkColor: state => (location: string, pct = 1.25) => {
       const color = state.scale(location);
       return state.scale && color ? chroma(color).darken(pct) : null;
+    },
+    getRegionColor: state => (location: string) => {
+      const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(state.regionDict.map(d => d.region));
+      return scale(location);
     }
   },
   actions: {},

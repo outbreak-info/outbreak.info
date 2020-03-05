@@ -15,7 +15,8 @@
 import EpiStacked from "@/components/EpiStacked.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
-import * as d3 from 'd3';
+import { csv, nest, timeParse, sum, isoParse } from 'd3';
+import store from "@/store";
 
 export default {
   name: "Home",
@@ -34,56 +35,16 @@ export default {
     },
     nested() {
       return this.nest(this.data);
+    },
+    regionDict() {
+      return store.state.regionDict;
     }
   },
   data() {
     return {
       dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
 
-
-      data: null,
-      regionDict: [{
-          region: "Asia (outside China)",
-          countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
-            "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
-          ]
-        },
-        {
-          region: "China",
-          countries: ["Mainland China", ]
-        },
-        {
-          region: "North America",
-          countries: ["US", "Canada", "Mexico", "Dominican Republic"]
-        },
-        {
-          region: "South America",
-          countries: ["Brazil", "Ecuador"]
-        },
-        {
-          region: "Europe",
-          countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
-            "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland", "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia"
-          ]
-        },
-        {
-          region: "Africa",
-          countries: ["Algeria", "Nigeria", "Morocco", "Senegal"]
-        },
-        {
-          region: "Diamond Princess Cruise",
-          countries: ["Others", ]
-        },
-        {
-          region: "Middle East",
-          countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia"]
-        },
-        {
-          region: "Australia/Oceania",
-          countries: ["Australia", "New Zealand"]
-        }
-      ]
-
+      data: null
     }
   },
   methods: {
@@ -95,9 +56,9 @@ export default {
       }
     },
     getData: function() {
-      d3.csv(this.dataUrl).then(data => {
-        const parseDate = d3.timeParse("%m/%d/%y");
-        const parseD3Date = d3.timeParse();
+      csv(this.dataUrl).then(data => {
+        const parseDate = timeParse("%m/%d/%y");
+        const parseD3Date = timeParse();
         data.forEach(d => {
           const metadata = {
             'province': d['Province/State'],
@@ -145,15 +106,15 @@ export default {
     nest: function(data) {
       if (data) {
         // nest by date
-        const regionNest = d3.nest()
+        const regionNest = nest()
           .key(d => d.date)
           .key(d => d.region)
-          .rollup(values => d3.sum(values, d => d.cases))
+          .rollup(values => sum(values, d => d.cases))
           .entries(data);
 
         const nested = regionNest.map(d => {
           const obj = {};
-          obj['date'] = d3.isoParse(d.key);
+          obj['date'] = isoParse(d.key);
 
           d.values.forEach(value => {
             obj[value.key] = value.value;
