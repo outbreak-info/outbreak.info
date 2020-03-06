@@ -122,7 +122,7 @@ export default {
         if (this.region) {
           console.log(this.region)
           console.log(cleanedData)
-          this.data = cleanedData.filter(d => d.region === this.region && d.locationType != "region");
+          this.data = cleanedData.filter(d => d.region === this.region && d.locationType === "country");
           console.log(this.data)
           this.selectedPlaces = this.data.map(d => d.placeName);
         } else {
