@@ -1,7 +1,8 @@
 <template>
 <div id="app">
+  <!-- TEMP: BASIC HEADER -->
   <header id="outbreak-header">
-    outbreak.info
+    <router-link to="/" class="no-underline">outbreak.info</router-link>
     <nav id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
@@ -9,8 +10,9 @@
     </nav>
   </header>
 
-  <router-view />
+  <router-view class="px-3"/>
 
+  <!-- TEMP: BASIC FOOTER -->
   <footer id="outbreak-footer">
     <div class="flex flex-space-between px-3 py-3">
       <div>
@@ -62,7 +64,7 @@ export default ({
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: $base-grey;
-    font-weight: 300;
+    // font-weight: 300;
 }
 
 #app text {
@@ -177,5 +179,9 @@ button.chip:hover {
             color: $primary-color;
         }
     }
+}
+
+.no-underline {
+    text-decoration: none;
 }
 </style>
