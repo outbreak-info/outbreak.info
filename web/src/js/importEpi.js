@@ -7,51 +7,10 @@ import {
   map
 } from 'd3';
 
-export function getRegion(country) {
-  const regionDict = [
-    {
-      region: "China",
-      countries: ["Mainland China",]
-    },
-    {
-      region: "Asia (outside China)",
-      countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
-        "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
-      ]
-    },
-    {
-      region: "North America",
-      countries: ["US", "Canada", "Mexico", "Dominican Republic", "Saint Barthelemy"]
-    },
-    {
-      region: "South America",
-      countries: ["Brazil", "Ecuador", "Chile", "Argentina"]
-    },
-    {
-      region: "Europe",
-      countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
-        "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland",
-        "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia", "Hungary", "Liechtenstein", "Poland", "Gibraltar", "Faroe Islands", "Ukraine"
-      ]
-    },
-    {
-      region: "Middle East",
-      countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia", "Jordan"]
-    },
-    {
-      region: "Africa",
-      countries: ["Algeria", "Nigeria", "Morocco", "Senegal", "Tunisia"]
-    },
-    {
-      region: "Diamond Princess Cruise",
-      countries: ["Others",]
-    },
+import store from "@/store";
 
-    {
-      region: "Australia/Oceania",
-      countries: ["Australia", "New Zealand"]
-    }
-  ]
+export function getRegion(country) {
+  const regionDict = store.state.regionDict;
 
   const region = regionDict.filter(d => d.countries.includes(country));
 

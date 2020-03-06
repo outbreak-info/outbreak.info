@@ -43,7 +43,7 @@ export default new Vuex.Store({
       {
         display: false,
         region: "Europe",
-        countries: ["Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
+        countries: ["Bosnia and Herzegovina", "Slovenia", "Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
           "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland",
           "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia", "Hungary", "Liechtenstein", "Poland", "Gibraltar", "Faroe Islands", "Ukraine"
         ]
@@ -51,12 +51,12 @@ export default new Vuex.Store({
       {
         display: false,
         region: "Middle East",
-        countries: ["Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia", "Jordan"]
+        countries: ["Palestine", "Egypt", "Iran", "United Arab Emirates", "Israel", "Lebanon", "Iraq", "Oman", "Afghanistan", "Bahrain", "Kuwait", "Pakistan", "Qatar", "Saudi Arabia", "Jordan"]
       },
       {
         display: false,
         region: "Africa",
-        countries: ["Algeria", "Nigeria", "Morocco", "Senegal", "Tunisia"]
+        countries: ["Algeria", "Nigeria", "Morocco", "Senegal", "Tunisia", "South Africa"]
       },
       {
         display: false,
