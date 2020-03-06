@@ -1,4 +1,4 @@
-# web
+# Vue CLI instructions
 
 ## Project setup
 ```
