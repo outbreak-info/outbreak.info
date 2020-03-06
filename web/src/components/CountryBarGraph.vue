@@ -89,8 +89,9 @@ export default Vue.extend({
     getData: function(region) {
       this.data = this.allData.filter(d => d.region === region);
     },
-    colorScale: function(location) {
-      return store.getters.getRegionColor(location);
+    colorScale: function(idx) {
+      this.data.length
+      return store.getters.getRegionColorPalette(this.region, this.data.length, idx);
     },
     updatePlot: function() {
       this.getData(this.region);
@@ -146,7 +147,7 @@ export default Vue.extend({
       this.opacityScale = this.opacityScale
         .domain([0, this.data.length - 1]);
 
-      // this.xAxis = d3.axisBottom(this.x).ticks(9);
+      // this.xAxis = d3.axisBottom(this.x);
       //
       // d3.select(".axis--x")
       //   .call(this.xAxis);
@@ -177,8 +178,9 @@ export default Vue.extend({
       grpSelector.merge(grpEnter)
         .attr("id", d => `${d.placeName}`)
         .attr("class", d => `${d.region}`)
-        .style("fill", d => this.colorScale(d.region))
-        .style("stroke", d => this.colorScale(d.region));
+        .style("fill", (d, i) => this.colorScale(i))
+        .style("stroke", (d, i) => this.colorScale(i))
+        // .style("stroke", d => this.colorScale(d.region));
 
 
       // --- bars ---
@@ -192,8 +194,8 @@ export default Vue.extend({
         // .attr("width", 0)
         .attr("height", this.y.bandwidth())
         .attr("y", d => this.y(d.placeName))
-        .style("fill", d => this.colorScale(d.region))
-        .style("fill-opacity", (d, i) => this.opacityScale(i))
+        .style("fill", (d,i) => this.colorScale(i))
+        // .style("fill-opacity", (d, i) => this.opacityScale(i))
         // .attr("x", d => this.x(0))
         // .transition(t1)
         .attr("width", d => this.x(0) - this.x(d.currentCases))
@@ -225,7 +227,7 @@ export default Vue.extend({
       sparkSelector.merge(sparkEnter)
         .datum(d => d.data)
         .join("path")
-        .style("fill-opacity", (d, i) => this.opacityScale(i))
+        // .style("fill-opacity", (d, i) => this.opacityScale(i))
         .attr("d", this.line);
 
 
@@ -257,8 +259,8 @@ export default Vue.extend({
 }
 
 .sparkline {
-    // fill: none;
-    stroke-width: 0.5;
+    // stroke-width: 0.1;
+    stroke: none;
     stroke-linecap: round;
 }
 

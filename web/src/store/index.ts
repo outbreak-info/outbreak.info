@@ -112,6 +112,13 @@ export default new Vuex.Store({
     getRegionColor: state => (location: string) => {
       const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(state.regionDict.map(d => d.region));
       return scale(location);
+    },
+    getRegionColorPalette: state => (region: string, numEntries: number, idx: number) => {
+      const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(state.regionDict.map(d => d.region));
+      const color = scale(region);
+
+      const colorScale = chroma.scale([chroma(color).luminance(0.5), color, chroma(color).darken(1.25)]).domain([0, numEntries - 1]);
+      return (colorScale(idx));
     }
   },
   actions: {},
