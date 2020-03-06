@@ -115,7 +115,7 @@ export function prep4Stacked(data, nestingVar) {
       .rollup(values => sum(values, d => d.cases))
       .entries(data);
 
-    const nested = regionNest.map(d => {
+    regionNest.map(d => {
       const obj = {};
       obj['date'] = isoParse(d.key);
 
