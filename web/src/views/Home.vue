@@ -1,19 +1,23 @@
 <template>
-  <div class="home flex-column align-left">
-    <!-- TO BE REPLACED -->
-    <section id="home-temp-header" class="flex-column align-left">
-      <h1>outbreak.info</h1>
-      <p>
-        During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research. <b>outbreak.info</b> is a resource to aggregate all this information into a single location.
-      </p>
+<div class="home flex-column align-left">
+  <div v-if=loading class="loader">
+    <img src="@/assets/ripple.svg" />
+  </div>
 
-      <p id="disclaimer">
-        Disclaimer: outbreak.info is a work-in-progress. Notice a bug, know of a COVID-19 data source, or want to suggest a feature? <a href="https://github.com/SuLab/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>.
-      </p>
-    </section>
+  <!-- TO BE REPLACED -->
+  <section id="home-temp-header" class="flex-column align-left">
+    <h1>outbreak.info</h1>
+    <p>
+      During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research. <b>outbreak.info</b> is a resource to aggregate all this information into a single location.
+    </p>
 
-    <!-- EPI CURVE SUMMARIES -->
-    <!-- <section class="flex-column align-left" id="regional-epi-curves">
+    <p id="disclaimer">
+      Disclaimer: outbreak.info is a work-in-progress. Notice a bug, know of a COVID-19 data source, or want to suggest a feature? <a href="https://github.com/SuLab/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>.
+    </p>
+  </section>
+
+  <!-- EPI CURVE SUMMARIES -->
+  <!-- <section class="flex-column align-left" id="regional-epi-curves">
       <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
         <CountryBarGraph :region="region.region" :id="idx" :style="{visibility: region.display ? 'visible' : 'hidden', left: region.x + 'px', top: region.y + 'px'}" class="tooltip-countries" />
       </div>
@@ -26,14 +30,25 @@
 
       <DataSource />
     </section> -->
-  </div>
+</div>
 </template>
 
 <script>
 // @ is an alias to /src
+import {
+  mapState
+} from 'vuex';
 
 export default {
   name: "Home",
+  data() {
+    return {
+      loadindsdg: true
+    }
+  },
+  computed: mapState({
+    loading: state => state.admin.loading,
+  })
 };
 </script>
 
