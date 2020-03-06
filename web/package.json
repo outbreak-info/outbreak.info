@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "outbreak.info",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,10 +8,20 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-regular-svg-icons": "^5.12.1",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/vue-fontawesome": "^0.1.9",
+    "axios": "^0.19.2",
+    "chroma-js": "^2.1.0",
     "core-js": "^3.6.4",
+    "d3": "^5.15.0",
+    "lodash": "^4.17.15",
+    "rxjs": "^6.5.4",
     "vue": "^2.6.11",
     "vue-gtag": "^1.6.2",
     "vue-router": "^3.1.5",
+    "vue-rx": "^6.2.0",
     "vuex": "^3.1.2"
   },
   "devDependencies": {
