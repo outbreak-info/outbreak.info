@@ -1,0 +1,41 @@
+// --- loading spinner ---
+.loader {
+  position: fixed;
+  z-index: 100;
+  top: calc(50% - 100px) !important;
+  left: calc(50% - 100px) !important;
+}
+
+// --- buttons ---
+button {
+    line-height: 1.5em;
+    font-size: 1em;
+    fill: white;
+    font-family: $font-family;
+    margin-right: 0.25em;
+    margin-left: 0.25em;
+    margin-bottom: 0.25em;
+    border-color: $grey-40;
+    &:focus {
+        outline: none !important;
+    }
+    &.chip {
+        border-radius: 1em;
+        display: flex;
+        align-items: center;
+        padding: 2px 8px;
+        cursor: pointer;
+        & .remove-btn {
+            margin-left: 0.25em;
+        }
+    }
+}
+
+.all-selected,
+button.chip:hover {
+    background: $grey-80 !important;
+    color: white;
+    & .remove-btn {
+        color: $warning-color !important;
+    }
+}

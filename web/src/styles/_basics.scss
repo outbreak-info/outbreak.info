@@ -1,0 +1,19 @@
+// --- fonts, default colors ---
+#app {
+    font-family: $font-family;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: $base-grey;
+}
+
+#app text {
+    font-family: $font-family;
+}
+
+// --- svg ---
+.axis--x text,
+.axis--y text,
+.default-black {
+    fill: $base-grey;
+}
