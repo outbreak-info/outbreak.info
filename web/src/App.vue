@@ -9,8 +9,17 @@
     </nav>
   </header>
 
-
   <router-view />
+
+  <footer id="outbreak-footer">
+    <div class="flex flex-space-between px-3 py-3">
+      <div>
+        &copy; 2020 <a href="http://sulab.org/" rel="noreferrer" target="_blank"> The Su Lab</a>
+      </div>
+      <a href="mailto:blog@sulab.org">blog@sulab.org</a>
+    </div>
+
+  </footer>
 </div>
 </template>
 
@@ -46,6 +55,7 @@ export default ({
 })
 </script>
 <style lang="scss">
+// --- fonts, default colors ---
 #app {
     font-family: $font-family;
     -webkit-font-smoothing: antialiased;
@@ -64,12 +74,6 @@ export default ({
 .axis--y text,
 .default-black {
     fill: $base-grey;
-}
-
-#outbreak-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
 
 // buttons
@@ -106,20 +110,7 @@ button.chip:hover {
     }
 }
 
-#nav {
-    padding: 30px;
-
-    a {
-        font-weight: bold;
-        color: #2c3e50;
-
-        &.router-link-exact-active {
-            color: $primary-color;
-        }
-    }
-}
-
-// layout
+// --- layout ---
 .flex {
     display: flex;
     flex-wrap: wrap;
@@ -129,6 +120,10 @@ button.chip:hover {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+}
+
+.flex-space-between {
+    justify-content: space-between;
 }
 
 .align-left {
@@ -152,5 +147,35 @@ button.chip:hover {
 .px-3 {
     padding-left: 1rem;
     padding-right: 1rem;
+}
+
+// @Marco delete me!
+#outbreak-header {
+    background: $grey-30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+#outbreak-footer {
+  margin-top: 0.5rem;
+    background: $grey-30;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#nav {
+    padding: 30px;
+
+    a {
+        font-weight: bold;
+        color: #2c3e50;
+
+        &.router-link-exact-active {
+            color: $primary-color;
+        }
+    }
 }
 </style>
