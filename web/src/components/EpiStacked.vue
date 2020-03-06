@@ -12,9 +12,6 @@
 import Vue from "vue";
 
 import * as d3 from 'd3';
-import {
-  schemeTableau10
-} from 'd3-scale-chromatic';
 import store from "@/store";
 
 const width = 500;

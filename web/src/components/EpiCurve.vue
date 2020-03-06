@@ -71,8 +71,7 @@ export default Vue.extend({
       chart: null,
       switchBtn: null,
       // methods
-      line: null,
-      line2: null
+      line: null
     }
   },
   watch: {
@@ -148,12 +147,9 @@ export default Vue.extend({
       this.prepData();
       this.svg = d3.select("svg.epi-curve");
       this.chart = d3.select("#epi-curve");
+
       this.line = d3.line()
         .x((d: any) => this.x(d.date))
-        .y((d: any) => this.y(d.cases));
-
-      this.line2 = d3.line()
-        .x((d: any, i: number) => this.x(i))
         .y((d: any) => this.y(d.cases));
 
       this.svg.append('g')
