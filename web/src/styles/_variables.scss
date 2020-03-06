@@ -1,0 +1,20 @@
+// color palette
+$primary-color: #42b983;
+
+// greys
+$base-grey: #2c3e50;
+// #272727;
+ // #2c3e50
+$grey-90: lighten($base-grey, 10%);
+$grey-80: lighten($base-grey, 20%);
+$grey-70: lighten($base-grey, 30%);
+$grey-60: lighten($base-grey, 40%);
+$grey-40: lighten($base-grey, 60%);
+$grey-30: lighten($base-grey, 70%);
+$grey-alpha15: rgba($base-grey, 0.15);
+
+// fonts
+$font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
+
+// accent colors
+$warning-color: red;
