@@ -59,7 +59,7 @@ export default ({
 #outbreak-footer {
     margin-top: 0.5rem;
     background: $grey-30;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
 }
