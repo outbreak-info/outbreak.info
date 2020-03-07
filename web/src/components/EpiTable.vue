@@ -55,7 +55,6 @@ import {
 import store from '@/store';
 
 const formatDate = timeFormat("%a %d %b %Y");
-const formatPercent = format(".0%");
 
 export default Vue.extend({
   name: "EpiTable",
@@ -86,7 +85,7 @@ export default Vue.extend({
       this.cases.forEach(d => {
         const last2 = d.data.slice(-2);
         d['numIncrease'] = (last2[1].cases - last2[0].cases).toLocaleString();
-        d['pctIncrease'] = formatPercent(d.numIncrease / last2[0].cases);
+        d['pctIncrease'] = this.formatPercent(d.numIncrease / last2[0].cases);
         d['currentDate'] = formatDate(last2[1].date);
         d['totalNum'] = last2[1].cases.toLocaleString();
         d['color'] = this.colorScale(d.placeName);
@@ -94,6 +93,21 @@ export default Vue.extend({
 
       this.cases.sort((a, b) => b.numIncrease - a.numIncrease);
 
+    },
+    formatPercent(pct) {
+      if(pct === 0) {
+        return("none");
+      }
+
+      if(pct < 0.005) {
+        return("< 1%");
+      }
+      
+      if(!isFinite(pct)) {
+        return("* first reported case *");
+      }
+
+      return(format(".0%")(pct));
     },
     colorScale: function(location) {
       const scale = store.getters['colors/getColor'];
