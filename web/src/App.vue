@@ -41,6 +41,7 @@ export default ({
   methods: {},
   mounted() {
     store.dispatch('epidata/loadCases');
+    store.dispatch('epidata/getDateUpdated');
   }
 })
 </script>
