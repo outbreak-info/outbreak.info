@@ -11,7 +11,7 @@ import Vue from "vue";
 
 import * as d3 from 'd3';
 import { interpolateYlGnBu } from "d3-scale-chromatic";
-import { geoWinkel3 } from "d3-geo-projection";
+import { geoWinkel3, geoInterruptedHomolosine, geoInterruptedBoggs } from "d3-geo-projection";
 
 const width = 700;
 const height = 400;
@@ -42,7 +42,7 @@ export default Vue.extend({
       logData: null,
 
       // axes
-      projection: geoWinkel3(),
+      projection: geoInterruptedHomolosine(),
       x: d3.scaleLinear().range([0, width]),
       y: d3.scaleLinear().range([height, 0]),
       colorScale: null,
@@ -107,7 +107,7 @@ export default Vue.extend({
       // --- create groups for each region ---
       const regionGroups = this.chart
         .selectAll(".centroid")
-        .data(this.flatData.filter(d => d.date_string == "01-22-20").filter(d => d.cases));
+        .data(this.flatData.filter(d => d.date_string == "03-01-20").filter(d => d.cases));
 
       // -- exit --
       regionGroups.exit().remove();
