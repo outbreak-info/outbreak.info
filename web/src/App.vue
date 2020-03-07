@@ -10,6 +10,8 @@
     </nav>
   </header>
 
+  <h1>{{test.length}} loaded</h1>
+
   <router-view class="px-3" />
 
   <!-- TEMP: BASIC FOOTER -->
@@ -24,6 +26,29 @@
   </footer>
 </div>
 </template>
+
+<script>
+import store from "@/store";
+
+import { mapState } from 'vuex';
+
+export default ({
+  name: "App",
+  data() {
+    return {
+      dataUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
+    }
+  },
+  methods: {},
+  computed: mapState({
+    // arrow functions can make the code very succinct!
+    test: state => state.epidata.cases,
+  }),
+  mounted() {
+    store.dispatch('epidata/loadCases');
+  }
+})
+</script>
 
 <style lang="scss">
 // @Marco delete all below!

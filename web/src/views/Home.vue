@@ -16,39 +16,93 @@
     </p>
   </section>
 
+
   <!-- EPI CURVE SUMMARIES -->
-  <!-- <section class="flex-column align-left" id="regional-epi-curves">
-      <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
+  <section class="flex-column align-left" id="regional-epi-curves" v-if="nestedData.length > 0">
+    <!-- <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
         <CountryBarGraph :region="region.region" :id="idx" :style="{visibility: region.display ? 'visible' : 'hidden', left: region.x + 'px', top: region.y + 'px'}" class="tooltip-countries" />
       </div>
       <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
-      <DataUpdated />
-      <div class="flex">
-        <EpiStacked v-bind:data="nested" v-bind:id="'all-data'" @regionSelected="handleTooltip" />
-        <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" @regionSelected="handleTooltip" />
-      </div>
+      <DataUpdated /> -->
+    <div class="flex">
+      <EpiStacked v-bind:data="nestedData" v-bind:id="'all-data'" v-if="nestedData.length > 0" />
+      <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" v-if="noChina.length > 0" />
+      <!-- <EpiStacked v-bind:data="nestedData" v-bind:id="'all-data'" @regionSelected="handleTooltip" />
+        <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" @regionSelected="handleTooltip" /> -->
+    </div>
 
-      <DataSource />
-    </section> -->
+    <DataSource />
+  </section>
 </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import EpiStacked from "@/components/EpiStacked.vue";
+// import CountryBarGraph from "@/components/CountryBarGraph.vue";
+// // import DataUpdated from "@/components/DataUpdated.vue";
+import DataSource from "@/components/DataSource.vue";
+
+
 import {
   mapState
 } from 'vuex';
 
+import {
+  nestRegions
+} from "@/js/importEpi";
+
+import {
+  cloneDeep
+} from "lodash";
+
 export default {
   name: "Home",
+  components: {
+    EpiStacked,
+    // CountryBarGraph
+    // DataUpdated,
+    DataSource,
+
+  },
   data() {
     return {
-      loadindsdg: true
+      // nestedData: [],
+      // loading: false
     }
   },
-  computed: mapState({
-    loading: state => state.admin.loading,
-  })
+  watch: {},
+  mounted() {
+    // The watching works... but doesn't stick when the route gets changed :(
+    // this.$store.watch(
+    //   (state, getters) => state.epidata.cases,
+    //   (newValue, oldValue) => {
+    //     console.log("this.changed")
+    //     this.nestedData = nestRegions(newValue.flatMap(d => d.data));
+    //     // console.log(this.nestedData)
+    //     // return(this.nestedData)
+    //   }, {deep: true}
+    // )
+  },
+  computed: {
+    ...mapState('admin', ['loading']),
+    ...mapState('geo', ['regionDict']),
+    ...mapState('epidata', ['cases']),
+    nestedData() {
+      return (nestRegions(this.cases.flatMap(d => d.data)));
+    },
+    noChina() {
+      if (this.nestedData) {
+        const data = cloneDeep(this.nestedData);
+        data.forEach(d => {
+          d["China"] ? delete(d["China"]) : null;
+        })
+        return (data)
+      } else {
+        return (null)
+      }
+    }
+  }
 };
 </script>
 

@@ -10,7 +10,7 @@ import {
 import store from "@/store";
 
 export function getRegion(country) {
-  const regionDict = store.state.regionDict;
+  const regionDict = store.state.geo.regionDict;
 
   const region = regionDict.filter(d => d.countries.includes(country));
 
@@ -106,16 +106,16 @@ export function nestEpiTrace(data, nestingVar, nestingType) {
   }
 }
 
-export function prep4Stacked(data, nestingVar) {
+export function nestRegions(data) {
   if (data) {
     // nest by date
     const regionNest = nest()
-      .key(d => d[nestingVar])
       .key(d => d.date)
+      .key(d => d.region)
       .rollup(values => sum(values, d => d.cases))
       .entries(data);
 
-    regionNest.map(d => {
+    const nested = regionNest.map(d => {
       const obj = {};
       obj['date'] = isoParse(d.key);
 
@@ -125,5 +125,6 @@ export function prep4Stacked(data, nestingVar) {
 
       return (obj)
     })
+    return (nested);
   }
 }

@@ -10,7 +10,11 @@ const getters = {}
 const actions = {}
 
 // mutations
-const mutations = {}
+const mutations = {
+  setLoading(state, isLoading) {
+    state.loading = isLoading;
+  }
+}
 
 export default {
   namespaced: true,
