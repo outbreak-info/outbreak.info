@@ -1,5 +1,6 @@
 <template>
 <div class="epidemiology">
+  <h4 class="stacked-area-title" v-if="title">{{title}}</h4>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-summary-svg" :id="id">
     <g :transform="`translate(${margin.left},${margin.top})`" class="epi-summary"></g>
     <g :transform="`translate(${margin.left},${-margin.top})`" class="legend"></g>
@@ -28,6 +29,7 @@ export default Vue.extend({
   components: {},
   props: {
     id: String,
+    title: String,
     data: Array
   },
   data() {

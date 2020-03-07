@@ -25,8 +25,8 @@
       <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
       <DataUpdated />
     <div class="flex">
-      <EpiStacked v-bind:data="nestedData" v-bind:id="'all-data'" @regionSelected="handleTooltip" />
-      <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" @regionSelected="handleTooltip" />
+      <EpiStacked :data="nestedData" id="all-data" title="Worldwide" @regionSelected="handleTooltip" />
+      <EpiStacked :data="noChina" id="no-china" title="Outside Mainland China" @regionSelected="handleTooltip" />
     </div>
 
     <DataSource />
