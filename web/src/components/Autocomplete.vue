@@ -1,11 +1,14 @@
 <template>
 <div class="autocomplete">
-  <div :content="selected" class="autocomplete-input flex">
-    <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)" v-bind:style="{background: lightColorScale(item)}">
-      {{item}}
-      <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{color: colorScale(item)}" />
-    </button>
-    <input type="text" @input="onChange" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
+  <div :content="selected" class="autocomplete-input flex-column user-input-wrp">
+    <div class="floating-label align-left" :class="[selected.length === 0 ? 'empty' : 'filled']">select locations</div>
+    <div class="flex">
+      <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)" v-bind:style="{background: lightColorScale(item)}">
+        {{item}}
+        <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{color: colorScale(item)}" />
+      </button>
+      <input type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
+    </div>
   </div>
 
   <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
@@ -69,6 +72,15 @@ export default Vue.extend({
       isLoading: false,
       isSelectAll: false,
       arrowCounter: 0,
+    }
+  },
+  watch: {
+    items: function(val, oldValue) {
+      // actually compare them
+      if (val.length !== oldValue.length) {
+        this.results = val;
+        this.isLoading = false;
+      }
     }
   },
   mounted() {
@@ -156,15 +168,6 @@ export default Vue.extend({
         this.arrowCounter = -1;
       }
     }
-  },
-  watch: {
-    items: function(val, oldValue) {
-      // actually compare them
-      if (val.length !== oldValue.length) {
-        this.results = val;
-        this.isLoading = false;
-      }
-    },
   }
 })
 </script>
@@ -174,6 +177,7 @@ export default Vue.extend({
 .autocomplete {
     position: relative;
     max-width: 700px;
+    margin-bottom: 0.5em;
 }
 
 .autocomplete-results {
@@ -213,7 +217,25 @@ input {
 }
 
 input:focus {
-    /* removing the input focus blue box. Put this on the form if you like. */
+    // removing the input focus blue box.
     outline: none;
+}
+
+// placeholder
+.floating-label {
+    margin-bottom: 0.25em;
+    text-transform: uppercase;
+    flex-grow: 1;
+    color: $grey-60;
+}
+
+.floating-label.empty {
+    font-size: 1em;
+    transition: 0.5s ease all;
+}
+
+.floating-label.filled {
+    font-size: 0.7em;
+    transition: 0.5s ease all;
 }
 </style>

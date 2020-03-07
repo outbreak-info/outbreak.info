@@ -1,8 +1,6 @@
 <template>
 <div>
-  <template>
     <Autocomplete :items="allPlaces" :selected="selectedPlaces" @selected="updateSelected" />
-  </template>
 
   <div class="flex">
     <EpiCurve v-bind:data="data" />
@@ -106,7 +104,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.remove-btn {
-    font-size: 0.75em;
-}
 </style>
