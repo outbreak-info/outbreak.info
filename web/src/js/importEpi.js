@@ -36,6 +36,7 @@ export function cleanEpi(data) {
     delete d['Country/Region'];
     delete d['Lat'];
     delete d['Long'];
+    metadata['id'] = metadata['placeName'].replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_");
     const keys = Object.keys(d);
 
     d['data'] = keys.map(timepoint => {
@@ -46,7 +47,7 @@ export function cleanEpi(data) {
         "coord": [metadata.lon, metadata.lat],
         "country": metadata.country,
         "region": metadata.region,
-        "id": metadata.placeName.replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_")
+        "id": metadata.id
       })
     });
 
@@ -57,6 +58,7 @@ export function cleanEpi(data) {
     const firstDate = d.data.filter(d => d.cases > 0).slice(0,1)
 
     d['placeName'] = metadata.placeName;
+    d['id'] = metadata.id;
     d['province'] = metadata.province;
     const last2 = d.data.slice(-2);
     d['numIncrease'] = (last2[1].cases - last2[0].cases);
