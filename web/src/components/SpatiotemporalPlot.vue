@@ -10,17 +10,23 @@
 import Vue from "vue";
 
 import * as d3 from 'd3';
-import { interpolateYlGnBu } from "d3-scale-chromatic";
-import { geoWinkel3, geoInterruptedHomolosine, geoInterruptedBoggs } from "d3-geo-projection";
+import {
+  interpolateYlGnBu
+} from "d3-scale-chromatic";
+import {
+  geoWinkel3,
+  geoInterruptedHomolosine,
+  geoInterruptedBoggs
+} from "d3-geo-projection";
 
 const width = 700;
 const height = 400;
-const radius = 5;
+const radius = 4;
 const margin = {
-  top: 10,
-  right: 170,
-  bottom: 75,
-  left: 60
+  top: 25,
+  right: 25,
+  bottom: 25,
+  left: 25
 }
 const transitionDuration = 3500;
 
@@ -40,9 +46,10 @@ export default Vue.extend({
 
       // data
       logData: null,
+      currentDate: "02-22-20",
 
       // axes
-      projection: geoInterruptedHomolosine(),
+      projection: geoInterruptedHomolosine().center([0,0]).translate([(width/2), (height/2)]).scale( width / 1.3 / Math.PI),
       x: d3.scaleLinear().range([0, width]),
       y: d3.scaleLinear().range([height, 0]),
       colorScale: null,
@@ -66,8 +73,16 @@ export default Vue.extend({
   },
   methods: {
     prepData: function() {
+      this.data.forEach(location => {
+        location.data.forEach(d => {
+          d["firstAppearance"] = location.firstDate === d.date;
+        })
+      });
+
       this.flatData = this.data.flatMap(d => d.data);
+
       this.plottedData = this.flatData.filter(d => d.date_string == "03-06-20");
+      console.log(this.plottedData)
     },
     updatePlot: function() {
       if (this.data) {
@@ -98,7 +113,7 @@ export default Vue.extend({
       this.colorScale = function(value) {
         const scale = d3.scaleSequential(interpolateYlGnBu)
 
-        .domain([1, Math.log10(d3.max(this.flatData, d => d.cases))]);
+          .domain([1, Math.log10(d3.max(this.flatData, d => d.cases))]);
         return value ? scale(Math.log10(value)) : "white";
       }
     },
@@ -107,7 +122,7 @@ export default Vue.extend({
       // --- create groups for each region ---
       const regionGroups = this.chart
         .selectAll(".centroid")
-        .data(this.flatData.filter(d => d.date_string == "03-01-20").filter(d => d.cases));
+        .data(this.flatData.filter(d => d.date_string == this.currentDate).filter(d => d.cases));
 
       // -- exit --
       regionGroups.exit().remove();
@@ -124,6 +139,26 @@ export default Vue.extend({
         .attr("cx", d => this.projection(d.coord)[0])
         .attr("cy", d => this.projection(d.coord)[1])
 
+      const textSelector = this.chart
+        .selectAll(".annotation--new-country")
+        .data(this.flatData.filter(d => d.date_string == this.currentDate).filter(d => d.cases && d.firstAppearance));
+
+      // -- exit --
+      textSelector.exit().remove();
+
+      // -- enter --
+      const textEnter = textSelector.enter()
+        .append("text")
+        .attr("class", "annotation--new-country")
+        .attr("dx", 5)
+        .attr("dy", 5)
+
+      textSelector.merge(textEnter)
+        .attr("id", d => d.id)
+        .attr("x", d => this.projection(d.coord)[0])
+        .attr("y", d => this.projection(d.coord)[1])
+        .text(d => d.id.replace(/_/g, " "))
+
     }
   }
 });
@@ -131,8 +166,16 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+svg {
+  background: aliceblue;
+}
+
 .centroid {
-  stroke: $grey-90;
-  stroke-width: 0.75;
+    stroke: $grey-90;
+    stroke-width: 0.75;
+    opacity: 0.65;
+}
+.annotation--new-country {
+    dominant-baseline: central;
 }
 </style>
