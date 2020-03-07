@@ -112,13 +112,13 @@ export default Vue.extend({
         .attr('transform', `translate(${this.margin.left + this.width + this.margin.right - 10}, ${this.margin.top})`);
 
       // this.line = d3.line()
-      //   .x((d: any) => this.xSpark(d.date))
-      //   .y((d: any) => d.y);
+      //   .x(d => this.xSpark(d.date))
+      //   .y(d => d.y);
 
       this.line = d3.area()
-        .x((d: any) => this.xSpark(d.date))
-        .y0((d: any) => d.y0)
-        .y1((d: any) => d.y);
+        .x(d => this.xSpark(d.date))
+        .y0(d => d.y0)
+        .y1(d => d.y);
     },
     prepData: function() {
       this.data.forEach(d => {

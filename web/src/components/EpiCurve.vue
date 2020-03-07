@@ -149,8 +149,8 @@ export default Vue.extend({
       this.chart = d3.select("#epi-curve");
 
       this.line = d3.line()
-        .x((d: any) => this.x(d.date))
-        .y((d: any) => this.y(d.cases));
+        .x(d => this.x(d.date))
+        .y(d => this.y(d.cases));
 
       this.svg.append('g')
         .attr('class', 'epi-axis axis--x')
@@ -399,13 +399,13 @@ export default Vue.extend({
 
       // dynamically adjust the width of the rect
       // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
-      // .attr("width", function(d: any) {
+      // .attr("width", functiond {
       //   console.log(d3.select(this.parentNode));
       //   return(500)
       // })
       // dots.select(".tooltip--rect").attr("width", d => 500)
       // `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
-      // .attr("height", (d: any) => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
+      // .attr("height", d => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
 
       // event listener
       d3.selectAll("circle")
