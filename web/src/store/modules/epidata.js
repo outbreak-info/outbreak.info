@@ -24,6 +24,7 @@ const state = {
   casesUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
   cases: [],
   currentTotalCases: null,
+  allPlaces: [],
   mostCases: [],
   firstCases: [],
   // date updated
@@ -80,6 +81,7 @@ const mutations = {
 
     state.currentTotalCases = sum(data, d => d.currentCases);
     state.mostCases = data.sort((a,b) => b.currentCases - a.currentCases).slice(0,5);
+    state.allPlaces = [...new Set(data.map(d => d.placeName))];;
   },
   setDateUpdated(state, newDate) {
     state.dateUpdated = newDate;

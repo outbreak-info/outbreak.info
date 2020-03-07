@@ -12,20 +12,22 @@ const blankFunc = function(location) {
 
 // initial state
 const state = {
-  scale: blankFunc
+  scale: blankFunc,
+  locationScale: blankFunc,
+  epiLocations: []
 }
 
 // getters --> computed props
 const getters = {
   getColor: state => (location) => {
-    return state.scale ? state.scale(location) : null;
+    return state.locationScale ? state.locationScale(location) : null;
   },
   getLightColor: state => (location, pct = 0.65) => {
-    const color = state.scale(location);
+    const color = state.locationScale(location);
     return state.scale && color ? chroma(color).luminance(pct) : null;
   },
   getDarkColor: state => (location, pct = 1.25) => {
-    const color = state.scale(location);
+    const color = state.locationScale(location);
     return state.scale && color ? chroma(color).darken(pct) : null;
   },
   getRegionColor: state => (location) => {
@@ -34,7 +36,6 @@ const getters = {
     return scale(location);
   },
   getRegionColorPalette: state => (region, numEntries, idx) => {
-    console.log(this.state)
     const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(this.state.geo.regionDict.map(d => d.region));
     const color = scale(region);
 
@@ -48,7 +49,10 @@ const actions = {}
 
 // mutations
 const mutations = {
-
+  setLocations(state, payload) {
+    state.epiLocations = payload;
+    state.locationScale = scaleOrdinal(schemeTableau10).domain(state.epiLocations);
+  },
 }
 
 export default {

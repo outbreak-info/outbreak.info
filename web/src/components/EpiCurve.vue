@@ -1,7 +1,7 @@
 <template>
 <div class="epidemiology flex-column align-left">
   <!-- <button @click="switchAxes()">common axis</button> -->
-  <h3 class="plot-title">Cumulative number of COVID-19 cases</h3>
+  <h3 class="plot-title">Cumulative number of COVID-19 cases<span v-if="placeName"> in {{placeName}}</span></h3>
   <DataUpdated />
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
     <defs>
@@ -35,7 +35,7 @@ const margin = {
   top: 10,
   right: 170,
   bottom: 75,
-  left: 60
+  left: 70
 }
 const transitionDuration = 3500;
 
@@ -80,13 +80,22 @@ export default Vue.extend({
       this.updatePlot();
     }
   },
+  computed: {
+    placeName() {
+      if(this.data.length === 1) {
+        return(this.data[0].placeName)
+      }
+      return(null)
+    }
+  },
   mounted() {
     this.setupPlot();
     this.updatePlot();
   },
   methods: {
     colorScale: function(location) {
-      return store.getters.getColor(location)
+      const scale = store.getters['colors/getColor'];
+      return (scale(location))
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;

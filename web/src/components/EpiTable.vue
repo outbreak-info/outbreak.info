@@ -7,10 +7,10 @@
         location
       </th>
       <th class="px-3">
-        cases
+        updated
       </th>
       <th class="px-3">
-        updated
+        total cases
       </th>
       <th class="px-2">
         new cases today
@@ -21,14 +21,14 @@
 
     </tr>
     <tr v-for="row in cases" v-bind:key="row.placeName">
-      <td class="align-left location color-bar" v-bind:style="{'border-color': row.color}">
+      <td class="align-left px-3 location color-bar" v-bind:style="{'border-color': row.color}">
         {{ row.placeName}}
       </td>
       <td>
-        {{ row.totalNum}}
+        {{ row.currentDate }}
       </td>
       <td>
-        {{ row.currentDate }}
+        {{ row.totalNum}}
       </td>
       <td>
         {{ row.numIncrease.toLocaleString() }}
@@ -96,8 +96,9 @@ export default Vue.extend({
 
     },
     colorScale: function(location) {
-      return store.getters.getColor(location)
-    }
+      const scale = store.getters['colors/getColor'];
+      return (scale(location))
+    },
   }
 });
 </script>

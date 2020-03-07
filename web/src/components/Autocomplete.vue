@@ -78,11 +78,13 @@ export default Vue.extend({
     document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
-    lightColorScale: function(item) {
-      return store.getters.getLightColor(item)
+    lightColorScale: function(location) {
+      const scale = store.getters['colors/getLightColor'];
+      return (scale(location))
     },
-    colorScale: function(item) {
-      return store.getters.getDarkColor(item)
+    colorScale: function(location) {
+      const scale = store.getters['colors/getDarkColor'];
+      return (scale(location))
     },
     removeChip(item) {
       this.$emit('selected', this.selected.filter(d => d !== item));
