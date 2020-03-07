@@ -24,6 +24,7 @@
       </div> -->
       <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
       <DataUpdated />
+      <CaseSummary />
     <div class="flex">
       <EpiStacked :data="nestedData" id="all-data" title="Worldwide" @regionSelected="handleTooltip" />
       <EpiStacked :data="noChina" id="no-china" title="Outside Mainland China" @regionSelected="handleTooltip" />
@@ -38,6 +39,7 @@
 // @ is an alias to /src
 import EpiStacked from "@/components/EpiStacked.vue";
 // import CountryBarGraph from "@/components/CountryBarGraph.vue";
+import CaseSummary from "@/components/CaseSummary.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 
@@ -60,15 +62,14 @@ export default {
   name: "Home",
   components: {
     EpiStacked,
-    // CountryBarGraph
+    // CountryBarGraph,
+    CaseSummary,
     DataUpdated,
     DataSource,
 
   },
   data() {
     return {
-      // nestedData: [],
-      // loading: false
     }
   },
   watch: {},

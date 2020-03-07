@@ -15,7 +15,7 @@ import {
 import {
   csv,
   isoParse,
-  max
+  max, sum
 } from 'd3';
 
 // initial state
@@ -23,6 +23,9 @@ const state = {
   // case count variables
   casesUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
   cases: [],
+  currentTotalCases: null,
+  mostCases: [],
+  firstCases: [],
   // date updated
   mostRecentDate: null,
   dateUpdated: null,
@@ -39,7 +42,7 @@ const getters = {
 
 // actions --> async props
 const actions = {
-  loadCases(store, rootState) {
+  loadCases(store) {
     this.state.admin.loading = true;
 
     from(csv(store.state.casesUrl)).pipe(
@@ -73,6 +76,10 @@ const actions = {
 const mutations = {
   setCases(state, data) {
     state.cases = data;
+    console.log(data)
+
+    state.currentTotalCases = sum(data, d => d.currentCases);
+    state.mostCases = data.sort((a,b) => b.currentCases - a.currentCases).slice(0,5);
   },
   setDateUpdated(state, newDate) {
     state.dateUpdated = newDate;
