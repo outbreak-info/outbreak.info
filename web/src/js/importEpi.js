@@ -54,12 +54,16 @@ export function cleanEpi(data) {
 
     d['data'].sort((a, b) => a.date - b.date);
 
+    const firstDate = d.data.filter(d => d.cases > 0).slice(0,1)
+
     d['placeName'] = metadata.placeName;
     d['province'] = metadata.province;
     const last2 = d.data.slice(-2);
     d['numIncrease'] = (last2[1].cases - last2[0].cases);
     d['pctIncrease'] = d.numIncrease / last2[0].cases;
     d['currentDate'] = last2[1].date;
+    d['firstDate'] = firstDate[0]['date'];
+    d['newToday'] = firstDate[0]['date'] === last2[1].date;
     d['currentCases'] = last2[1].cases;
   });
 
