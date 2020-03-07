@@ -221,4 +221,9 @@ export default Vue.extend({
 path.stacked-area-chart {
     cursor: pointer;
 }
+
+.stacked-area-title {
+    margin: 0;
+    margin-top: 0.5em;
+}
 </style>
