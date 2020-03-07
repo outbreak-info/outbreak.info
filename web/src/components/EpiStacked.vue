@@ -187,7 +187,7 @@ export default Vue.extend({
       this.chart.selectAll("path.stacked-area-chart")
         .on("mouseover", (d) => this.handleMouseover(d.key))
         .on("mouseout", (d) => this.handleMouseout(d.key))
-        .on("click", (d) => this.handleClick(d));
+        .on("click", (d) => this.handleClick(d.key));
 
       this.legend.selectAll(".legend-group")
         .on("mouseover", (d) => this.handleMouseover(d.key))
