@@ -1,10 +1,9 @@
 // initial state
 const state = {
-  regionDict: [
-    {
+  regionDict: [{
       display: false,
       region: "China",
-      countries: ["Mainland China",]
+      countries: ["Mainland China", ]
     },
     {
       display: false,
@@ -44,7 +43,7 @@ const state = {
     {
       display: false,
       region: "Diamond Princess Cruise",
-      countries: ["Others",]
+      countries: ["Others", ]
     },
 
     {
@@ -63,6 +62,14 @@ const actions = {}
 
 // mutations
 const mutations = {
+  setRegionTooltip(state, payload) {
+    const idx = state.regionDict.findIndex(d => d.region === payload['region']);
+    if (idx > -1) {
+      state.regionDict[idx]['display'] = payload['display'];
+      state.regionDict[idx]['x'] = payload['x'];
+      state.regionDict[idx]['y'] = payload['y'];
+    }
+  }
 }
 
 export default {

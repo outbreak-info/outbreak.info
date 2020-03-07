@@ -86,7 +86,8 @@ export default Vue.extend({
       })
     },
     colorScale: function(location) {
-      return store.getters.getRegionColor(location)
+      const scale = store.getters['colors/getRegionColor'];
+      return (scale(location))
     },
     updatePlot: function() {
       if (this.data) {

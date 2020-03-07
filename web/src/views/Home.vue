@@ -25,10 +25,8 @@
       <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
       <DataUpdated /> -->
     <div class="flex">
-      <EpiStacked v-bind:data="nestedData" v-bind:id="'all-data'" v-if="nestedData.length > 0" />
-      <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" v-if="noChina.length > 0" />
-      <!-- <EpiStacked v-bind:data="nestedData" v-bind:id="'all-data'" @regionSelected="handleTooltip" />
-        <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" @regionSelected="handleTooltip" /> -->
+      <EpiStacked v-bind:data="nestedData" v-bind:id="'all-data'" @regionSelected="handleTooltip" />
+      <EpiStacked v-bind:data="noChina" v-bind:id="'no-china'" @regionSelected="handleTooltip" />
     </div>
 
     <DataSource />
@@ -56,6 +54,8 @@ import {
   cloneDeep
 } from "lodash";
 
+import store from "@/store";
+
 export default {
   name: "Home",
   components: {
@@ -72,18 +72,6 @@ export default {
     }
   },
   watch: {},
-  mounted() {
-    // The watching works... but doesn't stick when the route gets changed :(
-    // this.$store.watch(
-    //   (state, getters) => state.epidata.cases,
-    //   (newValue, oldValue) => {
-    //     console.log("this.changed")
-    //     this.nestedData = nestRegions(newValue.flatMap(d => d.data));
-    //     // console.log(this.nestedData)
-    //     // return(this.nestedData)
-    //   }, {deep: true}
-    // )
-  },
   computed: {
     ...mapState('admin', ['loading']),
     ...mapState('geo', ['regionDict']),
@@ -102,6 +90,23 @@ export default {
         return (null)
       }
     }
+  },
+  methods: {
+    handleTooltip(selected) {
+      store.commit('geo/setRegionTooltip', selected)
+    }
+  },
+  mounted() {
+    // The watching works... but doesn't stick when the route gets changed :(
+    // this.$store.watch(
+    //   (state, getters) => state.epidata.cases,
+    //   (newValue, oldValue) => {
+    //     console.log("this.changed")
+    //     this.nestedData = nestRegions(newValue.flatMap(d => d.data));
+    //     // console.log(this.nestedData)
+    //     // return(this.nestedData)
+    //   }, {deep: true}
+    // )
   }
 };
 </script>

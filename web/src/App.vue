@@ -10,8 +10,6 @@
     </nav>
   </header>
 
-  <h1>{{test.length}} loaded</h1>
-
   <router-view class="px-3" />
 
   <!-- TEMP: BASIC FOOTER -->
@@ -40,10 +38,6 @@ export default ({
     }
   },
   methods: {},
-  computed: mapState({
-    // arrow functions can make the code very succinct!
-    test: state => state.epidata.cases,
-  }),
   mounted() {
     store.dispatch('epidata/loadCases');
   }
