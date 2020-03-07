@@ -26,11 +26,11 @@ export function cleanEpi(data) {
   data.forEach(d => {
     const metadata = {
       'province': d['Province/State'],
-      'placeName': d['Province/State'],
+      'placeName': d['Province/State'] ? d['Province/State'] : d['Country/Region'],
       'country': d['Country/Region'],
       'region': getRegion(d['Country/Region']),
-      lat: d["Lat"],
-      lon: d["Long"]
+      lat: +d["Lat"],
+      lon: +d["Long"]
     };
     delete d['Province/State'];
     delete d['Country/Region'];
@@ -43,6 +43,7 @@ export function cleanEpi(data) {
         "date": parseDate(timepoint),
         "date_string": formatDate(parseDate(timepoint)),
         "cases": +d[timepoint],
+        "coord": [metadata.lon, metadata.lat],
         "country": metadata.country,
         "region": metadata.region,
         "id": metadata.placeName.replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_")
