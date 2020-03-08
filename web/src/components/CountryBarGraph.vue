@@ -1,8 +1,8 @@
 <template>
 <div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`">
-  <h4 class="plot-title">Current COVID-19 cases in {{region}}</h4>
+  <h4 class="plot-title">Current total COVID-19 cases in {{region}}</h4>
 
-  <svg :width="width + margin.left + margin.right + sparkWidth + 2*margin.gap" :height="height + margin.top + margin.bottom" class="case-counts">
+  <svg :width="width + margin.left + margin.right + sparkWidth + newCasesWidth + 4*margin.gap" :height="height + margin.top + margin.bottom" class="case-counts">
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
   </svg>
 </div>
@@ -17,16 +17,19 @@ import {
 } from "lodash";
 
 import store from '@/store';
-import { mapState } from 'vuex';
+import {
+  mapState
+} from 'vuex';
 
 const width = 250;
 const sparkWidth = 75;
+const newCasesWidth = 35;
 const innerPadding = 0.25;
 const margin = {
-  top: 5,
+  top: 20,
   right: 100,
   bottom: 10,
-  left: 35,
+  left: 50,
   gap: 10
 }
 const transitionDuration = 3500;
@@ -42,6 +45,7 @@ export default Vue.extend({
     return {
       width,
       sparkWidth,
+      newCasesWidth,
       margin,
       innerPadding,
       transitionDuration,
@@ -64,7 +68,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('epidata', ['countryCases', "barHeight"]),
-},
+  },
   watch: {
     region: function() {
       this.data = this.getData(this.region);
@@ -175,7 +179,7 @@ export default Vue.extend({
         .attr("class", d => `${d.region}`)
         .style("fill", (d, i) => this.colorScale(i))
         .style("stroke", (d, i) => this.colorScale(i))
-        // .style("stroke", d => this.colorScale(d.region));
+      // .style("stroke", d => this.colorScale(d.region));
 
 
       // --- bars ---
@@ -189,7 +193,7 @@ export default Vue.extend({
         // .attr("width", 0)
         .attr("height", this.y.bandwidth())
         .attr("y", d => this.y(d.placeName))
-        .style("fill", (d,i) => this.colorScale(i))
+        .style("fill", (d, i) => this.colorScale(i))
         // .style("fill-opacity", (d, i) => this.opacityScale(i))
         // .attr("x", d => this.x(0))
         // .transition(t1)
@@ -212,6 +216,12 @@ export default Vue.extend({
 
 
       // --- sparklines ---
+      this.chart.append("text")
+        .attr("class", "subtitle")
+        .attr("x", this.width + this.margin.gap + this.margin.right + this.sparkWidth / 2)
+        .attr("y", -5)
+        .text("over time");
+
       const sparkSelector = grpSelector.select(".sparkline");
 
       const sparkEnter = grpEnter.append("path")
@@ -225,6 +235,25 @@ export default Vue.extend({
         // .style("fill-opacity", (d, i) => this.opacityScale(i))
         .attr("d", this.line);
 
+      // --- number of new cases ---
+      this.chart.append("text")
+        .attr("class", "subtitle")
+        .attr("x", this.width + this.margin.gap * 3 + this.margin.right + this.sparkWidth + this.newCasesWidth / 2)
+        .attr("y", -5)
+        .text("new today");
+
+      const newCasesSelector = grpSelector.select(".new-cases");
+
+      const newCasesEnter = grpEnter.append("text")
+        .attr("transform", d => `translate(${this.width + this.margin.gap * 3 + this.margin.right + this.sparkWidth }, ${0})`)
+        .attr("x", 5)
+        .attr("y", d => this.y(d.id.replace(/_/g, " ")) + this.y.bandwidth() / 2)
+        .attr("class", "new-cases")
+        .style("font-size", this.y.bandwidth());
+
+      // merge
+      newCasesSelector.merge(newCasesEnter)
+        .text(d => d.numIncrease.toLocaleString());
 
     }
   }
@@ -246,17 +275,28 @@ export default Vue.extend({
     font-size: 14px;
 }
 
-.annotation--country-count {
+.annotation--country-count,
+.new-cases {
     dominant-baseline: central;
-    text-anchor: end;
     stroke: none;
     font-weight: 700 !important;
+}
+
+.annotation--country-count {
+    text-anchor: end;
 }
 
 .sparkline {
     // stroke-width: 0.1;
     stroke: none;
     stroke-linecap: round;
+}
+
+.subtitle {
+    text-anchor: middle;
+    font-size: 0.7em;
+    opacity: 0.7;
+    dominant-baseline: ideographic;
 }
 
 rect.country-count {
