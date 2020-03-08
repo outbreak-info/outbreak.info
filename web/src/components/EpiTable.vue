@@ -1,22 +1,30 @@
 <template>
-<div class="epi-table">
-  <h5>Most recent cases</h5>
+<div class="epi-table my-3">
+  <h4>Most recent cases</h4>
   <table>
     <tr>
-      <th class="align-left">
+      <th class="align-left sortable" @click="sortLocation()">
         location
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="locationSort === 'asc'" />
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="locationSort === 'desc'" />
       </th>
       <th class="px-3">
         updated
       </th>
-      <th class="px-3">
+      <th class="px-3 sortable" @click="sortTotal()">
         total cases
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="totalSort === 'asc'" />
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="totalSort === 'desc'" />
       </th>
-      <th class="px-2">
+      <th class="px-2 sortable" @click="sortNew()">
         new cases today
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="newSort === 'asc'" />
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="newSort === 'desc'" />
       </th>
-      <th class="px-2">
+      <th class="px-2 sortable" @click="sortPct()">
         increase from yesterday
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="pctSort === 'asc'" />
+        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="pctSort === 'desc'" />
       </th>
 
     </tr>
@@ -28,10 +36,10 @@
         {{ row.currentDate }}
       </td>
       <td>
-        {{ row.totalNum}}
+        {{ row.totalNumFormatted}}
       </td>
       <td>
-        {{ row.numIncrease.toLocaleString() }}
+        {{ row.numIncreaseFormatted }}
       </td>
       <td>
         {{ row.pctIncrease }}
@@ -52,20 +60,41 @@ import {
   timeFormat
 } from "d3";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from '@fortawesome/vue-fontawesome'
+import {
+  library
+} from '@fortawesome/fontawesome-svg-core';
+import {
+  faArrowUp,
+  faArrowDown
+} from '@fortawesome/free-solid-svg-icons';
+
+library.add(faArrowUp);
+library.add(faArrowDown);
+
 import store from '@/store';
 
 const formatDate = timeFormat("%a %d %b %Y");
 
 export default Vue.extend({
   name: "EpiTable",
-  components: {},
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     data: Array
   },
   data() {
     return {
       formatDate,
-      cases: null
+      cases: null,
+      locationSort: null,
+      newSort: null,
+      pctSort: null,
+      totalSort: null
     }
   },
   watch: {
@@ -76,38 +105,97 @@ export default Vue.extend({
   mounted() {
     if (this.data) {
       this.prepData();
+      this.sortTotal();
     }
   },
   methods: {
+    sortLocation() {
+      // backwards, since it reflects the previous value
+      if ((this.locationSort === "asc")) {
+        this.cases.sort((a, b) => a.placeName > b.placeName ? -1 : 1);
+        this.locationSort = "desc";
+      } else {
+        this.cases.sort((a, b) => a.placeName < b.placeName ? -1 : 1);
+        this.locationSort = "asc";
+      }
+      // reset other sorting funcs
+      this.newSort = null;
+      this.totalSort = null;
+      this.pctSort = null;
+    },
+    sortTotal() {
+      // backwards, since it reflects the previous value
+      if ((this.totalSort === "asc")) {
+        this.cases.sort((a, b) => a.totalNum - b.totalNum);
+        this.totalSort = "desc";
+      } else {
+        this.cases.sort((a, b) => b.totalNum - a.totalNum);
+        this.totalSort = "asc";
+      }
+      // reset other sorting funcs
+      this.newSort = null;
+      this.locationSort = null;
+      this.pctSort = null;
+    },
+    sortNew() {
+      // backwards, since it reflects the previous value
+      if ((this.newSort === "asc")) {
+        this.cases.sort((a, b) => a.numIncrease - b.numIncrease);
+        this.newSort = "desc";
+      } else {
+        this.cases.sort((a, b) => b.numIncrease - a.numIncrease);
+        this.newSort = "asc";
+      }
+      // reset other sorting funcs
+      this.locationSort = null;
+      this.totalSort = null;
+      this.pctSort = null;
+    },
+    sortPct() {
+      // backwards, since it reflects the previous value
+      if ((this.pctSort === "asc")) {
+        this.cases.sort((a, b) => a.pct - b.pct);
+        this.pctSort = "desc";
+      } else {
+        this.cases.sort((a, b) => b.pct - a.pct);
+        this.pctSort = "asc";
+      }
+      // reset other sorting funcs
+      this.newSort = null;
+      this.totalSort = null;
+      this.locationSort = null;
+    },
     prepData() {
       this.cases = cloneDeep(this.data);
+      console.log(this.cases)
 
       this.cases.forEach(d => {
         const last2 = d.data.slice(-2);
-        d['numIncrease'] = (last2[1].cases - last2[0].cases).toLocaleString();
+        console.log(last2)
+        d['numIncreaseFormatted'] = (last2[1].cases - last2[0].cases).toLocaleString();
+        d['numIncrease'] = last2[1].cases - last2[0].cases;
+        d['pct'] = d.numIncrease / last2[0].cases;
         d['pctIncrease'] = this.formatPercent(d.numIncrease / last2[0].cases);
         d['currentDate'] = formatDate(last2[1].date);
-        d['totalNum'] = last2[1].cases.toLocaleString();
+        d['totalNum'] = last2[1].cases;
+        d['totalNumFormatted'] = last2[1].cases.toLocaleString();
         d['color'] = this.colorScale(d.placeName);
       });
-
-      this.cases.sort((a, b) => b.numIncrease - a.numIncrease);
-
     },
     formatPercent(pct) {
-      if(pct === 0) {
-        return("none");
+      if (pct === 0) {
+        return ("none");
       }
 
-      if(pct < 0.005) {
-        return("< 1%");
-      }
-      
-      if(!isFinite(pct)) {
-        return("* first reported case *");
+      if (pct < 0.005) {
+        return ("< 1%");
       }
 
-      return(format(".0%")(pct));
+      if (!isFinite(pct)) {
+        return ("* first reported case *");
+      }
+
+      return (format(".0%")(pct));
     },
     colorScale: function(location) {
       const scale = store.getters['colors/getColor'];
@@ -119,6 +207,9 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+h4 {
+    margin: 0;
+}
 .align-left {
     text-align: left;
 }
@@ -135,6 +226,7 @@ tr {
 
 td {
     padding: 5px 0;
+    text-align: center;
 }
 
 th {
@@ -150,5 +242,9 @@ th {
     // background: #00BCD4;
     // width: 4px;
     // height: 100%;
+}
+
+.sortable {
+    cursor: pointer;
 }
 </style>
