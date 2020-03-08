@@ -5,7 +5,8 @@
     <router-link to="/" class="no-underline">outbreak.info</router-link>
     <nav id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link :key="$route.fullPath" to="/epidemiology">Epidemiology</router-link> |
+      <router-link :key="$route.fullPath"
+      :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Epidemiology</router-link> |
       <router-link to="/timelapse">Timelapse</router-link> |
       <router-link to="/about">About</router-link>
     </nav>
@@ -35,6 +36,12 @@ export default ({
   name: "App",
   data() {
     return {
+    }
+  },
+  computed: {
+    ...mapState('epidata', ['mostCases']),
+    mostCasesNames: function() {
+      return(this.mostCases.map(d => d.placeName).join(";"))
     }
   },
   methods: {},
