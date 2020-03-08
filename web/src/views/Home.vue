@@ -32,6 +32,9 @@
 
     <DataSource />
   </section>
+  <section class="case-data-table">
+    <EpiTable :data="cases" />
+  </section>
 </div>
 </template>
 
@@ -42,7 +45,7 @@ import CountryBarGraph from "@/components/CountryBarGraph.vue";
 import CaseSummary from "@/components/CaseSummary.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
-
+import EpiTable from "@/components/EpiTable.vue";
 
 import {
   mapState
@@ -66,7 +69,7 @@ export default {
     CaseSummary,
     DataUpdated,
     DataSource,
-
+    EpiTable
   },
   data() {
     return {

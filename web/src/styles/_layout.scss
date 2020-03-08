@@ -24,6 +24,28 @@
     margin: 0 !important;
 }
 
+// margins
+.my-1 {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+.my-2 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.my-3 {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+.mx-2 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+.mx-3 {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
 // padding
 .py-1 {
     padding-top: 0.25rem;
