@@ -5,6 +5,9 @@
   <svg :width="width + margin.left + margin.right + sparkWidth + newCasesWidth + 4*margin.gap" :height="height + margin.top + margin.bottom" class="case-counts">
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
   </svg>
+  <div class="click-affordance py-1" :style="{background: lightColor}">
+    click plot to view cases over time
+  </div>
 </div>
 </template>
 
@@ -68,6 +71,10 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('epidata', ['countryCases', "barHeight"]),
+    lightColor: function() {
+      const scale = store.getters['colors/getRegionColor'];
+      return(scale(this.region, 0.85))
+    },
   },
   watch: {
     region: function() {
@@ -301,5 +308,11 @@ export default Vue.extend({
 
 rect.country-count {
     shape-rendering: crispedges;
+}
+
+.click-affordance {
+  width: 100%;
+  text-align: center;
+  font-size: 0.85em;
 }
 </style>

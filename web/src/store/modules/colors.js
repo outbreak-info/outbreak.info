@@ -30,9 +30,13 @@ const getters = {
     const color = state.locationScale(location);
     return state.scale && color ? chroma(color).darken(pct) : null;
   },
-  getRegionColor: state => (location) => {
+  getRegionColor: state => (location, pct = null) => {
     //this.state.geo.regionDict.map(d => d.region)
     const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(["China", "Asia (outside China)", "North America", "South America", "Europe", "Middle East", "Africa", "Diamond Princess Cruise", "Australia/Oceania"]);
+
+    if(pct) {
+      return(chroma(scale(location)).luminance(pct))
+    }
     return scale(location);
   },
   getRegionColorPalette: state => (region, numEntries, idx) => {
