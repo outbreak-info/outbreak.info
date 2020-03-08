@@ -1,6 +1,14 @@
 <template>
 <div class="epi-table my-3" v-if="data && data.length > 0">
-  <h4>Most recent cases</h4>
+  <div class="flex flex-space-between">
+    <h4>Most recent cases</h4>
+    <select v-model="numPerPage" @change="changePageNum()">
+      <option v-for="option in pageOpts" :value="option" :key="option">
+        {{ option }} results
+      </option>
+    </select>
+  </div>
+
   <table>
     <tr>
       <th class="align-left sortable location" @click="sortLocation()">
@@ -127,7 +135,8 @@ export default Vue.extend({
       pctSort: null,
       totalSort: null,
       page: 0,
-      numPerPage: 10
+      numPerPage: 10,
+      pageOpts: [5, 10, 50, 100]
     }
   },
   watch: {
@@ -219,6 +228,9 @@ export default Vue.extend({
     },
     changePage(step) {
       this.page += step;
+      this.filterCases();
+    },
+    changePageNum() {
       this.filterCases();
     },
     prepData() {
