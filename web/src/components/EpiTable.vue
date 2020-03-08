@@ -1,37 +1,49 @@
 <template>
-<div class="epi-table my-3">
+<div class="epi-table my-3" v-if="data && data.length > 0">
   <h4>Most recent cases</h4>
   <table>
     <tr>
       <th class="align-left sortable location" @click="sortLocation()">
-        location
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="locationSort === 'asc'" />
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="locationSort === 'desc'" />
+        <div class="sort-grp">
+          location
+          <font-awesome-icon :class="[locationSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="locationSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="locationSort === 'desc'" />
+        </div>
       </th>
       <th class="px-3">
         updated
       </th>
-      <th class="px-3 sortable" @click="sortTotal()">
-        total cases
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="totalSort === 'asc'" />
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="totalSort === 'desc'" />
+      <th class="px-3 sortable total" @click="sortTotal()">
+        <div class="sort-grp">
+          total cases
+          <font-awesome-icon :class="[totalSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="totalSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="totalSort === 'desc'" />
+        </div>
       </th>
-      <th class="px-2 sortable" @click="sortNew()">
-        new cases today
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="newSort === 'asc'" />
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="newSort === 'desc'" />
+      <th class="px-2 sortable new-cases" @click="sortNew()">
+        <div class="sort-grp">
+          new cases today
+          <font-awesome-icon :class="[newSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="newSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="newSort === 'desc'" />
+        </div>
       </th>
-      <th class="px-2 sortable" @click="sortPct()">
-        increase from yesterday
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="pctSort === 'asc'" />
-        <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="pctSort === 'desc'" />
+      <th class="px-2 sortable pct-increase" @click="sortPct()">
+        <div class="sort-grp">
+          increase from yesterday
+          <font-awesome-icon :class="[pctSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="pctSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="pctSort === 'desc'" />
+        </div>
       </th>
 
     </tr>
-    <tr v-for="row in cases" v-bind:key="row.placeName">
+    <tr v-for="row in filteredCases" v-bind:key="row.placeName">
       <td class="align-left px-3 location color-bar" v-bind:style="{'border-color': row.color}">
         <router-link :to="{ name: 'Epidemiology', query: { location: row.placeName } }" class="router-link-black" v-if="routable">
-        {{ row.placeName}}</router-link>
+          {{ row.placeName}}</router-link>
         <span v-else>{{ row.placeName }}</span>
       </td>
       <td>
@@ -49,6 +61,15 @@
 
     </tr>
   </table>
+  <div class="pagination mt-2 flex align-items-center flex-space-between">
+    <button class="pagination-btn pagination-left" :class="{'disabled': page === 0}" @click="changePage(-1)">
+      <font-awesome-icon :icon="['fas', 'arrow-left']" />
+    </button>
+    <small>viewing locations {{lowerLim + 1}} &minus; {{ upperLim }} of {{total}}</small>
+    <button class="pagination-btn pagination-left" :class="{'disabled' : page === lastPage}" @click="changePage(1)">
+      <font-awesome-icon :icon="['fas', 'arrow-right']" />
+    </button>
+  </div>
 </div>
 </template>
 
@@ -71,11 +92,17 @@ import {
 } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowUp,
-  faArrowDown
+  faArrowDown,
+  faArrowLeft,
+  faArrowRight,
+  faSort
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faArrowUp);
 library.add(faArrowDown);
+library.add(faArrowLeft);
+library.add(faArrowRight);
+library.add(faSort);
 
 import store from '@/store';
 
@@ -94,10 +121,13 @@ export default Vue.extend({
     return {
       formatDate,
       cases: null,
+      filteredCases: null,
       locationSort: null,
       newSort: null,
       pctSort: null,
-      totalSort: null
+      totalSort: null,
+      page: 0,
+      numPerPage: 10
     }
   },
   watch: {
@@ -108,7 +138,21 @@ export default Vue.extend({
   mounted() {
     if (this.data) {
       this.prepData();
-      this.sortTotal();
+    }
+  },
+  computed: {
+    lowerLim: function() {
+      return this.page * this.numPerPage;
+    },
+    upperLim: function() {
+      const upper = this.page * this.numPerPage + this.numPerPage;
+      return upper > this.total ? this.total : upper;
+    },
+    total: function() {
+      return this.cases.length;
+    },
+    lastPage: function() {
+      return Math.floor(this.cases.length / this.numPerPage);
     }
   },
   methods: {
@@ -125,6 +169,7 @@ export default Vue.extend({
       this.newSort = null;
       this.totalSort = null;
       this.pctSort = null;
+      this.filterCases();
     },
     sortTotal() {
       // backwards, since it reflects the previous value
@@ -139,6 +184,8 @@ export default Vue.extend({
       this.newSort = null;
       this.locationSort = null;
       this.pctSort = null;
+
+      this.filterCases();
     },
     sortNew() {
       // backwards, since it reflects the previous value
@@ -153,6 +200,7 @@ export default Vue.extend({
       this.locationSort = null;
       this.totalSort = null;
       this.pctSort = null;
+      this.filterCases();
     },
     sortPct() {
       // backwards, since it reflects the previous value
@@ -167,6 +215,11 @@ export default Vue.extend({
       this.newSort = null;
       this.totalSort = null;
       this.locationSort = null;
+      this.filterCases();
+    },
+    changePage(step) {
+      this.page += step;
+      this.filterCases();
     },
     prepData() {
       this.cases = cloneDeep(this.data);
@@ -184,6 +237,11 @@ export default Vue.extend({
         d['totalNumFormatted'] = last2[1].cases.toLocaleString();
         d['color'] = this.colorScale(d.placeName);
       });
+
+      this.sortTotal();
+    },
+    filterCases() {
+      this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);
     },
     formatPercent(pct) {
       if (pct === 0) {
@@ -238,6 +296,15 @@ th {
     color: $grey-70;
 }
 
+.sort-hover {
+    display: none;
+}
+
+.sort-grp.hover .sort-hover,
+.sort-grp:hover .sort-hover {
+    display: inline;
+}
+
 .color-bar {
     border-left-width: 4px;
     border-left-style: solid;
@@ -246,8 +313,19 @@ th {
     // width: 4px;
     // height: 100%;
 }
+
+// widths
 .location {
-  width: 150px;
+    width: 150px;
+}
+.pct-increase {
+    width: 160px;
+}
+.new-cases {
+    width: 120px;
+}
+.total {
+    width: 100px;
 }
 
 .sortable {

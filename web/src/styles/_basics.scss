@@ -22,3 +22,13 @@
 .router-link-black {
   color: $base-grey !important;
 }
+
+.hidden {
+  display: none;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: auto !important;
+  pointer-events: none !important;
+}

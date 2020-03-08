@@ -16,6 +16,7 @@ button {
     margin-left: 0.25em;
     margin-bottom: 0.25em;
     border-color: $grey-40;
+    cursor: pointer;
     &:focus {
         outline: none !important;
     }
