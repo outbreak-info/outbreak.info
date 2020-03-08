@@ -17,6 +17,7 @@ import {
 } from "lodash";
 
 import store from '@/store';
+import { mapState } from 'vuex';
 
 const width = 250;
 const sparkWidth = 75;
@@ -45,9 +46,7 @@ export default Vue.extend({
       innerPadding,
       transitionDuration,
       height: 0,
-      barHeight: 0,
       data: null,
-      allData: [],
 
       // axes
       x: d3.scaleLinear().range([width, 0]),
@@ -63,35 +62,31 @@ export default Vue.extend({
       line: null
     }
   },
+  computed: {
+    ...mapState('epidata', ['countryCases', "barHeight"]),
+},
   watch: {
     region: function() {
-      console.log('watching')
       this.data = this.getData(this.region);
-      // this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
-      // this.updatePlot();
+      this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
+      this.updatePlot();
     },
-    allData: function() {
-      console.log('data@');
-      console.log(this.allData)
-    }
+    // countryCases: function() {
+    //   console.log('data@');
+    //   console.log(this.countryCases)
+    // }
   },
   mounted() {
-    // this.data = store.getters.getCountryCases(this.region);
-    // console.log(this.region)
-    // console.log(this.data)
-    this.barHeight = store.getters.getBarHeight;
-    this.allData = store.getters.getCountryCases;
-    // this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
     this.setupPlot();
     this.updatePlot();
   },
   methods: {
     getData: function(region) {
-      this.data = this.allData.filter(d => d.region === region);
+      this.data = this.countryCases.filter(d => d.region === region);
     },
     colorScale: function(idx) {
-      this.data.length
-      return store.getters.getRegionColorPalette(this.region, this.data.length, idx);
+      const scale = store.getters['colors/getRegionColorPalette'];
+      return scale(this.region, this.data.length, idx);
     },
     updatePlot: function() {
       this.getData(this.region);

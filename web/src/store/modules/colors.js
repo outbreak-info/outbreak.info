@@ -36,7 +36,9 @@ const getters = {
     return scale(location);
   },
   getRegionColorPalette: state => (region, numEntries, idx) => {
-    const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(this.state.geo.regionDict.map(d => d.region));
+    // console.log(state.geo.regionDict.map(d => d.region))
+    const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(["China", "Asia (outside China)", "North America", "South America", "Europe", "Middle East", "Africa", "Diamond Princess Cruise", "Australia/Oceania"]);
+    // const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(state.geo.regionDict.map(d => d.region));
     const color = scale(region);
 
     const colorScale = chroma.scale([chroma(color).luminance(0.5), color, chroma(color).darken(1.25)]).domain([0, numEntries - 1]);
