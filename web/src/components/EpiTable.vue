@@ -3,7 +3,7 @@
   <h4>Most recent cases</h4>
   <table>
     <tr>
-      <th class="align-left sortable" @click="sortLocation()">
+      <th class="align-left sortable location" @click="sortLocation()">
         location
         <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="locationSort === 'asc'" />
         <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="locationSort === 'desc'" />
@@ -30,7 +30,9 @@
     </tr>
     <tr v-for="row in cases" v-bind:key="row.placeName">
       <td class="align-left px-3 location color-bar" v-bind:style="{'border-color': row.color}">
-        {{ row.placeName}}
+        <router-link :to="{ name: 'Epidemiology', query: { location: row.placeName } }" class="router-link-black" v-if="routable">
+        {{ row.placeName}}</router-link>
+        <span v-else>{{ row.placeName }}</span>
       </td>
       <td>
         {{ row.currentDate }}
@@ -85,7 +87,8 @@ export default Vue.extend({
     FontAwesomeIcon
   },
   props: {
-    data: Array
+    data: Array,
+    routable: Boolean
   },
   data() {
     return {
@@ -242,6 +245,9 @@ th {
     // background: #00BCD4;
     // width: 4px;
     // height: 100%;
+}
+.location {
+  width: 150px;
 }
 
 .sortable {

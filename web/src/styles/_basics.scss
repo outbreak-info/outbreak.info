@@ -17,3 +17,8 @@
 .default-black {
     fill: $base-grey;
 }
+
+// --- common useful things ---
+.router-link-black {
+  color: $base-grey !important;
+}
