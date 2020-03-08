@@ -366,9 +366,9 @@ export default Vue.extend({
       tooltipRect.merge(tooltipRectEnter)
         .attr("x", d => this.x(d.date))
         .attr("y", d => this.y(d.cases))
-        .attr("width", 100)
+        .attr("width", 108)
         .attr("height", 40)
-        .attr("stroke-dasharray", "100, 180")
+        .attr("stroke-dasharray", "108, 188")
         .attr("stroke-width", "3")
         .attr("fill-opacity", 0.4)
 
