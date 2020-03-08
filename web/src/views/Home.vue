@@ -33,7 +33,7 @@
     <DataSource />
   </section>
   <section class="case-data-table">
-    <EpiTable :data="cases" routable="true"/>
+    <EpiTable :data="cases" :routable="true"/>
   </section>
 </div>
 </template>
