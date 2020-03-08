@@ -19,9 +19,9 @@
 
   <!-- EPI CURVE SUMMARIES -->
   <section class="flex-column align-left" id="regional-epi-curves" v-if="nestedData.length > 0">
-    <!-- <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
+    <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
         <CountryBarGraph :region="region.region" :id="idx" :style="{visibility: region.display ? 'visible' : 'hidden', left: region.x + 'px', top: region.y + 'px'}" class="tooltip-countries" />
-      </div> -->
+      </div>
       <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
       <DataUpdated />
       <CaseSummary />
@@ -38,7 +38,7 @@
 <script>
 // @ is an alias to /src
 import EpiStacked from "@/components/EpiStacked.vue";
-// import CountryBarGraph from "@/components/CountryBarGraph.vue";
+import CountryBarGraph from "@/components/CountryBarGraph.vue";
 import CaseSummary from "@/components/CaseSummary.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
@@ -62,7 +62,7 @@ export default {
   name: "Home",
   components: {
     EpiStacked,
-    // CountryBarGraph,
+    CountryBarGraph,
     CaseSummary,
     DataUpdated,
     DataSource,
