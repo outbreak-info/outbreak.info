@@ -1,5 +1,5 @@
 <template>
-<div class="epidemiology flex-column align-left">
+<div class="epidemiology-curves flex-column align-left">
   <!-- <button @click="switchAxes()">common axis</button> -->
   <h3 class="plot-title">Cumulative number of COVID-19 cases<span v-if="placeName"> in {{placeName}}</span></h3>
   <DataUpdated />
@@ -82,10 +82,10 @@ export default Vue.extend({
   },
   computed: {
     placeName() {
-      if(this.data.length === 1) {
-        return(this.data[0].placeName)
+      if (this.data.length === 1) {
+        return (this.data[0].placeName)
       }
-      return(null)
+      return (null)
     }
   },
   mounted() {
@@ -242,6 +242,35 @@ export default Vue.extend({
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
       const formatDate = d3.timeFormat("%d %b %Y");
+
+      // --- annotation: change in case definition ---
+      const includesChina = this.plottedData.map(d => d.region).includes("China")
+      const dateCaseDefChange = new Date("2020-02-13");
+
+      const defChangedSelector = this.chart.selectAll(".case-def-changed")
+        .data(includesChina ? ["includesChina"] : []);
+
+      defChangedSelector.exit().remove();
+
+      const defChangedEnter = defChangedSelector.enter().append("g")
+        .attr("class", "annotation-group case-def-changed");
+
+      defChangedSelector.merge(defChangedEnter);
+
+      defChangedEnter
+        .append("text")
+        .attr("x", this.x(dateCaseDefChange))
+        .attr("dx", -3)
+        .attr("y", 0)
+        .text("Case definition changed");
+
+      defChangedEnter.append("line")
+        .attr("class", "annotation--line case-def-changed")
+        .attr("x1", this.x(dateCaseDefChange))
+        .attr("x2", this.x(dateCaseDefChange))
+        .attr("y1", 8)
+        .attr("y2", this.height);
+
 
       // --- create groups for each region ---
       const regionGroups = this.chart
@@ -416,10 +445,11 @@ export default Vue.extend({
       // `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
       // .attr("height", d => `${(document.getElementById("text-" + d.data.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
 
-      // event listener
+
+      // --- event listeners ---
       d3.selectAll("circle")
         .on("mouseover", d => this.tooltipOn(d))
-        .on("mouseout", d => this.tooltipOff(d))
+        .on("mouseout", d => this.tooltipOff(d));
 
 
       // --- transition: trace the curves ---
@@ -514,5 +544,15 @@ export default Vue.extend({
 
 .switch-button-hover {
     fill-opacity: 0.25;
+}
+
+.epidemiology-curves line.case-def-changed {
+    stroke: $grey-60;
+    stroke-width: 0.75;
+    shape-rendering: crispedges;
+    stroke-dasharray: 6,6;
+}
+.epidemiology-curves .case-def-changed text {
+    text-anchor: start;
 }
 </style>

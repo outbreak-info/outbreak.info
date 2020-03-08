@@ -2,6 +2,11 @@
 <div class="epidemiology">
   <h4 class="stacked-area-title" v-if="title">{{title}}</h4>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-summary-svg" :id="id">
+    <defs>
+      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+      </marker>
+    </defs>
     <g :transform="`translate(${margin.left},${margin.top})`" class="epi-summary"></g>
     <g :transform="`translate(${margin.left},${-margin.top})`" class="legend"></g>
   </svg>
@@ -140,13 +145,38 @@ export default Vue.extend({
 
     },
     drawPlot: function() {
+      const dateCaseDefChange = new Date("2020-02-13");
+
+      // --- annotations ---
+      if(Object.keys(this.data[0]).includes("China")){
+      const annotGrp = this.chart.append("g")
+        .attr("class", "annotation-group case-def-changed");
+        annotGrp
+        .append("text")
+        .attr("x", this.x(dateCaseDefChange))
+        .attr("y", this.y(80000))
+        .text("Case definition changed");
+
+        const x1 = this.x(new Date("2020-02-08"));
+        const x2 = this.x(new Date("2020-02-12"));
+        const y1 = this.y(77000);
+        const y2 = this.y(55000);
+
+        annotGrp
+        .append("path")
+          .attr("class", "swoopy-arrow")
+          .attr("id", "switch-btn-swoopy-arrow")
+          .attr("marker-end", "url(#arrow)")
+          // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
+          .attr("d", `M ${x1} ${y1} C ${x1 + 5} ${y1 + 45}, ${x2 - 10} ${y2 - 5}, ${x2} ${y2}`)
+}
       this.area = d3.area()
         .x(d => this.x(d.data.date))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]));
 
       this.chart
-        .selectAll("path")
+        .selectAll(".stacked-area-chart")
         .data(this.series)
         .join("path")
         .style("fill", ({
@@ -183,7 +213,8 @@ export default Vue.extend({
         .attr("class", "legend-name")
         .text(({
           key
-        }) => key)
+        }) => key);
+
 
       // --- tooltips ---
       this.chart.selectAll("path.stacked-area-chart")
@@ -195,7 +226,6 @@ export default Vue.extend({
         .on("mouseover", (d) => this.handleMouseover(d.key))
         .on("mouseout", (d) => this.handleMouseout(d.key))
         .on("click", (d) => this.handleClick(d.key));
-
 
     }
   }
@@ -223,7 +253,22 @@ path.stacked-area-chart {
 }
 
 .stacked-area-title {
-    margin: 0;
-    margin-top: 0.5em;
+    margin: 0.5em 0 0;
+}
+
+.case-def-changed {
+  font-size: 0.85em;
+  text-anchor: middle;
+  fill: $grey-60;
+}
+
+.swoopy-arrow,
+.swoopy-arrowhead {
+    stroke: $grey-60;
+    fill: none;
+    stroke-width: 0.8;
+}
+.swoopy-arrowhead {
+    stroke-width: 1;
 }
 </style>
