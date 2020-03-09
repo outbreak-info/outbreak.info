@@ -190,7 +190,7 @@ export default Vue.extend({
       locationSort: null,
       newSort: null,
       pctSort: null,
-      totalSort: null,
+      totalSort: "asc",
       page: 0,
       numPerPage: 10,
       pageOpts: [5, 10, 50, 100]

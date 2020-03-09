@@ -8,3 +8,7 @@
 - Installed nginx and configured settings
 - Clone GitHub repo, deployed Vue app.
 - Switched to https using Let's Encrypt.
+
+# 2020-03-09
+- `npm install`, `npm audit fix`
+- v0.1 released
