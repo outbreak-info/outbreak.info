@@ -158,10 +158,10 @@ export default Vue.extend({
       return upper > this.total ? this.total : upper;
     },
     total: function() {
-      return this.cases.length;
+      return this.cases ? this.cases.length : null;
     },
     lastPage: function() {
-      return Math.floor(this.cases.length / this.numPerPage);
+      return this.cases ? Math.floor(this.cases.length / this.numPerPage) : null;
     }
   },
   methods: {
