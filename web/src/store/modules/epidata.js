@@ -19,10 +19,6 @@ import {
   sum
 } from 'd3';
 
-import {
-  cloneDeep
-} from 'lodash'
-
 // initial state
 const state = {
   // case count variables
@@ -64,8 +60,8 @@ const actions = {
           const lastDate = max(cleanedCases, d => d.currentDate);
 
           // calculate summaries
-          // For regional summaries, remove China (since duplicative with "Mainland China")
-          const regionTotals = nestEpiTrace(cleanedCases.flatMap(d => d.data), "region", "region").filter(d => d.locationName !== "China");
+          // For regional summaries, remove China, Princess Cruise (since duplicative with "Mainland China")
+          const regionTotals = nestEpiTrace(cleanedCases.flatMap(d => d.data), "region", "region").filter(d => !["Diamond Princess Cruise", "China"].includes(d.locationName));
           const countryTotals = nestEpiTrace(cleanedCases.flatMap(d => d.data), "country", "country");
           const subnationals = cleanedCases.filter(d => d.locationType === "sub-national");
           const cleaned = [regionTotals, countryTotals, subnationals].reduce((flat, next) => flat.concat(next), []);
