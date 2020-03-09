@@ -1,15 +1,14 @@
 // initial state
-const state = {}
+const state = {};
 
 // getters
-const getters = {}
+const getters = {};
 
 // actions
-const actions = {}
+const actions = {};
 
 // mutations
-const mutations = {
-}
+const mutations = {};
 
 export default {
   namespaced: true,
@@ -17,4 +16,4 @@ export default {
   getters,
   actions,
   mutations
-}
+};

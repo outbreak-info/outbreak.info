@@ -1,28 +1,41 @@
 <template>
-<div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`">
-  <h4 class="plot-title">Current total COVID-19 cases in {{region}}</h4>
+  <div
+    class="country-bar-graph flex-column align-left"
+    :id="`region-graphs-${id}`"
+  >
+    <h4 class="plot-title">Current total COVID-19 cases in {{ region }}</h4>
 
-  <svg :width="width + margin.left + margin.right + sparkWidth + newCasesWidth + 4*margin.gap" :height="height + margin.top + margin.bottom" class="case-counts">
-    <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
-  </svg>
-  <div class="click-affordance py-1" :style="{background: lightColor}">
-    click plot to view cases over time
+    <svg
+      :width="
+        width +
+          margin.left +
+          margin.right +
+          sparkWidth +
+          newCasesWidth +
+          4 * margin.gap
+      "
+      :height="height + margin.top + margin.bottom"
+      class="case-counts"
+    >
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="case-counts"
+      ></g>
+    </svg>
+    <div class="click-affordance py-1" :style="{ background: lightColor }">
+      click plot to view cases over time
+    </div>
   </div>
-</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
-import * as d3 from 'd3';
-import {
-  cloneDeep
-} from "lodash";
+import * as d3 from "d3";
+import { cloneDeep } from "lodash";
 
-import store from '@/store';
-import {
-  mapState
-} from 'vuex';
+import store from "@/store";
+import { mapState } from "vuex";
 
 const width = 250;
 const sparkWidth = 75;
@@ -34,7 +47,7 @@ const margin = {
   bottom: 10,
   left: 50,
   gap: 10
-}
+};
 const transitionDuration = 3500;
 
 export default Vue.extend({
@@ -67,21 +80,23 @@ export default Vue.extend({
       chart: null,
       // methods
       line: null
-    }
+    };
   },
   computed: {
-    ...mapState('epidata', ['countryCases', "barHeight"]),
+    ...mapState("epidata", ["countryCases", "barHeight"]),
     lightColor: function() {
-      const scale = store.getters['colors/getRegionColor'];
-      return(scale(this.region, 0.85))
-    },
+      const scale = store.getters["colors/getRegionColor"];
+      return scale(this.region, 0.85);
+    }
   },
   watch: {
     region: function() {
       this.data = this.getData(this.region);
-      this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
+      this.height =
+        this.barHeight * this.data.length +
+        (this.data.length - 2) * this.innerPadding;
       this.updatePlot();
-    },
+    }
     // countryCases: function() {
     //   console.log('data@');
     //   console.log(this.countryCases)
@@ -96,62 +111,75 @@ export default Vue.extend({
       this.data = this.countryCases.filter(d => d.region === region);
     },
     colorScale: function(idx) {
-      const scale = store.getters['colors/getRegionColorPalette'];
+      const scale = store.getters["colors/getRegionColorPalette"];
       return scale(this.region, this.data.length, idx);
     },
     updatePlot: function() {
       this.getData(this.region);
 
       if (this.data) {
-        this.height = this.barHeight * this.data.length + ((this.data.length - 2) * this.innerPadding);
+        this.height =
+          this.barHeight * this.data.length +
+          (this.data.length - 2) * this.innerPadding;
         this.updateScales();
         this.prepData();
         this.drawPlot();
       }
     },
     setupPlot: function() {
-      this.svg = d3.select(`#region-graphs-${this.id}`).select("svg.case-counts");
+      this.svg = d3
+        .select(`#region-graphs-${this.id}`)
+        .select("svg.case-counts");
       this.chart = this.svg.select("#case-counts");
 
-      this.svg.append('g')
-        .attr('class', 'bar-axis axis--y')
-        .attr('transform', `translate(${this.margin.left + this.width + this.margin.right - 10}, ${this.margin.top})`);
+      this.svg
+        .append("g")
+        .attr("class", "bar-axis axis--y")
+        .attr(
+          "transform",
+          `translate(${this.margin.left +
+            this.width +
+            this.margin.right -
+            10}, ${this.margin.top})`
+        );
 
       // this.line = d3.line()
       //   .x(d => this.xSpark(d.date))
       //   .y(d => d.y);
 
-      this.line = d3.area()
+      this.line = d3
+        .area()
         .x(d => this.xSpark(d.date))
         .y0(d => d.y0)
         .y1(d => d.y);
     },
     prepData: function() {
       this.data.forEach(d => {
-        const y = d3.scaleLinear()
+        const y = d3
+          .scaleLinear()
           .range([this.y.bandwidth() * 0.8, 0])
           .domain([0, d3.max(d.data.map(d => d.cases))]);
 
         d.data.forEach(datum => {
-          datum['y'] = y(datum.cases);
-          datum['y0'] = y(0);
-        })
-      })
+          datum["y"] = y(datum.cases);
+          datum["y0"] = y(0);
+        });
+      });
     },
     updateScales: function() {
       this.data.sort((a, b) => a.currentCases - b.currentCases);
 
-      this.x = this.x
-        .domain([0, d3.max(this.data, d => d.currentCases)]);
+      this.x = this.x.domain([0, d3.max(this.data, d => d.currentCases)]);
 
-      this.y = this.y.range([this.height, 0])
+      this.y = this.y
+        .range([this.height, 0])
         .domain(this.data.map(d => d.locationName));
 
-      this.xSpark = this.xSpark
-        .domain(d3.extent(this.data.flatMap(d => d.data).map(d => d.date)));
+      this.xSpark = this.xSpark.domain(
+        d3.extent(this.data.flatMap(d => d.data).map(d => d.date))
+      );
 
-      this.opacityScale = this.opacityScale
-        .domain([0, this.data.length - 1]);
+      this.opacityScale = this.opacityScale.domain([0, this.data.length - 1]);
 
       // this.xAxis = d3.axisBottom(this.x);
       //
@@ -160,8 +188,7 @@ export default Vue.extend({
 
       this.yAxis = d3.axisRight(this.y);
 
-      this.svg.select(".axis--y")
-        .call(this.yAxis);
+      this.svg.select(".axis--y").call(this.yAxis);
     },
     drawPlot: function() {
       // console.log(this.data)
@@ -173,30 +200,35 @@ export default Vue.extend({
         .data(this.data);
 
       // exit
-      grpSelector.exit().transition(t1).style("opacity", 1e-5).remove();
+      grpSelector
+        .exit()
+        .transition(t1)
+        .style("opacity", 1e-5)
+        .remove();
 
       // enter
-      const grpEnter = grpSelector.enter()
+      const grpEnter = grpSelector
+        .enter()
         .append("g")
         .attr("class", "country-count-group");
 
       // merge
-      grpSelector.merge(grpEnter)
+      grpSelector
+        .merge(grpEnter)
         .attr("id", d => `${d.locationName}`)
         .attr("class", d => `${d.region}`)
         .style("fill", (d, i) => this.colorScale(i))
-        .style("stroke", (d, i) => this.colorScale(i))
+        .style("stroke", (d, i) => this.colorScale(i));
       // .style("stroke", d => this.colorScale(d.region));
-
 
       // --- bars ---
       const barSelector = grpSelector.select(".country-count");
 
-      const barEnter = grpEnter.append("rect")
-        .attr("class", "country-count");
+      const barEnter = grpEnter.append("rect").attr("class", "country-count");
 
       // merge
-      barSelector.merge(barEnter)
+      barSelector
+        .merge(barEnter)
         // .attr("width", 0)
         .attr("height", this.y.bandwidth())
         .attr("y", d => this.y(d.locationName))
@@ -210,58 +242,87 @@ export default Vue.extend({
       // --- text ---
       const textSelector = grpSelector.select(".annotation--country-count");
 
-      const textEnter = grpEnter.append("text")
+      const textEnter = grpEnter
+        .append("text")
         .attr("class", "annotation--country-count");
 
       // merge
-      textSelector.merge(textEnter)
+      textSelector
+        .merge(textEnter)
         .attr("x", d => this.x(d.currentCases))
         .attr("dx", "-0.5em")
         .attr("y", d => this.y(d.locationName) + this.y.bandwidth() / 2)
         .style("font-size", this.y.bandwidth())
-        .text(d => d.currentCases.toLocaleString())
-
+        .text(d => d.currentCases.toLocaleString());
 
       // --- sparklines ---
-      this.chart.append("text")
+      this.chart
+        .append("text")
         .attr("class", "subtitle")
-        .attr("x", this.width + this.margin.gap + this.margin.right + this.sparkWidth / 2)
+        .attr(
+          "x",
+          this.width + this.margin.gap + this.margin.right + this.sparkWidth / 2
+        )
         .attr("y", -5)
         .text("over time");
 
       const sparkSelector = grpSelector.select(".sparkline");
 
-      const sparkEnter = grpEnter.append("path")
-        .attr("transform", d => `translate(${this.width + this.margin.gap + this.margin.right}, ${this.y(d.locationName)})`)
+      const sparkEnter = grpEnter
+        .append("path")
+        .attr(
+          "transform",
+          d =>
+            `translate(${this.width +
+              this.margin.gap +
+              this.margin.right}, ${this.y(d.locationName)})`
+        )
         .attr("class", "sparkline");
 
       // merge
-      sparkSelector.merge(sparkEnter)
+      sparkSelector
+        .merge(sparkEnter)
         .datum(d => d.data)
         .join("path")
         // .style("fill-opacity", (d, i) => this.opacityScale(i))
         .attr("d", this.line);
 
       // --- number of new cases ---
-      this.chart.append("text")
+      this.chart
+        .append("text")
         .attr("class", "subtitle")
-        .attr("x", this.width + this.margin.gap * 3 + this.margin.right + this.sparkWidth + this.newCasesWidth / 2)
+        .attr(
+          "x",
+          this.width +
+            this.margin.gap * 3 +
+            this.margin.right +
+            this.sparkWidth +
+            this.newCasesWidth / 2
+        )
         .attr("y", -5)
         .text("new today");
 
       const newCasesSelector = grpSelector.select(".new-cases");
 
-      const newCasesEnter = grpEnter.append("text")
-        .attr("transform", d => `translate(${this.width + this.margin.gap * 3 + this.margin.right + this.sparkWidth }, ${0})`)
+      const newCasesEnter = grpEnter
+        .append("text")
+        .attr(
+          "transform",
+          d =>
+            `translate(${this.width +
+              this.margin.gap * 3 +
+              this.margin.right +
+              this.sparkWidth}, ${0})`
+        )
         .attr("x", 5)
         .attr("y", d => this.y(d.locationName) + this.y.bandwidth() / 2)
         .attr("class", "new-cases")
         .style("font-size", this.y.bandwidth());
 
       // merge
-      newCasesSelector.merge(newCasesEnter)
+      newCasesSelector
+        .merge(newCasesEnter)
         .text(d => d.numIncrease.toLocaleString());
-
     }
   }
 });
@@ -271,43 +332,43 @@ export default Vue.extend({
 <style lang="scss">
 .country-bar-graph .axis--y path,
 .country-bar-graph .tick line {
-    display: none;
+  display: none;
 }
 
 .country-bar-graph .axis--y text {
-    text-anchor: end;
+  text-anchor: end;
 }
 
 .bar-axis {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .annotation--country-count,
 .new-cases {
-    dominant-baseline: central;
-    stroke: none;
-    font-weight: 700 !important;
+  dominant-baseline: central;
+  stroke: none;
+  font-weight: 700 !important;
 }
 
 .annotation--country-count {
-    text-anchor: end;
+  text-anchor: end;
 }
 
 .sparkline {
-    // stroke-width: 0.1;
-    stroke: none;
-    stroke-linecap: round;
+  // stroke-width: 0.1;
+  stroke: none;
+  stroke-linecap: round;
 }
 
 .subtitle {
-    text-anchor: middle;
-    font-size: 0.7em;
-    opacity: 0.7;
-    dominant-baseline: ideographic;
+  text-anchor: middle;
+  font-size: 0.7em;
+  opacity: 0.7;
+  dominant-baseline: ideographic;
 }
 
 rect.country-count {
-    shape-rendering: crispedges;
+  shape-rendering: crispedges;
 }
 
 .click-affordance {

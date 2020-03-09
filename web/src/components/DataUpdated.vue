@@ -1,43 +1,43 @@
 <template>
-<small class="date-updated" v-if="lastUpdated">updated {{ lastUpdated }} ago</small>
+  <small class="date-updated" v-if="lastUpdated"
+    >updated {{ lastUpdated }} ago</small
+  >
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import {
-  mapState
-} from 'vuex';
+import { mapState } from "vuex";
 
 export default Vue.extend({
   name: "DataUpdated",
   props: {},
   data() {
-    return {}
+    return {};
   },
   watch: {},
   computed: {
-    ...mapState('epidata', ['dateUpdated']),
+    ...mapState("epidata", ["dateUpdated"]),
     lastUpdated() {
       let lastUpdated = null;
       if (this.dateUpdated) {
         const updatedDiff = (new Date() - this.dateUpdated) / (60 * 60 * 1000);
 
         if (updatedDiff < 1) {
-          lastUpdated = `${Math.round(updatedDiff*60)}m`
+          lastUpdated = `${Math.round(updatedDiff * 60)}m`;
         } else {
-          lastUpdated = `${Math.round(updatedDiff)}h`
+          lastUpdated = `${Math.round(updatedDiff)}h`;
         }
       }
-      return (lastUpdated);
-    },
+      return lastUpdated;
+    }
   },
   methods: {}
-})
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 .date-updated {
-    color: $grey-60;
+  color: $grey-60;
 }
 </style>

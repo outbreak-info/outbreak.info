@@ -4,7 +4,8 @@ import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home
@@ -16,7 +17,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "about" */ "../views/About.vue")
+      import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
     path: "/epidemiology",
@@ -24,19 +25,18 @@ const routes = [{
     props: route => ({
       region: route.query.region,
       country: route.query.country,
-      location: route.query.location,
+      location: route.query.location
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import( /* webpackChunkName: "about" */ "../views/Epi.vue")
+    component: () => import(/* webpackChunkName: "about" */ "../views/Epi.vue")
   },
   {
     path: "/timelapse",
     name: "Timelapse",
     component: () =>
-      import( /* webpackChunkName: "about" */ "../views/Timelapse.vue")
+      import(/* webpackChunkName: "about" */ "../views/Timelapse.vue")
   }
 ];
 

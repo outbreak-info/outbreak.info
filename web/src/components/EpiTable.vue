@@ -1,110 +1,166 @@
 <template>
-<div class="epi-table my-3" v-if="data && data.length > 0">
-  <div class="flex flex-space-between">
-    <h4>Most recent cases</h4>
-    <select v-model="numPerPage" @change="changePageNum()">
-      <option v-for="option in pageOpts" :value="option" :key="option">
-        {{ option }} results
-      </option>
-    </select>
+  <div class="epi-table my-3" v-if="data && data.length > 0">
+    <div class="flex flex-space-between">
+      <h4>Most recent cases</h4>
+      <select v-model="numPerPage" @change="changePageNum()">
+        <option v-for="option in pageOpts" :value="option" :key="option">
+          {{ option }} results
+        </option>
+      </select>
+    </div>
+
+    <table>
+      <tr>
+        <th class="align-left sortable location" @click="sortLocation()">
+          <div class="sort-grp">
+            location
+            <font-awesome-icon
+              :class="[locationSort ? 'hidden' : 'sort-hover']"
+              :icon="['fas', 'sort']"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-up']"
+              v-if="locationSort === 'asc'"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-down']"
+              v-if="locationSort === 'desc'"
+            />
+          </div>
+        </th>
+        <th class="px-3">
+          updated
+        </th>
+        <th class="px-3 sortable total" @click="sortTotal()">
+          <div class="sort-grp">
+            total cases
+            <font-awesome-icon
+              :class="[totalSort ? 'hidden' : 'sort-hover']"
+              :icon="['fas', 'sort']"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-up']"
+              v-if="totalSort === 'asc'"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-down']"
+              v-if="totalSort === 'desc'"
+            />
+          </div>
+        </th>
+        <th class="px-2 sortable new-cases" @click="sortNew()">
+          <div class="sort-grp">
+            new cases today
+            <font-awesome-icon
+              :class="[newSort ? 'hidden' : 'sort-hover']"
+              :icon="['fas', 'sort']"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-up']"
+              v-if="newSort === 'asc'"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-down']"
+              v-if="newSort === 'desc'"
+            />
+          </div>
+        </th>
+        <th class="px-2 sortable pct-increase" @click="sortPct()">
+          <div class="sort-grp">
+            increase from yesterday
+            <font-awesome-icon
+              :class="[pctSort ? 'hidden' : 'sort-hover']"
+              :icon="['fas', 'sort']"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-up']"
+              v-if="pctSort === 'asc'"
+            />
+            <font-awesome-icon
+              class="sort-btn"
+              :icon="['fas', 'arrow-down']"
+              v-if="pctSort === 'desc'"
+            />
+          </div>
+        </th>
+      </tr>
+      <tr v-for="row in filteredCases" v-bind:key="row.locationName">
+        <td
+          class="align-left px-3 location color-bar"
+          v-bind:style="{ 'border-color': row.color }"
+        >
+          <router-link
+            :to="{
+              name: 'Epidemiology',
+              query: { location: row.locationName }
+            }"
+            class="router-link-black"
+            v-if="routable"
+          >
+            {{ row.locationName }}</router-link
+          >
+          <span v-else>{{ row.locationName }}</span>
+        </td>
+        <td>
+          {{ row.currentDateFormatted }}
+        </td>
+        <td>
+          {{ row.totalNumFormatted }}
+        </td>
+        <td>
+          {{ row.numIncreaseFormatted }}
+        </td>
+        <td>
+          {{ row.pctIncreaseFormatted }}
+        </td>
+      </tr>
+    </table>
+
+    <div class="pagination mt-2 flex align-items-center flex-space-between">
+      <button
+        class="pagination-btn pagination-left"
+        :class="{ disabled: page === 0 }"
+        @click="changePage(-1)"
+      >
+        <font-awesome-icon :icon="['fas', 'arrow-left']" />
+      </button>
+      <small
+        >viewing locations {{ lowerLim + 1 }} &minus; {{ upperLim }} of
+        {{ total }}</small
+      >
+      <button
+        class="pagination-btn pagination-left"
+        :class="{ disabled: page === lastPage }"
+        @click="changePage(1)"
+      >
+        <font-awesome-icon :icon="['fas', 'arrow-right']" />
+      </button>
+    </div>
   </div>
-
-  <table>
-    <tr>
-      <th class="align-left sortable location" @click="sortLocation()">
-        <div class="sort-grp">
-          location
-          <font-awesome-icon :class="[locationSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="locationSort === 'asc'" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="locationSort === 'desc'" />
-        </div>
-      </th>
-      <th class="px-3">
-        updated
-      </th>
-      <th class="px-3 sortable total" @click="sortTotal()">
-        <div class="sort-grp">
-          total cases
-          <font-awesome-icon :class="[totalSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="totalSort === 'asc'" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="totalSort === 'desc'" />
-        </div>
-      </th>
-      <th class="px-2 sortable new-cases" @click="sortNew()">
-        <div class="sort-grp">
-          new cases today
-          <font-awesome-icon :class="[newSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="newSort === 'asc'" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="newSort === 'desc'" />
-        </div>
-      </th>
-      <th class="px-2 sortable pct-increase" @click="sortPct()">
-        <div class="sort-grp">
-          increase from yesterday
-          <font-awesome-icon :class="[pctSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="pctSort === 'asc'" />
-          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="pctSort === 'desc'" />
-        </div>
-      </th>
-
-    </tr>
-    <tr v-for="row in filteredCases" v-bind:key="row.locationName">
-      <td class="align-left px-3 location color-bar" v-bind:style="{'border-color': row.color}">
-        <router-link :to="{ name: 'Epidemiology', query: { location: row.locationName } }" class="router-link-black" v-if="routable">
-          {{ row.locationName}}</router-link>
-        <span v-else>{{ row.locationName }}</span>
-      </td>
-      <td>
-        {{ row.currentDateFormatted }}
-      </td>
-      <td>
-        {{ row.totalNumFormatted}}
-      </td>
-      <td>
-        {{ row.numIncreaseFormatted }}
-      </td>
-      <td>
-        {{ row.pctIncreaseFormatted }}
-      </td>
-
-    </tr>
-  </table>
-  <div class="pagination mt-2 flex align-items-center flex-space-between">
-    <button class="pagination-btn pagination-left" :class="{'disabled': page === 0}" @click="changePage(-1)">
-      <font-awesome-icon :icon="['fas', 'arrow-left']" />
-    </button>
-    <small>viewing locations {{lowerLim + 1}} &minus; {{ upperLim }} of {{total}}</small>
-    <button class="pagination-btn pagination-left" :class="{'disabled' : page === lastPage}" @click="changePage(1)">
-      <font-awesome-icon :icon="['fas', 'arrow-right']" />
-    </button>
-  </div>
-</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import {
-  cloneDeep
-} from "lodash";
-import {
-  format,
-  timeFormat
-} from "d3";
+import { cloneDeep } from "lodash";
+import { format, timeFormat } from "d3";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from '@fortawesome/vue-fontawesome'
-import {
-  library
-} from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
   faArrowDown,
   faArrowLeft,
   faArrowRight,
   faSort
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faArrowUp);
 library.add(faArrowDown);
@@ -112,7 +168,7 @@ library.add(faArrowLeft);
 library.add(faArrowRight);
 library.add(faSort);
 
-import store from '@/store';
+import store from "@/store";
 
 const formatDate = timeFormat("%a %d %b %Y");
 
@@ -138,7 +194,7 @@ export default Vue.extend({
       page: 0,
       numPerPage: 10,
       pageOpts: [5, 10, 50, 100]
-    }
+    };
   },
   watch: {
     data: function() {
@@ -162,17 +218,19 @@ export default Vue.extend({
       return this.cases ? this.cases.length : null;
     },
     lastPage: function() {
-      return this.cases ? Math.floor(this.cases.length / this.numPerPage) : null;
+      return this.cases
+        ? Math.floor(this.cases.length / this.numPerPage)
+        : null;
     }
   },
   methods: {
     sortLocation() {
       // backwards, since it reflects the previous value
-      if ((this.locationSort === "asc")) {
-        this.cases.sort((a, b) => a.locationName > b.locationName ? -1 : 1);
+      if (this.locationSort === "asc") {
+        this.cases.sort((a, b) => (a.locationName > b.locationName ? -1 : 1));
         this.locationSort = "desc";
       } else {
-        this.cases.sort((a, b) => a.locationName < b.locationName ? -1 : 1);
+        this.cases.sort((a, b) => (a.locationName < b.locationName ? -1 : 1));
         this.locationSort = "asc";
       }
       // reset other sorting funcs
@@ -183,7 +241,7 @@ export default Vue.extend({
     },
     sortTotal() {
       // backwards, since it reflects the previous value
-      if ((this.totalSort === "asc")) {
+      if (this.totalSort === "asc") {
         this.cases.sort((a, b) => a.currentCases - b.currentCases);
         this.totalSort = "desc";
       } else {
@@ -199,7 +257,7 @@ export default Vue.extend({
     },
     sortNew() {
       // backwards, since it reflects the previous value
-      if ((this.newSort === "asc")) {
+      if (this.newSort === "asc") {
         this.cases.sort((a, b) => a.numIncrease - b.numIncrease);
         this.newSort = "desc";
       } else {
@@ -214,7 +272,7 @@ export default Vue.extend({
     },
     sortPct() {
       // backwards, since it reflects the previous value
-      if ((this.pctSort === "asc")) {
+      if (this.pctSort === "asc") {
         this.cases.sort((a, b) => a.pctIncrease - b.pctIncrease);
         this.pctSort = "desc";
       } else {
@@ -238,11 +296,11 @@ export default Vue.extend({
       this.cases = cloneDeep(this.data);
 
       this.cases.forEach(d => {
-        d['currentDateFormatted'] = formatDate(d.currentDate);
-        d['numIncreaseFormatted'] = d.numIncrease.toLocaleString();
-        d['pctIncreaseFormatted'] = this.formatPercent(d.pctIncrease);
-        d['totalNumFormatted'] = d.currentCases.toLocaleString();
-        d['color'] = this.colorScale(d.locationName);
+        d["currentDateFormatted"] = formatDate(d.currentDate);
+        d["numIncreaseFormatted"] = d.numIncrease.toLocaleString();
+        d["pctIncreaseFormatted"] = this.formatPercent(d.pctIncrease);
+        d["totalNumFormatted"] = d.currentCases.toLocaleString();
+        d["color"] = this.colorScale(d.locationName);
       });
 
       this.sortTotal();
@@ -252,22 +310,22 @@ export default Vue.extend({
     },
     formatPercent(pct) {
       if (!pct) {
-        return ("none");
+        return "none";
       }
 
       if (pct < 0) {
-        return ("case count corrected");
+        return "case count corrected";
       }
 
       if (pct < 0.005) {
-        return ("< 1%");
+        return "< 1%";
       }
 
       if (!isFinite(pct)) {
-        return ("* first reported case *");
+        return "* first reported case *";
       }
 
-      return (format(".0%")(pct));
+      return format(".0%")(pct);
     }
   }
 });
@@ -276,66 +334,66 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 h4 {
-    margin: 0;
+  margin: 0;
 }
 .align-left {
-    text-align: left;
+  text-align: left;
 }
 
 table {
-    border-collapse: collapse;
-    font-size: 0.85em;
+  border-collapse: collapse;
+  font-size: 0.85em;
 }
 
 tr {
-    border-bottom: 1px solid #ececec;
-    // border-bottom: 1px solid $grey-40;
+  border-bottom: 1px solid #ececec;
+  // border-bottom: 1px solid $grey-40;
 }
 
 td {
-    padding: 5px 0;
-    text-align: center;
+  padding: 5px 0;
+  text-align: center;
 }
 
 th {
-    font-size: 0.95em;
-    font-weight: 400;
-    color: $grey-70;
+  font-size: 0.95em;
+  font-weight: 400;
+  color: $grey-70;
 }
 
 .sort-hover {
-    display: none;
+  display: none;
 }
 
 .sort-grp.hover .sort-hover,
 .sort-grp:hover .sort-hover {
-    display: inline;
+  display: inline;
 }
 
 .color-bar {
-    border-left-width: 4px;
-    border-left-style: solid;
-    padding-left: 5px !important;
-    // background: #00BCD4;
-    // width: 4px;
-    // height: 100%;
+  border-left-width: 4px;
+  border-left-style: solid;
+  padding-left: 5px !important;
+  // background: #00BCD4;
+  // width: 4px;
+  // height: 100%;
 }
 
 // widths
 .location {
-    width: 150px;
+  width: 150px;
 }
 .pct-increase {
-    width: 160px;
+  width: 160px;
 }
 .new-cases {
-    width: 120px;
+  width: 120px;
 }
 .total {
-    width: 100px;
+  width: 100px;
 }
 
 .sortable {
-    cursor: pointer;
+  cursor: pointer;
 }
 </style>

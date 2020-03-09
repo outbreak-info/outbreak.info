@@ -1,19 +1,22 @@
 <template>
-<div>
-    <Autocomplete :items="allPlaces" :selected="selectedPlaces" @selected="updateSelected" />
+  <div>
+    <Autocomplete
+      :items="allPlaces"
+      :selected="selectedPlaces"
+      @selected="updateSelected"
+    />
 
-  <div class="flex">
-    <EpiCurve v-bind:data="data" />
-    <EpiTable v-bind:data="data" :colorScale="colorScale" />
-  </div>
-  <!-- <div id="presetLocations">
+    <div class="flex">
+      <EpiCurve v-bind:data="data" />
+      <EpiTable v-bind:data="data" :colorScale="colorScale" />
+    </div>
+    <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
       {{place.label}}
     </button>
   </div> -->
-</div>
+  </div>
 </template>
-
 
 <script>
 // @ is an alias to /src
@@ -21,10 +24,8 @@ import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
 
-import store from '@/store';
-import {
-  mapState
-} from "vuex";
+import store from "@/store";
+import { mapState } from "vuex";
 
 export default {
   name: "Epidemiology",
@@ -40,30 +41,59 @@ export default {
   },
   data() {
     return {
-      presetGroups: [{
-        label: "United States",
-        locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX",
-          "Omaha, NE (From Diamond Princess)", "Travis, CA (From Diamond Princess)", "Lackland, TX (From Diamond Princess)", "Humboldt County, CA", "Sacramento County, CA", "Unassigned Location (From Diamond Princess)", "Portland, OR",
-          "Snohomish County, WA", "Providence, RI", "Grafton County, NH", "Hillsborough, FL", "New York City, NY", "Placer County, CA", "San Mateo, CA", "Sarasota, FL", "Sonoma County, CA", "Umatilla, OR"
-        ]
-      }],
+      presetGroups: [
+        {
+          label: "United States",
+          locations: [
+            "US",
+            "King County, WA",
+            "Cook County, IL",
+            "Tempe, AZ",
+            "Orange, CA",
+            "Los Angeles, CA",
+            "Santa Clara, CA",
+            "Boston, MA",
+            "San Benito, CA",
+            "Madison, WI",
+            "San Diego County, CA",
+            "San Antonio, TX",
+            "Omaha, NE (From Diamond Princess)",
+            "Travis, CA (From Diamond Princess)",
+            "Lackland, TX (From Diamond Princess)",
+            "Humboldt County, CA",
+            "Sacramento County, CA",
+            "Unassigned Location (From Diamond Princess)",
+            "Portland, OR",
+            "Snohomish County, WA",
+            "Providence, RI",
+            "Grafton County, NH",
+            "Hillsborough, FL",
+            "New York City, NY",
+            "Placer County, CA",
+            "San Mateo, CA",
+            "Sarasota, FL",
+            "Sonoma County, CA",
+            "Umatilla, OR"
+          ]
+        }
+      ],
       selectedPlaces: [],
       data: []
-    }
+    };
   },
   computed: {
-    ...mapState('epidata', ["allCases", "allPlaces"])
+    ...mapState("epidata", ["allCases", "allPlaces"])
   },
   watch: {
     selectedPlaces: function(newValue, oldValue) {
       const newLocation = newValue ? newValue.join(";") : "";
       if (this.$route.query.location !== newLocation) {
         this.$router.push({
-          path: 'epidemiology',
+          path: "epidemiology",
           query: {
             location: newLocation
           }
-        })
+        });
       }
     },
     location: function(newLocation, oldLocation) {
@@ -72,9 +102,16 @@ export default {
   },
   methods: {
     filterData: function(locations) {
-      this.data = this.allCases.filter(d => locations.map(d => d.toLowerCase()).includes(d.locationName.toLowerCase()));
+      this.data = this.allCases.filter(d =>
+        locations
+          .map(d => d.toLowerCase())
+          .includes(d.locationName.toLowerCase())
+      );
 
-      store.commit('colors/setLocations', this.data.map(d => d.locationName));
+      store.commit(
+        "colors/setLocations",
+        this.data.map(d => d.locationName)
+      );
     },
     setLocation: function(locationString, nullLocationHandler) {
       if (locationString && locationString !== "") {
@@ -86,8 +123,8 @@ export default {
       }
     },
     colorScale: function(location) {
-      const scale = store.getters['colors/getColor'];
-      return (scale(location))
+      const scale = store.getters["colors/getColor"];
+      return scale(location);
     },
     clearLocations: function() {
       this.selectedPlaces = [];
@@ -98,7 +135,7 @@ export default {
     },
     selectGroup: function(locationGroup) {
       // this.selectedPlaces = locationGroup.locations;
-    },
+    }
   },
   mounted() {
     this.setLocation(this.location);
@@ -106,5 +143,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

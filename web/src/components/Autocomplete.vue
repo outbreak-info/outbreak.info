@@ -1,25 +1,61 @@
 <template>
-<div class="autocomplete">
-  <div :content="selected" class="autocomplete-input flex-column user-input-wrp">
-    <div class="floating-label align-left" :class="[selected.length === 0 ? 'empty' : 'filled']">select locations</div>
-    <div class="flex">
-      <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)" v-bind:style="{background: lightColorScale(item)}">
-        {{item}}
-        <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{color: colorScale(item)}" />
-      </button>
-      <input type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
+  <div class="autocomplete">
+    <div
+      :content="selected"
+      class="autocomplete-input flex-column user-input-wrp"
+    >
+      <div
+        class="floating-label align-left"
+        :class="[selected.length === 0 ? 'empty' : 'filled']"
+      >
+        select locations
+      </div>
+      <div class="flex">
+        <button
+          class="chip"
+          v-for="(item, idx) in selected"
+          :key="idx"
+          :class="{ 'all-selected': isSelectAll }"
+          @click="removeChip(item)"
+          v-bind:style="{ background: lightColorScale(item) }"
+        >
+          {{ item }}
+          <font-awesome-icon
+            class="remove-btn"
+            :icon="['far', 'times-circle']"
+            v-bind:style="{ color: colorScale(item) }"
+          />
+        </button>
+        <input
+          type="text"
+          v-model="search"
+          @input="onChange"
+          @keydown.down="onArrowDown"
+          @keydown.up="onArrowUp"
+          @keydown.enter="onEnter"
+          @keydown.delete="onBackspace"
+          @keydown.ctrl.65="onSelectAll"
+          @keydown.meta.65="onSelectAll"
+        />
+      </div>
     </div>
-  </div>
 
-  <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
-    <li class="loading" v-if="isLoading">
-      Loading results...
-    </li>
-    <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
-      {{ result }}
-    </li>
-  </ul>
-</div>
+    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
+      <li class="loading" v-if="isLoading">
+        Loading results...
+      </li>
+      <li
+        v-else
+        v-for="(result, i) in results"
+        :key="i"
+        @click="setResult(result)"
+        class="autocomplete-result"
+        :class="{ 'is-active': i === arrowCounter }"
+      >
+        {{ result }}
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts">
@@ -27,18 +63,12 @@
 import Vue from "vue";
 
 // --- store / Vuex ---
-import store from '@/store';
+import store from "@/store";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from '@fortawesome/vue-fontawesome'
-import {
-  library
-} from '@fortawesome/fontawesome-svg-core';
-import {
-  faTimesCircle
-} from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTimesCircle } from "@fortawesome/free-regular-svg-icons";
 
 library.add(faTimesCircle);
 
@@ -48,17 +78,17 @@ export default Vue.extend({
     items: {
       type: Array,
       required: false,
-      default: () => [],
+      default: () => []
     },
     selected: {
       type: Array,
       required: false,
-      default: () => [],
+      default: () => []
     },
     isAsync: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     }
   },
   components: {
@@ -68,11 +98,11 @@ export default Vue.extend({
     return {
       isOpen: false,
       results: [],
-      search: '',
+      search: "",
       isLoading: false,
       isSelectAll: false,
-      arrowCounter: 0,
-    }
+      arrowCounter: 0
+    };
   },
   watch: {
     items: function(val, oldValue) {
@@ -84,22 +114,25 @@ export default Vue.extend({
     }
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside)
+    document.addEventListener("click", this.handleClickOutside);
   },
   destroyed() {
-    document.removeEventListener('click', this.handleClickOutside)
+    document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
     lightColorScale: function(location) {
-      const scale = store.getters['colors/getLightColor'];
-      return (scale(location))
+      const scale = store.getters["colors/getLightColor"];
+      return scale(location);
     },
     colorScale: function(location) {
-      const scale = store.getters['colors/getDarkColor'];
-      return (scale(location))
+      const scale = store.getters["colors/getDarkColor"];
+      return scale(location);
     },
     removeChip(item) {
-      this.$emit('selected', this.selected.filter(d => d !== item));
+      this.$emit(
+        "selected",
+        this.selected.filter(d => d !== item)
+      );
       // this.selected = this.selected.filter(d => d !== item);
     },
     onChange() {
@@ -116,14 +149,14 @@ export default Vue.extend({
     },
     filterResults() {
       // first uncapitalize all the things
-      this.results = this.items.filter((item) => {
+      this.results = this.items.filter(item => {
         return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       });
     },
     setResult(result) {
       // this.$emit('input', result);
       this.selected.push(result);
-      this.$emit('selected', this.selected);
+      this.$emit("selected", this.selected);
       this.search = "";
       this.isOpen = false;
     },
@@ -139,10 +172,12 @@ export default Vue.extend({
     },
     onEnter() {
       // Let's warn the parent that a change was made
-      const result = this.results[this.arrowCounter] ? this.results[this.arrowCounter] : this.search;
+      const result = this.results[this.arrowCounter]
+        ? this.results[this.arrowCounter]
+        : this.search;
       // this.$emit('input', result);
       this.selected.push(result);
-      this.$emit('input', this.selected);
+      this.$emit("input", this.selected);
       this.search = "";
       this.isOpen = false;
       this.arrowCounter = -1;
@@ -154,7 +189,7 @@ export default Vue.extend({
 
       if (this.isSelectAll) {
         this.search = "";
-        this.$emit('selected', []);
+        this.$emit("selected", []);
         this.isSelectAll = false;
       }
     },
@@ -169,73 +204,73 @@ export default Vue.extend({
       }
     }
   }
-})
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 .autocomplete {
-    position: relative;
-    max-width: 700px;
-    margin-bottom: 0.5em;
+  position: relative;
+  max-width: 700px;
+  margin-bottom: 0.5em;
 }
 
 .autocomplete-results {
-    padding: 0;
-    margin: 0;
-    border: 1px solid $grey-40;
-    background: $grey-30;
-    box-shadow: 1px 1px 2px 2px $grey-alpha15;
-    height: 120px;
-    overflow: auto;
-    width: 100%;
+  padding: 0;
+  margin: 0;
+  border: 1px solid $grey-40;
+  background: $grey-30;
+  box-shadow: 1px 1px 2px 2px $grey-alpha15;
+  height: 120px;
+  overflow: auto;
+  width: 100%;
 }
 
 .autocomplete-result {
-    list-style: none;
-    text-align: left;
-    padding: 4px 2px;
-    cursor: pointer;
+  list-style: none;
+  text-align: left;
+  padding: 4px 2px;
+  cursor: pointer;
 }
 
 .autocomplete-result.is-active,
 .autocomplete-result:hover {
-    background-color: $primary-color;
-    color: white;
+  background-color: $primary-color;
+  color: white;
 }
 
 .autocomplete-input {
-    border: 1px solid $grey-40;
-    border-radius: 0.25em;
-    padding: 0.5em;
+  border: 1px solid $grey-40;
+  border-radius: 0.25em;
+  padding: 0.5em;
 }
 
 input {
-    flex-grow: 2;
-    border: none;
-    font-size: 1em;
+  flex-grow: 2;
+  border: none;
+  font-size: 1em;
 }
 
 input:focus {
-    // removing the input focus blue box.
-    outline: none;
+  // removing the input focus blue box.
+  outline: none;
 }
 
 // placeholder
 .floating-label {
-    margin-bottom: 0.25em;
-    text-transform: uppercase;
-    flex-grow: 1;
-    color: $grey-60;
+  margin-bottom: 0.25em;
+  text-transform: uppercase;
+  flex-grow: 1;
+  color: $grey-60;
 }
 
 .floating-label.empty {
-    font-size: 1em;
-    transition: 0.5s ease all;
+  font-size: 1em;
+  transition: 0.5s ease all;
 }
 
 .floating-label.filled {
-    font-size: 0.7em;
-    transition: 0.5s ease all;
+  font-size: 0.7em;
+  transition: 0.5s ease all;
 }
 </style>

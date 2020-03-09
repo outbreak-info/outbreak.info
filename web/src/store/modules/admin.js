@@ -1,20 +1,20 @@
 // initial state
 const state = {
   loading: false
-}
+};
 
 // getters
-const getters = {}
+const getters = {};
 
 // actions
-const actions = {}
+const actions = {};
 
 // mutations
 const mutations = {
   setLoading(state, isLoading) {
     state.loading = isLoading;
   }
-}
+};
 
 export default {
   namespaced: true,
@@ -22,4 +22,4 @@ export default {
   getters,
   actions,
   mutations
-}
+};
