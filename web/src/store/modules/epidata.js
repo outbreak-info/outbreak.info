@@ -1,6 +1,6 @@
 import {
   cleanEpi,
-  nestRegions
+  nestEpiTrace
 } from "@/js/importEpi";
 
 import {
@@ -15,18 +15,29 @@ import {
 import {
   csv,
   isoParse,
-  max, sum
+  max,
+  sum
 } from 'd3';
+
+import {
+  cloneDeep
+} from 'lodash'
 
 // initial state
 const state = {
   // case count variables
   casesUrl: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
   cases: [],
+  allCases: [],
+  countryCases: [],
   currentTotalCases: null,
+  numCountries: null,
   allPlaces: [],
   mostCases: [],
   firstCases: [],
+  caseThreshold: 50,
+  barHeight: 15,
+  countriesAboveThreshold: [],
   // date updated
   mostRecentDate: null,
   dateUpdated: null,
@@ -44,16 +55,25 @@ const getters = {
 // actions --> async props
 const actions = {
   loadCases(store) {
+    console.log("GETTING DATA FROM GITHUB")
     this.state.admin.loading = true;
 
     from(csv(store.state.casesUrl)).pipe(
         tap(data => {
-          const cleaned = cleanEpi(data);
-          const lastDate = max(cleaned, d => d.currentDate);
-          store.commit("setCases", cleaned);
+          const cleanedCases = cleanEpi(data);
+          const lastDate = max(cleanedCases, d => d.currentDate);
+
+          // calculate summaries
+          const regionTotals = nestEpiTrace(cleanedCases.flatMap(d => d.data), "region", "region");
+          const countryTotals = nestEpiTrace(cleanedCases.flatMap(d => d.data), "country", "country");
+          const subnationals = cleanedCases.filter(d => d.locationType === "sub-national");
+          const cleaned = [regionTotals, countryTotals, subnationals].reduce((flat, next) => flat.concat(next), []);
+
+          store.commit("setCases", {
+            cases: cleanedCases,
+            all: cleaned
+          });
           store.commit("setRecentDate", lastDate);
-          // const nestedRegions = nestRegions(cleaned.flatMap(d => d.data));
-          // store.commit("setRegionCases", nestedRegions)
         }),
         catchError(e => {
           console.log("%c Error in getting case counts!", "color: red")
@@ -75,23 +95,28 @@ const actions = {
 
 // mutations
 const mutations = {
-  setCases(state, data) {
-    state.cases = data;
-    console.log(data)
+  setCases(state, payload) {
+    state.cases = payload.cases;
+    state.allCases = payload.all;
 
-    state.currentTotalCases = sum(data, d => d.currentCases);
-    state.mostCases = data.sort((a,b) => b.currentCases - a.currentCases).slice(0,5);
-    state.allPlaces = [...new Set(data.map(d => d.placeName))];;
+    const countryCases = payload.all.filter(d => d.locationType === "country");
+
+    state.currentTotalCases = sum(payload.cases, d => d.currentCases);
+    state.countryCases = countryCases;
+    state.numCountries = countryCases.length;
+    state.mostCases = countryCases.sort((a, b) => b.currentCases - a.currentCases).slice(0, 5);
+    state.firstCases = countryCases.filter(d => d.newToday);
+    state.countriesAboveThreshold = countryCases.filter(d => d.numIncrease > state.caseThreshold);
+
+    state.allPlaces = [...new Set(payload.all.map(d => d.locationName))];
   },
+  // Github commit date
   setDateUpdated(state, newDate) {
     state.dateUpdated = newDate;
   },
   setRecentDate(state, newDate) {
     state.mostRecentDate = newDate;
-  },
-  // setRegionCases(state, data) {
-  //   state.casesByRegion = data
-  // }
+  }
 }
 
 export default {
