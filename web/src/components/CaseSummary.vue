@@ -9,7 +9,8 @@
     <span v-if="idx < mostCases.length - 1">{{idx === mostCases.length - 2 ? ", and " : ", "}}</span>
   </span>.
   In the last day, <span v-if="firstCases.length > 0">
-    <span class="accent">{{ firstCases.length }} countries</span> have announced their <span class="accent">first cases</span>, and </span>
+    <router-link :to="{ name: 'Epidemiology', query: { location: newCountries } }" class="accent new-cases">{{ firstCases.length }} countries</router-link>
+      have announced their <span class="accent">first cases</span>, and </span>
   <router-link :to="{ name: 'Epidemiology', query: { location: changingCountries } }" class="accent rapidly-growing">{{countriesAboveThresholdCount}} countries</router-link> have reported more than <span class="accent">{{caseThreshold}} new cases</span>.
   <router-link :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Explore how case counts are changing in regions, countries, and subnational locations</router-link>
 </p>
@@ -48,6 +49,9 @@ export default Vue.extend({
     changingCountries() {
       return(this.countriesAboveThreshold.map(d => d.locationName).join(";"))
     },
+    newCountries() {
+      return(this.firstCases.map(d => d.locationName).join(";"))
+    },
     mostCasesNames: function() {
       return(this.mostCases.map(d => d.locationName).join(";"))
     }
@@ -67,7 +71,7 @@ export default Vue.extend({
     color: $primary-color;
 }
 
-.hardest-hit, .rapidly-growing {
+.hardest-hit, .rapidly-growing, .new-cases {
     color: $primary-color;
     border-bottom: $primary-color 1px dotted;
     text-decoration: none;
