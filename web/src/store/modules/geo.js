@@ -9,24 +9,25 @@ const state = {
       display: false,
       region: "Asia (outside China)",
       countries: ["Thailand", "Japan", "South Korea", "Taiwan", "Macau", "Hong Kong", "Singapore", "Vietnam",
-        "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia"
+        "Nepal", "Malaysia", "Cambodia", "Sri Lanka", "Philippines", "India", "Indonesia", "Bhutan", "Bangladesh", "Maldives"
       ]
     },
     {
       display: false,
       region: "North America",
-      countries: ["US", "Canada", "Mexico", "Dominican Republic", "Saint Barthelemy"]
+      countries: ["US", "Canada", "Mexico", "Dominican Republic", "Saint Barthelemy", "Martinique"]
     },
     {
       display: false,
       region: "South America",
-      countries: ["Brazil", "Ecuador", "Chile", "Argentina"]
+      countries: ["Brazil", "Ecuador", "Chile", "Argentina", "Paraguay", "Peru", "Costa Rica", "French Guiana", "Colombia"]
     },
     {
       display: false,
       region: "Europe",
       countries: ["Bosnia and Herzegovina", "Slovenia", "Germany", "Finland", "France", "Croatia", "Austria", "Italy", "UK", "Russia", "Sweden", "Spain", "Belgium", "Switzerland", "Greece", "Georgia", "North Macedonia", "Norway",
-        "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland",
+        "Romania", "Denmark", "Estonia", "Netherlands", "San Marino", "Belarus", "Iceland", "Lithuania", "Ireland", "Republic of Ireland", "Moldova", "Bulgaria", "Serbia",
+        "Vatican City", "Slovakia", "Malta",
         "Luxembourg", "Monaco", "Azerbaijan", "Czech Republic", "Armenia", "Portugal", "Andorra", "Latvia", "Hungary", "Liechtenstein", "Poland", "Gibraltar", "Faroe Islands", "Ukraine"
       ]
     },
@@ -38,7 +39,7 @@ const state = {
     {
       display: false,
       region: "Africa",
-      countries: ["Algeria", "Nigeria", "Morocco", "Senegal", "Tunisia", "South Africa"]
+      countries: ["Algeria", "Nigeria", "Morocco", "Senegal", "Tunisia", "South Africa", "Cameroon", "Togo"]
     },
     {
       display: false,
