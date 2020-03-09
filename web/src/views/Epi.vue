@@ -6,11 +6,11 @@
     <EpiCurve v-bind:data="data" />
     <EpiTable v-bind:data="data" />
   </div>
-  <div id="presetLocations">
+  <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
       {{place.label}}
     </button>
-  </div>
+  </div> -->
 </div>
 </template>
 
@@ -40,7 +40,6 @@ export default {
   },
   data() {
     return {
-      topX: 6,
       presetGroups: [{
         label: "United States",
         locations: ["US", "King County, WA", "Cook County, IL", "Tempe, AZ", "Orange, CA", "Los Angeles, CA", "Santa Clara, CA", "Boston, MA", "San Benito, CA", "Madison, WI", "San Diego County, CA", "San Antonio, TX",
@@ -51,6 +50,9 @@ export default {
       selectedPlaces: [],
       data: []
     }
+  },
+  computed: {
+    ...mapState('epidata', ["allCases", "allPlaces"])
   },
   watch: {
     selectedPlaces: function(newValue, oldValue) {
@@ -68,14 +70,12 @@ export default {
       this.setLocation(newLocation);
     }
   },
-  computed: {
-    ...mapState('epidata', ["cases", "allPlaces"])
-  },
   methods: {
     filterData: function(locations) {
-      this.data = this.cases.filter(d => locations.map(d => d.toLowerCase()).includes(d.placeName.toLowerCase()));
+      this.data = this.allCases.filter(d => locations.map(d => d.toLowerCase()).includes(d.locationName.toLowerCase()));
+      console.log(this.data)
 
-      store.commit('colors/setLocations', this.data.map(d => d.placeName));
+      store.commit('colors/setLocations', this.data.map(d => d.locationName));
     },
     setLocation: function(locationString, nullLocationHandler) {
       if (locationString && locationString !== "") {
@@ -94,7 +94,7 @@ export default {
       this.selectedPlaces = selected;
     },
     selectGroup: function(locationGroup) {
-      this.selectedPlaces = locationGroup.locations;
+      // this.selectedPlaces = locationGroup.locations;
     },
   },
   mounted() {
