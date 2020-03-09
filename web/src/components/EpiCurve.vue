@@ -468,7 +468,7 @@ export default Vue.extend({
         .style("fill", "white")
         .attr("y", -this.margin.top)
         .attr("width", this.width + this.radius + this.margin.right)
-        .attr("height", this.height + this.margin.top + this.radius * 2 + this.margin.bottom);
+        .attr("height", this.height + this.margin.top + this.radius * 3);
 
       curtainSelector.merge(curtainEnter)
         .attr("x", -this.radius)
