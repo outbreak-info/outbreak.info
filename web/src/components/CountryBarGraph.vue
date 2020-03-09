@@ -232,7 +232,7 @@ export default Vue.extend({
       const sparkSelector = grpSelector.select(".sparkline");
 
       const sparkEnter = grpEnter.append("path")
-        .attr("transform", d => `translate(${this.width + this.margin.gap + this.margin.right}, ${this.y(d.id.replace(/_/g, " "))})`)
+        .attr("transform", d => `translate(${this.width + this.margin.gap + this.margin.right}, ${this.y(d.locationName)})`)
         .attr("class", "sparkline");
 
       // merge
@@ -254,7 +254,7 @@ export default Vue.extend({
       const newCasesEnter = grpEnter.append("text")
         .attr("transform", d => `translate(${this.width + this.margin.gap * 3 + this.margin.right + this.sparkWidth }, ${0})`)
         .attr("x", 5)
-        .attr("y", d => this.y(d.id.replace(/_/g, " ")) + this.y.bandwidth() / 2)
+        .attr("y", d => this.y(d.locationName) + this.y.bandwidth() / 2)
         .attr("class", "new-cases")
         .style("font-size", this.y.bandwidth());
 
