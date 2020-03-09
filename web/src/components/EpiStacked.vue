@@ -66,10 +66,12 @@ export default Vue.extend({
   },
   methods: {
     handleClick: function(key) {
+      const getLocations = store.getters['epidata/getCountryFromRegion'];
+
       this.$router.push({
         path: 'epidemiology',
         query: {
-          region: key
+          location: getLocations(key)
         }
       })
 

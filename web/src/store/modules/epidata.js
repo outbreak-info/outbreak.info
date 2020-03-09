@@ -45,7 +45,10 @@ const state = {
 // getters --> computed props
 const getters = {
   getCases: state => state.cases,
-  getDateUpdated: state => state.dateUpdated
+  getDateUpdated: state => state.dateUpdated,
+  getCountryFromRegion: state => regionName => {
+    return (state.countryCases.filter(d => d.region === regionName)).map(d => d.locationName).join(";");
+  }
 }
 
 // actions --> async props
