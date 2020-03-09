@@ -1,14 +1,17 @@
 <template>
 <p class="case-summary">
   {{currentDate ? `As of ${currentDate}` : "Currently"}},
-  there are <span class="current-total">{{ currentTotalCases.toLocaleString() }}</span> confirmed COVID-19 cases worldwide,
+  there are <span class="bold-accent">{{ currentTotalCases.toLocaleString() }}</span> confirmed COVID-19 cases
+  in <span class="bold-accent">{{ numCountries }} countries</span> worldwide,
   with the most heavily hit areas including
   <span v-for="(country, idx) in mostCases" :key="idx">
-    <router-link :to="{ name: 'Epidemiology', query: {location: country.placeName} }" class="hardest-hit">{{ country.placeName }}</router-link>
-    <span v-if="idx < mostCases.length - 1">{{idx === mostCases.length - 2 ? ", and " : ", "}}</span></span>.
-  In the last day, {{ firstCases }} countries have announced their first cases,
-  and Y countries have reported more than z new cases.
-  <router-link to="/epidemiology">Explore how case counts are changing in regions, countries, and subnational locations</router-link>
+    <router-link :to="{ name: 'Epidemiology', query: {location: country.locationName} }" class="hardest-hit">{{ country.locationName }}</router-link>
+    <span v-if="idx < mostCases.length - 1">{{idx === mostCases.length - 2 ? ", and " : ", "}}</span>
+  </span>.
+  In the last day, <span v-if="firstCases.length > 0">
+    <span class="accent">{{ firstCases.length }} countries</span> have announced their <span class="accent">first cases</span>, and</span>
+  <router-link :to="{ name: 'Epidemiology', query: { location: changingCountries } }" class="accent rapidly-growing">{{countriesAboveThresholdCount}} countries</router-link> have reported more than <span class="accent">{{caseThreshold}} new cases</span>.
+  <router-link :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Explore how case counts are changing in regions, countries, and subnational locations</router-link>
 </p>
 </template>
 
@@ -30,7 +33,7 @@ export default Vue.extend({
   },
   watch: {},
   computed: {
-    ...mapState('epidata', ['mostRecentDate', 'currentTotalCases', 'firstCases', 'mostCases']),
+    ...mapState('epidata', ['mostRecentDate', 'currentTotalCases', 'firstCases', 'mostCases', 'numCountries', 'caseThreshold', 'countriesAboveThreshold']),
     currentDate() {
       const formatDate = timeFormat("%e %B %Y");
       let lastUpdated = null;
@@ -39,6 +42,15 @@ export default Vue.extend({
       }
       return (lastUpdated);
     },
+    countriesAboveThresholdCount() {
+      return(this.countriesAboveThreshold.length)
+    },
+    changingCountries() {
+      return(this.countriesAboveThreshold.map(d => d.locationName).join(";"))
+    },
+    mostCasesNames: function() {
+      return(this.mostCases.map(d => d.locationName).join(";"))
+    }
   },
   methods: {}
 })
@@ -46,15 +58,18 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.current-total {
+.bold-accent {
     color: $primary-color;
     font-weight: 700;
 }
 
-.hardest-hit {
-  color: $primary-color;
-  border-bottom: $primary-color 1px dotted;
-  text-decoration: none;
+.accent {
+    color: $primary-color;
 }
 
+.hardest-hit, .rapidly-growing {
+    color: $primary-color;
+    border-bottom: $primary-color 1px dotted;
+    text-decoration: none;
+}
 </style>
