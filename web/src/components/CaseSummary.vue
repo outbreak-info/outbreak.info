@@ -9,7 +9,7 @@
     <span v-if="idx < mostCases.length - 1">{{idx === mostCases.length - 2 ? ", and " : ", "}}</span>
   </span>.
   In the last day, <span v-if="firstCases.length > 0">
-    <span class="accent">{{ firstCases.length }} countries</span> have announced their <span class="accent">first cases</span>, and</span>
+    <span class="accent">{{ firstCases.length }} countries</span> have announced their <span class="accent">first cases</span>, and </span>
   <router-link :to="{ name: 'Epidemiology', query: { location: changingCountries } }" class="accent rapidly-growing">{{countriesAboveThresholdCount}} countries</router-link> have reported more than <span class="accent">{{caseThreshold}} new cases</span>.
   <router-link :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Explore how case counts are changing in regions, countries, and subnational locations</router-link>
 </p>
