@@ -55,7 +55,7 @@
         <span v-else>{{ row.placeName }}</span>
       </td>
       <td>
-        {{ row.currentDate }}
+        {{ row.currentDateFormatted }}
       </td>
       <td>
         {{ row.totalNumFormatted}}
@@ -64,7 +64,7 @@
         {{ row.numIncreaseFormatted }}
       </td>
       <td>
-        {{ row.pctIncrease }}
+        {{ row.pctIncreaseFormatted }}
       </td>
 
     </tr>
@@ -183,10 +183,10 @@ export default Vue.extend({
     sortTotal() {
       // backwards, since it reflects the previous value
       if ((this.totalSort === "asc")) {
-        this.cases.sort((a, b) => a.totalNum - b.totalNum);
+        this.cases.sort((a, b) => a.currentCases - b.currentCases);
         this.totalSort = "desc";
       } else {
-        this.cases.sort((a, b) => b.totalNum - a.totalNum);
+        this.cases.sort((a, b) => b.currentCases - a.currentCases);
         this.totalSort = "asc";
       }
       // reset other sorting funcs
@@ -214,10 +214,10 @@ export default Vue.extend({
     sortPct() {
       // backwards, since it reflects the previous value
       if ((this.pctSort === "asc")) {
-        this.cases.sort((a, b) => a.pct - b.pct);
+        this.cases.sort((a, b) => a.pctIncrease - b.pctIncrease);
         this.pctSort = "desc";
       } else {
-        this.cases.sort((a, b) => b.pct - a.pct);
+        this.cases.sort((a, b) => b.pctIncrease - a.pctIncrease);
         this.pctSort = "asc";
       }
       // reset other sorting funcs
@@ -235,16 +235,13 @@ export default Vue.extend({
     },
     prepData() {
       this.cases = cloneDeep(this.data);
+      console.log(this.data)
 
       this.cases.forEach(d => {
-        const last2 = d.data.slice(-2);
-        d['numIncreaseFormatted'] = (last2[1].cases - last2[0].cases).toLocaleString();
-        d['numIncrease'] = last2[1].cases - last2[0].cases;
-        d['pct'] = d.numIncrease / last2[0].cases;
-        d['pctIncrease'] = this.formatPercent(d.numIncrease, last2[0].cases);
-        d['currentDate'] = formatDate(last2[1].date);
-        d['totalNum'] = last2[1].cases;
-        d['totalNumFormatted'] = last2[1].cases.toLocaleString();
+        d['currentDateFormatted'] = formatDate(d.currentDate);
+        d['numIncreaseFormatted'] = d.numIncrease.toLocaleString();
+        d['pctIncreaseFormatted'] = this.formatPercent(d.pctIncrease);
+        d['totalNumFormatted'] = d.currentCases.toLocaleString();
         d['color'] = this.colorScale(d.placeName);
       });
 
@@ -253,10 +250,8 @@ export default Vue.extend({
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);
     },
-    formatPercent(current, previous) {
-      const pct = current / previous;
-
-      if (pct === 0 || (current === 0 && previous === 0)) {
+    formatPercent(pct) {
+      if (!pct) {
         return ("none");
       }
 
