@@ -46,7 +46,7 @@ export default Vue.extend({
 
       // data
       logData: null,
-      currentDate: "02-22-20",
+      currentDate: "03-08-20",
 
       // axes
       projection: geoInterruptedHomolosine().center([0,0]).translate([(width/2), (height/2)]).scale( width / 1.3 / Math.PI),
@@ -81,7 +81,7 @@ export default Vue.extend({
 
       this.flatData = this.data.flatMap(d => d.data);
 
-      this.plottedData = this.flatData.filter(d => d.date_string == "03-06-20");
+      this.plottedData = this.flatData.filter(d => d.date_string == "03-08-20");
       console.log(this.plottedData)
     },
     updatePlot: function() {
@@ -167,13 +167,13 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .timelapse svg {
-  background: aliceblue;
+  // background: aliceblue;
 }
 
 .centroid {
     stroke: $grey-90;
     stroke-width: 0.75;
-    opacity: 0.65;
+    opacity: 0.75;
 }
 .annotation--new-country {
     dominant-baseline: central;

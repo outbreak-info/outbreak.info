@@ -7,7 +7,7 @@
       <router-link to="/">Home</router-link> |
       <router-link :key="$route.fullPath"
       :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Epidemiology</router-link> |
-      <router-link to="/timelapse">Timelapse</router-link> |
+      <!-- <router-link to="/timelapse">Timelapse</router-link> | -->
       <router-link to="/about">About</router-link>
     </nav>
   </header>
