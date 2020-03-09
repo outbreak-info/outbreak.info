@@ -25,9 +25,9 @@ export function cleanEpi(data) {
 
   data.forEach(d => {
     const metadata = {
-      'province': d['Province/State'],
-      'placeName': d['Province/State'] ? d['Province/State'] : d['Country/Region'],
-      'country': d['Country/Region'],
+      'province': d['Province/State'].trim(),
+      'placeName': d['Province/State'] ? d['Province/State'].trim() : d['Country/Region'].trim(),
+      'country': d['Country/Region'].trim(),
       'region': getRegion(d['Country/Region']),
       lat: +d["Lat"],
       lon: +d["Long"]
@@ -37,7 +37,14 @@ export function cleanEpi(data) {
     delete d['Lat'];
     delete d['Long'];
     metadata['id'] = metadata['placeName'].replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_");
-    const keys = Object.keys(d);
+    let keys = Object.keys(d);
+    const today = keys.slice(-1)[0];
+    const badToday = data.map(d => d[today]).every(d => d == "");
+
+    if (badToday) {
+      console.log("Deleting today's data: all null")
+      keys.pop();
+    }
 
     d['data'] = keys.map(timepoint => {
       return ({
@@ -55,7 +62,7 @@ export function cleanEpi(data) {
 
     d['data'].sort((a, b) => a.date - b.date);
 
-    const firstDate = d.data.filter(d => d.cases > 0).slice(0,1)
+    const firstDate = d.data.filter(d => d.cases > 0).slice(0, 1);
 
     d['placeName'] = metadata.placeName;
     d['id'] = metadata.id;
@@ -64,8 +71,8 @@ export function cleanEpi(data) {
     d['numIncrease'] = (last2[1].cases - last2[0].cases);
     d['pctIncrease'] = d.numIncrease / last2[0].cases;
     d['currentDate'] = last2[1].date;
-    d['firstDate'] = firstDate[0]['date'];
-    d['newToday'] = firstDate[0]['date'] === last2[1].date;
+    // d['firstDate'] = firstDate[0]['date'];
+    // d['newToday'] = firstDate[0]['date'] === last2[1].date;
     d['currentCases'] = last2[1].cases;
   });
 
@@ -104,9 +111,11 @@ export function nestEpiTrace(data, nestingVar, nestingType) {
       d['pctIncrease'] = d.numIncrease / last2[0].cases;
       d['currentDate'] = last2[1].date;
       d['currentCases'] = last2[1].cases;
+      d['newToday'] = d.data[0].value.newToday;
       d['countries'] = d.data[0].value.countries;
       d['region'] = d.data[0].value.region;
       d['locationType'] = nestingType;
+      // delete d['values'];
     })
 
     return (regionNest);
