@@ -9,6 +9,8 @@
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
       </marker>
     </defs>
+    <g :transform="`translate(${this.margin.left}, ${margin.top + height})`" class="epi-axis axis--x"></g>
+    <g :transform="`translate(${this.margin.left}, ${margin.top})`" class="epi-axis axis--y"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
@@ -97,6 +99,10 @@ export default Vue.extend({
       const scale = store.getters['colors/getColor'];
       return (scale(location))
     },
+    lightColorScale: function(location) {
+      const scale = store.getters['colors/getColor'];
+      return (scale(location, 0.7))
+    },
     changeScale: function() {
       this.isLogY = !this.isLogY;
 
@@ -161,13 +167,13 @@ export default Vue.extend({
         .x(d => this.x(d.date))
         .y(d => this.y(d.cases));
 
-      this.svg.append('g')
-        .attr('class', 'epi-axis axis--x')
-        .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`);
-
-      this.svg.append('g')
-        .attr('class', 'epi-axis axis--y')
-        .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+      // this.svg.append('g')
+      //   .attr('class', 'epi-axis axis--x')
+      //   .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`);
+      //
+      // this.svg.append('g')
+      //   .attr('class', 'epi-axis axis--y')
+      //   .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
       this.switchBtn = this.svg.append("g")
         .attr("class", "switch-button-group");
@@ -362,7 +368,7 @@ export default Vue.extend({
       const tooltipGroupEnter = tooltipGroupSelector.enter()
         .append("g")
         .attr("class", "epi-tooltip-group")
-        .attr("fill", d => this.colorScale(d.placeName))
+        .attr("fill", d => this.lightColorScale(d.placeName))
         .attr("stroke", d => this.colorScale(d.placeName));
 
       tooltipGroupSelector.merge(tooltipGroupEnter)
@@ -398,8 +404,7 @@ export default Vue.extend({
         .attr("width", 108)
         .attr("height", 40)
         .attr("stroke-dasharray", "108, 188")
-        .attr("stroke-width", "3")
-        .attr("fill-opacity", 0.4)
+        .attr("stroke-width", "3");
 
       const tooltipText = tooltipSelector.select(".tooltip--text");
 
@@ -463,7 +468,7 @@ export default Vue.extend({
         .style("fill", "white")
         .attr("y", -this.margin.top)
         .attr("width", this.width + this.radius + this.margin.right)
-        .attr("height", this.height + this.margin.top + this.radius * 2);
+        .attr("height", this.height + this.margin.top + this.radius * 2 + this.margin.bottom);
 
       curtainSelector.merge(curtainEnter)
         .attr("x", -this.radius)

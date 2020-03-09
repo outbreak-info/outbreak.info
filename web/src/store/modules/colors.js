@@ -19,8 +19,11 @@ const state = {
 
 // getters --> computed props
 const getters = {
-  getColor: state => (location) => {
-    return state.locationScale ? state.locationScale(location) : null;
+  getColor: state => (location, pct = 0) => {
+    if(!state.locationScale) {
+      return(null)
+    }
+    return pct ? chroma(state.locationScale(location)).luminance(pct) : state.locationScale(location);
   },
   getLightColor: state => (location, pct = 0.65) => {
     const color = state.locationScale(location);
