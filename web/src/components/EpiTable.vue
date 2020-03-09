@@ -235,7 +235,6 @@ export default Vue.extend({
     },
     prepData() {
       this.cases = cloneDeep(this.data);
-      console.log(this.data)
 
       this.cases.forEach(d => {
         d['currentDateFormatted'] = formatDate(d.currentDate);
