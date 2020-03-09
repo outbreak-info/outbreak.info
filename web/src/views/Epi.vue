@@ -73,7 +73,6 @@ export default {
   methods: {
     filterData: function(locations) {
       this.data = this.allCases.filter(d => locations.map(d => d.toLowerCase()).includes(d.locationName.toLowerCase()));
-      console.log(this.data)
 
       store.commit('colors/setLocations', this.data.map(d => d.locationName));
     },
