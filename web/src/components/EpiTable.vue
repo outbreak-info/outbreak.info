@@ -123,7 +123,8 @@ export default Vue.extend({
   },
   props: {
     data: Array,
-    routable: Boolean
+    routable: Boolean,
+    colorScale: Function
   },
   data() {
     return {
@@ -267,11 +268,7 @@ export default Vue.extend({
       }
 
       return (format(".0%")(pct));
-    },
-    colorScale: function(location) {
-      const scale = store.getters['colors/getColor'];
-      return (scale(location))
-    },
+    }
   }
 });
 </script>

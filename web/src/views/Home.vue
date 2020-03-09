@@ -33,7 +33,7 @@
     <DataSource />
   </section>
   <section class="case-data-table">
-    <EpiTable :data="cases" :routable="true"/>
+    <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale"/>
   </section>
 </div>
 </template>
@@ -98,6 +98,10 @@ export default {
   methods: {
     handleTooltip(selected) {
       store.commit('geo/setRegionTooltip', selected)
+    },
+    regionColorScale: function(location) {
+      const scale = store.getters['colors/getRegionColorFromLocation'];
+      return (scale(location))
     }
   },
   mounted() {

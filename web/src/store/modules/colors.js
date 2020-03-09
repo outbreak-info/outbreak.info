@@ -20,8 +20,8 @@ const state = {
 // getters --> computed props
 const getters = {
   getColor: state => (location, pct = 0) => {
-    if(!state.locationScale) {
-      return(null)
+    if (!state.locationScale) {
+      return (null)
     }
     return pct ? chroma(state.locationScale(location)).luminance(pct) : state.locationScale(location);
   },
@@ -33,19 +33,25 @@ const getters = {
     const color = state.locationScale(location);
     return state.scale && color ? chroma(color).darken(pct) : null;
   },
-  getRegionColor: state => (location, pct = null) => {
-    //this.state.geo.regionDict.map(d => d.region)
-    const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(["China", "Asia (outside China)", "North America", "South America", "Europe", "Middle East", "Africa", "Diamond Princess Cruise", "Australia/Oceania"]);
+  getRegionColor: (state, _, rootState) => (location, pct = null) => {
+    const regions = rootState['geo']['regionDict'].map(d => d.region);
+    const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(regions);
 
-    if(pct) {
-      return(chroma(scale(location)).luminance(pct))
+    if (pct) {
+      return (chroma(scale(location)).luminance(pct))
     }
     return scale(location);
   },
-  getRegionColorPalette: state => (region, numEntries, idx) => {
-    // console.log(state.geo.regionDict.map(d => d.region))
-    const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(["China", "Asia (outside China)", "North America", "South America", "Europe", "Middle East", "Africa", "Diamond Princess Cruise", "Australia/Oceania"]);
-    // const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(state.geo.regionDict.map(d => d.region));
+  getRegionColorFromLocation: (state, getters, rootState, rootGetters) => (location) => {
+    const regions = rootState['geo']['regionDict'].map(d => d.region);
+    const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(regions);
+    const regionFunc = rootGetters['epidata/getRegion'];
+    const region = regionFunc(location);
+    return scale(region);
+  },
+  getRegionColorPalette: (state, _, rootState) => (region, numEntries, idx) => {
+    const regions = rootState['geo']['regionDict'].map(d => d.region);
+    const scale = scaleOrdinal(["#BBB"].concat(schemeTableau10)).domain(regions);
     const color = scale(region);
 
     const colorScale = chroma.scale([chroma(color).luminance(0.5), color, chroma(color).darken(1.25)]).domain([0, numEntries - 1]);

@@ -46,6 +46,10 @@ const state = {
 const getters = {
   getCases: state => state.cases,
   getDateUpdated: state => state.dateUpdated,
+  getRegion: state => placeName => {
+    const region = state.allCases.filter(d => d.locationName === placeName);
+    return (region[0].region);
+  },
   getCountryFromRegion: state => regionName => {
     return (state.countryCases.filter(d => d.region === regionName)).map(d => d.locationName).join(";");
   }

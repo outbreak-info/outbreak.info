@@ -69,6 +69,8 @@ export function cleanEpi(data) {
     const firstDate = row.data.filter(d => d.cases > 0).slice(0, 1);
     row['locationName'] = metadata.locationName;
     row['locationType'] = metadata.locationType;
+    row['region'] = metadata.region;
+    row['country'] = metadata.country;
     row['id'] = metadata.id;
     const last2 = row.data.slice(-2);
     row['numIncrease'] = (last2[1].cases - last2[0].cases);

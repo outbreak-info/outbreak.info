@@ -4,7 +4,7 @@
 
   <div class="flex">
     <EpiCurve v-bind:data="data" />
-    <EpiTable v-bind:data="data" />
+    <EpiTable v-bind:data="data" :colorScale="colorScale" />
   </div>
   <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
@@ -84,6 +84,10 @@ export default {
       } else {
         this.clearLocations();
       }
+    },
+    colorScale: function(location) {
+      const scale = store.getters['colors/getColor'];
+      return (scale(location))
     },
     clearLocations: function() {
       this.selectedPlaces = [];
