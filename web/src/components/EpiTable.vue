@@ -48,11 +48,11 @@
       </th>
 
     </tr>
-    <tr v-for="row in filteredCases" v-bind:key="row.placeName">
+    <tr v-for="row in filteredCases" v-bind:key="row.locationName">
       <td class="align-left px-3 location color-bar" v-bind:style="{'border-color': row.color}">
-        <router-link :to="{ name: 'Epidemiology', query: { location: row.placeName } }" class="router-link-black" v-if="routable">
-          {{ row.placeName}}</router-link>
-        <span v-else>{{ row.placeName }}</span>
+        <router-link :to="{ name: 'Epidemiology', query: { location: row.locationName } }" class="router-link-black" v-if="routable">
+          {{ row.locationName}}</router-link>
+        <span v-else>{{ row.locationName }}</span>
       </td>
       <td>
         {{ row.currentDateFormatted }}
@@ -168,10 +168,10 @@ export default Vue.extend({
     sortLocation() {
       // backwards, since it reflects the previous value
       if ((this.locationSort === "asc")) {
-        this.cases.sort((a, b) => a.placeName > b.placeName ? -1 : 1);
+        this.cases.sort((a, b) => a.locationName > b.locationName ? -1 : 1);
         this.locationSort = "desc";
       } else {
-        this.cases.sort((a, b) => a.placeName < b.placeName ? -1 : 1);
+        this.cases.sort((a, b) => a.locationName < b.locationName ? -1 : 1);
         this.locationSort = "asc";
       }
       // reset other sorting funcs
@@ -241,7 +241,7 @@ export default Vue.extend({
         d['numIncreaseFormatted'] = d.numIncrease.toLocaleString();
         d['pctIncreaseFormatted'] = this.formatPercent(d.pctIncrease);
         d['totalNumFormatted'] = d.currentCases.toLocaleString();
-        d['color'] = this.colorScale(d.placeName);
+        d['color'] = this.colorScale(d.locationName);
       });
 
       this.sortTotal();

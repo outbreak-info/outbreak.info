@@ -1,7 +1,7 @@
 <template>
 <div class="epidemiology-curves flex-column align-left">
   <!-- <button @click="switchAxes()">common axis</button> -->
-  <h3 class="plot-title">Cumulative number of COVID-19 cases<span v-if="placeName"> in {{placeName}}</span></h3>
+  <h3 class="plot-title">Cumulative number of COVID-19 cases<span v-if="locationName"> in {{locationName}}</span></h3>
   <DataUpdated />
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
     <defs>
@@ -83,9 +83,9 @@ export default Vue.extend({
     }
   },
   computed: {
-    placeName() {
+    locationName() {
       if (this.data.length === 1) {
-        return (this.data[0].placeName)
+        return (this.data[0].locationName)
       }
       return (null)
     }
@@ -293,8 +293,8 @@ export default Vue.extend({
 
       regionGroups.merge(regionsEnter)
         .attr("id", d => d.id)
-        .attr("fill", d => this.colorScale(d.placeName))
-        .attr("stroke", d => this.colorScale(d.placeName));
+        .attr("fill", d => this.colorScale(d.locationName))
+        .attr("stroke", d => this.colorScale(d.locationName));
 
       // --- region annotation ---
       const countrySelector = this.chart.selectAll(".epi-region")
@@ -314,7 +314,7 @@ export default Vue.extend({
         .attr("class", d => `annotation--region-name ${d.id}`)
         .attr('x', this.width)
         .attr('y', d => this.y(d.currentCases))
-        .text(d => d.placeName)
+        .text(d => d.locationName)
         .style("opacity", 1e-6)
         .transition(t1)
         .delay(1000)
@@ -368,8 +368,8 @@ export default Vue.extend({
       const tooltipGroupEnter = tooltipGroupSelector.enter()
         .append("g")
         .attr("class", "epi-tooltip-group")
-        .attr("fill", d => this.lightColorScale(d.placeName))
-        .attr("stroke", d => this.colorScale(d.placeName));
+        .attr("fill", d => this.lightColorScale(d.locationName))
+        .attr("stroke", d => this.colorScale(d.locationName));
 
       tooltipGroupSelector.merge(tooltipGroupEnter)
         .attr("class", d => `epi-tooltip-group ${d.id}`);

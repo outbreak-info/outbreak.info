@@ -145,7 +145,7 @@ export default Vue.extend({
         .domain([0, d3.max(this.data, d => d.currentCases)]);
 
       this.y = this.y.range([this.height, 0])
-        .domain(this.data.map(d => d.placeName));
+        .domain(this.data.map(d => d.locationName));
 
       this.xSpark = this.xSpark
         .domain(d3.extent(this.data.flatMap(d => d.data).map(d => d.date)));
@@ -182,7 +182,7 @@ export default Vue.extend({
 
       // merge
       grpSelector.merge(grpEnter)
-        .attr("id", d => `${d.placeName}`)
+        .attr("id", d => `${d.locationName}`)
         .attr("class", d => `${d.region}`)
         .style("fill", (d, i) => this.colorScale(i))
         .style("stroke", (d, i) => this.colorScale(i))
@@ -199,7 +199,7 @@ export default Vue.extend({
       barSelector.merge(barEnter)
         // .attr("width", 0)
         .attr("height", this.y.bandwidth())
-        .attr("y", d => this.y(d.placeName))
+        .attr("y", d => this.y(d.locationName))
         .style("fill", (d, i) => this.colorScale(i))
         // .style("fill-opacity", (d, i) => this.opacityScale(i))
         // .attr("x", d => this.x(0))
@@ -217,7 +217,7 @@ export default Vue.extend({
       textSelector.merge(textEnter)
         .attr("x", d => this.x(d.currentCases))
         .attr("dx", "-0.5em")
-        .attr("y", d => this.y(d.placeName) + this.y.bandwidth() / 2)
+        .attr("y", d => this.y(d.locationName) + this.y.bandwidth() / 2)
         .style("font-size", this.y.bandwidth())
         .text(d => d.currentCases.toLocaleString())
 

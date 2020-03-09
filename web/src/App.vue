@@ -41,7 +41,7 @@ export default ({
   computed: {
     ...mapState('epidata', ['mostCases']),
     mostCasesNames: function() {
-      return(this.mostCases.map(d => d.placeName).join(";"))
+      return(this.mostCases.map(d => d.locationName).join(";"))
     }
   },
   methods: {},
