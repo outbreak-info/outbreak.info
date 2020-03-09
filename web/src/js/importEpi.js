@@ -72,6 +72,7 @@ export function cleanEpi(data) {
     const firstDate = row.data.filter(d => d.cases > 0).slice(0, 1);
     row["locationName"] = metadata.locationName;
     row["locationType"] = metadata.locationType;
+    row["coord"] = [metadata.lat, metadata.lon];
     row["region"] = metadata.region;
     row["country"] = metadata.country;
     row["id"] = metadata.id;

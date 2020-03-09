@@ -1,6 +1,6 @@
 <template>
   <div class="home flex-column align-left">
-    <div v-if="loading" class="loader">
+        <div v-if="loading" class="loader">
       <img src="@/assets/ripple.svg" />
     </div>
 
@@ -71,6 +71,10 @@
     <section class="case-data-table">
       <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
     </section>
+
+    <section class="case-map">
+      <LeafletMap :data="cases"/>
+    </section>
   </div>
 </template>
 
@@ -82,6 +86,7 @@ import CaseSummary from "@/components/CaseSummary.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import EpiTable from "@/components/EpiTable.vue";
+import LeafletMap from "@/components/LeafletMap.vue";
 
 import { mapState } from "vuex";
 
@@ -99,7 +104,8 @@ export default {
     CaseSummary,
     DataUpdated,
     DataSource,
-    EpiTable
+    EpiTable,
+    LeafletMap
   },
   data() {
     return {};
