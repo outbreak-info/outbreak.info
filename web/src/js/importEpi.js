@@ -9,73 +9,75 @@ import {
 
 import store from "@/store";
 
-export function getRegion(country) {
-  const regionDict = store.state.geo.regionDict;
-
-  const region = regionDict.filter(d => d.countries.includes(country));
-
-  if (region.length === 1) {
-    return (region[0].region)
-  }
-}
-
+// Function to convert from the JHU data in wide form to long.
 export function cleanEpi(data) {
   const parseDate = timeParse("%m/%d/%y");
   const formatDate = timeFormat("%m-%d-%y");
 
-  data.forEach(d => {
+  data.forEach(row => {
     const metadata = {
-      'province': d['Province/State'].trim(),
-      'placeName': d['Province/State'] ? d['Province/State'].trim() : d['Country/Region'].trim(),
-      'country': d['Country/Region'].trim(),
-      'region': getRegion(d['Country/Region']),
-      lat: +d["Lat"],
-      lon: +d["Long"]
+      'locationName': row['Province/State'] && row["Province/State"] !== "" ? row['Province/State'].trim() : row['Country/Region'].trim(),
+      'locationType': row['Province/State'] && row["Province/State"] !== "" ? "sub-national" : "country",
+      'country': row['Country/Region'].trim(),
+      'region': getRegion(row['Country/Region']),
+      lat: +row["Lat"],
+      lon: +row["Long"]
     };
-    delete d['Province/State'];
-    delete d['Country/Region'];
-    delete d['Lat'];
-    delete d['Long'];
-    metadata['id'] = metadata['placeName'].replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_");
-    let keys = Object.keys(d);
-    const today = keys.slice(-1)[0];
-    const badToday = data.map(d => d[today]).every(d => d == "");
+    metadata['id'] = cleanID(metadata['locationName'], metadata['locationType']);
+
+    delete row['Province/State'];
+    delete row['Country/Region'];
+    delete row['Lat'];
+    delete row['Long'];
+
+    // get array of all the dates to convert from wide --> long
+    let dateArr = Object.keys(row);
+
+    // check the data integrity. Often during Github update, the initial load is an empty new column.
+    const dateToday = dateArr.slice(-1)[0];
+    const badToday = data.map(d => row[dateToday]).every(d => d == "");
 
     if (badToday) {
       console.log("Deleting today's data: all null")
-      keys.pop();
+      dateArr.pop();
     }
 
-    d['data'] = keys.map(timepoint => {
+    // convert from wide to long; save as `row['data']`
+    row['data'] = dateArr.map(timepoint => {
       return ({
         "date": parseDate(timepoint),
         "date_string": formatDate(parseDate(timepoint)),
-        "cases": +d[timepoint],
+        "cases": +row[timepoint],
         "coord": [metadata.lon, metadata.lat],
+        "id": metadata.id,
+        "locationType": metadata.locationType,
+        // variables needed for nesting and/or filtering
         "country": metadata.country,
-        "region": metadata.region,
-        "id": metadata.id
+        "countries": [metadata.country],
+        "region": metadata.region
       })
     });
 
-    keys.forEach(timepoint => delete d[timepoint]);
+    //  remove wide data
+    dateArr.forEach(timepoint => delete row[timepoint]);
 
-    d['data'].sort((a, b) => a.date - b.date);
+    row['data'].sort((a, b) => a.date - b.date);
 
-    const firstDate = d.data.filter(d => d.cases > 0).slice(0, 1);
-
-    d['placeName'] = metadata.placeName;
-    d['id'] = metadata.id;
-    d['province'] = metadata.province;
-    const last2 = d.data.slice(-2);
-    d['numIncrease'] = (last2[1].cases - last2[0].cases);
-    d['pctIncrease'] = d.numIncrease / last2[0].cases;
-    d['currentDate'] = last2[1].date;
-    // d['firstDate'] = firstDate[0]['date'];
-    // d['newToday'] = firstDate[0]['date'] === last2[1].date;
-    d['currentCases'] = last2[1].cases;
+    // pull out some global numbers for the case counts
+    // first date when cases are > 0.
+    const firstDate = row.data.filter(d => d.cases > 0).slice(0, 1);
+    row['locationName'] = metadata.locationName;
+    row['id'] = metadata.id;
+    const last2 = row.data.slice(-2);
+    row['numIncrease'] = (last2[1].cases - last2[0].cases);
+    row['pctIncrease'] = row.numIncrease / last2[0].cases;
+    row['currentDate'] = last2[1].date;
+    row['firstDate'] = firstDate.length ? firstDate[0]['date'] : null;
+    row['newToday'] = row['firstDate'] === row['currentDate'];
+    row['currentCases'] = last2[1].cases;
   });
 
+console.log(data)
   return (data);
 }
 
@@ -96,7 +98,7 @@ export function nestEpiTrace(data, nestingVar, nestingType) {
       .entries(data);
 
     regionNest.forEach(d => {
-      d['placeName'] = d.key;
+      d['locationName'] = d.key;
       d['id'] = d.key.replace(/\s/g, "_");
       d.values.forEach(timepoint => {
         timepoint['id'] = d.key.replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_");
@@ -142,5 +144,20 @@ export function nestRegions(data) {
       return (obj)
     })
     return (nested);
+  }
+}
+
+export function cleanID(id, type) {
+  const cleaned = id.replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_").replace(/\//g, "_");
+  return (`${cleaned}-${type}`);
+}
+
+export function getRegion(country) {
+  const regionDict = store.state.geo.regionDict;
+
+  const region = regionDict.filter(d => d.countries.includes(country));
+
+  if (region.length === 1) {
+    return (region[0].region)
   }
 }
