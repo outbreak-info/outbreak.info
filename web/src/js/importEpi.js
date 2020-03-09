@@ -3,8 +3,7 @@ import {
   isoParse,
   nest,
   sum,
-  timeFormat,
-  map
+  timeFormat
 } from 'd3';
 
 import store from "@/store";
@@ -43,6 +42,7 @@ export function cleanEpi(data) {
     }
 
     // convert from wide to long; save as `row['data']`
+    // INNER DATA STRUCTURE
     row['data'] = dateArr.map(timepoint => {
       return ({
         "date": parseDate(timepoint),
@@ -51,9 +51,9 @@ export function cleanEpi(data) {
         "coord": [metadata.lon, metadata.lat],
         "id": metadata.id,
         "locationType": metadata.locationType,
+        "locationName": metadata.locationName,
         // variables needed for nesting and/or filtering
         "country": metadata.country,
-        "countries": [metadata.country],
         "region": metadata.region
       })
     });
@@ -63,10 +63,12 @@ export function cleanEpi(data) {
 
     row['data'].sort((a, b) => a.date - b.date);
 
+    // OUTER METADATA ABOUT THAT PLACE
     // pull out some global numbers for the case counts
     // first date when cases are > 0.
     const firstDate = row.data.filter(d => d.cases > 0).slice(0, 1);
     row['locationName'] = metadata.locationName;
+    row['locationType'] = metadata.locationType;
     row['id'] = metadata.id;
     const last2 = row.data.slice(-2);
     row['numIncrease'] = (last2[1].cases - last2[0].cases);
@@ -77,10 +79,10 @@ export function cleanEpi(data) {
     row['currentCases'] = last2[1].cases;
   });
 
-console.log(data)
   return (data);
 }
 
+// Nest by a geographic aggreagtor (region, country, etc.) and then by date to get a cases / date.
 export function nestEpiTrace(data, nestingVar, nestingType) {
   const formatDate = timeFormat("%m-%d-%y");
   if (data) {
@@ -91,33 +93,47 @@ export function nestEpiTrace(data, nestingVar, nestingType) {
       .rollup(values => {
         return ({
           cases: sum(values, d => d.cases),
-          countries: map(values, d => d.country).keys(),
-          region: values[0].region
+          subregions: values.map(d => d.locationName),
+          region: values[0].region // should all be the same...
         })
       })
       .entries(data);
 
     regionNest.forEach(d => {
+      // pull out variables
       d['locationName'] = d.key;
-      d['id'] = d.key.replace(/\s/g, "_");
+      d['id'] = cleanID(d.key, "region");
+      d['data'] = d.values;
+      d['subregions'] = d.data[0].value.subregions;
+      d['region'] = d.data[0].value.region;
+      d['locationType'] = nestingType;
+
       d.values.forEach(timepoint => {
-        timepoint['id'] = d.key.replace(/,\s/g, "_").replace(/\s/g, "_").replace(/\(/g, "_").replace(/\)/g, "_");
+        timepoint['id'] = d.id;
+        timepoint['locationName'] = d.key;
+        timepoint['locationType'] = nestingType;
         timepoint['date'] = isoParse(timepoint.key);
         timepoint['date_string'] = formatDate(timepoint.date);
         timepoint['cases'] = timepoint.value.cases;
+        timepoint['region'] = timepoint.value.region;
+        // cleanup
+        delete timepoint.key;
+        delete timepoint.value;
       })
 
-      d['data'] = d.values;
+      // calc variables
       const last2 = d.data.slice(-2);
+      const firstDate = d.data.filter(d => d.cases > 0).slice(0, 1);
       d['numIncrease'] = (last2[1].cases - last2[0].cases);
       d['pctIncrease'] = d.numIncrease / last2[0].cases;
       d['currentDate'] = last2[1].date;
       d['currentCases'] = last2[1].cases;
-      d['newToday'] = d.data[0].value.newToday;
-      d['countries'] = d.data[0].value.countries;
-      d['region'] = d.data[0].value.region;
-      d['locationType'] = nestingType;
-      // delete d['values'];
+      d['firstDate'] = firstDate.length ? firstDate[0]['date'] : null;
+      d['newToday'] = d['firstDate'] === d['currentDate'];
+
+      // delete duplicates from nesting
+      delete d['values'];
+      delete d['key'];
     })
 
     return (regionNest);
