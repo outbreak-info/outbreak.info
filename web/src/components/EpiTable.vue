@@ -235,15 +235,13 @@ export default Vue.extend({
     },
     prepData() {
       this.cases = cloneDeep(this.data);
-      console.log(this.cases)
 
       this.cases.forEach(d => {
         const last2 = d.data.slice(-2);
-        console.log(last2)
         d['numIncreaseFormatted'] = (last2[1].cases - last2[0].cases).toLocaleString();
         d['numIncrease'] = last2[1].cases - last2[0].cases;
         d['pct'] = d.numIncrease / last2[0].cases;
-        d['pctIncrease'] = this.formatPercent(d.numIncrease / last2[0].cases);
+        d['pctIncrease'] = this.formatPercent(d.numIncrease, last2[0].cases);
         d['currentDate'] = formatDate(last2[1].date);
         d['totalNum'] = last2[1].cases;
         d['totalNumFormatted'] = last2[1].cases.toLocaleString();
@@ -255,9 +253,15 @@ export default Vue.extend({
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);
     },
-    formatPercent(pct) {
-      if (pct === 0) {
+    formatPercent(current, previous) {
+      const pct = current / previous;
+
+      if (pct === 0 || (current === 0 && previous === 0)) {
         return ("none");
+      }
+
+      if (pct < 0) {
+        return ("case count corrected");
       }
 
       if (pct < 0.005) {
