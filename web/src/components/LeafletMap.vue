@@ -1,7 +1,7 @@
 <template>
 <div v-if="this.height && this.data">
   <h3 v-if="this.mostRecentDate">Current cases as of {{formatDate(mostRecentDate)}}</h3>
-  <div :style="{height: height + 'px', width: width + 'px'}">
+  <div :style="{height: height + 'px', width: width + 'px'}" id="case-map">
     <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate">
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
       <l-tile-layer :url="urlLabels" :attribution="attribution" :opacity="0.25" v-if="currentZoom > 3" />
@@ -52,7 +52,19 @@
         </l-popup>
       </l-circle-marker>
     </l-map>
+    <div class="legend box-shadow">
+      <div class="px-3 py-3">
+        <h5>legend</h5>
+        <div class="case-count">
+          number of cases
+        </div>
+        <div class="new-count">
+          new cases today
+        </div>
+      </div>
+    </div>
   </div>
+
 </div>
 </template>
 
@@ -236,5 +248,16 @@ th {
     font-size: 0.95em;
     font-weight: 400;
     color: $grey-70;
+}
+
+.legend {
+    background: #ffffff99;
+    position: absolute;
+    bottom: calc(20% + 0.5em); // leaflet inserts a position=relative div w/ height = 80%
+    left: 0.5em;
+    z-index: 1000;
+}
+#case-map {
+    position: relative;
 }
 </style>
