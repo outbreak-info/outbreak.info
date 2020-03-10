@@ -1,6 +1,6 @@
 <template>
-<div v-if="this.height">
-  <h3>Current cases as of {{formatDate(mostRecentDate)}}</h3>
+<div v-if="this.height && this.data">
+  <h3 v-if="this.mostRecentDate">Current cases as of {{formatDate(mostRecentDate)}}</h3>
   <div :style="{height: height + 'px', width: width + 'px'}">
     <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate">
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
@@ -36,7 +36,7 @@
             </tr>
             <tr>
               <td>
-                {{ circle.mostRecentDateFormatted }}
+                {{ circle.currentDateFormatted }}
               </td>
               <td>
                 {{ circle.totalNumFormatted }}
@@ -164,10 +164,11 @@ export default Vue.extend({
     },
     prepData() {
       if (this.data) {
+        console.log(this.data)
         this.data.forEach(d => {
           d['fill'] = this.colorScale(d.numIncrease);
           d['r'] = this.radiusScale(d.currentCases);
-          d["mostRecentDateFormatted"] = this.formatDate(d.mostRecentDate);
+          d["currentDateFormatted"] = this.formatDate(d.currentDate);
           d["numIncreaseFormatted"] = d.numIncrease.toLocaleString();
           d["pctIncreaseFormatted"] = this.formatPercent(d.pctIncrease);
           d["totalNumFormatted"] = d.currentCases.toLocaleString();
@@ -175,14 +176,12 @@ export default Vue.extend({
       }
     },
     colorScale(d) {
-      const scale = scaleSequential(interpolateYlGnBu).domain([0, 1500]);
+      const scale = scaleSequential(interpolateYlGnBu).domain([0, max(this.data, d => d.numIncrease)]);
       return scale(d)
-      // return scaleSequential(interpolateYlGnBu).domain([0, max(this.data, d => d.numIncrease)])
     },
     radiusScale(d) {
-      const scale = scaleSqrt().domain([1, 90000]).range([3, 50]);
+      const scale = scaleSqrt().domain([1, max(this.data, d => d.currentCases)]).range([3, 50]);
       return scale(d)
-      // return scaleSqrt().domain([1, max(this.data, d => d.currentCases)]).range([0, 50])
     },
     formatPercent(pct) {
       if (!pct) {
