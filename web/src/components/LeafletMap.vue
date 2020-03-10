@@ -21,16 +21,16 @@
           </h3>
           <table class="summary-table">
             <tr>
-              <th class="px-3">
+              <th class="px-3 td-date-updated">
                 updated
               </th>
-              <th class="px-3 sortable total" @click="sortTotal()">
+              <th class="px-3 sortable td-total" @click="sortTotal()">
                 total cases
               </th>
-              <th class="px-2 sortable new-cases" @click="sortNew()">
+              <th class="px-2 sortable td-new-cases" @click="sortNew()">
                 new cases today
               </th>
-              <th class="px-2 sortable pct-increase" @click="sortPct()">
+              <th class="px-2 sortable td-pct-increase" @click="sortPct()">
                 increase from yesterday
               </th>
             </tr>
@@ -52,7 +52,7 @@
         </l-popup>
       </l-circle-marker>
     </l-map>
-    <div class="legend box-shadow">
+    <div class="legend box-shado w">
       <div class="px-3 py-3">
         <h5>legend</h5>
         <div class="case-count">
