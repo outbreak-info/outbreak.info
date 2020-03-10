@@ -32,3 +32,12 @@
   cursor: auto !important;
   pointer-events: none !important;
 }
+
+.no-underline{
+  text-decoration: none;
+}
+
+
+.fill-primary-light {
+  background: lighten($primary-color, 25%)
+}

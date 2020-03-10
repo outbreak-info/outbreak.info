@@ -8,10 +8,11 @@
         </option>
       </select>
     </div>
+    <DataUpdated />
 
     <table>
       <tr>
-        <th class="align-left sortable location" @click="sortLocation()">
+        <th class="align-left sortable td-location" @click="sortLocation()">
           <div class="sort-grp">
             location
             <font-awesome-icon
@@ -30,10 +31,10 @@
             />
           </div>
         </th>
-        <th class="px-3">
+        <!-- <th class="px-3">
           updated
-        </th>
-        <th class="px-3 sortable total" @click="sortTotal()">
+        </th> -->
+        <th class="px-3 sortable td-total" @click="sortTotal()">
           <div class="sort-grp">
             total cases
             <font-awesome-icon
@@ -52,7 +53,7 @@
             />
           </div>
         </th>
-        <th class="px-2 sortable new-cases" @click="sortNew()">
+        <th class="px-2 sortable td-new-cases" @click="sortNew()">
           <div class="sort-grp">
             new cases today
             <font-awesome-icon
@@ -71,7 +72,7 @@
             />
           </div>
         </th>
-        <th class="px-2 sortable pct-increase" @click="sortPct()">
+        <th class="px-2 sortable td-pct-increase" @click="sortPct()">
           <div class="sort-grp">
             increase from yesterday
             <font-awesome-icon
@@ -89,6 +90,9 @@
               v-if="pctSort === 'desc'"
             />
           </div>
+        </th>
+        <th class="td-sparkline">
+          cases over time
         </th>
       </tr>
       <tr v-for="row in filteredCases" v-bind:key="row.locationName">
@@ -108,9 +112,9 @@
           >
           <span v-else>{{ row.locationName }}</span>
         </td>
-        <td>
+        <!-- <td>
           {{ row.currentDateFormatted }}
-        </td>
+        </td> -->
         <td>
           {{ row.totalNumFormatted }}
         </td>
@@ -119,6 +123,9 @@
         </td>
         <td>
           {{ row.pctIncreaseFormatted }}
+        </td>
+        <td>
+          <Sparkline :data="[row.data]" :width="100" :height="23" :id="row.id" :color="row.color" />
         </td>
       </tr>
     </table>
@@ -150,6 +157,8 @@
 import Vue from "vue";
 import { cloneDeep } from "lodash";
 import { format, timeFormat } from "d3";
+import DataUpdated from "@/components/DataUpdated.vue";
+import Sparkline from "@/components/Sparkline.vue";
 
 // --- font awesome --
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -175,7 +184,9 @@ const formatDate = timeFormat("%a %d %b %Y");
 export default Vue.extend({
   name: "EpiTable",
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    DataUpdated,
+    Sparkline
   },
   props: {
     data: Array,
@@ -296,7 +307,7 @@ export default Vue.extend({
       this.cases = cloneDeep(this.data);
 
       this.cases.forEach(d => {
-        d["currentDateFormatted"] = formatDate(d.currentDate);
+        // d["currentDateFormatted"] = formatDate(d.currentDate);
         d["numIncreaseFormatted"] = d.numIncrease.toLocaleString();
         d["pctIncreaseFormatted"] = this.formatPercent(d.pctIncrease);
         d["totalNumFormatted"] = d.currentCases.toLocaleString();
@@ -380,16 +391,16 @@ th {
 }
 
 // widths
-.location {
+.td-location {
   width: 150px;
 }
-.pct-increase {
+.td-pct-increase {
   width: 160px;
 }
-.new-cases {
+.td-new-cases {
   width: 120px;
 }
-.total {
+.td-total {
   width: 100px;
 }
 
