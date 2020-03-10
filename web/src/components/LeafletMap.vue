@@ -206,6 +206,8 @@ export default Vue.extend({
   mounted() {
     this.setWidth();
 
+    this.prepData();
+
     this.$nextTick(function() {
       window.addEventListener('resize', this.setWidth);
     })
