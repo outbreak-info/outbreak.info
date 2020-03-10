@@ -16,7 +16,7 @@
       </nav>
     </header>
 
-    <router-view class="px-3" />
+    <router-view class="flex px-3" />
 
     <!-- TEMP: BASIC FOOTER -->
     <footer id="outbreak-footer">
