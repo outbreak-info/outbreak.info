@@ -72,7 +72,6 @@ export default Vue.extend({
       x: d3.scaleLinear().range([width, 0]),
       y: d3.scaleBand().paddingInner(innerPadding),
       xSpark: d3.scaleTime().range([0, sparkWidth]),
-      opacityScale: d3.scaleLinear().range([0.5, 1]),
       xAxis: null,
       yAxis: null,
       // refs
@@ -179,8 +178,6 @@ export default Vue.extend({
         d3.extent(this.data.flatMap(d => d.data).map(d => d.date))
       );
 
-      this.opacityScale = this.opacityScale.domain([0, this.data.length - 1]);
-
       // this.xAxis = d3.axisBottom(this.x);
       //
       // d3.select(".axis--x")
@@ -233,7 +230,6 @@ export default Vue.extend({
         .attr("height", this.y.bandwidth())
         .attr("y", d => this.y(d.locationName))
         .style("fill", (d, i) => this.colorScale(i))
-        // .style("fill-opacity", (d, i) => this.opacityScale(i))
         // .attr("x", d => this.x(0))
         // .transition(t1)
         .attr("width", d => this.x(0) - this.x(d.currentCases))
@@ -284,7 +280,6 @@ export default Vue.extend({
         .merge(sparkEnter)
         .datum(d => d.data)
         .join("path")
-        // .style("fill-opacity", (d, i) => this.opacityScale(i))
         .attr("d", this.line);
 
       // --- number of new cases ---
