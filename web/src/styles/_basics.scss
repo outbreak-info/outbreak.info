@@ -32,3 +32,15 @@
   cursor: auto !important;
   pointer-events: none !important;
 }
+
+.no-underline{
+  text-decoration: none;
+}
+
+.box-shadow {
+  box-shadow: 1px 1px 2px 2px $grey-alpha15;
+}
+
+.fill-primary-light {
+  background: lighten($primary-color, 25%)
+}
