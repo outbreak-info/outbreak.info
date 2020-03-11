@@ -125,7 +125,13 @@
           {{ row.pctIncreaseFormatted }}
         </td>
         <td>
-          <Sparkline :data="[row.data]" :width="100" :height="23" :id="row.id" :color="row.color" />
+          <Sparkline
+            :data="[row.data]"
+            :width="100"
+            :height="23"
+            :id="row.id"
+            :color="row.color"
+          />
         </td>
       </tr>
     </table>

@@ -5,7 +5,7 @@ import store from "./store";
 import VueGtag from "vue-gtag";
 import VueRx from "vue-rx";
 
-import 'leaflet/dist/leaflet.css';
+import "leaflet/dist/leaflet.css";
 
 Vue.config.productionTip = false;
 

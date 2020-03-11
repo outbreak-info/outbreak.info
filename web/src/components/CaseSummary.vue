@@ -1,42 +1,53 @@
 <template>
-<p class="case-summary">
-  {{ currentDate ? `As of ${currentDate}` : "Currently" }}, there are
-  <span class="bold-accent">{{ currentTotalCases.toLocaleString() }}</span>
-  confirmed COVID-19 cases in
-  <span class="bold-accent">{{ numCountries }} countries</span> worldwide,
-  with the most heavily hit areas including
-  <span v-for="(country, idx) in mostCases" :key="idx">
-    <router-link :to="{
+  <p class="case-summary">
+    {{ currentDate ? `As of ${currentDate}` : "Currently" }}, there are
+    <span class="bold-accent">{{ currentTotalCases.toLocaleString() }}</span>
+    confirmed COVID-19 cases in
+    <span class="bold-accent">{{ numCountries }} countries</span> worldwide,
+    with the most heavily hit areas including
+    <span v-for="(country, idx) in mostCases" :key="idx">
+      <router-link
+        :to="{
           name: 'Epidemiology',
           query: { location: country.locationName }
-        }" class="hardest-hit">{{ country.locationName }}</router-link>
-    <span v-if="idx < mostCases.length - 1">{{
+        }"
+        class="hardest-hit"
+        >{{ country.locationName }}</router-link
+      >
+      <span v-if="idx < mostCases.length - 1">{{
         idx === mostCases.length - 2 ? ", and " : ", "
-      }}</span>
-  </span>. In the last day,
-  <span v-if="firstCases.length > 0">
-    <router-link :to="{ name: 'Epidemiology', query: { location: newCountries } }" class="accent new-cases">{{ firstCases.length }} countries</router-link>
-    have announced their <span class="accent">first cases</span>, and
-  </span>
-  <router-link :to="{ name: 'Epidemiology', query: { location: changingCountries } }" class="accent rapidly-growing">{{ countriesAboveThresholdCount }} countries</router-link>
-  have reported more than
-  <span class="accent">{{ caseThreshold }} new cases</span>.
-  <button class="fill-primary-light">
-    <router-link class="router-link-black no-underline" :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Explore cases over time</router-link>
-  </button>
-</p>
-
+      }}</span> </span
+    >. In the last day,
+    <span v-if="firstCases.length > 0">
+      <router-link
+        :to="{ name: 'Epidemiology', query: { location: newCountries } }"
+        class="accent new-cases"
+        >{{ firstCases.length }} countries</router-link
+      >
+      have announced their <span class="accent">first cases</span>, and
+    </span>
+    <router-link
+      :to="{ name: 'Epidemiology', query: { location: changingCountries } }"
+      class="accent rapidly-growing"
+      >{{ countriesAboveThresholdCount }} countries</router-link
+    >
+    have reported more than
+    <span class="accent">{{ caseThreshold }} new cases</span>.
+    <button class="fill-primary-light">
+      <router-link
+        class="router-link-black no-underline"
+        :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }"
+        >Explore cases over time</router-link
+      >
+    </button>
+  </p>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import {
-  mapState
-} from "vuex";
+import { mapState } from "vuex";
 
-import {
-  timeFormat
-} from "d3";
+import { timeFormat } from "d3";
 
 export default Vue.extend({
   name: "CaseSumamry",
@@ -83,19 +94,19 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 .bold-accent {
-    color: $primary-color;
-    font-weight: 700;
+  color: $primary-color;
+  font-weight: 700;
 }
 
 .accent {
-    color: $primary-color;
+  color: $primary-color;
 }
 
 .hardest-hit,
 .new-cases,
 .rapidly-growing {
-    color: $primary-color;
-    border-bottom: $primary-color 1px dotted;
-    text-decoration: none;
+  color: $primary-color;
+  border-bottom: $primary-color 1px dotted;
+  text-decoration: none;
 }
 </style>
