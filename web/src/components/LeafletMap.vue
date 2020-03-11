@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.height && this.data">
+  <div v-if="this.height && this.data && this.data.length > 0">
     <h3 v-if="this.mostRecentDate">
       Current cases as of {{ formatDate(mostRecentDate) }}
     </h3>
