@@ -74,7 +74,7 @@
             </g>
 
             <g id="legend-color">
-              <text x="0" :y="legendHeight + margin.circles + margin.gap*2" dominant-baseline="hanging" opacity="0.6">NEW CASES</text>
+              <text x="0" :y="legendHeight + margin.circles + margin.gap*2" dominant-baseline="hanging" opacity="0.6">NEW CASES TODAY</text>
               <text :x="legendWidth + legendGap" :y="legendHeight + margin.circles + margin.gap*2 + 25" font-size="0.85em" class="legend-label legend-label--max" text-anchor="end">{{colorMax}}</text>
               <text :x="0" :y="legendHeight + margin.circles + margin.gap*2 + 25" font-size="0.85em" class="legend-label legend-label--min">0</text>
               <rect :width="legendWidth + legendGap" height="15" :y="legendHeight + margin.circles + margin.gap*2 + 30" fill="url(#gradient-legend)" stroke="black" :stroke-width="0.5"></rect>
