@@ -1,14 +1,17 @@
 <template>
   <div class="epi-table my-3" v-if="data && data.length > 0">
-    <div class="flex flex-space-between">
-      <h4>Most recent cases</h4>
-      <select v-model="numPerPage" @change="changePageNum()">
-        <option v-for="option in pageOpts" :value="option" :key="option">
-          {{ option }} results
-        </option>
-      </select>
+    <div class="flex-column align-left">
+      <div class="header flex flex-space-between">
+        <h4>Most recent cases</h4>
+        <select v-model="numPerPage" @change="changePageNum()">
+          <option v-for="option in pageOpts" :value="option" :key="option">
+            {{ option }} results
+          </option>
+        </select>
+      </div>
+<DataUpdated />
     </div>
-    <DataUpdated />
+
 
     <table>
       <tr>
@@ -398,19 +401,23 @@ th {
 
 // widths
 .td-location {
-  width: 150px;
+  width: 140px;
 }
 .td-pct-increase {
-  width: 160px;
+  width: 90px;
 }
 .td-new-cases {
-  width: 120px;
+  width: 70px;
 }
 .td-total {
-  width: 100px;
+  width: 70px;
 }
 
 .sortable {
   cursor: pointer;
+}
+
+.header {
+width: 100%;
 }
 </style>
