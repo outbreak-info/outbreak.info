@@ -52,14 +52,37 @@
         </l-popup>
       </l-circle-marker>
     </l-map>
-    <div class="legend box-shado w">
-      <div class="px-3 py-3">
-        <h5>legend</h5>
-        <div class="case-count">
-          number of cases
-        </div>
-        <div class="new-count">
-          new cases today
+    <div class="legend box-shadow">
+      <div class="px-2 py-2">
+        <div class="case-count flex-column">
+          <svg :width="legendWidth + legendGap" :height="legendHeight + margin.circles + margin.colors" v-show="showLegend">
+            <defs>
+              <linearGradient id="gradient-legend" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop v-for="(color, i) in legendColors" :key="i" :offset="(i/10)*100 + '%'" :style="`stop-color:${color}; stop-opacity:1`" />
+              </linearGradient>
+            </defs>
+
+            <g id="legend-radius">
+              <text x="0" y="0" dominant-baseline="hanging" opacity="0.6">TOTAL CASES</text>
+              <g v-for="circle in legendCircles" :key="circle.cases">
+                <circle class="legend-circle" fill="white" stroke="grey" stroke-width="0.5" fill-opacity="0.75" transform="translate(0,20)" :cx="circle.x" :cy="legendHeight/2" :r="circle.r"></circle>
+                <text class="legend-circle-text" dominant-baseline="hanging" text-anchor="middle" font-size="0.85em" :x="circle.x" :y="legendHeight/2 - circle.r">{{circle.cases}}</text>
+              </g>
+            </g>
+            <g id="spacer">
+              <line x1="0" :x2="legendWidth + legendGap" :y1="legendHeight + margin.circles " :y2="legendHeight + margin.circles + margin.gap" stroke="white"></line>
+            </g>
+
+            <g id="legend-color">
+              <text x="0" :y="legendHeight + margin.circles + margin.gap*2" dominant-baseline="hanging" opacity="0.6">NEW CASES</text>
+              <text :x="legendWidth + legendGap" :y="legendHeight + margin.circles + margin.gap*2 + 25" font-size="0.85em" class="legend-label legend-label--max" text-anchor="end">{{colorMax}}</text>
+              <text :x="0" :y="legendHeight + margin.circles + margin.gap*2 + 25" font-size="0.85em" class="legend-label legend-label--min">0</text>
+              <rect :width="legendWidth + legendGap" height="15" :y="legendHeight + margin.circles + margin.gap*2 + 30" fill="url(#gradient-legend)" stroke="black" :stroke-width="0.5"></rect>
+
+            </g>
+
+          </svg>
+          <button @click="showLegend = !showLegend"><small>{{showLegend ? "hide" : "show"}} legend</small></button>
         </div>
       </div>
     </div>
@@ -85,8 +108,10 @@ import {
   scaleSqrt,
   scaleSequential,
   max,
+  sum,
   timeFormat,
-  format
+  format,
+  range
 } from "d3";
 import {
   interpolateYlGnBu
@@ -114,6 +139,18 @@ export default Vue.extend({
       width: null,
       height: null,
       formatDate: timeFormat("%d %b %Y"),
+      legendWidth: null,
+      legendHeight: null,
+      legendCircles: null,
+      colorMax: null,
+      legendColors: null,
+      legendGap: 20,
+      margin: {
+        gap: 2,
+        circles: 30,
+        colors: 55
+      },
+      showLegend: true,
       zoom: 1,
       center: latLng(26.5, 3.5),
       url: "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.png",
@@ -176,7 +213,6 @@ export default Vue.extend({
     },
     prepData() {
       if (this.data) {
-        console.log(this.data)
         this.data.forEach(d => {
           d['fill'] = this.colorScale(d.numIncrease);
           d['r'] = this.radiusScale(d.currentCases);
@@ -189,10 +225,28 @@ export default Vue.extend({
     },
     colorScale(d) {
       const scale = scaleSequential(interpolateYlGnBu).domain([0, max(this.data, d => d.numIncrease)]);
+      const domain = scale.domain();
+
+      let colors = range(domain[0], domain[1], (domain[1] - domain[0]) / 11);
+      this.colorMax = domain[1];
+      this.legendColors = colors.map(d => scale(d));
       return scale(d)
     },
     radiusScale(d) {
-      const scale = scaleSqrt().domain([1, max(this.data, d => d.currentCases)]).range([3, 50]);
+      const scale = scaleSqrt().domain([1, max(this.data, d => d.currentCases)]).range([3, 40]).nice();
+      const domain = scale.domain();
+
+      // const circles = range(domain[0], domain[1], (domain[1] - domain[0]) / 4);
+      const circles = [1, 100, 1000, 10000, domain[1]];
+      this.legendCircles = circles.map((d, i) => {
+        return ({
+          cases: d.toLocaleString(),
+          r: scale(d),
+          x: sum(circles.slice(0, i).map(d => scale(d))) + sum(circles.slice(1, i).map(d => scale(d))) + scale(d) + i * this.legendGap
+        });
+      })
+      this.legendHeight = max(this.legendCircles, d => d.r) * 2;
+      this.legendWidth = sum(this.legendCircles, d => d.r) * 2 + 3 * this.legendGap;
       return scale(d)
     },
     formatPercent(pct) {
