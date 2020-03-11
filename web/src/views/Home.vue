@@ -33,9 +33,9 @@
     <h3 class="plot-title">Cumulative number of COVID-19 cases by region</h3>
     <DataUpdated />
     <CaseSummary />
-    <div class="flex">
-      <EpiStacked :data="nestedData" id="all-data" title="Worldwide" @regionSelected="handleTooltip" />
-      <EpiStacked :data="noChina" id="no-china" title="Outside Mainland China" @regionSelected="handleTooltip" />
+    <div class="flex flex-space-between" id="regional-stacked-area-plots" ref="regional_stacked_area_plots">
+      <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data" title="Worldwide" @regionSelected="handleTooltip" />
+      <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="noChina" id="no-china" title="Outside Mainland China" @regionSelected="handleTooltip" />
     </div>
 
     <DataSource />
@@ -86,7 +86,10 @@ export default {
     LeafletMap
   },
   data() {
-    return {};
+    return {
+      stackedWidth: 500,
+      stackedHeight: 250
+    };
   },
   watch: {},
   computed: {
@@ -115,6 +118,28 @@ export default {
     regionColorScale: function(location) {
       const scale = store.getters["colors/getRegionColorFromLocation"];
       return scale(location);
+    },
+    setDims() {
+      const selector = this.$refs.regional_stacked_area_plots;
+
+      console.log('changing dims');
+      console.log(selector)
+      if (selector) {
+        const dims = selector.getBoundingClientRect();
+        // const dims = {window.innerWidth, height: window.innerHeight}
+        const whRatio = 5 / 3;
+        const widthThresh = 700;
+
+        this.stackedWidth = dims.width < widthThresh ? dims.width : dims.width / 2 - 5;
+        const idealHeight = this.stackedWidth / whRatio;
+        if (idealHeight < window.innerHeight) {
+          this.stackedHeight = idealHeight;
+        } else {
+          this.stackedHeight = window.innerHeight;
+          this.stackedWidth = this.stackedHeight * whRatio;
+        }
+      }
+
     }
   },
   mounted() {
@@ -128,6 +153,16 @@ export default {
     //     // return(this.nestedData)
     //   }, {deep: true}
     // )
+    //
+
+
+    // Event listener for mobile responsiveness
+    // $nextTick waits till DOM rendered
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.setDims);
+      // set initial dimensions for the stacked area plots.
+      this.setDims();
+    });
   }
 };
 </script>
@@ -152,5 +187,9 @@ p {
 
 #home-temp-header {
     margin-bottom: 0.5em;
+}
+
+#regional-stacked-area-plots {
+    width: 100%;
 }
 </style>

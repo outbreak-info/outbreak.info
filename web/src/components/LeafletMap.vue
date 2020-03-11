@@ -1,23 +1,25 @@
 <template>
-<div v-if="this.height && this.data">
-  <h3 v-if="this.mostRecentDate">Current cases as of {{formatDate(mostRecentDate)}}</h3>
-  <div :style="{height: height + 'px', width: width + 'px'}" id="case-map">
+<div v-if="this.height && this.data && this.data.length > 0">
+  <h3 v-if="this.mostRecentDate">
+    Current cases as of {{ formatDate(mostRecentDate) }}
+  </h3>
+  <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
     <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate">
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
       <l-tile-layer :url="urlLabels" :attribution="attribution" :opacity="0.25" v-if="currentZoom > 3" />
       <l-circle-marker v-for="(circle, i) in data" :key="i" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
         <l-tooltip :options="{ permanent: false, interactive: true }">
           <div>
-            {{circle.locationName}}
+            {{ circle.locationName }}
           </div>
           <small>click to view details</small>
         </l-tooltip>
         <l-popup>
           <h3>
             <router-link :to="{
-              name: 'Epidemiology',
-              query: { location: circle.locationName }
-            }" class="router-link-black">{{circle.locationName}}</router-link>
+                  name: 'Epidemiology',
+                  query: { location: circle.locationName }
+                }" class="router-link-black">{{ circle.locationName }}</router-link>
           </h3>
           <table class="summary-table">
             <tr>
@@ -58,15 +60,19 @@
           <svg :width="legendWidth + legendGap" :height="legendHeight + margin.circles + margin.colors" v-show="showLegend">
             <defs>
               <linearGradient id="gradient-legend" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop v-for="(color, i) in legendColors" :key="i" :offset="(i/10)*100 + '%'" :style="`stop-color:${color}; stop-opacity:1`" />
+                <stop v-for="(color, i) in legendColors" :key="i" :offset="(i / 10) * 100 + '%'" :style="`stop-color:${color}; stop-opacity:1`" />
               </linearGradient>
             </defs>
 
             <g id="legend-radius">
-              <text x="0" y="0" dominant-baseline="hanging" opacity="0.6">TOTAL CASES</text>
+              <text x="0" y="0" dominant-baseline="hanging" opacity="0.6">
+                TOTAL CASES
+              </text>
               <g v-for="circle in legendCircles" :key="circle.cases">
-                <circle class="legend-circle" fill="white" stroke="grey" stroke-width="0.5" fill-opacity="0.75" transform="translate(0,15)" :cx="circle.x" :cy="legendHeight/2" :r="circle.r"></circle>
-                <text class="legend-circle-text" dominant-baseline="hanging" text-anchor="middle" font-size="0.85em" :x="circle.x" :y="legendHeight/2 - circle.r">{{circle.cases}}</text>
+                <circle class="legend-circle" fill="white" stroke="grey" stroke-width="0.5" fill-opacity="0.75" transform="translate(0,15)" :cx="circle.x" :cy="legendHeight / 2" :r="circle.r"></circle>
+                <text class="legend-circle-text" dominant-baseline="hanging" text-anchor="middle" font-size="0.85em" :x="circle.x" :y="legendHeight / 2 - circle.r">
+                  {{ circle.cases }}
+                </text>
               </g>
             </g>
             <g id="spacer">
@@ -74,20 +80,25 @@
             </g>
 
             <g id="legend-color">
-              <text x="0" :y="legendHeight + margin.circles + margin.gap*2" dominant-baseline="hanging" opacity="0.6">NEW CASES TODAY</text>
-              <text :x="legendWidth + legendGap" :y="legendHeight + margin.circles + margin.gap*2 + 25" font-size="0.85em" class="legend-label legend-label--max" text-anchor="end">{{colorMax}}</text>
-              <text :x="0" :y="legendHeight + margin.circles + margin.gap*2 + 25" font-size="0.85em" class="legend-label legend-label--min">0</text>
-              <rect :width="legendWidth + legendGap" height="15" :y="legendHeight + margin.circles + margin.gap*2 + 30" fill="url(#gradient-legend)" stroke="black" :stroke-width="0.5"></rect>
-
+              <text x="0" :y="legendHeight + margin.circles + margin.gap * 2" dominant-baseline="hanging" opacity="0.6">
+                NEW CASES TODAY
+              </text>
+              <text :x="legendWidth + legendGap" :y="legendHeight + margin.circles + margin.gap * 2 + 25" font-size="0.85em" class="legend-label legend-label--max" text-anchor="end">
+                {{ colorMax }}
+              </text>
+              <text :x="0" :y="legendHeight + margin.circles + margin.gap * 2 + 25" font-size="0.85em" class="legend-label legend-label--min">
+                0
+              </text>
+              <rect :width="legendWidth + legendGap" height="15" :y="legendHeight + margin.circles + margin.gap * 2 + 30" fill="url(#gradient-legend)" stroke="black" :stroke-width="0.5"></rect>
             </g>
-
           </svg>
-          <button @click="showLegend = !showLegend"><small>{{showLegend ? "hide" : "show"}} legend</small></button>
+          <button @click="showLegend = !showLegend">
+            <small>{{ showLegend ? "hide" : "show" }} legend</small>
+          </button>
         </div>
       </div>
     </div>
   </div>
-
 </div>
 </template>
 
@@ -162,7 +173,14 @@ export default Vue.extend({
       mapOptions: {
         zoomSnap: 0.5,
         maxZoom: 7,
-        minZoom: 0
+        minZoom: 0,
+        // maxBoundsViscosity: 1.0,
+        maxBounds: [
+          //south west
+          [-180, -74.227],
+          //north east
+          [180, -74.125]
+        ]
       }
     };
   },
@@ -186,7 +204,6 @@ export default Vue.extend({
         this.width = this.height * aspectRatio;
       }
 
-
       if (this.width < 400) {
         this.zoomUpdate(0);
       } else if (this.width >= 400 && this.width < 700) {
@@ -194,13 +211,12 @@ export default Vue.extend({
       } else if (this.width >= 700 && this.width < 1100) {
         this.currentZoom = 1.5;
       } else if (this.width >= 1100 && this.width < 1500) {
-        this.zoomUpdate(5)
+        this.zoomUpdate(5);
       } else if (this.width >= 1500 && this.width < 2500) {
         this.zoomUpdate(2.5);
       } else {
         this.currentZoom = 3.5;
       }
-
     },
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
@@ -214,40 +230,50 @@ export default Vue.extend({
     prepData() {
       if (this.data) {
         this.data.forEach(d => {
-          d['fill'] = this.colorScale(d.numIncrease);
-          d['r'] = this.radiusScale(d.currentCases);
+          d["fill"] = this.colorScale(d.numIncrease);
+          d["r"] = this.radiusScale(d.currentCases);
           d["currentDateFormatted"] = this.formatDate(d.currentDate);
           d["numIncreaseFormatted"] = d.numIncrease.toLocaleString();
           d["pctIncreaseFormatted"] = this.formatPercent(d.pctIncrease);
           d["totalNumFormatted"] = d.currentCases.toLocaleString();
-        })
+        });
       }
     },
     colorScale(d) {
-      const scale = scaleSequential(interpolateYlGnBu).domain([0, max(this.data, d => d.numIncrease)]);
+      const scale = scaleSequential(interpolateYlGnBu).domain([
+        0,
+        max(this.data, d => d.numIncrease)
+      ]);
       const domain = scale.domain();
 
       let colors = range(domain[0], domain[1], (domain[1] - domain[0]) / 11);
       this.colorMax = domain[1];
       this.legendColors = colors.map(d => scale(d));
-      return scale(d)
+      return scale(d);
     },
     radiusScale(d) {
-      const scale = scaleSqrt().domain([1, max(this.data, d => d.currentCases)]).range([3, 40]).nice();
+      const scale = scaleSqrt()
+        .domain([1, max(this.data, d => d.currentCases)])
+        .range([3, 40])
+        .nice();
       const domain = scale.domain();
 
       // const circles = range(domain[0], domain[1], (domain[1] - domain[0]) / 4);
       const circles = [1, 100, 1000, 10000, domain[1]];
       this.legendCircles = circles.map((d, i) => {
-        return ({
+        return {
           cases: d.toLocaleString(),
           r: scale(d),
-          x: sum(circles.slice(0, i).map(d => scale(d))) + sum(circles.slice(1, i).map(d => scale(d))) + scale(d) + i * this.legendGap
-        });
-      })
+          x: sum(circles.slice(0, i).map(d => scale(d))) +
+            sum(circles.slice(1, i).map(d => scale(d))) +
+            scale(d) +
+            i * this.legendGap
+        };
+      });
       this.legendHeight = max(this.legendCircles, d => d.r) * 2;
-      this.legendWidth = sum(this.legendCircles, d => d.r) * 2 + 3 * this.legendGap;
-      return scale(d)
+      this.legendWidth =
+        sum(this.legendCircles, d => d.r) * 2 + 3 * this.legendGap;
+      return scale(d);
     },
     formatPercent(pct) {
       if (!pct) {
@@ -275,8 +301,8 @@ export default Vue.extend({
     this.prepData();
 
     this.$nextTick(function() {
-      window.addEventListener('resize', this.setWidth);
-    })
+      window.addEventListener("resize", this.setWidth);
+    });
   }
 });
 </script>

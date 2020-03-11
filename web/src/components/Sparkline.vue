@@ -1,8 +1,7 @@
 <template>
-<div class="sparkline-group" :id="`sparkline-${id}`">
-  <svg :width="width" :height="height" class="epi-sparkline">
-  </svg>
-</div>
+  <div class="sparkline-group" :id="`sparkline-${id}`">
+    <svg :width="width" :height="height" class="epi-sparkline"></svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -30,26 +29,19 @@ export default Vue.extend({
       area: null
     };
   },
-  watch: {
-
-  },
+  watch: {},
   methods: {
     setupPlot() {
-      this.svg = d3
-        .select(`#sparkline-${this.id}`)
-        .select("svg.epi-sparkline");
+      this.svg = d3.select(`#sparkline-${this.id}`).select("svg.epi-sparkline");
       this.chart = this.svg.select("#case-counts");
 
-      this.chart = this.svg
-        .append("g")
-        .attr("class", "sparkline");
+      this.chart = this.svg.append("g").attr("class", "sparkline");
 
       this.area = d3
         .area()
         .x(d => this.x(d.date))
         .y0(d => this.y(0))
         .y1(d => this.y(d.cases));
-
     },
     updatePlot() {
       if (this.data && this.width && this.height) {
@@ -69,7 +61,8 @@ export default Vue.extend({
     drawPlot() {
       const sparkSelector = this.chart.selectAll(".sparkline").data(this.data);
 
-      const sparkEnter = sparkSelector.enter()
+      const sparkEnter = sparkSelector
+        .enter()
         .append("path")
         .attr("class", "sparkline");
 
@@ -81,9 +74,12 @@ export default Vue.extend({
         .style("fill", this.color)
         .attr("d", this.area);
 
-      const curtainSelector = this.chart.selectAll(".curtainline").data(this.data);
+      const curtainSelector = this.chart
+        .selectAll(".curtainline")
+        .data(this.data);
 
-      const curtainEnter = curtainSelector.enter()
+      const curtainEnter = curtainSelector
+        .enter()
         .append("path")
         .attr("class", "curtainline");
 
@@ -94,16 +90,14 @@ export default Vue.extend({
         .join("path")
         .style("fill", this.color)
         .attr("d", this.area);
-
     }
   },
   mounted() {
     this.setupPlot();
     this.updatePlot();
-  },
+  }
 });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
-</style>
+<style lang="scss"></style>
