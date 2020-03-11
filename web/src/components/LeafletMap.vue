@@ -65,12 +65,12 @@
             <g id="legend-radius">
               <text x="0" y="0" dominant-baseline="hanging" opacity="0.6">TOTAL CASES</text>
               <g v-for="circle in legendCircles" :key="circle.cases">
-                <circle class="legend-circle" fill="white" stroke="grey" stroke-width="0.5" fill-opacity="0.75" transform="translate(0,20)" :cx="circle.x" :cy="legendHeight/2" :r="circle.r"></circle>
+                <circle class="legend-circle" fill="white" stroke="grey" stroke-width="0.5" fill-opacity="0.75" transform="translate(0,15)" :cx="circle.x" :cy="legendHeight/2" :r="circle.r"></circle>
                 <text class="legend-circle-text" dominant-baseline="hanging" text-anchor="middle" font-size="0.85em" :x="circle.x" :y="legendHeight/2 - circle.r">{{circle.cases}}</text>
               </g>
             </g>
             <g id="spacer">
-              <line x1="0" :x2="legendWidth + legendGap" :y1="legendHeight + margin.circles " :y2="legendHeight + margin.circles + margin.gap" stroke="white"></line>
+              <line x1="0" :x2="legendWidth + legendGap" :y1="legendHeight + margin.circles - margin.gap" :y2="legendHeight + margin.circles - margin.gap" stroke="white"></line>
             </g>
 
             <g id="legend-color">
@@ -147,7 +147,7 @@ export default Vue.extend({
       legendGap: 20,
       margin: {
         gap: 2,
-        circles: 30,
+        circles: 25,
         colors: 55
       },
       showLegend: true,
