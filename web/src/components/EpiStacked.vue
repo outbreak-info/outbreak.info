@@ -2,8 +2,8 @@
   <div class="epidemiology">
     <h4 class="stacked-area-title" v-if="title">{{ title }}</h4>
     <svg
-      :width="width + margin.left + margin.right"
-      :height="height + margin.top + margin.bottom"
+      :width="width"
+      :height="height"
       class="epi-summary-svg"
       :id="id"
     >
@@ -38,13 +38,11 @@ import Vue from "vue";
 import * as d3 from "d3";
 import store from "@/store";
 
-const width = 500;
-const height = 300;
 const margin = {
   top: 10,
-  right: 100,
+  right: 10,
   bottom: 25,
-  left: 70
+  left: 75
 };
 
 export default Vue.extend({
@@ -53,12 +51,12 @@ export default Vue.extend({
   props: {
     id: String,
     title: String,
-    data: Array
+    data: Array,
+    width: Number,
+    height: Number
   },
   data() {
     return {
-      width,
-      height,
       margin,
       series: null,
       // axes
@@ -145,10 +143,10 @@ export default Vue.extend({
 
       this.x = this.x
         .domain(d3.extent(this.data.map(d => d.date)))
-        .range([0, this.width]);
+        .range([0, this.width - this.margin.left - this.margin.right]);
 
       this.y = this.y
-        .range([this.height, 0])
+        .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, d3.max(this.series, d => d3.max(d, d => d[1]))])
         .nice();
 
@@ -159,7 +157,7 @@ export default Vue.extend({
         .attr("class", "epi-axis axis--x")
         .attr(
           "transform",
-          `translate(${this.margin.left}, ${this.margin.top + this.height + 2})`
+          `translate(${this.margin.left}, ${this.height - this.margin.bottom + 2})`
         )
         .call(this.xAxis);
 
@@ -300,5 +298,8 @@ path.stacked-area-chart {
 }
 .swoopy-arrowhead {
   stroke-width: 1;
+}
+svg {
+  background: red
 }
 </style>
