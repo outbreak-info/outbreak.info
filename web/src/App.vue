@@ -15,6 +15,9 @@
         <router-link to="/about">About</router-link>
       </nav>
     </header>
+    <div class="warning">
+      Our data is in the process of being updated; as a result, case counts are not currently correct. Sorry-- it'll be fixed soon.
+    </div>
 
     <router-view class="flex px-3" />
 
@@ -90,5 +93,13 @@ export default {
 
 .no-underline {
   text-decoration: none;
+}
+
+.warning {
+  background: red;
+  color: white;
+  width: 100%;
+  margin-bottom: 10px;
+
 }
 </style>
