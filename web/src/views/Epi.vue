@@ -106,7 +106,7 @@ export default {
 
       store.commit(
         "colors/setLocations",
-        this.data.map(d => d.locationName)
+        this.data.sort((a, b) => b.currentCases - a.currentCases).map(d => d.locationName)
       );
     },
     setLocation: function(locationString, nullLocationHandler) {
