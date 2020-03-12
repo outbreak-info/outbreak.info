@@ -1,9 +1,9 @@
 <template>
 <div>
-  <Autocomplete :items="allPlaces" :selected="selectedPlaces" @selected="updateSelected" />
+  <Autocomplete :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
 
   <div class="flex flex-space-between epi-container">
-    <EpiCurve v-bind:data="data" />
+    <EpiCurve v-bind:data="data" @addable="updateAddable"/>
     <EpiTable v-bind:data="data" :colorScale="colorScale" />
   </div>
   <!-- <div id="presetLocations">
@@ -74,6 +74,7 @@ export default {
         ]
       }],
       selectedPlaces: [],
+      addable: [],
       data: []
     };
   },
@@ -127,7 +128,10 @@ export default {
       this.filterData([]);
     },
     updateSelected: function(selected) {
-      this.selectedPlaces = selected;
+      this.selectedPlaces = [... new Set(selected)];
+    },
+    updateAddable: function(selected) {
+      this.addable = selected;
     },
     selectGroup: function(locationGroup) {
       // this.selectedPlaces = locationGroup.locations;

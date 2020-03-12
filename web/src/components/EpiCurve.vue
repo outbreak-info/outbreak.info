@@ -1,8 +1,11 @@
 <template>
 <div class="epidemiology-curves flex-column align-left" ref="epiContainer">
   <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
-    <small>You've selected a lot of places. Showing the top {{lengthThreshold}} with the highest current case counts</small>
-    <small><button @click="plotAll()">I don't care! Show me everything and I'll delete what I don't want</button></small>
+    <small v-if="!showAll">You've selected a lot of places. Showing the top {{lengthThreshold}} with the highest current case counts</small>
+    <div class="flex">
+      <input type="checkbox" id="checkbox" v-model="showAll" @click="plotAll()">
+      <label for="checkbox"><small>show more than {{ lengthThreshold }} curves</small></label>
+    </div>
   </div>
 
   <!-- <button @click="switchAxes()">common axis</button> -->
@@ -94,8 +97,6 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      // reset showing all
-      this.showAll = false;
       this.prepData();
       this.updatePlot();
     },
@@ -178,17 +179,20 @@ export default Vue.extend({
       d3.selectAll(`.epi-region`).style("opacity", 1);
     },
     plotAll: function() {
-      this.showAll = true;
+      this.showAll = !this.showAll;
       this.updatePlot();
-      // const locations = this.allCases.sort((a,b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold).map(d => d.locationName);
     },
     updatePlot: function() {
       if (this.data) {
-        if (this.isLogY) {
+        if (this.showAll) {
           // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
-          this.plottedData = this.showAll ? this.logData : this.logData.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
+          this.plottedData = this.isLogY ? this.logData : this.data;
+          this.$emit("addable", []);
         } else {
-          this.plottedData = this.showAll ? this.data : this.data.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
+          this.plottedData = this.isLogY ? this.logData.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold) : this.data.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
+          const toAdd = this.data.slice().sort((a, b) => b.currentCases - a.currentCases).slice(this.lengthThreshold, ).map(d =>
+            d.locationName);
+          this.$emit("addable", toAdd);
         }
 
         this.updateScales();
