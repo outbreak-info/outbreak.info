@@ -1,11 +1,17 @@
 <template>
 <div class="epidemiology-curves flex-column align-left" ref="epiContainer">
+  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
+    <small>You've selected a lot of places. Showing the top {{lengthThreshold}} with the highest current case counts</small>
+    <small><button @click="plotAll()">I don't care! Show me everything and I'll delete what I don't want</button></small>
+  </div>
+
   <!-- <button @click="switchAxes()">common axis</button> -->
   <h3 class="plot-title">
     Cumulative number of COVID-19 cases<span v-if="locationName">
       in {{ locationName }}</span>
   </h3>
   <DataUpdated />
+
   <svg :width="width" :height="height" class="epi-curve">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -66,6 +72,11 @@ export default Vue.extend({
       logData: null,
       plottedData: null,
 
+      // button interfaces
+      lengthThreshold: 8,
+      showAll: false,
+      isLogY: false,
+
       // axes
       numXTicks: 9,
       numYTicks: 6,
@@ -73,7 +84,6 @@ export default Vue.extend({
       y: d3.scaleLinear(),
       xAxis: null,
       yAxis: null,
-      isLogY: false,
       // refs
       svg: null,
       chart: null,
@@ -84,6 +94,8 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
+      // reset showing all
+      this.showAll = false;
       this.prepData();
       this.updatePlot();
     },
@@ -97,6 +109,9 @@ export default Vue.extend({
         return this.data[0].locationName;
       }
       return null;
+    },
+    dataLength() {
+      return (this.data.length);
     }
   },
   mounted() {
@@ -162,12 +177,17 @@ export default Vue.extend({
 
       d3.selectAll(`.epi-region`).style("opacity", 1);
     },
+    plotAll: function() {
+      this.showAll = true;
+      this.updatePlot();
+      // const locations = this.allCases.sort((a,b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold).map(d => d.locationName);
+    },
     updatePlot: function() {
       if (this.data) {
         if (this.isLogY) {
-          this.plottedData = this.logData;
+          this.plottedData = this.showAll ? this.logData : this.logData.slice().sort((a,b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
         } else {
-          this.plottedData = this.data;
+          this.plottedData = this.showAll ? this.data : this.data.slice().sort((a,b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
         }
 
         this.updateScales();
