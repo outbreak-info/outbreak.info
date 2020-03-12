@@ -174,13 +174,13 @@ export default Vue.extend({
         zoomSnap: 0.5,
         maxZoom: 7,
         minZoom: 0,
-        // maxBoundsViscosity: 1.0,
-        maxBounds: [
-          //south west
-          [-180, -74.227],
-          //north east
-          [180, -74.125]
-        ]
+        worldCopyJump:true,
+        // bounds: [
+        //   //south west
+        //   [-180, -72],
+        //   //north east
+        //   [180, 72]
+        // ]
       }
     };
   },
