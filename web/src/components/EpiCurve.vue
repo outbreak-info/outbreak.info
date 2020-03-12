@@ -185,9 +185,10 @@ export default Vue.extend({
     updatePlot: function() {
       if (this.data) {
         if (this.isLogY) {
-          this.plottedData = this.showAll ? this.logData : this.logData.slice().sort((a,b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
+          // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
+          this.plottedData = this.showAll ? this.logData : this.logData.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
         } else {
-          this.plottedData = this.showAll ? this.data : this.data.slice().sort((a,b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
+          this.plottedData = this.showAll ? this.data : this.data.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
         }
 
         this.updateScales();
@@ -408,6 +409,40 @@ export default Vue.extend({
         .attr("stroke", d => this.colorScale(d.locationName));
 
       // --- region annotation ---
+      // using force direction to make sure they don't overlap.
+      // based off https://bl.ocks.org/wdickerson/bd654e61f536dcef3736f41e0ad87786
+      const labelHeight = 16;
+      // Create nodes of the text labels for force direction
+      this.plottedData.forEach(d => {
+        d['fx'] = 0;
+        d['targetY'] = this.y(d.currentCases);
+      });
+
+      // Define a custom force
+      const forceClamp = (min, max) => {
+        let nodes;
+        const force = () => {
+          nodes.forEach(n => {
+            if (n.y > max) n.y = max;
+            if (n.y < min) n.y = min;
+          });
+        };
+        force.initialize = (_) => nodes = _;
+        return force;
+      }
+
+      // Set up the force simulation
+      const force = d3.forceSimulation()
+        .nodes(this.plottedData)
+        .force('collide', d3.forceCollide(labelHeight / 2))
+        .force('y', d3.forceY(d => d.targetY).strength(1))
+        .force('clamp', forceClamp(0, this.height - this.margin.top - this.margin.bottom))
+        .stop();
+
+      // Execute the simulation
+      for (let i = 0; i < 300; i++) force.tick();
+
+
       const countrySelector = this.chart
         .selectAll(".epi-region")
         .select(".annotation--region-name");
@@ -427,7 +462,7 @@ export default Vue.extend({
         // .attr('y', this.y(0))
         .attr("class", d => `annotation--region-name ${d.id}`)
         .attr("x", this.width - this.margin.left - this.margin.right)
-        .attr("y", d => this.y(d.currentCases))
+        .attr("y", d => d.y)
         .text(d => d.locationName)
         .style("opacity", 1e-6)
         .transition(t1)
