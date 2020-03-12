@@ -88,7 +88,6 @@ export default Vue.extend({
       this.updatePlot();
     },
     width() {
-      console.log(this.width);
       this.updatePlot();
     }
   },
@@ -246,7 +245,7 @@ export default Vue.extend({
       this.switchBtn = this.svg.selectAll(".switch-button-group").data([0]);
 
       this.switchBtn.exit().remove();
-      const switchEnter = this.switchBtn.enter().append("g").attr("class", "switch-button-group");
+      const switchEnter = this.switchBtn.enter().append("g").attr("class", "switch-button-group").attr("transform", "translate(5,0)");
 
       this.switchBtn.merge(switchEnter);
 
@@ -311,22 +310,24 @@ export default Vue.extend({
         )
         .on("click", () => this.changeScale());
 
-      this.switchBtn
-        .select("rect")
-        .attr(
-          "width",
-          this.switchBtn
-          .select("text")
-          .node()
-          .getBBox().width + 10
-        )
-        .attr(
-          "height",
-          this.switchBtn
-          .select("text")
-          .node()
-          .getBBox().height + 5
-        );
+      if (this.switchBtn.select("text").node()) {
+        this.switchBtn
+          .select("rect")
+          .attr(
+            "width",
+            this.switchBtn
+            .select("text")
+            .node()
+            .getBBox().width + 10
+          )
+          .attr(
+            "height",
+            this.switchBtn
+            .select("text")
+            .node()
+            .getBBox().height + 5
+          );
+      }
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
