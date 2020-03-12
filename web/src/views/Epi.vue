@@ -2,7 +2,7 @@
 <div>
   <Autocomplete :items="allPlaces" :selected="selectedPlaces" @selected="updateSelected" />
 
-  <div class="flex flex-space-between epi-group">
+  <div class="flex flex-space-between epi-container" ref="epiContainer">
     <EpiCurve v-bind:data="data" />
     <EpiTable v-bind:data="data" :colorScale="colorScale" />
   </div>

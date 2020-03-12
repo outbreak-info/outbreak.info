@@ -1,49 +1,25 @@
 <template>
-  <div class="epidemiology-curves flex-column align-left">
-    <!-- <button @click="switchAxes()">common axis</button> -->
-    <h3 class="plot-title">
-      Cumulative number of COVID-19 cases<span v-if="locationName">
-        in {{ locationName }}</span
-      >
-    </h3>
-    <DataUpdated />
-    <svg
-      :width="width + margin.left + margin.right"
-      :height="height + margin.top + margin.bottom"
-      class="epi-curve"
-    >
-      <defs>
-        <marker
-          id="arrow"
-          markerWidth="13"
-          markerHeight="10"
-          refX="9"
-          refY="5"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-        </marker>
-      </defs>
-      <g
-        :transform="`translate(${this.margin.left}, ${margin.top + height})`"
-        class="epi-axis axis--x"
-      ></g>
-      <g
-        :transform="`translate(${this.margin.left}, ${margin.top})`"
-        class="epi-axis axis--y"
-      ></g>
-      <g
-        :transform="`translate(${margin.left},${margin.top})`"
-        id="epi-curve"
-      ></g>
-      <g
-        :transform="`translate(${margin.left},${margin.top})`"
-        id="transition-mask"
-      ></g>
-    </svg>
-    <DataSource />
-  </div>
+<div class="epidemiology-curves flex-column align-left" ref="epiContainer">
+  <!-- <button @click="switchAxes()">common axis</button> -->
+  <h3 class="plot-title">
+    Cumulative number of COVID-19 cases<span v-if="locationName">
+      in {{ locationName }}</span>
+  </h3>
+  <DataUpdated />
+  <svg :width="width" :height="height" class="epi-curve">
+    <defs>
+      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+      </marker>
+    </defs>
+    <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="epi-axis axis--x"></g>
+    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y"></g>
+    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
+    <!-- <g class="switch-button-group"></g> -->
+    <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
+  </svg>
+  <DataSource />
+</div>
 </template>
 
 <script lang="ts">
@@ -52,7 +28,9 @@ import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 
 import * as d3 from "d3";
-import { cloneDeep } from "lodash";
+import {
+  cloneDeep
+} from "lodash";
 
 import store from "@/store";
 
@@ -89,8 +67,10 @@ export default Vue.extend({
       plottedData: null,
 
       // axes
-      x: d3.scaleTime().range([0, width]),
-      y: d3.scaleLinear().range([height, 0]),
+      numXTicks: 9,
+      numYTicks: 6,
+      x: d3.scaleTime(),
+      y: d3.scaleLinear(),
       xAxis: null,
       yAxis: null,
       isLogY: false,
@@ -105,6 +85,10 @@ export default Vue.extend({
   watch: {
     data: function() {
       this.prepData();
+      this.updatePlot();
+    },
+    width() {
+      console.log(this.width);
       this.updatePlot();
     }
   },
@@ -121,6 +105,29 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
+    setPlotDims() {
+      const idealWidth = 750;
+      const whRatio = 5 / 3;
+      const framePadding = 32; // left / right padding on the div of 16px ea.
+      if (window.innerWidth < idealWidth) {
+        const newWidth = window.innerWidth - framePadding;
+        const newHeight = newWidth / whRatio;
+        // check height within limits
+        if (newHeight > window.innerHeight) {
+          this.width = window.innerHeight * whRatio;
+          this.height = window.innerHeight;
+        } else {
+          this.width = newWidth;
+          this.height = newHeight;
+        }
+      } else {
+        this.width = idealWidth;
+        this.height = idealWidth / whRatio;
+      }
+
+      this.numXTicks = this.width < 550 ? 3 : 9;
+      this.numYTicks = this.height < 250 ? 3 : 6;
+    },
     colorScale: function(location) {
       const scale = store.getters["colors/getColor"];
       return scale(location);
@@ -177,6 +184,16 @@ export default Vue.extend({
       }
     },
     setupPlot: function() {
+      // Event listener for mobile responsiveness
+      // $nextTick waits till DOM rendered
+      this.$nextTick(function() {
+        window.addEventListener("resize", this.setPlotDims);
+        // set initial dimensions for the stacked area plots.
+        this.setPlotDims();
+      });
+
+      this.setPlotDims();
+
       this.prepData();
       this.svg = d3.select("svg.epi-curve");
       this.chart = d3.select("#epi-curve");
@@ -185,66 +202,106 @@ export default Vue.extend({
         .line()
         .x(d => this.x(d.date))
         .y(d => this.y(d.cases));
+    },
+    updateScales: function() {
+      this.x = this.x
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain(
+          d3.extent(this.plottedData.flatMap(d => d.data).map(d => d.date))
+        );
 
-      // this.svg.append('g')
-      //   .attr('class', 'epi-axis axis--x')
-      //   .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`);
+      if (this.isLogY) {
+        this.y = d3
+          .scaleLog()
+          .range([this.height - this.margin.top - this.margin.bottom, 0])
+          .domain([
+            1,
+            d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))
+          ]);
+      } else {
+        this.y = d3
+          .scaleLinear()
+          .range([this.height - this.margin.top - this.margin.bottom, 0])
+          .domain([
+            0,
+            d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))
+          ]);
+      }
+
+      this.xAxis = d3.axisBottom(this.x).ticks(this.numXTicks);
+
+      d3.select(".axis--x").call(this.xAxis);
+
+      this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks);
+
+      d3.select(".axis--y").call(this.yAxis);
+
+      // --- update y-scale switch button --
       //
-      // this.svg.append('g')
-      //   .attr('class', 'epi-axis axis--y')
-      //   .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
-
-      this.switchBtn = this.svg
-        .append("g")
-        .attr("class", "switch-button-group");
-
       const dySwitch = -10;
       const xSwoop = 30;
       const ySwoop = -35;
       const swoopOffset = 10;
 
-      this.switchBtn
+      this.switchBtn = this.svg.selectAll(".switch-button-group").data([0]);
+
+      this.switchBtn.exit().remove();
+      const switchEnter = this.switchBtn.enter().append("g").attr("class", "switch-button-group");
+
+      this.switchBtn.merge(switchEnter);
+
+      const switchRect = this.switchBtn.select(".switch-button-rect");
+      const switchRectEnter = this.switchBtn
         .append("rect")
         .attr("class", "switch-button-rect")
         .attr("x", 0)
-        .attr("y", this.margin.top + this.height + this.margin.bottom - 28)
         .attr("width", 0)
         .attr("height", 0);
 
-      this.switchBtn
+      switchRect.merge(switchRectEnter)
+        .attr("y", this.height - 28);
+
+      const switchArrow = this.switchBtn.select("path");
+
+      const switchArrowEnter = this.switchBtn
         .append("path")
         .attr("class", "swoopy-arrow")
         .attr("id", "switch-btn-swoopy-arrow")
-        .attr("marker-end", "url(#arrow)")
+        .attr("marker-end", "url(#arrow)");
+
+      switchArrow.merge(switchArrowEnter)
         // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
         .attr(
           "d",
-          `M ${xSwoop} ${this.margin.top +
-            this.height +
-            this.margin.bottom +
+          `M ${xSwoop} ${
+            this.height  +
             ySwoop}
-          C ${xSwoop + swoopOffset} ${this.margin.top +
+          C ${xSwoop + swoopOffset} ${
             this.height +
-            this.margin.bottom +
             ySwoop},
-          ${this.margin.left + ySwoop + 20} ${this.height +
-            this.margin.top +
+          ${this.margin.left + ySwoop + 20} ${this.height -
+            this.margin.bottom +
             15 +
             swoopOffset},
-          ${this.margin.left + ySwoop + 20} ${this.height +
-            this.margin.top +
+          ${this.margin.left + ySwoop + 20} ${this.height -
+            this.margin.bottom +
             15}`
           // `M ${xSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${xSwoop + 5} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 55}, ${this.margin.left - 25 - dxSwoop} ${ this.height + this.margin.top }, ${this.margin.left - 25} ${ this.height + this.margin.top }`
           // `M ${dxSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${dxSwoop+15} ${this.margin.top + this.height + this.margin.bottom - 20}, ${this.margin.left - 13} ${this.height + this.margin.top + 25}, ${this.margin.left - 13} ${this.height + this.margin.top + 10}`
         );
 
-      this.switchBtn
+      const switchText = this.switchBtn.select("text");
+
+      const switchTextEnter = this.switchBtn
         .append("text")
         .attr("class", "switch-button")
-        .attr("x", 5)
+        .attr("x", 5);
+
+      switchText.merge(switchTextEnter)
+        .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
         .attr(
           "y",
-          this.margin.top + this.height + this.margin.bottom + dySwitch
+          this.height + dySwitch
         )
         .on("mouseover", () =>
           this.switchBtn.select("rect").classed("switch-button-hover", true)
@@ -253,58 +310,22 @@ export default Vue.extend({
           this.switchBtn.select("rect").classed("switch-button-hover", false)
         )
         .on("click", () => this.changeScale());
-    },
-    updateScales: function() {
-      this.x = this.x.domain(
-        d3.extent(this.plottedData.flatMap(d => d.data).map(d => d.date))
-      );
-
-      if (this.isLogY) {
-        this.y = d3
-          .scaleLog()
-          .range([height, 0])
-          .domain([
-            1,
-            d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))
-          ]);
-      } else {
-        this.y = d3
-          .scaleLinear()
-          .range([height, 0])
-          .domain([
-            0,
-            d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))
-          ]);
-      }
-
-      this.xAxis = d3.axisBottom(this.x).ticks(9);
-
-      d3.select(".axis--x").call(this.xAxis);
-
-      this.yAxis = d3.axisLeft(this.y);
-
-      d3.select(".axis--y").call(this.yAxis);
-
-      // --- update y-scale switch button ---
-      this.switchBtn
-        .select("text")
-        .text(`switch to ${this.isLogY ? "linear" : "log"} scale`);
 
       this.switchBtn
         .select("rect")
         .attr(
           "width",
           this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().width + 10
+          .select("text")
+          .node()
+          .getBBox().width + 10
         )
         .attr(
           "height",
           this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().height + 5
+          .select("text")
+          .node()
+          .getBBox().height + 5
         );
     },
     drawDots: function() {
@@ -384,7 +405,7 @@ export default Vue.extend({
         // .attr('x', 0)
         // .attr('y', this.y(0))
         .attr("class", d => `annotation--region-name ${d.id}`)
-        .attr("x", this.width)
+        .attr("x", this.width - this.margin.left - this.margin.right)
         .attr("y", d => this.y(d.currentCases))
         .text(d => d.locationName)
         .style("opacity", 1e-6)
@@ -551,10 +572,10 @@ export default Vue.extend({
         .attr("class", "transition-curtain")
         .style("fill", "white")
         .attr("y", -this.margin.top)
-        .attr("width", this.width + this.radius + this.margin.right)
+        .attr("width", this.width + this.radius - this.margin.left)
         .attr(
           "height",
-          this.height + this.margin.top + this.radius * 2 + this.margin.bottom
+          this.height + this.radius * 2
         );
 
       curtainSelector
@@ -562,7 +583,7 @@ export default Vue.extend({
         .attr("x", -this.radius)
         .transition(t1)
         .ease(d3.easeLinear)
-        .attr("x", this.width + this.margin.right);
+        .attr("x", this.width - this.margin.left);
     }
   }
 });
@@ -571,80 +592,80 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .epi-axis text {
-  font-size: 12pt;
+    font-size: 12pt;
 }
 
 .epi-line {
-  fill: none;
-  stroke-width: 2;
+    fill: none;
+    stroke-width: 2;
 }
 
 .epi-point {
-  // opacity: 0.4;
+    // opacity: 0.4;
 }
 
 .annotation--region-name {
-  dominant-baseline: middle;
+    dominant-baseline: middle;
 }
 
 .tooltip--text {
-  dominant-baseline: hanging;
-  stroke: none !important;
+    dominant-baseline: hanging;
+    stroke: none !important;
 }
 
 .tooltip--date {
-  font-weight: 300;
+    font-weight: 300;
 }
 
 .tooltip--case-count {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .switch-button {
-  cursor: pointer;
-  dominant-baseline: text-after-edge;
-  // fill: $grey-90 !important;
-  font-weight: 300 !important;
-  font-size: 0.85em;
+    cursor: pointer;
+    dominant-baseline: text-after-edge;
+    // fill: $grey-90 !important;
+    font-weight: 300 !important;
+    font-size: 0.85em;
 
-  &:hover {
-    text-decoration: underline;
-  }
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-  stroke: $grey-70;
-  fill: none;
-  stroke-width: 0.8;
+    stroke: $grey-70;
+    fill: none;
+    stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-  stroke-width: 1;
+    stroke-width: 1;
 }
 
 .switch-button-rect {
-  fill-opacity: 0.15;
-  rx: 4;
-  ry: 4;
-  stroke: $grey-60;
-  stroke-width: 0.5;
-  shape-rendering: crispedges;
-  &:hover {
-    fill-opacity: 0.25;
-  }
+    fill-opacity: 0.15;
+    rx: 4;
+    ry: 4;
+    stroke: $grey-60;
+    stroke-width: 0.5;
+    shape-rendering: crispedges;
+    &:hover {
+        fill-opacity: 0.25;
+    }
 }
 
 .switch-button-hover {
-  fill-opacity: 0.25;
+    fill-opacity: 0.25;
 }
 
 .epidemiology-curves line.case-def-changed {
-  stroke: $grey-60;
-  stroke-width: 0.75;
-  shape-rendering: crispedges;
-  stroke-dasharray: 6, 6;
+    stroke: $grey-60;
+    stroke-width: 0.75;
+    shape-rendering: crispedges;
+    stroke-dasharray: 6, 6;
 }
 .epidemiology-curves .case-def-changed text {
-  text-anchor: start;
+    text-anchor: start;
 }
 </style>
