@@ -19,8 +19,8 @@
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
       </marker>
     </defs>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y"></g>
+    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
+    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
@@ -253,11 +253,11 @@ export default Vue.extend({
 
       this.xAxis = d3.axisBottom(this.x).ticks(this.numXTicks);
 
-      d3.select(".axis--x").call(this.xAxis);
+      d3.select(this.$refs.xAxis).call(this.xAxis);
 
       this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks);
 
-      d3.select(".axis--y").call(this.yAxis);
+      d3.select(this.$refs.yAxis).call(this.yAxis);
 
       // --- update y-scale switch button --
       //
