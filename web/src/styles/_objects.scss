@@ -3,8 +3,8 @@
 .loader {
   position: fixed;
   z-index: 100;
-  top: calc(50% - 100px) !important;
-  left: calc(50% - 100px) !important;
+  top: calc(50vh - 50px) !important;
+  left: calc(50vw - 50px) !important;
 }
 // --- buttons ---
 button {
