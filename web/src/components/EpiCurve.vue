@@ -13,14 +13,14 @@
       in {{ locationName }}</span>
   </h3>
   <DataUpdated />
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
+  <svg :width="width" :height="height" class="epi-curve">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
       </marker>
     </defs>
-    <g :transform="`translate(${this.margin.left}, ${margin.top + height})`" class="epi-axis axis--x"></g>
-    <g :transform="`translate(${this.margin.left}, ${margin.top})`" class="epi-axis axis--y"></g>
+    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x"></g>
+    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
