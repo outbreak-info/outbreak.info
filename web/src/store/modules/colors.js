@@ -22,7 +22,15 @@ const categoricalPalette = ["#507ea3",
 "#b475a3",
 "#ff98a8",
 "#9c755f",
-"#bab0ab"];
+"#bab0ab",
+"#154d7e",
+"#ba6000",
+"#aa2230",
+"#418d88",
+"#277223",
+"#b7990e",
+"#834874",
+"#828282"];
 
 // getters --> computed props
 const getters = {
