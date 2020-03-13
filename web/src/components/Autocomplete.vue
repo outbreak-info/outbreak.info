@@ -5,10 +5,9 @@
       select locations
     </div>
     <div class="d-flex flex-wrap">
-      <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)" v-bind:style="{ background: lightColorScale(item) }">
-        {{ item }}
-        <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{ color: colorScale(item) }" />
-      </button>
+      <button class="chip" v-for="(item, idx) in selectedItems" :key="idx" :class="{ 'to-add': item.addable, 'all-selected': isSelectAll }" @click="updateChip(item)" v-bind:style="{ background: item.lightColor }">
+        {{ item.label }}
+        <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{ color: item.darkColor }" v-if="!item.addable" /></button>
       <input type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
     </div>
   </div>

@@ -1,13 +1,9 @@
 <template>
   <div class="container full-page py-5 bg-light">
-    <Autocomplete class="m-auto"
-      :items="allPlaces"
-      :selected="selectedPlaces"
-      @selected="updateSelected"
-    />
+    <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
 
     <div class="d-flex flex-column">
-      <EpiCurve v-bind:data="data" />
+      <EpiCurve v-bind:data="data" @addable="updateAddable"/>
       <EpiTable v-bind:data="data" :colorScale="colorScale" />
     </div>
     <!-- <div id="presetLocations">
