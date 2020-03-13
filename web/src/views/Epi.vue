@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <Autocomplete
+  <div class="container full-page py-5 bg-light">
+    <Autocomplete class="m-auto"
       :items="allPlaces"
       :selected="selectedPlaces"
       @selected="updateSelected"
     />
 
-    <div class="flex">
+    <div class="d-flex flex-column">
       <EpiCurve v-bind:data="data" />
       <EpiTable v-bind:data="data" :colorScale="colorScale" />
     </div>

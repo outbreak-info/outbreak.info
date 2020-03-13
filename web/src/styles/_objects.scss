@@ -25,6 +25,7 @@ button {
         display: flex;
         align-items: center;
         padding: 2px 8px;
+        white-space: nowrap;
         cursor: pointer;
         & .remove-btn {
             margin-left: 0.25em;
@@ -40,4 +41,26 @@ button.chip:hover {
     & .remove-btn {
         color: $warning-color !important;
     }
+}
+
+.btn-main{
+  background: $primary-color !important;
+  color: white;
+  transition: all .5s;
+  text-transform: uppercase;
+  &:hover{
+    background: $secondary-color !important;
+    color: white;
+  }
+  &-outline{
+    background: transparent;
+    border: $primary-color 2px solid !important;
+    color: $secondary-color;
+    transition: all .5s;
+    text-transform:uppercase;
+    &:hover{
+      background: $primary-color !important;
+      color: white;
+    }
+  }
 }

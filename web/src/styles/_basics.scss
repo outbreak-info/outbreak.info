@@ -18,11 +18,64 @@
     fill: $base-grey;
 }
 
+@media only screen and (max-width: 600px) {
+  .hero{
+    background-position: center;
+    background-size: cover;
+    background-image: none;
+  }
+  p.focustext{
+    font-size: 19px;
+  }
+}
+
+.hero{
+  background-position: center;
+  background-size: cover;
+  background-image: url("~@/assets/hero-01.svg");
+}
+
+.nav-hero{
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("~@/assets/navback-01.svg");
+}
+
+.back-1{
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("~@/assets/back1.png");
+}
+
+.back-2{
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("~@/assets/back2.png");
+}
+
 // --- common useful things ---
 .router-link-black {
   color: $base-grey !important;
 }
 
+.full-page{
+  min-height: 100vh;
+}
+
+.half-page{
+  min-height: 50vh;
+}
+
+.main{
+  overflow: hidden;
+}
+
+p.focustext{
+  font-size: 25px;
+}
 .hidden {
   display: none;
 }
@@ -43,4 +96,63 @@
 
 .fill-primary-light {
   background: lighten($primary-color, 25%)
+}
+
+.text-main{
+  color: $primary-color;
+}
+
+.text-sec{
+  color: $secondary-color;
+}
+
+.text-highlight{
+  color: $warning-color;
+}
+
+.bg-light{
+  background-color: $lightback;
+}
+
+.bg-main{
+  background-color: $primary-color;
+    &__lighter{
+      background-color: lighten($primary-color,20%);
+    }
+    &__darker{
+      background-color: darken($primary-color,10%);
+    }
+}
+
+.bg-sec{
+  background-color: $secondary-color;
+  &__lighter{
+    background-color: lighten($secondary-color,20%);
+  }
+  &__darker{
+    background-color: darken($secondary-color,10%);
+  }
+}
+
+.bg-highlight{
+  background-color: $warning-color;
+  &__lighter{
+    background-color: lighten($warning-color,20%);
+  }
+  &__darker{
+    background-color: darken($warning-color,10%);
+  }
+}
+
+.bg-grey{
+  background-color: $base-grey;
+  &__lighter{
+    background-color: lighten($base-grey,20%);
+  }
+  &__lightest{
+    background-color: lighten($base-grey,70%);
+  }
+  &__darker{
+    background-color: darken($base-grey,10%);
+  }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="epidemiology-curves flex-column align-left">
     <!-- <button @click="switchAxes()">common axis</button> -->
-    <h3 class="plot-title">
+    <h3 class="plot-title text-sec py-5">
       Cumulative number of COVID-19 cases<span v-if="locationName">
         in {{ locationName }}</span
       >

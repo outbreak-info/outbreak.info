@@ -1,16 +1,19 @@
 <template>
   <div class="epi-table my-3" v-if="data && data.length > 0">
-    <div class="flex flex-space-between">
-      <h4>Most recent cases</h4>
-      <select v-model="numPerPage" @change="changePageNum()">
-        <option v-for="option in pageOpts" :value="option" :key="option">
-          {{ option }} results
-        </option>
-      </select>
+    <div class="d-flex justify-content-center py-5">
+      <div>
+        <h4>Most Recent Cases</h4>
+        <DataUpdated />
+        <div class="mt-4">
+          <select v-model="numPerPage" @change="changePageNum()">
+            <option v-for="option in pageOpts" :value="option" :key="option">
+              {{ option }} results
+            </option>
+          </select>
+        </div>
+      </div>
     </div>
-    <DataUpdated />
-
-    <table>
+    <table class="m-auto">
       <tr>
         <th class="align-left sortable td-location" @click="sortLocation()">
           <div class="sort-grp">
@@ -135,8 +138,8 @@
         </td>
       </tr>
     </table>
-
-    <div class="pagination mt-2 flex align-items-center flex-space-between">
+    <br />
+    <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
       <button
         class="pagination-btn pagination-left"
         :class="{ disabled: page === 0 }"

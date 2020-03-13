@@ -1,32 +1,3 @@
-// --- layout ---
-
-.flex {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.flex-column {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-}
-
-.flex-space-between {
-  justify-content: space-between;
-}
-
-.align-left {
-  align-items: flex-start;
-  text-align: left;
-}
-
-.align-items-center {
-  align-items: center;
-}
-// d3-constants
-.plot-title {
-  margin: 0 !important;
-}
 // margins
 .mt-1 {
   margin-top: 0.25rem;

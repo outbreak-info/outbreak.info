@@ -1,5 +1,5 @@
 <template>
-  <div class="autocomplete">
+  <div class="autocomplete" style="background:white;">
     <div
       :content="selected"
       class="autocomplete-input flex-column user-input-wrp"
@@ -10,7 +10,7 @@
       >
         select locations
       </div>
-      <div class="flex">
+      <div class="d-flex flex-wrap">
         <button
           class="chip"
           v-for="(item, idx) in selected"

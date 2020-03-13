@@ -1,9 +1,9 @@
 <template>
-<div v-if="this.height && this.data && this.data.length > 0">
-  <h3 v-if="this.mostRecentDate">
+<div v-if="this.height && this.data && this.data.length > 0" class="full-page mt-5">
+  <h3 v-if="this.mostRecentDate" class="py-5">
     Current cases as of {{ formatDate(mostRecentDate) }}
   </h3>
-  <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
+  <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map" class="m-auto">
     <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate">
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
       <l-tile-layer :url="urlLabels" :attribution="attribution" :opacity="0.25" v-if="currentZoom > 3" />
