@@ -4,7 +4,7 @@
     Current cases as of {{ formatDate(mostRecentDate) }}
   </h3>
   <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
-    <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate">
+    <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate" ref="map" @click="handleMapClick">
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
       <l-tile-layer :url="urlLabels" :attribution="attribution" :opacity="0.25" v-if="currentZoom > 3" />
       <l-circle-marker v-for="(circle, i) in data" :key="i" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
@@ -174,7 +174,8 @@ export default Vue.extend({
         zoomSnap: 0.5,
         maxZoom: 7,
         minZoom: 0,
-        worldCopyJump:true,
+        worldCopyJump: true,
+        scrollWheelZoom: false
         // bounds: [
         //   //south west
         //   [-180, -72],
@@ -224,8 +225,16 @@ export default Vue.extend({
     centerUpdate(center) {
       this.currentCenter = center;
     },
-    innerClick() {
-      alert("Click!");
+    handleMapClick() {
+//       console.log("map clicked")
+//       console.log(this)
+//       this.$refs.map.mapObject.scrollWheelZoom.enabled();
+//       console.log(this.$refs.map.mapObject)
+//       console.log(this.$refs.map.mapObject.options)
+//       // this.$refs.map.mapObject.options.scrollWheelZoom = true;
+//       console.log(this.$refs.map.mapObject.options.scrollWheelZoom)
+// this.$refs.map.mapObject.invalidateSize()
+
     },
     prepData() {
       if (this.data) {
