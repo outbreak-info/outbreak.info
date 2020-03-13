@@ -401,19 +401,23 @@ th {
 
 // widths
 .td-location {
-  width: 150px;
+  width: 140px;
 }
 .td-pct-increase {
-  width: 160px;
+  width: 90px;
 }
 .td-new-cases {
-  width: 120px;
+  width: 70px;
 }
 .td-total {
-  width: 100px;
+  width: 70px;
 }
 
 .sortable {
   cursor: pointer;
+}
+
+.header {
+width: 100%;
 }
 </style>

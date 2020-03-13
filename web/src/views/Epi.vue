@@ -1,13 +1,9 @@
 <template>
   <div class="container full-page py-5 bg-light">
-    <Autocomplete class="m-auto"
-      :items="allPlaces"
-      :selected="selectedPlaces"
-      @selected="updateSelected"
-    />
+    <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
 
     <div class="d-flex flex-column">
-      <EpiCurve v-bind:data="data" />
+      <EpiCurve v-bind:data="data" @addable="updateAddable"/>
       <EpiTable v-bind:data="data" :colorScale="colorScale" />
     </div>
     <!-- <div id="presetLocations">
@@ -15,7 +11,7 @@
       {{place.label}}
     </button>
   </div> -->
-  </div>
+</div>
 </template>
 
 <script>
@@ -25,7 +21,9 @@ import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
 
 import store from "@/store";
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
 
 export default {
   name: "Epidemiology",
@@ -41,43 +39,42 @@ export default {
   },
   data() {
     return {
-      presetGroups: [
-        {
-          label: "United States",
-          locations: [
-            "US",
-            "King County, WA",
-            "Cook County, IL",
-            "Tempe, AZ",
-            "Orange, CA",
-            "Los Angeles, CA",
-            "Santa Clara, CA",
-            "Boston, MA",
-            "San Benito, CA",
-            "Madison, WI",
-            "San Diego County, CA",
-            "San Antonio, TX",
-            "Omaha, NE (From Diamond Princess)",
-            "Travis, CA (From Diamond Princess)",
-            "Lackland, TX (From Diamond Princess)",
-            "Humboldt County, CA",
-            "Sacramento County, CA",
-            "Unassigned Location (From Diamond Princess)",
-            "Portland, OR",
-            "Snohomish County, WA",
-            "Providence, RI",
-            "Grafton County, NH",
-            "Hillsborough, FL",
-            "New York City, NY",
-            "Placer County, CA",
-            "San Mateo, CA",
-            "Sarasota, FL",
-            "Sonoma County, CA",
-            "Umatilla, OR"
-          ]
-        }
-      ],
+      presetGroups: [{
+        label: "United States",
+        locations: [
+          "US",
+          "King County, WA",
+          "Cook County, IL",
+          "Tempe, AZ",
+          "Orange, CA",
+          "Los Angeles, CA",
+          "Santa Clara, CA",
+          "Boston, MA",
+          "San Benito, CA",
+          "Madison, WI",
+          "San Diego County, CA",
+          "San Antonio, TX",
+          "Omaha, NE (From Diamond Princess)",
+          "Travis, CA (From Diamond Princess)",
+          "Lackland, TX (From Diamond Princess)",
+          "Humboldt County, CA",
+          "Sacramento County, CA",
+          "Unassigned Location (From Diamond Princess)",
+          "Portland, OR",
+          "Snohomish County, WA",
+          "Providence, RI",
+          "Grafton County, NH",
+          "Hillsborough, FL",
+          "New York City, NY",
+          "Placer County, CA",
+          "San Mateo, CA",
+          "Sarasota, FL",
+          "Sonoma County, CA",
+          "Umatilla, OR"
+        ]
+      }],
       selectedPlaces: [],
+      addable: [],
       data: []
     };
   },
@@ -104,13 +101,13 @@ export default {
     filterData: function(locations) {
       this.data = this.allCases.filter(d =>
         locations
-          .map(d => d.toLowerCase())
-          .includes(d.locationName.toLowerCase())
+        .map(d => d.toLowerCase())
+        .includes(d.locationName.toLowerCase())
       );
 
       store.commit(
         "colors/setLocations",
-        this.data.map(d => d.locationName)
+        this.data.sort((a, b) => b.currentCases - a.currentCases).map(d => d.locationName)
       );
     },
     setLocation: function(locationString, nullLocationHandler) {
@@ -131,7 +128,10 @@ export default {
       this.filterData([]);
     },
     updateSelected: function(selected) {
-      this.selectedPlaces = selected;
+      this.selectedPlaces = [... new Set(selected)];
+    },
+    updateAddable: function(selected) {
+      this.addable = selected;
     },
     selectGroup: function(locationGroup) {
       // this.selectedPlaces = locationGroup.locations;
@@ -143,4 +143,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.epi-group {
+    align-items: center;
+    width: 100%;
+}
+</style>
