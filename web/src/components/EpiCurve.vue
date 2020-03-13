@@ -68,6 +68,7 @@ export default Vue.extend({
       margin,
       radius,
       transitionDuration,
+      backgroundColor: "#f8f9fa",
 
       // data
       logData: null,
@@ -628,7 +629,7 @@ export default Vue.extend({
         .enter()
         .append("rect")
         .attr("class", "transition-curtain")
-        .style("fill", "white")
+        .style("fill", this.backgroundColor)
         .attr("y", -this.margin.top)
         .attr("width", this.width + this.radius - this.margin.left)
         .attr(
