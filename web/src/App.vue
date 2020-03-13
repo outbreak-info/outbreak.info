@@ -27,14 +27,14 @@
             </li>
           </ul>
         </div>
-        <form class="pull-right d-none d-md-block">
+        <!-- <form class="pull-right d-none d-md-block">
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text bg-grey text-sec border-0" id="basic-addon1"><i class="fas fa-search"></i></span>
             </div>
             <input type="text" class="form-control border-0 bg-grey text-light" placeholder="Search" aria-label="Username" aria-describedby="basic-addon1">
           </div>
-        </form>
+        </form> -->
       </nav>
     </header>
     <transition name="fade">
