@@ -28,10 +28,20 @@ button {
     align-items: center;
     padding: 2px 8px;
     cursor: pointer;
-
-    & .remove-btn, & .add-btn {
-      margin-left: 0.25em;
-      font-size: 0.75em;
+    &:focus {
+        outline: none !important;
+    }
+    &.chip {
+        border-radius: 1em;
+        display: flex;
+        align-items: center;
+        padding: 2px 8px;
+        white-space: nowrap;
+        cursor: pointer;
+        & .remove-btn {
+            margin-left: 0.25em;
+            font-size: 0.75em;
+        }
     }
   }
 }
@@ -63,5 +73,27 @@ button.chip.to-add:hover {
 
   & .add-btn {
     color: white !important;
+  }
+}
+
+.btn-main{
+  background: $primary-color !important;
+  color: white;
+  transition: all .5s;
+  text-transform: uppercase;
+  &:hover{
+    background: $secondary-color !important;
+    color: white;
+  }
+  &-outline{
+    background: transparent;
+    border: $primary-color 2px solid !important;
+    color: $secondary-color;
+    transition: all .5s;
+    text-transform:uppercase;
+    &:hover{
+      background: $primary-color !important;
+      color: white;
+    }
   }
 }

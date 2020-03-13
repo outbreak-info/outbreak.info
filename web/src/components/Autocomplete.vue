@@ -1,14 +1,13 @@
 <template>
-<div class="autocomplete">
+<div class="autocomplete" style="background:white;">
   <div :content="selected" class="autocomplete-input flex-column user-input-wrp">
     <div class="floating-label align-left" :class="[selected.length === 0 ? 'empty' : 'filled']">
       select locations
     </div>
-    <div class="flex">
-      <button class="chip" v-for="(item, idx) in selectedItems" :key="idx" :class="{ 'to-add': item.addable, 'all-selected': isSelectAll }" @click="updateChip(item)" v-bind:style="{ background: item.lightColor }">
-        {{ item.label }}
-        <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{ color: item.darkColor }" v-if="!item.addable"/>
-        <!-- <font-awesome-icon class="add-btn" :icon="['far', 'plus-square']" v-bind:style="{ color: item.darkColor }" v-if="item.addable" /> -->
+    <div class="d-flex flex-wrap">
+      <button class="chip" v-for="(item, idx) in selected" :key="idx" :class="{ 'all-selected': isSelectAll }" @click="removeChip(item)" v-bind:style="{ background: lightColorScale(item) }">
+        {{ item }}
+        <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{ color: colorScale(item) }" />
       </button>
       <input type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
     </div>
@@ -40,7 +39,8 @@ import {
   library
 } from "@fortawesome/fontawesome-svg-core";
 import {
-  faTimesCircle, faPlusSquare
+  faTimesCircle,
+  faPlusSquare
 } from "@fortawesome/free-regular-svg-icons";
 
 library.add(faTimesCircle, faPlusSquare);
@@ -119,11 +119,12 @@ export default Vue.extend({
       return scale(location);
     },
     updateChip(item) {
-      if(item.addable){
-      this.$emit(
-        "selected",
-        this.selected.concat(item.label)
-      );} else {
+      if (item.addable) {
+        this.$emit(
+          "selected",
+          this.selected.concat(item.label)
+        );
+      } else {
         this.$emit(
           "selected",
           this.selected.filter(d => d !== item.label)

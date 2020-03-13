@@ -1,12 +1,16 @@
 <template>
-<div>
-  <Autocomplete :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
+  <div class="container full-page py-5 bg-light">
+    <Autocomplete class="m-auto"
+      :items="allPlaces"
+      :selected="selectedPlaces"
+      @selected="updateSelected"
+    />
 
-  <div class="flex flex-space-between epi-container">
-    <EpiCurve v-bind:data="data" @addable="updateAddable"/>
-    <EpiTable v-bind:data="data" :colorScale="colorScale" />
-  </div>
-  <!-- <div id="presetLocations">
+    <div class="d-flex flex-column">
+      <EpiCurve v-bind:data="data" />
+      <EpiTable v-bind:data="data" :colorScale="colorScale" />
+    </div>
+    <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
       {{place.label}}
     </button>

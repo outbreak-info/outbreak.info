@@ -1,7 +1,7 @@
 <template>
-  <small class="date-updated" v-if="lastUpdated"
-    >updated {{ lastUpdated }} ago</small
-  >
+  <small class="text-muted badge bg-grey__lightest" v-if="lastUpdated"
+    >Last updated {{ lastUpdated }} ago
+  </small>
 </template>
 
 <script lang="ts">
@@ -37,7 +37,4 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.date-updated {
-  color: $grey-60;
-}
 </style>

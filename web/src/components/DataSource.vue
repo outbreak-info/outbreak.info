@@ -1,5 +1,5 @@
 <template>
-  <div class="source">
+  <div class="source my-3">
     <small
       >Source:
       <a :href="dataSourceUrl" target="_blank" rel="noreferrer">{{

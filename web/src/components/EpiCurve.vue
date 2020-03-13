@@ -1,5 +1,5 @@
 <template>
-<div class="epidemiology-curves flex-column align-left" ref="epiContainer">
+<div class="epidemiology-curves flex-column align-left">
   <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
     <small v-if="!showAll">You've selected a lot of places. Showing the top {{lengthThreshold}} with the highest current case counts</small>
     <div class="flex">
@@ -7,27 +7,25 @@
       <label for="checkbox"><small>show more than {{ lengthThreshold }} curves</small></label>
     </div>
   </div>
-
   <!-- <button @click="switchAxes()">common axis</button> -->
-  <h3 class="plot-title">
+  <h3 class="plot-title text-sec py-5">
     Cumulative number of COVID-19 cases<span v-if="locationName">
       in {{ locationName }}</span>
   </h3>
   <DataUpdated />
-
-  <svg :width="width" :height="height" class="epi-curve">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-curve">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
       </marker>
     </defs>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="epi-axis axis--x"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y"></g>
+    <g :transform="`translate(${this.margin.left}, ${margin.top + height})`" class="epi-axis axis--x"></g>
+    <g :transform="`translate(${this.margin.left}, ${margin.top})`" class="epi-axis axis--y"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
-    <!-- <g class="switch-button-group"></g> -->
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
   <DataSource />
+
 </div>
 </template>
 
