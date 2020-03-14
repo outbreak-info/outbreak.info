@@ -3,11 +3,13 @@ const state = {
   regionDict: [
     {
       display: false,
+      displayMore: false,
       region: "China",
       countries: ["Mainland China"]
     },
     {
       display: false,
+      displayMore: false,
       region: "Asia (outside China)",
       countries: [
         "Thailand",
@@ -32,6 +34,7 @@ const state = {
     },
     {
       display: false,
+      displayMore: false,
       region: "North America",
       countries: [
         "US",
@@ -44,6 +47,7 @@ const state = {
     },
     {
       display: false,
+      displayMore: false,
       region: "South America",
       countries: [
         "Brazil",
@@ -59,6 +63,7 @@ const state = {
     },
     {
       display: false,
+      displayMore: false,
       region: "Europe",
       countries: [
         "Bosnia and Herzegovina",
@@ -113,6 +118,7 @@ const state = {
     },
     {
       display: false,
+      displayMore: false,
       region: "Middle East",
       countries: [
         "Palestine",
@@ -134,6 +140,7 @@ const state = {
     },
     {
       display: false,
+      displayMore: false,
       region: "Africa",
       countries: [
         "Algeria",
@@ -148,12 +155,14 @@ const state = {
     },
     {
       display: false,
+      displayMore: false,
       region: "Diamond Princess Cruise",
       countries: ["Others"]
     },
 
     {
       display: false,
+      displayMore: false,
       region: "Australia/Oceania",
       countries: ["Australia", "New Zealand"]
     }
@@ -172,8 +181,21 @@ const mutations = {
     const idx = state.regionDict.findIndex(d => d.region === payload["region"]);
     if (idx > -1) {
       state.regionDict[idx]["display"] = payload["display"];
+      state.regionDict[idx]["displayMore"] =
+        payload["displayMore"] || payload["displayMore"] === false
+          ? payload["displayMore"]
+          : state.regionDict[idx]["displayMore"];
+      state.regionDict[idx]["currentCases"] = payload["currentCases"]
+        ? payload["currentCases"].toLocaleString()
+        : null;
       state.regionDict[idx]["x"] = payload["x"];
       state.regionDict[idx]["y"] = payload["y"];
+    } else if (payload["region"] === "all") {
+      // reset everything
+      state.regionDict.forEach(d => {
+        d["display"] = false;
+        d["displayMore"] = false;
+      });
     }
   }
 };

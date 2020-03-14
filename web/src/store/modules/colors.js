@@ -13,24 +13,26 @@ const state = {
 };
 
 // based off Tableau 10, sync'd with out color palette and with a slight increase in saturation for many.
-const categoricalPalette = ["#507ea3",
-"#f28e2c",
-"#e15759",
-"#76b7b2",
-"#59a14f",
-"#edc949",
-"#b475a3",
-"#ff98a8",
-"#9c755f",
-"#bab0ab",
-"#154d7e",
-"#ba6000",
-"#aa2230",
-"#418d88",
-"#277223",
-"#b7990e",
-"#834874",
-"#828282"];
+const categoricalPalette = [
+  "#507ea3",
+  "#f28e2c",
+  "#e15759",
+  "#76b7b2",
+  "#59a14f",
+  "#edc949",
+  "#b475a3",
+  "#ff98a8",
+  "#9c755f",
+  "#bab0ab",
+  "#154d7e",
+  "#ba6000",
+  "#aa2230",
+  "#418d88",
+  "#277223",
+  "#b7990e",
+  "#834874",
+  "#828282"
+];
 
 // getters --> computed props
 const getters = {

@@ -4,7 +4,17 @@
       <div>
         <h4>Most Recent Cases</h4>
         <DataUpdated />
-        <div class="mt-4">
+        <div class="d-flex mt-4">
+          <input
+            v-model="searchInput"
+            @input="filterHits"
+            type="text"
+            class="form-control mr-5"
+            id="filter-locations"
+            placeholder="Search"
+            aria-label="search"
+            aria-describedby="sb"
+          />
           <select v-model="numPerPage" @change="changePageNum()">
             <option v-for="option in pageOpts" :value="option" :key="option">
               {{ option }} results
@@ -138,8 +148,11 @@
         </td>
       </tr>
     </table>
+
     <br />
-    <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
+    <div
+      class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto"
+    >
       <button
         class="pagination-btn pagination-left"
         :class="{ disabled: page === 0 }"
@@ -206,11 +219,12 @@ export default Vue.extend({
     return {
       formatDate,
       cases: null,
+      searchInput: "",
       filteredCases: null,
       locationSort: null,
       newSort: null,
       pctSort: null,
-      totalSort: "asc",
+      totalSort: null,
       page: 0,
       numPerPage: 10,
       pageOpts: [5, 10, 50, 100]
@@ -328,6 +342,13 @@ export default Vue.extend({
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);
     },
+    filterHits() {
+      this.filteredCases = this.cases
+        .filter(d =>
+          d.locationName.toLowerCase().includes(this.searchInput.toLowerCase())
+        )
+        .slice(this.lowerLim, this.upperLim);
+    },
     formatPercent(pct) {
       if (!pct) {
         return "none";
@@ -418,6 +439,6 @@ th {
 }
 
 .header {
-width: 100%;
+  width: 100%;
 }
 </style>

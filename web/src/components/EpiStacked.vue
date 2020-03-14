@@ -1,21 +1,37 @@
 <template>
-<div class="epidemiology">
-  <h4 class="stacked-area-title" v-if="title && data && data.length > 0">{{ title }}</h4>
-  <svg :width="width" :height="height" class="epi-summary-svg" :id="id">
-    <defs>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
-    <g :transform="`translate(${margin.left},${margin.top})`" class="epi-summary">
-      <g class="annotation-group case-def-changed"></g>
-    </g>
-    <g class="epi-axis axis--x"></g>
-    <g class="epi-axis axis--y"></g>
+  <div class="epidemiology-area">
+    <h4 class="stacked-area-title" v-if="title && data && data.length > 0">
+      {{ title }}
+    </h4>
+    <svg :width="width" :height="height" class="epi-summary-svg" :id="id">
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="13"
+          markerHeight="10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        class="epi-summary"
+      >
+        <g class="annotation-group case-def-changed"></g>
+      </g>
+      <g class="epi-axis axis--x"></g>
+      <g class="epi-axis axis--y"></g>
 
-    <g :transform="`translate(${margin.left},${-margin.top})`" class="legend"></g>
-  </svg>
-</div>
+      <g
+        :transform="`translate(${margin.left},${-margin.top})`"
+        class="legend"
+      ></g>
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -74,29 +90,38 @@ export default Vue.extend({
   },
   methods: {
     handleClick: function(key) {
-      const getLocations = store.getters["epidata/getCountryFromRegion"];
-
-      this.$router.push({
-        path: "epidemiology",
-        query: {
-          location: getLocations(key)
-        }
-      });
-
       this.$emit("regionSelected", {
         region: key,
-        display: false
+        display: false,
+        displayMore: true
       });
     },
-    handleMouseover: function(key) {
+    handleMouseover: function(d) {
+      d3.selectAll(".legend-group").style("opacity", 0.4);
+
+      d3.selectAll(".stacked-area-chart").style("opacity", 0.4);
+
+      d3.selectAll(
+        `.${d.key
+          .replace(/\s/g, "_")
+          .replace(/\//g, "_")
+          .replace(/\(/g, "_")
+          .replace(/\)/g, "_")}`
+      ).style("opacity", 1);
+
       this.$emit("regionSelected", {
-        region: key,
+        region: d.key,
         display: true,
+        currentCases: d.slice(-1)[0].data[d.key],
         x: d3.event.x + 10,
         y: d3.event.y + 10
       });
     },
     handleMouseout: function(key) {
+      d3.selectAll(".legend-group").style("opacity", 1);
+
+      d3.selectAll(".stacked-area-chart").style("opacity", 1);
+
       this.$emit("regionSelected", {
         region: key,
         display: false
@@ -117,7 +142,6 @@ export default Vue.extend({
       this.svg = d3.select(`#${this.id}`);
       this.chart = this.svg.select(".epi-summary");
       this.legend = this.svg.select(".legend");
-
     },
     updateScales: function() {
       const keys = Object.keys(this.data[0]).filter(d => d !== "date");
@@ -130,9 +154,9 @@ export default Vue.extend({
         // .order(d3.stackOrderAppearance)
         // .order(d3.stackOrderNone)
         .order(d3.stackOrderReverse)(
-          // .order(d3.stackOrderInsideOut)
-          this.data
-        );
+        // .order(d3.stackOrderInsideOut)
+        this.data
+      );
 
       this.x = this.x
         .domain(d3.extent(this.data.map(d => d.date)))
@@ -150,7 +174,9 @@ export default Vue.extend({
         .select(".axis--x")
         .attr(
           "transform",
-          `translate(${this.margin.left}, ${this.height - this.margin.bottom + 2})`
+          `translate(${this.margin.left}, ${this.height -
+            this.margin.bottom +
+            2})`
         )
         .call(this.xAxis);
 
@@ -173,10 +199,10 @@ export default Vue.extend({
 
         const annotTextSelector = annotGrp.select("text");
 
-        const annotTextEnter = annotGrp
-          .append("text");
+        const annotTextEnter = annotGrp.append("text");
 
-        annotTextSelector.merge(annotTextEnter)
+        annotTextSelector
+          .merge(annotTextEnter)
           .attr("x", this.x(dateCaseDefChange))
           .attr("y", this.y(80000))
           .text("Case definition changed");
@@ -193,7 +219,8 @@ export default Vue.extend({
           .attr("id", "switch-btn-swoopy-arrow")
           .attr("marker-end", "url(#arrow)");
 
-        annotArrowSelector.merge(annotArrowEnter)
+        annotArrowSelector
+          .merge(annotArrowEnter)
           // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
           .attr(
             "d",
@@ -211,15 +238,19 @@ export default Vue.extend({
         .selectAll(".stacked-area-chart")
         .data(this.series)
         .join("path")
-        .style("fill", ({
-          key
-        }) => this.colorScale(key))
-        .attr("class", "stacked-area-chart")
+        .style("fill", ({ key }) => this.colorScale(key))
+        .attr(
+          "class",
+          d =>
+            `stacked-area-chart ${d.key
+              .replace(/\s/g, "_")
+              .replace(/\//g, "_")
+              .replace(/\(/g, "_")
+              .replace(/\)/g, "_")}`
+        )
         .attr("d", this.area)
         .append("title")
-        .text(({
-          key
-        }) => key);
+        .text(({ key }) => key);
 
       const legendRectWidth = 15;
 
@@ -230,7 +261,15 @@ export default Vue.extend({
       const legendEnter = legendData
         .enter()
         .append("g")
-        .attr("class", "legend-group");
+        .attr(
+          "class",
+          d =>
+            `legend-group ${d.key
+              .replace(/\s/g, "_")
+              .replace(/\//g, "_")
+              .replace(/\(/g, "_")
+              .replace(/\)/g, "_")}`
+        );
 
       legendEnter
         .append("rect")
@@ -238,9 +277,7 @@ export default Vue.extend({
         .attr("x", 10)
         .attr("width", legendRectWidth)
         .attr("height", legendRectWidth)
-        .style("fill", ({
-          key
-        }) => this.colorScale(key));
+        .style("fill", ({ key }) => this.colorScale(key));
 
       legendEnter
         .append("text")
@@ -248,20 +285,18 @@ export default Vue.extend({
         .attr("x", 10 + legendRectWidth)
         .attr("dx", 8)
         .attr("class", "legend-name")
-        .text(({
-          key
-        }) => key);
+        .text(({ key }) => key);
 
       // --- tooltips ---
       this.chart
         .selectAll("path.stacked-area-chart")
-        .on("mouseover", d => this.handleMouseover(d.key))
+        .on("mouseover", d => this.handleMouseover(d))
         .on("mouseout", d => this.handleMouseout(d.key))
         .on("click", d => this.handleClick(d.key));
 
       this.legend
         .selectAll(".legend-group")
-        .on("mouseover", d => this.handleMouseover(d.key))
+        .on("mouseover", d => this.handleMouseover(d))
         .on("mouseout", d => this.handleMouseout(d.key))
         .on("click", d => this.handleClick(d.key));
     }
@@ -272,40 +307,43 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .legend-name {
-    font-size: 10px;
-    dominant-baseline: middle;
+  font-size: 10px;
+  dominant-baseline: middle;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .epi-axis text {
-    font-size: 12pt;
+  font-size: 12pt;
 }
 
 .annotation--region-name {
-    dominant-baseline: middle;
+  dominant-baseline: middle;
 }
 
 .legend-group,
 path.stacked-area-chart {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .stacked-area-title {
-    margin: 0.5em 0 0;
+  margin: 0.5em 0 0;
 }
 
 .case-def-changed {
-    font-size: 0.85em;
-    text-anchor: middle;
-    fill: $grey-60;
+  font-size: 0.85em;
+  text-anchor: middle;
+  fill: $grey-60;
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-    stroke: $grey-60;
-    fill: none;
-    stroke-width: 0.8;
+  stroke: $grey-60;
+  fill: none;
+  stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-    stroke-width: 1;
+  stroke-width: 1;
 }
 </style>

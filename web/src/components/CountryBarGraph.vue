@@ -22,8 +22,18 @@
         id="case-counts"
       ></g>
     </svg>
-    <div class="click-affordance py-1" :style="{ background: lightColor }">
-      click plot to view cases over time
+
+    <div class="btn-links">
+      <button
+        class="btn-item click-affordance py-1"
+        :style="{ background: lightColor }"
+        @click="handleClick"
+      >
+        view cases over time
+      </button>
+      <button class="btn-item btn btn-main m-2" @click="closeWindow">
+        <font-awesome-icon :icon="['far', 'window-close']" />
+      </button>
     </div>
   </div>
 </template>
@@ -36,6 +46,13 @@ import { cloneDeep } from "lodash";
 
 import store from "@/store";
 import { mapState } from "vuex";
+
+// --- font awesome --
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faWindowClose } from "@fortawesome/free-regular-svg-icons";
+
+library.add(faWindowClose);
 
 const width = 250;
 const sparkWidth = 75;
@@ -52,7 +69,9 @@ const transitionDuration = 3500;
 
 export default Vue.extend({
   name: "CountryBarGraph",
-  components: {},
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     region: String,
     id: Number
@@ -104,6 +123,13 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.updatePlot();
+    this.$nextTick(function() {
+      document.addEventListener("keyup", evt => {
+        if (evt.keyCode === 27) {
+          this.closeWindow();
+        }
+      });
+    });
   },
   methods: {
     getData: function(region) {
@@ -112,6 +138,27 @@ export default Vue.extend({
     colorScale: function(idx) {
       const scale = store.getters["colors/getRegionColorPalette"];
       return scale(this.region, this.data.length, idx);
+    },
+    handleClick: function() {
+      const getLocations = store.getters["epidata/getCountryFromRegion"];
+
+      this.$emit("regionSelected", {
+        region: "all"
+      });
+
+      this.$router.push({
+        path: "epidemiology",
+        query: {
+          location: getLocations(this.region)
+        }
+      });
+    },
+    closeWindow: function() {
+      this.$emit("regionSelected", {
+        region: this.region,
+        display: false,
+        displayMore: false
+      });
     },
     updatePlot: function() {
       this.getData(this.region);
@@ -366,9 +413,25 @@ rect.country-count {
   shape-rendering: crispedges;
 }
 
-.click-affordance {
-  width: 100%;
-  text-align: center;
-  font-size: 0.85em;
+.btn-item:first-child {
+  margin-right: auto;
+  margin-left: auto;
+}
+.btn-item:last-child {
+  margin-left: auto;
+}
+
+.btn-links {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.btn-item {
+  display: flex;
+  margin: 1px;
+  padding: 5px;
 }
 </style>

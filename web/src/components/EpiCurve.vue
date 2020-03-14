@@ -1,37 +1,74 @@
 <template>
-<div class="epidemiology-curves flex-column align-left">
-  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
-    <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
-      <label class="b-contain m-auto">
-      	<span>show more than {{ lengthThreshold }} curves</span>
-      	<input type="checkbox" v-model="showAll" @click="plotAll()">
-      	<div class="b-input"></div>
-      </label>
+  <div class="epidemiology-curves flex-column align-left">
+    <div
+      class="flex-column too-many-warning"
+      v-if="dataLength > lengthThreshold"
+    >
+      <div
+        class="text-center m-auto p-2 bg-grey__lightest"
+        style="max-width:700px;"
+      >
+        <label class="b-contain m-auto">
+          <span>show more than {{ lengthThreshold }} curves</span>
+          <input type="checkbox" v-model="showAll" @click="plotAll()" />
+          <div class="b-input"></div>
+        </label>
+      </div>
+      <div style="max-width:700px;" class="m-auto">
+        <Warning
+          :animate="true"
+          class="mt-2"
+          v-if="!showAll"
+          :text="
+            'You have selected a lot of places. Showing the top ' +
+              lengthThreshold +
+              ' with the highest current case counts'
+          "
+        ></Warning>
+      </div>
     </div>
-    <div style="max-width:700px;" class="m-auto">
-      <Warning :animate="true" class="mt-2" v-if="!showAll" :text="'You have selected a lot of places. Showing the top '+lengthThreshold+' with the highest current case counts'"></Warning>
-    </div>
+    <!-- <button @click="switchAxes()">common axis</button> -->
+    <h3 class="plot-title text-sec py-5">
+      Cumulative number of COVID-19 cases<span v-if="locationName">
+        in {{ locationName }}</span
+      >
+    </h3>
+    <DataUpdated />
+    <svg :width="width" :height="height" class="epi-curve">
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="13"
+          markerHeight="10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
+        class="epi-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        class="epi-axis axis--y"
+        ref="yAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="epi-curve"
+      ></g>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="transition-mask"
+      ></g>
+    </svg>
+    <DataSource />
   </div>
-  <!-- <button @click="switchAxes()">common axis</button> -->
-  <h3 class="plot-title text-sec py-5">
-    Cumulative number of COVID-19 cases<span v-if="locationName">
-      in {{ locationName }}</span>
-  </h3>
-  <DataUpdated />
-  <svg :width="width" :height="height" class="epi-curve">
-    <defs>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
-  </svg>
-  <DataSource />
-
-</div>
 </template>
 
 <script lang="ts">
@@ -41,9 +78,7 @@ import DataSource from "@/components/DataSource.vue";
 import Warning from "@/components/Warning.vue";
 
 import * as d3 from "d3";
-import {
-  cloneDeep
-} from "lodash";
+import { cloneDeep } from "lodash";
 
 import store from "@/store";
 
@@ -118,7 +153,7 @@ export default Vue.extend({
       return null;
     },
     dataLength() {
-      return (this.data.length);
+      return this.data.length;
     }
   },
   mounted() {
@@ -195,9 +230,20 @@ export default Vue.extend({
           this.plottedData = this.isLogY ? this.logData : this.data;
           this.$emit("addable", []);
         } else {
-          this.plottedData = this.isLogY ? this.logData.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold) : this.data.slice().sort((a, b) => b.currentCases - a.currentCases).slice(0, this.lengthThreshold);
-          const toAdd = this.data.slice().sort((a, b) => b.currentCases - a.currentCases).slice(this.lengthThreshold, ).map(d =>
-            d.locationName);
+          this.plottedData = this.isLogY
+            ? this.logData
+                .slice()
+                .sort((a, b) => b.currentCases - a.currentCases)
+                .slice(0, this.lengthThreshold)
+            : this.data
+                .slice()
+                .sort((a, b) => b.currentCases - a.currentCases)
+                .slice(0, this.lengthThreshold);
+          const toAdd = this.data
+            .slice()
+            .sort((a, b) => b.currentCases - a.currentCases)
+            .slice(this.lengthThreshold)
+            .map(d => d.locationName);
           this.$emit("addable", toAdd);
         }
 
@@ -276,7 +322,11 @@ export default Vue.extend({
       this.switchBtn = this.svg.selectAll(".switch-button-group").data([0]);
 
       this.switchBtn.exit().remove();
-      const switchEnter = this.switchBtn.enter().append("g").attr("class", "switch-button-group").attr("transform", "translate(5,0)");
+      const switchEnter = this.switchBtn
+        .enter()
+        .append("g")
+        .attr("class", "switch-button-group")
+        .attr("transform", "translate(5,0)");
 
       this.switchBtn.merge(switchEnter);
 
@@ -288,8 +338,7 @@ export default Vue.extend({
         .attr("width", 0)
         .attr("height", 0);
 
-      switchRect.merge(switchRectEnter)
-        .attr("y", this.height - 28);
+      switchRect.merge(switchRectEnter).attr("y", this.height - 28);
 
       const switchArrow = this.switchBtn.select("path");
 
@@ -299,16 +348,13 @@ export default Vue.extend({
         .attr("id", "switch-btn-swoopy-arrow")
         .attr("marker-end", "url(#arrow)");
 
-      switchArrow.merge(switchArrowEnter)
+      switchArrow
+        .merge(switchArrowEnter)
         // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
         .attr(
           "d",
-          `M ${xSwoop} ${
-            this.height  +
-            ySwoop}
-          C ${xSwoop + swoopOffset} ${
-            this.height +
-            ySwoop},
+          `M ${xSwoop} ${this.height + ySwoop}
+          C ${xSwoop + swoopOffset} ${this.height + ySwoop},
           ${this.margin.left + ySwoop + 20} ${this.height -
             this.margin.bottom +
             15 +
@@ -327,12 +373,10 @@ export default Vue.extend({
         .attr("class", "switch-button")
         .attr("x", 5);
 
-      switchText.merge(switchTextEnter)
+      switchText
+        .merge(switchTextEnter)
         .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
-        .attr(
-          "y",
-          this.height + dySwitch
-        )
+        .attr("y", this.height + dySwitch)
         .on("mouseover", () =>
           this.switchBtn.select("rect").classed("switch-button-hover", true)
         )
@@ -347,16 +391,16 @@ export default Vue.extend({
           .attr(
             "width",
             this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().width + 10
+              .select("text")
+              .node()
+              .getBBox().width + 10
           )
           .attr(
             "height",
             this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().height + 5
+              .select("text")
+              .node()
+              .getBBox().height + 5
           );
       }
     },
@@ -424,8 +468,8 @@ export default Vue.extend({
       const labelHeight = 16;
       // Create nodes of the text labels for force direction
       this.plottedData.forEach(d => {
-        d['fx'] = 0;
-        d['targetY'] = this.y(d.currentCases);
+        d["fx"] = 0;
+        d["targetY"] = this.y(d.currentCases);
       });
 
       // Define a custom force
@@ -437,21 +481,24 @@ export default Vue.extend({
             if (n.y < min) n.y = min;
           });
         };
-        force.initialize = (_) => nodes = _;
+        force.initialize = _ => (nodes = _);
         return force;
-      }
+      };
 
       // Set up the force simulation
-      const force = d3.forceSimulation()
+      const force = d3
+        .forceSimulation()
         .nodes(this.plottedData)
-        .force('collide', d3.forceCollide(labelHeight / 2))
-        .force('y', d3.forceY(d => d.targetY).strength(1))
-        .force('clamp', forceClamp(0, this.height - this.margin.top - this.margin.bottom))
+        .force("collide", d3.forceCollide(labelHeight / 2))
+        .force("y", d3.forceY(d => d.targetY).strength(1))
+        .force(
+          "clamp",
+          forceClamp(0, this.height - this.margin.top - this.margin.bottom)
+        )
         .stop();
 
       // Execute the simulation
       for (let i = 0; i < 300; i++) force.tick();
-
 
       const countrySelector = this.chart
         .selectAll(".epi-region")
@@ -639,10 +686,7 @@ export default Vue.extend({
         .style("fill", this.backgroundColor)
         .attr("y", -this.margin.top)
         .attr("width", this.width + this.radius - this.margin.left)
-        .attr(
-          "height",
-          this.height + this.radius * 2
-        );
+        .attr("height", this.height + this.radius * 2);
 
       curtainSelector
         .merge(curtainEnter)
@@ -658,80 +702,80 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .epi-axis text {
-    font-size: 12pt;
+  font-size: 12pt;
 }
 
 .epi-line {
-    fill: none;
-    stroke-width: 2;
+  fill: none;
+  stroke-width: 2;
 }
 
 .epi-point {
-    // opacity: 0.4;
+  // opacity: 0.4;
 }
 
 .annotation--region-name {
-    dominant-baseline: middle;
+  dominant-baseline: middle;
 }
 
 .tooltip--text {
-    dominant-baseline: hanging;
-    stroke: none !important;
+  dominant-baseline: hanging;
+  stroke: none !important;
 }
 
 .tooltip--date {
-    font-weight: 300;
+  font-weight: 300;
 }
 
 .tooltip--case-count {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .switch-button {
-    cursor: pointer;
-    dominant-baseline: text-after-edge;
-    // fill: $grey-90 !important;
-    font-weight: 300 !important;
-    font-size: 0.85em;
+  cursor: pointer;
+  dominant-baseline: text-after-edge;
+  // fill: $grey-90 !important;
+  font-weight: 300 !important;
+  font-size: 0.85em;
 
-    &:hover {
-        text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-    stroke: $grey-70;
-    fill: none;
-    stroke-width: 0.8;
+  stroke: $grey-70;
+  fill: none;
+  stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-    stroke-width: 1;
+  stroke-width: 1;
 }
 
 .switch-button-rect {
-    fill-opacity: 0.15;
-    rx: 4;
-    ry: 4;
-    stroke: $grey-60;
-    stroke-width: 0.5;
-    shape-rendering: crispedges;
-    &:hover {
-        fill-opacity: 0.25;
-    }
+  fill-opacity: 0.15;
+  rx: 4;
+  ry: 4;
+  stroke: $grey-60;
+  stroke-width: 0.5;
+  shape-rendering: crispedges;
+  &:hover {
+    fill-opacity: 0.25;
+  }
 }
 
 .switch-button-hover {
-    fill-opacity: 0.25;
+  fill-opacity: 0.25;
 }
 
 .epidemiology-curves line.case-def-changed {
-    stroke: $grey-60;
-    stroke-width: 0.75;
-    shape-rendering: crispedges;
-    stroke-dasharray: 6, 6;
+  stroke: $grey-60;
+  stroke-width: 0.75;
+  shape-rendering: crispedges;
+  stroke-dasharray: 6, 6;
 }
 .epidemiology-curves .case-def-changed text {
-    text-anchor: start;
+  text-anchor: start;
 }
 </style>
