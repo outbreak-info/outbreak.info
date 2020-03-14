@@ -283,6 +283,9 @@ export default Vue.extend({
 .legend-name {
     font-size: 10px;
     dominant-baseline: middle;
+    &:hover {
+      text-decoration: underline;
+    }
 }
 
 .epi-axis text {
