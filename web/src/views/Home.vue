@@ -232,8 +232,6 @@ export default {
     setDims() {
       const selector = this.$refs.regional_stacked_area_plots;
 
-      console.log("changing dims");
-      console.log(selector);
       if (selector) {
         const dims = selector.getBoundingClientRect();
         // const dims = {window.innerWidth, height: window.innerHeight}
