@@ -19,27 +19,7 @@
         >
         to aggregate all this information into a single location.
       </p>
-      <div class="row m-0">
-        <div
-          class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center"
-        >
-          <a href="scripps.edu" rel="noreferrer" target="_blank">
-            <img
-              src="@/assets/scripps-logo.png"
-              width="200px"
-              alt="Scripps Research"
-            />
-          </a>
-        </div>
-        <div
-          class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center"
-        >
-          <a href="http://sulab.org/" rel="noreferrer" target="_blank">
-            <img src="@/assets/sulab-logo.png" width="200px" alt="SuLab" />
-          </a>
-        </div>
-      </div>
-
+      <Logos />
       <div class="jumbotron rounded bg-grey__darker">
         <h4 class="text-light m-2">
           Notice a bug, know of a COVID-19 data source, or want to suggest a
@@ -59,3 +39,16 @@
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import Vue from "vue";
+
+import Logos from "@/components/Logos.vue";
+
+export default Vue.extend({
+  name: "About",
+  components: {
+    Logos
+  }
+});
+</script>
