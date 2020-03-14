@@ -1,9 +1,10 @@
 <template>
   <div class="home flex-column align-left">
     <div v-if="loading" class="loader">
-      <i class="fas fa-circle-notch fa-spin fa-2x text-highlight"></i>
+      <i class="fas fa-circle-notch fa-spin fa-4x text-highlight"></i>
     </div>
     <!-- INTRO -->
+    <Warning :animate="false" :text="'Our data is in the process of being updated; as a result, case counts are not currently correct. Sorry-- it will be fixed soon.'"></Warning>
     <section class="row m-0 half-page">
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
         <div>
@@ -28,16 +29,12 @@
     <!-- SEARCH  -->
     <section class="d-flex justify-content-center align-items-center bg-sec text-light py-5">
       <div>
-        <h5>SEARCH REGION</h5>
+        <h5>SEARCH LOCATION</h5>
         <svg viewBox="0 0 100 3">
           <line x1="0" y1="0" x2="100" stroke="#D13B62" />
         </svg>
-        <form>
-          <div class="form-group">
-            <input v-model="searchQuery" type="email" class="form-control search-box" id="sBar" aria-describedby="sHelp">
-            <small id="sHelp" class="form-text text-light">Search updated information on COVID-19</small>
-          </div>
-        </form>
+        <SearchBar></SearchBar>
+        <small id="sBar" class="form-text text-light d-block">Search updated information on COVID-19</small>
       </div>
     </section>
     <!-- EPI CURVE SUMMARIES -->
@@ -61,9 +58,9 @@
               top: region.y + 'px'
             }" class="tooltip-countries" /> -->
       </div>
+      <CaseSummary  class="container"/>
       <h3>Cumulative Number of COVID-19 Cases by Region</h3>
       <DataUpdated />
-      <CaseSummary  class="container"/>
       <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
         <div class="row">
           <div class="col-sm-12 col-md-6">
@@ -107,6 +104,8 @@ import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import LeafletMap from "@/components/LeafletMap.vue";
+import SearchBar from "@/components/SearchBar.vue";
+import Warning from "@/components/Warning.vue";
 
 import {
   mapState
@@ -131,7 +130,9 @@ export default {
     DataUpdated,
     DataSource,
     EpiTable,
-    LeafletMap
+    LeafletMap,
+    SearchBar,
+    Warning
   },
   data() {
     return {

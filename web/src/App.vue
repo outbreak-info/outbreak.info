@@ -12,14 +12,15 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item active">
-              <router-link class="nav-link" to="/">Home</router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/" :class='{"active":$route.name == "Home"}'>Home </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/about">About</router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class='{"active":$route.name == "About"}'>About</router-link>
             </li>
             <li class="nav-item">
               <router-link
-                class="nav-link"
+                data-toggle="collapse" data-target=".navbar-collapse"
+                class="nav-link" :class='{"active":$route.name == "Epidemiology"}'
                 :key="$route.fullPath"
                 :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }"
                 >Epidemiology</router-link
@@ -27,14 +28,6 @@
             </li>
           </ul>
         </div>
-        <!-- <form class="pull-right d-none d-md-block">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-grey text-sec border-0" id="basic-addon1"><i class="fas fa-search"></i></span>
-            </div>
-            <input type="text" class="form-control border-0 bg-grey text-light" placeholder="Search" aria-label="Username" aria-describedby="basic-addon1">
-          </div>
-        </form> -->
       </nav>
     </header>
     <transition name="fade">

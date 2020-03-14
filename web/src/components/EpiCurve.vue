@@ -1,10 +1,15 @@
 <template>
 <div class="epidemiology-curves flex-column align-left">
   <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
-    <small v-if="!showAll">You've selected a lot of places. Showing the top {{lengthThreshold}} with the highest current case counts</small>
-    <div class="flex">
-      <input type="checkbox" id="checkbox" v-model="showAll" @click="plotAll()">
-      <label for="checkbox"><small>show more than {{ lengthThreshold }} curves</small></label>
+    <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
+      <label class="b-contain m-auto">
+      	<span>show more than {{ lengthThreshold }} curves</span>
+      	<input type="checkbox" v-model="showAll" @click="plotAll()">
+      	<div class="b-input"></div>
+      </label>
+    </div>
+    <div style="max-width:700px;" class="m-auto">
+      <Warning :animate="true" class="mt-2" v-if="!showAll" :text="'You have selected a lot of places. Showing the top '+lengthThreshold+' with the highest current case counts'"></Warning>
     </div>
   </div>
   <!-- <button @click="switchAxes()">common axis</button> -->
@@ -33,6 +38,7 @@
 import Vue from "vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
+import Warning from "@/components/Warning.vue";
 
 import * as d3 from "d3";
 import {
@@ -56,7 +62,8 @@ export default Vue.extend({
   name: "EpiCurve",
   components: {
     DataUpdated,
-    DataSource
+    DataSource,
+    Warning
   },
   props: {
     data: Array
