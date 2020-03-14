@@ -156,7 +156,6 @@
       </p>
     </section>
     <Logos />
-
   </div>
 </template>
 <script>
