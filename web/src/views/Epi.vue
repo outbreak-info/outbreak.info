@@ -9,7 +9,7 @@
     />
 
     <div class="d-flex">
-      <EpiCurve v-bind:data="data" @addable="updateAddable" />
+      <EpiCurve v-bind:data="data" variable="cases" @addable="updateAddable" />
       <EpiTable v-bind:data="data" :colorScale="colorScale" />
     </div>
     <!-- <div id="presetLocations">

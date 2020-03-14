@@ -101,7 +101,8 @@ export default Vue.extend({
     Warning
   },
   props: {
-    data: Array
+    data: Array,
+    variable: String
   },
   data() {
     return {
@@ -255,7 +256,7 @@ export default Vue.extend({
       if (this.data) {
         this.logData = cloneDeep(this.data);
         this.logData.forEach(d => {
-          d["data"] = d.data.filter(x => x.cases > 0);
+          d["data"] = d.data.filter(x => x[this.variable] > 0);
         });
       }
     },
@@ -277,7 +278,7 @@ export default Vue.extend({
       this.line = d3
         .line()
         .x(d => this.x(d.date))
-        .y(d => this.y(d.cases));
+        .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
       this.x = this.x
@@ -292,7 +293,7 @@ export default Vue.extend({
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .domain([
             1,
-            d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))
+            d3.max(this.plottedData.flatMap(d => d.data).map(d => d[this.variable]))
           ]);
       } else {
         this.y = d3
@@ -300,7 +301,7 @@ export default Vue.extend({
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .domain([
             0,
-            d3.max(this.plottedData.flatMap(d => d.data).map(d => d.cases))
+            d3.max(this.plottedData.flatMap(d => d.data).map(d => d[this.variable]))
           ]);
       }
 
@@ -558,7 +559,7 @@ export default Vue.extend({
         .attr("class", d => `epi-point ${d.id}`)
         .attr("id", d => `${d.id}-${d.date_string}`)
         .attr("cx", d => this.x(d.date))
-        .attr("cy", d => this.y(d.cases));
+        .attr("cy", d => this.y(d[this.variable]));
 
       // --- tooltips ---
       // need to be outside the path/dot groups, so they're on top of all the curves.
@@ -610,7 +611,7 @@ export default Vue.extend({
       tooltipRect
         .merge(tooltipRectEnter)
         .attr("x", d => this.x(d.date))
-        .attr("y", d => this.y(d.cases))
+        .attr("y", d => this.y(d[this.variable]))
         .attr("width", 108)
         .attr("height", 40)
         .attr("stroke-dasharray", "108, 188")
@@ -628,7 +629,7 @@ export default Vue.extend({
       //
       // tooltipText.select(".tooltip--country").merge(tooltipCtryEnter)
       //   .attr("x", d => this.x(d.date))
-      //   .attr("y", d => this.y(d.cases))
+      //   .attr("y", d => this.y(d[this.variable]))
       //   .text(d => d.id.replace(/_/g, " "))
 
       const tooltipDateEnter = tooltipTextEnter
@@ -639,7 +640,7 @@ export default Vue.extend({
         .select(".tooltip--date")
         .merge(tooltipDateEnter)
         .attr("x", d => this.x(d.date))
-        .attr("y", d => this.y(d.cases))
+        .attr("y", d => this.y(d[this.variable]))
         // .attr("dy", "1.1em")
         .text(d => formatDate(d.date));
 
@@ -651,10 +652,10 @@ export default Vue.extend({
         .select(".tooltip--case-count")
         .merge(tooltipCasesEnter)
         .attr("x", d => this.x(d.date))
-        .attr("y", d => this.y(d.cases))
+        .attr("y", d => this.y(d[this.variable]))
         .attr("dy", "1.1em")
         // .attr("dy", "2.2em")
-        .text(d => `${d.cases.toLocaleString()} cases`);
+        .text(d => `${d[this.variable].toLocaleString()} cases`);
 
       // dynamically adjust the width of the rect
       // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
