@@ -1,5 +1,5 @@
 <template>
-<div v-if="this.height && this.data && this.data.length > 0" class="full-page mt-5">
+<div v-if="this.height && this.data && this.data.length > 0" class="full-page d-flex flex-column align-items-center full-page mt-5">
   <h3 v-if="this.mostRecentDate" class="py-5">
     Current cases as of {{ formatDate(mostRecentDate) }}
   </h3>
@@ -220,7 +220,9 @@ export default Vue.extend({
       } else {
         this.currentZoom = 3.5;
       }
-    },
+      if(this.$refs.map){
+      this.$refs.map.mapObject._onResize()
+    }},
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
     },

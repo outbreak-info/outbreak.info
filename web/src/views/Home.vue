@@ -38,32 +38,34 @@
     </div>
   </section>
   <!-- EPI CURVE SUMMARIES -->
-  <section class="mt-5" id="regional-epi-curves" v-if="nestedData.length > 0">
-    <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
-      <div class="tooltip-countries" :id="idx" :style="{
+  <section class="mt-5" id="regional-epi-curves">
+    <template v-if="nestedData.length > 0">
+      <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
+        <div class="tooltip-countries" :id="idx" :style="{
               visibility: region.display ? 'visible' : 'hidden',
               left: region.x + 'px',
               top: region.y + 'px'}">
-        <div>
-          {{region.region}}
+          <div>
+            {{region.region}}
+          </div>
+          <div>
+            {{region.currentCases}} total cases
+          </div>
+          <div class="click-affordance py-1" :style="{ background: lightColor }">
+            click for details
+          </div>
         </div>
-        <div>
-          {{region.currentCases}} total cases
-        </div>
-        <div class="click-affordance py-1" :style="{ background: lightColor }">
-          click for details
-        </div>
+        <CountryBarGraph :region="region.region" :id="idx" :style="{
+              visibility: region.displayMore ? 'visible' : 'hidden'}" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
       </div>
-      <CountryBarGraph :region="region.region" :id="idx" :style="{
-              visibility: region.displayMore ? 'visible' : 'hidden'}"
-               @regionSelected="handleTooltip"
-              class="tooltip-countries-detailed" />
-    </div>
-    <CaseSummary class="container" />
-    <h3>Cumulative Number of COVID-19 Cases by Region</h3>
-    <DataUpdated />
+    </template>
+    <template v-if="nestedData.length > 0">
+      <CaseSummary class="container" />
+      <h3>Cumulative Number of COVID-19 Cases by Region</h3>
+      <DataUpdated />
+    </template>
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
-      <div class="row">
+      <div class="row" v-if="nestedData.length > 0">
         <div class="col-sm-12 col-md-6">
           <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data" title="Worldwide" @regionSelected="handleTooltip" />
         </div>
@@ -72,7 +74,7 @@
         </div>
       </div>
     </div>
-    <DataSource />
+    <DataSource v-if="nestedData.length > 0" />
   </section>
 
   <section class="case-data-table">
