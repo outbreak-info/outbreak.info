@@ -122,6 +122,13 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.updatePlot();
+    this.$nextTick(function() {
+      document.addEventListener('keyup', evt => {
+        if (evt.keyCode === 27) {
+          this.closeWindow();
+        }
+      });
+    })
   },
   methods: {
     getData: function(region) {
