@@ -85,7 +85,7 @@
               </text>
               <g transform="translate(0, 5)">
               <text :x="legendWidth + legendGap" :y="legendHeight + margin.circles + margin.gap * 2 + 26" font-size="0.85em" class="legend-label legend-label--max" text-anchor="end">
-                {{ colorMax }}
+                {{ colorMax.toLocaleString() }}
               </text>
               <text :x="0" :y="legendHeight + margin.circles + margin.gap * 2 + 26" font-size="0.85em" class="legend-label legend-label--min">
                 0
