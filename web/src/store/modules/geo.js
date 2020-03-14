@@ -180,10 +180,17 @@ const mutations = {
     const idx = state.regionDict.findIndex(d => d.region === payload["region"]);
     if (idx > -1) {
       state.regionDict[idx]["display"] = payload["display"];
-      state.regionDict[idx]["displayMore"] = payload["displayMore"] ? payload["displayMore"] : state.regionDict[idx]["displayMore"];
+      state.regionDict[idx]["displayMore"] = (payload["displayMore"] || payload["displayMore"] === false) ? payload["displayMore"] : state.regionDict[idx]["displayMore"];
       state.regionDict[idx]["currentCases"] = payload["currentCases"] ? payload["currentCases"].toLocaleString() : null;
       state.regionDict[idx]["x"] = payload["x"];
       state.regionDict[idx]["y"] = payload["y"];
+    } else if(payload["region"] === "all") {
+      // reset everything
+      state.regionDict.forEach(d => {
+        d["display"] = false;
+        d["displayMore"] = false;
+
+      })
     }
   }
 };

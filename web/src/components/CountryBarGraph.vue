@@ -14,9 +14,15 @@
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
   </svg>
 
-  <button class="click-affordance py-1" :style="{ background: lightColor }" @click="handleClick">
-    view cases over time
-  </button>
+  <div class="btn-links">
+    <button class="btn-item click-affordance py-1" :style="{ background: lightColor }" @click="handleClick">
+      view cases over time
+    </button>
+    <button class="btn-item btn btn-main m-2" @click="closeWindow">
+      <font-awesome-icon :icon="['far', 'window-close']" /></button>
+  </div>
+
+
 
 </div>
 </template>
@@ -34,6 +40,19 @@ import {
   mapState
 } from "vuex";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faWindowClose
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faWindowClose);
+
 const width = 250;
 const sparkWidth = 75;
 const newCasesWidth = 35;
@@ -49,7 +68,9 @@ const transitionDuration = 3500;
 
 export default Vue.extend({
   name: "CountryBarGraph",
-  components: {},
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     region: String,
     id: Number
@@ -114,9 +135,7 @@ export default Vue.extend({
       const getLocations = store.getters["epidata/getCountryFromRegion"];
 
       this.$emit("regionSelected", {
-        region: this.region,
-        display: false,
-        displayMore: false
+        region: "all"
       });
 
       this.$router.push({
@@ -124,6 +143,13 @@ export default Vue.extend({
         query: {
           location: getLocations(this.region)
         }
+      });
+    },
+    closeWindow: function() {
+      this.$emit("regionSelected", {
+        region: this.region,
+        display: false,
+        displayMore: false
       });
     },
     updatePlot: function() {
@@ -377,5 +403,27 @@ export default Vue.extend({
 
 rect.country-count {
     shape-rendering: crispedges;
+}
+
+.btn-item:first-child {
+    margin-right: auto;
+    margin-left: auto;
+}
+.btn-item:last-child {
+    margin-left: auto;
+}
+
+.btn-links {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.btn-item {
+    display: flex;
+    margin: 1px;
+    padding: 5px;
 }
 </style>

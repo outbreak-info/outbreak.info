@@ -38,7 +38,6 @@
     </div>
   </section>
   <!-- EPI CURVE SUMMARIES -->
-
   <section class="mt-5" id="regional-epi-curves" v-if="nestedData.length > 0">
     <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
       <div class="tooltip-countries" :id="idx" :style="{
@@ -108,6 +107,7 @@ import EpiTable from "@/components/EpiTable.vue";
 import LeafletMap from "@/components/LeafletMap.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Warning from "@/components/Warning.vue";
+
 
 import {
   mapState

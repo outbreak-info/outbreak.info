@@ -93,7 +93,6 @@ export default Vue.extend({
       this.$emit("regionSelected", {
         region: d.key,
         display: true,
-        displayMore: false,
         currentCases: d.slice(-1)[0].data[d.key],
         x: d3.event.x + 10,
         y: d3.event.y + 10
