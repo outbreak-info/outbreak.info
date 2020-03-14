@@ -1,177 +1,119 @@
 <template>
-  <div class="epi-table my-3" v-if="data && data.length > 0">
-    <div class="d-flex justify-content-center py-5">
-      <div>
-        <h4>Most Recent Cases</h4>
-        <DataUpdated />
-        <div class="mt-4">
-          <select v-model="numPerPage" @change="changePageNum()">
-            <option v-for="option in pageOpts" :value="option" :key="option">
-              {{ option }} results
-            </option>
-          </select>
-        </div>
+<div class="epi-table my-3" v-if="data && data.length > 0">
+  <div class="d-flex justify-content-center py-5">
+    <div>
+      <h4>Most Recent Cases</h4>
+      <DataUpdated />
+      <div class="d-flex mt-4">
+        <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb"/>
+        <select v-model="numPerPage" @change="changePageNum()">
+          <option v-for="option in pageOpts" :value="option" :key="option">
+            {{ option }} results
+          </option>
+        </select>
       </div>
     </div>
-    <table class="m-auto">
-      <tr>
-        <th class="align-left sortable td-location" @click="sortLocation()">
-          <div class="sort-grp">
-            location
-            <font-awesome-icon
-              :class="[locationSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="locationSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="locationSort === 'desc'"
-            />
-          </div>
-        </th>
-        <!-- <th class="px-3">
+  </div>
+  <table class="m-auto">
+    <tr>
+      <th class="align-left sortable td-location" @click="sortLocation()">
+        <div class="sort-grp">
+          location
+          <font-awesome-icon :class="[locationSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="locationSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="locationSort === 'desc'" />
+        </div>
+      </th>
+      <!-- <th class="px-3">
           updated
         </th> -->
-        <th class="px-3 sortable td-total" @click="sortTotal()">
-          <div class="sort-grp">
-            total cases
-            <font-awesome-icon
-              :class="[totalSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="totalSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="totalSort === 'desc'"
-            />
-          </div>
-        </th>
-        <th class="px-2 sortable td-new-cases" @click="sortNew()">
-          <div class="sort-grp">
-            new cases today
-            <font-awesome-icon
-              :class="[newSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="newSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="newSort === 'desc'"
-            />
-          </div>
-        </th>
-        <th class="px-2 sortable td-pct-increase" @click="sortPct()">
-          <div class="sort-grp">
-            increase from yesterday
-            <font-awesome-icon
-              :class="[pctSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="pctSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="pctSort === 'desc'"
-            />
-          </div>
-        </th>
-        <th class="td-sparkline">
-          cases over time
-        </th>
-      </tr>
-      <tr v-for="row in filteredCases" v-bind:key="row.locationName">
-        <td
-          class="align-left px-3 location color-bar"
-          v-bind:style="{ 'border-color': row.color }"
-        >
-          <router-link
-            :to="{
+      <th class="px-3 sortable td-total" @click="sortTotal()">
+        <div class="sort-grp">
+          total cases
+          <font-awesome-icon :class="[totalSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="totalSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="totalSort === 'desc'" />
+        </div>
+      </th>
+      <th class="px-2 sortable td-new-cases" @click="sortNew()">
+        <div class="sort-grp">
+          new cases today
+          <font-awesome-icon :class="[newSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="newSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="newSort === 'desc'" />
+        </div>
+      </th>
+      <th class="px-2 sortable td-pct-increase" @click="sortPct()">
+        <div class="sort-grp">
+          increase from yesterday
+          <font-awesome-icon :class="[pctSort ? 'hidden' : 'sort-hover']" :icon="['fas', 'sort']" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="pctSort === 'asc'" />
+          <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="pctSort === 'desc'" />
+        </div>
+      </th>
+      <th class="td-sparkline">
+        cases over time
+      </th>
+    </tr>
+    <tr v-for="row in filteredCases" v-bind:key="row.locationName">
+      <td class="align-left px-3 location color-bar" v-bind:style="{ 'border-color': row.color }">
+        <router-link :to="{
               name: 'Epidemiology',
               query: { location: row.locationName }
-            }"
-            class="router-link-black"
-            v-if="routable"
-          >
-            {{ row.locationName }}</router-link
-          >
-          <span v-else>{{ row.locationName }}</span>
-        </td>
-        <!-- <td>
+            }" class="router-link-black" v-if="routable">
+          {{ row.locationName }}</router-link>
+        <span v-else>{{ row.locationName }}</span>
+      </td>
+      <!-- <td>
           {{ row.currentDateFormatted }}
         </td> -->
-        <td>
-          {{ row.totalNumFormatted }}
-        </td>
-        <td>
-          {{ row.numIncreaseFormatted }}
-        </td>
-        <td>
-          {{ row.pctIncreaseFormatted }}
-        </td>
-        <td>
-          <Sparkline
-            :data="[row.data]"
-            :width="100"
-            :height="23"
-            :id="row.id"
-            :color="row.color"
-          />
-        </td>
-      </tr>
-    </table>
-    <br />
-    <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
-      <button
-        class="pagination-btn pagination-left"
-        :class="{ disabled: page === 0 }"
-        @click="changePage(-1)"
-      >
-        <font-awesome-icon :icon="['fas', 'arrow-left']" />
-      </button>
-      <small
-        >viewing locations {{ lowerLim + 1 }} &minus; {{ upperLim }} of
-        {{ total }}</small
-      >
-      <button
-        class="pagination-btn pagination-left"
-        :class="{ disabled: page === lastPage }"
-        @click="changePage(1)"
-      >
-        <font-awesome-icon :icon="['fas', 'arrow-right']" />
-      </button>
-    </div>
+      <td>
+        {{ row.totalNumFormatted }}
+      </td>
+      <td>
+        {{ row.numIncreaseFormatted }}
+      </td>
+      <td>
+        {{ row.pctIncreaseFormatted }}
+      </td>
+      <td>
+        <Sparkline :data="[row.data]" :width="100" :height="23" :id="row.id" :color="row.color" />
+      </td>
+    </tr>
+  </table>
+  <br />
+  <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
+    <button class="pagination-btn pagination-left" :class="{ disabled: page === 0 }" @click="changePage(-1)">
+      <font-awesome-icon :icon="['fas', 'arrow-left']" />
+    </button>
+    <small>viewing locations {{ lowerLim + 1 }} &minus; {{ upperLim }} of
+      {{ total }}</small>
+    <button class="pagination-btn pagination-left" :class="{ disabled: page === lastPage }" @click="changePage(1)">
+      <font-awesome-icon :icon="['fas', 'arrow-right']" />
+    </button>
   </div>
+</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { cloneDeep } from "lodash";
-import { format, timeFormat } from "d3";
+import {
+  cloneDeep
+} from "lodash";
+import {
+  format,
+  timeFormat
+} from "d3";
 import DataUpdated from "@/components/DataUpdated.vue";
 import Sparkline from "@/components/Sparkline.vue";
 
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
   faArrowDown,
@@ -206,6 +148,7 @@ export default Vue.extend({
     return {
       formatDate,
       cases: null,
+      searchInput: "",
       filteredCases: null,
       locationSort: null,
       newSort: null,
@@ -238,9 +181,9 @@ export default Vue.extend({
       return this.cases ? this.cases.length : null;
     },
     lastPage: function() {
-      return this.cases
-        ? Math.floor(this.cases.length / this.numPerPage)
-        : null;
+      return this.cases ?
+        Math.floor(this.cases.length / this.numPerPage) :
+        null;
     }
   },
   methods: {
@@ -328,6 +271,9 @@ export default Vue.extend({
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);
     },
+    filterHits() {
+      this.filteredCases = this.cases.filter(d => d.locationName.toLowerCase().includes(this.searchInput.toLowerCase())).slice(this.lowerLim, this.upperLim);
+    },
     formatPercent(pct) {
       if (!pct) {
         return "none";
@@ -354,70 +300,71 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 h4 {
-  margin: 0;
+    margin: 0;
 }
 .align-left {
-  text-align: left;
+    text-align: left;
 }
 
 table {
-  border-collapse: collapse;
-  font-size: 0.85em;
+    border-collapse: collapse;
+    font-size: 0.85em;
 }
 
 tr {
-  border-bottom: 1px solid #ececec;
-  // border-bottom: 1px solid $grey-40;
+    border-bottom: 1px solid #ececec;
+    // border-bottom: 1px solid $grey-40;
 }
 
 td {
-  padding: 5px 0;
-  text-align: center;
+    padding: 5px 0;
+    text-align: center;
 }
 
 th {
-  font-size: 0.95em;
-  font-weight: 400;
-  color: $grey-70;
+    font-size: 0.95em;
+    font-weight: 400;
+    color: $grey-70;
 }
 
 .sort-hover {
-  display: none;
+    display: none;
 }
 
 .sort-grp.hover .sort-hover,
 .sort-grp:hover .sort-hover {
-  display: inline;
+    display: inline;
 }
 
 .color-bar {
-  border-left-width: 4px;
-  border-left-style: solid;
-  padding-left: 5px !important;
-  // background: #00BCD4;
-  // width: 4px;
-  // height: 100%;
+    border-left-width: 4px;
+    border-left-style: solid;
+    padding-left: 5px !important;
+    // background: #00BCD4;
+    // width: 4px;
+    // height: 100%;
 }
 
 // widths
 .td-location {
-  width: 140px;
+    width: 140px;
 }
 .td-pct-increase {
-  width: 90px;
+    width: 90px;
 }
 .td-new-cases {
-  width: 70px;
+    width: 70px;
 }
 .td-total {
-  width: 70px;
+    width: 70px;
 }
 
 .sortable {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .header {
-width: 100%;
+    width: 100%;
 }
+
 </style>
