@@ -1,5 +1,5 @@
 <template>
-<div class="epidemiology">
+<div class="epidemiology-area">
   <h4 class="stacked-area-title" v-if="title && data && data.length > 0">{{ title }}</h4>
   <svg :width="width" :height="height" class="epi-summary-svg" :id="id">
     <defs>
@@ -88,10 +88,13 @@ export default Vue.extend({
         display: false
       });
     },
-    handleMouseover: function(key) {
+    handleMouseover: function(d) {
+      console.log(d)
+      console.log(d.slice(-1)[0].data[d.key])
       this.$emit("regionSelected", {
-        region: key,
+        region: d.key,
         display: true,
+        currentCases: d.slice(-1)[0].data[d.key],
         x: d3.event.x + 10,
         y: d3.event.y + 10
       });
@@ -255,13 +258,13 @@ export default Vue.extend({
       // --- tooltips ---
       this.chart
         .selectAll("path.stacked-area-chart")
-        .on("mouseover", d => this.handleMouseover(d.key))
+        .on("mouseover", d => this.handleMouseover(d))
         .on("mouseout", d => this.handleMouseout(d.key))
         .on("click", d => this.handleClick(d.key));
 
       this.legend
         .selectAll(".legend-group")
-        .on("mouseover", d => this.handleMouseover(d.key))
+        .on("mouseover", d => this.handleMouseover(d))
         .on("mouseout", d => this.handleMouseout(d.key))
         .on("click", d => this.handleClick(d.key));
     }

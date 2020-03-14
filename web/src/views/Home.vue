@@ -44,11 +44,22 @@
 
     <section class="mt-5" id="regional-epi-curves" v-if="nestedData.length > 0">
       <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
-        <CountryBarGraph :region="region.region" :id="idx" :style="{
+        <div class="tooltip-countries" :id="idx" :style="{
+              visibility: region.display ? 'visible' : 'visible',
+              left: region.x + 'px',
+              top: region.y + 'px'}">
+          <div>
+            {{region.region}}
+          </div>
+          <div>
+            {{region.currentCases}} total cases
+          </div>
+        </div>
+        <!-- <CountryBarGraph :region="region.region" :id="idx" :style="{
               visibility: region.display ? 'visible' : 'hidden',
               left: region.x + 'px',
               top: region.y + 'px'
-            }" class="tooltip-countries" />
+            }" class="tooltip-countries" /> -->
       </div>
       <h3>Cumulative Number of COVID-19 Cases by Region</h3>
       <DataUpdated />
@@ -115,7 +126,7 @@ export default {
   name: "Home",
   components: {
     EpiStacked,
-    CountryBarGraph,
+    // CountryBarGraph,
     CaseSummary,
     DataUpdated,
     DataSource,
@@ -207,7 +218,7 @@ export default {
 <style lang="scss" scoped>
 .tooltip-countries {
     background: white;
-    position: absolute;
+    position: fixed;
     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
     padding: 10px;
     z-index: 1000;

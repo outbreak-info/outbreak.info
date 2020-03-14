@@ -172,6 +172,7 @@ const mutations = {
     const idx = state.regionDict.findIndex(d => d.region === payload["region"]);
     if (idx > -1) {
       state.regionDict[idx]["display"] = payload["display"];
+      state.regionDict[idx]["currentCases"] = payload["currentCases"] ? payload["currentCases"].toLocaleString() : null;
       state.regionDict[idx]["x"] = payload["x"];
       state.regionDict[idx]["y"] = payload["y"];
     }
