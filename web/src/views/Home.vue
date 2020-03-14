@@ -155,6 +155,8 @@
         >
       </p>
     </section>
+    <Logos />
+
   </div>
 </template>
 <script>
@@ -167,6 +169,7 @@ import DataSource from "@/components/DataSource.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import LeafletMap from "@/components/LeafletMap.vue";
 import SearchBar from "@/components/SearchBar.vue";
+import Logos from "@/components/Logos.vue";
 import Warning from "@/components/Warning.vue";
 
 import { mapState } from "vuex";
@@ -188,6 +191,7 @@ export default {
     EpiTable,
     LeafletMap,
     SearchBar,
+    Logos,
     Warning
   },
   data() {
