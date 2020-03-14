@@ -74,32 +74,38 @@ export default Vue.extend({
   },
   methods: {
     handleClick: function(key) {
-      const getLocations = store.getters["epidata/getCountryFromRegion"];
-
-      this.$router.push({
-        path: "epidemiology",
-        query: {
-          location: getLocations(key)
-        }
-      });
-
       this.$emit("regionSelected", {
         region: key,
-        display: false
+        display: false,
+        displayMore: true
       });
     },
     handleMouseover: function(d) {
-      console.log(d)
-      console.log(d.slice(-1)[0].data[d.key])
+      d3.selectAll(".legend-group")
+      .style("opacity", 0.4);
+
+      d3.selectAll(".stacked-area-chart")
+      .style("opacity", 0.4);
+
+      d3.selectAll(`.${d.key.replace(/\s/g, "_").replace(/\//g, "_").replace(/\(/g, "_").replace(/\)/g, "_")}`)
+      .style("opacity", 1);
+
       this.$emit("regionSelected", {
         region: d.key,
         display: true,
+        displayMore: false,
         currentCases: d.slice(-1)[0].data[d.key],
         x: d3.event.x + 10,
         y: d3.event.y + 10
       });
     },
     handleMouseout: function(key) {
+      d3.selectAll(".legend-group")
+      .style("opacity", 1);
+
+      d3.selectAll(".stacked-area-chart")
+      .style("opacity", 1);
+
       this.$emit("regionSelected", {
         region: key,
         display: false
@@ -217,7 +223,7 @@ export default Vue.extend({
         .style("fill", ({
           key
         }) => this.colorScale(key))
-        .attr("class", "stacked-area-chart")
+        .attr("class", d=> `stacked-area-chart ${d.key.replace(/\s/g, "_").replace(/\//g, "_").replace(/\(/g, "_").replace(/\)/g, "_")}`)
         .attr("d", this.area)
         .append("title")
         .text(({
@@ -233,7 +239,7 @@ export default Vue.extend({
       const legendEnter = legendData
         .enter()
         .append("g")
-        .attr("class", "legend-group");
+        .attr("class", d => `legend-group ${d.key.replace(/\s/g, "_").replace(/\//g, "_").replace(/\(/g, "_").replace(/\)/g, "_")}`);
 
       legendEnter
         .append("rect")

@@ -1,41 +1,38 @@
 <template>
-  <div
-    class="country-bar-graph flex-column align-left"
-    :id="`region-graphs-${id}`"
-  >
-    <h4 class="plot-title">Current total COVID-19 cases in {{ region }}</h4>
+<div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`">
 
-    <svg
-      :width="
+  <h4 class="plot-title">Current total COVID-19 cases in {{ region }}</h4>
+
+  <svg :width="
         width +
           margin.left +
           margin.right +
           sparkWidth +
           newCasesWidth +
           4 * margin.gap
-      "
-      :height="height + margin.top + margin.bottom"
-      class="case-counts"
-    >
-      <g
-        :transform="`translate(${margin.left},${margin.top})`"
-        id="case-counts"
-      ></g>
-    </svg>
-    <div class="click-affordance py-1" :style="{ background: lightColor }">
-      click plot to view cases over time
-    </div>
-  </div>
+      " :height="height + margin.top + margin.bottom" class="case-counts">
+    <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
+  </svg>
+
+  <button class="click-affordance py-1" :style="{ background: lightColor }" @click="handleClick">
+    view cases over time
+  </button>
+
+</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
 import * as d3 from "d3";
-import { cloneDeep } from "lodash";
+import {
+  cloneDeep
+} from "lodash";
 
 import store from "@/store";
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
 
 const width = 250;
 const sparkWidth = 75;
@@ -112,6 +109,22 @@ export default Vue.extend({
     colorScale: function(idx) {
       const scale = store.getters["colors/getRegionColorPalette"];
       return scale(this.region, this.data.length, idx);
+    },
+    handleClick: function() {
+      const getLocations = store.getters["epidata/getCountryFromRegion"];
+
+      this.$emit("regionSelected", {
+        region: this.region,
+        display: false,
+        displayMore: false
+      });
+
+      this.$router.push({
+        path: "epidemiology",
+        query: {
+          location: getLocations(this.region)
+        }
+      });
     },
     updatePlot: function() {
       this.getData(this.region);
@@ -269,7 +282,7 @@ export default Vue.extend({
         .attr(
           "transform",
           d =>
-            `translate(${this.width +
+          `translate(${this.width +
               this.margin.gap +
               this.margin.right}, ${this.y(d.locationName)})`
         )
@@ -289,10 +302,10 @@ export default Vue.extend({
         .attr(
           "x",
           this.width +
-            this.margin.gap * 3 +
-            this.margin.right +
-            this.sparkWidth +
-            this.newCasesWidth / 2
+          this.margin.gap * 3 +
+          this.margin.right +
+          this.sparkWidth +
+          this.newCasesWidth / 2
         )
         .attr("y", -5)
         .text("new today");
@@ -304,7 +317,7 @@ export default Vue.extend({
         .attr(
           "transform",
           d =>
-            `translate(${this.width +
+          `translate(${this.width +
               this.margin.gap * 3 +
               this.margin.right +
               this.sparkWidth}, ${0})`
@@ -327,48 +340,42 @@ export default Vue.extend({
 <style lang="scss">
 .country-bar-graph .axis--y path,
 .country-bar-graph .tick line {
-  display: none;
+    display: none;
 }
 
 .country-bar-graph .axis--y text {
-  text-anchor: end;
+    text-anchor: end;
 }
 
 .bar-axis {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .annotation--country-count,
 .new-cases {
-  dominant-baseline: central;
-  stroke: none;
-  font-weight: 700 !important;
+    dominant-baseline: central;
+    stroke: none;
+    font-weight: 700 !important;
 }
 
 .annotation--country-count {
-  text-anchor: end;
+    text-anchor: end;
 }
 
 .sparkline {
-  // stroke-width: 0.1;
-  stroke: none;
-  stroke-linecap: round;
+    // stroke-width: 0.1;
+    stroke: none;
+    stroke-linecap: round;
 }
 
 .subtitle {
-  text-anchor: middle;
-  font-size: 0.7em;
-  opacity: 0.7;
-  dominant-baseline: ideographic;
+    text-anchor: middle;
+    font-size: 0.7em;
+    opacity: 0.7;
+    dominant-baseline: ideographic;
 }
 
 rect.country-count {
-  shape-rendering: crispedges;
-}
-
-.click-affordance {
-  width: 100%;
-  text-align: center;
-  font-size: 0.85em;
+    shape-rendering: crispedges;
 }
 </style>
