@@ -23,131 +23,133 @@
         </div>
       </div>
     </div>
-    <table class="m-auto">
-      <tr>
-        <th class="align-left sortable td-location" @click="sortLocation()">
-          <div class="sort-grp">
-            location
-            <font-awesome-icon
-              :class="[locationSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="locationSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="locationSort === 'desc'"
-            />
-          </div>
-        </th>
-        <!-- <th class="px-3">
-          updated
-        </th> -->
-        <th class="px-3 sortable td-total" @click="sortTotal()">
-          <div class="sort-grp">
-            total cases
-            <font-awesome-icon
-              :class="[totalSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="totalSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="totalSort === 'desc'"
-            />
-          </div>
-        </th>
-        <th class="px-2 sortable td-new-cases" @click="sortNew()">
-          <div class="sort-grp">
-            new cases today
-            <font-awesome-icon
-              :class="[newSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="newSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="newSort === 'desc'"
-            />
-          </div>
-        </th>
-        <th class="px-2 sortable td-pct-increase" @click="sortPct()">
-          <div class="sort-grp">
-            increase from yesterday
-            <font-awesome-icon
-              :class="[pctSort ? 'hidden' : 'sort-hover']"
-              :icon="['fas', 'sort']"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-up']"
-              v-if="pctSort === 'asc'"
-            />
-            <font-awesome-icon
-              class="sort-btn"
-              :icon="['fas', 'arrow-down']"
-              v-if="pctSort === 'desc'"
-            />
-          </div>
-        </th>
-        <th class="td-sparkline">
-          cases over time
-        </th>
-      </tr>
-      <tr v-for="row in filteredCases" v-bind:key="row.locationName">
-        <td
-          class="align-left px-3 location color-bar"
-          v-bind:style="{ 'border-color': row.color }"
-        >
-          <router-link
-            :to="{
-              name: 'Epidemiology',
-              query: { location: row.locationName }
-            }"
-            class="router-link-black"
-            v-if="routable"
+    <div class="p-2">
+      <table class="m-auto">
+        <tr>
+          <th class="align-left sortable td-location" @click="sortLocation()">
+            <div class="sort-grp">
+              location
+              <font-awesome-icon
+                :class="[locationSort ? 'hidden' : 'sort-hover']"
+                :icon="['fas', 'sort']"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-up']"
+                v-if="locationSort === 'asc'"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-down']"
+                v-if="locationSort === 'desc'"
+              />
+            </div>
+          </th>
+          <!-- <th class="px-3">
+            updated
+          </th> -->
+          <th class="px-3 sortable td-total" @click="sortTotal()">
+            <div class="sort-grp">
+              total cases
+              <font-awesome-icon
+                :class="[totalSort ? 'hidden' : 'sort-hover']"
+                :icon="['fas', 'sort']"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-up']"
+                v-if="totalSort === 'asc'"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-down']"
+                v-if="totalSort === 'desc'"
+              />
+            </div>
+          </th>
+          <th class="px-2 sortable td-new-cases" @click="sortNew()">
+            <div class="sort-grp">
+              new cases today
+              <font-awesome-icon
+                :class="[newSort ? 'hidden' : 'sort-hover']"
+                :icon="['fas', 'sort']"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-up']"
+                v-if="newSort === 'asc'"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-down']"
+                v-if="newSort === 'desc'"
+              />
+            </div>
+          </th>
+          <th class="px-2 sortable td-pct-increase" @click="sortPct()">
+            <div class="sort-grp">
+              increase from yesterday
+              <font-awesome-icon
+                :class="[pctSort ? 'hidden' : 'sort-hover']"
+                :icon="['fas', 'sort']"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-up']"
+                v-if="pctSort === 'asc'"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-down']"
+                v-if="pctSort === 'desc'"
+              />
+            </div>
+          </th>
+          <th class="td-sparkline">
+            cases over time
+          </th>
+        </tr>
+        <tr v-for="row in filteredCases" v-bind:key="row.locationName">
+          <td
+            class="align-left px-3 location color-bar"
+            v-bind:style="{ 'border-color': row.color }"
           >
-            {{ row.locationName }}</router-link
-          >
-          <span v-else>{{ row.locationName }}</span>
-        </td>
-        <!-- <td>
-          {{ row.currentDateFormatted }}
-        </td> -->
-        <td>
-          {{ row.totalNumFormatted }}
-        </td>
-        <td>
-          {{ row.numIncreaseFormatted }}
-        </td>
-        <td>
-          {{ row.pctIncreaseFormatted }}
-        </td>
-        <td>
-          <Sparkline
-            :data="[row.data]"
-            :width="100"
-            :height="23"
-            :id="row.id"
-            :color="row.color"
-          />
-        </td>
-      </tr>
-    </table>
+            <router-link
+              :to="{
+                name: 'Epidemiology',
+                query: { location: row.locationName }
+              }"
+              class="router-link-black"
+              v-if="routable"
+            >
+              {{ row.locationName }}</router-link
+            >
+            <span v-else>{{ row.locationName }}</span>
+          </td>
+          <!-- <td>
+            {{ row.currentDateFormatted }}
+          </td> -->
+          <td>
+            {{ row.totalNumFormatted }}
+          </td>
+          <td>
+            {{ row.numIncreaseFormatted }}
+          </td>
+          <td>
+            {{ row.pctIncreaseFormatted }}
+          </td>
+          <td>
+            <Sparkline
+              :data="[row.data]"
+              :width="100"
+              :height="23"
+              :id="row.id"
+              :color="row.color"
+            />
+          </td>
+        </tr>
+      </table>
+    </div>
 
     <br />
     <div

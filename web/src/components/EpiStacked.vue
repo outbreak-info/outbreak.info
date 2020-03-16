@@ -1,6 +1,6 @@
 <template>
   <div class="epidemiology-area">
-    <h4 class="stacked-area-title" v-if="title && data && data.length > 0">
+    <h4 class="stacked-area-title py-5" v-if="title && data && data.length > 0">
       {{ title }}
     </h4>
     <svg :width="width" :height="height" class="epi-summary-svg" :id="id">

@@ -12,18 +12,20 @@
       <div>
         <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-75" />
       </div>
-    </div>
-    <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
-      <div class="container p-3">
-        <h5>
-          During outbreaks of emerging diseases such as COVID-19, efficiently
-          collecting, sharing, and integrating data is critical to scientific
-          research.
-        </h5>
-        <h5 class="mt-5 text-dark font-weight-bold">
-          <b class="text-highlight">outbreak.info</b> is a resource to
-          aggregate all this information into a single location.
-        </h5>
+      <div
+        class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero half-page"
+      >
+        <div class="container p-3">
+          <h5>
+            During outbreaks of emerging diseases such as COVID-19, efficiently
+            collecting, sharing, and integrating data is critical to scientific
+            research.
+          </h5>
+          <h5 class="mt-5 text-dark font-weight-bold">
+            <b class="text-highlight">outbreak.info</b> is a resource to
+            aggregate all this information into a single location.
+          </h5>
+        </div>
       </div>
     </div>
   </section>
@@ -84,9 +86,9 @@
     <DataSource v-if="nestedData.length > 0" />
   </section>
 
-  <section class="case-data-table">
-    <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
-  </section>
+    <section class="case-data-table p-1">
+      <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
+    </section>
 
   <section class="case-map">
     <LeafletMap :data="cases" />
