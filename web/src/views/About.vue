@@ -1,26 +1,28 @@
 <template>
-  <div
-    class="full-page d-flex justify-content-center align-items-center bg-grey text-light"
-  >
-    <div class="container">
-      <h1>About</h1>
-      <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" />
-      <p class="align-left focustext">
-        During outbreaks of emerging diseases such as COVID-19, efficiently
-        collecting, sharing, and integrating data is critical to scientific
-        research.
-      </p>
-      <p class="align-left focustext">
-        <b>outbreak.info</b> is a project from the
-        <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su lab</a>
-        at
-        <a href="scripps.edu" rel="noreferrer" target="_blank"
-          >Scripps Research</a
-        >
-        to aggregate all this information into a single location.
-      </p>
-      <Logos />
-      <div class="jumbotron rounded bg-grey__darker">
+  <div>
+    <div class="row m-0">
+      <div class="col-sm-12 bg-light  d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="container half-page">
+          <h1>About</h1>
+          <img src="@/assets/logo-full-01.svg" alt="Outbreak.info" class="w-75 mb-5"/>
+          <p class="text-left focustext">
+            During outbreaks of emerging diseases such as COVID-19, efficiently
+            collecting, sharing, and integrating data is critical to scientific
+            research.
+          </p>
+          <p class="text-left focustext">
+            <b>outbreak.info</b> is a project from the
+            <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su lab</a>
+            at
+            <a href="scripps.edu" rel="noreferrer" target="_blank"
+              >Scripps Research</a
+            >
+            to aggregate all this information into a single location.
+          </p>
+        </div>
+      </div>
+      <Logos class="col-sm-12 bg-grey"/>
+      <div class="col-sm-12 jumbotron rounded-0 bg-grey__darker mb-0">
         <h4 class="text-light m-2">
           Notice a bug, know of a COVID-19 data source, or want to suggest a
           feature?
