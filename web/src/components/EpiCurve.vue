@@ -28,11 +28,11 @@
       </div>
     </div>
     <!-- <button @click="switchAxes()">common axis</button> -->
-    <h3 class="plot-title text-sec py-5">
+    <h4 class="plot-title py-5">
       Cumulative number of COVID-19 cases<span v-if="locationName">
         in {{ locationName }}</span
       >
-    </h3>
+    </h4>
     <DataUpdated />
     <svg :width="width" :height="height" class="epi-curve">
       <defs>
@@ -162,7 +162,13 @@ export default Vue.extend({
   },
   methods: {
     setPlotDims() {
-      const idealWidth = 750;
+      // const idealWidth = window.innerWidth/2;
+      let idealWidth
+      if(window.innerWidth > 400){
+        idealWidth = window.innerWidth/2-30;
+      }else{
+        idealWidth = window.innerWidth;
+      }
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.
       if (window.innerWidth < idealWidth) {

@@ -7,9 +7,9 @@
       :selected="selectedPlaces"
       @selected="updateSelected"
     />
-    <div class="d-flex">
-      <EpiCurve v-bind:data="data" @addable="updateAddable" />
-      <EpiTable v-bind:data="data" :colorScale="colorScale" />
+    <div class="d-flex row m-0">
+      <EpiCurve class="col-s-12 col-md-6" v-bind:data="data" @addable="updateAddable" />
+      <EpiTable class="col-s-12 col-md-6" v-bind:data="data" :colorScale="colorScale" />
     </div>
     <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
