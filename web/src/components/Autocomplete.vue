@@ -30,6 +30,7 @@
         <input
           type="text"
           v-model="search"
+          placeholder="Type here"
           @input="onChange"
           @keydown.down="onArrowDown"
           @keydown.up="onArrowUp"
