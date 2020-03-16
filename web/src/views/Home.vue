@@ -1,164 +1,111 @@
 <template>
-  <div class="home flex-column align-left">
-    <div v-if="loading" class="loader">
-      <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
-    </div>
-    <!-- INTRO -->
-    <Warning
-      :animate="false"
-      :text="
+<div class="home flex-column align-left">
+  <div v-if="loading" class="loader">
+    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+  </div>
+  <!-- INTRO -->
+  <Warning :animate="false" :text="
         'Our data is in the process of being updated; as a result, regional case counts are not currently correct. Sorry-- it will be fixed soon.'
-      "
-    ></Warning>
-    <section class="row m-0 half-page">
-      <div
-        class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1"
-      >
-        <div>
-          <img
-            src="@/assets/logo-full-white-01.svg"
-            alt="Outbreak.info"
-            class="w-75"
-          />
-        </div>
+      "></Warning>
+  <section class="row m-0 half-page">
+    <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
+      <div>
+        <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-75" />
       </div>
-      <div
-        class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero"
-      >
-        <div class="container p-3">
-          <h5>
-            During outbreaks of emerging diseases such as COVID-19, efficiently
-            collecting, sharing, and integrating data is critical to scientific
-            research.
-          </h5>
-          <h5 class="mt-5 text-dark font-weight-bold">
-            <b class="text-highlight">outbreak.info</b> is a resource to
-            aggregate all this information into a single location.
-          </h5>
-        </div>
+    </div>
+    <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
+      <div class="container p-3">
+        <h5>
+          During outbreaks of emerging diseases such as COVID-19, efficiently
+          collecting, sharing, and integrating data is critical to scientific
+          research.
+        </h5>
+        <h5 class="mt-5 text-dark font-weight-bold">
+          <b class="text-highlight">outbreak.info</b> is a resource to
+          aggregate all this information into a single location.
+        </h5>
       </div>
-    </section>
-    <!-- SEARCH  -->
-    <section
-      class="d-flex justify-content-center align-items-center bg-sec text-light py-5"
-    >
-      <div class="row m-0 w-100">
-        <div class="col-sm-12 col-md-6 m-auto">
-          <h5>SEARCH LOCATION</h5>
-          <svg viewBox="0 0 100 3">
-            <line x1="0" y1="0" x2="100" stroke="#D13B62" />
-          </svg>
-          <SearchBar class="w-100"></SearchBar>
-          <small id="sBar" class="form-text text-light d-block"
-            >Search updated information on COVID-19</small
-          >
-        </div>
+    </div>
+  </section>
+  <!-- SEARCH  -->
+  <section class="d-flex justify-content-center align-items-center bg-sec text-light py-5">
+    <div class="row m-0 w-100">
+      <div class="col-sm-12 col-md-6 m-auto">
+        <h5>SEARCH LOCATION</h5>
+        <svg viewBox="0 0 100 3">
+          <line x1="0" y1="0" x2="100" stroke="#D13B62" />
+        </svg>
+        <SearchBar class="w-100"></SearchBar>
+        <small id="sBar" class="form-text text-light d-block">Search updated information on COVID-19</small>
       </div>
-    </section>
-    <!-- EPI CURVE SUMMARIES -->
-    <section class="mt-5" id="regional-epi-curves">
-      <template v-if="nestedData.length > 0">
-        <div
-          class="region-tooltip-plots"
-          v-for="(region, idx) in regionDict"
-          :key="idx"
-        >
-          <div
-            class="tooltip-countries"
-            :id="idx"
-            :style="{
+    </div>
+  </section>
+  <!-- EPI CURVE SUMMARIES -->
+  <section class="mt-5" id="regional-epi-curves">
+    <template v-if="nestedData.length > 0">
+      <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
+        <div class="tooltip-countries" :id="idx" :style="{
               visibility: region.display ? 'visible' : 'hidden',
               left: region.x + 'px',
               top: region.y + 'px'
-            }"
-          >
-            <div>
-              {{ region.region }}
-            </div>
-            <div>{{ region.currentCases }} total cases</div>
-            <div
-              class="click-affordance py-1"
-              :style="{ background: lightColor }"
-            >
-              click for details
-            </div>
+            }">
+          <div>
+            {{ region.region }}
           </div>
-          <CountryBarGraph
-            :region="region.region"
-            :id="idx"
-            :style="{
-              visibility: region.displayMore ? 'visible' : 'hidden'
-            }"
-            @regionSelected="handleTooltip"
-            class="tooltip-countries-detailed"
-          />
+          <div>{{ region.currentCases }} total cases</div>
+          <div class="click-affordance py-1" :style="{ background: lightColor }">
+            click for details
+          </div>
         </div>
-      </template>
-      <template v-if="nestedData.length > 0">
-        <CaseSummary class="container" />
-        <h3>Cumulative Number of COVID-19 Cases by Region</h3>
-        <DataUpdated />
-      </template>
-      <div
-        id="regional-stacked-area-plots d-flex"
-        ref="regional_stacked_area_plots"
-      >
-        <div class="row" v-if="nestedData.length > 0">
-          <div class="col-sm-12 col-md-6">
-            <EpiStacked
-              :width="stackedWidth"
-              :height="stackedHeight"
-              :data="nestedData"
-              id="all-data"
-              title="Worldwide"
-              @regionSelected="handleTooltip"
-            />
-          </div>
-          <div class="col-sm-12 col-md-6">
-            <EpiStacked
-              :width="stackedWidth"
-              :height="stackedHeight"
-              :data="noChina"
-              id="no-china"
-              title="Outside Mainland China"
-              @regionSelected="handleTooltip"
-            />
-          </div>
+        <CountryBarGraph :region="region.region" :id="idx" :style="{
+              visibility: region.displayMore ? 'visible' : 'hidden'
+            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
+      </div>
+    </template>
+    <template v-if="nestedData.length > 0">
+      <CaseSummary class="container" />
+      <h3>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown">
+          <option v-for="option in variableOptions" :value="option.value" :key="option.value">
+            {{ option.label }}
+          </option>
+        </select> by Region</h3>
+      <DataUpdated />
+    </template>
+    <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
+      <div class="row" v-if="nestedData.length > 0">
+        <div class="col-sm-12 col-md-6">
+          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data" title="Worldwide" @regionSelected="handleTooltip" />
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="noChina" id="no-china" title="Outside Mainland China" @regionSelected="handleTooltip" />
         </div>
       </div>
-      <DataSource v-if="nestedData.length > 0" />
-    </section>
+    </div>
+    <DataSource v-if="nestedData.length > 0" />
+  </section>
 
-    <section class="case-data-table">
-      <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
-    </section>
+  <section class="case-data-table">
+    <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
+  </section>
 
-    <section class="case-map">
-      <LeafletMap :data="cases" />
-    </section>
+  <section class="case-map">
+    <LeafletMap :data="cases" />
+  </section>
 
-    <section>
-      <p>
-        <small class="text-muted"
-          >Disclaimer: outbreak.info is a work-in-progress.</small
-        >
-      </p>
-      <p class="focustext">
-        Notice a bug, know of a COVID-19 data source, or want to suggest a
-        feature?
-      </p>
-      <p class="text-center">
-        <a
-          class="btn btn-main m-5"
-          href="https://github.com/SuLab/outbreak.info/issues"
-          rel="noreferrer"
-          target="_blank"
-          >Submit an issue on Github</a
-        >
-      </p>
-    </section>
-    <Logos />
-  </div>
+  <section>
+    <p>
+      <small class="text-muted">Disclaimer: outbreak.info is a work-in-progress.</small>
+    </p>
+    <p class="focustext">
+      Notice a bug, know of a COVID-19 data source, or want to suggest a
+      feature?
+    </p>
+    <p class="text-center">
+      <a class="btn btn-main m-5" href="https://github.com/SuLab/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
+    </p>
+  </section>
+  <Logos />
+</div>
 </template>
 <script>
 // @ is an alias to /src
@@ -173,11 +120,17 @@ import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
 import Warning from "@/components/Warning.vue";
 
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
 
-import { nestRegions } from "@/js/importEpi";
+import {
+  nestRegions
+} from "@/js/importEpi";
 
-import { cloneDeep } from "lodash";
+import {
+  cloneDeep
+} from "lodash";
 
 import store from "@/store";
 
@@ -199,6 +152,17 @@ export default {
     return {
       stackedWidth: 500,
       stackedHeight: 250,
+      selectedVariable: "cases",
+      variableOptions: [{
+        label: "cases",
+        value: "cases"
+      }, {
+        label: "recoveries",
+        value: "recovered"
+      }, {
+        label: "deaths",
+        value: "dead"
+      }],
       searchQuery: ""
     };
   },
@@ -281,28 +245,44 @@ export default {
 
 <style lang="scss" scoped>
 .tooltip-countries {
-  background: white;
-  position: fixed;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  z-index: 1000;
-  pointer-events: none;
+    background: white;
+    position: fixed;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    z-index: 1000;
+    pointer-events: none;
 }
 
 .tooltip-countries-detailed {
-  background: white;
-  position: fixed;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  z-index: 1001;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+    background: white;
+    position: fixed;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    z-index: 1001;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .click-affordance {
-  width: 100%;
-  text-align: center;
-  font-size: 0.85em;
+    width: 100%;
+    text-align: center;
+    font-size: 0.85em;
+}
+
+.select-dropdown {
+    border: none;
+    color: $base-grey;
+    // margin-bottom: .5rem;
+    font-weight: 500;
+    // line-height: 1.2;
+    border-bottom: 2px $base-grey solid;
+    border-radius: 0 !important;
+    align-items: center;
+    background: #ffff;
+    padding: 0 5px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 </style>
