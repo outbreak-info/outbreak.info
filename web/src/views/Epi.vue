@@ -8,7 +8,7 @@
       @selected="updateSelected"
     />
     <div class="d-flex row m-0">
-      <EpiCurve class="col-s-12 col-md-6" v-bind:data="data" @addable="updateAddable" />
+      <EpiCurve class="col-s-12 col-md-6" v-bind:data="data" @addable="updateAddable" id="curveContainer"/>
       <EpiTable class="col-s-12 col-md-6" v-bind:data="data" :colorScale="colorScale" />
     </div>
     <!-- <div id="presetLocations">

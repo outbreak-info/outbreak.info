@@ -163,13 +163,8 @@ export default Vue.extend({
   },
   methods: {
     setPlotDims() {
-      // const idealWidth = window.innerWidth/2;
-      let idealWidth
-      if(window.innerWidth > 400){
-        idealWidth = window.innerWidth/2-30;
-      }else{
-        idealWidth = window.innerWidth;
-      }
+      let idealWidth = document.getElementById('curveContainer').offsetWidth;
+
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.
       if (window.innerWidth < idealWidth) {
