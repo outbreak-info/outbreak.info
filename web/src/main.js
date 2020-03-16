@@ -9,6 +9,7 @@ import "leaflet/dist/leaflet.css";
 import "tippy.js/dist/tippy.css";
 
 Vue.config.productionTip = false;
+Vue.prototype.$apiurl = "http://pending.biothings.io/covid19/";
 
 Vue.use(VueRx);
 
