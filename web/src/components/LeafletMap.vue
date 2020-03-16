@@ -298,6 +298,8 @@ export default Vue.extend({
 
       if (this.width < 400) {
         this.zoomUpdate(0);
+        this.showLegend = false;
+        this.height = window.innerHeight;
       } else if (this.width >= 400 && this.width < 700) {
         this.currentZoom = 1;
       } else if (this.width >= 700 && this.width < 1100) {

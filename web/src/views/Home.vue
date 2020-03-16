@@ -23,7 +23,7 @@
         </div>
       </div>
       <div
-        class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero"
+        class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero half-page"
       >
         <div class="container p-3">
           <h5>
@@ -129,7 +129,7 @@
       <DataSource v-if="nestedData.length > 0" />
     </section>
 
-    <section class="case-data-table">
+    <section class="case-data-table p-1">
       <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
     </section>
 
