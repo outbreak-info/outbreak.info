@@ -37,6 +37,12 @@ const routes = [
     name: "Timelapse",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/Timelapse.vue")
+  },
+  {
+    path: "/doubling-rates",
+    name: "Doubling Rates",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/DoublingRates.vue")
   }
 ];
 
