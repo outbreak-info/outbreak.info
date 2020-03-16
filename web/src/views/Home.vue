@@ -23,9 +23,9 @@
         </div>
       </div>
       <div
-        class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center pl-0 bg-grey__lightest hero"
+        class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero"
       >
-        <div class="container">
+        <div class="container p-3">
           <h5>
             During outbreaks of emerging diseases such as COVID-19, efficiently
             collecting, sharing, and integrating data is critical to scientific
@@ -42,15 +42,17 @@
     <section
       class="d-flex justify-content-center align-items-center bg-sec text-light py-5"
     >
-      <div class="d-none">
-        <h5>SEARCH LOCATION</h5>
-        <svg viewBox="0 0 100 3">
-          <line x1="0" y1="0" x2="100" stroke="#D13B62" />
-        </svg>
-        <SearchBar></SearchBar>
-        <small id="sBar" class="form-text text-light d-block"
-          >Search updated information on COVID-19</small
-        >
+      <div class="row m-0 w-100">
+        <div class="col-sm-12 col-md-6 m-auto">
+          <h5>SEARCH LOCATION</h5>
+          <svg viewBox="0 0 100 3">
+            <line x1="0" y1="0" x2="100" stroke="#D13B62" />
+          </svg>
+          <SearchBar class="w-100"></SearchBar>
+          <small id="sBar" class="form-text text-light d-block"
+            >Search updated information on COVID-19</small
+          >
+        </div>
       </div>
     </section>
     <!-- EPI CURVE SUMMARIES -->
