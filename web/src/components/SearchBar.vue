@@ -8,7 +8,7 @@
       </div>
       <input
         id="sBar"
-        class="form-control border-0 bg-grey text-light"
+        class="form-control border-0"
         placeholder="Search"
         aria-label="search"
         aria-describedby="sb"
