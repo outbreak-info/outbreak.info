@@ -1,7 +1,7 @@
 <template>
   <div class="home flex-column align-left">
     <div v-if="loading" class="loader">
-      <i class="fas fa-circle-notch fa-spin fa-4x text-highlight"></i>
+      <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
     </div>
     <!-- INTRO -->
     <Warning
