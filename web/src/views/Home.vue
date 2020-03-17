@@ -38,7 +38,7 @@
           <line x1="0" y1="0" x2="100" stroke="#D13B62" />
         </svg>
         <SearchBar class="w-100"></SearchBar>
-        <small id="sBar" class="form-text text-light d-block">Search updated information on COVID-19</small>
+        <small id="sBar" class="form-text text-light d-block">View COVID-19 trends by location</small>
       </div>
     </div>
   </section>
