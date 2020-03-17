@@ -95,6 +95,7 @@
 import store from "@/store";
 
 import { mapState } from "vuex";
+import { getLocations } from "@/api/epi-basics.js"
 
 export default {
   name: "App",
@@ -116,6 +117,11 @@ export default {
     self.year = currentTime.getFullYear();
     store.dispatch("epidata/loadCases");
     store.dispatch("epidata/getDateUpdated");
+  },
+  subscriptions() {
+    return {
+      placeNames$: getLocations(this.$apiurl)
+    }
   }
 };
 </script>

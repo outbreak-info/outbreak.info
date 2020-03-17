@@ -55,6 +55,7 @@ const actions = {
     from(csv(store.state.casesUrl))
       .pipe(
         tap(data => {
+          console.log(data)
           const cleanedCases = cleanEpi(data);
           const lastDate = max(cleanedCases, d => d.currentDate);
 
@@ -122,8 +123,6 @@ const mutations = {
     state.countriesAboveThreshold = countryCases.filter(
       d => d.numIncrease > state.caseThreshold
     );
-
-    state.allPlaces = [...new Set(payload.all.map(d => d.locationName))];
   },
   // Github commit date
   setDateUpdated(state, newDate) {
