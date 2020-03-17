@@ -21,8 +21,10 @@ export function getStackedRegions(apiUrl) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
 
-  return from(axios.get(`${apiUrl}query?q=admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead`)).pipe(
-      tap(x => console.log(x)),
+// trigger no-cache behavior by adding timestamp to request
+  const timestamp = new Date().getTime();
+
+  return from(axios.get(`${apiUrl}query?q=admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`, { headers: {'Content-Type': 'application/json' } })).pipe(
       pluck("data", "hits"),
       map(results => {
         // nest by date
@@ -37,8 +39,6 @@ export function getStackedRegions(apiUrl) {
             })
           })
           .entries(results);
-          console.log(regionNest)
-
 
         const nested = {};
         nested["confirmed"] = [];
