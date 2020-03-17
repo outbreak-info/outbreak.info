@@ -44,7 +44,7 @@
   </section>
   <!-- EPI CURVE SUMMARIES -->
   <section class="mt-5" id="regional-epi-curves">
-    <template v-if="nestedData.length > 0">
+    <template v-if="nestedData && nestedData.length > 0">
       <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
         <div class="tooltip-countries" :id="idx" :style="{
               visibility: region.display ? 'visible' : 'hidden',
@@ -54,7 +54,7 @@
           <div>
             {{ region.region }}
           </div>
-          <div>{{ region.currentCases }} total cases</div>
+          <div>{{ region.currentCases }} total {{selectedVariable}}</div>
           <div class="click-affordance py-1" :style="{ background: lightColor }">
             click for details
           </div>
@@ -64,9 +64,9 @@
             }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
       </div>
     </template>
-    <template v-if="nestedData.length > 0">
+    <template v-if="nestedData && nestedData.length > 0">
       <CaseSummary class="container" />
-      <h3>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown">
+      <h3>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
           </option>
@@ -76,10 +76,10 @@
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
       <div class="row" v-if="nestedData.length > 0">
         <div class="col-sm-12 col-md-6">
-          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data" title="Worldwide" @regionSelected="handleTooltip" />
+          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data"  :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
         </div>
         <div class="col-sm-12 col-md-6">
-          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="noChina" id="no-china" title="Outside Mainland China" @regionSelected="handleTooltip" />
+          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="noChina" id="no-china" :title="`${selectedVariableLabel} Outside Mainland China`" @regionSelected="handleTooltip" />
         </div>
       </div>
     </div>
@@ -121,6 +121,7 @@ import LeafletMap from "@/components/LeafletMap.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
 import Warning from "@/components/Warning.vue";
+import { getStackedRegions } from "@/api/region-summary.js";
 
 import {
   mapState
@@ -154,15 +155,18 @@ export default {
     return {
       stackedWidth: 500,
       stackedHeight: 250,
-      selectedVariable: "cases",
+      data: null,
+      dataSubscription: null,
+      nestedData: null,
+      selectedVariable: "confirmed",
       variableOptions: [{
-        label: "cases",
-        value: "cases"
+        label: "Cases",
+        value: "confirmed"
       }, {
-        label: "recoveries",
+        label: "Recoveries",
         value: "recovered"
       }, {
-        label: "deaths",
+        label: "Deaths",
         value: "dead"
       }],
       searchQuery: ""
@@ -177,22 +181,28 @@ export default {
       const scale = store.getters["colors/getRegionColor"];
       return scale(this.region, 0.85);
     },
-    nestedData() {
-      return nestRegions(this.cases.flatMap(d => d.data));
-    },
+    // nestedData() {
+    //   return nestRegions(this.cases.flatMap(d => d.data));
+    // },
     noChina() {
       if (this.nestedData) {
         const data = cloneDeep(this.nestedData);
         data.forEach(d => {
-          d["China"] ? delete d["China"] : null;
+          d["East Asia & Pacific: China"] ? delete d["East Asia & Pacific: China"] : null;
         });
         return data;
       } else {
         return null;
       }
+    },
+    selectedVariableLabel () {
+      return this.variableOptions.filter(d => d.value == this.selectedVariable)[0]["label"];
     }
   },
   methods: {
+    changeVariable() {
+      this.nestedData = this.data[this.selectedVariable];
+    },
     handleTooltip(selected) {
       store.commit("geo/setRegionTooltip", selected);
     },
@@ -222,6 +232,11 @@ export default {
     }
   },
   mounted() {
+    this.dataSubscription = getStackedRegions(this.$apiurl).subscribe(d => {
+      console.log(d)
+      this.data = d;
+      this.nestedData = d[this.selectedVariable];
+    })
     // The watching works... but doesn't stick when the route gets changed :(
     // this.$store.watch(
     //   (state, getters) => state.epidata.cases,
@@ -241,6 +256,9 @@ export default {
       // set initial dimensions for the stacked area plots.
       this.setDims();
     });
+  },
+  destroyed() {
+    this.dataSubscription.unsubscribe();
   }
 };
 </script>
