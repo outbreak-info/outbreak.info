@@ -34,7 +34,7 @@
           class="autocomplete-result"
           :class="{ 'is-active': i === arrowCounter }"
         >
-          {{ result }}
+          {{ result.label }}
         </li>
       </ul>
     </div>
@@ -81,15 +81,11 @@ export default Vue.extend({
       results: [],
       search: "",
       isLoading: false,
-      isSelectAll: false,
       arrowCounter: 0
     };
   },
   computed: {
-    ...mapState("epidata", ["allCases", "allPlaces"]),
-    // items: function(){
-    //   return mapState("epidata", ["allCases", "allPlaces"])
-    // },
+    ...mapState("epidata", ["allPlaces"]),
     selectedItems: function() {
       return this.selected.map(d => {
         return {
@@ -117,28 +113,7 @@ export default Vue.extend({
     document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
-    lightColorScale: function(location) {
-      const scale = store.getters["colors/getLightColor"];
-      return scale(location);
-    },
-    colorScale: function(location) {
-      const scale = store.getters["colors/getDarkColor"];
-      return scale(location);
-    },
-    updateChip(item) {
-      if (item.addable) {
-        this.$emit("selected", this.selected.concat(item.label));
-      } else {
-        this.$emit(
-          "selected",
-          this.selected.filter(d => d !== item.label)
-        );
-      }
-      // this.selected = this.selected.filter(d => d !== item);
-    },
     onChange() {
-      this.isSelectAll = false;
-
       // Is the data given by an outside ajax request?
       if (this.isAsync) {
         this.isLoading = true;
@@ -151,16 +126,14 @@ export default Vue.extend({
     filterResults() {
       // first uncapitalize all the things
       this.results = this.allPlaces.filter(item => {
-        return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+        return item.label.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       });
     },
     setResult(result) {
-      // this.$emit('input', result);
       this.selected.push(result);
-      this.$emit("selected", this.selected);
       this.search = "";
       this.isOpen = false;
-      this.$router.replace('/epidemiology?location='+result)
+      this.$router.replace(`/epidemiology?location=${this.selected.map(d => d.id).join(";")}`)
     },
     onArrowDown(evt) {
       if (this.arrowCounter < this.results.length) {
