@@ -3,8 +3,8 @@
   <!-- <h1 v-if="allData$">{{allData$.length}} records</h1> -->
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <div class="d-flex row m-0">
-    <EpiCurve class="col-s-12 col-md-12 col-lg-6" @addable="updateAddable" id="curveContainer" v-if="data$"/>
-    <!-- <EpiTable class="col-s-12 col-md-12 col-lg-6" :data="tableData$" :colorScale="colorScale" /> -->
+    <!-- <EpiCurve class="col-s-12 col-md-12 col-lg-6" @addable="updateAddable" id="curveContainer" v-if="data$"/> -->
+    <EpiTable class="col-sm-12 overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" />
   </div>
   <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
@@ -20,7 +20,7 @@ import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
 import {
-  getEpiData, epiDataSubject
+  getEpiData, epiDataSubject, epiTableSubject
 } from "@/api/epi-traces.js"
 import store from "@/store";
 import {
@@ -30,8 +30,8 @@ import {
 export default {
   name: "Epidemiology",
   components: {
-    EpiCurve,
-    // EpiTable,
+    // EpiCurve,
+    EpiTable,
     Autocomplete
   },
   props: {
@@ -75,7 +75,7 @@ export default {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.data$ = getEpiData(this.$apiurl, locations).subscribe(_ => null);
+        this.data$ = getEpiData(this.$apiurl, locations, "-confirmed_currentCases", 10).subscribe(_ => null);
         // need to call subscription in order to trigger calling API function and passing subscription to child
       } else {
         this.clearLocations();
@@ -88,6 +88,7 @@ export default {
     clearLocations: function() {
       this.selectedPlaces = [];
       epiDataSubject.next([]);
+      epiTableSubject.next([]);
     },
     updateSelected: function(selected) {
       this.selectedPlaces = [...new Set(selected)];
