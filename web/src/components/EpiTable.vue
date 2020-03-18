@@ -6,6 +6,9 @@
         <th v-for="(column, idx) in mergedColumns" :key="idx" :colspan="column.colspan">
           {{column.label}}
         </th>
+        <th>
+
+        </th>
       </tr>
       <tr class="table-header">
         <th v-for="(column, idx) in columns" :key="idx" :id="`th-${column.value}`" :class="{'sortable': column.sorted}" @click="sortColumn(column.sort_id)">
@@ -16,11 +19,17 @@
             <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === 1" />
           </div>
         </th>
+        <th id="td-outcomes">
+          outcomes
+        </th>
       </tr>
 
       <tr v-for="row in data" class="table-data" :key="row.location_id">
         <td v-for="(column, idx) in columns" :key="idx">
           <span v-html="row[column.value]"></span>
+        </td>
+        <td>
+          <RecoveredBar :data="row"/>
         </td>
       </tr>
 
