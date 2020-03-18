@@ -419,13 +419,12 @@ export default Vue.extend({
 
       // --- annotation: change in case definition ---
       const includesChina = this.plottedData
-        .map(d => d.region)
-        .includes("China");
+        .filter(d => d.key.includes("CHN"))
       const dateCaseDefChange = new Date("2020-02-13");
 
       const defChangedSelector = this.chart
         .selectAll(".case-def-changed")
-        .data(includesChina ? ["includesChina"] : []);
+        .data(includesChina.length > 0 ? ["includesChina"] : []);
 
       defChangedSelector.exit().remove();
 
@@ -436,20 +435,29 @@ export default Vue.extend({
 
       defChangedSelector.merge(defChangedEnter);
 
-      defChangedEnter
+      const defTextSelector = defChangedSelector.select("text");
+
+      const defTextEnter = defChangedEnter
         .append("text")
-        .attr("x", this.x(dateCaseDefChange))
         .attr("dx", -3)
         .attr("y", 0)
         .text("Case definition changed");
 
-      defChangedEnter
+      defTextSelector
+        .merge(defTextEnter)
+        .attr("x", this.x(dateCaseDefChange));
+
+      const defLineSelector = defChangedSelector.select("line");
+
+      const defLineEnter = defChangedEnter
         .append("line")
         .attr("class", "annotation--line case-def-changed")
+        .attr("y1", 8);
+
+      defLineSelector.merge(defLineEnter)
         .attr("x1", this.x(dateCaseDefChange))
         .attr("x2", this.x(dateCaseDefChange))
-        .attr("y1", 8)
-        .attr("y2", this.height);
+        .attr("y2", this.height - this.margin.top - this.margin.bottom);
 
       // --- create groups for each region ---
       const regionGroups = this.chart
