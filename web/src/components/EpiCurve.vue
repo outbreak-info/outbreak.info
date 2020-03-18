@@ -27,7 +27,7 @@
       in {{ locationName }}</span>
   </h4>
   <DataUpdated />
-  <svg :width="width" :height="height" class="epi-curve">
+  <svg :width="width" :height="height" class="epi-curve" ref="svg">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
@@ -35,7 +35,7 @@
     </defs>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
+    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
   <DataSource />
@@ -77,8 +77,7 @@ export default Vue.extend({
     DataSource,
     Warning
   },
-  props: {
-  },
+  props: {},
   data() {
     return {
       width,
@@ -128,7 +127,6 @@ export default Vue.extend({
   watch: {
     data: function() {
       console.log("NEW DATA")
-      this.prepData();
       this.updatePlot();
     },
     width() {
@@ -147,14 +145,12 @@ export default Vue.extend({
     }
   },
   created() {
+    // set up subscription here; listen for changes and execute in the watch.
+    // Strangely, w/o the watch, the subscription doesn't seem to update...
     this.dataSubscription = epiDataState$.subscribe(data => {
       console.log("subscribing")
       console.log(data)
-      if (data && data.length > 0) {
-        this.data = data;
-        this.prepData();
-        this.updatePlot();
-      }
+      this.data = data;
     })
   },
   beforeDestroy() {
@@ -204,7 +200,6 @@ export default Vue.extend({
       this.updatePlot();
     },
     changeVariable() {
-      this.prepData();
       this.updatePlot();
     },
     tooltipOn: function(d) {
@@ -234,6 +229,9 @@ export default Vue.extend({
       this.updatePlot();
     },
     updatePlot: function() {
+      console.log("calling update plot")
+      this.prepData();
+
       if (this.data) {
         if (this.showAll) {
           // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
@@ -262,6 +260,7 @@ export default Vue.extend({
       }
     },
     prepData: function() {
+      console.log("prepping data")
       if (this.data) {
         this.logData = cloneDeep(this.data);
         this.logData.forEach(d => {
@@ -280,9 +279,8 @@ export default Vue.extend({
 
       this.setPlotDims();
 
-      this.prepData();
-      this.svg = d3.select("svg.epi-curve");
-      this.chart = d3.select("#epi-curve");
+      this.svg = d3.select(this.$refs.svg);
+      this.chart = d3.select(this.$refs.epi_curve);
 
       this.line = d3
         .line()

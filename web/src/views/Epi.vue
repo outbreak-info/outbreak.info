@@ -20,7 +20,7 @@ import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
 import {
-  getEpiData
+  getEpiData, epiDataSubject
 } from "@/api/epi-traces.js"
 import store from "@/store";
 import {
@@ -75,10 +75,8 @@ export default {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.data$ = getEpiData(this.$apiurl, locations).subscribe(d => {
-          console.log(d)
-          // this.data = d;
-        });
+        this.data$ = getEpiData(this.$apiurl, locations).subscribe(_ => null);
+        // need to call subscription in order to trigger calling API function and passing subscription to child
       } else {
         this.clearLocations();
       }
@@ -89,7 +87,7 @@ export default {
     },
     clearLocations: function() {
       this.selectedPlaces = [];
-      // this.filterData([]);
+      epiDataSubject.next([]);
     },
     updateSelected: function(selected) {
       this.selectedPlaces = [...new Set(selected)];
@@ -103,7 +101,6 @@ export default {
   },
   subscriptions() {
     return {
-      // allData$: getEpiData(this.$apiurl, ["RWA"])
     }
   },
   mounted() {
