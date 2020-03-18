@@ -1,6 +1,5 @@
 <template>
 <div class="epi-table my-3">
-  <h1>DATA! {{data.length}}</h1>
   <div class="p-2">
     <table class="m-auto">
       <tr class="table-header">
@@ -295,21 +294,24 @@ export default Vue.extend({
   },
   methods: {
     sortColumn(variable) {
-      this.sortVar = variable === this.sortVar ? `-${variable}` : variable;
-
       // reset other sorting funcs for arrow affordances
       const idx = this.columns.findIndex(d => d.sort_id === variable);
+      if (this.columns[idx].sorted || this.columns[idx].sorted === 0) {
 
-      this.columns.forEach((d, i) => {
-        if (i === idx) {
-          d.sorted = d.sorted ? -1 * d.sorted : 1;
-        } else {
-          d.sorted = d.sorted || d.sorted === 0 ? 0 : null;
-        }
+        this.sortVar = variable === this.sortVar ? `-${variable}` : variable;
 
-      })
 
-      this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.sortVar, 10, 0).subscribe(_ => null);
+        this.columns.forEach((d, i) => {
+          if (i === idx) {
+            d.sorted = d.sorted ? -1 * d.sorted : 1;
+          } else {
+            d.sorted = d.sorted || d.sorted === 0 ? 0 : null;
+          }
+
+        })
+
+        this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.sortVar, 10, 0).subscribe(_ => null);
+      }
     },
     changePage(step) {
       this.page += step;
