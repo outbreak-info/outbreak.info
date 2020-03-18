@@ -183,7 +183,6 @@ export default {
   computed: {
     ...mapState("admin", ["loading"]),
     ...mapState("geo", ["regionDict"]),
-    ...mapState("epidata", ["cases"]),
     lightColor: function() {
       const scale = store.getters["colors/getRegionColor"];
       return scale(this.region, 0.85);
@@ -248,17 +247,6 @@ export default {
       this.data = d;
       this.nestedData = d[this.selectedVariable];
     })
-    // The watching works... but doesn't stick when the route gets changed :(
-    // this.$store.watch(
-    //   (state, getters) => state.epidata.cases,
-    //   (newValue, oldValue) => {
-    //     console.log("this.changed")
-    //     this.nestedData = nestRegions(newValue.flatMap(d => d.data));
-    //     // console.log(this.nestedData)
-    //     // return(this.nestedData)
-    //   }, {deep: true}
-    // )
-    //
 
     // Event listener for mobile responsiveness
     // $nextTick waits till DOM rendered

@@ -115,7 +115,6 @@ export default {
     var self = this;
     var currentTime = new Date();
     self.year = currentTime.getFullYear();
-    store.dispatch("epidata/loadCases");
     store.dispatch("epidata/getDateUpdated");
   },
   subscriptions() {
