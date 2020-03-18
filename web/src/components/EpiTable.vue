@@ -2,8 +2,8 @@
 <div class="epi-table my-3">
   <div class="p-2">
     <table class="m-auto">
-      <tr class="table-header">
-        <th v-for="(column, idx) in mergedColumns" :key="idx" :colspan="column.colspan">
+      <tr class="table-header-merged">
+        <th v-for="(column, idx) in mergedColumns" :key="idx" :colspan="column.colspan" :class="[column.colspan > 1 ? 'th-merged' : 'th-nomerge']">
           {{column.label}}
         </th>
         <th>
@@ -25,11 +25,12 @@
       </tr>
 
       <tr v-for="row in data" class="table-data" :key="row.location_id">
-        <td v-for="(column, idx) in columns" :key="idx">
-          <span v-html="row[column.value]"></span>
+        <td v-for="(column, idx) in columns" :key="idx" :class="{'align-left px-3 location color-bar': column.label === 'location'}" :style="{ 'border-color': row.color }">
+          <span v-if="column.label === 'location'">{{row[column.value]}}</span>
+          <span v-else>{{row[column.value]}}</span>
         </td>
         <td>
-          <RecoveredBar :data="row"/>
+          <RecoveredBar :data="row" />
         </td>
       </tr>
 
@@ -106,22 +107,19 @@ export default Vue.extend({
         }, {
           label: "",
           colspan: 1
-        }, {
-          label: "",
-          colspan: 1
         },
         {
-          label: "cases",
+          label: "CASES",
           colspan: 4
         },
         {
           label: "",
           colspan: 1
         }, {
-          label: "deaths",
+          label: "DEATHS",
           colspan: 4
         }, {
-          label: "recoveries",
+          label: "RECOVERIES",
           colspan: 4
         }
       ],
@@ -140,13 +138,13 @@ export default Vue.extend({
           sorted: 0,
           essential: false
         },
-        {
-          label: "region",
-          value: "region_wb",
-          sort_id: "region_wb",
-          sorted: 0,
-          essential: false
-        },
+        // {
+        //   label: "region",
+        //   value: "region_wb",
+        //   sort_id: "region_wb",
+        //   sorted: 0,
+        //   essential: false
+        // },
         {
           group: "cases",
           label: "total",
@@ -354,10 +352,21 @@ table {
 }
 
 tr {
-    border-bottom: 1px solid #ececec;
-    background: aliceblue;
-
+    border-bottom: 1px solid #cacaca;
     // border-bottom: 1px solid $grey-40;
+}
+
+tr.table-header-merged {
+    border-bottom: none;
+    // border-bottom: 1px solid $grey-40;
+}
+
+.th-merged {
+    border-bottom: 3px solid #cacaca;
+}
+
+.th-nomerge {
+    border-bottom: none !important;
 }
 
 td {
@@ -371,11 +380,6 @@ th {
     color: $grey-70;
 }
 
-table,
-td,
-th {
-    border: 1px solid black !important;
-}
 .sort-hover {
     display: none;
 }
