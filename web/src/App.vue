@@ -95,7 +95,7 @@
 import store from "@/store";
 
 import { mapState } from "vuex";
-import { getLocations } from "@/api/epi-basics.js"
+import { getLocations, getMostCases } from "@/api/epi-basics.js"
 
 export default {
   name: "App",
@@ -107,7 +107,7 @@ export default {
   computed: {
     ...mapState("epidata", ["mostCases"]),
     mostCasesNames: function() {
-      return this.mostCases.map(d => d.locationName).join(";");
+      return this.mostCases.map(d => d.location_id).join(";");
     }
   },
   methods: {},
@@ -119,7 +119,8 @@ export default {
   },
   subscriptions() {
     return {
-      placeNames$: getLocations(this.$apiurl)
+      placeNames$: getLocations(this.$apiurl),
+      mostCases$: getMostCases(this.$apiurl)
     }
   }
 };
