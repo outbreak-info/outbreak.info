@@ -1,22 +1,17 @@
 <template>
-  <div class="container full-page py-5 bg-light">
-    <Autocomplete
-      class="m-auto"
-      :items="allPlaces"
-      :toAdd="addable"
-      :selected="selectedPlaces"
-      @selected="updateSelected"
-    />
-    <div class="d-flex row m-0">
-      <EpiCurve class="col-s-12 col-md-6" :data="data" variable="cases" @addable="updateAddable" id="curveContainer"/>
-      <EpiTable class="col-s-12 col-md-6" v-bind:data="data" :colorScale="colorScale" />
-    </div>
-    <!-- <div id="presetLocations">
+<div class="container full-page py-5 bg-light">
+  <!-- <h1 v-if="allData$">{{allData$.length}} records</h1> -->
+  <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
+  <div class="d-flex row m-0">
+    <EpiCurve class="col-s-12 col-md-12 col-lg-6" :data$="data$" @addable="updateAddable" id="curveContainer" v-if="data$"/>
+    <!-- <EpiTable class="col-s-12 col-md-12 col-lg-6" :data="tableData$" :colorScale="colorScale" /> -->
+  </div>
+  <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
       {{place.label}}
     </button>
   </div> -->
-  </div>
+</div>
 </template>
 
 <script>
@@ -24,15 +19,19 @@
 import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
-
+import {
+  getEpiData
+} from "@/api/epi-traces.js"
 import store from "@/store";
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
 
 export default {
   name: "Epidemiology",
   components: {
     EpiCurve,
-    EpiTable,
+    // EpiTable,
     Autocomplete
   },
   props: {
@@ -42,49 +41,17 @@ export default {
   },
   data() {
     return {
-      presetGroups: [
-        {
-          label: "United States",
-          locations: [
-            "US",
-            "King County, WA",
-            "Cook County, IL",
-            "Tempe, AZ",
-            "Orange, CA",
-            "Los Angeles, CA",
-            "Santa Clara, CA",
-            "Boston, MA",
-            "San Benito, CA",
-            "Madison, WI",
-            "San Diego County, CA",
-            "San Antonio, TX",
-            "Omaha, NE (From Diamond Princess)",
-            "Travis, CA (From Diamond Princess)",
-            "Lackland, TX (From Diamond Princess)",
-            "Humboldt County, CA",
-            "Sacramento County, CA",
-            "Unassigned Location (From Diamond Princess)",
-            "Portland, OR",
-            "Snohomish County, WA",
-            "Providence, RI",
-            "Grafton County, NH",
-            "Hillsborough, FL",
-            "New York City, NY",
-            "Placer County, CA",
-            "San Mateo, CA",
-            "Sarasota, FL",
-            "Sonoma County, CA",
-            "Umatilla, OR"
-          ]
-        }
-      ],
+      presetGroups: [{
+        label: "United States",
+        locations: []
+      }],
       selectedPlaces: [],
       addable: [],
-      data: []
+      data$: null
     };
   },
   computed: {
-    ...mapState("epidata", ["allCases", "allPlaces"])
+    ...mapState("epidata", ["allPlaces"])
   },
   watch: {
     selectedPlaces: function(newValue, oldValue) {
@@ -103,25 +70,12 @@ export default {
     }
   },
   methods: {
-    filterData: function(locations) {
-      this.data = this.allCases.filter(d =>
-        locations
-          .map(d => d.toLowerCase())
-          .includes(d.locationName.toLowerCase())
-      );
-
-      store.commit(
-        "colors/setLocations",
-        this.data
-          .sort((a, b) => b.currentCases - a.currentCases)
-          .map(d => d.locationName)
-      );
-    },
     setLocation: function(locationString, nullLocationHandler) {
+      console.log("setting location")
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.filterData(locations);
+        this.data$ = getEpiData(this.$apiurl, locations);
       } else {
         this.clearLocations();
       }
@@ -132,7 +86,7 @@ export default {
     },
     clearLocations: function() {
       this.selectedPlaces = [];
-      this.filterData([]);
+      // this.filterData([]);
     },
     updateSelected: function(selected) {
       this.selectedPlaces = [...new Set(selected)];
@@ -144,6 +98,11 @@ export default {
       // this.selectedPlaces = locationGroup.locations;
     }
   },
+  subscriptions() {
+    return {
+      // allData$: getEpiData(this.$apiurl, ["RWA"])
+    }
+  },
   mounted() {
     this.setLocation(this.location);
   }
@@ -152,7 +111,7 @@ export default {
 
 <style lang="scss" scoped>
 .epi-group {
-  align-items: center;
-  width: 100%;
+    align-items: center;
+    width: 100%;
 }
 </style>
