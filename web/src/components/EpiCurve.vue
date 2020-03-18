@@ -57,9 +57,6 @@ import {
   cloneDeep
 } from "lodash";
 
-import {
-  Observable
-} from "rxjs";
 import store from "@/store";
 
 const width = 500;
@@ -92,7 +89,8 @@ export default Vue.extend({
       backgroundColor: "#f8f9fa",
 
       // data
-      // data: [],
+      data: [],
+      dataSubscription: null,
       logData: null,
       plottedData: null,
 
@@ -149,7 +147,7 @@ export default Vue.extend({
     }
   },
   created() {
-    const dataSubscription = epiDataState$.subscribe(data => {
+    this.dataSubscription = epiDataState$.subscribe(data => {
       console.log("subscribing")
       console.log(data)
       if (data && data.length > 0) {
@@ -158,6 +156,9 @@ export default Vue.extend({
         this.updatePlot();
       }
     })
+  },
+  beforeDestroy() {
+    this.dataSubscription.unsubscribe();
   },
   mounted() {
     this.setupPlot();
