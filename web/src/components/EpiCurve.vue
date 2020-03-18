@@ -48,14 +48,18 @@ import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import Warning from "@/components/Warning.vue";
 
-import { epiDataState$ } from "@/api/epi-traces.js";
+import {
+  epiDataState$
+} from "@/api/epi-traces.js";
 
 import * as d3 from "d3";
 import {
   cloneDeep
 } from "lodash";
 
-import {Observable} from "rxjs";
+import {
+  Observable
+} from "rxjs";
 import store from "@/store";
 
 const width = 500;
@@ -154,10 +158,11 @@ export default Vue.extend({
     const dataSubscription = epiDataState$.subscribe(data => {
       console.log("subscribing")
       console.log(data)
-      if(data && data.length > 0){
-      this.data = data;
-      this.prepData();
-      this.updatePlot();}
+      if (data && data.length > 0) {
+        this.data = data;
+        this.prepData();
+        this.updatePlot();
+      }
     })
   },
   mounted() {
@@ -624,9 +629,9 @@ export default Vue.extend({
         .merge(tooltipRectEnter)
         .attr("x", d => this.x(d.date))
         .attr("y", d => this.y(d[this.variable]))
-        .attr("width", 108)
-        .attr("height", 40)
-        .attr("stroke-dasharray", "108, 188")
+        .attr("width", 165)
+        .attr("height", 60)
+        .attr("stroke-dasharray", "175, 285")
         .attr("stroke-width", "3");
 
       const tooltipText = tooltipSelector.select(".tooltip--text");
@@ -670,14 +675,23 @@ export default Vue.extend({
         .text(d => `${d[this.variable].toLocaleString()} ${this.variable}`);
 
       // dynamically adjust the width of the rect
-      // dots.selectAll(".tooltip--epi-curve").selectAll('rect')
-      // .attr("width", functiond {
-      //   console.log(d3.select(this.parentNode));
-      //   return(500)
-      // })
-      // dots.select(".tooltip--rect").attr("width", d => 500)
-      // `${(document.getElementById("text-" + d.value.name.replace("*", "-").replace("@", "--")) as any).getBBox().width + 10}`)
-      // .attr("height", d => `${(document.getElementById("text-" + d.value.name.replace("*", "-").replace("@", "--")) as any).getBBox().height + 5}`);
+      // console.log(tooltipSelector.selectAll("rect"))
+      // tooltipSelector
+      //   .selectAll("rect")
+      //   .attr(
+      //     "width",
+      //     tooltipSelector
+      //     .select("text")
+      //     .node()
+      //     .getBBox().width + 10
+      //   )
+      //   .attr(
+      //     "height",
+      //     tooltipSelector
+      //     .select("text")
+      //     .node()
+      //     .getBBox().height + 5
+      //   );
 
       // --- event listeners ---
       d3.selectAll("circle")
