@@ -27,7 +27,7 @@ export function getEpiTraces(apiUrl, locations) {
 
   // sort by date so the numbers appear in the right order.
 
-  return from(axios.get(`${apiUrl}query?q=name:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,recovered,dead,confirmed_currentCases,dead_confirmedCases,recovered_currentCases,_id&timestamp=${timestamp}`, {
+  return from(axios.get(`${apiUrl}query?q=location_id:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,recovered,dead,confirmed_currentCases,dead_confirmedCases,recovered_currentCases,_id&timestamp=${timestamp}`, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -72,7 +72,7 @@ export function getEpiTable(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
   console.log(locationString)
 
-  return from(axios.get(`${apiUrl}query?q=name:${locationString}&sort=-date&size=${locations.length}&fields=location_id,name,country_name,region_wb,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,&timestamp=${timestamp}`, {
+  return from(axios.get(`${apiUrl}query?q=location_id:${locationString}&sort=-date&size=${locations.length}&fields=location_id,name,country_name,region_wb,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,&timestamp=${timestamp}`, {
     headers: {
       'Content-Type': 'application/json'
     }

@@ -1,56 +1,23 @@
 <template>
-  <div
-    v-if="this.height && this.data && this.data.length > 0"
-    class="full-page d-flex flex-column align-items-center full-page mt-5"
-  >
-    <h3 v-if="this.mostRecentDate" class="py-5">
-      Current cases as of {{ formatDate(mostRecentDate) }}
-    </h3>
-    <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
-      <l-map
-        :zoom="zoom"
-        :center="center"
-        :options="mapOptions"
-        style="height: 80%"
-        @update:center="centerUpdate"
-        @update:zoom="zoomUpdate"
-        ref="map"
-        @mouseover="turnZoomOn"
-        @mouseout="turnZoomOff"
-      >
-        <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
-        <l-tile-layer
-          :url="urlLabels"
-          :attribution="attribution"
-          :opacity="0.25"
-          v-if="currentZoom > 3"
-        />
-        <l-circle-marker
-          v-for="(circle, i) in data"
-          :key="i"
-          :lat-lng="circle.coord"
-          :radius="circle.r"
-          :color="'grey'"
-          :fillColor="circle.fill"
-          :weight="0.5"
-          :fillOpacity="0.8"
-        >
+<div v-if="this.height && this.data && this.data.length > 0" class="full-page d-flex flex-column align-items-center full-page mt-5">
+  <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
+    <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate" ref="map" @mouseover="turnZoomOn" @mouseout="turnZoomOff">
+      <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
+      <l-tile-layer :url="urlLabels" :attribution="attribution" :opacity="0.25" v-if="currentZoom > 3" />
+      <div v-for="(circle, i) in data" :key="i">
+        <l-circle-marker v-if="currentZoom > 2 && circle.admin_level === 1 || currentZoom <= 2 && circle.admin_level === 0" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
           <l-tooltip :options="{ permanent: false, interactive: true }">
             <div>
-              {{ circle.locationName }}
+              {{ circle.name }}
             </div>
             <small>click to view details</small>
           </l-tooltip>
           <l-popup>
             <h3>
-              <router-link
-                :to="{
+              <router-link :to="{
                   name: 'Epidemiology',
-                  query: { location: circle.locationName }
-                }"
-                class="router-link-black"
-                >{{ circle.locationName }}</router-link
-              >
+                  query: { location: circle.location_id }
+                }" class="router-link-black">{{ circle.name }}</router-link>
             </h3>
             <table class="summary-table">
               <tr>
@@ -58,10 +25,10 @@
                   updated
                 </th>
                 <th class="px-3 sortable td-total" @click="sortTotal()">
-                  total cases
+                  total {{variable}}
                 </th>
                 <th class="px-2 sortable td-new-cases" @click="sortNew()">
-                  new cases today
+                  new {{variable}} today
                 </th>
                 <th class="px-2 sortable td-pct-increase" @click="sortPct()">
                   increase from yesterday
@@ -84,121 +51,63 @@
             </table>
           </l-popup>
         </l-circle-marker>
-      </l-map>
-      <div class="legend box-shadow">
-        <div class="px-2 py-2">
-          <div class="case-count d-flex flex-column">
-            <svg
-              :width="legendWidth + legendGap"
-              :height="legendHeight + margin.circles + margin.colors"
-              v-show="showLegend"
-            >
-              <defs>
-                <linearGradient
-                  id="gradient-legend"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="0%"
-                >
-                  <stop
-                    v-for="(color, i) in legendColors"
-                    :key="i"
-                    :offset="(i / 10) * 100 + '%'"
-                    :style="`stop-color:${color}; stop-opacity:1`"
-                  />
-                </linearGradient>
-              </defs>
+      </div>
+    </l-map>
+    <div class="legend box-shadow">
+      <div class="px-2 py-2">
+        <div class="case-count d-flex flex-column">
+          <svg :width="legendWidth + legendGap" :height="legendHeight + margin.circles + margin.colors" v-show="showLegend">
+            <defs>
+              <linearGradient id="gradient-legend" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop v-for="(color, i) in legendColors" :key="i" :offset="(i / 10) * 100 + '%'" :style="`stop-color:${color}; stop-opacity:1`" />
+              </linearGradient>
+            </defs>
 
-              <g id="legend-radius">
-                <text x="0" y="0" dominant-baseline="hanging" opacity="0.6">
-                  TOTAL CASES
+            <g id="legend-radius" transform="translate(2,0)">
+              <text x="0" y="0" dominant-baseline="hanging" opacity="0.6">
+                TOTAL {{variable.toUpperCase()}}
+              </text>
+              <g v-for="circle in legendCircles" :key="circle.cases">
+                <circle class="legend-circle" :fill="circle.fill" stroke="grey" stroke-width="0.5" fill-opacity="0.75" transform="translate(0,15)" :cx="circle.x" :cy="legendHeight / 2" :r="circle.r"></circle>
+                <text class="legend-circle-text" dominant-baseline="hanging" text-anchor="middle" font-size="0.85em" :x="circle.x" :y="legendHeight / 2 - circle.r">
+                  {{ circle.cases }}
                 </text>
-                <g v-for="circle in legendCircles" :key="circle.cases">
-                  <circle
-                    class="legend-circle"
-                    fill="white"
-                    stroke="grey"
-                    stroke-width="0.5"
-                    fill-opacity="0.75"
-                    transform="translate(0,15)"
-                    :cx="circle.x"
-                    :cy="legendHeight / 2"
-                    :r="circle.r"
-                  ></circle>
-                  <text
-                    class="legend-circle-text"
-                    dominant-baseline="hanging"
-                    text-anchor="middle"
-                    font-size="0.85em"
-                    :x="circle.x"
-                    :y="legendHeight / 2 - circle.r"
-                  >
-                    {{ circle.cases }}
-                  </text>
-                </g>
               </g>
-              <g id="spacer">
-                <line
-                  x1="0"
-                  :x2="legendWidth + legendGap"
-                  :y1="legendHeight + margin.circles - margin.gap"
-                  :y2="legendHeight + margin.circles - margin.gap"
-                  stroke="white"
-                ></line>
-              </g>
+            </g>
+            <g id="spacer">
+              <line x1="0" :x2="legendWidth + legendGap" :y1="legendHeight + margin.circles - margin.gap" :y2="legendHeight + margin.circles - margin.gap" stroke="white"></line>
+            </g>
 
-              <g id="legend-color">
-                <text
-                  x="0"
-                  :y="legendHeight + margin.circles + margin.gap * 2"
-                  dominant-baseline="hanging"
-                  opacity="0.6"
-                >
-                  NEW CASES TODAY
+            <g id="legend-color">
+              <text x="0" :y="legendHeight + margin.circles + margin.gap * 2" dominant-baseline="hanging" opacity="0.6">
+                NEW {{variable.toUpperCase()}} TODAY
+              </text>
+              <g transform="translate(0, 5)">
+                <text :x="legendWidth + legendGap" :y="legendHeight + margin.circles + margin.gap * 2 + 26" font-size="0.85em" class="legend-label legend-label--max" text-anchor="end">
+                  {{ colorMax.toLocaleString() }}
                 </text>
-                <g transform="translate(0, 5)">
-                  <text
-                    :x="legendWidth + legendGap"
-                    :y="legendHeight + margin.circles + margin.gap * 2 + 26"
-                    font-size="0.85em"
-                    class="legend-label legend-label--max"
-                    text-anchor="end"
-                  >
-                    {{ colorMax.toLocaleString() }}
-                  </text>
-                  <text
-                    :x="0"
-                    :y="legendHeight + margin.circles + margin.gap * 2 + 26"
-                    font-size="0.85em"
-                    class="legend-label legend-label--min"
-                  >
-                    0
-                  </text>
-                  <rect
-                    :width="legendWidth + legendGap"
-                    height="15"
-                    :y="legendHeight + margin.circles + margin.gap * 2 + 30"
-                    fill="url(#gradient-legend)"
-                    stroke="black"
-                    :stroke-width="0.5"
-                  ></rect>
-                </g>
+                <text :x="0" :y="legendHeight + margin.circles + margin.gap * 2 + 26" font-size="0.85em" class="legend-label legend-label--min">
+                  0
+                </text>
+                <rect :width="legendWidth + legendGap" height="15" :y="legendHeight + margin.circles + margin.gap * 2 + 30" fill="url(#gradient-legend)" stroke="black" :stroke-width="0.5"></rect>
               </g>
-            </svg>
-            <button @click="showLegend = !showLegend">
-              <small>{{ showLegend ? "hide" : "show" }} legend</small>
-            </button>
-          </div>
+            </g>
+          </svg>
+          <button @click="showLegend = !showLegend">
+            <small>{{ showLegend ? "hide" : "show" }} legend</small>
+          </button>
         </div>
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { latLng } from "leaflet";
+import {
+  latLng
+} from "leaflet";
 import {
   LMap,
   LTileLayer,
@@ -216,10 +125,14 @@ import {
   format,
   range
 } from "d3";
-import { interpolateYlGnBu } from "d3-scale-chromatic";
+import {
+  interpolateYlGnBu
+} from "d3-scale-chromatic";
 
 import store from "@/store";
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
 
 export default Vue.extend({
   name: "LeafletMap",
@@ -231,7 +144,8 @@ export default Vue.extend({
     LTooltip
   },
   props: {
-    data: Array
+    data: Array,
+    variable: String
   },
   data() {
     return {
@@ -252,13 +166,10 @@ export default Vue.extend({
       showLegend: true,
       zoom: 1,
       center: latLng(26.5, 3.5),
-      url:
-        "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.png",
+      url: "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.png",
       // "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
-      urlLabels:
-        "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-labels/{z}/{x}/{y}{r}.png",
-      attribution:
-        'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      urlLabels: "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-labels/{z}/{x}/{y}{r}.png",
+      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       currentZoom: 1,
       currentCenter: latLng(26.5, 3.5),
       mapOptions: {
@@ -281,6 +192,9 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
+      this.prepData();
+    },
+    variable: function() {
       this.prepData();
     }
   },
@@ -332,20 +246,20 @@ export default Vue.extend({
     prepData() {
       if (this.data) {
         this.data.forEach(d => {
-          d["fill"] = this.colorScale(d.numIncrease);
-          d["r"] = this.radiusScale(d.currentCases);
-          d["currentDateFormatted"] = this.formatDate(d.currentDate);
-          d["numIncreaseFormatted"] = d.numIncrease.toLocaleString();
-          d["pctIncreaseFormatted"] = this.formatPercent(d.pctIncrease);
-          d["totalNumFormatted"] = d.currentCases.toLocaleString();
+          d["fill"] = d[`${this.variable}_currentCases`] ? this.colorScale(d[`${this.variable}_currentIncrease`]) : "#CCC";
+          d["r"] = this.radiusScale(d[`${this.variable}_currentCases`]);
+          d["currentDateFormatted"] = this.formatDate(d[`${this.variable}_currentToday`]);
+          d["numIncreaseFormatted"] = d[`${this.variable}_currentIncrease`].toLocaleString();
+          d["pctIncreaseFormatted"] = this.formatPercent(d[`${this.variable}_currentPctIncrease`]);
+          d["totalNumFormatted"] = d[`${this.variable}_currentCases`].toLocaleString();
         });
       }
     },
     colorScale(d) {
-      const scale = scaleSequential(interpolateYlGnBu).domain([
-        0,
-        max(this.data, d => d.numIncrease)
-      ]);
+      const scale = scaleSequential(interpolateYlGnBu)
+        .domain([1,
+          max(this.data, d => d[`${this.variable}_currentIncrease`])
+        ]).clamp(false);
       const domain = scale.domain();
 
       let colors = range(domain[0], domain[1], (domain[1] - domain[0]) / 11);
@@ -355,19 +269,19 @@ export default Vue.extend({
     },
     radiusScale(d) {
       const scale = scaleSqrt()
-        .domain([1, max(this.data, d => d.currentCases)])
+        .domain([1, max(this.data, d => d[`${this.variable}_currentCases`])])
         .range([3, 40])
         .nice();
       const domain = scale.domain();
 
       // const circles = range(domain[0], domain[1], (domain[1] - domain[0]) / 4);
-      const circles = [1, 100, 1000, 10000, domain[1]];
+      const circles = [0, 1, 100, 1000, 10000, domain[1]].filter(d => d <= domain[1]);
       this.legendCircles = circles.map((d, i) => {
         return {
           cases: d.toLocaleString(),
           r: scale(d),
-          x:
-            sum(circles.slice(0, i).map(d => scale(d))) +
+          fill: d > 0 ? "white" : "#AAA",
+          x: sum(circles.slice(0, i).map(d => scale(d))) +
             sum(circles.slice(1, i).map(d => scale(d))) +
             scale(d) +
             i * this.legendGap
@@ -375,7 +289,7 @@ export default Vue.extend({
       });
       this.legendHeight = max(this.legendCircles, d => d.r) * 2;
       this.legendWidth =
-        sum(this.legendCircles, d => d.r) * 2 + 3 * this.legendGap;
+        sum(this.legendCircles, d => d.r) * 2 + 4 * this.legendGap;
       return scale(d);
     },
     formatPercent(pct) {
@@ -413,36 +327,34 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 table {
-  border-collapse: collapse;
-  font-size: 0.85em;
+    border-collapse: collapse;
+    font-size: 0.85em;
 }
 
 tr {
-  border-bottom: 1px solid #ececec;
-  // border-bottom: 1px solid $grey-40;
+    border-bottom: 1px solid #ececec;
+    // border-bottom: 1px solid $grey-40;
 }
 
 td {
-  padding: 5px 0;
-  text-align: center;
+    padding: 5px 0;
+    text-align: center;
 }
 
 th {
-  font-size: 0.95em;
-  font-weight: 400;
-  color: $grey-70;
+    font-size: 0.95em;
+    font-weight: 400;
+    color: $grey-70;
 }
 
 .legend {
-  background: #ffffff99;
-  position: absolute;
-  bottom: calc(
-    20% + 0.5em
-  ); // leaflet inserts a position=relative div w/ height = 80%
-  left: 0.5em;
-  z-index: 1000;
+    background: #ffffff99;
+    position: absolute;
+    bottom: calc(20% + 0.5em); // leaflet inserts a position=relative div w/ height = 80%
+    left: 0.5em;
+    z-index: 1000;
 }
 #case-map {
-  position: relative;
+    position: relative;
 }
 </style>

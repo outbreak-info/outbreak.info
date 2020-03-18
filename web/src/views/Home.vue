@@ -12,9 +12,7 @@
       <div>
         <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-75" />
       </div>
-      <div
-        class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero half-page"
-      >
+      <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero half-page">
         <div class="container p-3">
           <h5>
             During outbreaks of emerging diseases such as COVID-19, efficiently
@@ -59,13 +57,13 @@
             click for details
           </div>
         </div>
-        <CountryBarGraph :region="region.region" :id="idx" :style="{
+        <!-- <CountryBarGraph :region="region.region" :id="idx" :style="{
               visibility: region.displayMore ? 'visible' : 'hidden'
-            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
+            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" /> -->
       </div>
     </template>
     <template v-if="nestedData && nestedData.length > 0">
-      <CaseSummary class="container" />
+      <!-- <CaseSummary class="container" /> -->
       <h3>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
@@ -74,24 +72,31 @@
       <DataUpdated />
     </template>
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
-      <div class="row" v-if="nestedData.length > 0">
+      <div class="row" v-if="nestedData && nestedData.length > 0">
         <div class="col-sm-12 col-md-6">
-          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data"  :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
+          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
         </div>
         <div class="col-sm-12 col-md-6">
           <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="noChina" id="no-china" :title="`${selectedVariableLabel} Outside Mainland China`" @regionSelected="handleTooltip" />
         </div>
       </div>
     </div>
-    <DataSource v-if="nestedData.length > 0" />
+    <DataSource v-if="nestedData && nestedData.length > 0" />
   </section>
 
-    <section class="case-data-table p-1">
+  <!-- <section class="case-data-table p-1">
       <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
-    </section>
+    </section> -->
 
   <section class="case-map">
-    <LeafletMap :data="cases" />
+    <h3 class="pt-5">
+      Current <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
+        <option v-for="option in variableOptions" :value="option.value" :key="option.value">
+          {{ option.label }}
+        </option>
+      </select> as of {{ "formatDate(mostRecentDate)" }}
+    </h3>
+    <LeafletMap :data="mapData$" :variable="selectedVariable" />
   </section>
 
   <section>
@@ -121,8 +126,10 @@ import LeafletMap from "@/components/LeafletMap.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
 import Warning from "@/components/Warning.vue";
-import { getStackedRegions } from "@/api/region-summary.js";
-
+import {
+  getStackedRegions
+} from "@/api/region-summary.js";
+import { getMapData } from "@/api/epi-geo.js";
 import {
   mapState
 } from "vuex";
@@ -141,11 +148,11 @@ export default {
   name: "Home",
   components: {
     EpiStacked,
-    CountryBarGraph,
-    CaseSummary,
+    // CountryBarGraph,
+    // CaseSummary,
     DataUpdated,
     DataSource,
-    EpiTable,
+    // EpiTable,
     LeafletMap,
     SearchBar,
     Logos,
@@ -195,7 +202,7 @@ export default {
         return null;
       }
     },
-    selectedVariableLabel () {
+    selectedVariableLabel() {
       return this.variableOptions.filter(d => d.value == this.selectedVariable)[0]["label"];
     }
   },
@@ -231,9 +238,13 @@ export default {
       }
     }
   },
+  subscriptions() {
+    return {
+      mapData$: getMapData(this.$apiurl)
+    }
+  },
   mounted() {
     this.dataSubscription = getStackedRegions(this.$apiurl).subscribe(d => {
-      console.log(d)
       this.data = d;
       this.nestedData = d[this.selectedVariable];
     })
@@ -288,21 +299,5 @@ export default {
     width: 100%;
     text-align: center;
     font-size: 0.85em;
-}
-
-.select-dropdown {
-    border: none;
-    color: $base-grey;
-    // margin-bottom: .5rem;
-    font-weight: 500;
-    // line-height: 1.2;
-    border-bottom: 2px $base-grey solid;
-    border-radius: 0 !important;
-    align-items: center;
-    background: #ffff;
-    padding: 0 5px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
 }
 </style>
