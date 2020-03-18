@@ -3,7 +3,7 @@
   <!-- <h1 v-if="allData$">{{allData$.length}} records</h1> -->
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <div class="d-flex row m-0">
-    <EpiCurve class="col-s-12 col-md-12 col-lg-6" :data="data" @addable="updateAddable" id="curveContainer" v-if="data$"/>
+    <EpiCurve class="col-s-12 col-md-12 col-lg-6" @addable="updateAddable" id="curveContainer" v-if="data$"/>
     <!-- <EpiTable class="col-s-12 col-md-12 col-lg-6" :data="tableData$" :colorScale="colorScale" /> -->
   </div>
   <!-- <div id="presetLocations">
@@ -76,7 +76,8 @@ export default {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
         this.data$ = getEpiData(this.$apiurl, locations).subscribe(d => {
-          this.data = d;
+          console.log(d)
+          // this.data = d;
         });
       } else {
         this.clearLocations();

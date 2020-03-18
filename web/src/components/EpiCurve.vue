@@ -67,7 +67,7 @@ const height = 300;
 const radius = 2.5;
 const margin = {
   top: 10,
-  right: 170,
+  right: 225,
   bottom: 75,
   left: 70
 };
@@ -81,7 +81,6 @@ export default Vue.extend({
     Warning
   },
   props: {
-    data: Array,
   },
   data() {
     return {
@@ -136,11 +135,6 @@ export default Vue.extend({
     },
     width() {
       this.updatePlot();
-    }
-  },
-  subscriptions() {
-    return {
-      data: this.data$
     }
   },
   computed: {
