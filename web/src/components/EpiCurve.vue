@@ -81,7 +81,7 @@ export default Vue.extend({
     Warning
   },
   props: {
-    data$: Observable,
+    data: Array,
   },
   data() {
     return {
