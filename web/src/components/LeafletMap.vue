@@ -169,7 +169,7 @@ export default Vue.extend({
       url: "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.png",
       // "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png",
       urlLabels: "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-labels/{z}/{x}/{y}{r}.png",
-      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution: 'Data from <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank">JHU CSSE</a> | Map tiles by <a href="http://stamen.com" target="_blank">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
       currentZoom: 1,
       currentCenter: latLng(26.5, 3.5),
       mapOptions: {
@@ -325,36 +325,42 @@ export default Vue.extend({
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
-table {
-    border-collapse: collapse;
-    font-size: 0.85em;
-}
+<style lang="scss">
+#case-map {
+    & table {
+        border-collapse: collapse;
+        font-size: 0.85em;
+    }
 
-tr {
-    border-bottom: 1px solid #ececec;
-    // border-bottom: 1px solid $grey-40;
-}
+    & tr {
+        border-bottom: 1px solid #ececec;
+        // border-bottom: 1px solid $grey-40;
+    }
 
-td {
-    padding: 5px 0;
-    text-align: center;
-}
+    & td {
+        padding: 5px 0;
+        text-align: center;
+    }
 
-th {
-    font-size: 0.95em;
-    font-weight: 400;
-    color: $grey-70;
-}
+    & th {
+        font-size: 0.95em;
+        font-weight: 400;
+        color: $grey-70;
+    }
 
-.legend {
-    background: #ffffff99;
-    position: absolute;
-    bottom: calc(20% + 0.5em); // leaflet inserts a position=relative div w/ height = 80%
-    left: 0.5em;
-    z-index: 1000;
+    & .legend {
+        background: #ffffff99;
+        position: absolute;
+        bottom: calc(20% + 0.5em); // leaflet inserts a position=relative div w/ height = 80%
+        left: 0.5em;
+        z-index: 1000;
+    }
 }
 #case-map {
     position: relative;
+}
+
+.leaflet-control-attribution {
+    opacity: 1 !important;
 }
 </style>
