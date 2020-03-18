@@ -97,7 +97,6 @@ export function getEpiTraces(apiUrl, locations) {
 export function getEpiTable(apiUrl, locations, sort, size, page) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
-  const formatPercent = format(".0%");
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = new Date().getTime();
   const locationString = `("${locations.join('","')}")`;
@@ -147,4 +146,24 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
     }),
     finalize(() => (store.state.admin.loading = false))
   )
+}
+
+const formatPercent = function(pct) {
+  if (!pct) {
+    return "none";
+  }
+
+  if (pct < 0) {
+    return "case count corrected";
+  }
+
+  if (pct < 0.005) {
+    return "< 1%";
+  }
+
+  if (!isFinite(pct)) {
+    return "* first reported case *";
+  }
+
+  return format(".0%")(pct);
 }

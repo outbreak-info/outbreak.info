@@ -20,7 +20,7 @@
 
       <tr v-for="row in data" class="table-data" :key="row.location_id">
         <td v-for="(column, idx) in columns" :key="idx">
-          {{row[column.value]}}
+          <span v-html="row[column.value]"></span>
         </td>
       </tr>
 
@@ -77,7 +77,7 @@ export default Vue.extend({
     FontAwesomeIcon,
     // DataUpdated,
     // Sparkline,
-    // RecoveredBar
+    RecoveredBar
   },
   props: {
     locations: Array,
@@ -251,7 +251,6 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      console.log("DATA CHANGED")
       this.prepData();
     }
   },
@@ -322,42 +321,10 @@ export default Vue.extend({
     },
     prepData() {
       console.log("prepping data")
-      this.cases = cloneDeep(this.data);
-
-      this.cases.forEach(d => {
-        // d["currentDateFormatted"] = formatDate(d.currentDate);
-        // d["numIncreaseFormatted"] = d.numIncrease.toLocaleString();
-        // d["pctIncreaseFormatted"] = this.formatPercent(d.pctIncrease);
-        // d["totalNumFormatted"] = d.currentCases.toLocaleString();
-        d["color"] = this.colorScale(d.locationName);
+      this.data.forEach(d => {
+        d["color"] = this.colorScale(d.location_id);
       });
 
-    },
-    filterHits() {
-      this.filteredCases = this.cases
-        .filter(d =>
-          d.locationName.toLowerCase().includes(this.searchInput.toLowerCase())
-        )
-        .slice(this.lowerLim, this.upperLim);
-    },
-    formatPercent(pct) {
-      if (!pct) {
-        return "none";
-      }
-
-      if (pct < 0) {
-        return "case count corrected";
-      }
-
-      if (pct < 0.005) {
-        return "< 1%";
-      }
-
-      if (!isFinite(pct)) {
-        return "* first reported case *";
-      }
-
-      return format(".0%")(pct);
     }
   }
 });
