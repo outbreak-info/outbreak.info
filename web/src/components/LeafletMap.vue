@@ -189,7 +189,6 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState("epidata")
   },
   watch: {
     data: function() {
