@@ -48,7 +48,7 @@
                 name: 'Epidemiology',
                 query: { location: row.location_id }
               }" class="router-link font-weight-bold" v-if="routable">
-              {{row[column.value]}} <i class="fas fa-chevron-right text-highlight"></i></router-link>
+              {{row[column.value]}} <i class="fas fa-chevron-right" :style="{color: row.color}"></i></router-link>
             <!-- not routable location name -->
             <span v-else>{{row[column.value]}}</span>
           </span>
