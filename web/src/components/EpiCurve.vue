@@ -126,7 +126,6 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      console.log("NEW DATA")
       this.updatePlot();
     },
     width() {
@@ -148,8 +147,6 @@ export default Vue.extend({
     // set up subscription here; listen for changes and execute in the watch.
     // Strangely, w/o the watch, the subscription doesn't seem to update...
     this.dataSubscription = epiDataState$.subscribe(data => {
-      console.log("subscribing")
-      console.log(data)
       this.data = data;
     })
   },
@@ -229,7 +226,6 @@ export default Vue.extend({
       this.updatePlot();
     },
     updatePlot: function() {
-      console.log("calling update plot")
       this.prepData();
 
       if (this.data) {
@@ -260,7 +256,6 @@ export default Vue.extend({
       }
     },
     prepData: function() {
-      console.log("prepping data")
       if (this.data) {
         this.logData = cloneDeep(this.data);
         this.logData.forEach(d => {
