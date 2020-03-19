@@ -501,7 +501,7 @@ export default Vue.extend({
       const force = d3
         .forceSimulation()
         .nodes(this.plottedData)
-        .force("collide", d3.forceCollide(labelHeight / 2))
+        .force("collide", d3.forceCollide(labelHeight / 2).strength(0.2))
         .force("y", d3.forceY(d => d.targetY).strength(1))
         .force(
           "clamp",
@@ -521,8 +521,8 @@ export default Vue.extend({
         .style("stroke", "none")
         .attr("dx", 8)
         .style("opacity", 1e-6)
-        .transition(t1)
-        .delay(1000)
+        .transition(t2)
+        .delay(250)
         .style("opacity", 1);
 
       countrySelector
@@ -561,18 +561,28 @@ export default Vue.extend({
       dotGroupSelector.exit().remove();
 
       const dotGroupEnter = dotGroupSelector
-        .enter()
-        .append("circle")
-        .attr("r", this.radius)
-        .attr("class", "epi-point");
+        .join(
+          enter => enter.append("circle")
+          .attr("r", this.radius)
+          .attr("class", "epi-point")
+          .attr("cy", this.y(0))
+          .call(update => update.transition(t2)
+          .attr("class", d => `epi-point ${d.location_id}`)
+          .attr("id", d => `${d._id}`)
+          .attr("cx", d => this.x(d.date))
+        .attr("cy", d => this.y(d[this.variable]))),
+          update => update
+          .attr("class", d => `epi-point ${d.location_id}`)
+          .attr("id", d => `${d._id}`)
+          .attr("cx", d => this.x(d.date))
+          .call(update => update.transition(t2)
+            .attr("cy", d => this.y(d[this.variable]))),
+          exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
+
+        );
 
       dotGroupSelector
-        .merge(dotGroupEnter)
-        .attr("class", d => `epi-point ${d.location_id}`)
-        .attr("id", d => `${d._id}`)
-        .attr("cx", d => this.x(d.date))
-        .transition(t2)
-        .attr("cy", d => this.y(d[this.variable]));
+        .merge(dotGroupEnter);
 
       // --- tooltips ---
       // need to be outside the path/dot groups, so they're on top of all the curves.
