@@ -252,7 +252,7 @@ export default {
       this.nestedData = d[this.selectedVariable];
     })
 
-    this.tableSubscription = getEpiTable(this.$apiurl, null, "-confirmed_currentCases", 10, 9).subscribe(_ => null);
+    this.tableSubscription = getEpiTable(this.$apiurl, null, "-confirmed_currentCases", 10, 0).subscribe(_ => null);
 
     // Event listener for mobile responsiveness
     // $nextTick waits till DOM rendered
