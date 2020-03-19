@@ -549,8 +549,20 @@ export default Vue.extend({
         .merge(pathEnter)
         .datum(d => d.value)
         .attr("id", d => `epi-line ${d[0].location_id}`)
-        .transition(t2)
-        .attr("d", this.line);
+        .attr("d", this.line)
+        .attr("stroke-dasharray", function() {
+                    var totalLength = this.getTotalLength();
+                    return totalLength + " " + totalLength;
+                })
+               .attr("stroke-dashoffset", function() {
+                    var totalLength = this.getTotalLength();
+                    return totalLength;
+                })
+        .transition()
+        .duration(2000)
+        // .duration(1500 + 54)
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0)
 
       // --- dots ---
       const dotGroupSelector = this.chart
@@ -565,16 +577,19 @@ export default Vue.extend({
           enter => enter.append("circle")
           .attr("r", this.radius)
           .attr("class", "epi-point")
-          .attr("cy", this.y(0))
-          .call(update => update.transition(t2)
+          // .attr("cy", this.y(0))
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
           .attr("cx", d => this.x(d.date))
-        .attr("cy", d => this.y(d[this.variable]))),
+          .attr("cy", d => this.y(d[this.variable]))
+          .attr("opacity", 0)
+          .call(update => update.transition(t2).delay((d, i) => i * 20)
+            .attr("opacity", 1)),
           update => update
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
           .attr("cx", d => this.x(d.date))
+          .attr("opacity", 1)
           .call(update => update.transition(t2)
             .attr("cy", d => this.y(d[this.variable]))),
           exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
