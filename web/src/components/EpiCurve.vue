@@ -199,18 +199,18 @@ export default Vue.extend({
     changeVariable() {
       this.updatePlot();
     },
-    tooltipOn: function(d) {
+    tooltipOn: function(d, location_id) {
       d3.select(`#tooltip-${d._id}`).attr("display", "block");
 
       d3.select(`#${d._id}`).attr("r", this.radius * 2);
 
-      d3.select(`#${d.location_id}`)
+      d3.selectAll(`#${d[location_id]}`)
         .select("text")
         .style("font-weight", 700);
 
       d3.selectAll(`.epi-region`).style("opacity", 0.35);
 
-      d3.selectAll(`#${d.location_id}`).style("opacity", 1);
+      d3.selectAll(`#${d[location_id]}`).style("opacity", 1);
     },
     tooltipOff: function(d) {
       d3.selectAll(".tooltip--epi-curve").attr("display", "none");
@@ -470,7 +470,7 @@ export default Vue.extend({
 
       regionGroups
         .merge(regionsEnter)
-        .attr("id", d => d._id)
+        .attr("id", d => d.key)
         .attr("fill", d => this.colorScale(d.key))
         .attr("stroke", d => this.colorScale(d.key));
 
@@ -716,7 +716,11 @@ export default Vue.extend({
 
       // --- event listeners ---
       d3.selectAll("circle")
-        .on("mouseover", d => this.tooltipOn(d))
+        .on("mouseover", d => this.tooltipOn(d, "location_id"))
+        .on("mouseout", d => this.tooltipOff(d));
+
+      d3.selectAll(".annotation--region-name")
+        .on("mouseover", d => this.tooltipOn(d, "key"))
         .on("mouseout", d => this.tooltipOff(d));
 
       // --- transition: trace the curves ---
