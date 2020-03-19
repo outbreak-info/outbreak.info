@@ -52,6 +52,9 @@
             <!-- not routable location name -->
             <span v-else>{{row[column.value]}}</span>
           </span>
+          <!-- spacer -->
+          <span v-else-if="column.value === ''" class="spacer px-1">
+          </span>
           <!-- sparklines -->
           <span v-else-if="column.value === 'confirmed_pctIncrease'" class="align-right">
             {{row[column.value]}}
