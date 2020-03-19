@@ -551,13 +551,13 @@ export default Vue.extend({
         .attr("id", d => `epi-line ${d[0].location_id}`)
         .attr("d", this.line)
         .attr("stroke-dasharray", function() {
-                    var totalLength = this.getTotalLength();
-                    return totalLength + " " + totalLength;
-                })
-               .attr("stroke-dashoffset", function() {
-                    var totalLength = this.getTotalLength();
-                    return totalLength;
-                })
+          var totalLength = this.getTotalLength();
+          return totalLength + " " + totalLength;
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
         .transition()
         .duration(2000)
         // .duration(1500 + 54)
@@ -652,7 +652,7 @@ export default Vue.extend({
         .attr("y", d => this.y(d[this.variable]))
         .attr("width", 165)
         .attr("height", 60)
-        .attr("stroke-dasharray", "175, 285")
+        .attr("stroke-dasharray", "165, 285")
         .attr("stroke-width", "3");
 
       const tooltipText = tooltipSelector.select(".tooltip--text");
@@ -696,23 +696,17 @@ export default Vue.extend({
         .text(d => `${d[this.variable].toLocaleString()} ${this.variable}`);
 
       // dynamically adjust the width of the rect
-      // console.log(tooltipSelector.selectAll("rect"))
-      // tooltipSelector
-      //   .selectAll("rect")
-      //   .attr(
-      //     "width",
-      //     tooltipSelector
-      //     .select("text")
-      //     .node()
-      //     .getBBox().width + 10
-      //   )
-      //   .attr(
-      //     "height",
-      //     tooltipSelector
-      //     .select("text")
-      //     .node()
-      //     .getBBox().height + 5
-      //   );
+      if (tooltipSelector.selectAll("rect")["_groups"].length) {
+        tooltipSelector.each(function(d) {
+          const bounds = d3.select(this).select("text")
+            .node()
+            .getBBox();
+
+          d3.select(this).select("rect").attr("width", bounds.width + 10)
+            .attr("height", bounds.height + 5)
+            .attr("stroke-dasharray", `${bounds.width + 10}, ${(bounds.height + 5)*2 + bounds.width + 10}`)
+        })
+      }
 
       // --- event listeners ---
       d3.selectAll("circle")
