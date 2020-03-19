@@ -190,7 +190,7 @@ export default Vue.extend({
           colspan: 1
         },{
           label: "RECOVERIES",
-          colspan: 5
+          colspan: 4
         }
       ],
 
@@ -345,13 +345,6 @@ export default Vue.extend({
           sort_id: "recovered_currentPctIncrease",
           sorted: 0,
           essential: true
-        },
-        {
-          group: "recoveries",
-          label: "per capita",
-          value: "recovered_percapita",
-          sorted: null,
-          essential: false
         },
         {
           group: "recoveries",
