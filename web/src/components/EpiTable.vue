@@ -478,6 +478,8 @@ tr.table-header-merged {
 td {
     padding: 5px;
     text-align: center;
+    vertical-align: middle;
+    border: none;
 }
 
 th {
@@ -496,7 +498,7 @@ th {
 }
 
 .color-bar {
-    border-left-width: 4px;
+    border-left-width: 10px;
     border-left-style: solid;
     padding-left: 5px !important;
     // background: #00BCD4;
