@@ -64,11 +64,11 @@
     </template>
     <template v-if="nestedData && nestedData.length > 0">
       <CaseSummary class="container" />
-      <h3>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
+      <h4>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
           </option>
-        </select> by Region</h3>
+        </select> by Region</h4>
       <DataUpdated />
     </template>
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
@@ -89,13 +89,13 @@
     </section>
 
   <section class="case-map">
-    <h3 class="pt-5">
+    <h4 class="pt-5">
       Current <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
         <option v-for="option in variableOptions" :value="option.value" :key="option.value">
           {{ option.label }}
         </option>
-      </select> as of {{ "formatDate(mostRecentDate)" }}
-    </h3>
+      </select> <br />as of {{ "formatDate(mostRecentDate)" }}
+    </h4>
     <LeafletMap :data="mapData$" :variable="selectedVariable" />
   </section>
 

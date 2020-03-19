@@ -1,5 +1,5 @@
 <template>
-<div v-if="this.height && this.data && this.data.length > 0" class="full-page d-flex flex-column align-items-center full-page mt-4">
+<div v-if="this.height && this.data && this.data.length > 0" class="full-page container d-flex flex-column align-items-center full-page mt-4" id="mapContainer">
   <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
     <l-map :zoom="zoom" :center="center" :options="mapOptions" style="height: 80%" @update:center="centerUpdate" @update:zoom="zoomUpdate" ref="map" @mouseover="turnZoomOn" @mouseout="turnZoomOff">
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
@@ -201,7 +201,7 @@ export default Vue.extend({
   methods: {
     setWidth() {
       const aspectRatio = 1.3;
-      this.width = window.innerWidth;
+      this.width = window.innerWidth*.9;
       const idealHeight = this.width / aspectRatio;
       if (idealHeight < window.innerHeight) {
         this.height = idealHeight;
