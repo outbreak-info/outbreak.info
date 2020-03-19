@@ -58,21 +58,21 @@
           <!-- sparklines -->
           <span v-else-if="column.value === 'confirmed_sparkline'" class="align-right">
             {{row[column.value]}}
-            <Sparkline :data="[row.longitudinal]" variable="confirmed" :width="100" :height="23" :id="row.location_id" :color="row.color" />
+            <Sparkline :data="[row.longitudinal]" variable="confirmed" :width="80" :height="23" :id="row.location_id" :color="row.color" />
           </span>
           <span v-else-if="column.value === 'dead_sparkline'">
             {{row[column.value]}}
-            <Sparkline :data="[row.longitudinal]" variable="dead" :width="100" :height="23" :id="row.location_id" :color="row.color" />
+            <Sparkline :data="[row.longitudinal]" variable="dead" :width="80" :height="23" :id="row.location_id" :color="row.color" />
           </span>
           <span v-else-if="column.value === 'recovered_sparkline'">
             {{row[column.value]}}
-            <Sparkline :data="[row.longitudinal]" variable="recovered" :width="100" :height="23" :id="row.location_id" :color="row.color" />
+            <Sparkline :data="[row.longitudinal]" variable="recovered" :width="80" :height="23" :id="row.location_id" :color="row.color" />
           </span>
           <!-- normal -->
           <span v-else>{{row[column.value]}}</span>
         </td>
         <td>
-          <RecoveredBar :data="row" />
+          <RecoveredBar :data="row" :color="row.color" />
         </td>
       </tr>
 
@@ -190,7 +190,7 @@ export default Vue.extend({
           colspan: 1
         },{
           label: "RECOVERIES",
-          colspan: 5
+          colspan: 4
         }
       ],
 
@@ -345,13 +345,6 @@ export default Vue.extend({
           sort_id: "recovered_currentPctIncrease",
           sorted: 0,
           essential: true
-        },
-        {
-          group: "recoveries",
-          label: "per capita",
-          value: "recovered_percapita",
-          sorted: null,
-          essential: false
         },
         {
           group: "recoveries",
