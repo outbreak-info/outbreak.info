@@ -18,7 +18,7 @@ import {
   scaleLinear
 } from "d3";
 
-const width = 65;
+const width = 50;
 const height = 15;
 
 export default Vue.extend({
