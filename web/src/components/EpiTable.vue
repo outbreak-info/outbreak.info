@@ -6,7 +6,7 @@
       <DataUpdated />
       <div class="mt-4">
         <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
-        <select v-model="numPerPage" @change="changePageNum()">
+        <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
           <option v-for="option in pageOpts" :value="option" :key="option">
             {{ option }} results
           </option>
