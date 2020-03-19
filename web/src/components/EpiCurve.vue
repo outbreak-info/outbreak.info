@@ -1,5 +1,5 @@
 <template>
-<div class="epidemiology-curves flex-column align-left">
+<div class="col-sm-12 epidemiology-curves flex-column align-items-center">
   <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
     <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
       <label class="b-contain m-auto">
@@ -159,8 +159,8 @@ export default Vue.extend({
   },
   methods: {
     setPlotDims() {
-      let idealWidth = 750;
-      // let idealWidth = document.getElementById('curveContainer').offsetWidth;
+      // let idealWidth = 750;
+      let idealWidth = document.getElementById('curveContainer').offsetWidth;
 
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.

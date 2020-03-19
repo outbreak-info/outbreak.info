@@ -42,7 +42,7 @@ import store from "@/store";
 
 const margin = {
   top: 10,
-  right: 15,
+  right: 25,
   bottom: 25,
   left: 75
 };
