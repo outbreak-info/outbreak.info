@@ -1,7 +1,7 @@
 <template>
 <div class="py-5" v-if="currentSummary$">
   <p class="case-summary focustext">
-    {{ currentDate ? `As of ${currentDate}` : "Currently" }}, there are
+    {{ currentDate$ ? `As of ${currentDate$}` : "Currently" }}, there are
     <span class="text-highlight">{{
         currentSummary$["confirmed"]
       }}</span>
@@ -55,6 +55,7 @@ import {
 import {
   getSummary
 } from "@/api/epi-basics.js";
+import { getCurrentDate } from "@/api/biothings.js";
 
 export default Vue.extend({
   name: "CaseSumamry",
@@ -69,14 +70,6 @@ export default Vue.extend({
   watch: {},
   computed: {
     ...mapState("epidata", ["mostCases"]),
-    // currentDate() {
-    //   const formatDate = timeFormat("%e %B %Y");
-    //   let lastUpdated = null;
-    //   if (this.mostRecentDate) {
-    //     lastUpdated = formatDate(this.mostRecentDate);
-    //   }
-    //   return lastUpdated;
-    // },
     mostCasesNames: function() {
       return this.mostCases.map(d => d.location_id).join(";");
     }
@@ -84,7 +77,8 @@ export default Vue.extend({
   methods: {},
   subscriptions() {
     return {
-      currentSummary$: getSummary(this.$apiurl, this.caseThreshold)
+      currentSummary$: getSummary(this.$apiurl, this.caseThreshold),
+      currentDate$: getCurrentDate(this.$apiurl)
     }
   },
   mounted() {

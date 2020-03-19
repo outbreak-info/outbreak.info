@@ -94,7 +94,7 @@
         <option v-for="option in variableOptions" :value="option.value" :key="option.value">
           {{ option.label }}
         </option>
-      </select> <br />as of {{ "formatDate(mostRecentDate)" }}
+      </select> as of {{ currentDate$ }}
     </h4>
     <LeafletMap :data="mapData$" :variable="selectedVariable" />
   </section>
@@ -133,9 +133,11 @@ import {
   getEpiTable
 } from "@/api/epi-traces.js"
 import { getMapData } from "@/api/epi-geo.js";
+import { getCurrentDate } from "@/api/biothings.js";
 import {
   mapState
 } from "vuex";
+
 
 
 import {
@@ -240,7 +242,8 @@ export default {
   },
   subscriptions() {
     return {
-      mapData$: getMapData(this.$apiurl)
+      mapData$: getMapData(this.$apiurl),
+      currentDate$: getCurrentDate(this.$apiurl)
     }
   },
   mounted() {

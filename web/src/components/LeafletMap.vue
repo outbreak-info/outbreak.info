@@ -128,6 +128,7 @@ import {
 import {
   interpolateYlGnBu
 } from "d3-scale-chromatic";
+import { getCurrentDate } from "@/api/biothings.js";
 
 import store from "@/store";
 import {
@@ -188,7 +189,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState("epidata", ["mostRecentDate"])
+    ...mapState("epidata")
   },
   watch: {
     data: function() {
