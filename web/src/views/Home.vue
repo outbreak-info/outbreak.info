@@ -7,9 +7,9 @@
   <Warning :animate="false" :text="
         'Our data is in the process of being updated; as a result, regional case counts are not currently correct. Sorry-- it will be fixed soon.'
       "></Warning>
-  <section class="row m-0 half-page">
-    <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
-      <div>
+  <section class="half-page">
+    <div class="row m-0">
+      <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
         <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-75" />
       </div>
       <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero half-page">
