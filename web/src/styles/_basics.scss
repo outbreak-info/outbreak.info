@@ -456,75 +456,40 @@ input:focus {
   transition: 0.5s ease all;
 }
 
-// .select-dropdown {
-//     border: none;
-//     color: $base-grey;
-//     // margin-bottom: .5rem;
-//     font-weight: 500;
-//     // line-height: 1.2;
-//     border-bottom: 2px $base-grey solid;
-//     border-radius: 4px 4px 0px 0px !important;
-//     align-items: center;
-//     background: #ffff;
-//     padding: 2px 15px 2px 8px;
-//     -webkit-appearance: none;
-//     -moz-appearance: none;
-//     appearance: none;
-// }
-
 select {
-
-  /* styling */
-  background-color: white;
-  border: thin solid $primary-color;
-  border-radius: 4px;
-  display: inline-block;
-  // font: inherit;
-  // line-height: 1.5em;
-  padding: 0.2em 3.5em 0.2em 1em;
-
-  /* reset */
-
-  // margin: 0;
+  margin: 0;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-appearance: none;
   -moz-appearance: none;
+	appearance:none;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	-ms-appearance:none;
+  padding: .3em 1.5em .3em .3em;
+  color:$secondary-color;
+	background:url("~@/assets/drop2.svg");
+  background-color: lighten($grey-40,20%);
+	background-repeat:no-repeat;
+  border:thin $secondary-color solid;
+	background-size:16px 16px;
+	background-position:center right 5px;
 }
 
-select.select-dropdown {
-  background-image:
-    linear-gradient(45deg, transparent 50%, white 50%),
-    linear-gradient(135deg, white 50%, transparent 50%),
-    linear-gradient(to right, $primary-color, $secondary-color);
-  background-position:
-    calc(95% - 20px) calc(.7em + 2px),
-    calc(95% - 15px) calc(.7em + 2px),
-    100% 0;
-  background-size:
-    5px 5px,
-    5px 5px,
-    2.5em 2.5em;
-  background-repeat: no-repeat;
+select:focus{
+  border:thin $warning-color solid;
+  border:thin $warning-color solid;
+  outline: none;
 }
 
-select.select-dropdown:focus {
-  background-image:
-    linear-gradient(45deg, white 50%, transparent 50%),
-    linear-gradient(135deg, transparent 50%, white 50%),
-    linear-gradient(to right, gray, gray);
-  background-position:
-    calc(95% - 15px) .7em,
-    calc(95% - 20px) .7em,
-    100% 0;
-  background-size:
-    5px 5px,
-    5px 5px,
-    2.5em 2.5em;
-  background-repeat: no-repeat;
-  border-color: grey;
-  outline: 0;
+select:hover{
+  background:url("~@/assets/drop.svg");
+  background-color: lighten($grey-40,20%);
+	background-repeat:no-repeat;
+  border:thin $secondary-color solid;
+	background-size:16px 16px;
+	background-position:center right 5px;
 }
 
 .leaflet-container{
