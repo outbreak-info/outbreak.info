@@ -51,7 +51,6 @@ export default Vue.extend({
       }
     },
     updateScales() {
-      console.log(this.data)
       this.x = this.x
         .range([0, this.width])
         .domain(d3.extent(this.data[0], d => d.date));
