@@ -4,7 +4,7 @@
     <div>
       <h4>Most Recent Cases</h4>
       <DataUpdated />
-      <div class="d-flex mt-4">
+      <div class="mt-4">
         <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
         <select v-model="numPerPage" @change="changePageNum()">
           <option v-for="option in pageOpts" :value="option" :key="option">
@@ -41,7 +41,19 @@
 
       <tr v-for="row in data" class="table-data" :key="row.location_id">
         <td v-for="(column, idx) in columns" :key="idx" :class="{'align-left px-3 location color-bar': column.label === 'location'}" :style="{ 'border-color': row.color }">
-          <span v-if="column.label === 'location'">{{row[column.value]}}</span>
+          <span v-if="column.label === 'location'">
+            <router-link
+              :to="{
+                name: 'Epidemiology',
+                query: { location: row.location_id }
+              }"
+              class="router-link-black"
+              v-if="routable"
+            >
+              {{row[column.value]}}</router-link
+            >
+            <span v-else>{{row[column.value]}}</span>
+          </span>
           <span v-else>{{row[column.value]}}</span>
         </td>
         <td>

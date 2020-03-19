@@ -99,9 +99,9 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = new Date().getTime();
-  const locationString = `("${locations.join('","')}")`;
+  const queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-02-01"` : 'date:"2020-02-01"';
 
-  return from(axios.get(`${apiUrl}query?q=location_id:${locationString} AND date:"2020-02-01"&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,region_wb,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
+  return from(axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,region_wb,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
     headers: {
       'Content-Type': 'application/json'
     }

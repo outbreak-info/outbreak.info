@@ -84,9 +84,9 @@
     <DataSource v-if="nestedData && nestedData.length > 0" />
   </section>
 
-  <!-- <section class="case-data-table p-1">
-      <EpiTable :data="cases" :routable="true" :colorScale="regionColorScale" />
-    </section> -->
+  <section class="case-data-table p-1">
+      <EpiTable :routable="true" :colorScale="regionColorScale" />
+    </section>
 
   <section class="case-map">
     <h3 class="pt-5">
@@ -129,14 +129,14 @@ import Warning from "@/components/Warning.vue";
 import {
   getStackedRegions
 } from "@/api/region-summary.js";
+import {
+  getEpiTable
+} from "@/api/epi-traces.js"
 import { getMapData } from "@/api/epi-geo.js";
 import {
   mapState
 } from "vuex";
 
-import {
-  nestRegions
-} from "@/js/importEpi";
 
 import {
   cloneDeep
@@ -152,7 +152,7 @@ export default {
     CaseSummary,
     DataUpdated,
     DataSource,
-    // EpiTable,
+    EpiTable,
     LeafletMap,
     SearchBar,
     Logos,
@@ -164,6 +164,7 @@ export default {
       stackedHeight: 250,
       data: null,
       dataSubscription: null,
+      tableSubscription: null,
       nestedData: null,
       selectedVariable: "confirmed",
       variableOptions: [{
@@ -248,6 +249,8 @@ export default {
       this.nestedData = d[this.selectedVariable];
     })
 
+    this.tableSubscription = getEpiTable(this.$apiurl, null, "-confirmed_currentCases", 10, 9).subscribe(_ => null);
+
     // Event listener for mobile responsiveness
     // $nextTick waits till DOM rendered
     this.$nextTick(function() {
@@ -258,6 +261,7 @@ export default {
   },
   destroyed() {
     this.dataSubscription.unsubscribe();
+    this.tableSubscription.unsubscribe();
   }
 };
 </script>
