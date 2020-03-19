@@ -80,7 +80,7 @@ export default Vue.extend({
 }
 
 .dead-cases {
-  fill: $grey-80;
+  fill: #5a5a5a;
 }
 
 .recovered-cases {
