@@ -17,6 +17,8 @@ import {
   format
 } from "d3";
 
+import { getAll } from "@/api/biothings.js";
+
 
 export const epiDataSubject = new BehaviorSubject([]);
 export const epiDataState$ = epiDataSubject.asObservable();
@@ -45,51 +47,50 @@ export function getEpiData(apiUrl, locations, sort, page, size) {
 export function getEpiTraces(apiUrl, locations) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
-  // trigger no-cache behavior by adding timestamp to request
-  const timestamp = new Date().getTime();
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  return from(axios.get(`${apiUrl}query?q=location_id:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,confirmed,dead,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id&timestamp=${timestamp}`, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })).pipe(
-    pluck("data", "hits"),
-    map(results => {
-      // convert dates to javascript dates
-      results.forEach(d => {
-        d['date'] = parseDate(d.date);
-      })
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,confirmed,dead,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
 
-      const nested = nest()
-        .key(d => d.location_id)
-        .rollup(values => values)
-        .entries(results);
+  return getAll(apiUrl, queryString)
+    .pipe(
+      map(results => {
 
-      // should be the same for all data; pulling out the first one.
-      nested.forEach(d => {
-        d["confirmed_currentCases"] = d.value[0].confirmed_currentCases;
-        d["recovered_currentCases"] = d.value[0].recovered_currentCases;
-        d["dead_currentCases"] = d.value[0].dead_currentCases;
-      })
+        // convert dates to javascript dates
+        results.forEach(d => {
+          d['date'] = parseDate(d.date);
+        })
+        // ensure dates are sorted
+        results.sort((a,b) => a.date - b.date);
 
-      store.commit(
-        "colors/setLocations",
-        nested
-        .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
-        .map(d => d.key)
-      );
-      epiDataSubject.next(nested)
-      return (nested);
-    }),
-    catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
-      console.log(e);
-      return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false))
-  )
+        const nested = nest()
+          .key(d => d.location_id)
+          .rollup(values => values)
+          .entries(results);
+
+        // should be the same for all data; pulling out the first one.
+        nested.forEach(d => {
+          d["confirmed_currentCases"] = d.value[0].confirmed_currentCases;
+          d["recovered_currentCases"] = d.value[0].recovered_currentCases;
+          d["dead_currentCases"] = d.value[0].dead_currentCases;
+        })
+
+        store.commit(
+          "colors/setLocations",
+          nested
+          .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
+          .map(d => d.key)
+        );
+        epiDataSubject.next(nested)
+        return (nested);
+      }),
+      catchError(e => {
+        console.log("%c Error in getting case counts!", "color: red");
+        console.log(e);
+        return from([]);
+      }),
+      finalize(() => (store.state.admin.loading = false))
+    )
 }
 
 export function getEpiTable(apiUrl, locations, sort, size, page) {

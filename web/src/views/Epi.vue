@@ -70,7 +70,6 @@ export default {
   },
   methods: {
     setLocation: function(locationString, nullLocationHandler) {
-      console.log("setting location")
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;

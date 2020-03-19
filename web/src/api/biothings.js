@@ -72,53 +72,53 @@ export function getCurrentDate(apiUrl) {
   )
 }
 
-// export function getAll(apiUrl, queryString) {
-//   store.state.admin.loading = true;
-//   return getOne(apiUrl).pipe(
-//     expand((data, _) => data.next ? getAllDoublingBatch(apiUrl, data.next) : EMPTY),
-//     pluck("results"),
-//     reduce((acc, data) => {
-//       return acc.concat(data);
-//     }, []),
-//     map((all_data) => {
-//       // last iteration returns undefined; filter out
-//       all_data = all_data.filter(d => d);
-//
-//       return (all_data);
-//     }),
-//     catchError(e => {
-//       console.log("%c Error in getting case counts!", "color: red");
-//       console.log(e);
-//       return from([]);
-//     }),
-//     finalize(() => (store.state.admin.loading = false))
-//   )
-// }
-//
-//
-// export function getOne(apiUrl, queryString, scrollID = null) {
-//   console.log('batch')
-//
-//   let url = `${apiUrl}query?q=${queryString}&fetch_all=true`;
-//   if (scrollID) {
-//     url = `${url}&scroll_id=${scrollID}`;
-//   }
-//
-//   return from(axios.get(url)).pipe(
-//     tap(x => console.log(x)),
-//     pluck("data"),
-//     map(results => {
-//       return ({
-//         next: results["_scroll_id"],
-//         results: results["hits"]
-//       })
-//     }),
-//     catchError(e => {
-//       console.log("%c Error in getting case counts!", "color: red");
-//       console.log(e);
-//       return from([]);
-//     }),
-//     finalize(() => (store.state.admin.loading = false))
-//   )
-//   // axios.get(apiUrl, { query: {admin0: location  } }).then(d => {console.log(d )})
-// }
+export function getAll(apiUrl, queryString) {
+  store.state.admin.loading = true;
+  return getOne(apiUrl, queryString).pipe(
+    expand((data, _) => data.next ? getOne(apiUrl, queryString, data.next) : EMPTY),
+    pluck("results"),
+    reduce((acc, data) => {
+      return acc.concat(data);
+    }, []),
+    map((all_data) => {
+      // last iteration returns undefined; filter out
+      all_data = all_data.filter(d => d);
+
+      return (all_data);
+    }),
+    catchError(e => {
+      console.log("%c Error in getting case counts!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+
+export function getOne(apiUrl, queryString, scrollID = null) {
+  // trigger no-cache behavior by adding timestamp to request
+  const timestamp = new Date().getTime();
+
+  let url = `${apiUrl}query?q=${queryString}&fetch_all=true&timestamp=${timestamp}`;
+  if (scrollID) {
+    url = `${url}&scroll_id=${scrollID}`;
+  }
+
+  return from(axios.get(url)).pipe(
+    pluck("data"),
+    map(results => {
+      return ({
+        next: results["_scroll_id"],
+        results: results["hits"]
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting case counts!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+  // axios.get(apiUrl, { query: {admin0: location  } }).then(d => {console.log(d )})
+}
