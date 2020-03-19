@@ -3,7 +3,7 @@
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <div class="d-flex row m-0">
     <EpiCurve class="row" @addable="updateAddable" id="curveContainer" v-if="data$"/>
-    <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" />
+    <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
   </div>
   <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">

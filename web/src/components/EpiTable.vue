@@ -130,7 +130,8 @@ export default Vue.extend({
   props: {
     locations: Array,
     routable: Boolean,
-    colorScale: Function
+    colorScale: Function,
+    colorVar: String
   },
   data() {
     return {
@@ -369,7 +370,7 @@ export default Vue.extend({
     prepData() {
       console.log("prepping data")
       this.data.forEach(d => {
-        d["color"] = this.colorScale(d.location_id);
+        d["color"] = this.colorScale(d[this.colorVar]);
       });
 
     }

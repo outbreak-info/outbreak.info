@@ -85,7 +85,7 @@
   </section>
 
   <section class="case-data-table p-1">
-      <EpiTable :routable="true" :colorScale="regionColorScale" />
+      <EpiTable :routable="true" :colorScale="regionColorScale" colorVar="region_wb" />
     </section>
 
   <section class="case-map">
