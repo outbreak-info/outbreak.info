@@ -1,6 +1,6 @@
 <template>
   <small class="text-muted badge bg-grey__lightest" v-if="lastUpdated"
-    >Last updated {{ lastUpdated }} ago
+    ><i class="far fa-clock"></i> Updated {{ lastUpdated }} ago
   </small>
 </template>
 

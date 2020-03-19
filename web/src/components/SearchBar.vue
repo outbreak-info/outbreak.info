@@ -2,7 +2,7 @@
   <form>
     <div class="input-group">
       <div class="input-group-prepend">
-        <span class="input-group-text bg-grey text-sec border-0" id="sb"
+        <span class="input-group-text bg-grey text-muted border-0" id="sb"
           ><i class="fas fa-search"></i
         ></span>
       </div>

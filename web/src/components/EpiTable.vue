@@ -16,7 +16,7 @@
   </div>
 
   <div class="p-2">
-    <table class="m-auto" v-if="data && data.length > 0">
+    <table class="m-auto table table-responsive" v-if="data && data.length > 0">
       <tr class="table-header-merged">
         <th v-for="(column, idx) in mergedColumns" :key="idx" :colspan="column.colspan" :class="[column.colspan > 1 ? 'th-merged' : 'th-nomerge']">
           {{column.label}}
@@ -26,7 +26,7 @@
         </th>
       </tr>
       <tr class="table-header">
-        <th v-for="(column, idx) in columns" :key="idx" :id="`th-${column.value}`" :class="{'sortable': column.sorted}" @click="sortColumn(column.sort_id)">
+        <th v-for="(column, idx) in columns" :key="idx" :id="`th-${column.value}`" :class="{'sortable': column.sorted, 'd-none d-md-table-cell': !column.essential}" @click="sortColumn(column.sort_id)">
           <div class="sort-grp">
             {{column.label}}
             <font-awesome-icon :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']" :icon="['fas', 'sort']" />
@@ -40,15 +40,15 @@
       </tr>
 
       <tr v-for="row in data" class="table-data" :key="row.location_id">
-        <td v-for="(column, idx) in columns" :key="idx" :class="{'align-left px-3 location color-bar': column.label === 'location'}" :style="{ 'border-color': row.color }">
+        <td v-for="(column, idx) in columns" :key="idx" :class="{'align-left px-3 location color-bar': column.label === 'location','d-none d-md-table-cell': !column.essential}" :style="{ 'border-color': row.color }">
           <!-- location -->
           <span v-if="column.label === 'location'">
             <!-- if routable -->
             <router-link :to="{
                 name: 'Epidemiology',
                 query: { location: row.location_id }
-              }" class="router-link-black" v-if="routable">
-              {{row[column.value]}}</router-link>
+              }" class="router-link font-weight-bold" v-if="routable">
+              {{row[column.value]}} <i class="fas fa-chevron-right text-highlight"></i></router-link>
             <!-- not routable location name -->
             <span v-else>{{row[column.value]}}</span>
           </span>

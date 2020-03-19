@@ -28,7 +28,7 @@
     </div>
   </section>
   <!-- SEARCH  -->
-  <section class="d-flex justify-content-center align-items-center bg-sec text-light py-5">
+  <section class="d-flex justify-content-center align-items-center bg-grag-main text-light py-5">
     <div class="row m-0 w-100">
       <div class="col-sm-12 col-md-6 m-auto">
         <h5>SEARCH LOCATION</h5>
