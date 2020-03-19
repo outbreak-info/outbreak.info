@@ -16,7 +16,7 @@
   </div>
 
   <div class="p-2">
-    <table class="m-auto">
+    <table class="m-auto" v-if="data && data.length > 0">
       <tr class="table-header-merged">
         <th v-for="(column, idx) in mergedColumns" :key="idx" :colspan="column.colspan" :class="[column.colspan > 1 ? 'th-merged' : 'th-nomerge']">
           {{column.label}}
@@ -41,19 +41,31 @@
 
       <tr v-for="row in data" class="table-data" :key="row.location_id">
         <td v-for="(column, idx) in columns" :key="idx" :class="{'align-left px-3 location color-bar': column.label === 'location'}" :style="{ 'border-color': row.color }">
+          <!-- location -->
           <span v-if="column.label === 'location'">
-            <router-link
-              :to="{
+            <!-- if routable -->
+            <router-link :to="{
                 name: 'Epidemiology',
                 query: { location: row.location_id }
-              }"
-              class="router-link-black"
-              v-if="routable"
-            >
-              {{row[column.value]}}</router-link
-            >
+              }" class="router-link-black" v-if="routable">
+              {{row[column.value]}}</router-link>
+            <!-- not routable location name -->
             <span v-else>{{row[column.value]}}</span>
           </span>
+          <!-- sparklines -->
+          <span v-else-if="column.value === 'confirmed_pctIncrease'" class="align-right">
+            {{row[column.value]}}
+            <Sparkline :data="[row.longitudinal]" variable="confirmed" :width="100" :height="23" :id="row.location_id" :color="row.color" />
+          </span>
+          <span v-else-if="column.value === 'dead_pctIncrease'">
+            {{row[column.value]}}
+            <Sparkline :data="[row.longitudinal]" variable="dead" :width="100" :height="23" :id="row.location_id" :color="row.color" />
+          </span>
+          <span v-else-if="column.value === 'recovered_pctIncrease'">
+            {{row[column.value]}}
+            <Sparkline :data="[row.longitudinal]" variable="recovered" :width="100" :height="23" :id="row.location_id" :color="row.color" />
+          </span>
+          <!-- normal -->
           <span v-else>{{row[column.value]}}</span>
         </td>
         <td>
@@ -114,7 +126,8 @@ library.add(faSort);
 import store from "@/store";
 import {
   epiTableState$,
-  getEpiTable
+  getEpiTable,
+  getSparklineTraces
 } from "@/api/epi-traces.js";
 
 const formatDate = timeFormat("%a %d %b %Y");
@@ -124,7 +137,7 @@ export default Vue.extend({
   components: {
     FontAwesomeIcon,
     DataUpdated,
-    // Sparkline,
+    Sparkline,
     RecoveredBar
   },
   props: {
@@ -148,16 +161,31 @@ export default Vue.extend({
           colspan: 1
         },
         {
+         label: "",
+         colspan: 1
+       },
+        {
           label: "CASES",
           colspan: 4
         },
+        {
+         label: "",
+         colspan: 1
+       },
+        {
+         label: "",
+         colspan: 1
+       },
         {
           label: "",
           colspan: 1
         }, {
           label: "DEATHS",
           colspan: 4
-        }, {
+        },  {
+          label: "",
+          colspan: 1
+        },{
           label: "RECOVERIES",
           colspan: 4
         }
@@ -184,6 +212,12 @@ export default Vue.extend({
         //   sorted: 0,
         //   essential: false
         // },
+                {
+                  label: "",
+                  value: "",
+                  sorted: null,
+                  essential: false
+                },
         {
           group: "cases",
           label: "total",
@@ -216,13 +250,24 @@ export default Vue.extend({
           essential: false
         },
         {
+          label: "",
+          value: "",
+          sorted: null,
+          essential: false
+        },
+        {
           label: "days between first case and death",
           value: "first_dead-first_confirmed",
           sort_id: "first_dead-first_confirmed",
           sorted: 0,
           essential: true
         },
-
+        {
+          label: "",
+          value: "",
+          sorted: null,
+          essential: false
+        },
         {
           group: "deaths",
           label: "total",
@@ -254,7 +299,12 @@ export default Vue.extend({
           sorted: null,
           essential: false
         },
-
+        {
+          label: "",
+          value: "",
+          sorted: null,
+          essential: false
+        },
         {
           group: "recoveries",
           label: "total",
@@ -309,8 +359,6 @@ export default Vue.extend({
     // set up subscription here; listen for changes and execute in the watch.
     // Strangely, w/o the watch, the subscription doesn't seem to update...
     this.dataSubscription = epiTableState$.subscribe(data => {
-      console.log("subscribing")
-      console.log(data)
       this.data = data["data"];
       this.total = data["total"];
     })
@@ -357,6 +405,7 @@ export default Vue.extend({
       }
     },
     updateData() {
+      getSparklineTraces(this.$apiurl, this.locations).subscribe(_ => null);
       this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.sortVar, this.numPerPage, this.numPerPage * this.page).subscribe(_ => null);
     },
     changePage(step) {
@@ -368,7 +417,6 @@ export default Vue.extend({
       this.updateData();
     },
     prepData() {
-      console.log("prepping data")
       this.data.forEach(d => {
         d["color"] = this.colorScale(d[this.colorVar]);
       });
@@ -464,5 +512,9 @@ th {
 
 .header {
     width: 100%;
+}
+
+.align-right {
+  align: right;
 }
 </style>

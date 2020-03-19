@@ -10,18 +10,22 @@ import {
   catchError,
   pluck,
   map,
+  mergeMap
 } from "rxjs/operators";
 import {
   nest,
   timeParse,
-  sum, format
+  format
 } from "d3";
 
 
 export const epiDataSubject = new BehaviorSubject([]);
 export const epiDataState$ = epiDataSubject.asObservable();
 
-export const epiTableSubject = new BehaviorSubject({data: [], total: 0});
+export const epiTableSubject = new BehaviorSubject({
+  data: [],
+  total: 0
+});
 export const epiTableState$ = epiTableSubject.asObservable();
 
 import store from "@/store";
@@ -29,12 +33,7 @@ import store from "@/store";
 export function getEpiData(apiUrl, locations, sort, page, size) {
   store.state.admin.loading = true;
 
-  // sort by date so the numbers appear in the right order.
-
   return (forkJoin([getEpiTraces(apiUrl, locations), getEpiTable(apiUrl, locations, sort, page, size)])).pipe(
-    // map(results => {
-    //   return (results);
-    // }),
     catchError(e => {
       console.log("%c Error in getting case counts!", "color: red");
       console.log(e);
@@ -96,6 +95,39 @@ export function getEpiTraces(apiUrl, locations) {
 
 export function getEpiTable(apiUrl, locations, sort, size, page) {
   store.state.admin.loading = true;
+  return getTableData(apiUrl, locations, sort, size, page).pipe(
+    tap(x => console.log(x)),
+    mergeMap(tableData => getSparklineTraces(apiUrl, tableData["hits"].map(d => d.location_id)).pipe(
+      map(sparks => {
+        sparks.forEach(spark => {
+          const idx = tableData["hits"].findIndex(d => d.location_id === spark.key);
+          if (idx > -1) {
+            tableData["hits"][idx]["longitudinal"] = spark.value;
+          }
+        })
+
+        epiTableSubject.next({
+          data: tableData["hits"],
+          total: tableData["total"]
+        })
+
+        return(tableData)
+      })
+    )),
+    // .pipe(
+    // map(results => {
+    //   console.log(results)
+    // })),
+    catchError(e => {
+      console.log("%c Error in getting case counts!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+export function getTableData(apiUrl, locations, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = new Date().getTime();
@@ -106,7 +138,6 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
       'Content-Type': 'application/json'
     }
   })).pipe(
-    tap(x => console.log(x)),
     pluck("data"),
     map(results => {
       // convert dates to javascript dates, format things for the table
@@ -117,23 +148,57 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
         d["confirmed_cases"] = d.confirmed_currentCases.toLocaleString();
         d["confirmed_increase"] = d.confirmed_currentIncrease.toLocaleString();
         d["confirmed_pctIncrease"] = formatPercent(d.confirmed_currentPctIncrease);
-        d["confirmed_percapita"] = d.population ?  (d.confirmed_currentCases ? `1 in ${Math.round(d.population / d.confirmed_currentCases).toLocaleString()}` : "0") : null;
+        d["confirmed_percapita"] = d.population ? (d.confirmed_currentCases ? `1 in ${Math.round(d.population / d.confirmed_currentCases).toLocaleString()}` : "0") : null;
 
         d["dead_cases"] = d.dead_currentCases.toLocaleString();
         d["dead_increase"] = d.dead_currentIncrease.toLocaleString();
         d["dead_pctIncrease"] = formatPercent(d.dead_currentPctIncrease);
-        d["dead_percapita"] = d.population ?  (d.dead_currentCases ? `1 in ${Math.round(d.population / d.dead_currentCases).toLocaleString()}` : "0") : null;
+        d["dead_percapita"] = d.population ? (d.dead_currentCases ? `1 in ${Math.round(d.population / d.dead_currentCases).toLocaleString()}` : "0") : null;
 
 
         d["recovered_cases"] = d.recovered_currentCases.toLocaleString();
         d["recovered_increase"] = d.recovered_currentIncrease.toLocaleString();
         d["recovered_pctIncrease"] = formatPercent(d.recovered_currentPctIncrease);
-        d["recovered_percapita"] = d.population ?  (d.recovered_currentCases ? `1 in ${Math.round(d.population / d.recovered_currentCases).toLocaleString()}` : "0") : null;
+        d["recovered_percapita"] = d.population ? (d.recovered_currentCases ? `1 in ${Math.round(d.population / d.recovered_currentCases).toLocaleString()}` : "0") : null;
       })
-      console.log(results)
-      epiTableSubject.next({data: results["hits"], total: results["total"]})
       return (results);
 
+    }),
+    catchError(e => {
+      console.log("%c Error in getting case counts!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+export function getSparklineTraces(apiUrl, locations) {
+  const parseDate = timeParse("%Y-%m-%d");
+  // trigger no-cache behavior by adding timestamp to request
+  const timestamp = new Date().getTime();
+  const queryString = `location_id:("${locations.join('","')}")`;
+
+  return from(axios.get(`${apiUrl}query?q=${queryString}&sort=date&size=1000&fields=date,location_id,confirmed,recovered,dead&timestamp=${timestamp}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      // convert dates to javascript dates, format things for the table
+      results.forEach(d => {
+        d["date"] = parseDate(d.date);
+        delete d["_id"];
+        delete d["_score"];
+      })
+
+      const nested = nest()
+        .key(d => d.location_id)
+        .rollup(values => values)
+        .entries(results);
+
+      return (nested);
     }),
     catchError(e => {
       console.log("%c Error in getting case counts!", "color: red");
