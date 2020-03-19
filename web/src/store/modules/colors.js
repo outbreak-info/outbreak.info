@@ -73,9 +73,8 @@ const getters = {
     const scale = scaleOrdinal(["#BBB"].concat(categoricalPalette)).domain(
       regions
     );
-    const regionFunc = rootGetters["epidata/getRegion"];
-    const region = regionFunc(location);
-    return scale(region);
+    // const regionFunc = rootGetters["epidata/getRegion"];
+    return scale(location);
   },
   getRegionColorPalette: (state, _, rootState) => (region, numEntries, idx) => {
     const regions = rootState["geo"]["regionDict"].map(d => d.region);

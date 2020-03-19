@@ -1,6 +1,6 @@
 <template>
-  <div class="sparkline-group" :id="`sparkline-${id}`">
-    <svg :width="width" :height="height" class="epi-sparkline"></svg>
+  <div class="sparkline-group" :id="`sparkline-${id}-${variable}`">
+    <svg :width="width" :height="height" class="epi-sparkline" ref="svg"></svg>
   </div>
 </template>
 
@@ -15,6 +15,7 @@ export default Vue.extend({
     data: Array,
     width: Number,
     height: Number,
+    variable: String,
     id: String,
     color: String
   },
@@ -32,7 +33,7 @@ export default Vue.extend({
   watch: {},
   methods: {
     setupPlot() {
-      this.svg = d3.select(`#sparkline-${this.id}`).select("svg.epi-sparkline");
+      this.svg = d3.select(`#sparkline-${this.id}-${this.variable}`).select("svg.epi-sparkline");
       this.chart = this.svg.select("#case-counts");
 
       this.chart = this.svg.append("g").attr("class", "sparkline");
@@ -41,22 +42,23 @@ export default Vue.extend({
         .area()
         .x(d => this.x(d.date))
         .y0(d => this.y(0))
-        .y1(d => this.y(d.cases));
+        .y1(d => this.y(d[this.variable]));
     },
     updatePlot() {
-      if (this.data && this.width && this.height) {
+      if (this.data && this.data[0] && this.width && this.height) {
         this.updateScales();
         this.drawPlot();
       }
     },
     updateScales() {
+      console.log(this.data)
       this.x = this.x
         .range([0, this.width])
         .domain(d3.extent(this.data[0], d => d.date));
 
       this.y = this.y
         .range([this.height, 0])
-        .domain([0, d3.max(this.data[0], d => d.cases)]);
+        .domain([0, d3.max(this.data[0], d => d[this.variable])]);
     },
     drawPlot() {
       const sparkSelector = this.chart.selectAll(".sparkline").data(this.data);

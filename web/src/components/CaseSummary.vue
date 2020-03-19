@@ -1,122 +1,92 @@
 <template>
-  <div class="py-5">
-    <p class="case-summary focustext">
-      {{ currentDate ? `As of ${currentDate}` : "Currently" }}, there are
-      <span class="text-highlight">{{
-        currentTotalCases.toLocaleString()
+<div class="py-5" v-if="currentSummary$">
+  <p class="case-summary focustext">
+    {{ currentDate ? `As of ${currentDate}` : "Currently" }}, there are
+    <span class="text-highlight">{{
+        currentSummary$["confirmed"]
       }}</span>
-      confirmed COVID-19 cases in
-      <span class="text-highlight">{{ numCountries }} countries</span>
-      worldwide, with the most heavily hit areas including
-      <span v-for="(country, idx) in mostCases" :key="idx">
-        <router-link
-          :data-tippy-info="`view ${country.locationName} over time`"
-          :to="{
+    confirmed COVID-19 cases in
+    <span class="text-highlight">{{ currentSummary$.numCountries }} countries</span>
+    worldwide with at least <span class="text-highlight">{{currentSummary$.dead}} deaths</span>, with the most heavily hit areas including
+    <span v-for="(country, idx) in mostCases" :key="idx">
+      <router-link :data-tippy-info="`view ${country.name} over time`" :to="{
             name: 'Epidemiology',
-            query: { location: country.locationName }
-          }"
-          class="hardest-hit text-sec font-weight-bold"
-          >{{ country.locationName }}</router-link
-        >
-        <span v-if="idx < mostCases.length - 1">{{
+            query: { location: country.location_id }
+          }" class="hardest-hit text-sec font-weight-bold">{{ country.name }}</router-link>
+      <span v-if="idx < mostCases.length - 1">{{
           idx === mostCases.length - 2 ? ", and " : ", "
-        }}</span> </span
-      >.
-    </p>
-    <p class="focustext">
-      In the last day,
-      <span v-if="firstCases.length > 0">
-        <router-link
-          :data-tippy-info="
-            `
-        ${firstCases
-          .map(d => d.locationName)
-          .sort()
-          .join(', ')}
-      `
-          "
-          id="first-cases"
-          :to="{ name: 'Epidemiology', query: { location: newCountries } }"
-          class="text-sec font-weight-bold"
-          >{{ firstCases.length }} countries</router-link
-        >
-        have announced their <span class="text-highlight">first cases</span>,
-        and
-      </span>
-      <router-link
-        id="changing-countries"
-        :data-tippy-info="
+        }}</span>
+    </span>.
+  </p>
+  <p class="focustext">
+    In the last day,
+    <span v-if="currentSummary$.firstCases.count > 0">
+      <router-link :data-tippy-info="
+            `${currentSummary$.firstCases.names}`
+          " id="first-cases" :to="{ name: 'Epidemiology', query: { location: currentSummary$.firstCases.link } }" class="text-sec font-weight-bold">{{ currentSummary$.firstCases.count }} countries</router-link>
+      have announced their <span class="text-highlight">first cases</span>,
+      and
+    </span>
+    <router-link id="changing-countries" :data-tippy-info="
           `
-      ${countriesAboveThreshold
-        .map(d => d.locationName)
-        .sort()
-        .join(', ')}`
-        "
-        :to="{ name: 'Epidemiology', query: { location: changingCountries } }"
-        class="text-sec font-weight-bold"
-        >{{ countriesAboveThresholdCount }} countries
-      </router-link>
-      have reported more than
-      <span class="text-highlight">{{ caseThreshold }} new cases</span>.
-    </p>
-    <p class="text-center">
-      <router-link
-        class="btn btn-main-outline router-link no-underline m-5"
-        role="button"
-        :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }"
-        >Explore cases over time</router-link
-      >
-    </p>
-  </div>
+      ${currentSummary$.aboveThreshold.names}`
+        " :to="{ name: 'Epidemiology', query: { location:  currentSummary$.aboveThreshold.link } }" class="text-sec font-weight-bold">{{ currentSummary$.aboveThreshold.count }} countries
+    </router-link>
+    have reported more than
+    <span class="text-highlight">{{ caseThreshold }} new cases</span>.
+  </p>
+  <p class="text-center">
+    <router-link class="btn btn-main-outline router-link no-underline m-5" role="button" :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Explore cases over time</router-link>
+  </p>
+</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
-import { timeFormat } from "d3";
+import {
+  timeFormat
+} from "d3";
+import {
+  getSummary
+} from "@/api/epi-basics.js";
 
 export default Vue.extend({
   name: "CaseSumamry",
   props: {},
   data() {
-    return {};
+    return {
+      currentDate: "2001-02",
+      caseThreshold: 50
+
+    };
   },
   watch: {},
   computed: {
-    ...mapState("epidata", [
-      "mostRecentDate",
-      "currentTotalCases",
-      "firstCases",
-      "mostCases",
-      "numCountries",
-      "caseThreshold",
-      "countriesAboveThreshold"
-    ]),
-    currentDate() {
-      const formatDate = timeFormat("%e %B %Y");
-      let lastUpdated = null;
-      if (this.mostRecentDate) {
-        lastUpdated = formatDate(this.mostRecentDate);
-      }
-      return lastUpdated;
-    },
-    countriesAboveThresholdCount() {
-      return this.countriesAboveThreshold.length;
-    },
-    changingCountries() {
-      return this.countriesAboveThreshold.map(d => d.locationName).join(";");
-    },
-    newCountries() {
-      return this.firstCases.map(d => d.locationName).join(";");
-    },
+    ...mapState("epidata", ["mostCases"]),
+    // currentDate() {
+    //   const formatDate = timeFormat("%e %B %Y");
+    //   let lastUpdated = null;
+    //   if (this.mostRecentDate) {
+    //     lastUpdated = formatDate(this.mostRecentDate);
+    //   }
+    //   return lastUpdated;
+    // },
     mostCasesNames: function() {
-      return this.mostCases.map(d => d.locationName).join(";");
+      return this.mostCases.map(d => d.location_id).join(";");
     }
   },
   methods: {},
+  subscriptions() {
+    return {
+      currentSummary$: getSummary(this.$apiurl, this.caseThreshold)
+    }
+  },
   mounted() {
     tippy("#first-cases", {
       content: "Loading...",

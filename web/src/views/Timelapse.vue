@@ -24,7 +24,7 @@ export default {
   watch: {},
   computed: {
     ...mapState("admin", ["loading"]),
-    ...mapState("epidata", ["cases"])
+    // ...mapState("epidata", ["cases"])
   },
   methods: {},
   mounted() {

@@ -105,6 +105,8 @@ export default Vue.extend({
         `.${d.key
           .replace(/\s/g, "_")
           .replace(/\//g, "_")
+            .replace(/&/g, "_")
+            .replace(/:/g, "_")
           .replace(/\(/g, "_")
           .replace(/\)/g, "_")}`
       ).style("opacity", 1);
@@ -234,9 +236,11 @@ export default Vue.extend({
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]));
 
-      this.chart
+      const areaSelector = this.chart
         .selectAll(".stacked-area-chart")
-        .data(this.series)
+        .data(this.series);
+
+        areaSelector
         .join("path")
         .style("fill", ({ key }) => this.colorScale(key))
         .attr(
@@ -244,6 +248,8 @@ export default Vue.extend({
           d =>
             `stacked-area-chart ${d.key
               .replace(/\s/g, "_")
+              .replace(/&/g, "_")
+              .replace(/:/g, "_")
               .replace(/\//g, "_")
               .replace(/\(/g, "_")
               .replace(/\)/g, "_")}`
@@ -266,6 +272,8 @@ export default Vue.extend({
           d =>
             `legend-group ${d.key
               .replace(/\s/g, "_")
+              .replace(/&/g, "_")
+              .replace(/:/g, "_")
               .replace(/\//g, "_")
               .replace(/\(/g, "_")
               .replace(/\)/g, "_")}`

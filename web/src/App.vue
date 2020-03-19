@@ -95,6 +95,7 @@
 import store from "@/store";
 
 import { mapState } from "vuex";
+import { getLocations, getMostCases } from "@/api/epi-basics.js"
 
 export default {
   name: "App",
@@ -106,7 +107,7 @@ export default {
   computed: {
     ...mapState("epidata", ["mostCases"]),
     mostCasesNames: function() {
-      return this.mostCases.map(d => d.locationName).join(";");
+      return this.mostCases.map(d => d.location_id).join(";");
     }
   },
   methods: {},
@@ -114,8 +115,13 @@ export default {
     var self = this;
     var currentTime = new Date();
     self.year = currentTime.getFullYear();
-    store.dispatch("epidata/loadCases");
     store.dispatch("epidata/getDateUpdated");
+  },
+  subscriptions() {
+    return {
+      placeNames$: getLocations(this.$apiurl),
+      mostCases$: getMostCases(this.$apiurl)
+    }
   }
 };
 </script>

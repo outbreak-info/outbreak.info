@@ -451,3 +451,19 @@ input:focus {
   font-size: 0.7em;
   transition: 0.5s ease all;
 }
+
+.select-dropdown {
+    border: none;
+    color: $base-grey;
+    // margin-bottom: .5rem;
+    font-weight: 500;
+    // line-height: 1.2;
+    border-bottom: 2px $base-grey solid;
+    border-radius: 4px 4px 0px 0px !important;
+    align-items: center;
+    background: #ffff;
+    padding: 2px 15px 2px 8px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}

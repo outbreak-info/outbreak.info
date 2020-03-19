@@ -54,7 +54,7 @@
         class="autocomplete-result"
         :class="{ 'is-active': i === arrowCounter }"
       >
-        {{ result }}
+        {{ result.label }}
       </li>
     </ul>
   </div>
@@ -117,8 +117,10 @@ export default Vue.extend({
   computed: {
     selectedItems: function() {
       return this.selected.map(d => {
+        const place = this.items.filter(placeDict => placeDict.id === d);
         return {
-          label: d,
+          label: place.length > 0 ? place[0].label : null,
+          id: d,
           addable: this.toAdd.includes(d),
           darkColor: this.colorScale(d),
           lightColor: this.lightColorScale(d)
@@ -152,11 +154,11 @@ export default Vue.extend({
     },
     updateChip(item) {
       if (item.addable) {
-        this.$emit("selected", this.selected.concat(item.label));
+        this.$emit("selected", this.selected.concat(item.id));
       } else {
         this.$emit(
           "selected",
-          this.selected.filter(d => d !== item.label)
+          this.selected.filter(d => d !== item.id)
         );
       }
       // this.selected = this.selected.filter(d => d !== item);
@@ -176,12 +178,12 @@ export default Vue.extend({
     filterResults() {
       // first uncapitalize all the things
       this.results = this.items.filter(item => {
-        return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+        return item.label.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       });
     },
     setResult(result) {
       // this.$emit('input', result);
-      this.selected.push(result);
+      this.selected.push(result.id);
       this.$emit("selected", this.selected);
       this.search = "";
       this.isOpen = false;
