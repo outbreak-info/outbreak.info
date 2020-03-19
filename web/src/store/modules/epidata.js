@@ -1,9 +1,5 @@
-import { cleanEpi, nestEpiTrace } from "@/js/importEpi";
-
-import { from } from "rxjs";
 import axios from "axios";
-import { tap, finalize, catchError } from "rxjs/operators";
-import { csv, isoParse, max, sum } from "d3";
+import { isoParse } from "d3";
 
 // initial state
 const state = {
