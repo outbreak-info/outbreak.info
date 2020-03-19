@@ -1,5 +1,5 @@
 <template>
-<div class="epi-table my-3">
+<div class="epi-table my-3" v-if="data">
   <div class="m-auto d-flex justify-content-center py-5">
     <div>
       <h4>Latest Data</h4>
@@ -164,31 +164,31 @@ export default Vue.extend({
           colspan: 1
         },
         {
-         label: "",
-         colspan: 1
-       },
+          label: "",
+          colspan: 1
+        },
         {
           label: "CASES",
           colspan: 5
         },
         {
-         label: "",
-         colspan: 1
-       },
+          label: "",
+          colspan: 1
+        },
         {
-         label: "",
-         colspan: 1
-       },
+          label: "",
+          colspan: 1
+        },
         {
           label: "",
           colspan: 1
         }, {
           label: "DEATHS",
           colspan: 5
-        },  {
+        }, {
           label: "",
           colspan: 1
-        },{
+        }, {
           label: "RECOVERIES",
           colspan: 4
         }
@@ -215,12 +215,12 @@ export default Vue.extend({
         //   sorted: 0,
         //   essential: false
         // },
-                {
-                  label: "",
-                  value: "",
-                  sorted: null,
-                  essential: false
-                },
+        {
+          label: "",
+          value: "",
+          sorted: null,
+          essential: false
+        },
         {
           group: "cases",
           label: "total",
@@ -434,9 +434,11 @@ export default Vue.extend({
       this.updateData();
     },
     prepData() {
-      this.data.forEach(d => {
-        d["color"] = this.colorScale(d[this.colorVar]);
-      });
+      if (this.data) {
+        this.data.forEach(d => {
+          d["color"] = this.colorScale(d[this.colorVar]);
+        });
+      }
 
     }
   }
@@ -534,6 +536,6 @@ th {
 }
 
 .align-right {
-  align: right;
+    align: right;
 }
 </style>

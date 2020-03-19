@@ -63,7 +63,7 @@ const width = 500;
 const height = 300;
 const radius = 2.5;
 const margin = {
-  top: 10,
+  top: 15,
   right: 225,
   bottom: 75,
   left: 70
@@ -134,7 +134,7 @@ export default Vue.extend({
   },
   computed: {
     locationName() {
-      if (this.data && this.data.length === 1) {
+      if (this.data && this.data.length === 1 && this.data[0].value[0]) {
         return this.data[0].value[0].name;
       }
       return null;
