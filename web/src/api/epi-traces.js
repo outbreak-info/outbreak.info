@@ -21,7 +21,7 @@ import {
 export const epiDataSubject = new BehaviorSubject([]);
 export const epiDataState$ = epiDataSubject.asObservable();
 
-export const epiTableSubject = new BehaviorSubject([]);
+export const epiTableSubject = new BehaviorSubject({data: [], total: 0});
 export const epiTableState$ = epiTableSubject.asObservable();
 
 import store from "@/store";
@@ -101,16 +101,16 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
   const timestamp = new Date().getTime();
   const locationString = `("${locations.join('","')}")`;
 
-  return from(axios.get(`${apiUrl}query?q=location_id:${locationString} AND date:"2020-02-01"&sort=${sort}&size=${size}&fields=location_id,admin_level,name,country_name,region_wb,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
+  return from(axios.get(`${apiUrl}query?q=location_id:${locationString} AND date:"2020-02-01"&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,region_wb,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
     headers: {
       'Content-Type': 'application/json'
     }
   })).pipe(
     tap(x => console.log(x)),
-    pluck("data", "hits"),
+    pluck("data"),
     map(results => {
-      // convert dates to javascript dates
-      results.forEach(d => {
+      // convert dates to javascript dates, format things for the table
+      results["hits"].forEach(d => {
         d['date'] = parseDate(d.date);
         d['country_name'] = d.admin_level === 0 ? d.name : d.country_name;
         d['region_wb'] = d.admin_level === -1 ? d.name : d.region_wb;
@@ -129,13 +129,9 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
         d["recovered_increase"] = d.recovered_currentIncrease.toLocaleString();
         d["recovered_pctIncrease"] = formatPercent(d.recovered_currentPctIncrease);
         d["recovered_percapita"] = d.population ?  (d.recovered_currentCases ? `1 in ${Math.round(d.population / d.recovered_currentCases).toLocaleString()}` : "0") : null;
-
-        // d["numIncreaseFormatted"] = d.numIncrease.toLocaleString();
-        // d["pctIncreaseFormatted"] = this.formatPercent(d.pctIncrease);
-        // d["totalNumFormatted"] = d.currentCases.toLocaleString();
       })
       console.log(results)
-      epiTableSubject.next(results)
+      epiTableSubject.next({data: results["hits"], total: results["total"]})
       return (results);
 
     }),

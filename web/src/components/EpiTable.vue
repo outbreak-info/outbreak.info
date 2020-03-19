@@ -1,5 +1,20 @@
 <template>
 <div class="epi-table my-3">
+  <div class="m-auto d-flex justify-content-center py-5">
+    <div>
+      <h4>Most Recent Cases</h4>
+      <DataUpdated />
+      <div class="d-flex mt-4">
+        <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
+        <select v-model="numPerPage" @change="changePageNum()">
+          <option v-for="option in pageOpts" :value="option" :key="option">
+            {{ option }} results
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
   <div class="p-2">
     <table class="m-auto">
       <tr class="table-header-merged">
@@ -35,6 +50,17 @@
       </tr>
 
     </table>
+  </div>
+  <br />
+  <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
+    <button class="pagination-btn pagination-left" :class="{ disabled: page === 0 }" @click="changePage(-1)">
+      <font-awesome-icon :icon="['fas', 'arrow-left']" />
+    </button>
+    <small>viewing locations {{ lowerLim + 1 }} &minus; {{ upperLim }} of
+      {{ total }}</small>
+    <button class="pagination-btn pagination-left" :class="{ disabled: page === lastPage }" @click="changePage(1)">
+      <font-awesome-icon :icon="['fas', 'arrow-right']" />
+    </button>
   </div>
 </div>
 </template>
@@ -85,7 +111,7 @@ export default Vue.extend({
   name: "EpiTable",
   components: {
     FontAwesomeIcon,
-    // DataUpdated,
+    DataUpdated,
     // Sparkline,
     RecoveredBar
   },
@@ -98,7 +124,7 @@ export default Vue.extend({
     return {
       formatDate,
       data: [],
-      cases: [],
+      total: 0,
       dataSubscription: null,
       changeDataSubscription: null,
       mergedColumns: [{
@@ -272,7 +298,8 @@ export default Vue.extend({
     this.dataSubscription = epiTableState$.subscribe(data => {
       console.log("subscribing")
       console.log(data)
-      this.data = data;
+      this.data = data["data"];
+      this.total = data["total"];
     })
   },
   beforeDestroy() {
@@ -289,12 +316,9 @@ export default Vue.extend({
       const upper = this.page * this.numPerPage + this.numPerPage;
       return upper > this.total ? this.total : upper;
     },
-    total: function() {
-      return this.cases ? this.cases.length : null;
-    },
     lastPage: function() {
-      return this.cases ?
-        Math.floor(this.cases.length / this.numPerPage) :
+      return this.total ?
+        Math.floor(this.total / this.numPerPage) :
         null;
     }
   },
@@ -316,15 +340,19 @@ export default Vue.extend({
 
         })
 
-        this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.sortVar, 10, 0).subscribe(_ => null);
+        this.updateData();
       }
+    },
+    updateData() {
+      this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.sortVar, this.numPerPage, this.numPerPage * this.page).subscribe(_ => null);
     },
     changePage(step) {
       this.page += step;
-      this.filterCases();
+      this.updateData();
     },
     changePageNum() {
-      this.filterCases();
+      this.page = 0;
+      this.updateData();
     },
     prepData() {
       console.log("prepping data")

@@ -1,10 +1,9 @@
 <template>
 <div class="container full-page py-5 bg-light">
-  <!-- <h1 v-if="allData$">{{allData$.length}} records</h1> -->
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <div class="d-flex row m-0">
-    <!-- <EpiCurve class="col-s-12 col-md-12 col-lg-6" @addable="updateAddable" id="curveContainer" v-if="data$"/> -->
-    <EpiTable class="col-sm-12 overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" />
+    <EpiCurve class="row" @addable="updateAddable" id="curveContainer" v-if="data$"/>
+    <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" />
   </div>
   <!-- <div id="presetLocations">
     <button v-for="(place, idx) in presetGroups" v-bind:key="idx" @click="selectGroup(place)">
@@ -30,7 +29,7 @@ import {
 export default {
   name: "Epidemiology",
   components: {
-    // EpiCurve,
+    EpiCurve,
     EpiTable,
     Autocomplete
   },
@@ -75,7 +74,7 @@ export default {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.data$ = getEpiData(this.$apiurl, locations, "-confirmed_currentCases", 10).subscribe(_ => null);
+        this.data$ = getEpiData(this.$apiurl, locations, "-confirmed_currentCases", 10, 0).subscribe(_ => null);
         // need to call subscription in order to trigger calling API function and passing subscription to child
       } else {
         this.clearLocations();
