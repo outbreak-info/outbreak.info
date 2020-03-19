@@ -56,15 +56,15 @@
           <span v-else-if="column.value === ''" class="spacer px-2">
           </span>
           <!-- sparklines -->
-          <span v-else-if="column.value === 'confirmed_pctIncrease'" class="align-right">
+          <span v-else-if="column.value === 'confirmed_sparkline'" class="align-right">
             {{row[column.value]}}
             <Sparkline :data="[row.longitudinal]" variable="confirmed" :width="100" :height="23" :id="row.location_id" :color="row.color" />
           </span>
-          <span v-else-if="column.value === 'dead_pctIncrease'">
+          <span v-else-if="column.value === 'dead_sparkline'">
             {{row[column.value]}}
             <Sparkline :data="[row.longitudinal]" variable="dead" :width="100" :height="23" :id="row.location_id" :color="row.color" />
           </span>
-          <span v-else-if="column.value === 'recovered_pctIncrease'">
+          <span v-else-if="column.value === 'recovered_sparkline'">
             {{row[column.value]}}
             <Sparkline :data="[row.longitudinal]" variable="recovered" :width="100" :height="23" :id="row.location_id" :color="row.color" />
           </span>
@@ -169,7 +169,7 @@ export default Vue.extend({
        },
         {
           label: "CASES",
-          colspan: 4
+          colspan: 5
         },
         {
          label: "",
@@ -184,13 +184,13 @@ export default Vue.extend({
           colspan: 1
         }, {
           label: "DEATHS",
-          colspan: 4
+          colspan: 5
         },  {
           label: "",
           colspan: 1
         },{
           label: "RECOVERIES",
-          colspan: 4
+          colspan: 5
         }
       ],
 
@@ -253,6 +253,13 @@ export default Vue.extend({
           essential: false
         },
         {
+          group: "cases",
+          label: "change over time",
+          value: "confirmed_sparkline",
+          sorted: null,
+          essential: true
+        },
+        {
           label: "",
           value: "",
           sorted: null,
@@ -303,6 +310,13 @@ export default Vue.extend({
           essential: false
         },
         {
+          group: "deaths",
+          label: "change over time",
+          value: "dead_sparkline",
+          sorted: null,
+          essential: true
+        },
+        {
           label: "",
           value: "",
           sorted: null,
@@ -338,6 +352,13 @@ export default Vue.extend({
           value: "recovered_percapita",
           sorted: null,
           essential: false
+        },
+        {
+          group: "recoveries",
+          label: "change over time",
+          value: "recovered_sparkline",
+          sorted: null,
+          essential: true
         }
       ],
       searchInput: "",
