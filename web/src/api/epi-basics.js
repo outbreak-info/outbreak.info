@@ -64,7 +64,7 @@ export function getLocations(apiUrl) {
       return (places)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting locations!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -83,7 +83,7 @@ export function getMostCases(apiUrl, num2Return = 5) {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting highest case counts!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -101,7 +101,7 @@ export function getSummary(apiUrl, caseThreshold) {
       return (totals)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting summary!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -119,7 +119,7 @@ export function getTotals(apiUrl) {
       return (totals)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting totals!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -135,7 +135,7 @@ export function countCountries(apiUrl) {
       return (results.length)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting number of countries!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -157,7 +157,7 @@ export function getFirstCases(apiUrl) {
       return (summary)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting cfirst cases!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -197,7 +197,7 @@ export function getDateUpdate(apiUrl) {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in date updated!", "color: red");
       console.log(e);
       return from([]);
     }),
