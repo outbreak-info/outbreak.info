@@ -2,7 +2,7 @@
 <div class="epi-table my-3">
   <div class="m-auto d-flex justify-content-center py-5">
     <div>
-      <h4>Most Recent Cases</h4>
+      <h4>Latest Data</h4>
       <DataUpdated />
       <div class="mt-4">
         <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
