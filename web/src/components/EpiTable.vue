@@ -72,7 +72,7 @@
           <span v-else>{{row[column.value]}}</span>
         </td>
         <td>
-          <RecoveredBar :data="row" />
+          <RecoveredBar :data="row" :color="row.color" />
         </td>
       </tr>
 
