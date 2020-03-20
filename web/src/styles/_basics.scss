@@ -493,5 +493,6 @@ select:hover{
 }
 
 .leaflet-container{
-background: linear-gradient(to top,  $secondary-color  0%, $primary-color 100%) !important;
+background: linear-gradient(to bottom,  $grey-40  0%, $secondary-color 100%) !important;
+// background: linear-gradient(to top,  $secondary-color  0%, $primary-color 100%) !important;
 }
