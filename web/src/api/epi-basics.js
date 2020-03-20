@@ -171,7 +171,8 @@ export function getFirstCases(apiUrl) {
 export function getCasesAboveThresh(apiUrl, threshold) {
   const timestamp = new Date().getTime();
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-02-01"%20AND%20admin_level:0%20AND%20confirmed_currentCases:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=date:"2020-02-01"%20AND%20admin_level:0%20AND%20confirmed_currentIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
+    tap(x => console.log(x)),
     pluck("data", "hits"),
     map(results => {
       const summary = {};
@@ -222,7 +223,6 @@ export function getGlanceSummary(apiUrl, locations, num2Return = 3) {
     pluck("data", "hits"),
     mergeMap(summaryData => getSparklineTraces(apiUrl, summaryData.map(d => d.location_id), "confirmed,dead,confirmed_numIncrease").pipe(
       map(sparks => {
-        console.log(summaryData)
         sparks.forEach(spark => {
           const idx = summaryData.findIndex(d => d.location_id === spark.key);
           if (idx > -1) {
