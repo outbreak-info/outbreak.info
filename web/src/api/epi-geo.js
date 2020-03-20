@@ -23,7 +23,7 @@ export function getMapData(apiUrl) {
   store.state.admin.loading = true;
   const timestamp = new Date().getTime();
 // Choosing one specific date, since all dates contain the current info.
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-15" AND admin_level:[0 TO *]&fields=location_id,name,country_name,admin_level,lat,long,confirmed_currentCases,
+  return from(axios.get(`${apiUrl}query?q=date:"2020-03-15" AND admin_level:[0 TO *]&fields=location_id,name,num_subnational,country_name,admin_level,lat,long,confirmed_currentCases,
   confirmed_currentIncrease,
   confirmed_currentPctIncrease,
   confirmed_currentToday,

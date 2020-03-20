@@ -5,7 +5,7 @@
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
       <l-tile-layer :url="urlLabels" :attribution="attribution" :opacity="0.25" v-if="currentZoom > 3" />
       <div v-for="(circle, i) in data" :key="i">
-        <l-circle-marker v-if="currentZoom > 2 && circle.admin_level === 1 || currentZoom <= 2 && circle.admin_level === 0" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
+        <l-circle-marker v-if="currentZoom > 2 && !circle.num_subnational || currentZoom <= 2 && circle.admin_level === 0" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
           <l-tooltip :options="{ permanent: false, interactive: true }">
             <div>
               {{ circle.name }}
