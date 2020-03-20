@@ -3,7 +3,7 @@
   <svg class="recovered-bars" :width="width+6" :height="height+6">
     <g transform="translate(3,3)">
       <rect :width="width" :height="height" :x="0" :y="0" class="total-cases"></rect>
-      <rect :width="recoveredWidth" :height="height" :x="0" :y="0" :fill="color" class="recovered-cases"></rect>
+      <rect :width="recoveredWidth" :height="height" :x="0" :y="0" class="recovered-cases"></rect>
       <rect :width="deadWidth" :height="height" :x="width - deadWidth" :y="0" class="dead-cases"></rect>
       <rect :width="width" :height="height" :x="0" :y="0" class="total-cases-outline"></rect>
     </g>
@@ -84,6 +84,7 @@ export default Vue.extend({
 }
 
 .recovered-cases {
+  fill: #007bff;
 }
 
 </style>

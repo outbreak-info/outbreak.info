@@ -63,7 +63,7 @@
       </div>
     </template>
     <template v-if="nestedData && nestedData.length > 0">
-      <!-- <CaseSummary class="container" /> -->
+      <CaseSummary class="container" />
       <h4>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
@@ -151,7 +151,7 @@ export default {
   components: {
     EpiStacked,
     CountryBarGraph,
-    // CaseSummary,
+    CaseSummary,
     DataUpdated,
     DataSource,
     EpiTable,

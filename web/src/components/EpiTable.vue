@@ -36,6 +36,14 @@
         </th>
         <th id="td-outcomes">
           outcomes
+          <svg width="70px" height="44px" class="mt-2">
+            <rect width="13" height="13" class="outcome-legend-rect recovered-cases" x="0" y="0"></rect>
+            <rect width="13" height="13" class="outcome-legend-rect total-cases" x="0" y="16"></rect>
+            <rect width="13" height="13" class="outcome-legend-rect dead-cases" x="0" y="32"></rect>
+            <text class="outcome-legend" x="16" y="0">recovered</text>
+            <text class="outcome-legend" x="16" y="16">unknown</text>
+            <text class="outcome-legend" x="16" y="32">dead</text>
+          </svg>
         </th>
       </tr>
 
@@ -537,5 +545,14 @@ th {
 
 .align-right {
     align: right;
+}
+
+.outcome-legend {
+  dominant-baseline: hanging;
+  font-size: 0.9em;
+}
+.outcome-legend-rect {
+  stroke: $base-grey;
+  stroke-width: 0.5;
 }
 </style>
