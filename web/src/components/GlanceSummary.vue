@@ -109,7 +109,7 @@ export default Vue.extend({
   name: "GlanceSummary",
   props: {
     data: Object,
-    idx: Number
+    idx: String
   },
   data() {
     return {};

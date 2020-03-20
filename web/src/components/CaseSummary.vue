@@ -49,7 +49,7 @@
     </div>
 
     <div class="row d-flex">
-      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="idx"/>
+      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="String(idx)"/>
     </div>
 
   </section>
