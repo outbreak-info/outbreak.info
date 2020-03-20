@@ -160,7 +160,6 @@ export default Vue.extend({
     },
     updateData() {
       this.changeDataSubscription = getCountryData(this.$apiurl, this.region, this.variable).subscribe(data => {
-        console.log("new data")
         this.data = data;
       });
     },

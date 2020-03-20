@@ -116,17 +116,12 @@ export function getCountryData(apiUrl, region, variable) {
         .rollup(values => values)
         .entries(timeData);
 
-        console.log(sparks)
-
       sparks.forEach(spark => {
         const idx = currentData["data"]["hits"].findIndex(d => d.location_id === spark.key);
         if (idx > -1) {
           currentData["data"]["hits"][idx]["data"] = spark.value;
         }
       })
-
-      console.log(currentData["data"]["hits"])
-
 
       return (currentData["data"]["hits"])
     }),
