@@ -2,14 +2,14 @@
 <div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`">
   <h4 class="plot-title">Current total COVID-19 {{ variable }} in {{ region }}</h4>
 
-  <svg :width="
-        width +
-          margin.left +
-          margin.right +
-          sparkWidth +
-          newCasesWidth +
-          4 * margin.gap
-      " :height="height + margin.top + margin.bottom" class="case-counts">
+  <svg :viewBox="`0 0 ${width +
+    margin.left +
+    margin.right +
+    sparkWidth +
+    newCasesWidth +
+    4 * margin.gap} ${height + margin.top + margin.bottom }`"
+      preserveAspectRatio="xMidYMid slice" style="overflow:auto"
+      class="case-counts">
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
   </svg>
 
