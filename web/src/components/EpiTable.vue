@@ -40,9 +40,9 @@
             <rect width="13" height="13" class="outcome-legend-rect recovered-cases" x="0" y="0"></rect>
             <rect width="13" height="13" class="outcome-legend-rect total-cases" x="0" y="16"></rect>
             <rect width="13" height="13" class="outcome-legend-rect dead-cases" x="0" y="32"></rect>
-            <text class="outcome-legend" x="16" y="0">recovered</text>
-            <text class="outcome-legend" x="16" y="16">unknown</text>
-            <text class="outcome-legend" x="16" y="32">dead</text>
+            <text class="outcome-legend" x="17" y="0">recovered</text>
+            <text class="outcome-legend" x="17" y="16">unknown</text>
+            <text class="outcome-legend" x="17" y="32">dead</text>
           </svg>
         </th>
       </tr>
