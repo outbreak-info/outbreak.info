@@ -6,6 +6,7 @@ import {
   tap,
   finalize,
   catchError,
+  mergeMap,
   pluck,
   map,
 } from "rxjs/operators";
@@ -14,6 +15,8 @@ import {
   timeParse,
   sum
 } from "d3";
+
+import { getSparklineTraces } from "@/api/epi-traces.js";
 
 import store from "@/store";
 
@@ -198,6 +201,37 @@ export function getDateUpdate(apiUrl) {
     }),
     catchError(e => {
       console.log("%c Error in date updated!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+
+
+export function getGlanceSummary(apiUrl, locations, num2Return = 3) {
+  store.state.admin.loading = true;
+  const parseDate = timeParse("%Y-%m-%d");
+  const timestamp = new Date().getTime();
+  const location_string = locations && locations.length ? ` AND location_id:("${locations.join('","')}")` : `AND admin_level:[0 TO *]&sort=-confirmed_currentIncrease`;
+
+  return from(axios.get(`${apiUrl}query?q=date:"2020-02-01"${location_string}&fields=location_id,name,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,confirmed_currentToday,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease&size=${num2Return}&timestamp=${timestamp}`)).pipe(
+    pluck("data", "hits"),
+    mergeMap(summaryData => getSparklineTraces(apiUrl, summaryData.map(d => d.location_id), "confirmed,dead,confirmed_numIncrease").pipe(
+      map(sparks => {
+        console.log(summaryData)
+        sparks.forEach(spark => {
+          const idx = summaryData.findIndex(d => d.location_id === spark.key);
+          if (idx > -1) {
+            summaryData[idx]["longitudinal"] = spark.value;
+          }
+        })
+        return(summaryData)
+      })
+    )),
+    catchError(e => {
+      console.log("%c Error in getting highest case counts!", "color: red");
       console.log(e);
       return from([]);
     }),

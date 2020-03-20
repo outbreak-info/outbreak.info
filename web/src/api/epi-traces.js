@@ -172,14 +172,14 @@ export function getTableData(apiUrl, locations, sort, size, page) {
   )
 }
 
-export function getSparklineTraces(apiUrl, locations) {
+export function getSparklineTraces(apiUrl, locations, variableString="confirmed,recovered,dead") {
   if (locations) {
     const parseDate = timeParse("%Y-%m-%d");
     // trigger no-cache behavior by adding timestamp to request
     const timestamp = new Date().getTime();
     const queryString = `location_id:("${locations.join('","')}")`;
 
-    return from(axios.get(`${apiUrl}query?q=${queryString}&sort=date&size=1000&fields=date,location_id,confirmed,recovered,dead&timestamp=${timestamp}`, {
+    return from(axios.get(`${apiUrl}query?q=${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`, {
       headers: {
         'Content-Type': 'application/json'
       }

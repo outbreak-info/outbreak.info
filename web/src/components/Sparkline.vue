@@ -30,7 +30,11 @@ export default Vue.extend({
       area: null
     };
   },
-  watch: {},
+  watch: {
+    data: function() {
+      this.updatePlot()
+    }
+  },
   methods: {
     setupPlot() {
       this.svg = d3.select(`#sparkline-${this.id}-${this.variable}`).select("svg.epi-sparkline");
