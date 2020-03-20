@@ -53,17 +53,17 @@
             {{ region.region }}
           </div>
           <div>{{ region.currentCases }} total {{selectedVariable}}</div>
-          <div class="click-affordance py-1" :style="{ background: lightColor }">
+          <div class="click-affordance py-1" :style="{ background: lightColor(region.region) }">
             click for details
           </div>
         </div>
-        <!-- <CountryBarGraph :region="region.region" :id="idx" :style="{
+        <CountryBarGraph :region="region.region" :variable="selectedVariable" :id="idx" :style="{
               visibility: region.displayMore ? 'visible' : 'hidden'
-            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" /> -->
+            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed"  />
       </div>
     </template>
     <template v-if="nestedData && nestedData.length > 0">
-      <CaseSummary class="container" />
+      <!-- <CaseSummary class="container" /> -->
       <h4>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
@@ -150,8 +150,8 @@ export default {
   name: "Home",
   components: {
     EpiStacked,
-    // CountryBarGraph,
-    CaseSummary,
+    CountryBarGraph,
+    // CaseSummary,
     DataUpdated,
     DataSource,
     EpiTable,
@@ -186,10 +186,6 @@ export default {
   computed: {
     ...mapState("admin", ["loading"]),
     ...mapState("geo", ["regionDict"]),
-    lightColor: function() {
-      const scale = store.getters["colors/getRegionColor"];
-      return scale(this.region, 0.85);
-    },
     // nestedData() {
     //   return nestRegions(this.cases.flatMap(d => d.data));
     // },
@@ -218,6 +214,10 @@ export default {
     regionColorScale: function(location) {
       const scale = store.getters["colors/getRegionColorFromLocation"];
       return scale(location);
+    },
+    lightColor: function(region) {
+      const scale = store.getters["colors/getRegionColor"];
+      return scale(region, 0.85);
     },
     setDims() {
       const selector = this.$refs.regional_stacked_area_plots;

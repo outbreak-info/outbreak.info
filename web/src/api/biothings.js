@@ -87,7 +87,7 @@ export function getAll(apiUrl, queryString) {
       return (all_data);
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in fetching all!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -114,11 +114,10 @@ export function getOne(apiUrl, queryString, scrollID = null) {
       })
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in fetching one!", "color: red");
       console.log(e);
       return from([]);
     }),
     finalize(() => (store.state.admin.loading = false))
   )
-  // axios.get(apiUrl, { query: {admin0: location  } }).then(d => {console.log(d )})
 }
