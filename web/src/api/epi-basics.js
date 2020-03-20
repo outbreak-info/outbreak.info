@@ -13,6 +13,7 @@ import {
 import {
   nest,
   timeParse,
+  timeFormat,
   sum
 } from "d3";
 
@@ -212,6 +213,7 @@ export function getDateUpdate(apiUrl) {
 
 export function getGlanceSummary(apiUrl, locations, num2Return = 3) {
   store.state.admin.loading = true;
+  const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
   const timestamp = new Date().getTime();
   const location_string = locations && locations.length ? ` AND location_id:("${locations.join('","')}")` : `AND admin_level:[0 TO *]&sort=-confirmed_currentIncrease`;
@@ -226,6 +228,10 @@ export function getGlanceSummary(apiUrl, locations, num2Return = 3) {
           if (idx > -1) {
             summaryData[idx]["longitudinal"] = spark.value;
           }
+        })
+
+        summaryData.forEach(d => {
+          d["confirmed_currentToday"] = formatDate(parseDate(d["confirmed_currentToday"]));
         })
         return(summaryData)
       })
