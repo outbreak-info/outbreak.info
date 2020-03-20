@@ -16,7 +16,9 @@ import {
   nest,
   timeParse,
   timeFormat,
+  format,
   isoParse,
+  utcParse,
   max,
   sum
 } from "d3";
@@ -31,10 +33,12 @@ export function getDateUpdated(apiUrl) {
 
     pluck("data", "build_date"),
     map(result => {
-      const dateUpdated = isoParse(result);
+      const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
+      const dateUpdated = strictIsoParse(result);
+      const today = new Date();
       let lastUpdated = null;
       if (dateUpdated) {
-        const updatedDiff = (new Date() - dateUpdated) / (60 * 60 * 1000);
+        const updatedDiff = (today - dateUpdated) / (60 * 60 * 1000);
 
         if (updatedDiff < 1) {
           lastUpdated = `${Math.round(updatedDiff * 60)}m`;
