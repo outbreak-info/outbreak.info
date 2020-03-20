@@ -1,5 +1,6 @@
 import {
-  from, forkJoin
+  from,
+  forkJoin
 } from "rxjs";
 import axios from "axios";
 import {
@@ -15,7 +16,9 @@ import {
   sum
 } from "d3";
 
-import { getAll } from "@/api/biothings.js";
+import {
+  getAll
+} from "@/api/biothings.js";
 
 import store from "@/store";
 
@@ -106,21 +109,23 @@ export function getCountryData(apiUrl, region, variable) {
         delete d["_score"];
       })
       // ensure dates are sorted
-      timeData.sort((a,b) => a.date - b.date);
+      timeData.sort((a, b) => a.date - b.date);
 
       const sparks = nest()
         .key(d => d.location_id)
         .rollup(values => values)
         .entries(timeData);
 
-        sparks.forEach(spark => {
-          const idx = currentData["data"]["hits"].findIndex(d => d.location_id === spark.key);
-          if (idx > -1) {
-            currentData["data"]["hits"]["data"] = sparks.value;
-          }
-        })
+        console.log(sparks)
 
-        console.log(currentData["data"]["hits"])
+      sparks.forEach(spark => {
+        const idx = currentData["data"]["hits"].findIndex(d => d.location_id === spark.key);
+        if (idx > -1) {
+          currentData["data"]["hits"][idx]["data"] = spark.value;
+        }
+      })
+
+      console.log(currentData["data"]["hits"])
 
 
       return (currentData["data"]["hits"])

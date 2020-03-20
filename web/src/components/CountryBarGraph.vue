@@ -198,17 +198,17 @@ export default Vue.extend({
         .y1(d => d.y);
     },
     prepData: function() {
-      // this.data.forEach(d => {
-      //   const y = d3
-      //     .scaleLinear()
-      //     .range([this.y.bandwidth() * 0.8, 0])
-      //     .domain([0, d3.max(d.data.map(d => d[this.variable]))]);
-      //
-      //   d.data.forEach(datum => {
-      //     datum["y"] = y(datum[this.variable]);
-      //     datum["y0"] = y(0);
-      //   });
-      // });
+      this.data.forEach(d => {
+        const y = d3
+          .scaleLinear()
+          .range([this.y.bandwidth() * 0.8, 0])
+          .domain([0, d3.max(d.data.map(d => d[this.variable]))]);
+
+        d.data.forEach(datum => {
+          datum["y"] = y(datum[this.variable]);
+          datum["y0"] = y(0);
+        });
+      });
     },
     updateScales: function() {
       this.x = this.x.domain([0, d3.max(this.data, d => d[`${this.variable}_currentCases`])]);
