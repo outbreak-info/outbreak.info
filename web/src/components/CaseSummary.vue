@@ -49,7 +49,7 @@
     </div>
 
     <div class="row d-flex">
-      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="String(idx)"/>
+      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="String(idx)" />
     </div>
 
   </section>
@@ -123,42 +123,43 @@ export default Vue.extend({
   mounted() {
     this.dataSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
       this.glanceSummaries = d;
-    });
-    tippy("#first-cases", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      }
+      tippy("#first-cases", {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "bottom",
+        animation: "fade",
+        theme: "light",
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
+
+      tippy("#changing-countries", {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "bottom",
+        animation: "fade",
+        theme: "light",
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
+
+      tippy(".hardest-hit", {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "bottom",
+        animation: "fade",
+        theme: "light",
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
     });
 
-    tippy("#changing-countries", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      }
-    });
-
-    tippy(".hardest-hit", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      }
-    });
   }
 });
 </script>
