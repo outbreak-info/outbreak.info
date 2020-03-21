@@ -172,7 +172,6 @@ export function getCasesAboveThresh(apiUrl, threshold) {
   const timestamp = new Date().getTime();
 
   return from(axios.get(`${apiUrl}query?q=date:"2020-02-01"%20AND%20admin_level:0%20AND%20confirmed_currentIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
-    tap(x => console.log(x)),
     pluck("data", "hits"),
     map(results => {
       const summary = {};
