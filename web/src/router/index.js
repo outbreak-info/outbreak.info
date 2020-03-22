@@ -38,12 +38,12 @@ const routes = [
   //   component: () =>
   //     import(/* webpackChunkName: "about" */ "../views/Timelapse.vue")
   // },
-  {
-    path: "/doubling-rates",
-    name: "Doubling Rates",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/DoublingRates.vue")
-  }
+  // {
+  //   path: "/doubling-rates",
+  //   name: "Doubling Rates",
+  //   component: () =>
+  //     import(/* webpackChunkName: "about" */ "../views/DoublingRates.vue")
+  // }
 ];
 
 const router = new VueRouter({
