@@ -45,11 +45,19 @@
   <section class="row">
     <div class="col-sm-12">
       <h4 class="text-left m-0">At a glance</h4>
-      <button @click="changeLocations()">change locations</button>
+      <p>View the three regions with the largest increase in cases in the past day, or select your own regions</p>
+      <button @click="summaryDeletable = !summaryDeletable">{{summaryDeletable ? "done" : "change locations"}}</button>
     </div>
 
     <div class="row d-flex">
-      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="String(idx)" />
+      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="String(idx)" :deletable="summaryDeletable" @removed="removeSummary" />
+
+      <div class="d-flex align-items-center" v-if="summaryDeletable">
+        <SearchBar :routable="false" @location="addSummary"></SearchBar>
+        <button class="add-location d-flex justify-content-center align-items-center">
+          <font-awesome-icon :icon="['fas', 'plus-circle']" class="add-btn" />
+        </button>
+      </div>
     </div>
 
   </section>
@@ -65,6 +73,7 @@ import {
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 import GlanceSummary from "@/components/GlanceSummary";
+import SearchBar from "@/components/SearchBar";
 
 import {
   timeFormat
@@ -77,10 +86,25 @@ import {
   getCurrentDate
 } from "@/api/biothings.js";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faPlusCircle
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faPlusCircle);
+
 export default Vue.extend({
   name: "CaseSummary",
   components: {
-    GlanceSummary
+    GlanceSummary,
+    SearchBar,
+    FontAwesomeIcon
   },
   props: {},
   data() {
@@ -89,6 +113,7 @@ export default Vue.extend({
       caseThreshold: 50,
       glanceLocations: [],
       glanceSummaries: [],
+      summaryDeletable: false,
       dataSubscription: null,
       updatedSubscription: null
     };
@@ -101,12 +126,24 @@ export default Vue.extend({
     }
   },
   methods: {
-    changeLocations() {
-      this.glanceLocations = ["KOR", "US-CA_USA", "US-MO_USA"];
+    removeSummary: function(idx) {
+      this.glanceLocations = this.glanceLocations.filter((d,i) => i !== +idx);
+      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      if (this.glanceLocations.length > 0) {
+        this.updatedSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
+          this.glanceSummaries = d;
+        });
+      } else {
+        this.glanceSummaries = [];
+      }
+    },
+    addSummary: function(location_id) {
+      this.glanceLocations = this.glanceLocations.concat(location_id);
+      Vue.$cookies.set('custom_locations', this.glanceLocations);
       this.updatedSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
         this.glanceSummaries = d;
       });
-    }
+    },
   },
   destroyed() {
     this.dataSubscription.unsubscribe();
@@ -121,8 +158,14 @@ export default Vue.extend({
     }
   },
   mounted() {
+    const locations = Vue.$cookies.get('custom_locations');
+    this.glanceLocations = locations ? locations.split(",") : [];
+
     this.dataSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
       this.glanceSummaries = d;
+      this.glanceLocations = d.map(d => d.location_id);
+      console.log(this.glanceLocations)
+      Vue.$cookies.set('custom_locations', this.glanceLocations);
       tippy("#first-cases", {
         content: "Loading...",
         maxWidth: "200px",
@@ -165,4 +208,22 @@ export default Vue.extend({
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.add-location {
+    width: 50px;
+    height: 50px;
+    background: lighten($warning-color, 38%);
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover {
+        background: $warning-color;
+        & .add-btn {
+            color: lighten($warning-color, 35%) !important;
+        }
+    }
+}
+.add-btn {
+    color: $warning-color;
+    font-size: 36px;
+}
+</style>
