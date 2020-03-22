@@ -247,7 +247,7 @@ export default Vue.extend({
             .slice()
             .sort((a, b) => b.currentCases - a.currentCases)
             .slice(this.lengthThreshold)
-            .map(d => d.name);
+            .map(d => d.key);
           this.$emit("addable", toAdd);
         }
 
