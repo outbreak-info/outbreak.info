@@ -129,8 +129,24 @@ export default Vue.extend({
     Bargraph
   },
   methods: {
-    formatPct(value) {
-      return (format(".0%")(value))
+    formatPct(pct) {
+      if (!pct) {
+        return null;
+      }
+
+      if (pct < 0) {
+        return "count corrected";
+      }
+
+      if (pct < 0.005) {
+        return "< 1%";
+      }
+
+      if (!isFinite(pct)) {
+        return "* first reported *";
+      }
+
+      return format(".0%")(pct);
     },
     removeSummary() {
       console.log("removing index called")
