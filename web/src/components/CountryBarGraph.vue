@@ -1,15 +1,14 @@
 <template>
 <div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`">
-  <h4 class="plot-title">Current total COVID-19 {{ variable }} in {{ region }}</h4>
+  <h4 class="plot-title">Current total COVID-19 {{ variable }} in
+    <span @click="handleClick" class="region-name">{{ region }}</span></h4>
 
   <svg :viewBox="`0 0 ${width +
     margin.left +
     margin.right +
     sparkWidth +
     newCasesWidth +
-    4 * margin.gap} ${height + margin.top + margin.bottom }`"
-      preserveAspectRatio="xMidYMid slice" style="overflow:auto"
-      class="case-counts">
+    4 * margin.gap} ${height + margin.top + margin.bottom }`" preserveAspectRatio="xMidYMid slice" style="overflow:auto" class="case-counts">
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
   </svg>
 
@@ -151,6 +150,23 @@ export default Vue.extend({
         }
       });
     },
+    routeToLoc: function(location_name) {
+      const location = this.data.filter(d => d.name === location_name)
+      const location_id = location ? location[0].location_id : null;
+
+      if (location_id) {
+        this.$emit("regionSelected", {
+          region: "all"
+        });
+
+        this.$router.push({
+          path: "epidemiology",
+          query: {
+            location: location_id
+          }
+        });
+      }
+    },
     closeWindow: function() {
       this.$emit("regionSelected", {
         region: this.region,
@@ -223,6 +239,9 @@ export default Vue.extend({
       this.yAxis = d3.axisRight(this.y);
 
       this.svg.select(".axis--y").call(this.yAxis);
+      this.svg.select(".axis--y").selectAll("text")
+        .on("click", d => this.routeToLoc(d));
+
     },
     drawPlot: function() {
       const t1 = d3.transition().duration(1000);
@@ -370,6 +389,17 @@ export default Vue.extend({
 
 .country-bar-graph .axis--y text {
     text-anchor: end;
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}
+
+.region-name {
+  &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+  }
 }
 
 .bar-axis {
