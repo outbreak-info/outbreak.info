@@ -62,13 +62,21 @@ export default Vue.extend({
       barSelector
         .join(
           enter => enter.append("rect")
-          .attr("class", "bargraph")
+          .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
           .attr("x", d => this.x(d.date))
           .attr("width", this.x.bandwidth())
           .attr("y", d => this.y(d[this.variable]))
           .attr("height", d => this.y(0) - this.y(d[this.variable]))
-          .attr("fill", this.color)
-          // .attr("height", d => this.y(d[this.variable]))
+          .attr("fill", this.color),
+          
+          update => update
+          .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
+          .attr("x", d => this.x(d.date))
+          .attr("width", this.x.bandwidth())
+          .attr("y", d => this.y(d[this.variable]))
+          .attr("height", d => this.y(0) - this.y(d[this.variable])),
+
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
     }
   },
