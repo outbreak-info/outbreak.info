@@ -100,9 +100,6 @@
   </section>
 
   <section>
-    <p>
-      <small class="text-muted">Disclaimer: outbreak.info is a work-in-progress.</small>
-    </p>
     <p class="focustext">
       Notice a bug, know of a COVID-19 data source, or want to suggest a
       feature?

@@ -18,7 +18,7 @@
             <span class="accent">{{cases}}</span>: today
           </div>
           <div class="muted">
-            <span class="accent">{{casesYesterday}}</span>: yesterday
+            <span class="yesterday">{{casesYesterday}}</span>: yesterday
           </div>
         </div>
         <svg class="mx-1" height="3em" width="20px">
@@ -47,7 +47,7 @@
             <span class="accent">{{deaths}}</span>: today
           </div>
           <div class="muted">
-            <span class="accent">{{deadYesterday}}</span>: yesterday
+            <span class="yesterday">{{deadYesterday}}</span>: yesterday
           </div>
         </div>
         <svg class="mx-1" height="3em" width="20px">
@@ -149,7 +149,6 @@ export default Vue.extend({
       return format(".0%")(pct);
     },
     removeSummary() {
-      console.log("removing index called")
       this.$emit("removed", this.idx);
     }
   },
@@ -223,17 +222,21 @@ export default Vue.extend({
     font-size: 36px;
     color: $grey-60;
 }
-.accent{
-  font-weight: 600;
-  color: $base-grey;
+.accent {
+    font-weight: 600;
+    color: $base-grey;
 }
+.yesterday {
+    color: $base-grey;
+}
+
 .muted {
-  color: $grey-80;
+    color: $grey-80;
 }
 .increasing {
-  color: lighten($warning-color, 30%);
+    color: lighten($warning-color, 30%);
 }
 .changes {
-  font-weight: 600;
+    font-weight: 600;
 }
 </style>

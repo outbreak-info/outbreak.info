@@ -12,3 +12,7 @@
 # 2020-03-09
 - `npm install`, `npm audit fix`
 - v0.1 released
+
+# 2020-03-22
+- `npm install`, `npm audit fix`
+- v0.2 released
