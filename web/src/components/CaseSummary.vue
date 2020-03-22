@@ -54,7 +54,7 @@
     </div>
 
     <div class="row d-flex">
-      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="String(idx)" :deletable="summaryDeletable" @removed="removeSummary" />
+      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="location.location_id" :deletable="summaryDeletable" @removed="removeSummary" />
 
       <div class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main" v-if="summaryDeletable">
         <h6>Add locations</h6>
@@ -114,11 +114,11 @@ export default Vue.extend({
   },
   methods: {
     removeSummary: function(idx) {
-      this.glanceLocations = this.glanceLocations.filter((d, i) => i !== +idx);
+      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
       Vue.$cookies.set('custom_locations', this.glanceLocations);
       if (this.glanceLocations.length > 0) {
         this.updatedSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
-          this.glanceSummaries = d;
+          this.glanceSummaries = this.sortSummaries(d);
         });
       } else {
         this.glanceSummaries = [];
@@ -128,9 +128,15 @@ export default Vue.extend({
       this.glanceLocations = this.glanceLocations.concat(location_id);
       Vue.$cookies.set('custom_locations', this.glanceLocations);
       this.updatedSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
-        this.glanceSummaries = d;
+        this.glanceSummaries = this.sortSummaries(d);
       });
     },
+    sortSummaries(data) {
+      if(this.glanceLocations && this.glanceLocations.length > 0) {
+        data.sort((a,b) => this.glanceLocations.indexOf(a.location_id) - this.glanceLocations.indexOf(b.location_id))
+      }
+        return(data);
+    }
   },
   destroyed() {
     this.dataSubscription.unsubscribe();
@@ -149,9 +155,8 @@ export default Vue.extend({
     this.glanceLocations = locations ? locations.split(",") : [];
 
     this.dataSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
-      this.glanceSummaries = d;
+      this.glanceSummaries = this.sortSummaries(d);
       this.glanceLocations = d.map(d => d.location_id);
-      console.log(this.glanceLocations)
       Vue.$cookies.set('custom_locations', this.glanceLocations);
       tippy("#first-cases", {
         content: "Loading...",

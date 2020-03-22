@@ -149,7 +149,6 @@ export default Vue.extend({
       return format(".0%")(pct);
     },
     removeSummary() {
-      console.log("removing index called")
       this.$emit("removed", this.idx);
     }
   },
