@@ -1,8 +1,8 @@
 <template>
-<div class="epi-table my-3">
+<div class="epi-table my-3" v-if="data">
   <div class="m-auto d-flex justify-content-center py-5">
     <div>
-      <h4>Most Recent Cases</h4>
+      <h4>Latest Data</h4>
       <DataUpdated />
       <div class="mt-4">
         <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
@@ -36,6 +36,14 @@
         </th>
         <th id="td-outcomes">
           outcomes
+          <svg width="70px" height="44px" class="mt-2">
+            <rect width="13" height="13" class="outcome-legend-rect recovered-cases" x="0" y="0"></rect>
+            <rect width="13" height="13" class="outcome-legend-rect total-cases" x="0" y="16"></rect>
+            <rect width="13" height="13" class="outcome-legend-rect dead-cases" x="0" y="32"></rect>
+            <text class="outcome-legend" x="17" y="0">recovered</text>
+            <text class="outcome-legend" x="17" y="16">unknown</text>
+            <text class="outcome-legend" x="17" y="32">dead</text>
+          </svg>
         </th>
       </tr>
 
@@ -48,7 +56,7 @@
                 name: 'Epidemiology',
                 query: { location: row.location_id }
               }" class="router-link font-weight-bold" v-if="routable">
-              {{row[column.value]}} <i class="fas fa-chevron-right text-highlight"></i></router-link>
+              {{row[column.value]}} <i class="fas fa-chevron-right" :style="{color: row.color}"></i></router-link>
             <!-- not routable location name -->
             <span v-else>{{row[column.value]}}</span>
           </span>
@@ -164,31 +172,31 @@ export default Vue.extend({
           colspan: 1
         },
         {
-         label: "",
-         colspan: 1
-       },
+          label: "",
+          colspan: 1
+        },
         {
           label: "CASES",
           colspan: 5
         },
         {
-         label: "",
-         colspan: 1
-       },
+          label: "",
+          colspan: 1
+        },
         {
-         label: "",
-         colspan: 1
-       },
+          label: "",
+          colspan: 1
+        },
         {
           label: "",
           colspan: 1
         }, {
           label: "DEATHS",
           colspan: 5
-        },  {
+        }, {
           label: "",
           colspan: 1
-        },{
+        }, {
           label: "RECOVERIES",
           colspan: 4
         }
@@ -215,12 +223,12 @@ export default Vue.extend({
         //   sorted: 0,
         //   essential: false
         // },
-                {
-                  label: "",
-                  value: "",
-                  sorted: null,
-                  essential: false
-                },
+        {
+          label: "",
+          value: "",
+          sorted: null,
+          essential: false
+        },
         {
           group: "cases",
           label: "total",
@@ -434,9 +442,11 @@ export default Vue.extend({
       this.updateData();
     },
     prepData() {
-      this.data.forEach(d => {
-        d["color"] = this.colorScale(d[this.colorVar]);
-      });
+      if (this.data) {
+        this.data.forEach(d => {
+          d["color"] = this.colorScale(d[this.colorVar]);
+        });
+      }
 
     }
   }
@@ -478,6 +488,8 @@ tr.table-header-merged {
 td {
     padding: 5px;
     text-align: center;
+    vertical-align: middle;
+    border: none;
 }
 
 th {
@@ -496,7 +508,7 @@ th {
 }
 
 .color-bar {
-    border-left-width: 4px;
+    border-left-width: 10px;
     border-left-style: solid;
     padding-left: 5px !important;
     // background: #00BCD4;
@@ -532,6 +544,15 @@ th {
 }
 
 .align-right {
-  align: right;
+    align: right;
+}
+
+.outcome-legend {
+  dominant-baseline: hanging;
+  font-size: 0.9em;
+}
+.outcome-legend-rect {
+  stroke: $base-grey;
+  stroke-width: 0.5;
 }
 </style>

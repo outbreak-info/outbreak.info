@@ -63,7 +63,7 @@ const width = 500;
 const height = 300;
 const radius = 2.5;
 const margin = {
-  top: 10,
+  top: 15,
   right: 225,
   bottom: 75,
   left: 70
@@ -134,7 +134,7 @@ export default Vue.extend({
   },
   computed: {
     locationName() {
-      if (this.data && this.data.length === 1) {
+      if (this.data && this.data.length === 1 && this.data[0].value[0]) {
         return this.data[0].value[0].name;
       }
       return null;
@@ -199,18 +199,18 @@ export default Vue.extend({
     changeVariable() {
       this.updatePlot();
     },
-    tooltipOn: function(d) {
+    tooltipOn: function(d, location_id) {
       d3.select(`#tooltip-${d._id}`).attr("display", "block");
 
       d3.select(`#${d._id}`).attr("r", this.radius * 2);
 
-      d3.select(`#${d.location_id}`)
+      d3.selectAll(`#${d[location_id]}`)
         .select("text")
         .style("font-weight", 700);
 
       d3.selectAll(`.epi-region`).style("opacity", 0.35);
 
-      d3.selectAll(`#${d.location_id}`).style("opacity", 1);
+      d3.selectAll(`#${d[location_id]}`).style("opacity", 1);
     },
     tooltipOff: function(d) {
       d3.selectAll(".tooltip--epi-curve").attr("display", "none");
@@ -247,7 +247,7 @@ export default Vue.extend({
             .slice()
             .sort((a, b) => b.currentCases - a.currentCases)
             .slice(this.lengthThreshold)
-            .map(d => d.name);
+            .map(d => d.key);
           this.$emit("addable", toAdd);
         }
 
@@ -470,7 +470,7 @@ export default Vue.extend({
 
       regionGroups
         .merge(regionsEnter)
-        .attr("id", d => d._id)
+        .attr("id", d => d.key)
         .attr("fill", d => this.colorScale(d.key))
         .attr("stroke", d => this.colorScale(d.key));
 
@@ -501,7 +501,7 @@ export default Vue.extend({
       const force = d3
         .forceSimulation()
         .nodes(this.plottedData)
-        .force("collide", d3.forceCollide(labelHeight / 2))
+        .force("collide", d3.forceCollide(labelHeight / 2).strength(0.2))
         .force("y", d3.forceY(d => d.targetY).strength(1))
         .force(
           "clamp",
@@ -521,8 +521,8 @@ export default Vue.extend({
         .style("stroke", "none")
         .attr("dx", 8)
         .style("opacity", 1e-6)
-        .transition(t1)
-        .delay(1000)
+        .transition(t2)
+        .delay(250)
         .style("opacity", 1);
 
       countrySelector
@@ -549,8 +549,20 @@ export default Vue.extend({
         .merge(pathEnter)
         .datum(d => d.value)
         .attr("id", d => `epi-line ${d[0].location_id}`)
-        .transition(t2)
-        .attr("d", this.line);
+        .attr("d", this.line)
+        .attr("stroke-dasharray", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength + " " + totalLength;
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .transition()
+        .duration(2000)
+        // .duration(1500 + 54)
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0)
 
       // --- dots ---
       const dotGroupSelector = this.chart
@@ -561,18 +573,31 @@ export default Vue.extend({
       dotGroupSelector.exit().remove();
 
       const dotGroupEnter = dotGroupSelector
-        .enter()
-        .append("circle")
-        .attr("r", this.radius)
-        .attr("class", "epi-point");
+        .join(
+          enter => enter.append("circle")
+          .attr("r", this.radius)
+          .attr("class", "epi-point")
+          // .attr("cy", this.y(0))
+          .attr("class", d => `epi-point ${d.location_id}`)
+          .attr("id", d => `${d._id}`)
+          .attr("cx", d => this.x(d.date))
+          .attr("cy", d => this.y(d[this.variable]))
+          .attr("opacity", 0)
+          .call(update => update.transition(t2).delay((d, i) => i * 20)
+            .attr("opacity", 1)),
+          update => update
+          .attr("class", d => `epi-point ${d.location_id}`)
+          .attr("id", d => `${d._id}`)
+          .attr("cx", d => this.x(d.date))
+          .attr("opacity", 1)
+          .call(update => update.transition(t2)
+            .attr("cy", d => this.y(d[this.variable]))),
+          exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
+
+        );
 
       dotGroupSelector
-        .merge(dotGroupEnter)
-        .attr("class", d => `epi-point ${d.location_id}`)
-        .attr("id", d => `${d._id}`)
-        .attr("cx", d => this.x(d.date))
-        .transition(t2)
-        .attr("cy", d => this.y(d[this.variable]));
+        .merge(dotGroupEnter);
 
       // --- tooltips ---
       // need to be outside the path/dot groups, so they're on top of all the curves.
@@ -627,7 +652,7 @@ export default Vue.extend({
         .attr("y", d => this.y(d[this.variable]))
         .attr("width", 165)
         .attr("height", 60)
-        .attr("stroke-dasharray", "175, 285")
+        .attr("stroke-dasharray", "165, 285")
         .attr("stroke-width", "3");
 
       const tooltipText = tooltipSelector.select(".tooltip--text");
@@ -671,27 +696,25 @@ export default Vue.extend({
         .text(d => `${d[this.variable].toLocaleString()} ${this.variable}`);
 
       // dynamically adjust the width of the rect
-      // console.log(tooltipSelector.selectAll("rect"))
-      // tooltipSelector
-      //   .selectAll("rect")
-      //   .attr(
-      //     "width",
-      //     tooltipSelector
-      //     .select("text")
-      //     .node()
-      //     .getBBox().width + 10
-      //   )
-      //   .attr(
-      //     "height",
-      //     tooltipSelector
-      //     .select("text")
-      //     .node()
-      //     .getBBox().height + 5
-      //   );
+      if (tooltipSelector.selectAll("rect")["_groups"].length) {
+        tooltipSelector.each(function(d) {
+          const bounds = d3.select(this).select("text")
+            .node()
+            .getBBox();
+
+          d3.select(this).select("rect").attr("width", bounds.width + 10)
+            .attr("height", bounds.height + 5)
+            .attr("stroke-dasharray", `${bounds.width + 10}, ${(bounds.height + 5)*2 + bounds.width + 10}`)
+        })
+      }
 
       // --- event listeners ---
       d3.selectAll("circle")
-        .on("mouseover", d => this.tooltipOn(d))
+        .on("mouseover", d => this.tooltipOn(d, "location_id"))
+        .on("mouseout", d => this.tooltipOff(d));
+
+      d3.selectAll(".annotation--region-name")
+        .on("mouseover", d => this.tooltipOn(d, "key"))
         .on("mouseout", d => this.tooltipOff(d));
 
       // --- transition: trace the curves ---

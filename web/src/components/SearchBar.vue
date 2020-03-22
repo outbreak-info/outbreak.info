@@ -1,50 +1,29 @@
 <template>
-  <form>
-    <div class="input-group">
-      <div class="input-group-prepend">
-        <span class="input-group-text bg-grey text-muted border-0" id="sb"
-          ><i class="fas fa-search"></i
-        ></span>
-      </div>
-      <input
-        id="sBar"
-        class="form-control border-0"
-        placeholder="Search"
-        aria-label="search"
-        aria-describedby="sb"
-        type="text"
-        v-model="search"
-        @input="onChange"
-        @keydown.down="onArrowDown"
-        @keydown.up="onArrowUp"
-        @keydown.enter="onEnter"
-        @keydown.delete="onBackspace"
-        @keydown.ctrl.65="onSelectAll"
-        @keydown.meta.65="onSelectAll"
-      />
-      <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
-        <li class="loading" v-if="isLoading">
-          Loading results...
-        </li>
-        <li
-          v-else
-          v-for="(result, i) in results"
-          :key="i"
-          @click="setResult(result)"
-          class="autocomplete-result"
-          :class="{ 'is-active': i === arrowCounter }"
-        >
-          {{ result.label }}
-        </li>
-      </ul>
+<form>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
     </div>
-  </form>
+    <input id="sBar" class="form-control border-0" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter"
+      @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
+    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
+      <li class="loading" v-if="isLoading">
+        Loading results...
+      </li>
+      <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
+        {{ result.label }}
+      </li>
+    </ul>
+  </div>
+</form>
 </template>
 
 <script lang="ts">
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from "vue";
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
 
 // --- store / Vuex ---
 import store from "@/store";
@@ -62,19 +41,18 @@ export default Vue.extend({
       required: false,
       default: () => []
     },
-    toAdd: {
-      type: Array,
-      required: false,
-      default: () => []
-    },
     isAsync: {
       type: Boolean,
       required: false,
       default: false
+    },
+    routable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
-  components: {
-  },
+  components: {},
   data() {
     return {
       isOpen: false,
@@ -133,7 +111,11 @@ export default Vue.extend({
       this.selected.push(result);
       this.search = "";
       this.isOpen = false;
-      this.$router.replace(`/epidemiology?location=${this.selected.map(d => d.id).join(";")}`)
+      if (this.routable) {
+        this.$router.replace(`/epidemiology?location=${this.selected.map(d => d.id).join(";")}`)
+      } else {
+        this.$emit("location", this.selected.map(d => d.id))
+      }
     },
     onArrowDown(evt) {
       if (this.arrowCounter < this.results.length) {
@@ -147,9 +129,9 @@ export default Vue.extend({
     },
     onEnter() {
       // Let's warn the parent that a change was made
-      const result = this.results[this.arrowCounter]
-        ? this.results[this.arrowCounter]
-        : this.search;
+      const result = this.results[this.arrowCounter] ?
+        this.results[this.arrowCounter] :
+        this.search;
       // this.$emit('input', result);
       this.selected.push(result);
       this.$emit("input", this.selected);

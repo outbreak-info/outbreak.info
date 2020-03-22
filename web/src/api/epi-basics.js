@@ -6,14 +6,18 @@ import {
   tap,
   finalize,
   catchError,
+  mergeMap,
   pluck,
   map,
 } from "rxjs/operators";
 import {
   nest,
   timeParse,
+  timeFormat,
   sum
 } from "d3";
+
+import { getSparklineTraces } from "@/api/epi-traces.js";
 
 import store from "@/store";
 
@@ -64,7 +68,7 @@ export function getLocations(apiUrl) {
       return (places)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting locations!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -83,7 +87,7 @@ export function getMostCases(apiUrl, num2Return = 5) {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting highest case counts!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -101,7 +105,7 @@ export function getSummary(apiUrl, caseThreshold) {
       return (totals)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting summary!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -119,7 +123,7 @@ export function getTotals(apiUrl) {
       return (totals)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting totals!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -135,7 +139,7 @@ export function countCountries(apiUrl) {
       return (results.length)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting number of countries!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -157,7 +161,7 @@ export function getFirstCases(apiUrl) {
       return (summary)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting cfirst cases!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -167,7 +171,7 @@ export function getFirstCases(apiUrl) {
 export function getCasesAboveThresh(apiUrl, threshold) {
   const timestamp = new Date().getTime();
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-02-01"%20AND%20admin_level:0%20AND%20confirmed_currentCases:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=date:"2020-02-01"%20AND%20admin_level:0%20AND%20confirmed_currentIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     map(results => {
       const summary = {};
@@ -197,7 +201,43 @@ export function getDateUpdate(apiUrl) {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in date updated!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+
+
+export function getGlanceSummary(apiUrl, locations) {
+  store.state.admin.loading = true;
+  const formatDate = timeFormat("%e %B %Y");
+  const parseDate = timeParse("%Y-%m-%d");
+  const timestamp = new Date().getTime();
+  const location_string = locations && locations.length ? ` AND location_id:("${locations.join('","')}")` : `AND admin_level:[0 TO *]&sort=-confirmed_currentIncrease`;
+  const num2Return = locations && locations.length ? locations.length : 3;
+
+  return from(axios.get(`${apiUrl}query?q=date:"2020-02-01"${location_string}&fields=location_id,name,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,confirmed_currentToday,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease&size=${num2Return}&timestamp=${timestamp}`)).pipe(
+    pluck("data", "hits"),
+    mergeMap(summaryData => getSparklineTraces(apiUrl, summaryData.map(d => d.location_id), "confirmed,dead,confirmed_numIncrease").pipe(
+      map(sparks => {
+        sparks.forEach(spark => {
+          const idx = summaryData.findIndex(d => d.location_id === spark.key);
+          if (idx > -1) {
+            summaryData[idx]["longitudinal"] = spark.value;
+          }
+        })
+
+        summaryData.forEach(d => {
+          d["confirmed_currentToday"] = formatDate(parseDate(d["confirmed_currentToday"]));
+        })
+        return(summaryData)
+      })
+    )),
+    catchError(e => {
+      console.log("%c Error in getting highest case counts!", "color: red");
       console.log(e);
       return from([]);
     }),

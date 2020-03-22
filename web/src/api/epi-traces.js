@@ -5,7 +5,6 @@ import {
 } from "rxjs";
 import axios from "axios";
 import {
-  tap,
   finalize,
   catchError,
   pluck,
@@ -17,6 +16,8 @@ import {
   timeParse,
   format
 } from "d3";
+
+import { getAll } from "@/api/biothings.js";
 
 
 export const epiDataSubject = new BehaviorSubject([]);
@@ -46,57 +47,55 @@ export function getEpiData(apiUrl, locations, sort, page, size) {
 export function getEpiTraces(apiUrl, locations) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
-  // trigger no-cache behavior by adding timestamp to request
-  const timestamp = new Date().getTime();
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  return from(axios.get(`${apiUrl}query?q=location_id:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,confirmed,dead,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id&timestamp=${timestamp}`, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })).pipe(
-    pluck("data", "hits"),
-    map(results => {
-      // convert dates to javascript dates
-      results.forEach(d => {
-        d['date'] = parseDate(d.date);
-      })
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
 
-      const nested = nest()
-        .key(d => d.location_id)
-        .rollup(values => values)
-        .entries(results);
+  return getAll(apiUrl, queryString)
+    .pipe(
+      map(results => {
 
-      // should be the same for all data; pulling out the first one.
-      nested.forEach(d => {
-        d["confirmed_currentCases"] = d.value[0].confirmed_currentCases;
-        d["recovered_currentCases"] = d.value[0].recovered_currentCases;
-        d["dead_currentCases"] = d.value[0].dead_currentCases;
-      })
+        // convert dates to javascript dates
+        results.forEach(d => {
+          d['date'] = parseDate(d.date);
+        })
+        // ensure dates are sorted
+        results.sort((a,b) => a.date - b.date);
 
-      store.commit(
-        "colors/setLocations",
-        nested
-        .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
-        .map(d => d.key)
-      );
-      epiDataSubject.next(nested)
-      return (nested);
-    }),
-    catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
-      console.log(e);
-      return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false))
-  )
+        const nested = nest()
+          .key(d => d.location_id)
+          .rollup(values => values)
+          .entries(results);
+
+        // should be the same for all data; pulling out the first one.
+        nested.forEach(d => {
+          d["confirmed_currentCases"] = d.value[0].confirmed_currentCases;
+          d["recovered_currentCases"] = d.value[0].recovered_currentCases;
+          d["dead_currentCases"] = d.value[0].dead_currentCases;
+        })
+
+        store.commit(
+          "colors/setLocations",
+          nested
+          .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
+          .map(d => d.key)
+        );
+        epiDataSubject.next(nested)
+        return (nested);
+      }),
+      catchError(e => {
+        console.log("%c Error in getting case counts!", "color: red");
+        console.log(e);
+        return from([]);
+      }),
+      finalize(() => (store.state.admin.loading = false))
+    )
 }
 
 export function getEpiTable(apiUrl, locations, sort, size, page) {
   store.state.admin.loading = true;
   return getTableData(apiUrl, locations, sort, size, page).pipe(
-    tap(x => console.log(x)),
     mergeMap(tableData => getSparklineTraces(apiUrl, tableData["hits"].map(d => d.location_id)).pipe(
       map(sparks => {
         sparks.forEach(spark => {
@@ -111,7 +110,7 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
           total: tableData["total"]
         })
 
-        return(tableData)
+        return (tableData)
       })
     )),
     // .pipe(
@@ -173,40 +172,44 @@ export function getTableData(apiUrl, locations, sort, size, page) {
   )
 }
 
-export function getSparklineTraces(apiUrl, locations) {
-  const parseDate = timeParse("%Y-%m-%d");
-  // trigger no-cache behavior by adding timestamp to request
-  const timestamp = new Date().getTime();
-  const queryString = `location_id:("${locations.join('","')}")`;
+export function getSparklineTraces(apiUrl, locations, variableString="confirmed,recovered,dead") {
+  if (locations) {
+    const parseDate = timeParse("%Y-%m-%d");
+    // trigger no-cache behavior by adding timestamp to request
+    const timestamp = new Date().getTime();
+    const queryString = `location_id:("${locations.join('","')}")`;
 
-  return from(axios.get(`${apiUrl}query?q=${queryString}&sort=date&size=1000&fields=date,location_id,confirmed,recovered,dead&timestamp=${timestamp}`, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })).pipe(
-    pluck("data", "hits"),
-    map(results => {
-      // convert dates to javascript dates, format things for the table
-      results.forEach(d => {
-        d["date"] = parseDate(d.date);
-        delete d["_id"];
-        delete d["_score"];
-      })
+    return from(axios.get(`${apiUrl}query?q=${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).pipe(
+      pluck("data", "hits"),
+      map(results => {
+        // convert dates to javascript dates, format things for the table
+        results.forEach(d => {
+          d["date"] = parseDate(d.date);
+          delete d["_id"];
+          delete d["_score"];
+        })
 
-      const nested = nest()
-        .key(d => d.location_id)
-        .rollup(values => values)
-        .entries(results);
+        const nested = nest()
+          .key(d => d.location_id)
+          .rollup(values => values)
+          .entries(results);
 
-      return (nested);
-    }),
-    catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
-      console.log(e);
-      return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false))
-  )
+        return (nested);
+      }),
+      catchError(e => {
+        console.log("%c Error in getting case counts!", "color: red");
+        console.log(e);
+        return from([]);
+      }),
+      finalize(() => (store.state.admin.loading = false))
+    )
+  } else {
+    return (from([]))
+  }
 }
 
 const formatPercent = function(pct) {

@@ -36,7 +36,7 @@
           <line x1="0" y1="0" x2="100" stroke="#D13B62" />
         </svg>
         <SearchBar class="w-100"></SearchBar>
-        <small id="sBar" class="form-text text-light d-block">View COVID-19 trends by location</small>
+        <small id="sBar-text" class="form-text text-light d-block">View COVID-19 trends by location</small>
       </div>
     </div>
   </section>
@@ -53,17 +53,17 @@
             {{ region.region }}
           </div>
           <div>{{ region.currentCases }} total {{selectedVariable}}</div>
-          <div class="click-affordance py-1" :style="{ background: lightColor }">
+          <div class="click-affordance py-1" :style="{ background: lightColor(region.region) }">
             click for details
           </div>
         </div>
-        <!-- <CountryBarGraph :region="region.region" :id="idx" :style="{
+        <CountryBarGraph :region="region.region" :variable="selectedVariable" :id="idx" :style="{
               visibility: region.displayMore ? 'visible' : 'hidden'
-            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" /> -->
+            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed"  />
       </div>
     </template>
     <template v-if="nestedData && nestedData.length > 0">
-      <CaseSummary class="container" />
+      <CaseSummary />
       <h4>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
@@ -94,7 +94,7 @@
         <option v-for="option in variableOptions" :value="option.value" :key="option.value">
           {{ option.label }}
         </option>
-      </select> <br />as of {{ "formatDate(mostRecentDate)" }}
+      </select> as of {{ currentDate$ }}
     </h4>
     <LeafletMap :data="mapData$" :variable="selectedVariable" />
   </section>
@@ -133,9 +133,11 @@ import {
   getEpiTable
 } from "@/api/epi-traces.js"
 import { getMapData } from "@/api/epi-geo.js";
+import { getCurrentDate } from "@/api/biothings.js";
 import {
   mapState
 } from "vuex";
+
 
 
 import {
@@ -148,7 +150,7 @@ export default {
   name: "Home",
   components: {
     EpiStacked,
-    // CountryBarGraph,
+    CountryBarGraph,
     CaseSummary,
     DataUpdated,
     DataSource,
@@ -184,10 +186,6 @@ export default {
   computed: {
     ...mapState("admin", ["loading"]),
     ...mapState("geo", ["regionDict"]),
-    lightColor: function() {
-      const scale = store.getters["colors/getRegionColor"];
-      return scale(this.region, 0.85);
-    },
     // nestedData() {
     //   return nestRegions(this.cases.flatMap(d => d.data));
     // },
@@ -217,6 +215,10 @@ export default {
       const scale = store.getters["colors/getRegionColorFromLocation"];
       return scale(location);
     },
+    lightColor: function(region) {
+      const scale = store.getters["colors/getRegionColor"];
+      return scale(region, 0.85);
+    },
     setDims() {
       const selector = this.$refs.regional_stacked_area_plots;
 
@@ -240,7 +242,8 @@ export default {
   },
   subscriptions() {
     return {
-      mapData$: getMapData(this.$apiurl)
+      mapData$: getMapData(this.$apiurl),
+      currentDate$: getCurrentDate(this.$apiurl)
     }
   },
   mounted() {
@@ -249,7 +252,7 @@ export default {
       this.nestedData = d[this.selectedVariable];
     })
 
-    this.tableSubscription = getEpiTable(this.$apiurl, null, "-confirmed_currentCases", 10, 9).subscribe(_ => null);
+    this.tableSubscription = getEpiTable(this.$apiurl, null, "-confirmed_currentCases", 10, 0).subscribe(_ => null);
 
     // Event listener for mobile responsiveness
     // $nextTick waits till DOM rendered
