@@ -14,11 +14,11 @@
 
         <div class="d-flex flex-column text-left">
           <h6>cases</h6>
-          <div>
-            {{cases}}: today
+          <div class="muted">
+            <span class="accent">{{cases}}</span>: today
           </div>
-          <div>
-            {{casesYesterday}}: yesterday
+          <div class="muted">
+            <span class="accent">{{casesYesterday}}</span>: yesterday
           </div>
         </div>
         <svg class="mx-1" height="3em" width="20px">
@@ -30,10 +30,10 @@
           <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
         </svg>
         <div class="d-flex flex-column number-changes">
-          <div>
+          <div class="changes">
             + {{casesIncrease}}
           </div>
-          <div>
+          <div class="changes">
             <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.confirmed_currentPctIncrease > 0" /> {{casesPct}}
           </div>
         </div>
@@ -43,11 +43,11 @@
 
         <div class="d-flex flex-column text-left">
           <h6>deaths</h6>
-          <div>
-            {{deaths}}: today
+          <div class="muted">
+            <span class="accent">{{deaths}}</span>: today
           </div>
-          <div>
-            {{deadYesterday}}: yesterday
+          <div class="muted">
+            <span class="accent">{{deadYesterday}}</span>: yesterday
           </div>
         </div>
         <svg class="mx-1" height="3em" width="20px">
@@ -59,10 +59,10 @@
           <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
         </svg>
         <div class="d-flex flex-column number-changes">
-          <div>
+          <div class="changes">
             + {{deadIncrease}}
           </div>
-          <div>
+          <div class="changes">
             <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.dead_currentPctIncrease > 0" /> {{deadPct}}
           </div>
         </div>
@@ -222,5 +222,18 @@ export default Vue.extend({
 .delete-icon {
     font-size: 36px;
     color: $grey-60;
+}
+.accent{
+  font-weight: 600;
+  color: $base-grey;
+}
+.muted {
+  color: $grey-80;
+}
+.increasing {
+  color: lighten($warning-color, 30%);
+}
+.changes {
+  font-weight: 600;
 }
 </style>

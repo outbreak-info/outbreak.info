@@ -63,7 +63,7 @@
       </div>
     </template>
     <template v-if="nestedData && nestedData.length > 0">
-      <CaseSummary class="container" />
+      <CaseSummary />
       <h4>Cumulative Number of COVID-19 <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
