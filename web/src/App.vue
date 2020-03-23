@@ -33,6 +33,7 @@
                 data-target=".navbar-collapse"
                 class="nav-link"
                 to="/"
+                :class="{ active: $route.name == 'Home' }"
                 >Home
               </router-link>
             </li>
@@ -42,6 +43,7 @@
                 data-target=".navbar-collapse"
                 class="nav-link"
                 to="/about"
+                :class="{ active: $route.name == 'About' }"
                 >About</router-link
               >
             </li>
@@ -50,6 +52,7 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link"
+                :class="{ active: $route.name == 'Epidemiology' }"
                 :key="$route.fullPath"
                 :to="{
                   name: 'Epidemiology',
