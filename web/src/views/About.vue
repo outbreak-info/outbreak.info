@@ -6,10 +6,10 @@
           <h1>About</h1>
           <img src="@/assets/logo-full-01.svg" alt="Outbreak.info" class="w-75 mb-5"/>
           <p class="text-left focustext">
-            In response to the current outbreak of SARS-CoV-2 (the virus underlying COVID-19), researchers worldwide have been generating and openly sharing data, publications, reagents, code, protocols, and more. Broad sharing of these research resources improves the speed and efficiency of science. But unfortunately, there are no uniform standards and repositories for collecting all this information in one place.
+            In response to the current outbreak of SARS-CoV-2 (the virus that causes COVID-19), researchers worldwide have been generating and openly sharing data, publications, reagents, code, protocols, and more. Broad sharing of these research resources improves the speed and efficiency of science. Unfortunately, there are no uniform standards and repositories for collecting all this information in one place.
           </p>
           <p class="text-left focustext">
-            <b>Outbreak.info</b> focuses on aggregating all SARS-CoV-2 / COVID-19 information into a single location. We focus on making the metadata about these resources more standardized, on creating web interfaces to make the resources more findable, and on a few focused data integration efforts to make data more usable.
+            <b>Outbreak.info</b> focuses on aggregating all SARS-CoV-2 / COVID-19 information into a single site. We focus on making the metadata about these resources more standardized, on creating web interfaces to make the resources more findable, and on a few focused data integration efforts to make data more usable.
           </p>
         </div>
       </div>
