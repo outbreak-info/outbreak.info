@@ -1,18 +1,21 @@
 <template>
-<div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`">
+<div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`" ref="countryBars">
   <h4 class="plot-title">Current total COVID-19 {{ variable }} in
     <span @click="handleClick" class="region-name">{{ region }}</span></h4>
 
-  <svg :viewBox="`0 0 ${width +
+  <svg :width="`${width +
     margin.left +
     margin.right +
     sparkWidth +
     newCasesWidth +
-    4 * margin.gap} ${height + margin.top + margin.bottom }`" preserveAspectRatio="xMidYMid slice" style="overflow:auto" class="case-counts">
+    4 * margin.gap}`"
+    :height="`${height + margin.top + margin.bottom }`" class="region-country-counts">
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
   </svg>
 
   <div class="btn-links">
+    <!-- <router-link v-if="isOverflow" :to="{ name: '', params: {} }">view all countries</router-link>> -->
+
     <button class="btn-item click-affordance py-1" :style="{ background: lightColor }" @click="handleClick">
       view cases over time
     </button>
@@ -84,6 +87,7 @@ export default Vue.extend({
       height: 0,
       data: null,
       barHeight: 15,
+      isOverflow: false,
 
       // axes
       x: d3.scaleLinear().range([width, 0]),
@@ -126,6 +130,8 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.$nextTick(function() {
+      window.addEventListener("click", this.clickClose);
+
       document.addEventListener("keyup", evt => {
         if (evt.keyCode === 27) {
           this.closeWindow();
@@ -167,6 +173,12 @@ export default Vue.extend({
         });
       }
     },
+    clickClose: function(evt) {
+      const classID = evt.target.className.baseVal;
+      if (!classID || (classID!== "region-country-counts" && classID !== "legend-name" && !classID.includes("stacked-area-chart"))) {
+        this.closeWindow();
+      }
+    },
     closeWindow: function() {
       this.$emit("regionSelected", {
         region: this.region,
@@ -181,18 +193,30 @@ export default Vue.extend({
     },
     updatePlot: function() {
       if (this.data) {
-        this.height =
-          this.barHeight * this.data.length +
-          (this.data.length - 2) * this.innerPadding;
+        this.getHeight();
         this.updateScales();
         this.prepData();
         this.drawPlot();
       }
     },
+    getHeight: function() {
+      const idealHeight = this.barHeight * this.data.length +
+      (this.data.length - 2) * this.innerPadding;
+      if(idealHeight > window.innerHeight*0.8) {
+      this.height = window.innerHeight*0.8;
+      const num2Plot = Math.floor((this.height - 2* this.innerPadding)/(this.barHeight + this.innerPadding));
+      this.data = this.data.slice(-num2Plot);
+      this.isOverflow = true;
+    } else{
+      this.height = idealHeight;
+    }
+
+
+    },
     setupPlot: function() {
       this.svg = d3
         .select(`#region-graphs-${this.id}`)
-        .select("svg.case-counts");
+        .select("svg.region-country-counts");
       this.chart = this.svg.select("#case-counts");
 
       this.svg
