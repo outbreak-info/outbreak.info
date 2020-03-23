@@ -55,7 +55,8 @@ export default Vue.extend({
     title: String,
     data: Array,
     width: Number,
-    height: Number
+    height: Number,
+    includeChinaAnnot: Boolean
   },
   data() {
     return {
@@ -194,7 +195,7 @@ export default Vue.extend({
       const dateCaseDefChange = new Date("2020-02-13");
 
       // --- annotations ---
-      if (Object.keys(this.data[0]).includes("China")) {
+      if (this.includeChinaAnnot) {
         const annotGrp = this.chart.select(".case-def-changed");
 
         annotGrp.exit().remove();
@@ -229,6 +230,8 @@ export default Vue.extend({
             `M ${x1} ${y1} C ${x1 + 5} ${y1 + 45}, ${x2 - 10} ${y2 -
               5}, ${x2} ${y2}`
           );
+
+          this.chart.select(".case-def-changed").on("mouseover", )
       }
       this.area = d3
         .area()
