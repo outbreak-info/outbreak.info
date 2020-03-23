@@ -1,10 +1,10 @@
 <template>
-<form>
+<form autocomplete="off">
   <div class="input-group">
     <div class="input-group-prepend">
       <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
     </div>
-    <input id="sBar" class="form-control border-0" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter"
+    <input id="sBar" class="form-control border-0" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter.prevent="onEnter"
       @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
       <li class="loading" v-if="isLoading">
@@ -128,7 +128,7 @@ export default Vue.extend({
       }
     },
     onEnter() {
-      // Let's warn the parent that a change was made
+      // // Let's warn the parent that a change was made
       const result = this.results[this.arrowCounter] ?
         this.results[this.arrowCounter] :
         this.search;
