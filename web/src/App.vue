@@ -129,4 +129,13 @@ export default {
 .no-underline {
   text-decoration: none;
 }
+
+.navbar-collapse.collapsing {
+  -webkit-transition: height 0s;
+  -moz-transition: height 0s;
+  -ms-transition: height 0s;
+  -o-transition: height 0s;
+  transition: height 0s;
+
+}
 </style>

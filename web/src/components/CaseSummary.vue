@@ -45,15 +45,16 @@
   </div>
 
   <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <div class="d-flex">
+    <div class="d-flex justify-content-center align-items-center mb-2">
+      <div>
         <h5 class="at-a-glance-header m-0">At a glance</h5>
         <p class="ml-3 mb-0">View the three locations with the largest increase in cases in the past day, or select your own locations</p>
+        <button class="btn btn-main-outline router-link no-underline white-background" @click="summaryDeletable = !summaryDeletable">{{summaryDeletable ? "done" : "change locations"}}</button>
       </div>
-      <button class="btn btn-main-outline router-link no-underline white-background" @click="summaryDeletable = !summaryDeletable">{{summaryDeletable ? "done" : "change locations"}}</button>
+
     </div>
 
-    <div class="row d-flex">
+    <div class="row d-flex justify-content-center">
       <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="location.location_id" :deletable="summaryDeletable" @removed="removeSummary" />
 
       <div class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main" v-if="summaryDeletable">
