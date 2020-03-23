@@ -77,6 +77,13 @@
               Contact Us
             </a>
           </li>
+          <li class="d-inline m-2">
+            <router-link
+              class="text-light"
+              to="/privacy-policy"
+              >Privacy Policy</router-link
+            >
+          </li>
         </ul>
         <small>
           All content copyright
