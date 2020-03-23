@@ -12,7 +12,7 @@ const routes = [
     component: Home
   },
   {
-    path: "/privacy-policy",
+    path: "/privacy",
     name: "Privacy",
     component: Privacy
   },
