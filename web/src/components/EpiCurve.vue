@@ -180,6 +180,8 @@ export default Vue.extend({
         this.height = idealWidth / whRatio;
       }
 
+      this.margin.right = this.width < 600 ? 115 : 205;
+
       this.numXTicks = this.width < 700 ? 3 : 7;
       this.numYTicks = this.height < 250 ? 3 : 6;
     },
@@ -293,6 +295,7 @@ export default Vue.extend({
         this.y = d3
           .scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
+          .nice()
           .domain([
             1,
             d3.max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
@@ -311,7 +314,11 @@ export default Vue.extend({
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks);
+      this.yAxis = this.isLogY ? d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d,i) => {
+        const log = Math.log10(d);
+        return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+      }) :
+      d3.axisLeft(this.y).ticks(this.numYTicks);
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
