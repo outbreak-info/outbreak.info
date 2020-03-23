@@ -95,7 +95,7 @@ export function getAll(apiUrl, queryString) {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false))
+    // finalize(() => (store.state.admin.loading = false))
   )
 }
 
@@ -122,6 +122,6 @@ export function getOne(apiUrl, queryString, scrollID = null) {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false))
+    // finalize(() => (store.state.admin.loading = false))
   )
 }

@@ -1,5 +1,8 @@
 <template>
 <div class="container full-page py-5 bg-light">
+  <div v-if="loading" class="loader">
+    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+  </div>
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <div class="d-flex row m-0">
     <EpiCurve class="row" @addable="updateAddable" id="curveContainer" v-if="data$"/>
@@ -50,7 +53,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("epidata", ["allPlaces"])
+    ...mapState("admin", ["loading"]),
+    ...mapState("epidata", ["allPlaces"]),
+    colorScale: function() {
+      const scale = store.getters["colors/getColor"];
+      return scale;
+    },
   },
   watch: {
     selectedPlaces: function(newValue, oldValue) {
@@ -78,10 +86,6 @@ export default {
       } else {
         this.clearLocations();
       }
-    },
-    colorScale: function(location) {
-      const scale = store.getters["colors/getColor"];
-      return scale(location);
     },
     clearLocations: function() {
       this.selectedPlaces = [];
