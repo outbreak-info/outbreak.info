@@ -6,18 +6,10 @@
           <h1>About</h1>
           <img src="@/assets/logo-full-01.svg" alt="Outbreak.info" class="w-75 mb-5"/>
           <p class="text-left focustext">
-            During outbreaks of emerging diseases such as COVID-19, efficiently
-            collecting, sharing, and integrating data is critical to scientific
-            research.
+            In response to the current outbreak of SARS-CoV-2 (the virus underlying COVID-19), researchers worldwide have been generating and openly sharing data, publications, reagents, code, protocols, and more. Broad sharing of these research resources improves the speed and efficiency of science. But unfortunately, there are no uniform standards and repositories for collecting all this information in one place.
           </p>
           <p class="text-left focustext">
-            <b>outbreak.info</b> is a project from the
-            <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su lab</a>
-            at
-            <a href="scripps.edu" rel="noreferrer" target="_blank"
-              >Scripps Research</a
-            >
-            to aggregate all this information into a single location.
+            <b>Outbreak.info</b> focuses on aggregating all SARS-CoV-2 / COVID-19 information into a single location. We focus on making the metadata about these resources more standardized, on creating web interfaces to make the resources more findable, and on a few focused data integration efforts to make data more usable.
           </p>
         </div>
       </div>

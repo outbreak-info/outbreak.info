@@ -7,22 +7,22 @@
   <!-- <Warning :animate="false" :text="
         'Our data is in the process of being updated; as a result, regional case counts are not currently correct. Sorry-- it will be fixed soon.'
       "></Warning> -->
-  <section class="half-page">
+  <section>
     <div class="row m-0">
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
         <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-75" />
       </div>
-      <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero half-page">
+      <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
         <div class="container p-3">
-          <h5>
+          <h6>
             During outbreaks of emerging diseases such as COVID-19, efficiently
             collecting, sharing, and integrating data is critical to scientific
             research.
-          </h5>
-          <h5 class="mt-5 text-dark font-weight-bold">
+          </h6>
+          <h6 class="text-dark font-weight-bold">
             <b class="text-highlight">outbreak.info</b> is a resource to
             aggregate all this information into a single location.
-          </h5>
+          </h6>
         </div>
       </div>
     </div>
