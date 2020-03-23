@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row m-0">
-      <div class="col-sm-12 bg-light  d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+      <div class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5" style="min-height: 70vh;">
         <div class="container half-page">
           <h1>About</h1>
           <img src="@/assets/logo-full-01.svg" alt="Outbreak.info" class="w-75 mb-5"/>
@@ -13,7 +13,7 @@
           </p>
         </div>
       </div>
-      <Logos class="col-sm-12 bg-grey"/>
+      <Logos class="col-sm-12 bg-grey p-0"/>
       <div class="col-sm-12 jumbotron rounded-0 bg-grey__darker mb-0">
         <h4 class="text-light m-2">
           Notice a bug, know of a COVID-19 data source, or want to suggest a
