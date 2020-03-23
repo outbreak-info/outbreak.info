@@ -385,21 +385,21 @@ export default Vue.extend({
       this.prepData();
     }
 
-this.$nextTick(function() {
-    tippy(".correction-explanation", {
-      content: null,
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        if (info){
-          instance.setContent(info);
-        }
-      }
-    });
-  })
+// this.$nextTick(function() {
+  //   tippy(".correction-explanation", {
+  //     content: null,
+  //     maxWidth: "200px",
+  //     placement: "bottom",
+  //     animation: "fade",
+  //     theme: "light",
+  //     onShow(instance) {
+  //       let info = instance.reference.dataset.tippyInfo;
+  //       if (info){
+  //         instance.setContent(info);
+  //       }
+  //     }
+  //   });
+  // })
   },
   created() {
     // set up subscription here; listen for changes and execute in the watch.
