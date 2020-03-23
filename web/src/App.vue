@@ -27,7 +27,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
-            <li class="nav-item active">
+            <li class="nav-item">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -128,12 +128,5 @@ export default {
 <style lang="scss">
 .no-underline {
   text-decoration: none;
-}
-
-.warning {
-  background: red;
-  color: white;
-  width: 100%;
-  margin-bottom: 10px;
 }
 </style>
