@@ -50,7 +50,11 @@ export default {
     };
   },
   computed: {
-    ...mapState("epidata", ["allPlaces"])
+    ...mapState("epidata", ["allPlaces"]),
+    colorScale: function() {
+      const scale = store.getters["colors/getColor"];
+      return scale;
+    },
   },
   watch: {
     selectedPlaces: function(newValue, oldValue) {
@@ -78,10 +82,6 @@ export default {
       } else {
         this.clearLocations();
       }
-    },
-    colorScale: function(location) {
-      const scale = store.getters["colors/getColor"];
-      return scale(location);
     },
     clearLocations: function() {
       this.selectedPlaces = [];
