@@ -75,6 +75,11 @@ export function getEpiTraces(apiUrl, locations) {
           d["dead_currentCases"] = d.value[0].dead_currentCases;
         })
 
+        // console.log("setting order")
+        // console.log(    nested
+        //     .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
+        //     .map(d => d.key))
+
         store.commit(
           "colors/setLocations",
           nested
@@ -89,7 +94,7 @@ export function getEpiTraces(apiUrl, locations) {
         console.log(e);
         return from([]);
       }),
-      finalize(() => (store.state.admin.loading = false))
+      // finalize(() => (store.state.admin.loading = false))
     )
 }
 
@@ -168,7 +173,7 @@ export function getTableData(apiUrl, locations, sort, size, page) {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false))
+    // finalize(() => (store.state.admin.loading = false))
   )
 }
 
@@ -205,7 +210,7 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
         console.log(e);
         return from([]);
       }),
-      finalize(() => (store.state.admin.loading = false))
+      // finalize(() => (store.state.admin.loading = false))
     )
   } else {
     return (from([]))
