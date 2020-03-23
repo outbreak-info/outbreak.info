@@ -215,15 +215,15 @@ export default Vue.extend({
         this.showLegend = false;
         this.height = window.innerHeight;
       } else if (this.width >= 400 && this.width < 700) {
-        this.currentZoom = 1;
+        this.zoom = 1;
       } else if (this.width >= 700 && this.width < 1100) {
-        this.currentZoom = 1.5;
+        this.zoom = 1.5;
       } else if (this.width >= 1100 && this.width < 1500) {
-        this.zoomUpdate(5);
+        this.zoom = 2;
       } else if (this.width >= 1500 && this.width < 2500) {
-        this.zoomUpdate(2.5);
+        this.zoom = 2.5;
       } else {
-        this.currentZoom = 3.5;
+        this.zoom = 3.5;
       }
       if (this.$refs.map) {
         this.$refs.map.mapObject._onResize();
