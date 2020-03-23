@@ -180,7 +180,7 @@ export default Vue.extend({
         this.height = idealWidth / whRatio;
       }
 
-      this.numXTicks = this.width < 625 ? 3 : 7;
+      this.numXTicks = this.width < 700 ? 3 : 7;
       this.numYTicks = this.height < 250 ? 3 : 6;
     },
     colorScale: function(location) {
