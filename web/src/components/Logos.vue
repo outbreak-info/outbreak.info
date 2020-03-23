@@ -38,7 +38,7 @@
     </div>
     <div class="row m-0 bg-main__darker d-flex justify-content-center align-items-center">
       <div class="col-sm-12 d-flex justify-content-center align-items-center p-2">
-        <small class="text-light">Supported by funding by</small>
+        <small class="text-light">Supported with funding from</small>
       </div>
       <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
         <a href="https://www.niaid.nih.gov/" rel="noreferrer" target="_blank">
