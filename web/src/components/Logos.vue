@@ -17,7 +17,7 @@
         </a>
       </div>
       <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
-        <a href="scripps.edu" rel="noreferrer" target="_blank">
+        <a href="https://www.scripps.edu/" rel="noreferrer" target="_blank">
           <img
             src="@/assets/scripps-logo.png"
             class="w-100"

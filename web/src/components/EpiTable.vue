@@ -76,6 +76,9 @@
             {{row[column.value]}}
             <Sparkline :data="[row.longitudinal]" variable="recovered" :width="80" :height="23" :id="row.location_id" :color="row.color" />
           </span>
+          <span v-else-if="column.value.includes('pctIncrease')" class="correction-explanation" :data-tippy-info="row[column.value] === 'case count corrected' ? 'total was higher yesterday' : null">
+            {{row[column.value]}}
+          </span>
           <!-- normal -->
           <span v-else>{{row[column.value]}}</span>
         </td>
@@ -112,6 +115,8 @@ import {
 import DataUpdated from "@/components/DataUpdated.vue";
 import Sparkline from "@/components/Sparkline.vue";
 import RecoveredBar from "@/components/RecoveredBar.vue";
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
 
 // --- font awesome --
 import {
@@ -306,7 +311,7 @@ export default Vue.extend({
           group: "deaths",
           label: "increase today",
           value: "dead_pctIncrease",
-          sort_id: "deadd_currentPctIncrease",
+          sort_id: "dead_currentPctIncrease",
           sorted: 0,
           essential: true
         },
@@ -379,6 +384,22 @@ export default Vue.extend({
     if (this.data) {
       this.prepData();
     }
+
+// this.$nextTick(function() {
+  //   tippy(".correction-explanation", {
+  //     content: null,
+  //     maxWidth: "200px",
+  //     placement: "bottom",
+  //     animation: "fade",
+  //     theme: "light",
+  //     onShow(instance) {
+  //       let info = instance.reference.dataset.tippyInfo;
+  //       if (info){
+  //         instance.setContent(info);
+  //       }
+  //     }
+  //   });
+  // })
   },
   created() {
     // set up subscription here; listen for changes and execute in the watch.

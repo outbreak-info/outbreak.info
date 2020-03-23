@@ -74,7 +74,7 @@
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
       <div class="row" v-if="nestedData && nestedData.length > 0">
         <div class="col-sm-12 col-md-6">
-          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
+          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
         </div>
         <div class="col-sm-12 col-md-6">
           <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="noChina" id="no-china" :title="`${selectedVariableLabel} Outside Mainland China`" @regionSelected="handleTooltip" />
