@@ -80,7 +80,7 @@
           <li class="d-inline m-2">
             <router-link
               class="text-light"
-              to="/privacy-policy"
+              to="/privacy"
               >Privacy Policy</router-link
             >
           </li>
