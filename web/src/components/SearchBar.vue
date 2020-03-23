@@ -133,11 +133,16 @@ export default Vue.extend({
         this.results[this.arrowCounter] :
         this.search;
       // this.$emit('input', result);
-      this.selected.push(result);
+      this.selected.push(result.id);
       this.$emit("input", this.selected);
       this.search = "";
       this.isOpen = false;
       this.arrowCounter = -1;
+      if (this.routable) {
+        this.$router.replace(`/epidemiology?location=${this.selected.map(d => d.id).join(";")}`)
+      } else {
+        this.$emit("location", this.selected.map(d => d.id))
+      }
     },
     onBackspace() {
       if (this.search === "") {
