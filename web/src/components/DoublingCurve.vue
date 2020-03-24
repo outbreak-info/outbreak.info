@@ -444,8 +444,8 @@ export default Vue.extend({
         .attr("class", d => `circle-confirmed ${d.id}`)
         .attr("cx", d => this.x(d.date))
         .attr("cy", d => this.y(d[this.variable]))
-        .classed("recent-data", (d, i) => this.fitIdx2.includes(i))
-        .classed("penultimate-data", (d, i) => this.fitIdx1.includes(i));
+        .classed("recent-data", d => this.fitIdx2.includes(d.idx))
+        .classed("penultimate-data", d => this.fitIdx1.includes(d.idx));
 
 
 
