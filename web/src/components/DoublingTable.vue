@@ -145,11 +145,6 @@ export default Vue.extend({
       this.$emit("changeFit", null)
     }
   },
-  mounted() {
-    if (this.data) {
-      console.log("fuck you")
-    }
-  },
   computed: {
     fit1_time: function() {
       return format(".1f")(this.data.fit1.doublingTime);

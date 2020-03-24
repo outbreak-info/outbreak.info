@@ -27,8 +27,6 @@ export function getDoubling(apiUrl, location_id) {
   const parseDate = timeParse("%Y-%m-%d");
 
   return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}" AND -date:"2020-03-23"&size=1000&fields=id_text,name,admin0,admin1,date,confirmed,recovered,dead`)).pipe(
-    // return from(axios.get("http://pending.biothings.io/covid19/query?q=admin0:%22Spain%22&size=1000&fields=id_text,admin0,admin1,date,confirmed,recovered,deaths")).pipe(
-    tap(x => console.log(x)),
     pluck("data", "hits"),
     map(results => {
       // ensure results are sorted by date
@@ -37,15 +35,16 @@ export function getDoubling(apiUrl, location_id) {
       results.forEach((d) => {
         d["date_string"] = d.date;
         d["date"] = parseDate(d.date);
-        d["logConfirmed"] = Math.log10(d.confirmed);
+        d["logConfirmed"] = Math.log(d.confirmed);
       })
       console.log(results)
 
       const resultsLength = results.length;
       const fitLength = 5;
+      const maxDate = results.sort((a, b) => a.date - b.date).slice(-1)[0].date;
 
-      const fitLast5 = fitExponential(results, resultsLength - fitLength, resultsLength);
-      const fitPenultimate5 = fitExponential(results, resultsLength - fitLength * 2, resultsLength - fitLength);
+      const fitLast5 = fitExponential(results, resultsLength - fitLength, resultsLength, maxDate);
+      const fitPenultimate5 = fitExponential(results, resultsLength - fitLength * 2, resultsLength - fitLength, maxDate);
 
       return ({
         data: results,
@@ -63,8 +62,7 @@ export function getDoubling(apiUrl, location_id) {
   // axios.get(apiUrl, { query: {admin0: location  } }).then(d => {console.log(d )})
 }
 
-export function fitExponential(data, minIdx, maxIdx) {
-  console.log(`${minIdx}:${maxIdx}`)
+export function fitExponential(data, minIdx, maxIdx, maxDate) {
   data.sort((a, b) => a.date - b.date);
 
   data.forEach((d, i) => {
@@ -78,12 +76,13 @@ export function fitExponential(data, minIdx, maxIdx) {
 
     // one day previous to fit
     const firstDate = +sliced[0].date - 8.64e7;
-    const lastDate = +new Date("2020-03-28");
+    const lastDate = +maxDate + 8.64e7 * 5; // 5 days past the end
     fit["doublingTime"] = Math.log(2) / fit.slope;
-    fit["x1"] = firstDate;
-    fit["y1"] = Math.pow(10, firstDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
-    fit["x2"] = lastDate;
-    fit["y2"] = Math.pow(10, lastDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
+    fit["x1"] = new Date(firstDate);
+    // y-axis is a log 10 transform
+    fit["y1"] = Math.exp(firstDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
+    fit["x2"] = new Date(lastDate);
+    fit["y2"] = Math.exp(lastDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
     console.log(fit)
     return (fit)
   } else {
