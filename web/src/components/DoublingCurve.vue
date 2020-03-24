@@ -259,7 +259,10 @@ export default Vue.extend({
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks);
+      this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d, i) => {
+          const log = Math.log10(d);
+          return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+        });
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
     },
