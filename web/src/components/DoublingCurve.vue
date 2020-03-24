@@ -99,7 +99,7 @@ export default Vue.extend({
   },
   computed: {
     drawable() {
-      return(this.toFit)
+      return (this.toFit)
     },
     locationName() {
       if (this.plottedData.length === 1) {
@@ -269,38 +269,122 @@ export default Vue.extend({
 
       // --- best-fit lines ---
       //       // y = -1222.7800       0.0672
+      //       dashed line animation from Nadieh Brehmer: https://www.visualcinnamon.com/2016/01/animating-dashed-line-d3.html
+      const calcDashArray = function(selector) {
+        //Get the total length of the path
+        var totalLength = selector.getTotalLength();
+
+        /////// Create the required stroke-dasharray to animate a dashed pattern ///////
+
+        //Create a (random) dash pattern
+        //The first number specifies the length of the visible part, the dash
+        //The second number specifies the length of the invisible part
+        var dashing = "12,6"
+
+        //This returns the length of adding all of the numbers in dashing
+        //(the length of one pattern in essence)
+        //So for "6,6", for example, that would return 6+6 = 12
+        var dashLength =
+          dashing
+          .split(/[\s,]/)
+          .map(function(a) {
+            return parseFloat(a) || 0
+          })
+          .reduce(function(a, b) {
+            return a + b
+          });
+
+        //How many of these dash patterns will fit inside the entire path?
+        var dashCount = Math.ceil(totalLength / dashLength);
+
+        //Create an array that holds the pattern as often
+        //so it will fill the entire path
+        var newDashes = new Array(dashCount).join(dashing + " ");
+
+        //Then add one more dash pattern, namely with a visible part
+        //of length 0 (so nothing) and a white part
+        //that is the same length as the entire path
+        var dashArray = newDashes + " 0, " + totalLength;
+        return totalLength + " " + totalLength;
+        // return dashArray
+      }
+
       const penultimateFitSelector = this.chart
-      .selectAll("penultimate-fit")
-      .data([this.fit1]);
+        .selectAll(".penultimate-fit")
+        .data([this.fit1]);
 
-      penultimateFitSelector.exit().remove();
-
-      const penultimateFitEnter = penultimateFitSelector
-        .enter().append("line")
-        .attr("class", "epi-line penultimate-fit");
-
-      penultimateFitSelector.merge(penultimateFitEnter)
+      penultimateFitSelector.join(
+        enter => enter.append("line")
+        .attr("class", "epi-line penultimate-fit")
+        // .transition(t1)
         .attr("x1", d => this.x(d.x1))
-        .attr("x2", d =>  this.x(d.x2))
-        .attr("y1", d =>  this.y(d.y1))
-        .attr("y2", d =>  this.y(d.y2))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        update => update.attr("x1", d => this.x(d.x1))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+      )
+
 
       // y = -313.6766 + 0.0176x
       const recentFitSelector = this.chart
-      .selectAll("recent-fit")
-      .data([this.fit2]);
+        .selectAll("recent-fit")
+        .data([this.fit2]);
 
-      recentFitSelector.exit().remove();
-
-      const recentFitEnter = recentFitSelector
-        .enter().append("line")
-        .attr("class", "epi-line recent-fit");
-
-      recentFitSelector.merge(recentFitEnter)
+      recentFitSelector.join(
+        enter => enter.append("line")
+        .attr("class", "epi-line recent-fit")
+        // .transition(t1)
         .attr("x1", d => this.x(d.x1))
-        .attr("x2", d =>  this.x(d.x2))
-        .attr("y1", d =>  this.y(d.y1))
-        .attr("y2", d =>  this.y(d.y2))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).delay(this.transitionDuration + 50).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        update => update.attr("x1", d => this.x(d.x1))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).delay(this.transitionDuration + 50).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+      )
+
       // --- show cases as dot plot ---
       const dotGroups = this.dots
         .selectAll(".circle-confirmed")
