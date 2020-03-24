@@ -68,6 +68,7 @@ export default Vue.extend({
       radius,
       transitionDuration,
       numFit: 5,
+      variable: "confirmed",
 
       // data
       plottedData: null,
@@ -103,6 +104,12 @@ export default Vue.extend({
     }
   },
   computed: {
+    fitIdx1() {
+      return(d3.range(this.fit1.minIdx, this.fit1.maxIdx))
+    },
+    fitIdx2() {
+      return(d3.range(this.fit2.minIdx, this.fit2.maxIdx))
+    },
     drawable() {
       if (this.toFit) {
         this.removeFit();
@@ -180,8 +187,8 @@ export default Vue.extend({
     },
     prepData: function() {
       if (this.data) {
-        console.log(this.data)
-        console.log(this.plottedData)
+        // console.log(this.data)
+        // console.log(this.plottedData)
         this.plottedData = this.data.data.filter(d => d.confirmed);
         this.fit1 = this.data.fit1;
         this.fit2 = this.data.fit2;
@@ -192,8 +199,8 @@ export default Vue.extend({
       // this.drawable = !this.drawable;
       // allow drawing of rects
       // based off https://bl.ocks.org/romsson/568e166d702b4a464347
-      const mousedown = function() {
-        const mouseLoc = d3.mouse(this);
+      const mousedown = function(x, y, variable) {
+        const mouseLoc = d3.mouse(d3.event.target);
         d3.select(".doubling-curve")
           .append("rect")
           .attr("class", "selection-box")
@@ -202,30 +209,42 @@ export default Vue.extend({
           .attr("width", 0)
           .attr("height", 0);
 
-        d3.select(".doubling-curve").on("mousemove", mousemove);
+        d3.select(".doubling-curve").on("mousemove", () => mousemove(x, y, variable));
       }
 
       const mouseup = function() {
         d3.select(".doubling-curve").on("mousemove", null);
       }
 
-      const mousemove = function() {
-        const mouseLoc = d3.mouse(this);
+      const mousemove = function(x, y, variable) {
+        console.log(y)
+        const mouseLoc = d3.mouse(d3.event.target);
+        console.log(mouseLoc);
+        console.log(d3.event);
 
         const rect = d3.select(".doubling-curve")
           .select(".selection-box");
-        // rect.attr("width", Math.max(0, mouseLoc[0] - +rect.attr("x")))
-        rect.attr("width", Math.max(0, mouseLoc[0] - +rect.attr("x")))
-          .attr("height", Math.max(0, mouseLoc[1] - +rect.attr("y")));
+
+        const x1 = mouseLoc[0];
+        const x2 = +rect.attr("x");
+        const y1 = mouseLoc[1];
+        const y2 = +rect.attr("y");
+
+        rect.attr("width", Math.max(0, x1 - x2))
+          .attr("height", Math.max(0, y1 - y2));
 
         const circles = d3.selectAll("circle")
           .classed("highlight", d => {
-            return (d && d.confirmed > 500)
+            console.log(y1)
+            console.log(y2)
+            console.log(d && d.confirmed ? y(d.confirmed) : "no data")
+            console.log("--")
+            return d && d[variable] && y(d[variable]) <= y2 && y(d[variable]) >= y1
           });
       };
 
       this.svg = d3.select("svg.doubling-curve")
-        .on("mousedown", mousedown)
+        .on("mousedown", () => mousedown(this.x, this.y, this.variable))
         .on("mouseup", mouseup);
     },
     executeFit: function() {
@@ -432,9 +451,9 @@ export default Vue.extend({
         .attr("id", d => d.id)
         .attr("class", d => `circle-confirmed ${d.id}`)
         .attr("cx", d => this.x(d.date))
-        .attr("cy", d => this.y(d.confirmed))
-        .classed("recent-data", (d, i) => i >= (this.plottedData.length - this.numFit))
-        .classed("penultimate-data", (d, i) => i >= this.plottedData.length - this.numFit * 2 && i < this.plottedData.length - this.numFit);
+        .attr("cy", d => this.y(d[this.variable]))
+        .classed("recent-data", (d, i) => this.fitIdx2.includes(i))
+        .classed("penultimate-data", (d, i) => this.fitIdx1.includes(i));
 
 
 
