@@ -314,11 +314,11 @@ export default Vue.extend({
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = this.isLogY ? d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d,i) => {
-        const log = Math.log10(d);
-        return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
-      }) :
-      d3.axisLeft(this.y).ticks(this.numYTicks);
+      this.yAxis = this.isLogY ? d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d, i) => {
+          const log = Math.log10(d);
+          return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+        }) :
+        d3.axisLeft(this.y).ticks(this.numYTicks);
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
@@ -428,38 +428,46 @@ export default Vue.extend({
         .selectAll(".case-def-changed")
         .data(includesChina.length > 0 ? ["includesChina"] : []);
 
-      defChangedSelector.exit().remove();
 
       const defChangedEnter = defChangedSelector
-        .enter()
-        .append("g")
-        .attr("class", "annotation-group case-def-changed");
+        .join(
+          enter => enter.append("g")
+          .attr("class", "annotation-group case-def-changed"),
+          update => update.append("g")
+          .attr("class", "annotation-group case-def-changed"),
+           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+        );
 
-      defChangedSelector.merge(defChangedEnter);
-
-      const defTextSelector = defChangedSelector.select("text");
-
-      const defTextEnter = defChangedEnter
+      defChangedEnter
         .append("text")
         .attr("dx", -3)
         .attr("y", 0)
+        .attr("x", this.x(dateCaseDefChange))
         .text("Case definition changed");
 
-      defTextSelector
-        .merge(defTextEnter)
-        .attr("x", this.x(dateCaseDefChange));
-
-      const defLineSelector = defChangedSelector.select("line");
-
-      const defLineEnter = defChangedEnter
+      defChangedEnter
         .append("line")
         .attr("class", "annotation--line case-def-changed")
-        .attr("y1", 8);
-
-      defLineSelector.merge(defLineEnter)
+        .attr("y1", 8)
         .attr("x1", this.x(dateCaseDefChange))
         .attr("x2", this.x(dateCaseDefChange))
         .attr("y2", this.height - this.margin.top - this.margin.bottom);
+
+      // const defTextSelector = defChangedSelector.select("text");
+      //
+      // const defTextEnter = defChangedEnter
+      //   .append("text")
+      //   .attr("dx", -3)
+      //   .attr("y", 0)
+      //   .text("Case definition changed");
+      //
+      // // defTextSelector
+      // //   .merge(defTextEnter)
+      // //   ;
+      // //
+      // // const defLineSelector = defChangedSelector.select("line");
+      // //
+      // // const defLineEnter = ;
 
       // --- create groups for each region ---
       const regionGroups = this.chart

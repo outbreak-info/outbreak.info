@@ -1,33 +1,45 @@
 <template>
 <div>
-  <!-- <SlopeComparison :slope1="0.141" :slope2="0.079"/> -->
-  <SlopeComparison :slope1="0.171" :slope2="0.257"/>
-  <!-- <DoublingCurve v-if="epi$" :data="epi$.data" /> -->
+
+<div class="d-flex align-items-center mx-4">
+  <DoublingCurve v-if="epi$" :data="epi$" :toFit="toFit"/>
+  <DoublingTable v-if="epi$" :data="epi$" @changeFit="changeFit"/>
+</div>
+
 </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import {
-  getDoubling
+  getDoubling, getAllDoublingBatch, getAllDoubling
 } from "@/api/calc-doubling.js";
 
-// import DoublingCurve from "@/components/DoublingCurve.vue"
-import SlopeComparison from "@/components/SlopeComparison.vue"
+import DoublingCurve from "@/components/DoublingCurve.vue"
+import DoublingTable from "@/components/DoublingTable.vue"
+
 
 export default Vue.extend({
   name: "DoublingRates",
   components: {
-    // DoublingCurve,
-    SlopeComparison
+    DoublingCurve,
+    DoublingTable
   },
   data() {
-    return {}
+    return {
+      toFit: null
+    }
   },
   subscriptions() {
     return {
-      epi$: getDoubling("this.$apiurl", "Spain")
+      epi$: getDoubling(this.$apiurl, "GBR"),
+      // all$: getAllDoubling(this.$apiurl)
     }
+  },
+  methods: {
+changeFit: function(fitIdx){
+  console.log(fitIdx)
+}
   },
   mounted() {
     console.log('hi');

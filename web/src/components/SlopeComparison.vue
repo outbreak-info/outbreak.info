@@ -20,7 +20,7 @@ import Vue from "vue";
 import * as d3 from "d3";
 
 const width = 125;
-const height = 150;
+const height = 75;
 const margin = {
   top: 5,
   right: 50,
@@ -82,7 +82,7 @@ export default Vue.extend({
       this.y = d3
         .scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, 1])
+        .domain([0, 0.3])
 
       this.xAxis = d3.axisBottom(this.x).ticks(0).tickSizeOuter(0);
 
