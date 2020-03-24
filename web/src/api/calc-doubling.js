@@ -22,11 +22,11 @@ import {
 } from "datalib";
 import store from "@/store";
 
-export function getDoubling(apiUrl, location_id) {
+export function getDoubling(apiUrl, location_id, variable="confirmed") {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
 
-  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}" AND -date:"2020-03-23"&size=1000&fields=id_text,name,admin0,admin1,date,confirmed,recovered,dead`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}" AND -date:"2020-03-23"&size=1000&fields=id_text,name,admin0,admin1,date,${variable}`)).pipe(
     pluck("data", "hits"),
     map(results => {
       // ensure results are sorted by date
@@ -35,7 +35,7 @@ export function getDoubling(apiUrl, location_id) {
       results.forEach((d) => {
         d["date_string"] = d.date;
         d["date"] = parseDate(d.date);
-        d["logConfirmed"] = Math.log(d.confirmed);
+        d["logCases"] = Math.log(d[variable]);
       })
       console.log(results)
 
@@ -72,7 +72,7 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
   let sliced = data.slice(minIdx, maxIdx);
   // console.log(sliced.map((d) => {return({date: d.date_string, i:d.idx})})
   if (sliced.length > 0) {
-    const fit = linearRegression(sliced, d => +d.date / (24 * 3600 * 1000), d => d.logConfirmed);
+    const fit = linearRegression(sliced, d => +d.date / (24 * 3600 * 1000), d => d.logCases);
 
     // one day previous to fit
     const firstDate = +sliced[0].date - 8.64e7;
