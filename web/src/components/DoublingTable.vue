@@ -1,7 +1,7 @@
 <template>
 <div class="doubling-table my-3 d-flex flex-column align-items-center" v-if="data">
   <h4>Doubling rates</h4>
-  <SlopeComparison :slope1="data.fit1.slope" :slope2="data.fit2.slope" class="mb-2"/>
+  <SlopeComparison :slope1="data.fit1.slope" :slope2="data.fit2.slope" class="mb-2" />
   <DataUpdated />
 
   <table class="m-auto">
@@ -21,8 +21,10 @@
     </tr>
     <tr class="tr-current">
       <th>
-        <button @click="drawRect">change points to fit</button>
-        last {{fitSpan}} days
+        <button @click="selectPoints(1)" :class="{'disabled' : fitting2}">
+          {{fitting1 ? "fit these points" : "change points to fit"}}
+        </button>
+        {{ customFit1 ? "custom points" : `last ${fitSpan} days` }}
       </th>
       <td>
         {{fit2_time}}
@@ -36,8 +38,10 @@
     </tr>
     <tr class="tr-previous">
       <th>
-        <button @click="drawRect">change points to fit</button>
-        last {{fitSpan*2}} days
+        <button @click="selectPoints(2)" :class="{'disabled' : fitting1}">
+          {{fitting2 ? "fit these points" : "change points to fit"}}
+        </button>
+        {{ customFit2 ? "custom points" : `last ${fitSpan*2} days` }}
       </th>
       <td>
         {{fit1_time}}
@@ -106,12 +110,18 @@ export default Vue.extend({
     SlopeComparison
   },
   props: {
-    data: Object
+    data: Object,
+    isFitting1: Boolean,
+    isFitting2: Boolean
   },
   data() {
     return {
       formatDate,
       fitSpan: 5,
+      fitting1: false,
+      fitting2: false,
+      customFit1: false,
+      customFit2: false,
       cases: null,
       searchInput: "",
       filteredCases: null,
@@ -125,7 +135,15 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {}
+    data: function() {},
+    isFitting1: function(newValue) {
+      this.fitting1 = !this.fitting1;
+      this.$emit("changeFit", null);
+    },
+    isFitting2: function(newValue) {
+      this.fitting2 = !this.fitting2;
+      this.$emit("changeFit", null)
+    }
   },
   mounted() {
     if (this.data) {
@@ -156,6 +174,18 @@ export default Vue.extend({
     }
   },
   methods: {
+    selectPoints(idx) {
+      const isSelecting = this[`fitting${idx}`];
+      this[`fitting${idx}`] = !isSelecting;
+      this[`customFit${idx}`] = true;
+
+      if (isSelecting) {
+        // selection is finished; run calculation of new data.
+        this.$emit("changeFit", null);
+      } else {
+        this.$emit("changeFit", idx)
+      }
+    },
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);
     },
@@ -204,10 +234,10 @@ table {
 }
 
 .tr-current {
-  background: lighten($warning-color, 40%);
+    background: lighten($warning-color, 40%);
 }
 .tr-previous {
-  background: lighten($secondary-color, 58%);
+    background: lighten($secondary-color, 58%);
 }
 
 tr {
@@ -246,11 +276,11 @@ th {
 }
 
 .increasing {
-  color: $warning-color;
+    color: $warning-color;
 }
 
 .decreasing {
-  color: $secondary-color;
+    color: $secondary-color;
 }
 
 .change {
@@ -259,14 +289,15 @@ th {
 
 // widths
 .td-days {
-  width: 240px;
+    width: 240px;
 }
 .td-doubling {
     width: 100px;
 }
 
-.td-slope, .td-r2 {
-  width: 70px;
+.td-r2,
+.td-slope {
+    width: 70px;
 }
 
 .sortable {

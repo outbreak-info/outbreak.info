@@ -1,11 +1,15 @@
 <template>
 <div class="doubling-curves d-flex flex-column align-items-center">
-
   <!-- <button @click="switchAxes()">common axis</button> -->
   <h3 class="plot-title text-sec py-5" v-if="plottedData">
     Cumulative number of COVID-19 cases in {{plottedData[0].name}}
   </h3>
   <DataUpdated />
+  <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
+    <Warning :animate="true" class="mt-2" text="Click on the graph to select new points"></Warning>
+    <div class="alert done-btn p-2 row m-0 rounded-0 mt-2 scale-in-center" @click="executeFit">done</div>
+  </div>
+
   <svg :width="width" :height="height" class="doubling-curve">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -18,7 +22,6 @@
     <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
   <DataSource />
-  <button @click="drawRect">{{drawable && selectedPoints.length > 0 ? "fit these points" : "select points to fit"}}</button>
 </div>
 </template>
 
@@ -26,6 +29,7 @@
 import Vue from "vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
+import Warning from "@/components/Warning.vue";
 
 import * as d3 from "d3";
 import {
@@ -43,13 +47,14 @@ const margin = {
   bottom: 75,
   left: 70
 };
-const transitionDuration = 3500;
+const transitionDuration = 500;
 
 export default Vue.extend({
   name: "DoublingCurve",
   components: {
     DataUpdated,
     DataSource,
+    Warning
   },
   props: {
     data: Object,
@@ -99,6 +104,10 @@ export default Vue.extend({
   },
   computed: {
     drawable() {
+      if (this.toFit) {
+        this.removeFit();
+        this.drawRect();
+      }
       return (this.toFit)
     },
     locationName() {
@@ -179,7 +188,8 @@ export default Vue.extend({
       }
     },
     drawRect() {
-      this.drawable = !this.drawable;
+      console.log("drawing rect")
+      // this.drawable = !this.drawable;
       // allow drawing of rects
       // based off https://bl.ocks.org/romsson/568e166d702b4a464347
       const mousedown = function() {
@@ -217,6 +227,22 @@ export default Vue.extend({
       this.svg = d3.select("svg.doubling-curve")
         .on("mousedown", mousedown)
         .on("mouseup", mouseup);
+    },
+    executeFit: function() {
+      console.log("finishing fit");
+      this.$emit("executeFit", this.toFit);
+    },
+    removeFit: function() {
+      console.log("removing fit")
+      this.chart.selectAll(".epi-line").style("opacity", 0.3);
+      if (this.toFit === 2) {
+        this.chart.selectAll("circle").classed("penultimate-data", false);
+        this.chart.selectAll(".penultimate-fit").style("display", "none");
+      }
+      if (this.toFit === 1) {
+        this.chart.selectAll("circle").classed("recent-data", false);
+        this.chart.selectAll(".recent-fit").style("display", "none");
+      }
     },
     setupPlot: function() {
       // Event listener for mobile responsiveness
@@ -260,9 +286,9 @@ export default Vue.extend({
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
       this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d, i) => {
-          const log = Math.log10(d);
-          return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
-        });
+        const log = Math.log10(d);
+        return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+      });
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
     },
@@ -573,6 +599,17 @@ export default Vue.extend({
     }
     .highlight {
         fill: green !important;
+    }
+
+    .done-btn {
+        background: lighten($warning-color, 40%);
+        border: 1px solid $warning-color;
+        cursor: pointer;
+        color: $warning-color;
+        text-transform: uppercase;
+        font-size: 0.8em;
+        font-weight: 600;
+        align-items: center;
     }
 }
 </style>
