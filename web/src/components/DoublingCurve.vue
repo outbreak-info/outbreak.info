@@ -389,7 +389,7 @@ export default Vue.extend({
 
       // y = -313.6766 + 0.0176x
       const recentFitSelector = this.chart
-        .selectAll("recent-fit")
+        .selectAll(".recent-fit")
         .data([this.fit2]);
 
       recentFitSelector.join(
