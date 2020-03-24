@@ -47,6 +47,10 @@ const routes = [
   {
     path: "/doubling-rates",
     name: "Doubling Rates",
+    props: route => ({
+      location: route.query.location,
+      variable: route.query.variable
+    }),
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/DoublingRates.vue")
   }

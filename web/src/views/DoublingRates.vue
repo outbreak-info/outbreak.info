@@ -29,6 +29,10 @@ export default Vue.extend({
   },
   data() {
     return {
+      locationID: null,
+      variable: "confirmed",
+      epi$: null,
+      dataSubscription: null,
       toFit: null,
       fitting1: false,
       fitting2: true,
@@ -39,22 +43,27 @@ export default Vue.extend({
       // this.fitIdx2 = [23,24,25,26];
     }
   },
-  subscriptions() {
-    return {
-      epi$: getDoubling(this.$apiurl, "DEU"),
-      // all$: getAllDoubling(this.$apiurl)
-    }
-  },
   methods: {
     changeFit: function(fitIdx) {
       this.toFit = fitIdx;
     },
     executeFit: function(fitIdx) {
       this[`fitting${fitIdx}`] = !this[`fitting${fitIdx}`];
+    },
+    updateData: function() {
+      this.dataSubscription = getDoubling(this.$apiurl, this.locationID, this.variable).subscribe(results => {
+        this.epi$ = results;
+      })
     }
   },
   mounted() {
-    console.log('hi');
+    this.locationID = this.$route.query.location;
+    this.variable = this.$route.query.variable;
+
+    this.updateData();
+  },
+  beforeDestroy() {
+    this.dataSubscription.unsubscribe();
   }
 });
 </script>
