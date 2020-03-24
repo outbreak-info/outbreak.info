@@ -1,9 +1,18 @@
 <template>
 <div>
-
-  <div class="d-flex align-items-center mx-4">
-    <DoublingCurve v-if="epi$" :data="epi$" :toFit="toFit" @executeFit="executeFit" />
-    <DoublingTable v-if="epi$" :data="epi$" :isFitting1="fitting1" :isFitting2="fitting2" @changeFit="changeFit" />
+  <Warning :animate="false" class="mt-2" text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: an increase in doubling rate could mean more comprehensive testing is happening, the virus is spreading, or both."></Warning>
+  <div class="d-flex align-items-center mx-4" v-if="epi$">
+    <div class="d-flex flex-column align-items-center">
+      <h3 class="plot-title text-sec py-5">
+        Cumulative number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeParams">
+          <option v-for="option in variableOptions" :value="option.value" :key="option.value">
+            {{ option.label }}
+          </option>
+        </select> in {{epi$.data[0].name}}
+      </h3>
+      <DoublingCurve :data="epi$" :toFit="toFit" @executeFit="executeFit" :variable="variable" />
+    </div>
+    <DoublingTable :data="epi$" :isFitting1="fitting1" :isFitting2="fitting2" @changeFit="changeFit" />
   </div>
 
 </div>
@@ -19,18 +28,27 @@ import {
 
 import DoublingCurve from "@/components/DoublingCurve.vue"
 import DoublingTable from "@/components/DoublingTable.vue"
+import Warning from "@/components/Warning.vue"
 
 
 export default Vue.extend({
   name: "DoublingRates",
   components: {
     DoublingCurve,
-    DoublingTable
+    DoublingTable,
+    Warning
   },
   data() {
     return {
       locationID: null,
       variable: "confirmed",
+      variableOptions: [{
+        label: "Cases",
+        value: "confirmed"
+      }, {
+        label: "Deaths",
+        value: "dead"
+      }],
       epi$: null,
       dataSubscription: null,
       toFit: null,
@@ -46,6 +64,16 @@ export default Vue.extend({
   methods: {
     changeFit: function(fitIdx) {
       this.toFit = fitIdx;
+    },
+    changeParams: function(newVar) {
+      console.log('change');
+      this.updateData();
+      this.$router.push({path: "doubling-rates",
+        query: {
+          location: this.locationID,
+          variable: this.variable
+        }
+      })
     },
     executeFit: function(fitIdx) {
       this[`fitting${fitIdx}`] = !this[`fitting${fitIdx}`];

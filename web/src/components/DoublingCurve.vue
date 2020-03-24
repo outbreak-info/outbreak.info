@@ -1,9 +1,5 @@
 <template>
 <div class="doubling-curves d-flex flex-column align-items-center">
-  <!-- <button @click="switchAxes()">common axis</button> -->
-  <h3 class="plot-title text-sec py-5" v-if="plottedData">
-    Cumulative number of COVID-19 cases in {{plottedData[0].name}}
-  </h3>
   <DataUpdated />
   <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
     <Warning :animate="true" class="mt-2" text="Click on the graph to select new points"></Warning>
@@ -58,7 +54,8 @@ export default Vue.extend({
   },
   props: {
     data: Object,
-    toFit: Number
+    toFit: Number,
+    variable: String,
   },
   data() {
     return {
@@ -68,7 +65,6 @@ export default Vue.extend({
       radius,
       transitionDuration,
       numFit: 5,
-      variable: "confirmed",
 
       // data
       plottedData: null,
@@ -189,7 +185,7 @@ export default Vue.extend({
       if (this.data) {
         // console.log(this.data)
         // console.log(this.plottedData)
-        this.plottedData = this.data.data.filter(d => d.confirmed);
+        this.plottedData = this.data.data.filter(d => d[this.variable]);
         this.fit1 = this.data.fit1;
         this.fit2 = this.data.fit2;
       }
@@ -235,10 +231,6 @@ export default Vue.extend({
 
         const circles = d3.selectAll("circle")
           .classed("highlight", d => {
-            console.log(y1)
-            console.log(y2)
-            console.log(d && d.confirmed ? y(d.confirmed) : "no data")
-            console.log("--")
             return d && d[variable] && y(d[variable]) <= y2 && y(d[variable]) >= y1
           });
       };
@@ -297,7 +289,7 @@ export default Vue.extend({
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([
           1,
-          d3.max(this.plottedData.map(d => d.confirmed))
+          d3.max(this.plottedData.map(d => d[this.variable]))
         ]);
 
       this.xAxis = d3.axisBottom(this.x).ticks(this.numXTicks);
