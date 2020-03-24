@@ -170,7 +170,7 @@ export default Vue.extend({
         .domain([0, d3.max(this.series, d => d3.max(d, d => d[1]))])
         .nice();
 
-      const numXTicks = this.width < 475 ? 3 : 6;
+      const numXTicks = this.width < 575 ? 3 : 6;
       this.xAxis = d3.axisBottom(this.x).ticks(numXTicks);
 
       this.svg
