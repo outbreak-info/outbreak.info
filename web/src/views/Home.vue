@@ -4,9 +4,9 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
   <!-- INTRO -->
-  <!-- <Warning :animate="false" :text="
-        'Our data is in the process of being updated; as a result, regional case counts are not currently correct. Sorry-- it will be fixed soon.'
-      "></Warning> -->
+  <Warning :animate="false" :text="
+        'Due to changes to our data source, data after 22 March incorrectly shows as 0. We are fixing it as fast as we can!'
+      "></Warning>
   <section>
     <div class="row m-0">
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
@@ -122,7 +122,7 @@ import EpiTable from "@/components/EpiTable.vue";
 import LeafletMap from "@/components/LeafletMap.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
-// import Warning from "@/components/Warning.vue";
+import Warning from "@/components/Warning.vue";
 import {
   getStackedRegions
 } from "@/api/region-summary.js";
@@ -155,7 +155,7 @@ export default {
     LeafletMap,
     SearchBar,
     Logos,
-    // Warning
+    Warning
   },
   data() {
     return {
