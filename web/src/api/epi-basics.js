@@ -190,27 +190,6 @@ export function getCasesAboveThresh(apiUrl, threshold) {
   )
 }
 
-export function getDateUpdate(apiUrl) {
-  store.state.admin.loading = true;
-  const timestamp = new Date().getTime();
-
-  return from(axios.get(`${apiUrl}metadata&timestamp=${timestamp}`)).pipe(
-    // pluck("data", "hits"),
-    tap(results => {
-
-      return (results)
-    }),
-    catchError(e => {
-      console.log("%c Error in date updated!", "color: red");
-      console.log(e);
-      return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false))
-  )
-}
-
-
-
 export function getGlanceSummary(apiUrl, locations) {
   store.state.admin.loading = true;
   const formatDate = timeFormat("%e %B %Y");

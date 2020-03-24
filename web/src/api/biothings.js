@@ -28,14 +28,15 @@ import {
 import store from "@/store";
 
 export function getDateUpdated(apiUrl) {
-  const url = `${apiUrl}metadata`;
+  const today = new Date();
+  const timestamp = today.getTime();
+  const url = `${apiUrl}metadata&timestamp=${timestamp}`;
   return from(axios.get(url)).pipe(
 
     pluck("data", "build_date"),
     map(result => {
       const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
       const dateUpdated = strictIsoParse(result);
-      const today = new Date();
       let lastUpdated = null;
       if (dateUpdated) {
         const updatedDiff = (today - dateUpdated) / (60 * 60 * 1000);
@@ -61,7 +62,8 @@ export function getDateUpdated(apiUrl) {
 export function getCurrentDate(apiUrl) {
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
-  const url = `${apiUrl}query?q=__all__&sort=-date&size=1&fields=date`;
+  const timestamp = new Date().getTime();
+  const url = `${apiUrl}query?q=__all__&sort=-date&size=1&fields=date&timestamp=${timestamp}`;
   return from(axios.get(url)).pipe(
     pluck("data", "hits"),
     map(result => {
