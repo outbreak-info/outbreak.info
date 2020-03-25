@@ -85,6 +85,8 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
     fit["y1"] = Math.exp(firstDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
     fit["x2"] = new Date(lastDate);
     fit["y2"] = Math.exp(lastDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
+    fit["xstart"] = sliced[0].date;
+    fit["xend"] = sliced.slice(-1)[0].date;
     fit["minIdx"] = minIdx;
     fit["maxIdx"] = maxIdx;
     console.log(fit)
