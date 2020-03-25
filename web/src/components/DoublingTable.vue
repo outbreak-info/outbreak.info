@@ -21,9 +21,9 @@
     </tr>
     <tr class="tr-current">
       <th>
-        <button @click="selectPoints(1)" :class="{'disabled' : fitting2}">
+        <!-- <button @click="selectPoints(1)" :class="{'disabled' : fitting2}">
           {{fitting1 ? "fit these points" : "change points to fit"}}
-        </button>
+        </button> -->
         {{ customFit1 ? "custom points" : `last ${fitSpan} days` }}
       </th>
       <td>
@@ -38,9 +38,9 @@
     </tr>
     <tr class="tr-previous">
       <th>
-        <button @click="selectPoints(2)" :class="{'disabled' : fitting1}">
+        <!-- <button @click="selectPoints(2)" :class="{'disabled' : fitting1}">
           {{fitting2 ? "fit these points" : "change points to fit"}}
-        </button>
+        </button> -->
         {{ customFit2 ? "custom points" : `last ${fitSpan*2} days` }}
       </th>
       <td>
