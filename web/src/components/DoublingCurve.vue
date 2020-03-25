@@ -551,6 +551,9 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+$fit1-color: #59a14f;
+$fit2-color: #f28e2c;
+
 .doubling-curves {
     & .epi-axis {
         -webkit-user-select: none;
@@ -568,12 +571,12 @@ export default Vue.extend({
     }
 
     & .recent-data {
-        fill: $warning-color;
+        fill: $fit2-color;
         fill-opacity: 0.5;
     }
 
     & .penultimate-data {
-        fill: $secondary-color;
+        fill: $fit1-color;
         fill-opacity: 0.5;
     }
 
@@ -587,10 +590,10 @@ export default Vue.extend({
     }
 
     & .recent-fit {
-        stroke: $warning-color;
+        stroke: $fit2-color;
     }
     & .penultimate-fit {
-        stroke: $secondary-color;
+        stroke: $fit1-color;
     }
 
     & .tooltip--text {

@@ -2,7 +2,7 @@
 <div class="doubling-table my-3 d-flex flex-column align-items-center" v-if="data">
   <h4>Doubling rates</h4>
   <SlopeComparison :slope1="data.fit1.slope" :slope2="data.fit2.slope" class="mb-2" />
-  <DataUpdated />
+  <DataUpdated class="mb-3"/>
 
   <table class="m-auto">
     <tr>
@@ -24,7 +24,7 @@
         <!-- <button @click="selectPoints(1)" :class="{'disabled' : fitting2}">
           {{fitting1 ? "fit these points" : "change points to fit"}}
         </button> -->
-        {{ customFit1 ? "custom points" : `last ${fitSpan} days` }}
+        {{fit2_dates}}
       </th>
       <td>
         {{fit2_time}}
@@ -41,7 +41,7 @@
         <!-- <button @click="selectPoints(2)" :class="{'disabled' : fitting1}">
           {{fitting2 ? "fit these points" : "change points to fit"}}
         </button> -->
-        {{ customFit2 ? "custom points" : `last ${fitSpan*2} days` }}
+        {{fit1_dates}}
       </th>
       <td>
         {{fit1_time}}
@@ -55,12 +55,16 @@
     </tr>
     <tr class="change">
       <th>
-        change
+        change from older data
       </th>
-      <td :class="[change_time < 0 ? 'increasing' : 'decreasing']">
-        {{change_time}}
-        <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="change_time < 0" />
-        <font-awesome-icon class="decreasing" :icon="['fas', 'arrow-down']" v-if="change_time > 0" />
+      <td :class="[change_time.worse ? 'worse' : 'better']">
+        {{change_time.label}}
+        <font-awesome-icon class="better" :icon="['fas', 'arrow-up']" v-if="!change_time.worse" />
+        <font-awesome-icon class="worse" :icon="['fas', 'arrow-down']" v-if="change_time.worse" />
+      </td>
+      <td class="better-worse text-left" colspan="2" :class="[change_time.worse ? 'worse' : 'better']">
+        {{change_time.worse ? "worse" : "better"}}
+         <!-- <span v-if="change_time.nearZero"> (negligible rate of change)</span> -->
       </td>
     </tr>
   </table>
@@ -100,7 +104,7 @@ library.add(faSort);
 
 import store from "@/store";
 
-const formatDate = timeFormat("%a %d %b %Y");
+const formatDate = timeFormat("%d %b %Y");
 
 export default Vue.extend({
   name: "EpiTable",
@@ -117,7 +121,6 @@ export default Vue.extend({
   data() {
     return {
       formatDate,
-      fitSpan: 5,
       fitting1: false,
       fitting2: false,
       customFit1: false,
@@ -147,13 +150,19 @@ export default Vue.extend({
   },
   computed: {
     fit1_time: function() {
-      return format(".1f")(this.data.fit1.doublingTime);
+      return format(",.1f")(this.data.fit1.doublingTime);
     },
     fit2_time: function() {
-      return format(".1f")(this.data.fit2.doublingTime);
+      return format(",.1f")(this.data.fit2.doublingTime);
     },
     change_time: function() {
-      return format(".1f")(this.data.fit2.doublingTime - this.data.fit1.doublingTime);
+      return this.calcDiff();
+    },
+    fit1_dates: function() {
+      return `${formatDate(this.data.fit1.xstart)} - ${formatDate(this.data.fit1.xend)}`;
+    },
+    fit2_dates: function() {
+      return `${formatDate(this.data.fit2.xstart)} - ${formatDate(this.data.fit2.xend)}`;
     },
     fit1_slope: function() {
       return format(".2f")(this.data.fit1.slope);
@@ -180,6 +189,10 @@ export default Vue.extend({
       } else {
         this.$emit("changeFit", idx)
       }
+    },
+    calcDiff() {
+      const diff = this.data.fit2.doublingTime - this.data.fit1.doublingTime;
+      return({worse: diff < 0, label: format(",.1f")(diff), nearZero: this.data.fit2.slope < 0.01})
     },
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);
@@ -216,6 +229,8 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+$fit1-color: #59a14f;
+$fit2-color: #f28e2c;
 h4 {
     margin: 0;
 }
@@ -229,10 +244,10 @@ table {
 }
 
 .tr-current {
-    background: lighten($warning-color, 40%);
+    background: lighten($fit2-color, 35%);
 }
 .tr-previous {
-    background: lighten($secondary-color, 58%);
+    background: lighten($fit1-color, 45%);
 }
 
 tr {
@@ -270,16 +285,22 @@ th {
     // height: 100%;
 }
 
-.increasing {
+.worse {
     color: $warning-color;
 }
 
-.decreasing {
+.better {
     color: $secondary-color;
 }
 
 .change {
     font-weight: 500;
+}
+
+.better-worse {
+  opacity: 0.5;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 // widths

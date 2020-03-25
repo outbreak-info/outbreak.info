@@ -1,10 +1,10 @@
 <template>
-<div class="epidemiology-curves flex-column align-left">
+<div class="slope-comparison flex-column align-left">
 
   <svg :width="width" :height="height" class="slope-comparison">
     <defs>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+      <marker id="arrowhead" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse" >
+        <path d="M5,0 L12,5 L5,10" class="slope-arrowhead" :class="[slope1 < slope2 ? 'worse' : 'better']" />
       </marker>
     </defs>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis axis--x" ref="xAxis"></g>
@@ -14,8 +14,8 @@
       <path ref="arrow"></path>
       <line class="penultimate-slope" ref="penultimate_slope"></line>
       <line class="recent-slope" ref="recent_slope"></line>
-      <circle class="penultimate-slope-end" ref="this.$refs.penultimate_slope_end"></circle>
-      <circle class="recent-slope-end" ref="this.$refs.recent_slope_end"></circle>
+      <circle class="penultimate-slope-end" ref="penultimate_slope_end"></circle>
+      <circle class="recent-slope-end" ref="recent_slope_end"></circle>
     </g>
   </svg>
 </div>
@@ -74,8 +74,8 @@ export default Vue.extend({
   },
   methods: {
     updatePlot: function() {
-        this.updateScales();
-        this.drawSlopes();
+      this.updateScales();
+      this.drawSlopes();
     },
     setupPlot: function() {
       this.svg = d3.select("svg.slope-comparison");
@@ -102,37 +102,37 @@ export default Vue.extend({
     },
     drawSlopes: function() {
       d3.select(this.$refs.polygon)
-      .attr("points",`${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(this.slope1)} ${this.x(1)},${this.y(this.slope2)}`)
-      .attr("class", d => this.slope1 < this.slope2 ? "worse" : "better");
+        .attr("points", `${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(this.slope1)} ${this.x(1)},${this.y(this.slope2)}`)
+        .attr("class", d => this.slope1 < this.slope2 ? "worse" : "better");
 
       d3.select(this.$refs.arrow)
-      .attr("d",`M${this.x(1)} ${this.y(this.slope1)} C ${this.x(1) + 10} ${this.y(this.slope1)}, ${this.x(1) + 10} ${this.y(this.slope2)}, ${this.x(1)-4} ${this.y(this.slope2)}`)
-      .attr("transform", "translate(15, 0)")
-      .attr("class", d => this.slope1 < this.slope2 ? "swoopy-arrow worse" : "swoopy-arrow better")
-      .attr("marker-end", "url(#arrow)");
+        .attr("d", `M${this.x(1)} ${this.y(this.slope1)} C ${this.x(1) + 10} ${this.y(this.slope1)}, ${this.x(1) + 10} ${this.y(this.slope2)}, ${this.x(1)-4} ${this.y(this.slope2)}`)
+        .attr("transform", "translate(15, 0)")
+        .attr("class", d => this.slope1 < this.slope2 ? "swoopy-arrow worse" : "swoopy-arrow better")
+        .attr("marker-end", "url(#arrowhead)");
 
 
       d3.select(this.$refs.penultimate_slope)
-      .attr("x1", this.x(0))
-      .attr("y1", this.y(0))
-      .attr("x2", this.x(1))
-      .attr("y2", this.y(this.slope1));
+        .attr("x1", this.x(0))
+        .attr("y1", this.y(0))
+        .attr("x2", this.x(1))
+        .attr("y2", this.y(this.slope1));
 
       d3.select(this.$refs.recent_slope)
-      .attr("x1", this.x(0))
-      .attr("y1", this.y(0))
-      .attr("x2", this.x(1))
-      .attr("y2", this.y(this.slope2));
+        .attr("x1", this.x(0))
+        .attr("y1", this.y(0))
+        .attr("x2", this.x(1))
+        .attr("y2", this.y(this.slope2));
 
       d3.select(this.$refs.penultimate_slope_end)
-      .attr("cx", this.x(1))
-      .attr("cy", this.y(this.slope1))
-      .attr("r", 3);
+        .attr("cx", this.x(1))
+        .attr("cy", this.y(this.slope1))
+        .attr("r", 3);
 
       d3.select(this.$refs.recent_slope_end)
-      .attr("cx", this.x(1))
-      .attr("cy", this.y(this.slope2))
-      .attr("r", 3);
+        .attr("cx", this.x(1))
+        .attr("cy", this.y(this.slope2))
+        .attr("r", 3);
 
     }
   }
@@ -140,51 +140,56 @@ export default Vue.extend({
 </script>
 
 <style lang=scss>
+.slope-comparison {
+  $fit1-color: #59a14f;
+  $fit2-color: #f28e2c;
 
-.recent-slope {
-    stroke: $warning-color;
+  .recent-slope {
+    stroke: $fit2-color;
     stroke-width: 3;
-}
+  }
 
-.penultimate-slope {
-    stroke: $secondary-color;
+  .penultimate-slope {
+    stroke: $fit1-color;
     stroke-width: 1.5;
-    stroke-dasharray: 6,6;
-}
+    stroke-dasharray: 6, 6;
+  }
 
-.worse {
+  .worse {
     fill: $warning-color;
     fill-opacity: 0.2;
-}
+  }
 
-.better {
+  .better {
     fill: $secondary-color;
     fill-opacity: 0.2;
-}
+  }
 
-.penultimate-slope-end {
-  fill: $secondary-color;
-}
+  .penultimate-slope-end {
+    fill: $fit1-color;
+  }
 
-.recent-slope-end {
-  fill: $warning-color;
-}
+  .recent-slope-end {
+    fill: $fit2-color;
+  }
 
-.slope-comparison .axis--x path {
-  stroke: $grey-60;
-}
+  .slope-comparison .axis--x path {
+    stroke: $grey-60;
+  }
 
-.swoopy-arrow.better,
-.swoopy-arrowhead.better {
-    stroke: $secondary-color;
+  .swoopy-arrow.better,
+  .slope-arrowhead.better {
+    stroke: $secondary-color !important;
     fill: none;
     stroke-width: 1.5;
-}
-.swoopy-arrow.worse,
-.swoopy-arrowhead.worse {
-    stroke: $warning-color;
+  }
+
+  .swoopy-arrow.worse,
+  .slope-arrowhead.worse {
+    stroke: $warning-color !important;
     fill: none;
     stroke-width: 1.5;
-}
+  }
 
+}
 </style>
