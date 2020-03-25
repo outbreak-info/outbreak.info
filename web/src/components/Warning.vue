@@ -20,7 +20,7 @@
 <script lang="ts">
 import Vue from "vue";
 export default Vue.extend({
-  name: "SearchBar",
+  name: "Warning",
   props: {
     text: String,
     animate: Boolean

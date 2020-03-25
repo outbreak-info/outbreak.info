@@ -1,12 +1,12 @@
 <template>
-<div class="epidemiology-curves flex-column align-left">
-
-  <!-- <button @click="switchAxes()">common axis</button> -->
-  <h3 class="plot-title text-sec py-5">
-    Cumulative number of COVID-19 cases in {{data[0].admin0}}
-  </h3>
+<div class="doubling-curves d-flex flex-column align-items-center">
   <DataUpdated />
-  <svg :width="width" :height="height" class="epi-curve">
+  <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
+    <Warning :animate="true" class="mt-2" text="Click on the graph to select new points"></Warning>
+    <div class="alert done-btn p-2 row m-0 rounded-0 mt-2 scale-in-center" @click="executeFit">done</div>
+  </div>
+
+  <svg :width="width" :height="height" class="doubling-curve">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
@@ -25,6 +25,7 @@
 import Vue from "vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
+import Warning from "@/components/Warning.vue";
 
 import * as d3 from "d3";
 import {
@@ -37,22 +38,24 @@ const width = 500;
 const height = 300;
 const radius = 4.5;
 const margin = {
-  top: 35,
+  top: 100,
   right: 170,
   bottom: 75,
   left: 70
 };
-const transitionDuration = 3500;
+const transitionDuration = 500;
 
 export default Vue.extend({
   name: "DoublingCurve",
   components: {
     DataUpdated,
     DataSource,
+    Warning
   },
   props: {
-    data: Array,
-    fit: Object
+    data: Object,
+    toFit: Number,
+    variable: String,
   },
   data() {
     return {
@@ -64,12 +67,12 @@ export default Vue.extend({
       numFit: 5,
 
       // data
-      logData: null,
+      plottedData: null,
+      fit1: null,
+      fit2: null,
 
       // button interfaces
-      lengthThreshold: 8,
-      showAll: false,
-      isLogY: false,
+      selectedPoints: [],
 
       // axes
       numXTicks: 9,
@@ -89,7 +92,6 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      console.log(this.data)
       this.prepData();
       this.updatePlot();
     },
@@ -98,18 +100,31 @@ export default Vue.extend({
     }
   },
   computed: {
+    fitIdx1() {
+      return(d3.range(this.fit1.minIdx, this.fit1.maxIdx))
+    },
+    fitIdx2() {
+      return(d3.range(this.fit2.minIdx, this.fit2.maxIdx))
+    },
+    drawable() {
+      if (this.toFit) {
+        this.removeFit();
+        this.drawRect();
+      }
+      return (this.toFit)
+    },
     locationName() {
-      if (this.data.length === 1) {
-        return this.data[0].locationName;
+      if (this.plottedData.length === 1) {
+        return this.plottedData[0].locationName;
       }
       return null;
     },
     dataLength() {
-      return this.data.length;
+      return this.plottedData.length;
     }
   },
   mounted() {
-    console.log(this.data)
+    this.prepData();
     this.setupPlot();
     this.updatePlot();
   },
@@ -134,14 +149,9 @@ export default Vue.extend({
         this.height = idealWidth / whRatio;
       }
 
-      this.numXTicks = this.width < 550 ? 3 : 9;
+      this.numXTicks = this.width < 550 ? 3 : 6;
       this.numYTicks = this.height < 250 ? 3 : 6;
     },
-    // changeScale: function() {
-    //   this.isLogY = !this.isLogY;
-    //
-    //   this.updatePlot();
-    // },
     // tooltipOn: function(d) {
     //   d3.select(`#tooltip-${d.id}-${d.date_string}`).attr("display", "block");
     //
@@ -166,17 +176,84 @@ export default Vue.extend({
     // },
     updatePlot: function() {
       if (this.data) {
+        this.prepData();
         this.updateScales();
         this.drawDots();
       }
     },
     prepData: function() {
-      // if (this.data) {
-      //   this.logData = cloneDeep(this.data);
-      //   this.logData.forEach(d => {
-      //     d["data"] = d.data.filter(x => x[this.variable] > 0);
-      //   });
-      // }
+      if (this.data) {
+        // console.log(this.data)
+        // console.log(this.plottedData)
+        this.plottedData = this.data.data.filter(d => d[this.variable]);
+        this.fit1 = this.data.fit1;
+        this.fit2 = this.data.fit2;
+      }
+    },
+    drawRect() {
+      console.log("drawing rect")
+      // this.drawable = !this.drawable;
+      // allow drawing of rects
+      // based off https://bl.ocks.org/romsson/568e166d702b4a464347
+      const mousedown = function(x, y, variable) {
+        const mouseLoc = d3.mouse(d3.event.target);
+        d3.select(".doubling-curve")
+          .append("rect")
+          .attr("class", "selection-box")
+          .attr("x", mouseLoc[0])
+          .attr("y", mouseLoc[1])
+          .attr("width", 0)
+          .attr("height", 0);
+
+        d3.select(".doubling-curve").on("mousemove", () => mousemove(x, y, variable));
+      }
+
+      const mouseup = function() {
+        d3.select(".doubling-curve").on("mousemove", null);
+      }
+
+      const mousemove = function(x, y, variable) {
+        console.log(y)
+        const mouseLoc = d3.mouse(d3.event.target);
+        console.log(mouseLoc);
+        console.log(d3.event);
+
+        const rect = d3.select(".doubling-curve")
+          .select(".selection-box");
+
+        const x1 = mouseLoc[0];
+        const x2 = +rect.attr("x");
+        const y1 = mouseLoc[1];
+        const y2 = +rect.attr("y");
+
+        rect.attr("width", Math.max(0, x1 - x2))
+          .attr("height", Math.max(0, y1 - y2));
+
+        const circles = d3.selectAll("circle")
+          .classed("highlight", d => {
+            return d && d[variable] && y(d[variable]) <= y2 && y(d[variable]) >= y1
+          });
+      };
+
+      this.svg = d3.select("svg.doubling-curve")
+        .on("mousedown", () => mousedown(this.x, this.y, this.variable))
+        .on("mouseup", mouseup);
+    },
+    executeFit: function() {
+      console.log("finishing fit");
+      this.$emit("executeFit", this.toFit);
+    },
+    removeFit: function() {
+      console.log("removing fit")
+      this.chart.selectAll(".epi-line").style("opacity", 0.3);
+      if (this.toFit === 2) {
+        this.chart.selectAll("circle").classed("penultimate-data", false);
+        this.chart.selectAll(".penultimate-fit").style("display", "none");
+      }
+      if (this.toFit === 1) {
+        this.chart.selectAll("circle").classed("recent-data", false);
+        this.chart.selectAll(".recent-fit").style("display", "none");
+      }
     },
     setupPlot: function() {
       // Event listener for mobile responsiveness
@@ -190,10 +267,10 @@ export default Vue.extend({
       this.setPlotDims();
 
       this.prepData();
-      this.svg = d3.select("svg.epi-curve");
+
+      this.svg = d3.select("svg.doubling-curve");
       this.chart = d3.select("#epi-curve");
       this.dots = this.chart.append("g").attr("id", "confirmed-timepoints");
-
 
       this.line = d3
         .line()
@@ -201,130 +278,30 @@ export default Vue.extend({
         .y(d => this.y());
     },
     updateScales: function() {
-      console.log(this.data)
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(
-          d3.extent(this.data.map(d => d.date))
+          d3.extent(this.plottedData.map(d => d.date))
         );
 
-      // if (this.isLogY) {
       this.y = d3
         .scaleLog()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([
           1,
-          d3.max(this.data.map(d => d.confirmed))
+          d3.max(this.plottedData.map(d => d[this.variable]))
         ]);
-      // } else {
-      //   this.y = d3
-      //     .scaleLinear()
-      //     .range([this.height - this.margin.top - this.margin.bottom, 0])
-      //     .domain([
-      //       0,
-      //       d3.max(this.data.flatMap(d => d.data).map(d => d.confirmed))
-      //     ]);
-      // }
 
       this.xAxis = d3.axisBottom(this.x).ticks(this.numXTicks);
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks);
+      this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d, i) => {
+        const log = Math.log10(d);
+        return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+      });
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
-
-      // --- update y-scale switch button --
-      //
-      const dySwitch = -10;
-      const xSwoop = 30;
-      const ySwoop = -35;
-      const swoopOffset = 10;
-
-      this.switchBtn = this.svg.selectAll(".switch-button-group").data([0]);
-
-      this.switchBtn.exit().remove();
-      const switchEnter = this.switchBtn
-        .enter()
-        .append("g")
-        .attr("class", "switch-button-group")
-        .attr("transform", "translate(5,0)");
-
-      this.switchBtn.merge(switchEnter);
-
-      const switchRect = this.switchBtn.select(".switch-button-rect");
-      const switchRectEnter = this.switchBtn
-        .append("rect")
-        .attr("class", "switch-button-rect")
-        .attr("x", 0)
-        .attr("width", 0)
-        .attr("height", 0);
-
-      switchRect.merge(switchRectEnter).attr("y", this.height - 28);
-
-      const switchArrow = this.switchBtn.select("path");
-
-      const switchArrowEnter = this.switchBtn
-        .append("path")
-        .attr("class", "swoopy-arrow")
-        .attr("id", "switch-btn-swoopy-arrow")
-        .attr("marker-end", "url(#arrow)");
-
-      switchArrow
-        .merge(switchArrowEnter)
-        // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
-        .attr(
-          "d",
-          `M ${xSwoop} ${this.height + ySwoop}
-          C ${xSwoop + swoopOffset} ${this.height + ySwoop},
-          ${this.margin.left + ySwoop + 20} ${this.height -
-            this.margin.bottom +
-            15 +
-            swoopOffset},
-          ${this.margin.left + ySwoop + 20} ${this.height -
-            this.margin.bottom +
-            15}`
-          // `M ${xSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${xSwoop + 5} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 55}, ${this.margin.left - 25 - dxSwoop} ${ this.height + this.margin.top }, ${this.margin.left - 25} ${ this.height + this.margin.top }`
-          // `M ${dxSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${dxSwoop+15} ${this.margin.top + this.height + this.margin.bottom - 20}, ${this.margin.left - 13} ${this.height + this.margin.top + 25}, ${this.margin.left - 13} ${this.height + this.margin.top + 10}`
-        );
-
-      const switchText = this.switchBtn.select("text");
-
-      const switchTextEnter = this.switchBtn
-        .append("text")
-        .attr("class", "switch-button")
-        .attr("x", 5);
-
-      switchText
-        .merge(switchTextEnter)
-        .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
-        .attr("y", this.height + dySwitch)
-        .on("mouseover", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", true)
-        )
-        .on("mouseout", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", false)
-        )
-        .on("click", () => this.changeScale());
-
-      if (this.switchBtn.select("text").node()) {
-        this.switchBtn
-          .select("rect")
-          .attr(
-            "width",
-            this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().width + 10
-          )
-          .attr(
-            "height",
-            this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().height + 5
-          );
-      }
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
@@ -332,41 +309,126 @@ export default Vue.extend({
 
       // --- best-fit lines ---
       //       // y = -1222.7800       0.0672
-      const penultimateFitSelector = this.chart.selectAll("penultimate-fit").data([0]);
+      //       dashed line animation from Nadieh Brehmer: https://www.visualcinnamon.com/2016/01/animating-dashed-line-d3.html
+      const calcDashArray = function(selector) {
+        //Get the total length of the path
+        var totalLength = selector.getTotalLength();
 
-      penultimateFitSelector.exit().remove();
+        /////// Create the required stroke-dasharray to animate a dashed pattern ///////
 
-      const penultimateFitEnter = penultimateFitSelector
-        .enter().append("line")
-        .attr("class", "epi-line penultimate-fit");
+        //Create a (random) dash pattern
+        //The first number specifies the length of the visible part, the dash
+        //The second number specifies the length of the invisible part
+        var dashing = "12,6"
 
-        penultimateFitSelector.merge(penultimateFitEnter)
-          .attr("x1", this.x(new Date("2020-02-28")))
-          .attr("x2", this.x(new Date("2020-03-16")))
-          .attr("y1", this.y(2738))
-          .attr("y2", this.y(14958))
+        //This returns the length of adding all of the numbers in dashing
+        //(the length of one pattern in essence)
+        //So for "6,6", for example, that would return 6+6 = 12
+        var dashLength =
+          dashing
+          .split(/[\s,]/)
+          .map(function(a) {
+            return parseFloat(a) || 0
+          })
+          .reduce(function(a, b) {
+            return a + b
+          });
+
+        //How many of these dash patterns will fit inside the entire path?
+        var dashCount = Math.ceil(totalLength / dashLength);
+
+        //Create an array that holds the pattern as often
+        //so it will fill the entire path
+        var newDashes = new Array(dashCount).join(dashing + " ");
+
+        //Then add one more dash pattern, namely with a visible part
+        //of length 0 (so nothing) and a white part
+        //that is the same length as the entire path
+        var dashArray = newDashes + " 0, " + totalLength;
+        return totalLength + " " + totalLength;
+        // return dashArray
+      }
+
+      const penultimateFitSelector = this.chart
+        .selectAll(".penultimate-fit")
+        .data([this.fit1]);
+
+      penultimateFitSelector.join(
+        enter => enter.append("line")
+        .attr("class", "epi-line penultimate-fit")
+        // .transition(t1)
+        .attr("x1", d => this.x(d.x1))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        update => update.attr("x1", d => this.x(d.x1))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+      )
+
 
       // y = -313.6766 + 0.0176x
-      const recentFitSelector = this.chart.selectAll("recent-fit").data([0]);
+      const recentFitSelector = this.chart
+        .selectAll(".recent-fit")
+        .data([this.fit2]);
 
-      recentFitSelector.exit().remove();
-
-      const recentFitEnter = recentFitSelector
-        .enter().append("line")
-        .attr("class", "epi-line recent-fit");
-
-
-
-        recentFitSelector.merge(recentFitEnter)
-          .attr("x1", this.x(new Date("2020-03-03")))
-          .attr("x2", this.x(new Date("2020-03-16")))
-          .attr("y1", this.y(6358))
-          .attr("y2", this.y(8279))
+      recentFitSelector.join(
+        enter => enter.append("line")
+        .attr("class", "epi-line recent-fit")
+        // .transition(t1)
+        .attr("x1", d => this.x(d.x1))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).delay(this.transitionDuration + 50).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        update => update.attr("x1", d => this.x(d.x1))
+        .attr("x2", d => this.x(d.x2))
+        .attr("y1", d => this.y(d.y1))
+        .attr("y2", d => this.y(d.y2))
+        .attr("stroke-dasharray", function() {
+          return calcDashArray(this);
+        })
+        .attr("stroke-dashoffset", function() {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .call(update => update.transition(t1).delay(this.transitionDuration + 50).ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)),
+        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+      )
 
       // --- show cases as dot plot ---
       const dotGroups = this.dots
         .selectAll(".circle-confirmed")
-        .data(this.data);
+        .data(this.plottedData);
 
       // -- exit --
       dotGroups.exit().remove();
@@ -381,9 +443,9 @@ export default Vue.extend({
         .attr("id", d => d.id)
         .attr("class", d => `circle-confirmed ${d.id}`)
         .attr("cx", d => this.x(d.date))
-        .attr("cy", d => this.y(d.confirmed))
-        .classed("recent-data", (d, i) => i >= (this.data.length - this.numFit))
-        .classed("penultimate-data", (d, i) => i >= this.data.length - this.numFit * 2 && i < this.data.length - this.numFit);
+        .attr("cy", d => this.y(d[this.variable]))
+        .classed("recent-data", d => this.fitIdx2.includes(d.idx))
+        .classed("penultimate-data", d => this.fitIdx1.includes(d.idx));
 
 
 
@@ -391,96 +453,96 @@ export default Vue.extend({
       // --- tooltips ---
       // need to be outside the path/dot groups, so they're on top of all the curves.
       // OUTER GROUP: one per country
-      const tooltipGroupSelector = this.chart
-        .selectAll(".epi-tooltip-group")
-        .data(this.data);
-
-      // -- exit --
-      tooltipGroupSelector.exit().remove();
-
-      // -- enter --
-      const tooltipGroupEnter = tooltipGroupSelector
-        .enter()
-        .append("g")
-        .attr("class", "epi-tooltip-group")
-        .attr("fill", d => this.lightColorScale(d.locationName))
-        .attr("stroke", d => this.colorScale(d.locationName));
-
-      tooltipGroupSelector
-        .merge(tooltipGroupEnter)
-        .attr("class", d => `epi-tooltip-group ${d.id}`);
-
-      // INNER GROUPS: one per timepoint
-      const tooltipSelector = this.chart
-        .selectAll(".epi-tooltip-group")
-        .selectAll(".tooltip--epi-curve")
-        .data(d => d.data);
-
-      tooltipSelector.exit().remove();
-
-      const tooltipEnter = tooltipSelector
-        .enter()
-        .append("g")
-        .attr("class", "tooltip--epi-curve")
-        .attr("transform", "translate(5,5)")
-        .attr("display", "none");
-
-      tooltipSelector
-        .merge(tooltipEnter)
-        .attr("id", d => `tooltip-${d.id}-${d.date_string}`);
-
-      const tooltipRect = tooltipSelector.select(".tooltip--rect");
-
-      const tooltipRectEnter = tooltipEnter
-        .append("rect")
-        .attr("class", "tooltip--rect");
-
-      tooltipRect
-        .merge(tooltipRectEnter)
-        .attr("x", d => this.x(d.date))
-        .attr("y", d => this.y(d.confirmed))
-        .attr("width", 108)
-        .attr("height", 40)
-        .attr("stroke-dasharray", "108, 188")
-        .attr("stroke-width", "3");
-
-      const tooltipText = tooltipSelector.select(".tooltip--text");
-
-      const tooltipTextEnter = tooltipEnter
-        .append("text")
-        .attr("class", "tooltip--text default-black")
-        .attr("transform", "translate(5,5)");
-
-      const tooltipDateEnter = tooltipTextEnter
-        .append("tspan")
-        .attr("class", "tooltip--date");
-
-      tooltipText
-        .select(".tooltip--date")
-        .merge(tooltipDateEnter)
-        .attr("x", d => this.x(d.date))
-        .attr("y", d => this.y(d.confirmed))
-        // .attr("dy", "1.1em")
-        .text(d => formatDate(d.date));
-
-      const tooltipCasesEnter = tooltipTextEnter
-        .append("tspan")
-        .attr("class", "tooltip--case-count");
-
-      tooltipText
-        .select(".tooltip--case-count")
-        .merge(tooltipCasesEnter)
-        .attr("x", d => this.x(d.date))
-        .attr("y", d => this.y(d.confirmed))
-        .attr("dy", "1.1em")
-        // .attr("dy", "2.2em")
-        .text(d => `${d.confirmed.toLocaleString()} cases`);
-
-
-      // --- event listeners ---
-      d3.selectAll("circle")
-        .on("mouseover", d => this.tooltipOn(d))
-        .on("mouseout", d => this.tooltipOff(d));
+      // const tooltipGroupSelector = this.chart
+      //   .selectAll(".epi-tooltip-group")
+      //   .data(this.plottedData);
+      //
+      // // -- exit --
+      // tooltipGroupSelector.exit().remove();
+      //
+      // // -- enter --
+      // const tooltipGroupEnter = tooltipGroupSelector
+      //   .enter()
+      //   .append("g")
+      //   .attr("class", "epi-tooltip-group")
+      //   .attr("fill", d => this.lightColorScale(d.locationName))
+      //   .attr("stroke", d => this.colorScale(d.locationName));
+      //
+      // tooltipGroupSelector
+      //   .merge(tooltipGroupEnter)
+      //   .attr("class", d => `epi-tooltip-group ${d.id}`);
+      //
+      // // INNER GROUPS: one per timepoint
+      // const tooltipSelector = this.chart
+      //   .selectAll(".epi-tooltip-group")
+      //   .selectAll(".tooltip--epi-curve")
+      //   .data(d => d.data);
+      //
+      // tooltipSelector.exit().remove();
+      //
+      // const tooltipEnter = tooltipSelector
+      //   .enter()
+      //   .append("g")
+      //   .attr("class", "tooltip--epi-curve")
+      //   .attr("transform", "translate(5,5)")
+      //   .attr("display", "none");
+      //
+      // tooltipSelector
+      //   .merge(tooltipEnter)
+      //   .attr("id", d => `tooltip-${d.id}-${d.date_string}`);
+      //
+      // const tooltipRect = tooltipSelector.select(".tooltip--rect");
+      //
+      // const tooltipRectEnter = tooltipEnter
+      //   .append("rect")
+      //   .attr("class", "tooltip--rect");
+      //
+      // tooltipRect
+      //   .merge(tooltipRectEnter)
+      //   .attr("x", d => this.x(d.date))
+      //   .attr("y", d => this.y(d.confirmed))
+      //   .attr("width", 108)
+      //   .attr("height", 40)
+      //   .attr("stroke-dasharray", "108, 188")
+      //   .attr("stroke-width", "3");
+      //
+      // const tooltipText = tooltipSelector.select(".tooltip--text");
+      //
+      // const tooltipTextEnter = tooltipEnter
+      //   .append("text")
+      //   .attr("class", "tooltip--text default-black")
+      //   .attr("transform", "translate(5,5)");
+      //
+      // const tooltipDateEnter = tooltipTextEnter
+      //   .append("tspan")
+      //   .attr("class", "tooltip--date");
+      //
+      // tooltipText
+      //   .select(".tooltip--date")
+      //   .merge(tooltipDateEnter)
+      //   .attr("x", d => this.x(d.date))
+      //   .attr("y", d => this.y(d.confirmed))
+      //   // .attr("dy", "1.1em")
+      //   .text(d => formatDate(d.date));
+      //
+      // const tooltipCasesEnter = tooltipTextEnter
+      //   .append("tspan")
+      //   .attr("class", "tooltip--case-count");
+      //
+      // tooltipText
+      //   .select(".tooltip--case-count")
+      //   .merge(tooltipCasesEnter)
+      //   .attr("x", d => this.x(d.date))
+      //   .attr("y", d => this.y(d.confirmed))
+      //   .attr("dy", "1.1em")
+      //   // .attr("dy", "2.2em")
+      //   .text(d => `${d.confirmed.toLocaleString()} cases`);
+      //
+      //
+      // // --- event listeners ---
+      // d3.selectAll("circle")
+      //   .on("mouseover", d => this.tooltipOn(d))
+      //   .on("mouseout", d => this.tooltipOff(d));
 
     }
   }
@@ -489,93 +551,76 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-.circle-confirmed {
-    fill: #bab0ab;
-    fill-opacity: 0.75;
-}
-
-.recent-data {
-    fill: $warning-color;
-}
-
-.penultimate-data {
-    fill: $secondary-color;
-}
-
-.epi-axis text {
-    font-size: 12pt;
-}
-
-.epi-line {
-    fill: none;
-    stroke-width: 2;
-}
-
-.recent-fit {
-    stroke: $warning-color;
-}
-.penultimate-fit {
-    stroke: $secondary-color;
-}
-
-.tooltip--text {
-    dominant-baseline: hanging;
-    stroke: none !important;
-}
-
-.tooltip--date {
-    font-weight: 300;
-}
-
-.tooltip--case-count {
-    font-weight: 500;
-}
-
-.switch-button {
-    cursor: pointer;
-    dominant-baseline: text-after-edge;
-    // fill: $grey-90 !important;
-    font-weight: 300 !important;
-    font-size: 0.85em;
-
-    &:hover {
-        text-decoration: underline;
+.doubling-curves {
+    & .epi-axis {
+        -webkit-user-select: none;
+        /* Safari */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* IE10+/Edge */
+        user-select: none;
+        /* Standard */
     }
-}
-
-.swoopy-arrow,
-.swoopy-arrowhead {
-    stroke: $grey-70;
-    fill: none;
-    stroke-width: 0.8;
-}
-.swoopy-arrowhead {
-    stroke-width: 1;
-}
-
-.switch-button-rect {
-    fill-opacity: 0.15;
-    rx: 4;
-    ry: 4;
-    stroke: $grey-60;
-    stroke-width: 0.5;
-    shape-rendering: crispedges;
-    &:hover {
-        fill-opacity: 0.25;
+    & .circle-confirmed {
+        fill: #bab0ab;
+        fill-opacity: 0.75;
     }
-}
 
-.switch-button-hover {
-    fill-opacity: 0.25;
-}
+    & .recent-data {
+        fill: $warning-color;
+        fill-opacity: 0.5;
+    }
 
-.epidemiology-curves line.case-def-changed {
-    stroke: $grey-60;
-    stroke-width: 0.75;
-    shape-rendering: crispedges;
-    stroke-dasharray: 6, 6;
-}
-.epidemiology-curves .case-def-changed text {
-    text-anchor: start;
+    & .penultimate-data {
+        fill: $secondary-color;
+        fill-opacity: 0.5;
+    }
+
+    & .epi-axis text {
+        font-size: 12pt;
+    }
+
+    & .epi-line {
+        fill: none;
+        stroke-width: 2;
+    }
+
+    & .recent-fit {
+        stroke: $warning-color;
+    }
+    & .penultimate-fit {
+        stroke: $secondary-color;
+    }
+
+    & .tooltip--text {
+        dominant-baseline: hanging;
+        stroke: none !important;
+    }
+
+    & .tooltip--date {
+        font-weight: 300;
+    }
+
+    & .tooltip--case-count {
+        font-weight: 500;
+    }
+    & .selection-box {
+        opacity: 0.2;
+    }
+    .highlight {
+        fill: green !important;
+    }
+
+    .done-btn {
+        background: lighten($warning-color, 40%);
+        border: 1px solid $warning-color;
+        cursor: pointer;
+        color: $warning-color;
+        text-transform: uppercase;
+        font-size: 0.8em;
+        font-weight: 600;
+        align-items: center;
+    }
 }
 </style>

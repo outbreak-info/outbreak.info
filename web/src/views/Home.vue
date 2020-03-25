@@ -35,7 +35,7 @@
         <svg viewBox="0 0 100 3">
           <line x1="0" y1="0" x2="100" stroke="#D13B62" />
         </svg>
-        <SearchBar class="w-100"></SearchBar>
+        <SearchBar routeTo="/epidemiology?" class="w-100"></SearchBar>
         <small id="sBar-text" class="form-text text-light d-block">View COVID-19 trends by location</small>
       </div>
     </div>

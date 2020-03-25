@@ -9,7 +9,14 @@
     </defs>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis axis--x" ref="xAxis"></g>
     <!-- <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g> -->
-    <g :transform="`translate(${margin.left},${margin.top})`" class="slopes"></g>
+    <g :transform="`translate(${margin.left},${margin.top})`" class="slopes">
+      <polygon ref="polygon"></polygon>
+      <path ref="arrow"></path>
+      <line class="penultimate-slope" ref="penultimate_slope"></line>
+      <line class="recent-slope" ref="recent_slope"></line>
+      <circle class="penultimate-slope-end" ref="this.$refs.penultimate_slope_end"></circle>
+      <circle class="recent-slope-end" ref="this.$refs.recent_slope_end"></circle>
+    </g>
   </svg>
 </div>
 </template>
@@ -20,7 +27,7 @@ import Vue from "vue";
 import * as d3 from "d3";
 
 const width = 125;
-const height = 150;
+const height = 75;
 const margin = {
   top: 5,
   right: 50,
@@ -82,7 +89,7 @@ export default Vue.extend({
       this.y = d3
         .scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, 1])
+        .domain([0, 0.4])
 
       this.xAxis = d3.axisBottom(this.x).ticks(0).tickSizeOuter(0);
 
@@ -94,42 +101,38 @@ export default Vue.extend({
 
     },
     drawSlopes: function() {
-      this.chart.append("polygon")
+      d3.select(this.$refs.polygon)
       .attr("points",`${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(this.slope1)} ${this.x(1)},${this.y(this.slope2)}`)
       .attr("class", d => this.slope1 < this.slope2 ? "worse" : "better");
 
-      this.chart.append("path")
+      d3.select(this.$refs.arrow)
       .attr("d",`M${this.x(1)} ${this.y(this.slope1)} C ${this.x(1) + 10} ${this.y(this.slope1)}, ${this.x(1) + 10} ${this.y(this.slope2)}, ${this.x(1)-4} ${this.y(this.slope2)}`)
       .attr("transform", "translate(15, 0)")
       .attr("class", d => this.slope1 < this.slope2 ? "swoopy-arrow worse" : "swoopy-arrow better")
       .attr("marker-end", "url(#arrow)");
 
 
-      this.chart.append("line")
+      d3.select(this.$refs.penultimate_slope)
       .attr("x1", this.x(0))
       .attr("y1", this.y(0))
       .attr("x2", this.x(1))
-      .attr("y2", this.y(this.slope1))
-      .attr("class", "penultimate-slope");
+      .attr("y2", this.y(this.slope1));
 
-      this.chart.append("line")
+      d3.select(this.$refs.recent_slope)
       .attr("x1", this.x(0))
       .attr("y1", this.y(0))
       .attr("x2", this.x(1))
-      .attr("y2", this.y(this.slope2))
-      .attr("class", "recent-slope");
+      .attr("y2", this.y(this.slope2));
 
-      this.chart.append("circle")
+      d3.select(this.$refs.penultimate_slope_end)
       .attr("cx", this.x(1))
       .attr("cy", this.y(this.slope1))
-      .attr("r", 3)
-      .attr("class", "penultimate-slope-end");
+      .attr("r", 3);
 
-      this.chart.append("circle")
+      d3.select(this.$refs.recent_slope_end)
       .attr("cx", this.x(1))
       .attr("cy", this.y(this.slope2))
-      .attr("r", 3)
-      .attr("class", "recent-slope-end");
+      .attr("r", 3);
 
     }
   }
