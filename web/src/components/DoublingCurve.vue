@@ -149,7 +149,7 @@ export default Vue.extend({
         this.height = idealWidth / whRatio;
       }
 
-      this.numXTicks = this.width < 550 ? 3 : 9;
+      this.numXTicks = this.width < 550 ? 3 : 6;
       this.numYTicks = this.height < 250 ? 3 : 6;
     },
     // tooltipOn: function(d) {

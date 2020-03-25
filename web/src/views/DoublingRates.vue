@@ -8,8 +8,9 @@
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
           </option>
-        </select> in {{epi$.data[0].name}}
+        </select> <span v-if="epi$"> in {{epi$.data[0].name}}</span>
       </h3>
+      <SearchBar class="w-100" @location="setLocation" :selected="selected" placeholder="Change location"></SearchBar>
       <DoublingCurve :data="epi$" :toFit="toFit" @executeFit="executeFit" :variable="variable" />
     </div>
     <DoublingTable :data="epi$" :isFitting1="fitting1" :isFitting2="fitting2" @changeFit="changeFit" />
@@ -29,14 +30,15 @@ import {
 import DoublingCurve from "@/components/DoublingCurve.vue"
 import DoublingTable from "@/components/DoublingTable.vue"
 import Warning from "@/components/Warning.vue"
-
+import SearchBar from "@/components/SearchBar.vue"
 
 export default Vue.extend({
   name: "DoublingRates",
   components: {
     DoublingCurve,
     DoublingTable,
-    Warning
+    Warning,
+    SearchBar
   },
   data() {
     return {
@@ -61,6 +63,15 @@ export default Vue.extend({
       // this.fitIdx2 = [23,24,25,26];
     }
   },
+  computed: {
+selected() {
+  if(this.epi$){
+  return({id: this.epi$.data[0].location_id, label: this.epi$.data[0].name})
+}else {
+  return null
+}
+}
+  },
   methods: {
     changeFit: function(fitIdx) {
       this.toFit = fitIdx;
@@ -77,6 +88,11 @@ export default Vue.extend({
     },
     executeFit: function(fitIdx) {
       this[`fitting${fitIdx}`] = !this[`fitting${fitIdx}`];
+    },
+    setLocation: function(result) {
+      console.log(result);
+      this.locationID = result;
+      this.updateData();
     },
     updateData: function() {
       this.dataSubscription = getDoubling(this.$apiurl, this.locationID, this.variable).subscribe(results => {

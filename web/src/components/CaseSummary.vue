@@ -59,7 +59,7 @@
 
       <div class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main" v-if="summaryDeletable">
         <h6>Add locations</h6>
-        <SearchBar :routable="false" @location="addSummary" class="search-bar"></SearchBar>
+        <SearchBar @location="addSummary" class="search-bar"></SearchBar>
       </div>
     </div>
 

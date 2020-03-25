@@ -4,7 +4,7 @@
     <div class="input-group-prepend">
       <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
     </div>
-    <input id="sBar" class="form-control border-0" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter.prevent="onEnter"
+    <input id="sBar" class="form-control border-0" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter.prevent="onEnter"
       @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
       <li class="loading" v-if="isLoading">
@@ -36,20 +36,20 @@ export default Vue.extend({
       required: false,
       default: () => []
     },
-    selected: {
-      type: Array,
-      required: false,
-      default: () => []
-    },
     isAsync: {
       type: Boolean,
       required: false,
       default: false
     },
-    routable: {
-      type: Boolean,
+    placeholder: {
+      type: String,
       required: false,
-      default: true
+      default: "Search"
+    },
+    routeTo: {
+      type: String,
+      required: false,
+      default: null
     }
   },
   components: {},
@@ -58,22 +58,13 @@ export default Vue.extend({
       isOpen: false,
       results: [],
       search: "",
+      selected: null,
       isLoading: false,
       arrowCounter: 0
     };
   },
   computed: {
     ...mapState("epidata", ["allPlaces"]),
-    selectedItems: function() {
-      return this.selected.map(d => {
-        return {
-          label: d,
-          addable: this.toAdd.includes(d),
-          darkColor: this.colorScale(d),
-          lightColor: this.lightColorScale(d)
-        };
-      });
-    }
   },
   watch: {
     items: function(val, oldValue) {
@@ -108,13 +99,14 @@ export default Vue.extend({
       });
     },
     setResult(result) {
-      this.selected.push(result);
-      this.search = "";
+      this.selected = result;
       this.isOpen = false;
-      if (this.routable) {
-        this.$router.replace(`/epidemiology?location=${this.selected.map(d => d.id).join(";")}`)
+      if (this.routeTo) {
+        this.search = "";
+        this.$router.replace(`${this.routeTo}location=${this.selected.id}`)
       } else {
-        this.$emit("location", this.selected.map(d => d.id))
+        this.search = this.selected.label;
+        this.$emit("location", this.selected.id)
       }
     },
     onArrowDown(evt) {
@@ -133,15 +125,15 @@ export default Vue.extend({
         this.results[this.arrowCounter] :
         this.search;
       // this.$emit('input', result);
-      this.selected.push(result);
+      this.selected = result;
       this.$emit("input", this.selected);
       this.search = "";
       this.isOpen = false;
       this.arrowCounter = -1;
-      if (this.routable) {
-        this.$router.replace(`/epidemiology?location=${this.selected.map(d => d.id).join(";")}`)
+      if (this.routeTo && this.routeTo !== "") {
+        this.$router.replace(`/epidemiology?location=${this.selected.id}`)
       } else {
-        this.$emit("location", this.selected.map(d => d.id))
+        this.$emit("location", this.selected.id)
       }
     },
     onBackspace() {
