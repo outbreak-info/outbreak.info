@@ -1,6 +1,8 @@
 <template>
 <div>
-  <Warning :animate="false" class="mt-2" text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: an increase in doubling rate could mean more comprehensive testing is happening, the virus is spreading faster, or both."></Warning>
+  <Warning :animate="false" class="mt-2"
+    text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: an increase in doubling rate could mean more comprehensive testing is happening, the virus is spreading faster, or both.">
+  </Warning>
   <div class="d-flex align-items-center mx-4" v-if="epi$">
     <div class="d-flex flex-column align-items-center">
       <h3 class="plot-title text-sec py-5">
@@ -23,7 +25,6 @@
 import Vue from "vue";
 import {
   getDoubling,
-  getAllDoublingBatch,
   getAllDoubling
 } from "@/api/calc-doubling.js";
 
@@ -64,13 +65,16 @@ export default Vue.extend({
     }
   },
   computed: {
-selected() {
-  if(this.epi$){
-  return({id: this.epi$.data[0].location_id, label: this.epi$.data[0].name})
-}else {
-  return null
-}
-}
+    selected() {
+      if (this.epi$) {
+        return ({
+          id: this.epi$.data[0].location_id,
+          label: this.epi$.data[0].name
+        })
+      } else {
+        return null
+      }
+    }
   },
   methods: {
     changeFit: function(fitIdx) {
@@ -79,7 +83,8 @@ selected() {
     changeParams: function(newVar) {
       console.log('change');
       this.updateData();
-      this.$router.push({path: "doubling-rates",
+      this.$router.push({
+        path: "doubling-rates",
         query: {
           location: this.locationID,
           variable: this.variable
@@ -101,6 +106,7 @@ selected() {
     }
   },
   mounted() {
+    // getAllDoubling(this.$apiurl, this.variable).subscribe(d => console.log(d))
     this.locationID = this.$route.query.location;
     this.variable = this.$route.query.variable;
 

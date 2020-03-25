@@ -22,11 +22,14 @@ import {
 } from "datalib";
 import store from "@/store";
 
-export function getDoubling(apiUrl, location_id, variable="confirmed") {
+import { getAll } from "@/api/biothings.js";
+
+export function getDoubling(apiUrl, location_id, variable="confirmed", fitLength = 5) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
+  const timestamp = new Date().getTime()
 
-  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}" AND -date:"2020-03-23"&size=1000&fields=id_text,name,admin0,admin1,date,${variable}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}" AND -date:"2020-03-23"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     map(results => {
       // ensure results are sorted by date
@@ -40,7 +43,6 @@ export function getDoubling(apiUrl, location_id, variable="confirmed") {
       console.log(results)
 
       const resultsLength = results.length;
-      const fitLength = 5;
       const maxDate = results.sort((a, b) => a.date - b.date).slice(-1)[0].date;
 
       const fitLast5 = fitExponential(results, resultsLength - fitLength, resultsLength, maxDate);
@@ -101,61 +103,46 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
 
 }
 
-export function getAllDoubling(apiUrl) {
+export function getAllDoubling(apiUrl, variable, fitLength=5) {
   store.state.admin.loading = true;
-  return getAllDoublingBatch(apiUrl).pipe(
-    expand((data, _) => data.next ? getAllDoublingBatch(apiUrl, data.next) : EMPTY),
-    pluck("results"),
-    reduce((acc, data) => {
-      return acc.concat(data);
-    }, []),
-    map((all_data) => {
-      // last iteration returns undefined; filter out
-      all_data = all_data.filter(d => d);
-
-      return (all_data);
-    }),
-    catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
-      console.log(e);
-      return from([]);
-    }),
-    // finalize(() => (store.state.admin.loading = false))
-  )
-}
-
-export function getAllDoublingBatch(apiUrl, scrollID = null) {
-  console.log('batch')
+  const timestamp = new Date().getTime();
   const parseDate = timeParse("%Y-%m-%d");
+  const url = `${apiUrl}query?q=-date:"2020-03-23"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`;
 
-  let url = `${apiUrl}query?q=__all__&fields=id_text,name,admin0,admin1,date,confirmed,recovered,dead&fetch_all=true`;
-  if (scrollID) {
-    url = `${url}&scroll_id=${scrollID}`;
-  }
+  return getAll(url).pipe(
+    map((results) => {
+      console.log(results)
+      results.sort((a, b) => a.date - b.date);
 
-  return from(axios.get(url)).pipe(
-    tap(x => console.log(x)),
-    pluck("data"),
-    map(results => {
-      // ensure results are sorted by date
-      // results.sort((a, b) => a.date - b.date);
-
-      results["hits"].forEach((d) => {
+      results.forEach((d) => {
         d["date_string"] = d.date;
         d["date"] = parseDate(d.date);
-        d["logConfirmed"] = Math.log10(d.confirmed);
+        d["logCases"] = Math.log(d[variable]);
       })
-      return ({
-        next: results["_scroll_id"],
-        results: results["hits"]
+
+      const nested = nest()
+      .key(d => d.location_id)
+      .rollup(values => {
+        const resultsLength = values.length;
+        const maxDate = values.sort((a, b) => a.date - b.date).slice(-1)[0].date;
+
+        return({
+          data: values,
+          fit1: fitExponential(values, resultsLength - fitLength, resultsLength, maxDate),
+          fit2: fitExponential(values, resultsLength - fitLength * 2, resultsLength - fitLength, maxDate)
+        })
       })
+      .entries(results)
+
+      console.log(nested)
+
+      return (nested);
     }),
     catchError(e => {
       console.log("%c Error in getting case counts!", "color: red");
       console.log(e);
       return from([]);
     }),
-    // finalize(() => (store.state.admin.loading = false))
+    finalize(() => (store.state.admin.loading = false))
   )
-  // axios.get(apiUrl, { query: {admin0: location  } }).then(d => {console.log(d )})
 }
