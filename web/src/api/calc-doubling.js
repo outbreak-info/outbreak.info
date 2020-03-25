@@ -40,7 +40,6 @@ export function getDoubling(apiUrl, location_id, variable="confirmed", fitLength
         d["date"] = parseDate(d.date);
         d["logCases"] = Math.log(d[variable]);
       })
-      console.log(results)
 
       const resultsLength = results.length;
       const maxDate = results.sort((a, b) => a.date - b.date).slice(-1)[0].date;
@@ -89,7 +88,7 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
     fit["xend"] = sliced.slice(-1)[0].date;
     fit["minIdx"] = minIdx;
     fit["maxIdx"] = maxIdx;
-    console.log(fit)
+    // console.log(fit)
     return (fit)
   } else {
     return ({
@@ -113,7 +112,6 @@ export function getAllDoubling(apiUrl, variable, fitLength=5) {
 
   return getAll(url).pipe(
     map((results) => {
-      console.log(results)
       results.sort((a, b) => a.date - b.date);
 
       results.forEach((d) => {
