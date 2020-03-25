@@ -50,7 +50,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
 
   return getAll(apiUrl, queryString)
     .pipe(
