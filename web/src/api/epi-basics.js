@@ -26,7 +26,6 @@ export function getLocations(apiUrl) {
   store.state.admin.loading = true;
 
   return getAll(apiUrl, `date:"2020-03-24"&fields=location_id,name,country_name,wb_region,admin_level`).pipe(
-    pluck("data", "hits"),
     tap(results => {
       let places = results.map(d => {
         return ({
