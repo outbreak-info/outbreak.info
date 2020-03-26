@@ -96,7 +96,7 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
       return (fit)
     } else {
       return ({
-        doublingTime: null,
+        doublingTime: NaN,
         slope: fit.slope,
         R: fit.R,
         x1: null,
@@ -111,9 +111,9 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
     }
   }
   return ({
-    doublingTime: null,
-    slope: null,
-    R: null,
+    doublingTime: NaN,
+    slope: NaN,
+    R: NaN,
     x1: null,
     x2: null,
     y1: null,
