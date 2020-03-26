@@ -29,7 +29,7 @@ export function getDoubling(apiUrl, location_id, variable="confirmed", fitLength
   const parseDate = timeParse("%Y-%m-%d");
   const timestamp = new Date().getTime()
 
-  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}" AND -date:"2020-03-23"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     map(results => {
       // ensure results are sorted by date
