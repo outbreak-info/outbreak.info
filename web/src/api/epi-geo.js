@@ -25,7 +25,7 @@ export function getMapData(apiUrl) {
 
   store.state.admin.loading = true;
   // Choosing one specific date, since all dates contain the current info.
-  return getAll(axios.get(apiUrl, `date:"2020-03-24" AND admin_level:[0 TO *]&fields=location_id,name,num_subnational,country_name,admin_level,lat,long,confirmed_currentCases,
+  return getAll(apiUrl, `date:"2020-03-24" AND admin_level:[0 TO *]&fields=location_id,name,num_subnational,country_name,admin_level,lat,long,confirmed_currentCases,
   confirmed_currentIncrease,
   confirmed_currentPctIncrease,
   confirmed_currentToday,
@@ -35,7 +35,7 @@ export function getMapData(apiUrl) {
   dead_currentToday,
   recovered_currentCases,
   recovered_currentIncrease,
-  recovered_currentPctIncrease,recovered_currentToday`)).pipe(
+  recovered_currentPctIncrease,recovered_currentToday`).pipe(
     pluck("data", "hits"),
     map(results => {
       results.forEach(d => {
