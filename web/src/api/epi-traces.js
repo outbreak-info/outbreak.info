@@ -101,7 +101,7 @@ export function getEpiTraces(apiUrl, locations) {
 export function getEpiTable(apiUrl, locations, sort, size, page) {
   store.state.admin.loading = true;
   return getTableData(apiUrl, locations, sort, size, page).pipe(
-    mergeMap(tableData => getSparklineTraces(apiUrl, tableData["hits"].map(d => d.location_id)).pipe(
+    mergeMap(tableData => getSparklineTraces(apiUrl, tableData["hits"].map(d => encodeURIComponent(d.location_id))).pipe(
       map(sparks => {
         sparks.forEach(spark => {
           const idx = tableData["hits"].findIndex(d => d.location_id === spark.key);
@@ -206,7 +206,7 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
         return (nested);
       }),
       catchError(e => {
-        console.log("%c Error in getting case counts!", "color: red");
+        console.log("%c Error in getting sparklines!", "color: red");
         console.log(e);
         return from([]);
       }),
