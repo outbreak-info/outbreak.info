@@ -1,7 +1,7 @@
 <template>
 <div>
   <Warning :animate="false" class="mt-2"
-    text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: an increase in doubling rate could mean more comprehensive testing is happening, the virus is spreading faster, or both.">
+    text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: rate of testing could confound the interpretation of doubling rates.">
   </Warning>
   <div class="d-flex align-items-center mx-4">
     <div class="d-flex flex-column align-items-center mr-5">
