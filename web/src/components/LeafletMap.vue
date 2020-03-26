@@ -252,7 +252,7 @@ export default Vue.extend({
           d["numIncreaseFormatted"] = d[`${this.variable}_currentIncrease`] ? d[`${this.variable}_currentIncrease`].toLocaleString() : null;
           d["pctIncreaseFormatted"] = this.formatPercent(d[`${this.variable}_currentPctIncrease`]);
           d["totalNumFormatted"] = d[`${this.variable}_currentCases`] ? d[`${this.variable}_currentCases`].toLocaleString() : null;
-          if(d.admin_level === 0 && !d.num_subnational) {
+          if(d.admin_level === 0 && d.num_subnational === 1) {
             d["display"] = [-1, 20];
           } else if(d.admin_level === 0) {
             d["display"] = [-1, 2];
