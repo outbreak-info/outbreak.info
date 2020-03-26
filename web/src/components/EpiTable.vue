@@ -4,8 +4,32 @@
     <div>
       <h4>Latest Data</h4>
       <DataUpdated />
-      <div class="mt-4">
+
+      <!-- Pagination -->
+      <div class="d-flex justify-space-between mt-4">
         <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
+        <div class="region-selector d-flex mr-5">
+          <label class="b-contain m-auto pr-3">
+            <span>World Bank Regions</span>
+            <input type="checkbox" value="-1" v-model.lazy="selectedAdminLevels" />
+            <div class="b-input"></div>
+          </label>
+          <label class="b-contain m-auto pr-3">
+            <span>Countries</span>
+            <input type="checkbox" value="0" v-model.lazy="selectedAdminLevels" />
+            <div class="b-input"></div>
+          </label>
+          <label class="b-contain m-auto pr-3">
+            <span>States/Provinces</span>
+            <input type="checkbox" value="1" v-model.lazy="selectedAdminLevels" />
+            <div class="b-input"></div>
+          </label>
+          <label class="b-contain m-auto pr-3">
+            <span>U.S. Counties</span>
+            <input type="checkbox" value="2" v-model.lazy="selectedAdminLevels" />
+            <div class="b-input"></div>
+          </label>
+        </div>
         <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
           <option v-for="option in pageOpts" :value="option" :key="option">
             {{ option }} results
@@ -169,6 +193,8 @@ export default Vue.extend({
       total: 0,
       dataSubscription: null,
       changeDataSubscription: null,
+      sparksSubscription: null,
+      selectedAdminLevels: [0,1,2],
       mergedColumns: [{
           label: "",
           colspan: 1
@@ -378,7 +404,10 @@ export default Vue.extend({
   watch: {
     data: function() {
       this.prepData();
-    }
+    },
+    selectedAdminLevels: function() {
+      this.updateData();
+    },
   },
   mounted() {
     if (this.data) {
@@ -413,6 +442,7 @@ export default Vue.extend({
     this.dataSubscription.unsubscribe();
     if (this.changeDataSubscription) {
       this.changeDataSubscription.unsubscribe();
+      this.sparksSubscription.unsubscribe();
     }
   },
   computed: {
@@ -451,8 +481,8 @@ export default Vue.extend({
       }
     },
     updateData() {
-      getSparklineTraces(this.$apiurl, this.locations).subscribe(_ => null);
-      this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.sortVar, this.numPerPage, this.numPerPage * this.page).subscribe(_ => null);
+      this.sparksSubscription = getSparklineTraces(this.$apiurl, this.locations).subscribe(_ => null);
+      this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.selectedAdminLevels, this.sortVar, this.numPerPage, this.numPerPage * this.page).subscribe(_ => null);
     },
     changePage(step) {
       this.page += step;

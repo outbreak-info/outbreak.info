@@ -81,7 +81,7 @@ export default {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.data$ = getEpiData(this.$apiurl, locations, "-confirmed_currentCases", 10, 0).subscribe(_ => null);
+        this.data$ = getEpiData(this.$apiurl, locations, null, "-confirmed_currentCases", 10, 0).subscribe(_ => null);
         // need to call subscription in order to trigger calling API function and passing subscription to child
       } else {
         this.clearLocations();

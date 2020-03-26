@@ -31,10 +31,10 @@ export const epiTableState$ = epiTableSubject.asObservable();
 
 import store from "@/store";
 
-export function getEpiData(apiUrl, locations, sort, page, size) {
+export function getEpiData(apiUrl, locations, adminLevels, sort, page, size) {
   store.state.admin.loading = true;
 
-  return (forkJoin([getEpiTraces(apiUrl, locations), getEpiTable(apiUrl, locations, sort, page, size)])).pipe(
+  return (forkJoin([getEpiTraces(apiUrl, locations), getEpiTable(apiUrl, locations, adminLevels, sort, page, size)])).pipe(
     catchError(e => {
       console.log("%c Error in getting case counts!", "color: red");
       console.log(e);
@@ -98,9 +98,9 @@ export function getEpiTraces(apiUrl, locations) {
     )
 }
 
-export function getEpiTable(apiUrl, locations, sort, size, page) {
+export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
   store.state.admin.loading = true;
-  return getTableData(apiUrl, locations, sort, size, page).pipe(
+  return getTableData(apiUrl, locations, adminLevels, sort, size, page).pipe(
     mergeMap(tableData => getSparklineTraces(apiUrl, tableData["hits"].map(d => encodeURIComponent(d.location_id))).pipe(
       map(sparks => {
         sparks.forEach(spark => {
@@ -131,11 +131,15 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
   )
 }
 
-export function getTableData(apiUrl, locations, sort, size, page) {
+export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = new Date().getTime();
-  const queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-03-24"` : 'date:"2020-03-24"';
+  var queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-03-24"` : 'date:"2020-03-24"';
+
+  if(adminLevels && adminLevels.length > 0) {
+    queryString = queryString + `AND admin_level:("${adminLevels.join('" OR "')}")`
+  }
 
   return from(axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,state_name,wb_region,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
     headers: {
