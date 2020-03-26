@@ -1,7 +1,6 @@
 <template>
 <div>
-  <Warning :animate="false" class="mt-2"
-    text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: rate of testing could confound the interpretation of doubling rates.">
+  <Warning :animate="false" class="mt-2" text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: rate of testing could confound the interpretation of doubling rates.">
   </Warning>
   <div class="d-flex align-items-center mx-4">
     <div class="d-flex flex-column align-items-center mr-5">
@@ -10,7 +9,10 @@
           <option v-for="option in variableOptions" :value="option.value" :key="option.value">
             {{ option.label }}
           </option>
-        </select> <span v-if="epi$"> in {{epi$.data[0].name}}</span>
+        </select>
+        <span v-if="epi$"> in
+          <router-link v-if="epi$" :to="{ name: 'Epidemiology', query: { location: locationID } }">{{epi$.data[0].name}}</router-link>
+        </span>
       </h3>
       <h3 v-else class="pt-5">Select a location</h3>
       <SearchBar class="w-100 mb-3" @location="setLocation" :selected="selected" placeholder="Change location"></SearchBar>
