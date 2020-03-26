@@ -108,7 +108,7 @@ export default Vue.extend({
   mounted() {
     // getAllDoubling(this.$apiurl, this.variable).subscribe(d => console.log(d))
     this.locationID = this.$route.query.location;
-    this.variable = this.$route.query.variable;
+    this.variable = this.$route.query.variable ? this.$route.query.variable : "confirmed";
 
     this.updateData();
   },
