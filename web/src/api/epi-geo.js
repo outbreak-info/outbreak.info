@@ -36,7 +36,6 @@ export function getMapData(apiUrl) {
   recovered_currentCases,
   recovered_currentIncrease,
   recovered_currentPctIncrease,recovered_currentToday`).pipe(
-    pluck("data", "hits"),
     map(results => {
       results.forEach(d => {
         d["coord"] = [d.lat, d.long];
