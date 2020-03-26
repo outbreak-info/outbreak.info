@@ -5,10 +5,10 @@
       <l-tile-layer :url="url" :attribution="attribution" :opacity="0.3" />
       <l-tile-layer :url="urlLabels" :attribution="attribution" :opacity="0.25" v-if="currentZoom > 3" />
       <div v-for="(circle, i) in data" :key="i">
-        <l-circle-marker v-if="currentZoom > 2 && !circle.num_subnational || currentZoom <= 2 && circle.admin_level === 0" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
+        <l-circle-marker v-if="circle.display[1] > currentZoom && circle.display[0] <= currentZoom" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
           <l-tooltip :options="{ permanent: false, interactive: true }">
             <div>
-              {{ circle.name }}
+              {{ circle.admin_level == 2 ? `${circle.name} County` : circle.name }}
             </div>
             <small>click to view details</small>
           </l-tooltip>
@@ -17,7 +17,7 @@
               <router-link :to="{
                   name: 'Epidemiology',
                   query: { location: circle.location_id }
-                }" class="router-link-black">{{ circle.name }}</router-link>
+                }" class="router-link-black">{{ circle.admin_level == 2 ? `${circle.name} County` : circle.name }}</router-link>
             </h3>
             <table class="summary-table">
               <tr>
@@ -252,6 +252,19 @@ export default Vue.extend({
           d["numIncreaseFormatted"] = d[`${this.variable}_currentIncrease`] ? d[`${this.variable}_currentIncrease`].toLocaleString() : null;
           d["pctIncreaseFormatted"] = this.formatPercent(d[`${this.variable}_currentPctIncrease`]);
           d["totalNumFormatted"] = d[`${this.variable}_currentCases`] ? d[`${this.variable}_currentCases`].toLocaleString() : null;
+          if(d.admin_level === 0 && !d.num_subnational) {
+            d["display"] = [-1, 20];
+          } else if(d.admin_level === 0) {
+            d["display"] = [-1, 2];
+          } else if(d.admin_level === 1 && d.country_name === "United States of America") {
+            d["display"] = [2, 4];
+          } else if(d.admin_level === 1) {
+            d["display"] = [2, 20];
+          } else {
+            d["display"] = [4, 20];
+          }
+          // cicle.admin_level === 0 && !d.num_subnational || circle.admin_level == 2 && currentZoom >= 4
+           // || currentZoom > 2 && currentZoom <=4 && !circle.num_subnational && circle.admin_level < 2 || currentZoom <= 2 && circle.admin_level === 0
         });
       }
     },

@@ -16,14 +16,16 @@ import {
 } from "d3";
 
 import store from "@/store";
+import {
+  getAll
+} from "@/api/biothings.js";
 
 export function getMapData(apiUrl) {
   const parseDate = timeParse("%Y-%m-%d");
 
   store.state.admin.loading = true;
-  const timestamp = new Date().getTime();
-// Choosing one specific date, since all dates contain the current info.
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:[0 TO *]&fields=location_id,name,num_subnational,country_name,admin_level,lat,long,confirmed_currentCases,
+  // Choosing one specific date, since all dates contain the current info.
+  return getAll(axios.get(apiUrl, `date:"2020-03-24" AND admin_level:[0 TO *]&fields=location_id,name,num_subnational,country_name,admin_level,lat,long,confirmed_currentCases,
   confirmed_currentIncrease,
   confirmed_currentPctIncrease,
   confirmed_currentToday,
@@ -33,7 +35,7 @@ export function getMapData(apiUrl) {
   dead_currentToday,
   recovered_currentCases,
   recovered_currentIncrease,
-  recovered_currentPctIncrease,recovered_currentToday&size=1000&timestamp=${timestamp}`)).pipe(
+  recovered_currentPctIncrease,recovered_currentToday`)).pipe(
     pluck("data", "hits"),
     map(results => {
       results.forEach(d => {
@@ -45,7 +47,7 @@ export function getMapData(apiUrl) {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting map data!", "color: red");
       console.log(e);
       return from([]);
     }),
