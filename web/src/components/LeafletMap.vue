@@ -249,9 +249,9 @@ export default Vue.extend({
           d["fill"] = d[`${this.variable}_currentCases`] ? this.colorScale(d[`${this.variable}_currentIncrease`]) : "#CCC";
           d["r"] = this.radiusScale(d[`${this.variable}_currentCases`]);
           d["currentDateFormatted"] = this.formatDate(d[`${this.variable}_currentToday`]);
-          d["numIncreaseFormatted"] = d[`${this.variable}_currentIncrease`].toLocaleString();
+          d["numIncreaseFormatted"] = d[`${this.variable}_currentIncrease`] ? d[`${this.variable}_currentIncrease`].toLocaleString() : null;
           d["pctIncreaseFormatted"] = this.formatPercent(d[`${this.variable}_currentPctIncrease`]);
-          d["totalNumFormatted"] = d[`${this.variable}_currentCases`].toLocaleString();
+          d["totalNumFormatted"] = d[`${this.variable}_currentCases`] ? d[`${this.variable}_currentCases`].toLocaleString() : null;
         });
       }
     },
