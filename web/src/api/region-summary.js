@@ -55,6 +55,7 @@ export function getStackedRegions(apiUrl) {
       nested["dead"] = [];
       nested["recovered"] = [];
 
+      // loop over each date
       regionNest.map(d => {
         const objC = {};
         const objD = {};
@@ -63,10 +64,19 @@ export function getStackedRegions(apiUrl) {
         objD["date"] = parseDate(d.key);
         objR["date"] = parseDate(d.key);
 
-        d.values.forEach(value => {
-          objC[value.key] = value.value.confirmed;
-          objD[value.key] = value.value.dead;
-          objR[value.key] = value.value.recovered;
+        // loop over each region for those values
+        // looping over dict rather than values themselves to make sure I get 0s for everywhere.
+        store.state.geo.regionDict.forEach(region => {
+          const filtered = d.values.filter(d => d.key === region.region);
+          if (filtered.length === 1) {
+            objC[filtered[0].key] = filtered[0].value.confirmed;
+            objD[filtered[0].key] = filtered[0].value.dead;
+            objR[filtered[0].key] = filtered[0].value.recovered;
+          } else {
+            objC[region.region] = 0;
+            objD[region.region] = 0;
+            objR[region.region] = 0;
+          }
         });
 
         nested["confirmed"].push(objC)
@@ -77,6 +87,7 @@ export function getStackedRegions(apiUrl) {
       nested["confirmed"].sort((a, b) => a.date - b.date);
       nested["dead"].sort((a, b) => a.date - b.date);
       nested["recovered"].sort((a, b) => a.date - b.date);
+
       return nested;
     }),
     catchError(e => {
