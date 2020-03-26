@@ -182,8 +182,8 @@ export default Vue.extend({
 
       this.margin.right = this.width < 600 ? 115 : 205;
 
-      this.numXTicks = this.width < 700 ? 3 : 7;
-      this.numYTicks = this.height < 250 ? 3 : 6;
+      this.numXTicks = this.width < 700 ? 2 : 6;
+      this.numYTicks = this.height < 250 ? 2 : 6;
     },
     colorScale: function(location) {
       const scale = store.getters["colors/getColor"];
