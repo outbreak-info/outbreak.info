@@ -34,6 +34,7 @@ export function getStackedRegions(apiUrl) {
       'Content-Type': 'application/json'
     }
   })).pipe(
+    // tap(d => console.log(d)),
     pluck("data", "hits"),
     map(results => {
       // nest by date
@@ -94,8 +95,8 @@ export function getCountryData(apiUrl, region, variable) {
   const timestamp = new Date().getTime();
 
   return forkJoin([
-    from(axios.get(`${apiUrl}query?q=admin_level:0 AND date:"2020-03-15" AND region_wb:"${encodeURIComponent(region)}"&size=1000&fields=location_id,name,${variable}_currentCases,${variable}_currentIncrease&timestamp=${timestamp}`)),
-    getAll(apiUrl, `admin_level:0 AND region_wb:"${encodeURIComponent(region)}"&size=1000&fields=location_id,date,${variable}&timestamp=${timestamp}`)
+    from(axios.get(`${apiUrl}query?q=admin_level:0 AND date:"2020-03-24" AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,name,${variable}_currentCases,${variable}_currentIncrease&timestamp=${timestamp}`)),
+    getAll(apiUrl, `admin_level:0 AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,date,${variable}&timestamp=${timestamp}`)
   ]).pipe(
     map(([currentData, timeData]) => {
       // sort current data
