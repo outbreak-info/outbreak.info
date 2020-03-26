@@ -150,10 +150,10 @@ export default Vue.extend({
   },
   computed: {
     fit1_time: function() {
-      return format(",.1f")(this.data.fit1.doublingTime);
+      return this.data.fit1.doublingTime || this.data.fit1.doublingTime === 0 ? format(",.1f")(this.data.fit1.doublingTime) : "NaN";
     },
     fit2_time: function() {
-      return format(",.1f")(this.data.fit2.doublingTime);
+      return this.data.fit2.doublingTime || this.data.fit2.doublingTime === 0 ? format(",.1f")(this.data.fit2.doublingTime) : "NaN";
     },
     change_time: function() {
       return this.calcDiff();
@@ -192,7 +192,8 @@ export default Vue.extend({
     },
     calcDiff() {
       const diff = this.data.fit2.doublingTime - this.data.fit1.doublingTime;
-      return({worse: diff < 0, label: format(",.1f")(diff), nearZero: this.data.fit2.slope < 0.01})
+      const label = diff ? format(",.1f")(diff) : "not enough points to fit in older data";
+      return({worse: diff < 0 || !this.data.fit1.doublingTime, label: label, nearZero: this.data.fit2.slope < 0.01})
     },
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);

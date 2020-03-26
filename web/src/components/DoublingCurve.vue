@@ -38,8 +38,8 @@ const width = 500;
 const height = 300;
 const radius = 4.5;
 const margin = {
-  top: 100,
-  right: 170,
+  top: 15,
+  right: 15,
   bottom: 75,
   left: 70
 };
@@ -75,7 +75,7 @@ export default Vue.extend({
       selectedPoints: [],
 
       // axes
-      numXTicks: 9,
+      numXTicks: 8,
       numYTicks: 6,
       x: d3.scaleTime(),
       y: d3.scaleLinear(),
@@ -149,8 +149,8 @@ export default Vue.extend({
         this.height = idealWidth / whRatio;
       }
 
-      this.numXTicks = this.width < 550 ? 3 : 6;
-      this.numYTicks = this.height < 250 ? 3 : 6;
+      this.numXTicks = this.width < 650 ? 4 : 6;
+      this.numYTicks = this.height < 250 ? 4 : 6;
     },
     // tooltipOn: function(d) {
     //   d3.select(`#tooltip-${d.id}-${d.date_string}`).attr("display", "block");

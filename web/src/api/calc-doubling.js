@@ -9,7 +9,8 @@ import {
   catchError,
   pluck,
   map,
-  expand,reduce
+  expand,
+  reduce
 } from "rxjs/operators";
 import {
   nest,
@@ -22,14 +23,16 @@ import {
 } from "datalib";
 import store from "@/store";
 
-import { getAll } from "@/api/biothings.js";
+import {
+  getAll
+} from "@/api/biothings.js";
 
-export function getDoubling(apiUrl, location_id, variable="confirmed", fitLength = 5) {
+export function getDoubling(apiUrl, location_id, variable = "confirmed", fitLength = 5) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
   const timestamp = new Date().getTime()
 
-  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}" AND -date:"2020-03-23"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     map(results => {
       // ensure results are sorted by date
@@ -40,7 +43,6 @@ export function getDoubling(apiUrl, location_id, variable="confirmed", fitLength
         d["date"] = parseDate(d.date);
         d["logCases"] = Math.log(d[variable]);
       })
-      console.log(results)
 
       const resultsLength = results.length;
       const maxDate = results.sort((a, b) => a.date - b.date).slice(-1)[0].date;
@@ -76,36 +78,50 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
   if (sliced.length > 0) {
     const fit = linearRegression(sliced, d => +d.date / (24 * 3600 * 1000), d => d.logCases);
 
-    // one day previous to fit
-    const firstDate = +sliced[0].date - 8.64e7;
-    const lastDate = +maxDate + 8.64e7 * 5; // 5 days past the end
-    fit["doublingTime"] = Math.log(2) / fit.slope;
-    fit["x1"] = new Date(firstDate);
-    // y-axis is a log 10 transform
-    fit["y1"] = Math.exp(firstDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
-    fit["x2"] = new Date(lastDate);
-    fit["y2"] = Math.exp(lastDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
-    fit["xstart"] = sliced[0].date;
-    fit["xend"] = sliced.slice(-1)[0].date;
-    fit["minIdx"] = minIdx;
-    fit["maxIdx"] = maxIdx;
-    console.log(fit)
-    return (fit)
-  } else {
-    return ({
-      doublingTime: null,
-      slope: null,
-      R: null,
-      x1: null,
-      x2: null,
-      y1: null,
-      y2: null
-    })
+    if (fit.slope) {
+      // one day previous to fit
+      const firstDate = +sliced[0].date - 8.64e7;
+      const lastDate = +maxDate + 8.64e7 * 5; // 5 days past the end
+      fit["doublingTime"] = Math.log(2) / fit.slope;
+      fit["x1"] = new Date(firstDate);
+      // y-axis is a log 10 transform
+      fit["y1"] = Math.exp(firstDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
+      fit["x2"] = new Date(lastDate);
+      fit["y2"] = Math.exp(lastDate / (24 * 3600 * 1000) * fit.slope + fit.intercept);
+      fit["xstart"] = sliced[0].date;
+      fit["xend"] = sliced.slice(-1)[0].date;
+      fit["minIdx"] = minIdx;
+      fit["maxIdx"] = maxIdx;
+      // console.log(fit)
+      return (fit)
+    } else {
+      return ({
+        doublingTime: NaN,
+        slope: fit.slope,
+        R: fit.R,
+        x1: null,
+        x2: null,
+        y1: null,
+        y2: null,
+        xstart: sliced[0].date,
+        xend: sliced.slice(-1)[0].date,
+        minIdx: minIdx,
+        maxIdx: maxIdx
+      })
+    }
   }
-
+  return ({
+    doublingTime: NaN,
+    slope: NaN,
+    R: NaN,
+    x1: null,
+    x2: null,
+    y1: null,
+    y2: null
+  })
 }
 
-export function getAllDoubling(apiUrl, variable, fitLength=5) {
+export function getAllDoubling(apiUrl, variable, fitLength = 5) {
   store.state.admin.loading = true;
   const timestamp = new Date().getTime();
   const parseDate = timeParse("%Y-%m-%d");
@@ -113,7 +129,6 @@ export function getAllDoubling(apiUrl, variable, fitLength=5) {
 
   return getAll(url).pipe(
     map((results) => {
-      console.log(results)
       results.sort((a, b) => a.date - b.date);
 
       results.forEach((d) => {
@@ -123,18 +138,18 @@ export function getAllDoubling(apiUrl, variable, fitLength=5) {
       })
 
       const nested = nest()
-      .key(d => d.location_id)
-      .rollup(values => {
-        const resultsLength = values.length;
-        const maxDate = values.sort((a, b) => a.date - b.date).slice(-1)[0].date;
+        .key(d => d.location_id)
+        .rollup(values => {
+          const resultsLength = values.length;
+          const maxDate = values.sort((a, b) => a.date - b.date).slice(-1)[0].date;
 
-        return({
-          data: values,
-          fit1: fitExponential(values, resultsLength - fitLength, resultsLength, maxDate),
-          fit2: fitExponential(values, resultsLength - fitLength * 2, resultsLength - fitLength, maxDate)
+          return ({
+            data: values,
+            fit1: fitExponential(values, resultsLength - fitLength, resultsLength, maxDate),
+            fit2: fitExponential(values, resultsLength - fitLength * 2, resultsLength - fitLength, maxDate)
+          })
         })
-      })
-      .entries(results)
+        .entries(results)
 
       console.log(nested)
 

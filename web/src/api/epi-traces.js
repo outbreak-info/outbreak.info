@@ -31,10 +31,10 @@ export const epiTableState$ = epiTableSubject.asObservable();
 
 import store from "@/store";
 
-export function getEpiData(apiUrl, locations, sort, page, size) {
+export function getEpiData(apiUrl, locations, adminLevels, sort, page, size) {
   store.state.admin.loading = true;
 
-  return (forkJoin([getEpiTraces(apiUrl, locations), getEpiTable(apiUrl, locations, sort, page, size)])).pipe(
+  return (forkJoin([getEpiTraces(apiUrl, locations), getEpiTable(apiUrl, locations, adminLevels, sort, page, size)])).pipe(
     catchError(e => {
       console.log("%c Error in getting case counts!", "color: red");
       console.log(e);
@@ -50,7 +50,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
 
   return getAll(apiUrl, queryString)
     .pipe(
@@ -98,10 +98,10 @@ export function getEpiTraces(apiUrl, locations) {
     )
 }
 
-export function getEpiTable(apiUrl, locations, sort, size, page) {
+export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
   store.state.admin.loading = true;
-  return getTableData(apiUrl, locations, sort, size, page).pipe(
-    mergeMap(tableData => getSparklineTraces(apiUrl, tableData["hits"].map(d => d.location_id)).pipe(
+  return getTableData(apiUrl, locations, adminLevels, sort, size, page).pipe(
+    mergeMap(tableData => getSparklineTraces(apiUrl, tableData["hits"].map(d => encodeURIComponent(d.location_id))).pipe(
       map(sparks => {
         sparks.forEach(spark => {
           const idx = tableData["hits"].findIndex(d => d.location_id === spark.key);
@@ -131,13 +131,17 @@ export function getEpiTable(apiUrl, locations, sort, size, page) {
   )
 }
 
-export function getTableData(apiUrl, locations, sort, size, page) {
+export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = new Date().getTime();
-  const queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-02-01"` : 'date:"2020-02-01"';
+  var queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-03-24"` : 'date:"2020-03-24"';
 
-  return from(axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,region_wb,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
+  if(adminLevels && adminLevels.length > 0) {
+    queryString = queryString + `AND admin_level:("${adminLevels.join('" OR "')}")`
+  }
+
+  return from(axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,state_name,wb_region,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -148,20 +152,20 @@ export function getTableData(apiUrl, locations, sort, size, page) {
       results["hits"].forEach(d => {
         d['date'] = parseDate(d.date);
         d['country_name'] = d.admin_level === 0 ? d.name : d.country_name;
-        d['region_wb'] = d.admin_level === -1 ? d.name : d.region_wb;
-        d["confirmed_cases"] = d.confirmed_currentCases.toLocaleString();
-        d["confirmed_increase"] = d.confirmed_currentIncrease.toLocaleString();
+        d['wb_region'] = d.admin_level === -1 ? d.name : d.wb_region;
+        d["confirmed_cases"] = d.confirmed_currentCases ? d.confirmed_currentCases.toLocaleString() : null;
+        d["confirmed_increase"] = d.confirmed_currentIncrease ? d.confirmed_currentIncrease.toLocaleString() : null;
         d["confirmed_pctIncrease"] = formatPercent(d.confirmed_currentPctIncrease);
         d["confirmed_percapita"] = d.population ? (d.confirmed_currentCases ? `1 in ${Math.round(d.population / d.confirmed_currentCases).toLocaleString()}` : "0") : null;
 
-        d["dead_cases"] = d.dead_currentCases.toLocaleString();
-        d["dead_increase"] = d.dead_currentIncrease.toLocaleString();
+        d["dead_cases"] = d.dead_currentCases ? d.dead_currentCases.toLocaleString() : null;
+        d["dead_increase"] = d.dead_currentIncrease ? d.dead_currentIncrease.toLocaleString() : null;
         d["dead_pctIncrease"] = formatPercent(d.dead_currentPctIncrease);
         d["dead_percapita"] = d.population ? (d.dead_currentCases ? `1 in ${Math.round(d.population / d.dead_currentCases).toLocaleString()}` : "0") : null;
 
 
-        d["recovered_cases"] = d.recovered_currentCases.toLocaleString();
-        d["recovered_increase"] = d.recovered_currentIncrease.toLocaleString();
+        d["recovered_cases"] = d.recovered_currentCases ? d.recovered_currentCases.toLocaleString() : null;
+        d["recovered_increase"] = d.recovered_currentIncrease ? d.recovered_currentIncrease.toLocaleString() : null;
         d["recovered_pctIncrease"] = formatPercent(d.recovered_currentPctIncrease);
         d["recovered_percapita"] = d.population ? (d.recovered_currentCases ? `1 in ${Math.round(d.population / d.recovered_currentCases).toLocaleString()}` : "0") : null;
       })
@@ -184,12 +188,7 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
     const timestamp = new Date().getTime();
     const queryString = `location_id:("${locations.join('","')}")`;
 
-    return from(axios.get(`${apiUrl}query?q=${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })).pipe(
-      pluck("data", "hits"),
+    return getAll(apiUrl, `${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`).pipe(
       map(results => {
         // convert dates to javascript dates, format things for the table
         results.forEach(d => {
@@ -197,6 +196,8 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
           delete d["_id"];
           delete d["_score"];
         })
+
+        results.sort((a,b) => a.date - b.date);
 
         const nested = nest()
           .key(d => d.location_id)
@@ -206,7 +207,7 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
         return (nested);
       }),
       catchError(e => {
-        console.log("%c Error in getting case counts!", "color: red");
+        console.log("%c Error in getting sparklines!", "color: red");
         console.log(e);
         return from([]);
       }),

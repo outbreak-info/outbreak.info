@@ -71,11 +71,11 @@
     <div class="d-flex router-link-black mini-graphs mt-2 p-1">
       <div class="d-flex flex-column">
         <h6>cumulative cases</h6>
-        <Sparkline :data="[data.longitudinal]" variable="confirmed" :width="150" :height="40" :id="idx" :color="'#126B93'" />
+        <Sparkline :data="[data.longitudinal]" variable="confirmed" :width="150" :height="40" :id="'glance_' + idx" :color="'#126B93'" />
       </div>
       <div class="d-flex flex-column ml-4">
         <h6>new cases per day</h6>
-        <Bargraph :data="data.longitudinal" variable="confirmed_numIncrease" :width="150" :height="40" :id="idx" :color="'#126B93'" />
+        <Bargraph :data="data.longitudinal" variable="confirmed_numIncrease" :width="150" :height="40" :id="'glance_' + idx" :color="'#126B93'" />
       </div>
     </div>
   </router-link>
