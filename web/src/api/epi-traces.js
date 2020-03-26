@@ -188,12 +188,7 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
     const timestamp = new Date().getTime();
     const queryString = `location_id:("${locations.join('","')}")`;
 
-    return from(axios.get(`${apiUrl}query?q=${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })).pipe(
-      pluck("data", "hits"),
+    return getAll(apiUrl, `${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`).pipe(
       map(results => {
         // convert dates to javascript dates, format things for the table
         results.forEach(d => {
@@ -201,6 +196,8 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
           delete d["_id"];
           delete d["_score"];
         })
+
+        results.sort((a,b) => a.date - b.date);
 
         const nested = nest()
           .key(d => d.location_id)
