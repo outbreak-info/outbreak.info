@@ -61,6 +61,20 @@
                 >Epidemiology</router-link
               >
             </li>
+            <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
+                :class="{ active: $route.name == 'Doubling Rates' }"
+                :key="$route.fullPath"
+                :to="{
+                  name: 'Doubling Rates',
+                  query: { location: 'USA', variable: 'confirmed' }
+                }"
+                >Doubling Rates</router-link
+              >
+            </li>
           </ul>
         </div>
       </nav>
