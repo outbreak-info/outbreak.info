@@ -56,9 +56,9 @@
                 name: 'Epidemiology',
                 query: { location: row.location_id }
               }" class="router-link font-weight-bold" v-if="routable">
-              {{row[column.value]}} <i class="fas fa-chevron-right" :style="{color: row.color}"></i></router-link>
+              {{row.admin_level == 2 ? row[column.value] + ", " + row.state_name : row[column.value]}} <i class="fas fa-chevron-right" :style="{color: row.color}"></i></router-link>
             <!-- not routable location name -->
-            <span v-else>{{row[column.value]}}</span>
+            <span v-else>{{row.admin_level == 2 ? row[column.value] + ", " + row.state_name : row[column.value]}}</span>
           </span>
           <!-- spacer -->
           <span v-else-if="column.value === ''" class="spacer px-2">
