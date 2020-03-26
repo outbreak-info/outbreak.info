@@ -25,11 +25,11 @@ import store from "@/store";
 export function getLocations(apiUrl) {
   store.state.admin.loading = true;
 
-  return getAll(apiUrl, `date:"2020-03-24"&fields=location_id,name,country_name,wb_region,admin_level`).pipe(
+  return getAll(apiUrl, `date:"2020-03-24"&fields=location_id,name,country_name,state_name,wb_region,admin_level`).pipe(
     tap(results => {
       let places = results.map(d => {
         return ({
-          label: d.admin_level > 0 ? `${d.name}, ${d.country_name}` : d.name,
+          label: d.admin_level === 0 ? d.name : (d.admin_level === 1 ? `${d.name}, ${d.country_name}` : `${d.name}, ${d.state_name}`),
           id: d.location_id,
           admin_level: d.admin_level
         })
