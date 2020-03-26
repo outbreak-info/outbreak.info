@@ -12,7 +12,7 @@
           </option>
         </select> <span v-if="epi$"> in {{epi$.data[0].name}}</span>
       </h3>
-      <h3 v-else>Select a location</h3>
+      <h3 v-else class="pt-5">Select a location</h3>
       <SearchBar class="w-100 mb-3" @location="setLocation" :selected="selected" placeholder="Change location"></SearchBar>
       <DoublingCurve v-if="epi$" :data="epi$" :toFit="toFit" @executeFit="executeFit" :variable="variable" />
     </div>
