@@ -223,8 +223,8 @@ export default Vue.extend({
         },
         // {
         //   label: "region",
-        //   value: "region_wb",
-        //   sort_id: "region_wb",
+        //   value: "wb_region",
+        //   sort_id: "wb_region",
         //   sorted: 0,
         //   essential: false
         // },
