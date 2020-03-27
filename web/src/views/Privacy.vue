@@ -2,7 +2,7 @@
   <div class="full-page">
     <div class="container py-5 text-left">
       <h2 class="my-3 text-highlight">Privacy Policy</h2>
-      <small>Privacy policy extended from <a href="https://andersen-lab.com/privacy-policy/" rel="noreferrer" target="_blank">Anderson Lab</a>.</small>
+      <small>Privacy policy extended from <a href="https://andersen-lab.com/privacy-policy/" rel="noreferrer" target="_blank">Andersen Lab</a>.</small>
       <p>
         This page informs you of our policies regarding the collection, use and disclosure of personal data when you use our Service and the choices you have associated with that data.
       </p>
