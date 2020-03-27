@@ -103,8 +103,11 @@
           <span v-else-if="column.value.includes('pctIncrease')" class="correction-explanation" :data-tippy-info="row[column.value] === 'case count corrected' ? 'total was higher yesterday' : null">
             {{row[column.value]}}
           </span>
+          <span v-else-if="column.value.includes('dead') || column.value.includes('recovered')">
+            {{row[column.value] ? row[column.value] : 0}}
+          </span>
           <!-- normal -->
-          <span v-else>{{row[column.value] ? row[column.value] : 0}}</span>
+          <span v-else>{{row[column.value]}}</span>
         </td>
         <td>
           <RecoveredBar :data="row" :color="row.color" />
