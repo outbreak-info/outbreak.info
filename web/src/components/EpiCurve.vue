@@ -160,7 +160,7 @@ export default Vue.extend({
   methods: {
     setPlotDims() {
       // let idealWidth = 750;
-      let idealWidth = document.getElementById('curveContainer').offsetWidth;
+      let idealWidth = document.getElementById('curveContainer') ? document.getElementById('curveContainer').offsetWidth : 750;
 
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.
