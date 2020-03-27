@@ -36,7 +36,7 @@
           <line x1="0" y1="0" x2="100" stroke="#D13B62" />
         </svg>
         <SearchBar routeTo="/epidemiology?" class="w-100"></SearchBar>
-        <small id="sBar-text" class="form-text text-light d-block">View COVID-19 trends by location</small>
+        <small id="sBar-text" class="form-text text-light d-block">View COVID-19 trends by region, country, state/province, or U.S. county</small>
       </div>
     </div>
   </section>
