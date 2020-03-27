@@ -98,6 +98,13 @@
               >Privacy Policy</router-link
             >
           </li>
+          <li class="d-inline m-2">
+            <router-link
+              class="text-light"
+              to="/terms"
+              >Terms</router-link
+            >
+          </li>
         </ul>
         <small>
           All content copyright
