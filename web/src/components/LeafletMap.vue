@@ -8,7 +8,7 @@
         <l-circle-marker v-if="circle.display[1] > currentZoom && circle.display[0] <= currentZoom" :lat-lng="circle.coord" :radius="circle.r" :color="'grey'" :fillColor="circle.fill" :weight="0.5" :fillOpacity="0.8">
           <l-tooltip :options="{ permanent: false, interactive: true }">
             <div>
-              {{ circle.admin_level == 2 ? `${circle.name} County` : circle.name }}
+              {{ circle.name }}
             </div>
             <small>click to view details</small>
           </l-tooltip>
@@ -17,7 +17,7 @@
               <router-link :to="{
                   name: 'Epidemiology',
                   query: { location: circle.location_id }
-                }" class="router-link-black">{{ circle.admin_level == 2 ? `${circle.name} County` : circle.name }}</router-link>
+                }" class="router-link-black">{{ circle.name }}</router-link>
             </h3>
             <table class="summary-table">
               <tr>

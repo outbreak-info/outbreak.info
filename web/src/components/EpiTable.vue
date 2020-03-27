@@ -104,7 +104,7 @@
             {{row[column.value]}}
           </span>
           <!-- normal -->
-          <span v-else>{{row[column.value]}}</span>
+          <span v-else>{{row[column.value] ? row[column.value] : 0}}</span>
         </td>
         <td>
           <RecoveredBar :data="row" :color="row.color" />
@@ -194,7 +194,7 @@ export default Vue.extend({
       dataSubscription: null,
       changeDataSubscription: null,
       sparksSubscription: null,
-      selectedAdminLevels: [0,1,2],
+      selectedAdminLevels: [0, 1, 2],
       mergedColumns: [{
           label: "",
           colspan: 1
@@ -414,21 +414,21 @@ export default Vue.extend({
       this.prepData();
     }
 
-// this.$nextTick(function() {
-  //   tippy(".correction-explanation", {
-  //     content: null,
-  //     maxWidth: "200px",
-  //     placement: "bottom",
-  //     animation: "fade",
-  //     theme: "light",
-  //     onShow(instance) {
-  //       let info = instance.reference.dataset.tippyInfo;
-  //       if (info){
-  //         instance.setContent(info);
-  //       }
-  //     }
-  //   });
-  // })
+    // this.$nextTick(function() {
+    //   tippy(".correction-explanation", {
+    //     content: null,
+    //     maxWidth: "200px",
+    //     placement: "bottom",
+    //     animation: "fade",
+    //     theme: "light",
+    //     onShow(instance) {
+    //       let info = instance.reference.dataset.tippyInfo;
+    //       if (info){
+    //         instance.setContent(info);
+    //       }
+    //     }
+    //   });
+    // })
   },
   created() {
     // set up subscription here; listen for changes and execute in the watch.
@@ -599,11 +599,11 @@ th {
 }
 
 .outcome-legend {
-  dominant-baseline: hanging;
-  font-size: 0.9em;
+    dominant-baseline: hanging;
+    font-size: 0.9em;
 }
 .outcome-legend-rect {
-  stroke: $base-grey;
-  stroke-width: 0.5;
+    stroke: $base-grey;
+    stroke-width: 0.5;
 }
 </style>

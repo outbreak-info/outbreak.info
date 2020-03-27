@@ -42,6 +42,11 @@ const state = {
       displayMore: false,
       region: "South Asia"
     },
+    {
+      display: false,
+      displayMore: false,
+      region: "Cruises"
+    },
   ]
 };
 
