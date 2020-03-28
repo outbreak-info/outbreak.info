@@ -1,5 +1,5 @@
 <template>
-<div class="epi-table my-3" v-if="data && colorScale">
+<div class="epi-table my-3" v-if="data && data.length && colorScale">
   <div class="m-auto d-flex justify-content-center py-5">
     <div>
       <h4>Latest Data</h4>
