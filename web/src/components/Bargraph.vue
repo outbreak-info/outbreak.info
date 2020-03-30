@@ -44,6 +44,10 @@ export default Vue.extend({
     fixedXLim: {
       type: Array,
       default: null
+    },
+    animate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -67,6 +71,15 @@ export default Vue.extend({
       this.updatePlot()
     },
     variable: function() {
+      this.updatePlot()
+    },
+    fixedYMax: function() {
+      this.updatePlot()
+    },
+    width: function() {
+      this.updatePlot()
+    },
+    height: function() {
       this.updatePlot()
     }
   },
@@ -127,9 +140,11 @@ export default Vue.extend({
           .attr("y", d => this.y(0))
           .attr("height", 0)
           .attr("fill", this.color)
-          .call(update => update.transition(t1).delay((d, i) => i * 20)
+          .call(update => this.animate ? update.transition(t1).delay((d, i) => i * 20)
             .attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(0) - this.y(d[this.variable]))
+            .attr("height", d => this.y(0) - this.y(d[this.variable])) :
+            update.attr("y", d => this.y(d[this.variable]))
+              .attr("height", d => this.y(0) - this.y(d[this.variable]))
           ),
 
           update => update
@@ -138,9 +153,11 @@ export default Vue.extend({
           .attr("x", d => this.x(d.date))
           .attr("width", this.x.bandwidth())
 
-          .call(update => update.transition(t1)
+          .call(update => this.animate ? update.transition(t1)
             .attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(0) - this.y(d[this.variable]))
+            .attr("height", d => this.y(0) - this.y(d[this.variable])) :
+            update.attr("y", d => this.y(d[this.variable]))
+              .attr("height", d => this.y(0) - this.y(d[this.variable]))
           ),
 
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())

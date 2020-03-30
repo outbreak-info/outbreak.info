@@ -1,5 +1,5 @@
 <template>
-<div class="container full-page py-5 bg-light">
+<div class="full-page py-5 bg-light">
   <!-- loading -->
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
@@ -25,6 +25,15 @@
     </div>
   </div>
 
+  <!-- fixed y selector for small multiple bar graphs -->
+  <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;" v-if="variable.includes('numIncrease') && dataLength > 1">
+    <label class="b-contain m-auto">
+      <span>constant y-axis limits</span>
+      <input type="checkbox" v-model="fixedY" />
+      <div class="b-input"></div>
+    </label>
+  </div>
+
   <!-- title / drop down variable selector -->
   <h4 class="plot-title pt-5 pb-3">
     Number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeVariable">
@@ -41,11 +50,10 @@
 
   <div class="d-flex row m-0">
     <!-- bar graph -->
-    <template v-if="data$ && data$[0] && this.variable.includes('numIncrease')">
-      <div v-for="(countryData,idx) in data$[0]" :key="idx" class="d-flex mr-3 mb-3">
-        <Bargraph :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="450" :height="250" :fixedXLim="xLim" :id="String(idx)" :color="colorScale(countryData.key)" />
-      </div>
-    </template>
+    <div v-if="data$ && data$[0] && this.variable.includes('numIncrease')" class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
+      <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
+        :fixedXLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+    </div>
 
     <!-- curve -->
     <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('numIncrease')" />
@@ -75,7 +83,8 @@ import {
   mapState
 } from "vuex";
 import {
-  extent
+  extent,
+  max
 } from "d3";
 
 export default {
@@ -108,6 +117,10 @@ export default {
       showCurves: true,
       lengthThreshold: 8,
       showAll: false,
+      fixedY: false,
+      bargraphWidth: 300,
+      bargraphHeight: 400,
+      yMax: null,
       variableOptions: [{
         label: "cumulative cases",
         value: "confirmed"
@@ -174,6 +187,13 @@ export default {
     location: function(newLocation, oldLocation) {
       this.setLocation(newLocation);
     },
+    fixedY: function(newValue, oldValue) {
+      if (newValue) {
+        this.yMax = max(this.plottedData.flatMap(d => d.value), d => d[this.variable]);
+      } else {
+        this.yMax = null;
+      }
+    },
     showAll: function(newValue, oldValue) {
       if (newValue) {
         this.addable = [];
@@ -203,6 +223,7 @@ export default {
       epiTableSubject.next([]);
     },
     changeVariable() {
+      this.yMax = this.fixedY ? max(this.plottedData.flatMap(d => d.value), d => d[this.variable]) : null;
       this.$router.replace({
         path: "epidemiology",
         query: {
@@ -217,6 +238,30 @@ export default {
     },
     updateAddable: function(selected) {
       this.addable = selected;
+    },
+    setDims: function() {
+      const minWidth = 300;
+      const hwRatio = 0.75;
+      const marginPadding = 80;  // size of margin
+      const framePadding = 16;  // size of margin
+      const dimWidth = document.getElementById("bar-group") ? document.getElementById("bar-group").offsetWidth : minWidth;
+      if(dimWidth < 350) {
+        this.bargraphWidth = 300;
+        this.bargraphHeight= this.bargraphWidth * hwRatio;
+      } else if(dimWidth < 600){
+        this.bargraphWidth = dimWidth - framePadding - marginPadding;
+        this.bargraphHeight= this.bargraphWidth * hwRatio;
+      } else if(dimWidth < 1000) {
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding)/2;
+        this.bargraphHeight= this.bargraphWidth * hwRatio;
+      } else if(dimWidth < 1200) {
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding)/3;
+        this.bargraphHeight= this.bargraphWidth * hwRatio;
+      } else {
+
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding)/4;
+        this.bargraphHeight= this.bargraphWidth * hwRatio;
+      }
     },
     hideExtra: function() {
       const selectedData = this.data$ ? this.data$[0]
@@ -235,6 +280,11 @@ export default {
   },
   mounted() {
     this.setLocation(this.location);
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.setDims);
+      // set initial dimensions for the stacked area plots.
+      this.setDims();
+    });
   }
 };
 </script>

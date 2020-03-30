@@ -115,23 +115,24 @@ export default Vue.extend({
   methods: {
     setPlotDims() {
       // let idealWidth = 750;
+      const padding = 0.85;
       let idealWidth = document.getElementById('curveContainer') ? document.getElementById('curveContainer').offsetWidth : 750;
 
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.
       if (window.innerWidth < idealWidth) {
-        const newWidth = window.innerWidth - framePadding;
+        const newWidth = window.innerWidth * padding - framePadding;
         const newHeight = newWidth / whRatio;
         // check height within limits
         if (newHeight > window.innerHeight) {
-          this.width = window.innerHeight * whRatio;
-          this.height = window.innerHeight;
+          this.width = window.innerHeight * whRatio * padding;
+          this.height = window.innerHeight * padding;
         } else {
           this.width = newWidth;
           this.height = newHeight;
         }
       } else {
-        this.width = idealWidth;
+        this.width = idealWidth * padding;
         this.height = idealWidth / whRatio;
       }
 
