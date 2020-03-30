@@ -1,32 +1,5 @@
 <template>
 <div class="col-sm-12 epidemiology-curves flex-column align-items-center">
-  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
-    <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
-      <label class="b-contain m-auto">
-        <span>show more than {{ lengthThreshold }} curves</span>
-        <input type="checkbox" v-model="showAll" @click="plotAll()" />
-        <div class="b-input"></div>
-      </label>
-    </div>
-    <div style="max-width:700px;" class="m-auto">
-      <Warning :animate="true" class="mt-2" v-if="!showAll" :text="
-            'You have selected a lot of places. Showing the top ' +
-              lengthThreshold +
-              ' with the highest current case counts'
-          "></Warning>
-    </div>
-  </div>
-  <!-- <button @click="switchAxes()">common axis</button> -->
-  <h4 class="plot-title py-5">
-    Cumulative number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeVariable">
-      <option v-for="option in variableOptions" :value="option.value" :key="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-    <span v-if="locationName">
-      in {{ locationName }}</span>
-  </h4>
-  <DataUpdated />
   <svg :width="width" :height="height" class="epi-curve" ref="svg">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -44,9 +17,7 @@
 
 <script lang="js">
 import Vue from "vue";
-import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
-import Warning from "@/components/Warning.vue";
 
 import {
   epiDataState$
@@ -73,13 +44,11 @@ const transitionDuration = 3500;
 export default Vue.extend({
   name: "EpiCurve",
   components: {
-    DataUpdated,
     DataSource,
-    Warning
   },
   props: {
     location: String,
-    routeVariable: String,
+    variable: String,
     log: Boolean
   },
   data() {
@@ -98,20 +67,9 @@ export default Vue.extend({
       plottedData: null,
 
       // button interfaces
-      lengthThreshold: 8,
       showAll: false,
       isLogY: false,
       // variable: "confirmed",
-      variableOptions: [{
-        label: "Cases",
-        value: "confirmed"
-      }, {
-        label: "Recoveries",
-        value: "recovered"
-      }, {
-        label: "Deaths",
-        value: "dead"
-      }],
 
       // axes
       numXTicks: 7,
@@ -132,32 +90,26 @@ export default Vue.extend({
     data: function() {
       this.updatePlot();
     },
+    variable: function() {
+      this.updatePlot();
+    },
     log: {
       immediate: true,
       handler(newVal, oldVal) {
         this.isLogY = newVal;
       },
     },
-    routeVariable: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.variable = newVal;
-      },
-    },
+    // routeVariable: {
+    //   immediate: true,
+    //   handler(newVal, oldVal) {
+    //     this.variable = newVal;
+    //   },
+    // },
     width() {
       this.updatePlot();
     }
   },
   computed: {
-    locationName() {
-      if (this.data && this.data.length === 1 && this.data[0].value[0]) {
-        return this.data[0].value[0].name;
-      }
-      return null;
-    },
-    dataLength() {
-      return this.data ? this.data.length : null;
-    }
   },
   created() {
     // set up subscription here; listen for changes and execute in the watch.
@@ -211,18 +163,6 @@ export default Vue.extend({
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
-      this.$router.replace({
-        path: "epidemiology",
-        query: {
-          location: this.location,
-          log: String(this.isLogY),
-          variable: this.variable
-        }
-      });
-
-      this.updatePlot();
-    },
-    changeVariable() {
       this.$router.replace({
         path: "epidemiology",
         query: {
@@ -347,11 +287,11 @@ export default Vue.extend({
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = this.isLogY ? d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d, i) => {
+      this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
         }) :
-        d3.axisLeft(this.y).ticks(this.numYTicks);
+        d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
@@ -449,7 +389,7 @@ export default Vue.extend({
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
-      const t2 = d3.transition().duration(1500);
+      const t2 = d3.transition().duration(500);
       const formatDate = d3.timeFormat("%d %b %Y");
 
       // --- annotation: change in case definition ---
