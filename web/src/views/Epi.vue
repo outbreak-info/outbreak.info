@@ -43,7 +43,7 @@
     <!-- bar graph -->
     <template v-if="data$ && data$[0] && this.variable.includes('numIncrease')">
       <div v-for="(countryData,idx) in data$[0]" :key="idx" class="d-flex mr-3 mb-3">
-        <Bargraph :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="450" :height="250" :fixedXLim="xLim" :id="String(idx)" :color="'#126B93'" />
+        <Bargraph :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="450" :height="250" :fixedXLim="xLim" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
     </template>
 
@@ -223,7 +223,7 @@ export default {
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)
         .slice(0, this.lengthThreshold) : null;
-        
+
       const toAdd = this.data$[0]
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)
