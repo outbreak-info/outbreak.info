@@ -77,6 +77,7 @@ export function getLocations(apiUrl) {
 
 export function getMostCases(apiUrl, num2Return = 5) {
   store.state.admin.loading = true;
+  store.state.admin.siteDown = false;
   const timestamp = new Date().getTime();
 
   return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:0&fields=location_id,name&sort=-confirmed_currentCases&size=${num2Return}&timestamp=${timestamp}`)).pipe(
@@ -86,6 +87,7 @@ export function getMostCases(apiUrl, num2Return = 5) {
       return (results)
     }),
     catchError(e => {
+      store.state.admin.siteDown = true;
       console.log("%c Error in getting highest case counts!", "color: red");
       console.log(e);
       return from([]);

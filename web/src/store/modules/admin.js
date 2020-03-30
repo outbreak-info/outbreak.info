@@ -1,6 +1,7 @@
 // initial state
 const state = {
-  loading: false
+  loading: false,
+  siteDown: false
 };
 
 // getters
