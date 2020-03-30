@@ -464,7 +464,7 @@ export default Vue.extend({
       const force = d3
         .forceSimulation()
         .nodes(this.plottedData)
-        .force("collide", d3.forceCollide(labelHeight / 2).strength(0.2))
+        .force("collide", d3.forceCollide(labelHeight / 2).strength(0.1))
         .force("y", d3.forceY(d => d.targetY).strength(1))
         .force(
           "clamp",
@@ -495,7 +495,7 @@ export default Vue.extend({
         .attr("class", d => `annotation--region-name ${d.key}`)
         .attr("x", this.width - this.margin.left - this.margin.right)
         .attr("y", d => d.y)
-        .text(d => d.value[0].name)
+        .text(d => d.value[0] ? d.value[0].name : "")
         .style("opacity", 1e-6)
         .transition(t1)
         .delay(1000)
@@ -511,7 +511,7 @@ export default Vue.extend({
       pathSelector
         .merge(pathEnter)
         .datum(d => d.value)
-        .attr("id", d => `epi-line ${d[0].location_id}`)
+        .attr("id", d => d[0] ? `epi-line ${d[0].location_id}` : "epi-line-blank")
         .attr("d", this.line)
         .attr("stroke-dasharray", function() {
           var totalLength = this.getTotalLength();
