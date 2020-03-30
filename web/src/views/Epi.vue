@@ -5,7 +5,7 @@
   </div>
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <div class="d-flex row m-0">
-    <EpiCurve class="row" @addable="updateAddable" id="curveContainer" v-if="data$"/>
+    <EpiCurve class="row" @addable="updateAddable" id="curveContainer" :location= "location" :routeVariable="variable" :log="isLogY" v-if="data$" />
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
   </div>
   <!-- <div id="presetLocations">
@@ -22,7 +22,9 @@ import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
 import {
-  getEpiData, epiDataSubject, epiTableSubject
+  getEpiData,
+  epiDataSubject,
+  epiTableSubject
 } from "@/api/epi-traces.js"
 import store from "@/store";
 import {
@@ -37,16 +39,18 @@ export default {
     Autocomplete
   },
   props: {
-    region: String,
-    country: String,
+    variable: {
+      type: String,
+      default: "confirmed"
+    },
+    log: {
+      type: String,
+      default: "false"
+    },
     location: String
   },
   data() {
     return {
-      presetGroups: [{
-        label: "United States",
-        locations: []
-      }],
       selectedPlaces: [],
       addable: [],
       data$: null
@@ -59,6 +63,9 @@ export default {
       const scale = store.getters["colors/getColor"];
       return scale;
     },
+    isLogY: function() {
+      return(this.log === "true")
+    }
   },
   watch: {
     selectedPlaces: function(newValue, oldValue) {
@@ -67,11 +74,14 @@ export default {
         this.$router.push({
           path: "epidemiology",
           query: {
-            location: newLocation
+            location: newLocation,
+            log: String(this.isLogY),
+            variable: this.variable
           }
         });
       }
     },
+    // route props
     location: function(newLocation, oldLocation) {
       this.setLocation(newLocation);
     }
@@ -103,8 +113,7 @@ export default {
     }
   },
   subscriptions() {
-    return {
-    }
+    return {}
   },
   mounted() {
     this.setLocation(this.location);

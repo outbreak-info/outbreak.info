@@ -77,7 +77,11 @@ export default Vue.extend({
     DataSource,
     Warning
   },
-  props: {},
+  props: {
+    location: String,
+    routeVariable: String,
+    log: Boolean
+  },
   data() {
     return {
       width,
@@ -97,7 +101,7 @@ export default Vue.extend({
       lengthThreshold: 8,
       showAll: false,
       isLogY: false,
-      variable: "confirmed",
+      // variable: "confirmed",
       variableOptions: [{
         label: "Cases",
         value: "confirmed"
@@ -127,6 +131,18 @@ export default Vue.extend({
   watch: {
     data: function() {
       this.updatePlot();
+    },
+    log: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.isLogY = newVal;
+      },
+    },
+    routeVariable: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.variable = newVal;
+      },
     },
     width() {
       this.updatePlot();
@@ -195,10 +211,27 @@ export default Vue.extend({
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
+      this.$router.replace({
+        path: "epidemiology",
+        query: {
+          location: this.location,
+          log: String(this.isLogY),
+          variable: this.variable
+        }
+      });
 
       this.updatePlot();
     },
     changeVariable() {
+      this.$router.replace({
+        path: "epidemiology",
+        query: {
+          location: this.location,
+          log: String(this.isLogY),
+          variable: this.variable
+        }
+      });
+
       this.updatePlot();
     },
     tooltipOn: function(d, location_id) {

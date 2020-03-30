@@ -35,8 +35,8 @@ const routes = [
     path: "/epidemiology",
     name: "Epidemiology",
     props: route => ({
-      region: route.query.region,
-      country: route.query.country,
+      log: route.query.log,
+      variable: route.query.variable,
       location: route.query.location
     }),
     // route level code-splitting
