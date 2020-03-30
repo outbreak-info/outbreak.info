@@ -4,8 +4,7 @@ import {
 } from "rxjs";
 import axios from "axios";
 import {
-  tap,
-  finalize,
+  // finalize,
   catchError,
   pluck,
   map,
@@ -13,18 +12,10 @@ import {
   reduce
 } from "rxjs/operators";
 import {
-  nest,
   timeParse,
   timeFormat,
-  format,
-  isoParse,
-  utcParse,
-  max,
-  sum
+  utcParse
 } from "d3";
-import {
-  linearRegression
-} from "datalib";
 import store from "@/store";
 
 export function getDateUpdated(apiUrl) {
