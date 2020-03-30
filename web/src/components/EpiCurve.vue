@@ -389,7 +389,7 @@ export default Vue.extend({
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
-      const t2 = d3.transition().duration(500);
+      const t2 = d3.transition().duration(1500);
       const formatDate = d3.timeFormat("%d %b %Y");
 
       // --- annotation: change in case definition ---
