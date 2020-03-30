@@ -43,7 +43,7 @@
     <!-- bar graph -->
     <template v-if="data$ && data$[0] && this.variable.includes('numIncrease')">
       <div v-for="(countryData,idx) in data$[0]" :key="idx" class="d-flex mr-3 mb-3">
-        <Bargraph :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="450" :height="250" :id="String(idx)" :color="'#126B93'" />
+        <Bargraph :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="450" :height="250" :fixedXLim="xLim" :id="String(idx)" :color="'#126B93'" />
       </div>
     </template>
 
@@ -74,6 +74,7 @@ import store from "@/store";
 import {
   mapState
 } from "vuex";
+import { extent } from "d3";
 
 export default {
   name: "Epidemiology",
@@ -113,9 +114,9 @@ export default {
         label: "cumulative deaths",
         value: "dead"
       }, {
-        label: "cumulative cases & deaths",
-        value: "both"
-      }, {
+      //   label: "cumulative cases & deaths",
+      //   value: "both"
+      // }, {
         label: "new cases",
         value: "confirmed_numIncrease"
       }, {
@@ -142,6 +143,13 @@ export default {
         return this.data$[0][0].value[0].name;
       }
       return null;
+    },
+    xLim() {
+      if (this.data$ && this.data$[0]) {
+        return(extent(this.data$[0].flatMap(d => d.value), d => d.date));
+      } else {
+        return(null)
+      }
     }
   },
   watch: {

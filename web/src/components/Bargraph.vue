@@ -40,6 +40,10 @@ export default Vue.extend({
     fixedYMax: {
       type: Number,
       default: null
+    },
+    fixedXLim: {
+      type: Array,
+      default: null
     }
   },
   data() {
@@ -78,7 +82,7 @@ export default Vue.extend({
       }
     },
     updateScales() {
-      const range = d3.extent(this.data, d => d.date);
+      const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.data, d => d.date);
 
       this.x = this.x
         .range([0, this.width])
@@ -110,7 +114,7 @@ export default Vue.extend({
       }
     },
     drawPlot() {
-      const t1 = d3.transition().duration(1500);
+      const t1 = d3.transition().duration(500);
       const barSelector = this.chart.selectAll(".bargraph").data(this.data);
 
       barSelector
