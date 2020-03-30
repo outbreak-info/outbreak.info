@@ -47,6 +47,7 @@ export default Vue.extend({
     DataSource,
   },
   props: {
+    data: Array,
     location: String,
     variable: String,
     log: Boolean
@@ -61,13 +62,11 @@ export default Vue.extend({
       backgroundColor: "#f8f9fa",
 
       // data
-      data: [],
       dataSubscription: null,
       logData: null,
       plottedData: null,
 
       // button interfaces
-      showAll: false,
       isLogY: false,
       // variable: "confirmed",
 
@@ -108,18 +107,6 @@ export default Vue.extend({
     width() {
       this.updatePlot();
     }
-  },
-  computed: {
-  },
-  created() {
-    // set up subscription here; listen for changes and execute in the watch.
-    // Strangely, w/o the watch, the subscription doesn't seem to update...
-    this.dataSubscription = epiDataState$.subscribe(data => {
-      this.data = data;
-    })
-  },
-  beforeDestroy() {
-    this.dataSubscription.unsubscribe();
   },
   mounted() {
     this.setupPlot();
@@ -196,36 +183,12 @@ export default Vue.extend({
 
       d3.selectAll(`.epi-region`).style("opacity", 1);
     },
-    plotAll: function() {
-      this.showAll = !this.showAll;
-      this.updatePlot();
-    },
     updatePlot: function() {
       this.prepData();
 
       if (this.data) {
-        if (this.showAll) {
-          // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
-          this.plottedData = this.isLogY ? this.logData : this.data;
-          this.$emit("addable", []);
-        } else {
-          this.plottedData = this.isLogY ?
-            this.logData
-            .slice()
-            .sort((a, b) => b.currentCases - a.currentCases)
-            .slice(0, this.lengthThreshold) :
-            this.data
-            .slice()
-            .sort((a, b) => b.currentCases - a.currentCases)
-            .slice(0, this.lengthThreshold);
-          const toAdd = this.data
-            .slice()
-            .sort((a, b) => b.currentCases - a.currentCases)
-            .slice(this.lengthThreshold)
-            .map(d => d.key);
-          this.$emit("addable", toAdd);
-        }
-
+        // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
+        this.plottedData = this.isLogY ? this.logData : this.data;
         this.updateScales();
         this.drawDots();
       }

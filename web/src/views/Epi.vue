@@ -6,16 +6,16 @@
   </div>
   <!-- autocomplete region selector -->
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
-  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
+  <!-- too many to plot -->
+  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold && !variable.includes('numIncrease')">
     <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
       <label class="b-contain m-auto">
         <span>show more than {{ lengthThreshold }} curves</span>
-        <input type="checkbox" v-model="showAll" @click="plotAll()" />
+        <input type="checkbox" v-model="showAll" />
         <div class="b-input"></div>
       </label>
     </div>
 
-    <!-- too many to plot -->
     <div style="max-width:700px;" class="m-auto">
       <Warning :animate="true" class="mt-2" v-if="!showAll" :text="
             'You have selected a lot of places. Showing the top ' +
@@ -26,7 +26,7 @@
   </div>
 
   <!-- title / drop down variable selector -->
-  <h4 class="plot-title py-5">
+  <h4 class="plot-title pt-5 pb-3">
     Number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeVariable">
       <option v-for="option in variableOptions" :value="option.value" :key="option.value">
         {{ option.label }}
@@ -48,7 +48,7 @@
     </template>
 
     <!-- curve -->
-    <EpiCurve class="row" @addable="updateAddable" id="curveContainer" :location="location" :variable="variable" :log="isLogY" v-if="data$ && showCurves && !this.variable.includes('numIncrease')" />
+    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('numIncrease')" />
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
@@ -74,7 +74,9 @@ import store from "@/store";
 import {
   mapState
 } from "vuex";
-import { extent } from "d3";
+import {
+  extent
+} from "d3";
 
 export default {
   name: "Epidemiology",
@@ -102,8 +104,10 @@ export default {
       selectedPlaces: [],
       addable: [],
       data$: null,
+      plottedData: [],
       showCurves: true,
       lengthThreshold: 8,
+      showAll: false,
       variableOptions: [{
         label: "cumulative cases",
         value: "confirmed"
@@ -114,13 +118,13 @@ export default {
         label: "cumulative deaths",
         value: "dead"
       }, {
-      //   label: "cumulative cases & deaths",
-      //   value: "both"
-      // }, {
-        label: "new cases",
+        //   label: "cumulative cases & deaths",
+        //   value: "both"
+        // }, {
+        label: "daily new cases",
         value: "confirmed_numIncrease"
       }, {
-        label: "new deaths",
+        label: "daily new deaths",
         value: "dead_numIncrease"
       }]
     };
@@ -146,9 +150,9 @@ export default {
     },
     xLim() {
       if (this.data$ && this.data$[0]) {
-        return(extent(this.data$[0].flatMap(d => d.value), d => d.date));
+        return (extent(this.data$[0].flatMap(d => d.value), d => d.date));
       } else {
-        return(null)
+        return (null)
       }
     }
   },
@@ -169,6 +173,14 @@ export default {
     // route props
     location: function(newLocation, oldLocation) {
       this.setLocation(newLocation);
+    },
+    showAll: function(newValue, oldValue) {
+      if (newValue) {
+        this.addable = [];
+        this.plottedData = this.data$ ? this.data$[0] : null;
+      } else {
+        this.plottedData = this.hideExtra();
+      }
     }
   },
   methods: {
@@ -177,8 +189,8 @@ export default {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
         this.dataSubscription = getEpiData(this.$apiurl, locations, null, "-confirmed_currentCases", 10, 0).subscribe(d => {
-          console.log(d)
           this.data$ = d;
+          this.plottedData = this.data$[0].length > this.lengthThreshold ? this.hideExtra() : this.data$[0];
         });
         // need to call subscription in order to trigger calling API function and passing subscription to child
       } else {
@@ -199,8 +211,6 @@ export default {
           variable: this.variable
         }
       });
-
-      // this.updatePlot();
     },
     updateSelected: function(selected) {
       this.selectedPlaces = [...new Set(selected)];
@@ -208,12 +218,20 @@ export default {
     updateAddable: function(selected) {
       this.addable = selected;
     },
-    selectGroup: function(locationGroup) {
-      // this.selectedPlaces = locationGroup.locations;
+    hideExtra: function() {
+      const selectedData = this.data$ ? this.data$[0]
+        .slice()
+        .sort((a, b) => b.currentCases - a.currentCases)
+        .slice(0, this.lengthThreshold) : null;
+        
+      const toAdd = this.data$[0]
+        .slice()
+        .sort((a, b) => b.currentCases - a.currentCases)
+        .slice(this.lengthThreshold)
+        .map(d => d.key);
+      this.addable = toAdd;
+      return selectedData;
     }
-  },
-  subscriptions() {
-    return {}
   },
   mounted() {
     this.setLocation(this.location);

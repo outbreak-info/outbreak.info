@@ -76,7 +76,7 @@ export function getEpiTraces(apiUrl, locations) {
         })
 
         // console.log("setting order")
-        console.log(    nested)
+        // console.log(    nested)
         //     .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
         //     .map(d => d.key))
 
