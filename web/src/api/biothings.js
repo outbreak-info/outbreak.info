@@ -30,7 +30,7 @@ import store from "@/store";
 export function getDateUpdated(apiUrl) {
   const today = new Date();
   const timestamp = today.getTime();
-  const url = `${apiUrl}metadata`;
+  const url = `${apiUrl}metadata?timestamp=${timestamp}`;
   return from(axios.get(url)).pipe(
 
     pluck("data", "build_date"),
