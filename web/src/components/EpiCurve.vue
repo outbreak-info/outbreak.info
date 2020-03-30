@@ -460,37 +460,53 @@ export default Vue.extend({
       const defChangedSelector = this.chart
         .selectAll(".case-def-changed")
         .data(includesChina.length > 0 ? ["includesChina"] : []);
+      const defChangedLine = this.chart
+        .selectAll(".case-def-changed-line")
+        .data(includesChina.length > 0 ? ["includesChina"] : []);
 
 
       const defChangedEnter = defChangedSelector
         .join(
           enter => {
-            const defEnter = enter.append("g")
-              .attr("class", "annotation-group case-def-changed")
-
-            defEnter.append("text")
+            enter.append("text")
               .attr("dx", -3)
               .attr("y", 0)
               .attr("x", this.x(dateCaseDefChange))
+              .attr("class", "annotation-label case-def-changed")
               .text("Case definition changed")
 
-            defEnter.append("line")
-              .attr("class", "annotation--line case-def-changed")
+            // defEnter.append("line")
+            //   .attr("class", "annotation--line case-def-changed")
+            //   .attr("y1", 8)
+            //   .attr("x1", this.x(dateCaseDefChange))
+            //   .attr("x2", this.x(dateCaseDefChange))
+            //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
+          },
+          update => {
+            update.attr("x", this.x(dateCaseDefChange))
+
+            // update.select("line")
+            //   .attr("class", "annotation--line case-def-changed")
+            //   .attr("y1", 8)
+            //   .attr("x1", this.x(dateCaseDefChange))
+            //   .attr("x2", this.x(dateCaseDefChange))
+            //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
+          },
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+        );
+
+      defChangedLine
+        .join(
+          enter => {
+            enter.append("line")
+              .attr("class", "annotation--line case-def-changed-line")
               .attr("y1", 8)
               .attr("x1", this.x(dateCaseDefChange))
               .attr("x2", this.x(dateCaseDefChange))
               .attr("y2", this.height - this.margin.top - this.margin.bottom)
           },
           update => {
-            update.append("text")
-              .attr("dx", -3)
-              .attr("y", 0)
-              .attr("x", this.x(dateCaseDefChange))
-              .text("Case definition changed")
-
-            update.append("line")
-              .attr("class", "annotation--line case-def-changed")
-              .attr("y1", 8)
+            update
               .attr("x1", this.x(dateCaseDefChange))
               .attr("x2", this.x(dateCaseDefChange))
               .attr("y2", this.height - this.margin.top - this.margin.bottom)
@@ -859,7 +875,7 @@ export default Vue.extend({
     fill-opacity: 0.25;
 }
 
-.epidemiology-curves line.case-def-changed {
+.epidemiology-curves line.case-def-changed-line {
     stroke: $grey-60;
     stroke-width: 0.75;
     shape-rendering: crispedges;
