@@ -185,10 +185,9 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
   if (locations) {
     const parseDate = timeParse("%Y-%m-%d");
     // trigger no-cache behavior by adding timestamp to request
-    const timestamp = Math.round(new Date().getTime()/1e5);
     const queryString = `location_id:("${locations.join('","')}")`;
 
-    return getAll(apiUrl, `${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`).pipe(
+    return getAll(apiUrl, `${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}`).pipe(
       map(results => {
         // convert dates to javascript dates, format things for the table
         results.forEach(d => {
