@@ -2,9 +2,22 @@
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{title}}</h4>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" ref="svg">
+    <defs>
+      <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
+      </marker>
+      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+      </marker>
+    </defs>
+
     <g :transform="`translate(${margin.left}, ${height + margin.top + 2})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
+    <g :transform="`translate(${margin.left},${0})`" id="county-annotation" v-if="includeAxis && data[0].admin_level == 2">
+      <text y="0" class="missing-data-label">data missing March 10-21</text>
+      <line marker-start="url(#arrow-start)" marker-end="url(#arrow)" y1="30" y2="30" class="missing-data"></line>
+    </g>
   </svg>
   <div class="tooltip p-2">
     <h6 class="country-name m-0"></h6>
@@ -53,7 +66,7 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 5,
+        top: 15,
         bottom: 30,
         left: 65,
         right: 15
@@ -99,15 +112,14 @@ export default Vue.extend({
 
       this.x = this.x
         .range([0, this.width])
-        .domain(d3.timeDay.range(range[0], d3.timeDay.offset(range[1],1)));
-
-        // console.log(d3.range(d3.extent(this.data, d => d.date)[0], d3.extent(this.data, d => d.date)[1]))
+        .domain(d3.timeDay.range(range[0], d3.timeDay.offset(range[1], 1)));
 
       const yMax = this.fixedYMax ? this.fixedYMax : d3.max(this.data, d => d[this.variable]);
 
       this.y = this.y
         .range([this.height, 0])
         .domain([0, yMax]);
+
 
       if (this.includeAxis) {
         this.xAxis = d3.axisBottom(this.x)
@@ -124,6 +136,16 @@ export default Vue.extend({
           .tickSizeOuter(0);
 
         d3.select(this.$refs.yAxis).call(this.yAxis);
+
+        // JHU data is missing between March 10-21 for counties
+        d3.selectAll("#county-annotation")
+          .selectAll("line")
+          .attr("x1", this.x(d3.timeParse("%Y-%m-%d")("2020-03-11")))
+          .attr("x2", this.x(d3.timeParse("%Y-%m-%d")("2020-03-20")));
+
+        d3.selectAll("#county-annotation")
+          .selectAll("text")
+          .attr("x", this.x(d3.timeParse("%Y-%m-%d")("2020-03-16")));
       }
     },
     drawPlot() {
@@ -144,7 +166,7 @@ export default Vue.extend({
             .attr("y", d => this.y(d[this.variable]))
             .attr("height", d => this.y(0) - this.y(d[this.variable])) :
             update.attr("y", d => this.y(d[this.variable]))
-              .attr("height", d => this.y(0) - this.y(d[this.variable]))
+            .attr("height", d => this.y(0) - this.y(d[this.variable]))
           ),
 
           update => update
@@ -157,7 +179,7 @@ export default Vue.extend({
             .attr("y", d => this.y(d[this.variable]))
             .attr("height", d => this.y(0) - this.y(d[this.variable])) :
             update.attr("y", d => this.y(d[this.variable]))
-              .attr("height", d => this.y(0) - this.y(d[this.variable]))
+            .attr("height", d => this.y(0) - this.y(d[this.variable]))
           ),
 
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
@@ -184,14 +206,19 @@ export default Vue.extend({
     },
     mouseOff() {
       d3.selectAll(".tooltip")
-        // .style("opacity", 0);
+      // .style("opacity", 0);
       //
       this.chart.selectAll("rect").style("opacity", 1);
     }
   },
   mounted() {
-    if(!this.includeAxis) {
-      this.margin = {top: 0, bottom: 0, left: 0, right: 0};
+    if (!this.includeAxis) {
+      this.margin = {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
+      };
     }
 
     this.setupPlot();
@@ -207,5 +234,17 @@ export default Vue.extend({
     z-index: 1000;
     background: #ffffff70;
     opacity: 0;
+}
+
+.missing-data {
+    stroke: $grey-70;
+    fill: none;
+    stroke-width: 0.8;
+}
+.missing-data-label {
+    fill: $grey-80;
+    font-size: 0.85em;
+    dominant-baseline: hanging;
+    text-anchor: middle;
 }
 </style>
