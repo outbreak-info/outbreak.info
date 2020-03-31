@@ -7,3 +7,6 @@ outbreak.info is a project from the [Su lab](http://sulab.org/) at Scripps Resea
 
 # Data sources
 - [Johns Hopkins University Center for Systems Science and Engineering](https://github.com/CSSEGISandData/COVID-19)
+
+# Related projects
+- [Outbreak.api](https://github.com/biothings/outbreak.api) -- repo for the back-end API
