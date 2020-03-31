@@ -1,0 +1,76 @@
+<template>
+<div class="home flex-column align-left">
+  <div v-if="loading" class="loader">
+    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+  </div>
+
+  <!-- EPI CURVE SUMMARIES -->
+  <section class="mt-5" id="regional-epi-curves">
+    <div class="row d-flex justify-content-center">
+      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key=idx class="d-flex mx-2 mb-3" :data="location" :idx="location.location_id" :deletable="false" />
+
+    </div>
+
+    <DataSource />
+  </section>
+
+  <Logos />
+</div>
+</template>
+<script>
+// @ is an alias to /src
+import GlanceSummary from "@/components/GlanceSummary.vue";
+import Logos from "@/components/Logos.vue";
+import DataSource from "@/components/DataSource.vue";
+import {
+  getGlanceSummary
+} from "@/api/epi-basics.js";
+
+import {
+  mapState
+} from "vuex";
+
+export default {
+  name: "Summary",
+  components: {
+    GlanceSummary,
+    Logos,
+    DataSource
+  },
+  props: {
+    location: String
+  },
+  data() {
+    return {
+      glanceSummaries: [],
+      glanceLocations: null,
+      dataSubscription: null
+    };
+  },
+  watch: {
+    location: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        this.glanceLocations = newValue.split(";");
+        this.getData();
+      }
+    }
+  },
+  computed: {
+    ...mapState("admin", ["loading"])
+  },
+  methods: {
+    getData() {
+      this.dataSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
+        this.glanceSummaries = d;
+      });
+    }
+  },
+  mounted() {
+    this.getData();
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+</style>

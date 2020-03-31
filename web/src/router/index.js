@@ -32,6 +32,16 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
+    path: "/summary",
+    name: "Summary",
+    props: route => ({
+      location: route.query.location
+    }),
+      meta: { hideNavigation: true },
+    component: () =>
+      import(/* webpackChunkName: "summary" */ "../views/Summary.vue")
+  },
+  {
     path: "/epidemiology",
     name: "Epidemiology",
     props: route => ({

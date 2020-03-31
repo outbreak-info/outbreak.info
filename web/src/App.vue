@@ -25,7 +25,7 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse" id="navbarNav" v-if="!$route.meta.hideNavigation">
           <ul class="navbar-nav">
             <li class="nav-item">
               <router-link
