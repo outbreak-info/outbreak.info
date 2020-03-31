@@ -1,32 +1,5 @@
 <template>
 <div class="col-sm-12 epidemiology-curves flex-column align-items-center">
-  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold">
-    <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
-      <label class="b-contain m-auto">
-        <span>show more than {{ lengthThreshold }} curves</span>
-        <input type="checkbox" v-model="showAll" @click="plotAll()" />
-        <div class="b-input"></div>
-      </label>
-    </div>
-    <div style="max-width:700px;" class="m-auto">
-      <Warning :animate="true" class="mt-2" v-if="!showAll" :text="
-            'You have selected a lot of places. Showing the top ' +
-              lengthThreshold +
-              ' with the highest current case counts'
-          "></Warning>
-    </div>
-  </div>
-  <!-- <button @click="switchAxes()">common axis</button> -->
-  <h4 class="plot-title py-5">
-    Cumulative number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeVariable">
-      <option v-for="option in variableOptions" :value="option.value" :key="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-    <span v-if="locationName">
-      in {{ locationName }}</span>
-  </h4>
-  <DataUpdated />
   <svg :width="width" :height="height" class="epi-curve" ref="svg">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -44,9 +17,7 @@
 
 <script lang="js">
 import Vue from "vue";
-import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
-import Warning from "@/components/Warning.vue";
 
 import {
   epiDataState$
@@ -73,13 +44,12 @@ const transitionDuration = 3500;
 export default Vue.extend({
   name: "EpiCurve",
   components: {
-    DataUpdated,
     DataSource,
-    Warning
   },
   props: {
+    data: Array,
     location: String,
-    routeVariable: String,
+    variable: String,
     log: Boolean
   },
   data() {
@@ -92,26 +62,13 @@ export default Vue.extend({
       backgroundColor: "#f8f9fa",
 
       // data
-      data: [],
       dataSubscription: null,
       logData: null,
       plottedData: null,
 
       // button interfaces
-      lengthThreshold: 8,
-      showAll: false,
       isLogY: false,
       // variable: "confirmed",
-      variableOptions: [{
-        label: "Cases",
-        value: "confirmed"
-      }, {
-        label: "Recoveries",
-        value: "recovered"
-      }, {
-        label: "Deaths",
-        value: "dead"
-      }],
 
       // axes
       numXTicks: 7,
@@ -132,42 +89,24 @@ export default Vue.extend({
     data: function() {
       this.updatePlot();
     },
+    variable: function() {
+      this.updatePlot();
+    },
     log: {
       immediate: true,
       handler(newVal, oldVal) {
         this.isLogY = newVal;
       },
     },
-    routeVariable: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.variable = newVal;
-      },
-    },
+    // routeVariable: {
+    //   immediate: true,
+    //   handler(newVal, oldVal) {
+    //     this.variable = newVal;
+    //   },
+    // },
     width() {
       this.updatePlot();
     }
-  },
-  computed: {
-    locationName() {
-      if (this.data && this.data.length === 1 && this.data[0].value[0]) {
-        return this.data[0].value[0].name;
-      }
-      return null;
-    },
-    dataLength() {
-      return this.data ? this.data.length : null;
-    }
-  },
-  created() {
-    // set up subscription here; listen for changes and execute in the watch.
-    // Strangely, w/o the watch, the subscription doesn't seem to update...
-    this.dataSubscription = epiDataState$.subscribe(data => {
-      this.data = data;
-    })
-  },
-  beforeDestroy() {
-    this.dataSubscription.unsubscribe();
   },
   mounted() {
     this.setupPlot();
@@ -176,24 +115,20 @@ export default Vue.extend({
   methods: {
     setPlotDims() {
       // let idealWidth = 750;
+      const padding = 0.85;
       let idealWidth = document.getElementById('curveContainer') ? document.getElementById('curveContainer').offsetWidth : 750;
 
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.
-      if (window.innerWidth < idealWidth) {
-        const newWidth = window.innerWidth - framePadding;
-        const newHeight = newWidth / whRatio;
-        // check height within limits
-        if (newHeight > window.innerHeight) {
-          this.width = window.innerHeight * whRatio;
-          this.height = window.innerHeight;
-        } else {
-          this.width = newWidth;
-          this.height = newHeight;
-        }
+      const newWidth = window.innerWidth < idealWidth ? window.innerWidth * padding - framePadding : idealWidth * padding - framePadding;
+      const newHeight = newWidth / whRatio;
+      // check height within limits
+      if (newHeight > window.innerHeight) {
+        this.width = window.innerHeight * whRatio * padding;
+        this.height = window.innerHeight * padding;
       } else {
-        this.width = idealWidth;
-        this.height = idealWidth / whRatio;
+        this.width = newWidth;
+        this.height = newHeight;
       }
 
       this.margin.right = this.width < 600 ? 115 : 205;
@@ -211,18 +146,6 @@ export default Vue.extend({
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
-      this.$router.replace({
-        path: "epidemiology",
-        query: {
-          location: this.location,
-          log: String(this.isLogY),
-          variable: this.variable
-        }
-      });
-
-      this.updatePlot();
-    },
-    changeVariable() {
       this.$router.replace({
         path: "epidemiology",
         query: {
@@ -256,36 +179,12 @@ export default Vue.extend({
 
       d3.selectAll(`.epi-region`).style("opacity", 1);
     },
-    plotAll: function() {
-      this.showAll = !this.showAll;
-      this.updatePlot();
-    },
     updatePlot: function() {
       this.prepData();
 
       if (this.data) {
-        if (this.showAll) {
-          // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
-          this.plottedData = this.isLogY ? this.logData : this.data;
-          this.$emit("addable", []);
-        } else {
-          this.plottedData = this.isLogY ?
-            this.logData
-            .slice()
-            .sort((a, b) => b.currentCases - a.currentCases)
-            .slice(0, this.lengthThreshold) :
-            this.data
-            .slice()
-            .sort((a, b) => b.currentCases - a.currentCases)
-            .slice(0, this.lengthThreshold);
-          const toAdd = this.data
-            .slice()
-            .sort((a, b) => b.currentCases - a.currentCases)
-            .slice(this.lengthThreshold)
-            .map(d => d.key);
-          this.$emit("addable", toAdd);
-        }
-
+        // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
+        this.plottedData = this.isLogY ? this.logData : this.data;
         this.updateScales();
         this.drawDots();
       }
@@ -347,11 +246,11 @@ export default Vue.extend({
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = this.isLogY ? d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d, i) => {
+      this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
         }) :
-        d3.axisLeft(this.y).ticks(this.numYTicks);
+        d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
@@ -460,37 +359,53 @@ export default Vue.extend({
       const defChangedSelector = this.chart
         .selectAll(".case-def-changed")
         .data(includesChina.length > 0 ? ["includesChina"] : []);
+      const defChangedLine = this.chart
+        .selectAll(".case-def-changed-line")
+        .data(includesChina.length > 0 ? ["includesChina"] : []);
 
 
       const defChangedEnter = defChangedSelector
         .join(
           enter => {
-            const defEnter = enter.append("g")
-              .attr("class", "annotation-group case-def-changed")
-
-            defEnter.append("text")
+            enter.append("text")
               .attr("dx", -3)
               .attr("y", 0)
               .attr("x", this.x(dateCaseDefChange))
+              .attr("class", "annotation-label case-def-changed")
               .text("Case definition changed")
 
-            defEnter.append("line")
-              .attr("class", "annotation--line case-def-changed")
+            // defEnter.append("line")
+            //   .attr("class", "annotation--line case-def-changed")
+            //   .attr("y1", 8)
+            //   .attr("x1", this.x(dateCaseDefChange))
+            //   .attr("x2", this.x(dateCaseDefChange))
+            //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
+          },
+          update => {
+            update.attr("x", this.x(dateCaseDefChange))
+
+            // update.select("line")
+            //   .attr("class", "annotation--line case-def-changed")
+            //   .attr("y1", 8)
+            //   .attr("x1", this.x(dateCaseDefChange))
+            //   .attr("x2", this.x(dateCaseDefChange))
+            //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
+          },
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+        );
+
+      defChangedLine
+        .join(
+          enter => {
+            enter.append("line")
+              .attr("class", "annotation--line case-def-changed-line")
               .attr("y1", 8)
               .attr("x1", this.x(dateCaseDefChange))
               .attr("x2", this.x(dateCaseDefChange))
               .attr("y2", this.height - this.margin.top - this.margin.bottom)
           },
           update => {
-            update.append("text")
-              .attr("dx", -3)
-              .attr("y", 0)
-              .attr("x", this.x(dateCaseDefChange))
-              .text("Case definition changed")
-
-            update.append("line")
-              .attr("class", "annotation--line case-def-changed")
-              .attr("y1", 8)
+            update
               .attr("x1", this.x(dateCaseDefChange))
               .attr("x2", this.x(dateCaseDefChange))
               .attr("y2", this.height - this.margin.top - this.margin.bottom)
@@ -525,7 +440,7 @@ export default Vue.extend({
       // Create nodes of the text labels for force direction
       this.plottedData.forEach(d => {
         d["fx"] = 0;
-        d["targetY"] = this.y(d[`${this.variable}_currentCases`]);
+        d["targetY"] = d[`${this.variable}_currentCases`] ? this.y(d[`${this.variable}_currentCases`]) : this.height;
       });
 
       // Define a custom force
@@ -545,7 +460,7 @@ export default Vue.extend({
       const force = d3
         .forceSimulation()
         .nodes(this.plottedData)
-        .force("collide", d3.forceCollide(labelHeight / 2).strength(0.2))
+        .force("collide", d3.forceCollide(labelHeight / 2).strength(0.1))
         .force("y", d3.forceY(d => d.targetY).strength(1))
         .force(
           "clamp",
@@ -576,7 +491,7 @@ export default Vue.extend({
         .attr("class", d => `annotation--region-name ${d.key}`)
         .attr("x", this.width - this.margin.left - this.margin.right)
         .attr("y", d => d.y)
-        .text(d => d.value[0].name)
+        .text(d => d.value[0] ? d.value[0].name : "")
         .style("opacity", 1e-6)
         .transition(t1)
         .delay(1000)
@@ -592,7 +507,7 @@ export default Vue.extend({
       pathSelector
         .merge(pathEnter)
         .datum(d => d.value)
-        .attr("id", d => `epi-line ${d[0].location_id}`)
+        .attr("id", d => d[0] ? `epi-line ${d[0].location_id}` : "epi-line-blank")
         .attr("d", this.line)
         .attr("stroke-dasharray", function() {
           var totalLength = this.getTotalLength();
@@ -859,7 +774,7 @@ export default Vue.extend({
     fill-opacity: 0.25;
 }
 
-.epidemiology-curves line.case-def-changed {
+.epidemiology-curves line.case-def-changed-line {
     stroke: $grey-60;
     stroke-width: 0.75;
     shape-rendering: crispedges;
