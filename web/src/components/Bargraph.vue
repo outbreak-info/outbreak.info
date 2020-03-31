@@ -314,7 +314,8 @@ export default Vue.extend({
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable
+          variable: this.variable,
+          fixedY: String(!!this.fixedYMax)
         }
       });
 

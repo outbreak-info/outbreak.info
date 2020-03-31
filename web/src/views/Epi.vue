@@ -29,7 +29,7 @@
   <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;" v-if="variable.includes('numIncrease') && dataLength > 1">
     <label class="b-contain m-auto">
       <span>constant y-axis limits</span>
-      <input type="checkbox" v-model="fixedY" />
+      <input type="checkbox" v-model="isFixedY" />
       <div class="b-input"></div>
     </label>
   </div>
@@ -106,6 +106,10 @@ export default {
       type: String,
       default: "false"
     },
+    fixedY: {
+      type: String,
+      default: "false"
+    },
     location: String
   },
   data() {
@@ -117,7 +121,7 @@ export default {
       showCurves: true,
       lengthThreshold: 8,
       showAll: false,
-      fixedY: false,
+      isFixedY: false,
       bargraphWidth: 300,
       bargraphHeight: 400,
       yMax: null,
@@ -178,7 +182,8 @@ export default {
           query: {
             location: newLocation,
             log: String(this.isLogY),
-            variable: this.variable
+            variable: this.variable,
+            fixedY: String(this.isFixedY)
           }
         });
       }
@@ -188,11 +193,16 @@ export default {
       this.setLocation(newLocation);
     },
     fixedY: function(newValue, oldValue) {
-      if (newValue) {
+      if (newValue === "true") {
         this.yMax = max(this.plottedData.flatMap(d => d.value), d => d[this.variable]);
+        this.isFixedY = true;
       } else {
         this.yMax = null;
+        this.isFixedY = false;
       }
+    },
+    isFixedY: function(newValue, oldValue) {
+      this.changeVariable();
     },
     showAll: function(newValue, oldValue) {
       if (newValue) {
@@ -211,6 +221,8 @@ export default {
         this.dataSubscription = getEpiData(this.$apiurl, locations, null, "-confirmed_currentCases", 10, 0).subscribe(d => {
           this.data$ = d;
           this.plottedData = this.data$[0].length > this.lengthThreshold ? this.hideExtra() : this.data$[0];
+          this.isFixedY = this.fixedY == "true";
+          this.yMax = this.isFixedY ? max(this.plottedData.flatMap(d => d.value), d => d[this.variable]) : null;
         });
         // need to call subscription in order to trigger calling API function and passing subscription to child
       } else {
@@ -223,13 +235,14 @@ export default {
       epiTableSubject.next([]);
     },
     changeVariable() {
-      this.yMax = this.fixedY ? max(this.plottedData.flatMap(d => d.value), d => d[this.variable]) : null;
+      this.yMax = this.isFixedY ? max(this.plottedData.flatMap(d => d.value), d => d[this.variable]) : null;
       this.$router.replace({
         path: "epidemiology",
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable
+          variable: this.variable,
+          fixedY: String(this.isFixedY)
         }
       });
     },

@@ -35,9 +35,10 @@ const routes = [
     path: "/epidemiology",
     name: "Epidemiology",
     props: route => ({
-      log: route.query.log,
+      location: route.query.location,
       variable: route.query.variable,
-      location: route.query.location
+      log: route.query.log,
+      fixedY: route.query.fixedY
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
