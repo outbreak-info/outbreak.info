@@ -291,6 +291,9 @@ export default {
       return selectedData;
     }
   },
+  destroyed() {
+    window.removeEventListener("resize", this.setDims);
+  },
   mounted() {
     this.setLocation(this.location);
     this.$nextTick(function() {

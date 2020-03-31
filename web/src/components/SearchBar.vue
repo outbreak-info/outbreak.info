@@ -76,7 +76,7 @@ export default Vue.extend({
     }
   },
   mounted() {
-    document.addEventListener("click", this.handleClickOutside);
+    document.addEventListener("click", this.handleClickOutside, {passive: true});
   },
   destroyed() {
     document.removeEventListener("click", this.handleClickOutside);

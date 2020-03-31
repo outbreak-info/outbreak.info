@@ -130,14 +130,18 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.$nextTick(function() {
-      window.addEventListener("click", this.clickClose);
+      window.addEventListener("click", this.clickClose), {passive: true};
 
       document.addEventListener("keyup", evt => {
         if (evt.keyCode === 27) {
           this.closeWindow();
         }
-      });
+      }, {passive: true});
     });
+  },
+  destroyed() {
+    window.removeEventListener("click", this.clickClose);
+    document.removeEventListener("keyup", this.closeWindow);
   },
   methods: {
     colorScale: function(idx) {
