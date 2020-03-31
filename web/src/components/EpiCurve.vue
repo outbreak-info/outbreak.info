@@ -120,20 +120,15 @@ export default Vue.extend({
 
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.
-      if (window.innerWidth < idealWidth) {
-        const newWidth = window.innerWidth * padding - framePadding;
-        const newHeight = newWidth / whRatio;
-        // check height within limits
-        if (newHeight > window.innerHeight) {
-          this.width = window.innerHeight * whRatio * padding;
-          this.height = window.innerHeight * padding;
-        } else {
-          this.width = newWidth;
-          this.height = newHeight;
-        }
+      const newWidth = window.innerWidth < idealWidth ? window.innerWidth * padding - framePadding : idealWidth * padding - framePadding;
+      const newHeight = newWidth / whRatio;
+      // check height within limits
+      if (newHeight > window.innerHeight) {
+        this.width = window.innerHeight * whRatio * padding;
+        this.height = window.innerHeight * padding;
       } else {
-        this.width = idealWidth * padding;
-        this.height = idealWidth / whRatio;
+        this.width = newWidth;
+        this.height = newHeight;
       }
 
       this.margin.right = this.width < 600 ? 115 : 205;
