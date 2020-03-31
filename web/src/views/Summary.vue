@@ -62,8 +62,14 @@ export default {
   methods: {
     getData() {
       this.dataSubscription = getGlanceSummary(this.$apiurl, this.glanceLocations).subscribe(d => {
-        this.glanceSummaries = d;
+        this.glanceSummaries = this.sortSummaries(d);
       });
+    },
+    sortSummaries(data) {
+      if(this.glanceLocations && this.glanceLocations.length > 0) {
+        data.sort((a,b) => this.glanceLocations.indexOf(a.location_id) - this.glanceLocations.indexOf(b.location_id))
+      }
+        return(data);
     }
   },
   mounted() {
