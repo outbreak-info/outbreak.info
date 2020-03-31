@@ -6,7 +6,7 @@
       <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
       </marker>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
       </marker>
     </defs>
@@ -17,6 +17,11 @@
     <g :transform="`translate(${margin.left},${0})`" id="county-annotation" v-if="includeAxis && data[0].admin_level == 2">
       <text y="0" class="missing-data-label">data missing March 10-21</text>
       <line marker-start="url(#arrow-start)" marker-end="url(#arrow)" y1="30" y2="30" class="missing-data"></line>
+    </g>
+    <g class="switch-button-group" transform="translate(5,0)">
+      <rect class="switch-button-rect"></rect>
+      <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
+      <text class="switch-button" x="5"></text>
     </g>
   </svg>
   <div class="tooltip p-2">
@@ -31,6 +36,9 @@
 import Vue from "vue";
 
 import * as d3 from "d3";
+import {
+  cloneDeep
+} from "lodash";
 
 export default Vue.extend({
   name: "Bargraph",
@@ -42,6 +50,8 @@ export default Vue.extend({
     id: String,
     color: String,
     title: String,
+    log: Boolean,
+    location: String,
     includeAxis: {
       type: Boolean,
       default: false
@@ -67,14 +77,16 @@ export default Vue.extend({
     return {
       margin: {
         top: 15,
-        bottom: 30,
+        bottom: 60,
         left: 65,
         right: 15
       },
       // axes
-      y: d3.scaleLinear(),
+      y: null,
       x: d3.scaleBand().paddingInner(0.1),
       numYTicks: 6,
+      isLogY: false,
+      yMin: 0,
       // refs
       chart: null
     };
@@ -89,6 +101,13 @@ export default Vue.extend({
     fixedYMax: function() {
       this.updatePlot()
     },
+    log: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.isLogY = newVal;
+        this.updatePlot();
+      },
+    },
     width: function() {
       this.updatePlot()
     },
@@ -101,25 +120,103 @@ export default Vue.extend({
       this.svg = d3.select(`#bargraph-${this.id}-${this.variable}`).select("svg.epi-bargraph");
       this.chart = this.svg.select("#case-counts");
     },
+    prepData: function() {
+      if (this.data && this.includeAxis) {
+        this.logData = cloneDeep(this.data).filter(d => d[this.variable]);
+        this.logData.forEach(d => {
+          d['confirmed_log'] = Math.log10(d.confirmed_numIncrease)
+        })
+        console.log(this.data)
+        console.log(this.logData)
+
+        this.plottedData = this.isLogY ? this.logData : this.data;
+      } else {
+        this.plottedData = this.data;
+      }
+      console.log(this.plottedData)
+    },
     updatePlot() {
-      if (this.data && this.data[0] && this.width && this.height) {
+      this.prepData();
+
+      if (this.plottedData && this.plottedData[0] && this.width && this.height) {
         this.updateScales();
         this.drawPlot();
       }
     },
     updateScales() {
-      const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.data, d => d.date);
+      const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.plottedData, d => d.date);
 
       this.x = this.x
         .range([0, this.width])
         .domain(d3.timeDay.range(range[0], d3.timeDay.offset(range[1], 1)));
 
-      const yMax = this.fixedYMax ? this.fixedYMax : d3.max(this.data, d => d[this.variable]);
+      const yMax = this.fixedYMax ? this.fixedYMax : d3.max(this.plottedData, d => d[this.variable]);
 
-      this.y = this.y
-        .range([this.height, 0])
-        .domain([0, yMax]);
+      if (this.isLogY) {
+        this.yMin = 1;
 
+        this.y = d3
+          .scaleLog()
+          .range([this.height, 0])
+          .domain([this.yMin, yMax]);
+
+      } else {
+        this.yMin = 0;
+
+        this.y = d3.scaleLinear()
+          .range([this.height, 0])
+          .domain([this.yMin, yMax]);
+      }
+
+      // --- update y-scale switch button --
+      const dySwitch = 30;
+      const xSwoop = 15;
+      const ySwoop = -35;
+      const swoopOffset = 5;
+
+      this.switchBtn = this.svg.selectAll(".switch-button-group");
+
+      this.switchBtn.select(".switch-button-rect")
+        .attr("y", this.height + this.margin.top + dySwitch);
+
+      this.switchBtn.select("path")
+        .attr(
+          "d",
+          `M ${xSwoop} ${this.height + this.margin.top + this.margin.bottom + ySwoop}
+            C ${xSwoop } ${this.height + this.margin.top + this.margin.bottom + ySwoop - 10},
+            ${this.margin.left + ySwoop - 10} ${this.height + this.margin.top + 5},
+            ${this.margin.left + ySwoop + 5} ${this.height + this.margin.top }`
+        );
+
+      this.switchBtn.select("text")
+        .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
+        .attr("y", this.height + this.margin.top + dySwitch + 20)
+        .on("mouseover", () =>
+          this.switchBtn.select("rect").classed("switch-button-hover", true)
+        )
+        .on("mouseout", () =>
+          this.switchBtn.select("rect").classed("switch-button-hover", false)
+        )
+        .on("click", () => this.changeScale());
+
+      if (this.switchBtn.select("text").node()) {
+        this.switchBtn
+          .select("rect")
+          .attr(
+            "width",
+            this.switchBtn
+            .select("text")
+            .node()
+            .getBBox().width + 10
+          )
+          .attr(
+            "height",
+            this.switchBtn
+            .select("text")
+            .node()
+            .getBBox().height + 5
+          );
+      }
 
       if (this.includeAxis) {
         this.xAxis = d3.axisBottom(this.x)
@@ -131,9 +228,11 @@ export default Vue.extend({
 
         d3.select(this.$refs.xAxis).call(this.xAxis);
 
-        this.yAxis = d3.axisLeft(this.y)
-          .ticks(this.numYTicks)
-          .tickSizeOuter(0);
+        this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
+            const log = Math.log10(d);
+            return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+          }) :
+          d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
 
         d3.select(this.$refs.yAxis).call(this.yAxis);
 
@@ -150,7 +249,7 @@ export default Vue.extend({
     },
     drawPlot() {
       const t1 = d3.transition().duration(500);
-      const barSelector = this.chart.selectAll(".bargraph").data(this.data);
+      const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
 
       barSelector
         .join(
@@ -159,14 +258,14 @@ export default Vue.extend({
           .attr("id", d => d._id)
           .attr("x", d => this.x(d.date))
           .attr("width", this.x.bandwidth())
-          .attr("y", d => this.y(0))
+          .attr("y", d => this.y(this.yMin))
           .attr("height", 0)
           .attr("fill", this.color)
           .call(update => this.animate ? update.transition(t1).delay((d, i) => i * 20)
             .attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(0) - this.y(d[this.variable])) :
+            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
             update.attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(0) - this.y(d[this.variable]))
+            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
           ),
 
           update => update
@@ -177,9 +276,9 @@ export default Vue.extend({
 
           .call(update => this.animate ? update.transition(t1)
             .attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(0) - this.y(d[this.variable])) :
+            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
             update.attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(0) - this.y(d[this.variable]))
+            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
           ),
 
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
@@ -209,6 +308,19 @@ export default Vue.extend({
       // .style("opacity", 0);
       //
       this.chart.selectAll("rect").style("opacity", 1);
+    },
+    changeScale: function() {
+      this.isLogY = !this.isLogY;
+      this.$router.push({
+        path: "epidemiology",
+        query: {
+          location: this.location,
+          log: String(this.isLogY),
+          variable: this.variable
+        }
+      });
+
+      this.updatePlot();
     }
   },
   mounted() {

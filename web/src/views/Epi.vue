@@ -52,7 +52,7 @@
     <!-- bar graph -->
     <div v-if="data$ && data$[0] && this.variable.includes('numIncrease')" class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
       <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
-        :fixedXLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+        :location="location" :log="isLogY" :fixedXLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
     </div>
 
     <!-- curve -->
