@@ -30,7 +30,7 @@ import {
 export function getDoubling(apiUrl, location_id, variable = "confirmed", fitLength = 5) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = new Date().getTime()
+  const timestamp = Math.round(new Date().getTime()/1e5)
 
   return from(axios.get(`${apiUrl}query?q=location_id:"${location_id}"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
@@ -123,7 +123,7 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
 
 export function getAllDoubling(apiUrl, variable, fitLength = 5) {
   store.state.admin.loading = true;
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
   const parseDate = timeParse("%Y-%m-%d");
   const url = `${apiUrl}query?q=-date:"2020-03-23"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`;
 

@@ -77,7 +77,7 @@ export function getLocations(apiUrl) {
 
 export function getMostCases(apiUrl, num2Return = 5) {
   store.state.admin.loading = true;
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
 
   return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:0&fields=location_id,name&sort=-confirmed_currentCases&size=${num2Return}&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
@@ -113,7 +113,7 @@ export function getSummary(apiUrl, caseThreshold) {
 }
 
 export function getTotals(apiUrl) {
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
 
   return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:"-1"&fields=confirmed_currentCases,dead_currentCases&sort=-confirmed_currentCases&size=100&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
@@ -130,7 +130,7 @@ export function getTotals(apiUrl) {
 }
 
 export function countCountries(apiUrl) {
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
 
   return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:0&size=0&facet_size=300&facets=name&timestamp=${timestamp}`)).pipe(
     pluck("data", "facets", "name", "terms"),
@@ -146,7 +146,7 @@ export function countCountries(apiUrl) {
 }
 
 export function getFirstCases(apiUrl) {
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
 
   return from(axios.get(`${apiUrl}query?q=date:"2020-03-24"%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
@@ -168,7 +168,7 @@ export function getFirstCases(apiUrl) {
 }
 
 export function getCasesAboveThresh(apiUrl, threshold) {
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
 
   return from(axios.get(`${apiUrl}query?q=date:"2020-03-24"%20AND%20admin_level:0%20AND%20confirmed_currentIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
@@ -193,7 +193,7 @@ export function getGlanceSummary(apiUrl, locations) {
   store.state.admin.loading = true;
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
   const location_string = locations && locations.length ? ` AND location_id:("${locations.join('","')}")` : `AND admin_level:[0 TO *]&sort=-confirmed_currentIncrease`;
   const num2Return = locations && locations.length ? locations.length : 3;
 
