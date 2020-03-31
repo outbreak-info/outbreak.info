@@ -18,7 +18,7 @@
       <text y="0" class="missing-data-label">data missing March 10-21</text>
       <line marker-start="url(#arrow-start)" marker-end="url(#arrow)" y1="30" y2="30" class="missing-data"></line>
     </g>
-    <g class="switch-button-group" transform="translate(5,0)" ref="switch_btn">
+    <g class="switch-button-group" transform="translate(0,0)" ref="switch_btn" v-if="includeAxis">
       <rect class="switch-button-rect"></rect>
       <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
       <text class="switch-button" x="5"></text>
