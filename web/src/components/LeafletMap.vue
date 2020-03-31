@@ -325,6 +325,9 @@ export default Vue.extend({
       return format(".0%")(pct);
     }
   },
+  destroyed() {
+    window.removeEventListener("resize", this.setWidth);
+  },
   mounted() {
     this.setWidth();
 

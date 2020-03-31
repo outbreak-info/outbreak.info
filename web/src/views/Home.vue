@@ -262,6 +262,7 @@ export default {
   destroyed() {
     this.dataSubscription.unsubscribe();
     this.tableSubscription.unsubscribe();
+    window.removeEventListener("resize", this.setDims);
   }
 };
 </script>

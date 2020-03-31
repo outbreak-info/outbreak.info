@@ -27,7 +27,7 @@ export function getStackedRegions(apiUrl) {
   const parseDate = timeParse("%Y-%m-%d");
 
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
 
   return from(axios.get(`${apiUrl}query?q=admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`, {
     headers: {
@@ -103,7 +103,7 @@ export function getCountryData(apiUrl, region, variable) {
   const parseDate = timeParse("%Y-%m-%d");
 
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
 
   return forkJoin([
     from(axios.get(`${apiUrl}query?q=admin_level:0 AND date:"2020-03-24" AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,name,${variable}_currentCases,${variable}_currentIncrease&timestamp=${timestamp}`)),

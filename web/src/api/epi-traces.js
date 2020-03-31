@@ -134,7 +134,7 @@ export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
 export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = new Date().getTime();
+  const timestamp = Math.round(new Date().getTime()/1e5);
   var queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-03-24"` : 'date:"2020-03-24"';
 
   if(adminLevels && adminLevels.length > 0) {
@@ -185,10 +185,9 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
   if (locations) {
     const parseDate = timeParse("%Y-%m-%d");
     // trigger no-cache behavior by adding timestamp to request
-    const timestamp = new Date().getTime();
     const queryString = `location_id:("${locations.join('","')}")`;
 
-    return getAll(apiUrl, `${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}&timestamp=${timestamp}`).pipe(
+    return getAll(apiUrl, `${queryString}&sort=date&size=1000&fields=date,location_id,${variableString}`).pipe(
       map(results => {
         // convert dates to javascript dates, format things for the table
         results.forEach(d => {

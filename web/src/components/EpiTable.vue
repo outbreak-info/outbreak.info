@@ -118,12 +118,12 @@
   </div>
   <br />
   <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
-    <button class="pagination-btn pagination-left" :class="{ disabled: page === 0 }" @click="changePage(-1)">
+    <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: page === 0 }" @click="changePage(-1)">
       <font-awesome-icon :icon="['fas', 'arrow-left']" />
     </button>
     <small>viewing locations {{ lowerLim + 1 }} &minus; {{ upperLim }} of
       {{ total }}</small>
-    <button class="pagination-btn pagination-left" :class="{ disabled: page === lastPage }" @click="changePage(1)">
+    <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: page === lastPage }" @click="changePage(1)">
       <font-awesome-icon :icon="['fas', 'arrow-right']" />
     </button>
   </div>

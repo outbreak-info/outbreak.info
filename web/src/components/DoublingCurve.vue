@@ -128,6 +128,9 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
+  destroyed() {
+    window.removeEventListener("resize", this.setPlotDims);
+  },
   methods: {
     setPlotDims() {
       const idealWidth = 750;
