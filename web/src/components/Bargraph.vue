@@ -18,7 +18,7 @@
       <text y="0" class="missing-data-label">data missing March 10-21</text>
       <line marker-start="url(#arrow-start)" marker-end="url(#arrow)" y1="30" y2="30" class="missing-data"></line>
     </g>
-    <g class="switch-button-group" transform="translate(5,0)">
+    <g class="switch-button-group" transform="translate(5,0)" ref="switch_btn">
       <rect class="switch-button-rect"></rect>
       <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
       <text class="switch-button" x="5"></text>
@@ -126,14 +126,10 @@ export default Vue.extend({
         this.logData.forEach(d => {
           d['confirmed_log'] = Math.log10(d.confirmed_numIncrease)
         })
-        console.log(this.data)
-        console.log(this.logData)
-
         this.plottedData = this.isLogY ? this.logData : this.data;
       } else {
         this.plottedData = this.data;
       }
-      console.log(this.plottedData)
     },
     updatePlot() {
       this.prepData();
@@ -174,7 +170,7 @@ export default Vue.extend({
       const ySwoop = -35;
       const swoopOffset = 5;
 
-      this.switchBtn = this.svg.selectAll(".switch-button-group");
+      this.switchBtn = d3.select(this.$refs.switch_btn);
 
       this.switchBtn.select(".switch-button-rect")
         .attr("y", this.height + this.margin.top + dySwitch);
@@ -248,46 +244,48 @@ export default Vue.extend({
       }
     },
     drawPlot() {
-      const t1 = d3.transition().duration(500);
-      const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
+      if (this.chart) {
+        const t1 = d3.transition().duration(500);
+        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
 
-      barSelector
-        .join(
-          enter => enter.append("rect")
-          .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
-          .attr("id", d => d._id)
-          .attr("x", d => this.x(d.date))
-          .attr("width", this.x.bandwidth())
-          .attr("y", d => this.y(this.yMin))
-          .attr("height", 0)
-          .attr("fill", this.color)
-          .call(update => this.animate ? update.transition(t1).delay((d, i) => i * 20)
-            .attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
-            update.attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
-          ),
+        barSelector
+          .join(
+            enter => enter.append("rect")
+            .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
+            .attr("id", d => d._id)
+            .attr("x", d => this.x(d.date))
+            .attr("width", this.x.bandwidth())
+            .attr("y", d => this.y(this.yMin))
+            .attr("height", 0)
+            .attr("fill", this.color)
+            .call(update => this.animate ? update.transition(t1).delay((d, i) => i * 20)
+              .attr("y", d => this.y(d[this.variable]))
+              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
+              update.attr("y", d => this.y(d[this.variable]))
+              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
+            ),
 
-          update => update
-          .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
-          .attr("id", d => d._id)
-          .attr("x", d => this.x(d.date))
-          .attr("width", this.x.bandwidth())
+            update => update
+            .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
+            .attr("id", d => d._id)
+            .attr("x", d => this.x(d.date))
+            .attr("width", this.x.bandwidth())
 
-          .call(update => this.animate ? update.transition(t1)
-            .attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
-            update.attr("y", d => this.y(d[this.variable]))
-            .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
-          ),
+            .call(update => this.animate ? update.transition(t1)
+              .attr("y", d => this.y(d[this.variable]))
+              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
+              update.attr("y", d => this.y(d[this.variable]))
+              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
+            ),
 
-          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-        )
+            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+          )
 
-      if (this.includeTooltips) {
-        this.chart.selectAll("rect")
-          .on("mouseenter", d => this.mouseOn(d))
-          .on("mouseleave", this.mouseOff);
+        if (this.includeTooltips) {
+          this.chart.selectAll("rect")
+            .on("mouseenter", d => this.mouseOn(d))
+            .on("mouseleave", this.mouseOff);
+        }
       }
     },
     mouseOn(d) {
