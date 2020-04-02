@@ -39,7 +39,11 @@
 
       </div>
       <div class="col-sm-12 col-md-5">
-        <h5 class="border-section">What's new</h5>
+        <div class="border-section d-flex justify-content-between align-items-center mb-2">
+          <h5>What's new</h5>
+          <router-link :to="{ name: 'Contributing' }">subscribe to updates</router-link>
+        </div>
+
         <table id='whats-new'>
           <tbody>
             <div v-for="(item, idx) in data" :key="idx">
@@ -61,7 +65,7 @@
             </div>
           </tbody>
         </table>
-        <router-link :to="{ name: 'Contributing' }">subscribe to updates</router-link>
+
       </div>
     </div>
   </section>
@@ -80,10 +84,39 @@
 
   <section class="d-flex justify-content-end py-2">
     <div class="row w-100">
-      <div class="col-sm-3 filters">
+      <div class="col-sm-2 mr-5 filters">
         filters
+        <div>- resource type</div>
+        <div>- date range</div>
+        <div>- category</div>
+        <div>- affiliation</div>
+        <div>- funder</div>
       </div>
       <div class="col-sm-9" id="results">
+        <div class="row w-100 d-flex justify-content-between" id="selectors">
+          <div class="d-flex align-items-center">
+            <h5 class="m-0 mr-4">
+              You searched for COVID-19
+            </h5>
+            <p class="m-0">
+              3 results
+            </p>
+          </div>
+
+           <select><option>
+             date: newest to oldest
+           </option>
+           <option>
+             date: oldest to newest
+           </option>
+           <option>
+             A-Z
+           </option>
+           <option>
+             Z-A
+           </option>
+         </select>
+        </div>
 
       </div>
     </div>
@@ -196,6 +229,10 @@ export default {
     width: 150px;
 }
 
+#whats-new {
+  border-bottom: 1px solid $base-grey;
+}
+
 #whats-new td {
     padding-left: 5px;
     padding-right: 5px;
@@ -221,11 +258,11 @@ export default {
     fill: #126B93;
 }
 .Dataset.dark {
-    fill: #11537A;
+    fill: darken(#11537A, 10%);
 }
 
 .Dataset.light {
-    fill: lighten(#507192, 10%);
+    fill: lighten(#507192, 15%);
 }
 
 .filters {
