@@ -2,7 +2,7 @@
 <div class="source my-3">
   <small>Source:
     <span v-for="(source, idx) in sources" :key="idx">
-      <a :href="source.dataSourceUrl" target="_blank" rel="noreferrer">{{ source.dataSourceName}} {{source.scope}}</a>
+      <a :href="source.url" target="_blank" rel="noreferrer">{{ source.name}} {{source.scope}}</a>
       <span v-if="idx < sources.length-1">; </span>
     </span>, updated every day</small>
 </div>
@@ -11,25 +11,18 @@
 <script lang="ts">
 import Vue from "vue";
 
+import {
+  mapState
+} from "vuex";
+
 export default Vue.extend({
   name: "DataSource",
   props: {},
+  computed: {
+    ...mapState("admin", ["sources"]),
+  },
   data() {
-    return {
-      sources: [{
-          id: "JHU",
-          dataSourceName: "Johns Hopkins University Center for Systems Science and Engineering",
-          scope: "(non-U.S. data)",
-          dataSourceUrl: "https://github.com/CSSEGISandData/COVID-19"
-        },
-        {
-          id: "NYT",
-          dataSourceName: "The New York Times",
-          scope: "(U.S. data)",
-          dataSourceUrl: "https://github.com/nytimes/covid-19-data"
-        }
-      ]
-    };
+    return {};
   },
   watch: {},
   methods: {}
