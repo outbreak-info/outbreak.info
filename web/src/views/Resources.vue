@@ -46,23 +46,21 @@
 
         <table id='whats-new'>
           <tbody>
-            <div v-for="(item, idx) in data" :key="idx">
-              <tr class="new-item" v-if="idx < new2Display">
-                <td class="resource-type d-flex align-items-center" :class="item.type">
-                  <svg width="8" height="25" class="mr-1">
-                    <rect width="8" height="25" x="0" y="0" :class="[item.type, 'light']"></rect>
-                    <polygon points="8,6 8,12 0,20 0,12" :class="item.type"></polygon>
-                    <polygon points="0,0 8,0 8,6 0,12" :class="[item.type, 'dark']"></polygon>
-                  </svg>
-                  {{item.type}}
-                </td>
-                <td class="resource-name text-left" valign="top">{{item.name}}</td>
-                <td class="resource-affiliation text-left" valign="top">{{item.author[0].name}}</td>
-                <td class="resource-date" valign="top">{{format(item.dateModified)}}</td>
+            <tr v-for="(item, idx) in newData" :key="idx" class="new-item">
+              <td class="resource-type d-flex align-items-center" :class="item.type">
+                <svg width="8" height="25" class="mr-1">
+                  <rect width="8" height="25" x="0" y="0" :class="[item.type, 'light']"></rect>
+                  <polygon points="8,6 8,12 0,20 0,12" :class="item.type"></polygon>
+                  <polygon points="0,0 8,0 8,6 0,12" :class="[item.type, 'dark']"></polygon>
+                </svg>
+                {{item.type}}
+              </td>
+              <td class="resource-name text-left" valign="top">{{item.name}}</td>
+              <td class="resource-affiliation text-left" valign="top">{{item.author[0].name}}</td>
+              <td class="resource-date" valign="top">{{format(item.dateModified)}}</td>
 
-              </tr>
+            </tr>
 
-            </div>
           </tbody>
         </table>
 
@@ -88,35 +86,86 @@
         filters
         <div>- resource type</div>
         <div>- date range</div>
-        <div>- category</div>
+        <div>- biological category / classification</div>
         <div>- affiliation</div>
         <div>- funder</div>
       </div>
       <div class="col-sm-9" id="results">
         <div class="row w-100 d-flex justify-content-between" id="selectors">
           <div class="d-flex align-items-center">
-            <h5 class="m-0 mr-4">
+            <h4 class="m-0 mr-4">
               You searched for COVID-19
-            </h5>
+            </h4>
             <p class="m-0">
               3 results
             </p>
           </div>
 
-           <select><option>
-             date: newest to oldest
-           </option>
-           <option>
-             date: oldest to newest
-           </option>
-           <option>
-             A-Z
-           </option>
-           <option>
-             Z-A
-           </option>
-         </select>
+          <select>
+            <option>
+              date: newest to oldest
+            </option>
+            <option>
+              date: oldest to newest
+            </option>
+            <option>
+              A-Z
+            </option>
+            <option>
+              Z-A
+            </option>
+          </select>
         </div>
+        <div id="results-container" class="my-3">
+          <div class="row w-100 d-flex flex-column text-left py-4 search-result" v-for="(item, idx) in data" :key="idx">
+
+            <div class="d-flex w-100">
+              <svg width="6" height="25" class="resource-type mr-1">
+                <rect width="6" height="25" x="0" y="0" :class="[item.type, 'light']"></rect>
+                <polygon points="6,6 6,12 0,20 0,12" :class="item.type"></polygon>
+                <polygon points="0,0 6,0 6,6 0,12" :class="[item.type, 'dark']"></polygon>
+              </svg>
+              <span :class="[item.type, 'resource-type', 'mr-2']">{{item.type}}</span>
+              <a target="_blank" rel="noreferrer" :href="item.url">
+                <h5>{{item.name}}</h5>
+              </a>
+            </div>
+
+            <div class="row">
+              <!-- LEFT -->
+              <div class="col-sm-5 text-muted">
+                <div class="attribution text-body">
+                  <h6>{{item.author[0].name}}</h6>
+                </div>
+                <div class="dates">
+                  updated {{item.dateModified}} • created {{item.dateCreated}}
+                </div>
+                <router-link to="search" v-if="item.type=='Dataset'">
+                  find analyses/publications that use this data
+                </router-link>
+                <div v-if="item.isBasedOn" class="px-1 bg-grey__lightest">
+                  based on:
+                  <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
+                    {{resource.type}}
+                  </router-link>
+                </div>
+                <router-link to="search" v-if="item.relatedTo">
+                  related resources
+                </router-link>
+                <div class="keyword-container mt-2">
+                  <small class="keyword px-2 py-1 mt-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx"> {{keyword}}</small>
+                </div>
+              </div>
+
+              <!-- RIGHT     -->
+              <div class="col-sm-7 text-muted">
+                {{item.description}}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
 
       </div>
     </div>
@@ -141,6 +190,11 @@ export default {
   mounted() {
     this.data.sort((a, b) => a.date > b.date ? 1 : -1);
   },
+  computed: {
+    newData() {
+      return (this.data.slice(0, this.new2Display));
+    }
+  },
   data() {
     return {
       resourceTypes: ["What's New", "Datasets", "Publications", "Analyses", "Protocols"],
@@ -160,10 +214,10 @@ export default {
           dateCreated: "2020-01-24",
           dateModified: "2020-03-29",
           lastReviewed: "2020-04-01",
-          relatedTo: ["http://virological.org/t/initial-assessment-of-the-ability-of-published-coronavirus-primers-sets-to-detect-the-wuhan-coronavirus/321Source 70"],
+          relatedTo: ["http://virological.org/t/initial-assessment-of-the-ability-of-published-coronavirus-primers-sets-to-detect-the-wuhan-coronavirus/321Source"],
           analysisTechnique: "Whole Genome Sequencing",
           variableMeasured: "", // something similiar?
-          keywords: [],
+          keywords: ["Whole Genome Sequencing", "Assay Design"],
           infectiousAgent: "SARS-CoV-2",
           description: "BioLaboro is an application for rapidly designing de novo assays and validating existing PCR detection assays. It is a user-friendly new assay discovery pipeline composed of three tools: BioVelocity®, Primer3, and PSET. BioVelocity® uses a rapid, accurate hashing algorithm to align sequencing reads to a large set of references (e.g. Genbank) (Sozhamannan et al., 2015). BioVelocity® creates a k-mer index to determine all possible matches between query sequences and references simultaneously using a large RAM system (i.e. an IBM Power8). This algorithm makes it possible to very quickly identify sequences conserved within or omitted from a set of target references. Primer3 (http://primer3.sourceforge.net/ 29) is a tool for designing primers and probes for real-time PCR reactions. It considers a range of criteria such as oligonucleotide melting temperature, size, GC content, and primer-dimer possibilities. We use Primer3 along with our signature detection process to identify potential new primer sets. PSET (PCR Signature Erosion Tool) tests PCR assays in silico against the latest versions of public sequence repositories, or other reference datasets, to determine if primers and probes match only to their intended targets. Using this information, an assay provider can be better aware of potential false hits and be better prepared to design new primers when false hits become intractable.",
         },
@@ -184,15 +238,19 @@ export default {
           lastReviewed: "2020-04-01",
           analysisTechnique: "Whole Genome Sequencing",
           isPartOf: "http://www.healthdata.org/research-article/forecasting-covid-19-impact-hospital-bed-days-icu-days-ventilator-days-and-deaths",
+          isBasedOn: [{type: "Dataset", url:""}],
           variableMeasured: "", // something similiar?
-          keywords: [],
+          keywords: ["epidemiology", "outbreak size model"],
           infectiousAgent: "SARS-CoV-2",
           description: "The charts below show projected hospital resource use based on COVID-19 deaths. The model assumes continued social distancing until the end of May 2020. In locations without social distancing measures currently in place, we have assumed they will be in place within seven days of the last model update. If not, the number of deaths and burden on their hospital systems will likely be higher than the model predicts.",
         },
 
         {
           type: "Dataset",
+          url: "https://github.com/CSSEGISandData/COVID-19",
+          description: "This is the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).",
           name: "Novel Coronavirus (COVID-19) Cases",
+          keywords: ["epidemiology"],
           author: [{
             name: "Johns Hopkins University"
           }],
@@ -218,7 +276,6 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     opacity: 0.7;
-    width: 90px;
 }
 
 .resource-date {
@@ -230,7 +287,7 @@ export default {
 }
 
 #whats-new {
-  border-bottom: 1px solid $base-grey;
+    border-bottom: 1px solid $base-grey;
 }
 
 #whats-new td {
@@ -267,5 +324,14 @@ export default {
 
 .filters {
     background: lighten(yellow, 35%);
+}
+
+.search-result {
+    border-bottom: 3px solid $grey-40;
+}
+
+.keyword {
+  background: lighten($warning-color, 35%);
+  border-radius: 5px;
 }
 </style>
