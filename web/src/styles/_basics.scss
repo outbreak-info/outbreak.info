@@ -390,6 +390,13 @@ p.focustext{
   }
 }
 
+.border-section {
+  border-top: 1px solid $base-grey;
+  border-bottom: 1px solid $base-grey;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
 .scale-in-center {
 	-webkit-animation: scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 	        animation: scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;

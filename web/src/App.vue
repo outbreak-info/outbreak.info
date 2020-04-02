@@ -2,7 +2,7 @@
   <div id="app">
     <header id="outbreak-header">
       <nav
-        class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero"
+         class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero"
       >
         <router-link to="/" class="navbar-brand no-underline">
           <img
@@ -42,16 +42,6 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link"
-                to="/about"
-                :class="{ active: $route.name == 'About' }"
-                >About</router-link
-              >
-            </li>
-            <li class="nav-item">
-              <router-link
-                data-toggle="collapse"
-                data-target=".navbar-collapse"
-                class="nav-link"
                 :class="{ active: $route.name == 'Epidemiology' }"
                 :key="$route.fullPath"
                 :to="{
@@ -73,6 +63,26 @@
                   query: { location: 'USA', variable: 'confirmed' }
                 }"
                 >Doubling Rates</router-link
+              >
+            </li>
+            <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
+                to="/resources"
+                :class="{ active: $route.name == 'Resources' }"
+                >Resources</router-link
+              >
+            </li>
+            <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
+                to="/about"
+                :class="{ active: $route.name == 'About' }"
+                >About</router-link
               >
             </li>
           </ul>
@@ -153,7 +163,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .no-underline {
   text-decoration: none;
 }
