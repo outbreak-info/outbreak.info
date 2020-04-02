@@ -282,13 +282,14 @@ export default Vue.extend({
           )
 
         if (this.includeTooltips) {
-          this.chart.selectAll("rect")
+          this.chart.selectAll("rect.bargraph")
             .on("mouseenter", d => this.mouseOn(d))
-            .on("mouseleave", this.mouseOff);
+           .on("mouseleave", this.mouseOff);
         }
       }
     },
     mouseOn(d) {
+
       const ttip = d3.selectAll(".tooltip")
         .style("top", d3.event.y + "px")
         .style("left", d3.event.x + "px")
@@ -303,9 +304,8 @@ export default Vue.extend({
     },
     mouseOff() {
       d3.selectAll(".tooltip")
-      // .style("opacity", 0);
-      //
-      this.chart.selectAll("rect").style("opacity", 1);
+      .style("opacity", 0);
+      this.chart.selectAll("rect.bargraph").style("opacity", 1);
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
@@ -345,6 +345,7 @@ export default Vue.extend({
     z-index: 1000;
     background: #ffffff70;
     opacity: 0;
+    pointer-events:none;
 }
 
 .missing-data {
