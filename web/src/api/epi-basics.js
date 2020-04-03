@@ -79,11 +79,13 @@ function getLabel(entry){
   if(entry.admin_level === 0) {
     return entry.name;
   } else if(entry.admin_level === 1) {
-    return entry.country_iso3 == "USA" ? `${entry.name} State` : `${entry.name} Province, ${entry.country_name}`;
+    return entry.country_iso3 == "USA" ? `${entry.name} State, ${entry.country_name}` : `${entry.name} Province, ${entry.country_name}`;
   } else if(String(entry.admin_level) == "1.7") {
     return `${entry.name}`;
   } else if(String(entry.admin_level) == "1.5") {
     return `${entry.name} Metropolitan Area`;
+  } else if(String(entry.admin_level) == "2") {
+    return `${entry.name}, ${entry.state_name}`;
   }
   return(entry.name);
 }
