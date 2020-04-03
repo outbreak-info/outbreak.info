@@ -75,7 +75,7 @@ export default Vue.extend({
         top: 15,
         bottom: 60,
         left: 65,
-        right: 15
+        right: 20
       },
       // axes
       y: null,
@@ -145,7 +145,7 @@ export default Vue.extend({
       const yMax = this.fixedYMax ? this.fixedYMax : d3.max(this.plottedData, d => d[this.variable]);
 
       if (this.isLogY) {
-        this.yMin = 1;
+        this.yMin = .5;
 
         this.y = d3
           .scaleLog()
@@ -222,7 +222,7 @@ export default Vue.extend({
 
         this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
             const log = Math.log10(d);
-            return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+            return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0? d3.format(",")(d) : ""
           }) :
           d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
 
