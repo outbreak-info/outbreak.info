@@ -3,7 +3,7 @@ const state = {
   regionDict: [{
       display: false,
       displayMore: false,
-      region: "East Asia & Pacific: China"
+      region: "East Asia & Pacific: China",
     },
     {
       display: false,

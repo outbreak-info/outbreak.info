@@ -65,12 +65,21 @@ const routes = [
     path: "/doubling-rates",
     name: "Doubling Rates",
     props: route => ({
-      location: route.query.location,
+      query: route.query.query,
+      variable: route.query.variable
+    }),
+    component: () =>
+      import(/* webpackChunkName: "doubling-summary" */ "../views/DoublingSummary.vue")
+  },
+  {
+    path: "/doubling-rates/:location",
+    name: "Doubling Rates",
+    props: route => ({
       variable: route.query.variable
     }),
     component: () =>
       import(/* webpackChunkName: "doubling-rates" */ "../views/DoublingRates.vue")
-  }
+  },
 ];
 
 const router = new VueRouter({
