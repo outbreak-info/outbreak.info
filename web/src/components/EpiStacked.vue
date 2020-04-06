@@ -44,7 +44,7 @@ const margin = {
   top: 10,
   right: 25,
   bottom: 25,
-  left: 75
+  left: 95
 };
 
 export default Vue.extend({
