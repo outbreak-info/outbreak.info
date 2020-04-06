@@ -306,15 +306,15 @@ th {
 
 // widths
 .td-days {
-    width: 240px;
+    width: 60px;
 }
 .td-doubling {
-    width: 100px;
+    width: 75px;
 }
 
 .td-r2,
 .td-slope {
-    width: 70px;
+    width: 50px;
 }
 
 .sortable {

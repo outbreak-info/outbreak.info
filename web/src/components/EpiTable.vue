@@ -25,6 +25,11 @@
             <div class="b-input"></div>
           </label>
           <label class="b-contain m-auto pr-3">
+            <span>U.S. Metropolitan Areas</span>
+            <input type="checkbox" value="1.5" v-model.lazy="selectedAdminLevels" />
+            <div class="b-input"></div>
+          </label>
+          <label class="b-contain m-auto pr-3">
             <span>U.S. Counties</span>
             <input type="checkbox" value="2" v-model.lazy="selectedAdminLevels" />
             <div class="b-input"></div>
@@ -197,7 +202,7 @@ export default Vue.extend({
       dataSubscription: null,
       changeDataSubscription: null,
       sparksSubscription: null,
-      selectedAdminLevels: [0, 1, 2],
+      selectedAdminLevels: [0, 1, 1.5, 2],
       mergedColumns: [{
           label: "",
           colspan: 1

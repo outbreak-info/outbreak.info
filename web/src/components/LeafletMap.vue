@@ -256,8 +256,8 @@ export default Vue.extend({
             d["display"] = [-1, 20];
           } else if(d.admin_level === 0) {
             d["display"] = [-1, 2];
-          } else if(d.admin_level === 1 && d.country_name === "United States of America") {
-            d["display"] = [2, 4];
+          // } else if(d.admin_level === 1 && d.country_name === "United States of America") {
+          //   d["display"] = [2, 4];
           } else if(d.admin_level === 1) {
             d["display"] = [2, 20];
           } else {

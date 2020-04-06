@@ -11,8 +11,13 @@
           <p class="text-left focustext">
             <b>Outbreak.info</b> focuses on aggregating all SARS-CoV-2 / COVID-19 information into a single site. We focus on making the metadata about these resources more standardized, on creating web interfaces to make the resources more findable, and on a few focused data integration efforts to make data more usable.
           </p>
+
+          <p class="focustext text-left">
+            <router-link :to="{ name: 'Sources'}" class="text-left">Learn more about our data sources</router-link>
+          </p>
         </div>
       </div>
+
       <Logos class="col-sm-12 bg-grey p-0"/>
       <div class="col-sm-12 jumbotron rounded-0 bg-grey__darker mb-0">
         <h4 class="text-light m-2">

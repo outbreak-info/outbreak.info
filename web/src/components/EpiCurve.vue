@@ -37,7 +37,7 @@ const margin = {
   top: 15,
   right: 225,
   bottom: 75,
-  left: 70
+  left: 85
 };
 const transitionDuration = 3500;
 

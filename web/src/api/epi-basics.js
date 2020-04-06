@@ -25,11 +25,11 @@ import store from "@/store";
 export function getLocations(apiUrl) {
   store.state.admin.loading = true;
 
-  return getAll(apiUrl, `date:"2020-03-24"&fields=location_id,name,country_name,state_name,wb_region,admin_level`).pipe(
+  return getAll(apiUrl, `date:"2020-03-24"&fields=location_id,name,country_name,country_iso3,state_name,wb_region,admin_level`).pipe(
     tap(results => {
       let places = results.map(d => {
         return ({
-          label: d.admin_level === 0 ? d.name : (d.admin_level === 1 ? `${d.name}, ${d.country_name}` : `${d.name}, ${d.state_name}`),
+          label: getLabel(d),
           id: d.location_id,
           admin_level: d.admin_level
         })
@@ -73,6 +73,21 @@ export function getLocations(apiUrl) {
     }),
     finalize(() => (store.state.admin.loading = false))
   )
+}
+
+function getLabel(entry){
+  if(entry.admin_level === 0) {
+    return entry.name;
+  } else if(entry.admin_level === 1) {
+    return entry.country_iso3 == "USA" ? `${entry.name} State, ${entry.country_name}` : `${entry.name} Province, ${entry.country_name}`;
+  } else if(String(entry.admin_level) == "1.7") {
+    return `${entry.name}`;
+  } else if(String(entry.admin_level) == "1.5") {
+    return `${entry.name} Metropolitan Area`;
+  } else if(String(entry.admin_level) == "2") {
+    return `${entry.name}, ${entry.state_name}`;
+  }
+  return(entry.name);
 }
 
 export function getMostCases(apiUrl, num2Return = 5) {

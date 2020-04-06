@@ -27,26 +27,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav" v-if="!$route.meta.hideNavigation">
           <ul class="navbar-nav">
-            <li class="nav-item">
-              <router-link
-                data-toggle="collapse"
-                data-target=".navbar-collapse"
-                class="nav-link"
-                to="/"
-                :class="{ active: $route.name == 'Home' }"
-                >Home
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link
-                data-toggle="collapse"
-                data-target=".navbar-collapse"
-                class="nav-link"
-                to="/about"
-                :class="{ active: $route.name == 'About' }"
-                >About</router-link
-              >
-            </li>
+
             <li class="nav-item">
               <router-link
                 data-toggle="collapse"
@@ -73,6 +54,28 @@
                   query: { location: 'USA', variable: 'confirmed' }
                 }"
                 >Doubling Rates</router-link
+              >
+            </li>
+            
+            <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
+                to="/data"
+                :class="{ active: $route.name == 'Data' }"
+                >Data
+              </router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
+                to="/about"
+                :class="{ active: $route.name == 'About' }"
+                >About</router-link
               >
             </li>
           </ul>

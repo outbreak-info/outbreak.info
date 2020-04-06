@@ -14,10 +14,6 @@
     <g :transform="`translate(${margin.left}, ${height + margin.top + 2})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
-    <g :transform="`translate(${margin.left},${0})`" id="county-annotation" v-if="includeAxis && data[0].admin_level == 2">
-      <text y="0" class="missing-data-label">data missing March 10-21</text>
-      <line marker-start="url(#arrow-start)" marker-end="url(#arrow)" y1="30" y2="30" class="missing-data"></line>
-    </g>
     <g class="switch-button-group" transform="translate(0,0)" ref="switch_btn" v-if="includeAxis">
       <rect class="switch-button-rect"></rect>
       <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
@@ -79,7 +75,7 @@ export default Vue.extend({
         top: 15,
         bottom: 60,
         left: 65,
-        right: 15
+        right: 20
       },
       // axes
       y: null,
@@ -149,7 +145,7 @@ export default Vue.extend({
       const yMax = this.fixedYMax ? this.fixedYMax : d3.max(this.plottedData, d => d[this.variable]);
 
       if (this.isLogY) {
-        this.yMin = 1;
+        this.yMin = .5;
 
         this.y = d3
           .scaleLog()
@@ -226,21 +222,11 @@ export default Vue.extend({
 
         this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
             const log = Math.log10(d);
-            return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+            return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0? d3.format(",")(d) : ""
           }) :
           d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
 
         d3.select(this.$refs.yAxis).call(this.yAxis);
-
-        // JHU data is missing between March 10-21 for counties
-        d3.selectAll("#county-annotation")
-          .selectAll("line")
-          .attr("x1", this.x(d3.timeParse("%Y-%m-%d")("2020-03-11")))
-          .attr("x2", this.x(d3.timeParse("%Y-%m-%d")("2020-03-20")));
-
-        d3.selectAll("#county-annotation")
-          .selectAll("text")
-          .attr("x", this.x(d3.timeParse("%Y-%m-%d")("2020-03-16")));
       }
     },
     drawPlot() {
@@ -346,17 +332,5 @@ export default Vue.extend({
     background: #ffffff70;
     opacity: 0;
     pointer-events:none;
-}
-
-.missing-data {
-    stroke: $grey-70;
-    fill: none;
-    stroke-width: 0.8;
-}
-.missing-data-label {
-    fill: $grey-80;
-    font-size: 0.85em;
-    dominant-baseline: hanging;
-    text-anchor: middle;
 }
 </style>

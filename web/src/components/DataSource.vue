@@ -1,27 +1,29 @@
 <template>
-  <div class="source my-3">
-    <small
-      >Source:
-      <a :href="dataSourceUrl" target="_blank" rel="noreferrer">{{
-        dataSourceName
-      }}</a
-      >, updated usually every day</small
-    >
-  </div>
+<div class="source my-3">
+  <small>Source:
+    <span v-for="(source, idx) in sources" :key="idx">
+      <a :href="source.url" target="_blank" rel="noreferrer">{{ source.name}} {{source.scope}}</a>
+      <span v-if="idx < sources.length-1">; </span>
+    </span>, updated every day. <router-link :to="{ name: 'Sources' }">Read more</router-link>
+  </small>
+</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
+import {
+  mapState
+} from "vuex";
+
 export default Vue.extend({
   name: "DataSource",
   props: {},
+  computed: {
+    ...mapState("admin", ["sources"]),
+  },
   data() {
-    return {
-      dataSourceName:
-        "Johns Hopkins University Center for Systems Science and Engineering",
-      dataSourceUrl: "https://github.com/CSSEGISandData/COVID-19"
-    };
+    return {};
   },
   watch: {},
   methods: {}
