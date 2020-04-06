@@ -50,9 +50,12 @@
 
   <div class="d-flex row m-0">
     <!-- bar graph -->
-    <div v-if="data$ && data$[0] && this.variable.includes('numIncrease')" class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
-      <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
-        :includeTooltips="true" :location="location" :log="isLogY" :fixedXLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+    <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('numIncrease')">
+      <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
+        <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
+          :includeTooltips="true" :location="location" :log="isLogY" :fixedXLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+      </div>
+      <DataSource />
     </div>
 
     <!-- curve -->
@@ -67,6 +70,7 @@
 <script>
 // @ is an alias to /src
 import DataUpdated from "@/components/DataUpdated.vue";
+import DataSource from "@/components/DataSource.vue";
 import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
@@ -90,6 +94,7 @@ import {
 export default {
   name: "Epidemiology",
   components: {
+    DataSource,
     DataUpdated,
     Warning,
     EpiCurve,
@@ -255,25 +260,25 @@ export default {
     setDims: function() {
       const minWidth = 300;
       const hwRatio = 0.75;
-      const marginPadding = 80;  // size of margin
-      const framePadding = 16;  // size of margin
+      const marginPadding = 80; // size of margin
+      const framePadding = 16; // size of margin
       const dimWidth = document.getElementById("bar-group") ? document.getElementById("bar-group").offsetWidth : minWidth;
-      if(dimWidth < 350) {
+      if (dimWidth < 350) {
         this.bargraphWidth = 300;
-        this.bargraphHeight= this.bargraphWidth * hwRatio;
-      } else if(dimWidth < 600){
+        this.bargraphHeight = this.bargraphWidth * hwRatio;
+      } else if (dimWidth < 600) {
         this.bargraphWidth = dimWidth - framePadding - marginPadding;
-        this.bargraphHeight= this.bargraphWidth * hwRatio;
-      } else if(dimWidth < 1000) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding)/2;
-        this.bargraphHeight= this.bargraphWidth * hwRatio;
-      } else if(dimWidth < 1200) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding)/3;
-        this.bargraphHeight= this.bargraphWidth * hwRatio;
+        this.bargraphHeight = this.bargraphWidth * hwRatio;
+      } else if (dimWidth < 1000) {
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
+        this.bargraphHeight = this.bargraphWidth * hwRatio;
+      } else if (dimWidth < 1200) {
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 3;
+        this.bargraphHeight = this.bargraphWidth * hwRatio;
       } else {
 
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding)/4;
-        this.bargraphHeight= this.bargraphWidth * hwRatio;
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 4;
+        this.bargraphHeight = this.bargraphWidth * hwRatio;
       }
     },
     hideExtra: function() {
