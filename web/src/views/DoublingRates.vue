@@ -2,7 +2,7 @@
 <div>
   <Warning :animate="false" class="mt-2" text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: rate of testing could confound the interpretation of doubling rates.">
   </Warning>
-  <div class="d-flex align-items-center mx-4">
+  <div class="d-flex flex-wrap align-items-center mx-4">
     <div class="d-flex flex-column align-items-center mr-5">
       <h3 class="plot-title text-sec py-5" v-if="epi$">
         Cumulative number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeParams">
