@@ -4,7 +4,7 @@
     <span v-for="(source, idx) in sources" :key="idx">
       <a :href="source.url" target="_blank" rel="noreferrer">{{ source.name}} {{source.scope}}</a>
       <span v-if="idx < sources.length-1">; </span>
-    </span>, updated every day. <router-link :to="{ name: 'Sources' }">Read more</router-link>
+    </span>, updated daily. <router-link :to="{ name: 'Sources' }">Read more</router-link>
   </small>
 </div>
 </template>
