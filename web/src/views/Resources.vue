@@ -1,7 +1,7 @@
 <template>
 <div class="">
 
-  <section class="d-flex justify-content-center align-items-center bg-grag-main text-light py-5">
+  <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
       <div class="col-sm-12 m-auto">
         <h4>COVID-19 and SARS-CoV-2 datasets, analyses, and resources</h4>
@@ -11,37 +11,35 @@
 
   <section class="d-flex py-2">
     <div class="row m-0 w-100">
-      <div class="col-sm-12 col-md-7">
-        <form autocomplete="off">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+      <div class="col-sm-12 col-md-8">
+        <div class="py-3">
+          <form autocomplete="off" class="m-auto">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+              </div>
+              <input id="sBar" class="form-control border" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp"
+                @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
+              <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
+                <li class="loading" v-if="isLoading">
+                  Loading results...
+                </li>
+                <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
+                  {{ result.label }}
+                </li>
+              </ul>
             </div>
-            <input id="sBar" class="form-control border-0" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp"
-              @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
-            <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
-              <li class="loading" v-if="isLoading">
-                Loading results...
-              </li>
-              <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
-                {{ result.label }}
-              </li>
-            </ul>
-          </div>
-        </form>
-        <div>
-          <router-link :to="{ name: 'Sources' }">Where do we get our data?</router-link>
+          </form>
         </div>
-        <div>
-          <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
-        </div>
-
-
       </div>
-      <div class="col-sm-12 col-md-5">
-        <div class="border-section d-flex justify-content-between align-items-center mb-2">
-          <h5>What's new</h5>
-          <router-link :to="{ name: 'Contributing' }">subscribe to updates</router-link>
+      <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
+        <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link>
+        <router-link :to="{ name: 'Sources' }">Where do we get our data?</router-link>
+        <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
+      </div>
+      <div class="col-sm-12">
+        <div class="text-highlight d-flex justify-content-between align-items-center mb-2">
+          <h5>WHAT'S NEW</h5>
         </div>
 
         <table id='whats-new'>
@@ -56,7 +54,7 @@
                 {{item.type}}
               </td>
               <td class="resource-name text-left" valign="top">{{item.name}}</td>
-              <td class="resource-affiliation text-left" valign="top">{{item.author[0].name}}</td>
+              <td class="resource-affiliation text-left text-muted" valign="top">{{item.author[0].name}}</td>
               <td class="resource-date" valign="top">{{format(item.dateModified)}}</td>
 
             </tr>
@@ -68,12 +66,12 @@
     </div>
   </section>
 
-  <section class="d-flex justify-content-end py-2">
+  <section class="d-flex justify-content-end py-2 bg-sec">
     <div class="row d-flex justify-content-center w-100">
-      <nav class="navbar navbar-expand-lg navbar-dark">
+      <nav class="navbar navbar-expand-lg navbar-light">
         <ul class="navbar-nav">
-          <li class="nav-item" v-for="(resource, idx) in resourceTypes" :key="idx">
-            {{resource}}
+          <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
+            <a>{{resource}}</a>
           </li>
         </ul>
       </nav>
@@ -81,24 +79,54 @@
   </section>
 
   <section class="d-flex justify-content-end py-2">
-    <div class="row w-100">
-      <div class="col-sm-2 mr-5 filters">
-        filters
-        <div>- resource type</div>
-        <div>- date range</div>
-        <div>- biological category / classification</div>
-        <div>- affiliation</div>
-        <div>- funder</div>
+    <div class="row m-0">
+      <div class="col-sm-2 p-0">
+        <div class="border-bottom border-secondary alert-secondary p-1">
+          <!-- Toggle Header -->
+          <div class="row m-0">
+            <div class="col-sm-10 p-1">
+              <h6>FITLER TYPE</h6>
+            </div>
+            <div class="col-sm-2 text-center p-1">
+              <!-- toggle fa class up->down -->
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+          <!-- Toggle content -->
+          <form>
+            <div>
+              <!-- Search -->
+              <div class="p-1 bg-light">
+                <input type="text" class="border border-secondary p-1" placeholder="Search">
+              </div>
+              <!-- Options -->
+              <ul class="list-group rounded-0">
+                <li class="list-group-item rounded-0 text-left list-group-item-action p-1 active">
+                  <input type="checkbox" class="mr-1" name="item" id="i" value="item" checked="checked">
+                  <label for="i" class="m-0">
+                    <small>Option Label</small>
+                  </label>
+                </li>
+                <li class="list-group-item rounded-0 text-left list-group-item-action p-1">
+                  <input type="checkbox" class="mr-1" name="item" id="i2" value="item">
+                  <label for="i2" class="m-0">
+                    <small>Option Label</small>
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </form>
+        </div>
       </div>
-      <div class="col-sm-9" id="results">
+      <div class="col-sm-9 pl-5" id="results">
         <div class="row w-100 d-flex justify-content-between" id="selectors">
           <div class="d-flex align-items-center">
             <h4 class="m-0 mr-4">
               You searched for COVID-19
             </h4>
-            <p class="m-0">
+            <small class="m-0 text-highlight">
               3 results
-            </p>
+            </small>
           </div>
 
           <select>
@@ -117,7 +145,7 @@
           </select>
         </div>
         <div id="results-container" class="my-3">
-          <div class="row w-100 d-flex flex-column text-left py-4 search-result" v-for="(item, idx) in data" :key="idx">
+          <div class="row w-100 d-flex flex-column text-left py-2 search-result" v-for="(item, idx) in data" :key="idx">
 
             <div class="d-flex w-100">
               <svg width="6" height="25" class="resource-type mr-1">
@@ -125,7 +153,7 @@
                 <polygon points="6,6 6,12 0,20 0,12" :class="item.type"></polygon>
                 <polygon points="0,0 6,0 6,6 0,12" :class="[item.type, 'dark']"></polygon>
               </svg>
-              <span :class="[item.type, 'resource-type', 'mr-2']">{{item.type}}</span>
+              <small :class="[item.type, 'resource-type', 'mr-2']">{{item.type}}</small>
               <a target="_blank" rel="noreferrer" :href="item.url">
                 <h5>{{item.name}}</h5>
               </a>
@@ -135,31 +163,33 @@
               <!-- LEFT -->
               <div class="col-sm-5 text-muted">
                 <div class="attribution text-body">
-                  <h6>{{item.author[0].name}}</h6>
+                  <small>{{item.author[0].name}}</small>
                 </div>
                 <div class="dates">
-                  updated {{item.dateModified}} • created {{item.dateCreated}}
+                  <small><i class="far fa-clock"></i> updated {{item.dateModified}} • created {{item.dateCreated}}</small>
                 </div>
                 <router-link to="search" v-if="item.type=='Dataset'">
-                  find analyses/publications that use this data
+                  <small>find analyses/publications that use this data</small>
                 </router-link>
                 <div v-if="item.isBasedOn" class="px-1 bg-grey__lightest">
-                  based on:
+                  based on |
                   <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
                     {{resource.type}}
                   </router-link>
                 </div>
                 <router-link to="search" v-if="item.relatedTo">
-                  related resources
+                  <small>related resources</small>
                 </router-link>
-                <div class="keyword-container mt-2">
-                  <small class="keyword px-2 py-1 mt-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx"> {{keyword}}</small>
-                </div>
               </div>
 
               <!-- RIGHT     -->
               <div class="col-sm-7 text-muted">
                 {{item.description}}
+              </div>
+
+              <!-- Bottom -->
+              <div class="col-sm-12 keyword-container mt-2">
+                <small class="keyword px-2 py-1 mt-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx"> {{keyword}}</small>
               </div>
             </div>
 
@@ -286,10 +316,6 @@ export default {
     width: 150px;
 }
 
-#whats-new {
-    border-bottom: 1px solid $base-grey;
-}
-
 #whats-new td {
     padding-left: 5px;
     padding-right: 5px;
@@ -328,10 +354,21 @@ export default {
 
 .search-result {
     border-bottom: 3px solid $grey-40;
+    padding: 5px;
+}
+
+.search-result:nth-child(odd) {
+    background-color: $grey-30;
 }
 
 .keyword {
   background: lighten($warning-color, 35%);
   border-radius: 5px;
 }
+.list-group-item.active{
+  background-color: $secondary-color !important;
+  border-color: $secondary-color !important;
+  color: white !important;
+}
+
 </style>
