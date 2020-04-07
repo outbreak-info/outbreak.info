@@ -9,7 +9,6 @@
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
   <DataSource />
 </div>
@@ -50,6 +49,7 @@ export default Vue.extend({
     data: Array,
     location: String,
     variable: String,
+    xVariable: String,
     log: Boolean
   },
   data() {
@@ -71,7 +71,7 @@ export default Vue.extend({
       // variable: "confirmed",
 
       // axes
-      numXTicks: 7,
+      numXTicks: 6,
       numYTicks: 6,
       x: d3.scaleTime(),
       y: d3.scaleLinear(),
@@ -136,7 +136,7 @@ export default Vue.extend({
 
       this.margin.right = this.width < 600 ? 115 : 205;
 
-      this.numXTicks = this.width < 700 ? 2 : 6;
+      this.numXTicks = this.width < 750 ? 2 : 6;
       this.numYTicks = this.height < 250 ? 2 : 6;
     },
     colorScale: function(location) {
@@ -216,14 +216,14 @@ export default Vue.extend({
 
       this.line = d3
         .line()
-        .x(d => this.x(d.date))
+        .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(
-          d3.extent(this.plottedData.flatMap(d => d.value).map(d => d.date))
+          d3.extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
         );
 
       if (this.isLogY) {
@@ -542,7 +542,7 @@ export default Vue.extend({
           // .attr("cy", this.y(0))
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
-          .attr("cx", d => this.x(d.date))
+          .attr("cx", d => this.x(d[this.xVariable]))
           .attr("cy", d => this.y(d[this.variable]))
           .attr("opacity", 0)
           .call(update => update.transition(t2).delay((d, i) => i * 20)
@@ -550,7 +550,7 @@ export default Vue.extend({
           update => update
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
-          .attr("cx", d => this.x(d.date))
+          .attr("cx", d => this.x(d[this.xVariable]))
           .attr("opacity", 1)
           .call(update => update.transition(t2)
             .attr("cy", d => this.y(d[this.variable]))),
@@ -610,7 +610,7 @@ export default Vue.extend({
 
       tooltipRect
         .merge(tooltipRectEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         .attr("width", 165)
         .attr("height", 60)
@@ -628,7 +628,7 @@ export default Vue.extend({
         .attr("class", "tooltip--country");
 
       tooltipText.select(".tooltip--country").merge(tooltipCtryEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         .text(d => d.name)
 
@@ -639,7 +639,7 @@ export default Vue.extend({
       tooltipText
         .select(".tooltip--date")
         .merge(tooltipDateEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         .attr("dy", "1.1em")
         .text(d => formatDate(d.date));
@@ -651,7 +651,7 @@ export default Vue.extend({
       tooltipText
         .select(".tooltip--case-count")
         .merge(tooltipCasesEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         // .attr("dy", "1.1em")
         .attr("dy", "2.2em")
