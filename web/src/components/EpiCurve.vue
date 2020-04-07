@@ -68,6 +68,7 @@ export default Vue.extend({
 
       // button interfaces
       isLogY: false,
+      // xVariable: "date",
       // variable: "confirmed",
 
       // axes
@@ -147,14 +148,29 @@ export default Vue.extend({
       const scale = store.getters["colors/getColor"];
       return scale(location, 0.7);
     },
-    changeScale: function() {
+    changeXScale: function() {
+      this.xVariable = "daysSince100Cases";
+      this.$router.replace({
+        path: "epidemiology",
+        query: {
+          location: this.location,
+          log: String(this.isLogY),
+          variable: this.variable,
+          xVariable: this.xVariable
+        }
+      });
+
+      this.updatePlot();
+    },
+    changeYScale: function() {
       this.isLogY = !this.isLogY;
       this.$router.replace({
         path: "epidemiology",
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable
+          variable: this.variable,
+          xVariable: this.xVariable
         }
       });
 
@@ -220,12 +236,12 @@ export default Vue.extend({
         .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
-      if(this.xVariable == "date"){
-      this.x = d3.scaleTime()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(
-          d3.extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
-        );
+      if (this.xVariable == "date") {
+        this.x = d3.scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
+          .domain(
+            d3.extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
+          );
       } else {
         this.x = d3.scaleLinear()
           .range([0, this.width - this.margin.left - this.margin.right])
@@ -265,12 +281,102 @@ export default Vue.extend({
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
-      // --- update y-scale switch button --
-      //
+      // --- update x-scale switch button --
       const dySwitch = -10;
       const xSwoop = 30;
       const ySwoop = -35;
       const swoopOffset = 10;
+
+      this.switchXBtn = this.svg.selectAll(".switch-x-button-group").data([0]);
+
+      this.switchXBtn.exit().remove();
+      const switchXEnter = this.switchXBtn
+        .enter()
+        .append("g")
+        .attr("class", "switch-x-button-group")
+        .attr("transform", "translate(405,0)");
+
+      this.switchXBtn.merge(switchXEnter);
+
+      const switchXRect = this.switchXBtn.select(".switch-button-rect");
+      const switchXRectEnter = this.switchXBtn
+        .append("rect")
+        .attr("class", "switch-button-rect")
+        .attr("x", 0)
+        .attr("width", 0)
+        .attr("height", 0);
+
+      switchXRect.merge(switchXRectEnter).attr("y", this.height - 28);
+
+      const switchXArrow = this.switchXBtn.select("path");
+
+      const switchXArrowEnter = this.switchXBtn
+        .append("path")
+        .attr("class", "swoopy-arrow")
+        .attr("id", "switch-btn-swoopy-arrow")
+        .attr("marker-end", "url(#arrow)");
+
+      switchXArrow
+        .merge(switchXArrowEnter)
+        // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
+        .attr(
+          "d",
+          `M ${xSwoop} ${this.height + ySwoop}
+          C ${xSwoop + swoopOffset} ${this.height + ySwoop},
+          ${this.margin.left + ySwoop + 20} ${this.height -
+            this.margin.bottom +
+            15 +
+            swoopOffset},
+          ${this.margin.left + ySwoop + 20} ${this.height -
+            this.margin.bottom +
+            15}`
+          // `M ${xSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${xSwoop + 5} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 55}, ${this.margin.left - 25 - dxSwoop} ${ this.height + this.margin.top }, ${this.margin.left - 25} ${ this.height + this.margin.top }`
+          // `M ${dxSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${dxSwoop+15} ${this.margin.top + this.height + this.margin.bottom - 20}, ${this.margin.left - 13} ${this.height + this.margin.top + 25}, ${this.margin.left - 13} ${this.height + this.margin.top + 10}`
+        );
+
+      const switchXText = this.switchXBtn.select("text");
+
+      const switchXTextEnter = this.switchXBtn
+        .append("text")
+        .attr("class", "switch-button")
+        .attr("x", 5);
+
+      switchXText
+        .merge(switchXTextEnter)
+        .text(`switch to days since 100 cases`)
+        .attr("y", this.height + dySwitch)
+        .on("mouseover", () =>
+          this.switchXBtn.select("rect").classed("switch-button-hover", true)
+        )
+        .on("mouseout", () =>
+          this.switchXBtn.select("rect").classed("switch-button-hover", false)
+        )
+        .on("click", () => this.changeXScale());
+
+      if (this.switchXBtn.select("text").node()) {
+        this.switchXBtn
+          .select("rect")
+          .attr(
+            "width",
+            this.switchXBtn
+            .select("text")
+            .node()
+            .getBBox().width + 10
+          )
+          .attr(
+            "height",
+            this.switchXBtn
+            .select("text")
+            .node()
+            .getBBox().height + 5
+          );
+      }
+
+      // --- update y-scale switch button --
+      // const dySwitch = -10;
+      // const xSwoop = 30;
+      // const ySwoop = -35;
+      // const swoopOffset = 10;
 
       this.switchBtn = this.svg.selectAll(".switch-button-group").data([0]);
 
@@ -336,7 +442,7 @@ export default Vue.extend({
         .on("mouseout", () =>
           this.switchBtn.select("rect").classed("switch-button-hover", false)
         )
-        .on("click", () => this.changeScale());
+        .on("click", () => this.changeYScale());
 
       if (this.switchBtn.select("text").node()) {
         this.switchBtn
@@ -558,9 +664,9 @@ export default Vue.extend({
           update => update
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
-          .attr("cx", d => this.x(d[this.xVariable]))
           .attr("opacity", 1)
           .call(update => update.transition(t2)
+            .attr("cx", d => this.x(d[this.xVariable]))
             .attr("cy", d => this.y(d[this.variable]))),
           exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
 
