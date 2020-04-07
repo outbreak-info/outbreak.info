@@ -220,11 +220,19 @@ export default Vue.extend({
         .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
-      this.x = this.x
+      if(this.xVariable == "date"){
+      this.x = d3.scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(
           d3.extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
         );
+      } else {
+        this.x = d3.scaleLinear()
+          .range([0, this.width - this.margin.left - this.margin.right])
+          .domain(
+            [0, d3.max(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))]
+          );
+      }
 
       if (this.isLogY) {
         this.y = d3
