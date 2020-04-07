@@ -56,7 +56,7 @@
                 >Doubling Rates</router-link
               >
             </li>
-            
+
             <li class="nav-item">
               <router-link
                 data-toggle="collapse"
@@ -82,10 +82,11 @@
         </div>
       </nav>
     </header>
+    <Warning :animate="false" text="Our site is undergoing maintenance. Please check back later for the current data."></Warning>
     <transition name="fade">
       <router-view class="main" />
     </transition>
-    <!-- TEMP: BASIC FOOTER -->
+    <!-- FOOTER -->
     <footer id="outbreak-footer" class="bg-main__darker py-4">
       <div class="text-center text-muted">
         <ul>
@@ -127,9 +128,11 @@ import store from "@/store";
 
 import { mapState } from "vuex";
 import { getLocations, getMostCases } from "@/api/epi-basics.js"
+import Warning from "@/components/Warning.vue";
 
 export default {
   name: "App",
+  components: { Warning },
   data() {
     return {
       year: ""
