@@ -10,6 +10,13 @@
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
   </svg>
+  <small>
+    <select v-model="xVariable" class="select-dropdown" @change="changeXScale">
+      <option v-for="option in xVarOptions" :value="option.value" :key="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </small>
   <DataSource />
 </div>
 </template>
@@ -49,7 +56,7 @@ export default Vue.extend({
     data: Array,
     location: String,
     variable: String,
-    xVariable: String,
+    xVariableInput: String,
     log: Boolean
   },
   data() {
@@ -68,7 +75,20 @@ export default Vue.extend({
 
       // button interfaces
       isLogY: false,
-      // xVariable: "date",
+      xVariable: "date",
+      xVarOptions: [{
+        value: "date",
+        label: "date"
+      }, {
+        value: "daysSince100Cases",
+        label: "days since 100 cases"
+      }, {
+        value: "daysSince10Deaths",
+        label: "days since 10 deaths"
+      }, {
+        value: "daysSince50Deaths",
+        label: "daysSince50Deaths"
+      }],
       // variable: "confirmed",
 
       // axes
@@ -97,6 +117,12 @@ export default Vue.extend({
       immediate: true,
       handler(newVal, oldVal) {
         this.isLogY = newVal;
+      },
+    },
+    xVariableInput: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.xVariable = newVal;
       },
     },
     // routeVariable: {
@@ -149,7 +175,6 @@ export default Vue.extend({
       return scale(location, 0.7);
     },
     changeXScale: function() {
-      this.xVariable = "daysSince100Cases";
       this.$router.replace({
         path: "epidemiology",
         query: {
