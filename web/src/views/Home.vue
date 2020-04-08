@@ -23,6 +23,9 @@
             <b class="text-highlight">outbreak.info</b> is a resource to
             aggregate all this information into a single location.
           </h6>
+          <p class="mt-4">
+            <router-link :to="{ name: 'Latest' }">View latest changes</router-link>
+          </p>
         </div>
       </div>
     </div>
