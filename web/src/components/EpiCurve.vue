@@ -10,7 +10,7 @@
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
   </svg>
-  <small>
+  <small class="d-flex position-absolute justify-content-end pr-5 x-axis-select" ref="xSelector">
     <select v-model="xVariable" class="select-dropdown" @change="changeXScale">
       <option v-for="option in xVarOptions" :value="option.value" :key="option.value">
         {{ option.label }}
@@ -153,7 +153,7 @@ export default Vue.extend({
       const newWidth = window.innerWidth < idealWidth ? window.innerWidth * padding - framePadding : idealWidth * padding - framePadding;
       const newHeight = newWidth / whRatio;
       // check height within limits
-      if (newHeight > window.innerHeight) {
+      if (newHeight > window.innerHeight*padding) {
         this.width = window.innerHeight * whRatio * padding;
         this.height = window.innerHeight * padding;
       } else {
@@ -319,19 +319,9 @@ export default Vue.extend({
         .enter()
         .append("g")
         .attr("class", "switch-x-button-group")
-        .attr("transform", "translate(405,0)");
+        .attr("transform", "translate(0,0)");
 
       this.switchXBtn.merge(switchXEnter);
-
-      const switchXRect = this.switchXBtn.select(".switch-button-rect");
-      const switchXRectEnter = this.switchXBtn
-        .append("rect")
-        .attr("class", "switch-button-rect")
-        .attr("x", 0)
-        .attr("width", 0)
-        .attr("height", 0);
-
-      switchXRect.merge(switchXRectEnter).attr("y", this.height - 28);
 
       const switchXArrow = this.switchXBtn.select("path");
 
@@ -346,56 +336,17 @@ export default Vue.extend({
         // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
         .attr(
           "d",
-          `M ${xSwoop} ${this.height + ySwoop}
-          C ${xSwoop + swoopOffset} ${this.height + ySwoop},
-          ${this.margin.left + ySwoop + 20} ${this.height -
+          `M ${xSwoop + this.width - this.margin.right} ${this.height + ySwoop}
+          C ${xSwoop + this.width - this.margin.right*0.95 } ${this.height-45},
+          ${xSwoop + this.width - this.margin.right + 10} ${this.height -
             this.margin.bottom +
-            15 +
-            swoopOffset},
-          ${this.margin.left + ySwoop + 20} ${this.height -
+            18},
+          ${xSwoop + this.width - this.margin.right + ySwoop + 20} ${this.height -
             this.margin.bottom +
             15}`
           // `M ${xSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${xSwoop + 5} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 55}, ${this.margin.left - 25 - dxSwoop} ${ this.height + this.margin.top }, ${this.margin.left - 25} ${ this.height + this.margin.top }`
           // `M ${dxSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${dxSwoop+15} ${this.margin.top + this.height + this.margin.bottom - 20}, ${this.margin.left - 13} ${this.height + this.margin.top + 25}, ${this.margin.left - 13} ${this.height + this.margin.top + 10}`
         );
-
-      const switchXText = this.switchXBtn.select("text");
-
-      const switchXTextEnter = this.switchXBtn
-        .append("text")
-        .attr("class", "switch-button")
-        .attr("x", 5);
-
-      switchXText
-        .merge(switchXTextEnter)
-        .text(`switch to days since 100 cases`)
-        .attr("y", this.height + dySwitch)
-        .on("mouseover", () =>
-          this.switchXBtn.select("rect").classed("switch-button-hover", true)
-        )
-        .on("mouseout", () =>
-          this.switchXBtn.select("rect").classed("switch-button-hover", false)
-        )
-        .on("click", () => this.changeXScale());
-
-      if (this.switchXBtn.select("text").node()) {
-        this.switchXBtn
-          .select("rect")
-          .attr(
-            "width",
-            this.switchXBtn
-            .select("text")
-            .node()
-            .getBBox().width + 10
-          )
-          .attr(
-            "height",
-            this.switchXBtn
-            .select("text")
-            .node()
-            .getBBox().height + 5
-          );
-      }
 
       // --- update y-scale switch button --
       // const dySwitch = -10;
@@ -420,9 +371,16 @@ export default Vue.extend({
         .attr("class", "switch-button-rect")
         .attr("x", 0)
         .attr("width", 0)
-        .attr("height", 0);
+        .attr("height", 26.5);
 
-      switchRect.merge(switchRectEnter).attr("y", this.height - 28);
+      switchRect.merge(switchRectEnter).attr("y", this.height - 28)
+        .on("mouseover", () =>
+          this.switchBtn.select("rect").classed("switch-button-hover", true)
+        )
+        .on("mouseout", () =>
+          this.switchBtn.select("rect").classed("switch-button-hover", false)
+        )
+        .on("click", () => this.changeYScale());;
 
       const switchArrow = this.switchBtn.select("path");
 
@@ -455,19 +413,12 @@ export default Vue.extend({
       const switchTextEnter = this.switchBtn
         .append("text")
         .attr("class", "switch-button")
-        .attr("x", 5);
+        .attr("x", 3.84 * 2);
 
       switchText
         .merge(switchTextEnter)
         .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
-        .attr("y", this.height + dySwitch)
-        .on("mouseover", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", true)
-        )
-        .on("mouseout", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", false)
-        )
-        .on("click", () => this.changeYScale());
+        .attr("y", this.height + 6 - 12.8);
 
       if (this.switchBtn.select("text").node()) {
         this.switchBtn
@@ -477,16 +428,20 @@ export default Vue.extend({
             this.switchBtn
             .select("text")
             .node()
-            .getBBox().width + 10
-          )
-          .attr(
-            "height",
-            this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().height + 5
+            .getBBox().width + 3.84 * 4
           );
+        // .attr(
+        //   "height",
+        //   this.switchBtn
+        //   .select("text")
+        //   .node()
+        //   .getBBox().height + 3.84*2
+        // );
       }
+
+      d3.select(this.$refs.xSelector)
+      .style("right", this.margin.right + "px")
+      .style("top", this.height - 28 + "px");
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
@@ -879,15 +834,14 @@ export default Vue.extend({
 }
 
 .switch-button {
-    cursor: pointer;
+    pointer-events: none;
     dominant-baseline: text-after-edge;
     // fill: $grey-90 !important;
     font-weight: 300 !important;
-    font-size: 0.85em;
+    font-size: 12.8px;
+    fill: $secondary-color;
 
-    &:hover {
-        text-decoration: underline;
-    }
+    &:hover {}
 }
 
 .swoopy-arrow,
@@ -901,20 +855,19 @@ export default Vue.extend({
 }
 
 .switch-button-rect {
-    fill-opacity: 0.15;
-    rx: 4;
-    ry: 4;
-    stroke: $grey-60;
-    stroke-width: 0.5;
+    cursor: pointer;
+    fill: white;
+    rx: 5;
+    ry: 5;
+    stroke: $secondary-color;
+    stroke-width: 1;
     shape-rendering: crispedges;
     &:hover {
-        fill-opacity: 0.25;
+        fill: $secondary-bright;
     }
 }
 
-.switch-button-hover {
-    fill-opacity: 0.25;
-}
+.switch-button-hover {}
 
 .epidemiology-curves line.case-def-changed-line {
     stroke: $grey-60;
@@ -924,5 +877,10 @@ export default Vue.extend({
 }
 .epidemiology-curves .case-def-changed text {
     text-anchor: start;
+}
+
+.x-axis-select {
+    // top: -29px;
+    // right: 20px;
 }
 </style>
