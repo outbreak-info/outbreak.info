@@ -202,9 +202,6 @@ export default {
     location: function(newLocation, oldLocation) {
       this.setLocation(newLocation);
     },
-    xVariable: function(newLocation, oldLocation) {
-      this.changeVariable();
-    },
     fixedY: function(newValue, oldValue) {
       if (newValue === "true") {
         this.yMax = max(this.plottedData.flatMap(d => d.value), d => d[this.variable]);

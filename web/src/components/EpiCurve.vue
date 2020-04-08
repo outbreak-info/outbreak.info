@@ -11,7 +11,7 @@
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
   </svg>
   <small class="d-flex position-absolute justify-content-end pr-5 x-axis-select" ref="xSelector">
-    <select v-model="xVariable" class="select-dropdown" @change="changeXScale">
+    <select v-model="xVariable" class="select-dropdown" @change="changeScale">
       <option v-for="option in xVarOptions" :value="option.value" :key="option.value">
         {{ option.label }}
       </option>
@@ -174,23 +174,17 @@ export default Vue.extend({
       const scale = store.getters["colors/getColor"];
       return scale(location, 0.7);
     },
-    changeXScale: function() {
-      this.$router.replace({
-        path: "epidemiology",
-        query: {
-          location: this.location,
-          log: String(this.isLogY),
-          variable: this.variable,
-          xVariable: this.xVariable
-        }
-      });
 
-      this.updatePlot();
-    },
     changeYScale: function() {
       this.isLogY = !this.isLogY;
+      this.changeScale();
+
+    },
+    changeScale: function() {
       this.$router.replace({
         path: "epidemiology",
+        name: "Epidemiology",
+        params: {disableScroll: true},
         query: {
           location: this.location,
           log: String(this.isLogY),
