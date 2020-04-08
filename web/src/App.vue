@@ -82,7 +82,6 @@
         </div>
       </nav>
     </header>
-    <Warning :animate="false" text="Our site is undergoing maintenance. Please check back later for the current data."></Warning>
     <transition name="fade">
       <router-view class="main" />
     </transition>
@@ -128,11 +127,9 @@ import store from "@/store";
 
 import { mapState } from "vuex";
 import { getLocations, getMostCases } from "@/api/epi-basics.js"
-import Warning from "@/components/Warning.vue";
 
 export default {
   name: "App",
-  components: { Warning },
   data() {
     return {
       year: ""
