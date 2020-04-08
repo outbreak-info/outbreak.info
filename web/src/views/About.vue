@@ -15,6 +15,10 @@
           <p class="focustext text-left">
             <router-link :to="{ name: 'Sources'}" class="text-left">Learn more about our data sources</router-link>
           </p>
+          
+          <p class="focustext text-left">
+            <router-link :to="{ name: 'Latest'}" class="text-left">View latest changes</router-link>
+          </p>
         </div>
       </div>
 
@@ -39,7 +43,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import Vue from "vue";
 
 import Logos from "@/components/Logos.vue";

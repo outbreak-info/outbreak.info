@@ -16,8 +16,7 @@ const state = {
       url: "https://github.com/nytimes/covid-19-data"
     }
   ],
-  geoSources: [
-    {
+  geoSources: [{
       id: "naturaleath",
       name: "Natural Earth",
       scope: "(country names)",
@@ -31,7 +30,70 @@ const state = {
       description: "Metropolitan areas are defined by the U.S. Census Bureau's Core Based Statistical Areas. Totals for Metro areas are calculated by aggregating the component U.S. counties into the Core Based Statistical Areas.",
       url: "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html"
     }
-  ]
+  ],
+  updates: [
+    {
+    date: new Date("2020-04-06 0:0"),
+    category: "data",
+    title: "Changed United States epidemiology data source",
+    description: 'Switched the data source for U.S. epidemiological data from <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank" rel="noreferrer">Johns Hopkins</a> to the <a href="https://github.com/nytimes/covid-19-data" target="_blank" rel="noreferrer">New York Times</a>.',
+    route: {
+      name: 'Epidemiology',
+      query: {
+        location: 'USA;USA_US-CA;METRO_41940;USA_US-CA_06085',
+        variable: 'confirmed'
+      }
+    }
+  },
+    {
+    date: new Date("2020-04-06 0:0"),
+    category: "feature",
+    title: "Added United States Metropolitan Areas aggregations",
+    description: "Using the U.S. Census Bureau's Core Based Statistical Areas, calculated case and death totals for metropolitan areas, which are groups of U.S. counties.",
+    route: {
+      name: 'Epidemiology',
+      query: {
+        location: 'METRO_28140;METRO_41180',
+        variable: 'confirmed'
+      }
+    }
+  },
+    {
+    date: new Date("2020-03-31 0:0"),
+    category: "feature",
+    title: "Added daily case and death counts",
+    description: "Created daily histograms of confirmed cases or deaths pre day by location.",
+    route: {
+      name: 'Epidemiology',
+      query: {
+        location: 'METRO_35620;ITA;ESP;USA',
+        variable: 'dead'
+      }
+    }},
+    {
+    date: new Date("2020-03-31 0:0"),
+    category: "feature",
+    title: "Created iframe-embeddable summary boxes",
+    description: "Added customizable summary boxes, which can be embedded within iframes. Locations should be specified by `location_id` (usually the ISO3 or FIPS code) and should be separated by semicolons.",
+    route: {
+      name: 'Summary',
+      query: {
+        location: 'USA;USA_US-CA;USA_US-CA_06037;USA_US-CA_06073'
+      }
+    }},
+    {
+    date: new Date("2020-03-24 0:0"),
+    category: "feature",
+    title: "Added doubling rates",
+    description: "Created summary of the doubling rates for a location in the last five days compared to the previous five days.",
+    route: {
+      name: 'Doubling Rates',
+      query: {
+        location: 'USA'
+      }
+    }
+  }
+]
 };
 
 // getters
