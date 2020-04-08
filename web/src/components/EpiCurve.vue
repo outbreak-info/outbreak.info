@@ -736,7 +736,7 @@ export default Vue.extend({
         .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         .attr("dy", "1.1em")
-        .text(d => formatDate(d.date));
+        .text(d => d.date ? formatDate(d.date) : "interpolated value");
 
       const tooltipCasesEnter = tooltipTextEnter
         .append("tspan")
