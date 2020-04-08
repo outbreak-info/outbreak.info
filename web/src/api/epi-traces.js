@@ -17,7 +17,9 @@ import {
   format
 } from "d3";
 
-import { getAll } from "@/api/biothings.js";
+import {
+  getAll
+} from "@/api/biothings.js";
 
 
 export const epiDataSubject = new BehaviorSubject([]);
@@ -50,7 +52,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,confirmed_currentCases,dead_currentCases,recovered_currentCases,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,_id`;
 
   return getAll(apiUrl, queryString)
     .pipe(
@@ -60,8 +62,6 @@ export function getEpiTraces(apiUrl, locations) {
         results.forEach(d => {
           d['date'] = parseDate(d.date);
         })
-        // ensure dates are sorted
-        results.sort((a,b) => a.date - b.date);
 
         const nested = nest()
           .key(d => d.location_id)
@@ -73,10 +73,30 @@ export function getEpiTraces(apiUrl, locations) {
           d["confirmed_currentCases"] = d.value[0].confirmed_currentCases;
           d["recovered_currentCases"] = d.value[0].recovered_currentCases;
           d["dead_currentCases"] = d.value[0].dead_currentCases;
+          // add in static values to get 0 points for x-shifted cases
+          if (d.value[0].confirmed_currentCases >= 100) {
+            d["value"].push({
+              confirmed: 100,
+              daysSince100Cases: 0
+            })
+          }
+
+          if (d.value[0].dead_currentCases >= 10) {
+            d["value"].push({
+              dead: 10,
+              daysSince10Deaths: 0
+            })
+          }
+          if (d.value[0].dead_currentCases >= 50) {
+            d["value"].push({
+              dead: 50,
+              daysSince50Deaths: 0
+            })
+          }
         })
 
         // console.log("setting order")
-        // console.log(    nested)
+        console.log(nested)
         //     .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
         //     .map(d => d.key))
 
@@ -134,10 +154,10 @@ export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
 export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime()/1e5);
+  const timestamp = Math.round(new Date().getTime() / 1e5);
   var queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-03-24"` : 'date:"2020-03-24"';
 
-  if(adminLevels && adminLevels.length > 0) {
+  if (adminLevels && adminLevels.length > 0) {
     queryString = queryString + `AND admin_level:("${adminLevels.join('" OR "')}")`
   }
 
@@ -181,7 +201,7 @@ export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   )
 }
 
-export function getSparklineTraces(apiUrl, locations, variableString="confirmed,recovered,dead") {
+export function getSparklineTraces(apiUrl, locations, variableString = "confirmed,recovered,dead") {
   if (locations) {
     const parseDate = timeParse("%Y-%m-%d");
     // trigger no-cache behavior by adding timestamp to request
@@ -196,7 +216,7 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
           delete d["_score"];
         })
 
-        results.sort((a,b) => a.date - b.date);
+        results.sort((a, b) => a.date - b.date);
 
         const nested = nest()
           .key(d => d.location_id)

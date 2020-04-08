@@ -220,7 +220,7 @@ export default Vue.extend({
     updatePlot: function() {
       this.prepData();
 
-      console.log(this.data)
+      console.log(this.plottedData)
 
       if (this.data) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
@@ -233,8 +233,13 @@ export default Vue.extend({
         this.plottedData = cloneDeep(this.data);
 
         this.plottedData.forEach(d => {
-          d["value"] = this.isLogY ? d.value.filter(x => x[this.variable] > 0) : d.value.filter(x => x[this.variable]);
+          d["value"] = this.isLogY ? d.value.filter(x => x[this.variable] > 0 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
+
+          // ensure dates are sorted
+          d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
         });
+
+
       }
     },
     setupPlot: function() {
