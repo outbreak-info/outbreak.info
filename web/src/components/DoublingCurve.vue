@@ -39,7 +39,7 @@ const height = 300;
 const radius = 4.5;
 const margin = {
   top: 15,
-  right: 25,
+  right: 15,
   bottom: 75,
   left: 70
 };
