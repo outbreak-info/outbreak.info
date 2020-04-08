@@ -169,7 +169,8 @@ export default Vue.extend({
       this.switchBtn = d3.select(this.$refs.switch_btn);
 
       this.switchBtn.select(".switch-button-rect")
-        .attr("y", this.height + this.margin.top + dySwitch);
+        .attr("y", this.height + this.margin.top + dySwitch)
+        .on("click", () => this.changeScale());;
 
       this.switchBtn.select("path")
         .attr(
@@ -182,14 +183,8 @@ export default Vue.extend({
 
       this.switchBtn.select("text")
         .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
-        .attr("y", this.height + this.margin.top + dySwitch + 20)
-        .on("mouseover", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", true)
-        )
-        .on("mouseout", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", false)
-        )
-        .on("click", () => this.changeScale());
+        .attr("y", this.height + this.margin.top + dySwitch + 20);
+
 
       if (this.switchBtn.select("text").node()) {
         this.switchBtn
@@ -295,8 +290,10 @@ export default Vue.extend({
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
-      this.$router.push({
+      this.$router.replace({
         path: "epidemiology",
+        name: "Epidemiology",
+        params: {disableScroll: true},
         query: {
           location: this.location,
           log: String(this.isLogY),
