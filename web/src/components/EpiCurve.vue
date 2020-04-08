@@ -220,8 +220,6 @@ export default Vue.extend({
     updatePlot: function() {
       this.prepData();
 
-      console.log(this.plottedData)
-
       if (this.data) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
         this.updateScales();
@@ -510,7 +508,6 @@ export default Vue.extend({
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         );
-
       // --- create groups for each region ---
       const regionGroups = this.chart
         .selectAll(".epi-region")
@@ -623,10 +620,11 @@ export default Vue.extend({
         .attr("stroke-dashoffset", 0)
 
       // --- dots ---
+      const keyFunc = function(d, i) { return d._id }
       const dotGroupSelector = this.chart
         .selectAll(".epi-region")
         .selectAll(".epi-point")
-        .data(d => d.value);
+        .data(d => d.value, keyFunc);
 
       dotGroupSelector.exit().remove();
 
