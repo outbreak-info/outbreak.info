@@ -70,7 +70,7 @@ export default Vue.extend({
 
       // data
       dataSubscription: null,
-      logData: null,
+      // logData: null,
       plottedData: null,
 
       // button interfaces
@@ -87,7 +87,7 @@ export default Vue.extend({
         label: "days since 10 deaths"
       }, {
         value: "daysSince50Deaths",
-        label: "daysSince50Deaths"
+        label: "days since 50 deaths"
       }],
       // variable: "confirmed",
 
@@ -220,18 +220,20 @@ export default Vue.extend({
     updatePlot: function() {
       this.prepData();
 
+      console.log(this.data)
+
       if (this.data) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
-        this.plottedData = this.isLogY ? this.logData : this.data;
         this.updateScales();
         this.drawDots();
       }
     },
     prepData: function() {
       if (this.data) {
-        this.logData = cloneDeep(this.data);
-        this.logData.forEach(d => {
-          d["value"] = d.value.filter(x => x[this.variable] > 0);
+        this.plottedData = cloneDeep(this.data);
+
+        this.plottedData.forEach(d => {
+          d["value"] = this.isLogY ? d.value.filter(x => x[this.variable] > 0) : d.value.filter(x => x[this.variable]);
         });
       }
     },
