@@ -76,6 +76,7 @@ export function getEpiTraces(apiUrl, locations) {
           // add in static values to get 0 points for x-shifted cases
           if (d.value[0].confirmed_currentCases >= 100) {
             d["value"].push({
+              name:  d.value[0].name,
               confirmed: 100,
               daysSince100Cases: 0
             })
@@ -83,12 +84,14 @@ export function getEpiTraces(apiUrl, locations) {
 
           if (d.value[0].dead_currentCases >= 10) {
             d["value"].push({
+              name:  d.value[0].name,
               dead: 10,
               daysSince10Deaths: 0
             })
           }
           if (d.value[0].dead_currentCases >= 50) {
             d["value"].push({
+              name:  d.value[0].name,
               dead: 50,
               daysSince50Deaths: 0
             })

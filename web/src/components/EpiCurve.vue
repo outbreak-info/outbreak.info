@@ -538,7 +538,8 @@ export default Vue.extend({
       // Create nodes of the text labels for force direction
       this.plottedData.forEach(d => {
         d["fx"] = 0;
-        d["targetY"] = d[`${this.variable}_currentCases`] ? this.y(d[`${this.variable}_currentCases`]) : this.height;
+        const yMax = d3.max(d.value, d => d[this.variable]);
+        d["targetY"] = yMax ? this.y(yMax) : this.height;
       });
 
       // Define a custom force
