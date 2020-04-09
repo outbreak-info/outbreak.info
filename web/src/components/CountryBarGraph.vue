@@ -402,7 +402,7 @@ export default Vue.extend({
       // merge
       newCasesSelector
         .merge(newCasesEnter)
-        .text(d => d[this.variable].toLocaleString());
+        .text(d => d[`${this.variable}_numIncrease`].toLocaleString());
     }
   }
 });
