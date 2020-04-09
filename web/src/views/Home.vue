@@ -76,11 +76,8 @@
     </template>
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
       <div class="row px-2" v-if="nestedData && nestedData.length > 0">
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-12">
           <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
-        </div>
-        <div class="col-sm-12 col-md-6">
-          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="noChina" id="no-china" :title="`${selectedVariableLabel} Outside Mainland China`" @regionSelected="handleTooltip" />
         </div>
       </div>
     </div>
@@ -186,20 +183,6 @@ export default {
   computed: {
     ...mapState("admin", ["loading"]),
     ...mapState("geo", ["regionDict"]),
-    // nestedData() {
-    //   return nestRegions(this.cases.flatMap(d => d.data));
-    // },
-    noChina() {
-      if (this.nestedData) {
-        const data = cloneDeep(this.nestedData);
-        data.forEach(d => {
-          d["East Asia & Pacific: China"] ? delete d["East Asia & Pacific: China"] : null;
-        });
-        return data;
-      } else {
-        return null;
-      }
-    },
     selectedVariableLabel() {
       return this.variableOptions.filter(d => d.value == this.selectedVariable)[0]["label"];
     }
@@ -227,14 +210,14 @@ export default {
         // const dims = {window.innerWidth, height: window.innerHeight}
         const whRatio = 5 / 3;
         const widthThresh = 700;
+        const selectorsProportion = 0.8;
 
-        this.stackedWidth =
-          dims.width < widthThresh ? dims.width : dims.width / 2 - 5;
+        this.stackedWidth = dims.width ;
         const idealHeight = this.stackedWidth / whRatio;
-        if (idealHeight < window.innerHeight) {
-          this.stackedHeight = idealHeight;
+        if (idealHeight < window.innerHeight * selectorsProportion) {
+          this.stackedHeight = idealHeight * selectorsProportion;
         } else {
-          this.stackedHeight = window.innerHeight;
+          this.stackedHeight = window.innerHeight * selectorsProportion;
           this.stackedWidth = this.stackedHeight * whRatio;
         }
       }
@@ -252,7 +235,7 @@ export default {
       this.nestedData = d[this.selectedVariable];
     })
 
-    this.tableSubscription = getEpiTable(this.$apiurl, null, [0,1,2], "-confirmed_currentCases", 10, 0).subscribe(_ => null);
+    this.tableSubscription = getEpiTable(this.$apiurl, null, [0,1,2], "-confirmed", 10, 0).subscribe(_ => null);
 
     // Event listener for mobile responsiveness
     // $nextTick waits till DOM rendered

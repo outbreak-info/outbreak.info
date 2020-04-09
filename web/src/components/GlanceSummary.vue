@@ -34,7 +34,7 @@
             + {{casesIncrease}}
           </div>
           <div class="changes">
-            <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.confirmed_currentPctIncrease > 0" /> {{casesPct}}
+            <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.confirmed_pctIncrease > 0" /> {{casesPct}}
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@
             + {{deadIncrease}}
           </div>
           <div class="changes">
-            <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.dead_currentPctIncrease > 0" /> {{deadPct}}
+            <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.dead_pctIncrease > 0" /> {{deadPct}}
           </div>
         </div>
       </div>
@@ -154,31 +154,31 @@ export default Vue.extend({
   },
   computed: {
     updatedDate() {
-      return this.data.confirmed_currentToday
+      return this.data.date
     },
     cases() {
-      return this.data.confirmed_currentCases.toLocaleString();
+      return this.data.confirmed.toLocaleString();
     },
     casesIncrease() {
-      return this.data.confirmed_currentIncrease.toLocaleString();
+      return this.data.confirmed_numIncrease.toLocaleString();
     },
     casesPct() {
-      return this.formatPct(this.data.confirmed_currentPctIncrease);
+      return this.formatPct(this.data.confirmed_pctIncrease);
     },
     casesYesterday() {
-      return (this.data.confirmed_currentCases - this.data.confirmed_currentIncrease).toLocaleString();
+      return (this.data.confirmed - this.data.confirmed_numIncrease).toLocaleString();
     },
     deaths() {
-      return this.data.dead_currentCases.toLocaleString();
+      return this.data.dead.toLocaleString();
     },
     deadIncrease() {
-      return this.data.dead_currentIncrease.toLocaleString();
+      return this.data.dead_numIncrease.toLocaleString();
     },
     deadPct() {
-      return this.formatPct(this.data.dead_currentPctIncrease);
+      return this.formatPct(this.data.dead_pctIncrease);
     },
     deadYesterday() {
-      return (this.data.dead_currentCases - this.data.dead_currentIncrease).toLocaleString();
+      return (this.data.dead - this.data.dead_numIncrease).toLocaleString();
     }
   }
 });

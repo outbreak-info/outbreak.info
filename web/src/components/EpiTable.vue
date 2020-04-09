@@ -1,5 +1,5 @@
 <template>
-<div class="epi-table my-3" v-if="data && data.length && colorScale">
+<div class="epi-table my-3" v-if="data && colorScale">
   <div class="m-auto d-flex justify-content-center py-5">
     <div>
       <h4>Latest Data</h4>
@@ -59,8 +59,8 @@
           <div class="sort-grp">
             {{column.label}}
             <font-awesome-icon :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']" :icon="['fas', 'sort']" />
-            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === -1" />
-            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === 1" />
+            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === 1" />
+            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === -1" />
           </div>
         </th>
         <th id="td-outcomes">
@@ -272,7 +272,7 @@ export default Vue.extend({
           group: "cases",
           label: "total",
           value: "confirmed_cases",
-          sort_id: "confirmed_currentCases",
+          sort_id: "confirmed",
           sorted: -1,
           essential: true
         },
@@ -280,7 +280,7 @@ export default Vue.extend({
           group: "cases",
           label: "new today",
           value: "confirmed_increase",
-          sort_id: "confirmed_currentIncrease",
+          sort_id: "confirmed_numIncrease",
           sorted: 0,
           essential: false
         },
@@ -288,7 +288,7 @@ export default Vue.extend({
           group: "cases",
           label: "increase today",
           value: "confirmed_pctIncrease",
-          sort_id: "confirmed_currentPctIncrease",
+          sort_id: "confirmed_pctIncrease",
           sorted: 0,
           essential: true
         },
@@ -329,7 +329,7 @@ export default Vue.extend({
           group: "deaths",
           label: "total",
           value: "dead_cases",
-          sort_id: "dead_currentCases",
+          sort_id: "dead",
           sorted: 0,
           essential: true
         },
@@ -337,7 +337,7 @@ export default Vue.extend({
           group: "deaths",
           label: "new today",
           value: "dead_increase",
-          sort_id: "dead_currentIncrease",
+          sort_id: "dead_numIncrease",
           sorted: 0,
           essential: false
         },
@@ -345,7 +345,7 @@ export default Vue.extend({
           group: "deaths",
           label: "increase today",
           value: "dead_pctIncrease",
-          sort_id: "dead_currentPctIncrease",
+          sort_id: "dead_pctIncrease",
           sorted: 0,
           essential: true
         },
@@ -373,7 +373,7 @@ export default Vue.extend({
           group: "recoveries",
           label: "total",
           value: "recovered_cases",
-          sort_id: "recovered_currentCases",
+          sort_id: "recovered",
           sorted: 0,
           essential: true
         },
@@ -381,7 +381,7 @@ export default Vue.extend({
           group: "recoveries",
           label: "new today",
           value: "recovered_increase",
-          sort_id: "recovered_currentIncrease",
+          sort_id: "recovered_numIncrease",
           sorted: 0,
           essential: false
         },
@@ -389,7 +389,7 @@ export default Vue.extend({
           group: "recoveries",
           label: "increase today",
           value: "recovered_pctIncrease",
-          sort_id: "recovered_currentPctIncrease",
+          sort_id: "recovered_pctIncrease",
           sorted: 0,
           essential: true
         },
@@ -403,7 +403,7 @@ export default Vue.extend({
       ],
       searchInput: "",
       filteredCases: null,
-      sortVar: "-confirmed_currentCases",
+      sortVar: "-confirmed",
       page: 0,
       numPerPage: 10,
       pageOpts: [5, 10, 50, 100]
@@ -471,18 +471,22 @@ export default Vue.extend({
     sortColumn(variable) {
       // reset other sorting funcs for arrow affordances
       const idx = this.columns.findIndex(d => d.sort_id === variable);
+
       if (this.columns[idx].sorted || this.columns[idx].sorted === 0) {
-
-        this.sortVar = variable === this.sortVar ? `-${variable}` : variable;
-
-
+        // if the sort variable is the same, switch it.
+        if (this.sortVar == variable) {
+          this.sortVar = `-${variable}`;
+        } else if (this.sortVar == `-${variable}`) {
+          this.sortVar = variable;
+        } else {
+          this.sortVar = `-${variable}`;
+        }
         this.columns.forEach((d, i) => {
           if (i === idx) {
-            d.sorted = d.sorted ? -1 * d.sorted : 1;
+            d.sorted = d.sorted ? -1 * d.sorted : -1;
           } else {
             d.sorted = d.sorted || d.sorted === 0 ? 0 : null;
           }
-
         })
 
         this.updateData();

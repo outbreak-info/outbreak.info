@@ -92,6 +92,21 @@ const state = {
         location: 'USA'
       }
     }
+  },
+    {
+    date: new Date("2020-04-10 0:0"),
+    category: "feature",
+    title: "Normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
+    description: "For epidemiology plots over time, allow the x-axis to shift to a normalized timepoint: when the location had 100 cumulative confirmed cases, 10 cumulative deaths, or 50 cumulative deaths.",
+    route: {
+      name: 'Epidemiology',
+      query: {
+        location: 'METRO_12060;METRO_35380;METRO_26420',
+        log: "false",
+        variable: "dead",
+        xVariable: "daysSince10Deaths"
+      }
+    }
   }
 ]
 };

@@ -97,7 +97,7 @@ export default Vue.extend({
   props: {},
   data() {
     return {
-      currentDate: "2001-02",
+      currentDate: null,
       caseThreshold: 50,
       glanceLocations: [],
       glanceSummaries: [],

@@ -6,8 +6,7 @@ import Terms from "../views/Terms.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     name: "Home",
     component: Home
@@ -29,7 +28,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+      import( /* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
     path: "/latest",
@@ -47,7 +46,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "data" */ "../views/Data.vue")
+      import( /* webpackChunkName: "data" */ "../views/Data.vue")
   },
   {
     path: "/sources",
@@ -56,7 +55,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "sources" */ "../views/Sources.vue")
+      import( /* webpackChunkName: "sources" */ "../views/Sources.vue")
   },
   {
     path: "/summary",
@@ -64,15 +63,18 @@ const routes = [
     props: route => ({
       location: route.query.location
     }),
-      meta: { hideNavigation: true },
+    meta: {
+      hideNavigation: true
+    },
     component: () =>
-      import(/* webpackChunkName: "summary" */ "../views/Summary.vue")
+      import( /* webpackChunkName: "summary" */ "../views/Summary.vue")
   },
   {
     path: "/epidemiology",
     name: "Epidemiology",
     props: route => ({
       location: route.query.location,
+      xVariable: route.query.xVariable,
       variable: route.query.variable,
       log: route.query.log,
       fixedY: route.query.fixedY
@@ -80,7 +82,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "epi" */ "../views/Epi.vue")
+    component: () => import( /* webpackChunkName: "epi" */ "../views/Epi.vue")
   },
   // {
   //   path: "/timelapse",
@@ -96,7 +98,7 @@ const routes = [
       variable: route.query.variable
     }),
     component: () =>
-      import(/* webpackChunkName: "doubling-rates" */ "../views/DoublingRates.vue")
+      import( /* webpackChunkName: "doubling-rates" */ "../views/DoublingRates.vue")
   }
 ];
 
@@ -105,9 +107,14 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   linkExactActiveClass: 'active',
   routes,
-  scrollBehavior (to, from, savedPosition) {
-  return { x: 0, y: 0 }
-}
+  scrollBehavior(to, from, savedPosition) {
+    if (!to.params.disableScroll) {
+      return {
+        x: 0,
+        y: 0
+      }
+    }
+  }
 });
 
 export default router;

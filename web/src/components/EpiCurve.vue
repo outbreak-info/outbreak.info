@@ -9,8 +9,14 @@
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
   </svg>
+  <small class="d-flex position-absolute justify-content-end pr-5 x-axis-select" ref="xSelector">
+    <select v-model="xVariable" class="select-dropdown" @change="changeScale">
+      <option v-for="option in xVarOptions" :value="option.value" :key="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </small>
   <DataSource />
 </div>
 </template>
@@ -50,6 +56,7 @@ export default Vue.extend({
     data: Array,
     location: String,
     variable: String,
+    xVariableInput: String,
     log: Boolean
   },
   data() {
@@ -63,15 +70,29 @@ export default Vue.extend({
 
       // data
       dataSubscription: null,
-      logData: null,
+      // logData: null,
       plottedData: null,
 
       // button interfaces
       isLogY: false,
+      xVariable: "date",
+      xVarOptions: [{
+        value: "date",
+        label: "date"
+      }, {
+        value: "daysSince100Cases",
+        label: "days since 100 cases"
+      }, {
+        value: "daysSince10Deaths",
+        label: "days since 10 deaths"
+      }, {
+        value: "daysSince50Deaths",
+        label: "days since 50 deaths"
+      }],
       // variable: "confirmed",
 
       // axes
-      numXTicks: 7,
+      numXTicks: 6,
       numYTicks: 6,
       x: d3.scaleTime(),
       y: d3.scaleLinear(),
@@ -96,6 +117,12 @@ export default Vue.extend({
       immediate: true,
       handler(newVal, oldVal) {
         this.isLogY = newVal;
+      },
+    },
+    xVariableInput: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.xVariable = newVal;
       },
     },
     // routeVariable: {
@@ -126,7 +153,7 @@ export default Vue.extend({
       const newWidth = window.innerWidth < idealWidth ? window.innerWidth * padding - framePadding : idealWidth * padding - framePadding;
       const newHeight = newWidth / whRatio;
       // check height within limits
-      if (newHeight > window.innerHeight) {
+      if (newHeight > window.innerHeight*padding) {
         this.width = window.innerHeight * whRatio * padding;
         this.height = window.innerHeight * padding;
       } else {
@@ -136,7 +163,7 @@ export default Vue.extend({
 
       this.margin.right = this.width < 600 ? 115 : 205;
 
-      this.numXTicks = this.width < 700 ? 2 : 6;
+      this.numXTicks = this.width < 750 ? 2 : 6;
       this.numYTicks = this.height < 250 ? 2 : 6;
     },
     colorScale: function(location) {
@@ -147,14 +174,22 @@ export default Vue.extend({
       const scale = store.getters["colors/getColor"];
       return scale(location, 0.7);
     },
-    changeScale: function() {
+
+    changeYScale: function() {
       this.isLogY = !this.isLogY;
+      this.changeScale();
+
+    },
+    changeScale: function() {
       this.$router.replace({
         path: "epidemiology",
+        name: "Epidemiology",
+        params: {disableScroll: true},
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable
+          variable: this.variable,
+          xVariable: this.xVariable
         }
       });
 
@@ -187,17 +222,22 @@ export default Vue.extend({
 
       if (this.data) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
-        this.plottedData = this.isLogY ? this.logData : this.data;
         this.updateScales();
         this.drawDots();
       }
     },
     prepData: function() {
       if (this.data) {
-        this.logData = cloneDeep(this.data);
-        this.logData.forEach(d => {
-          d["value"] = d.value.filter(x => x[this.variable] > 0);
+        this.plottedData = cloneDeep(this.data);
+
+        this.plottedData.forEach(d => {
+          d["value"] = this.isLogY ? d.value.filter(x => x[this.variable] > 0 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
+
+          // ensure dates are sorted
+          d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
         });
+
+
       }
     },
     setupPlot: function() {
@@ -216,15 +256,23 @@ export default Vue.extend({
 
       this.line = d3
         .line()
-        .x(d => this.x(d.date))
+        .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
-      this.x = this.x
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(
-          d3.extent(this.plottedData.flatMap(d => d.value).map(d => d.date))
-        );
+      if (this.xVariable == "date") {
+        this.x = d3.scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
+          .domain(
+            d3.extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
+          );
+      } else {
+        this.x = d3.scaleLinear()
+          .range([0, this.width - this.margin.left - this.margin.right])
+          .domain(
+            [0, d3.max(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))]
+          );
+      }
 
       if (this.isLogY) {
         this.y = d3
@@ -257,12 +305,53 @@ export default Vue.extend({
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
-      // --- update y-scale switch button --
-      //
+      // --- update x-scale switch button --
       const dySwitch = -10;
       const xSwoop = 30;
       const ySwoop = -35;
       const swoopOffset = 10;
+
+      this.switchXBtn = this.svg.selectAll(".switch-x-button-group").data([0]);
+
+      this.switchXBtn.exit().remove();
+      const switchXEnter = this.switchXBtn
+        .enter()
+        .append("g")
+        .attr("class", "switch-x-button-group")
+        .attr("transform", "translate(0,0)");
+
+      this.switchXBtn.merge(switchXEnter);
+
+      const switchXArrow = this.switchXBtn.select("path");
+
+      const switchXArrowEnter = this.switchXBtn
+        .append("path")
+        .attr("class", "swoopy-arrow")
+        .attr("id", "switch-btn-swoopy-arrow")
+        .attr("marker-end", "url(#arrow)");
+
+      switchXArrow
+        .merge(switchXArrowEnter)
+        // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
+        .attr(
+          "d",
+          `M ${xSwoop + this.width - this.margin.right} ${this.height + ySwoop}
+          C ${xSwoop + this.width - this.margin.right*0.95 } ${this.height-45},
+          ${xSwoop + this.width - this.margin.right + 10} ${this.height -
+            this.margin.bottom +
+            18},
+          ${xSwoop + this.width - this.margin.right + ySwoop + 20} ${this.height -
+            this.margin.bottom +
+            15}`
+          // `M ${xSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${xSwoop + 5} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 55}, ${this.margin.left - 25 - dxSwoop} ${ this.height + this.margin.top }, ${this.margin.left - 25} ${ this.height + this.margin.top }`
+          // `M ${dxSwoop} ${this.margin.top + this.height + this.margin.bottom + dySwitch - 20} C ${dxSwoop+15} ${this.margin.top + this.height + this.margin.bottom - 20}, ${this.margin.left - 13} ${this.height + this.margin.top + 25}, ${this.margin.left - 13} ${this.height + this.margin.top + 10}`
+        );
+
+      // --- update y-scale switch button --
+      // const dySwitch = -10;
+      // const xSwoop = 30;
+      // const ySwoop = -35;
+      // const swoopOffset = 10;
 
       this.switchBtn = this.svg.selectAll(".switch-button-group").data([0]);
 
@@ -281,9 +370,16 @@ export default Vue.extend({
         .attr("class", "switch-button-rect")
         .attr("x", 0)
         .attr("width", 0)
-        .attr("height", 0);
+        .attr("height", 26.5);
 
-      switchRect.merge(switchRectEnter).attr("y", this.height - 28);
+      switchRect.merge(switchRectEnter).attr("y", this.height - 28)
+        .on("mouseover", () =>
+          this.switchBtn.select("rect").classed("switch-button-hover", true)
+        )
+        .on("mouseout", () =>
+          this.switchBtn.select("rect").classed("switch-button-hover", false)
+        )
+        .on("click", () => this.changeYScale());;
 
       const switchArrow = this.switchBtn.select("path");
 
@@ -316,19 +412,12 @@ export default Vue.extend({
       const switchTextEnter = this.switchBtn
         .append("text")
         .attr("class", "switch-button")
-        .attr("x", 5);
+        .attr("x", 3.84 * 2);
 
       switchText
         .merge(switchTextEnter)
         .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
-        .attr("y", this.height + dySwitch)
-        .on("mouseover", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", true)
-        )
-        .on("mouseout", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", false)
-        )
-        .on("click", () => this.changeScale());
+        .attr("y", this.height + 6 - 12.8);
 
       if (this.switchBtn.select("text").node()) {
         this.switchBtn
@@ -338,16 +427,20 @@ export default Vue.extend({
             this.switchBtn
             .select("text")
             .node()
-            .getBBox().width + 10
-          )
-          .attr(
-            "height",
-            this.switchBtn
-            .select("text")
-            .node()
-            .getBBox().height + 5
+            .getBBox().width + 3.84 * 4
           );
+        // .attr(
+        //   "height",
+        //   this.switchBtn
+        //   .select("text")
+        //   .node()
+        //   .getBBox().height + 3.84*2
+        // );
       }
+
+      d3.select(this.$refs.xSelector)
+      .style("right", this.margin.right + "px")
+      .style("top", this.height - 28 + "px");
     },
     drawDots: function() {
       const t1 = d3.transition().duration(this.transitionDuration);
@@ -415,7 +508,6 @@ export default Vue.extend({
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         );
-
       // --- create groups for each region ---
       const regionGroups = this.chart
         .selectAll(".epi-region")
@@ -443,7 +535,8 @@ export default Vue.extend({
       // Create nodes of the text labels for force direction
       this.plottedData.forEach(d => {
         d["fx"] = 0;
-        d["targetY"] = d[`${this.variable}_currentCases`] ? this.y(d[`${this.variable}_currentCases`]) : this.height;
+        const yMax = d3.max(d.value, d => d[this.variable]);
+        d["targetY"] = yMax ? this.y(yMax) : this.height;
       });
 
       // Define a custom force
@@ -527,10 +620,11 @@ export default Vue.extend({
         .attr("stroke-dashoffset", 0)
 
       // --- dots ---
+      const keyFunc = function(d, i) { return d._id }
       const dotGroupSelector = this.chart
         .selectAll(".epi-region")
         .selectAll(".epi-point")
-        .data(d => d.value);
+        .data(d => d.value, keyFunc);
 
       dotGroupSelector.exit().remove();
 
@@ -542,7 +636,7 @@ export default Vue.extend({
           // .attr("cy", this.y(0))
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
-          .attr("cx", d => this.x(d.date))
+          .attr("cx", d => this.x(d[this.xVariable]))
           .attr("cy", d => this.y(d[this.variable]))
           .attr("opacity", 0)
           .call(update => update.transition(t2).delay((d, i) => i * 20)
@@ -550,9 +644,9 @@ export default Vue.extend({
           update => update
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
-          .attr("cx", d => this.x(d.date))
           .attr("opacity", 1)
           .call(update => update.transition(t2)
+            .attr("cx", d => this.x(d[this.xVariable]))
             .attr("cy", d => this.y(d[this.variable]))),
           exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
 
@@ -610,7 +704,7 @@ export default Vue.extend({
 
       tooltipRect
         .merge(tooltipRectEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         .attr("width", 165)
         .attr("height", 60)
@@ -628,7 +722,7 @@ export default Vue.extend({
         .attr("class", "tooltip--country");
 
       tooltipText.select(".tooltip--country").merge(tooltipCtryEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         .text(d => d.name)
 
@@ -639,10 +733,10 @@ export default Vue.extend({
       tooltipText
         .select(".tooltip--date")
         .merge(tooltipDateEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         .attr("dy", "1.1em")
-        .text(d => formatDate(d.date));
+        .text(d => d.date ? formatDate(d.date) : "interpolated value");
 
       const tooltipCasesEnter = tooltipTextEnter
         .append("tspan")
@@ -651,7 +745,7 @@ export default Vue.extend({
       tooltipText
         .select(".tooltip--case-count")
         .merge(tooltipCasesEnter)
-        .attr("x", d => this.x(d.date))
+        .attr("x", d => this.x(d[this.xVariable]))
         .attr("y", d => this.y(d[this.variable]))
         // .attr("dy", "1.1em")
         .attr("dy", "2.2em")
@@ -740,15 +834,14 @@ export default Vue.extend({
 }
 
 .switch-button {
-    cursor: pointer;
+    pointer-events: none;
     dominant-baseline: text-after-edge;
     // fill: $grey-90 !important;
     font-weight: 300 !important;
-    font-size: 0.85em;
+    font-size: 12.8px;
+    fill: $secondary-color;
 
-    &:hover {
-        text-decoration: underline;
-    }
+    &:hover {}
 }
 
 .swoopy-arrow,
@@ -762,20 +855,19 @@ export default Vue.extend({
 }
 
 .switch-button-rect {
-    fill-opacity: 0.15;
-    rx: 4;
-    ry: 4;
-    stroke: $grey-60;
-    stroke-width: 0.5;
+    cursor: pointer;
+    fill: white;
+    rx: 5;
+    ry: 5;
+    stroke: $secondary-color;
+    stroke-width: 1;
     shape-rendering: crispedges;
     &:hover {
-        fill-opacity: 0.25;
+        fill: $secondary-bright;
     }
 }
 
-.switch-button-hover {
-    fill-opacity: 0.25;
-}
+.switch-button-hover {}
 
 .epidemiology-curves line.case-def-changed-line {
     stroke: $grey-60;
@@ -785,5 +877,10 @@ export default Vue.extend({
 }
 .epidemiology-curves .case-def-changed text {
     text-anchor: start;
+}
+
+.x-axis-select {
+    // top: -29px;
+    // right: 20px;
 }
 </style>

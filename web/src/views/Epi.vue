@@ -53,13 +53,13 @@
     <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('numIncrease')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
         <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
-          :includeTooltips="true" :location="location" :log="isLogY" :fixedXLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+          :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
       <DataSource />
     </div>
 
     <!-- curve -->
-    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('numIncrease')" />
+    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :xVariableInput="xVariable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('numIncrease')" />
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
@@ -111,6 +111,10 @@ export default {
       type: String,
       default: "false"
     },
+    xVariable: {
+      type: String,
+      default: "date"
+    },
     fixedY: {
       type: String,
       default: "false"
@@ -148,7 +152,15 @@ export default {
       }, {
         label: "daily new deaths",
         value: "dead_numIncrease"
-      }]
+      },
+      // {
+      //   label: "5 day case doubling rate",
+      //   value: "confirmed_doublingRate"
+      // }, {
+      //   label: "5 day death doubling rate",
+      //   value: "dead_doublingRate"
+      // }
+    ]
     };
   },
   computed: {
@@ -188,6 +200,7 @@ export default {
             location: newLocation,
             log: String(this.isLogY),
             variable: this.variable,
+            xVariable: this.xVariable,
             fixedY: String(this.isFixedY)
           }
         });
@@ -223,7 +236,7 @@ export default {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.dataSubscription = getEpiData(this.$apiurl, locations, null, "-confirmed_currentCases", 10, 0).subscribe(d => {
+        this.dataSubscription = getEpiData(this.$apiurl, locations, null, "-confirmed", 10, 0).subscribe(d => {
           this.data$ = d;
           this.plottedData = this.data$[0].length > this.lengthThreshold ? this.hideExtra() : this.data$[0];
           this.isFixedY = this.fixedY == "true";
@@ -247,6 +260,7 @@ export default {
           location: this.location,
           log: String(this.isLogY),
           variable: this.variable,
+          xVariable: this.xVariable,
           fixedY: String(this.isFixedY)
         }
       });

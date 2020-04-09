@@ -1,6 +1,6 @@
 <template>
   <div class="epidemiology-area">
-    <h4 class="stacked-area-title py-5" v-if="title && data && data.length > 0">
+    <h4 class="stacked-area-title pt-2 pb-4" v-if="title && data && data.length > 0">
       {{ title }}
     </h4>
     <svg :width="width" :height="height" class="epi-summary-svg" :id="id">
@@ -42,9 +42,9 @@ import store from "@/store";
 
 const margin = {
   top: 10,
-  right: 25,
+  right: 50,
   bottom: 25,
-  left: 95
+  left: 100
 };
 
 export default Vue.extend({

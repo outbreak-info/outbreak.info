@@ -63,7 +63,7 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-$circle-width: 10px;
+$circle-width: 8px;
 .update-type {
     text-transform: uppercase;
     font-weight: 700;

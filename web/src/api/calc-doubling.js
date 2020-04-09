@@ -125,7 +125,7 @@ export function getAllDoubling(apiUrl, variable, fitLength = 5) {
   store.state.admin.loading = true;
   const timestamp = Math.round(new Date().getTime()/1e5);
   const parseDate = timeParse("%Y-%m-%d");
-  const url = `${apiUrl}query?q=-date:"2020-03-23"&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`;
+  const url = `${apiUrl}query?q=__all__&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`;
 
   return getAll(url).pipe(
     map((results) => {
