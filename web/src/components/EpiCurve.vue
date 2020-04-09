@@ -118,7 +118,7 @@ export default Vue.extend({
     log: {
       immediate: true,
       handler(newVal, oldVal) {
-        this.isLogY = newVal;
+        this.isLogY = this.loggable ? newVal : false;
       },
     },
     xVariableInput: {
@@ -229,6 +229,8 @@ export default Vue.extend({
       }
     },
     prepData: function() {
+      this.loggable = this.variable != "testing_positivity";
+
       if (this.data) {
         this.plottedData = cloneDeep(this.data);
 
@@ -759,7 +761,7 @@ export default Vue.extend({
         .attr("y", d => this.y(d[this.variable]))
         // .attr("dy", "1.1em")
         .attr("dy", "2.2em")
-        .text(d => `${d[this.variable].toLocaleString()} ${this.variable}`);
+        .text(d => this.percent ? `${d3.format(".1%")(d[this.variable])} ${this.variableLabel}` : `${d[this.variable].toLocaleString()} ${this.variableLabel}`);
 
       // dynamically adjust the width of the rect
       if (tooltipSelector.selectAll("rect")["_groups"].length) {
