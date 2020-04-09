@@ -49,6 +49,7 @@
   <DataUpdated />
 
   <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'" text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing."></Warning>
+  <Warning :animate="true" class="my-4" v-if="noData" text="No results. Testing/hospitalization data are currently only available for U.S. States (not Metro areas or Counties), and recovery data is not available for the U.S."></Warning>
 
   <div class="d-flex row m-0">
     <!-- bar graph -->
@@ -183,6 +184,13 @@ export default {
     colorScale: function() {
       const scale = store.getters["colors/getColor"];
       return scale;
+    },
+    noData: function() {
+      if(this.data$){
+      return(!this.data$[0].flatMap(d => d.value).map(d => d[this.variable]).some(d => d));
+    } else {
+      return(false)
+    }
     },
     isLogY: function() {
       return (this.log === "true")

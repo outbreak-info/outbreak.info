@@ -66,8 +66,6 @@ export function getEpiTraces(apiUrl, locations) {
           d['testing_positivity'] = d.testing_positive ? (d.testing_positive/d.testing_totalTestResults) : 0;
         })
 
-        console.log(results)
-
         const nested = nest()
           .key(d => d.location_id)
           .rollup(values => values)
