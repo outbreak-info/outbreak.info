@@ -59,7 +59,7 @@
     </div>
 
     <!-- curve -->
-    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :xVariableInput="xVariable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('Increase')" />
+    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('Increase')" />
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />

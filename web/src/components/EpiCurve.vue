@@ -57,7 +57,9 @@ export default Vue.extend({
     location: String,
     variable: String,
     xVariableInput: String,
-    log: Boolean
+    log: Boolean,
+    loggable: Boolean,
+    percent: Boolean
   },
   data() {
     return {
@@ -231,7 +233,7 @@ export default Vue.extend({
         this.plottedData = cloneDeep(this.data);
 
         this.plottedData.forEach(d => {
-          d["value"] = this.isLogY ? d.value.filter(x => x[this.variable] > 0 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
+          d["value"] = this.isLogY && this.loggable ? d.value.filter(x => x[this.variable] > 0 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
 
           // ensure dates are sorted
           d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
@@ -297,11 +299,19 @@ export default Vue.extend({
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
-          const log = Math.log10(d);
-          return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
-        }) :
-        d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
+      if(this.isLogY && this.loggable){
+        this.yAxis = d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
+            const log = Math.log10(d);
+            return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+          })
+      } else {
+        this.yAxis = d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
+      }
+
+      if(this.percent){
+      this.yAxis.tickFormat(d3.format(".0%"))
+    }
+
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
@@ -352,6 +362,7 @@ export default Vue.extend({
       // const xSwoop = 30;
       // const ySwoop = -35;
       // const swoopOffset = 10;
+      if(this.loggable){
 
       this.switchBtn = this.svg.selectAll(".switch-button-group").data([0]);
 
@@ -431,12 +442,11 @@ export default Vue.extend({
           );
         // .attr(
         //   "height",
-        //   this.switchBtn
         //   .select("text")
         //   .node()
         //   .getBBox().height + 3.84*2
         // );
-      }
+      }}
 
       d3.select(this.$refs.xSelector)
       .style("right", this.margin.right + "px")
@@ -535,8 +545,8 @@ export default Vue.extend({
       // Create nodes of the text labels for force direction
       this.plottedData.forEach(d => {
         d["fx"] = 0;
-        const yMax = d3.max(d.value, d => d[this.variable]);
-        d["targetY"] = yMax ? this.y(yMax) : this.height;
+        const yMax = d.value.filter(d => d.mostRecent).map(d => d[this.variable]);
+        d["targetY"] = yMax[0] ? this.y(yMax[0]) : this.height;
       });
 
       // Define a custom force
