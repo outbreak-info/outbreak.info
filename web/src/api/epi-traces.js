@@ -52,7 +52,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,_id`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_positiveIncrease,testing_totalTestResultsIncrease,_id`;
 
   return getAll(apiUrl, queryString)
     .pipe(
@@ -61,7 +61,14 @@ export function getEpiTraces(apiUrl, locations) {
         // convert dates to javascript dates
         results.forEach(d => {
           d['date'] = parseDate(d.date);
+          d['testing_positive'] = d.testing_positive ?  d.testing_positive : 0;
+          d['testing_totalTestResults'] = d.testing_totalTestResults ? d.testing_totalTestResults : 0;
+          d['testing_positivity'] = d.testing_positive ? (d.testing_positive/d.testing_totalTestResults) : 0;
+          // d['testing_positivity'] = d.testing_totalTestResults ? (d.t/d.testing_totalTestResults) : 0;
+          // d['testing_positivity'] = d.testing_positiveIncrease ? (d.testing_positiveIncrease/d.testing_totalTestResultsIncrease) : 0;
         })
+
+        console.log(results)
 
         const nested = nest()
           .key(d => d.location_id)

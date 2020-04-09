@@ -7,7 +7,7 @@
   <!-- autocomplete region selector -->
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <!-- too many to plot -->
-  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold && !variable.includes('numIncrease')">
+  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold && !variable.includes('Increase')">
     <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
       <label class="b-contain m-auto">
         <span>show more than {{ lengthThreshold }} curves</span>
@@ -26,7 +26,7 @@
   </div>
 
   <!-- fixed y selector for small multiple bar graphs -->
-  <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;" v-if="variable.includes('numIncrease') && dataLength > 1">
+  <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;" v-if="variable.includes('Increase') && dataLength > 1">
     <label class="b-contain m-auto">
       <span>constant y-axis limits</span>
       <input type="checkbox" v-model="isFixedY" />
@@ -50,7 +50,7 @@
 
   <div class="d-flex row m-0">
     <!-- bar graph -->
-    <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('numIncrease')">
+    <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('Increase')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
         <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
           :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
@@ -59,7 +59,7 @@
     </div>
 
     <!-- curve -->
-    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :xVariableInput="xVariable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('numIncrease')" />
+    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :xVariableInput="xVariable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('Increase')" />
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
@@ -152,14 +152,23 @@ export default {
       }, {
         label: "daily new deaths",
         value: "dead_numIncrease"
-      },
-      // {
-      //   label: "5 day case doubling rate",
-      //   value: "confirmed_doublingRate"
-      // }, {
-      //   label: "5 day death doubling rate",
-      //   value: "dead_doublingRate"
-      // }
+        // {
+        //   label: "5 day case doubling rate",
+        //   value: "confirmed_doublingRate"
+        // }, {
+        //   label: "5 day death doubling rate",
+        //   value: "dead_doublingRate"
+        // }
+      }, {
+        label: "cumulative COVID-19 tests (U.S. States only)",
+        value: "testing_totalTestResults"
+      }, {
+        label: "daily new tests (U.S. States only)",
+        value: "testing_totalTestResultsIncrease"
+      }, {
+        label: "percent positive tests (U.S. States only)",
+        value: "testing_positivity"
+      }
     ]
     };
   },
