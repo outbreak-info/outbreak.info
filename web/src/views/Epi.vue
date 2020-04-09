@@ -288,7 +288,6 @@ export default {
       }
     },
     hideExtra: function() {
-      console.log(this.data$)
       const selectedData = this.data$ ? this.data$[0]
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)
