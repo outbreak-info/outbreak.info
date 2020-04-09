@@ -55,13 +55,13 @@ library.add(faWindowClose);
 
 const width = 250;
 const sparkWidth = 75;
-const newCasesWidth = 35;
+const newCasesWidth = 45;
 const innerPadding = 0.25;
 const margin = {
   top: 20,
   right: 100,
   bottom: 10,
-  left: 50,
+  left: 60,
   gap: 10
 };
 const transitionDuration = 3500;
