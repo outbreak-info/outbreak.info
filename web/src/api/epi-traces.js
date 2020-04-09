@@ -64,8 +64,6 @@ export function getEpiTraces(apiUrl, locations) {
           d['testing_positive'] = d.testing_positive ?  d.testing_positive : 0;
           d['testing_totalTestResults'] = d.testing_totalTestResults ? d.testing_totalTestResults : 0;
           d['testing_positivity'] = d.testing_positive ? (d.testing_positive/d.testing_totalTestResults) : 0;
-          // d['testing_positivity'] = d.testing_totalTestResults ? (d.t/d.testing_totalTestResults) : 0;
-          // d['testing_positivity'] = d.testing_positiveIncrease ? (d.testing_positiveIncrease/d.testing_totalTestResultsIncrease) : 0;
         })
 
         console.log(results)
