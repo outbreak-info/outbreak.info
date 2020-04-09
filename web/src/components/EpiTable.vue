@@ -1,5 +1,5 @@
 <template>
-<div class="epi-table my-3" v-if="data  && colorScale">
+<div class="epi-table my-3" v-if="data && colorScale">
   <div class="m-auto d-flex justify-content-center py-5">
     <div>
       <h4>Latest Data</h4>
@@ -59,8 +59,8 @@
           <div class="sort-grp">
             {{column.label}}
             <font-awesome-icon :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']" :icon="['fas', 'sort']" />
-            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === -1" />
-            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === 1" />
+            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === 1" />
+            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === -1" />
           </div>
         </th>
         <th id="td-outcomes">
@@ -471,18 +471,22 @@ export default Vue.extend({
     sortColumn(variable) {
       // reset other sorting funcs for arrow affordances
       const idx = this.columns.findIndex(d => d.sort_id === variable);
+
       if (this.columns[idx].sorted || this.columns[idx].sorted === 0) {
-
-        this.sortVar = variable === this.sortVar ? `-${variable}` : variable;
-
-
+        // if the sort variable is the same, switch it.
+        if (this.sortVar == variable) {
+          this.sortVar = `-${variable}`;
+        } else if (this.sortVar == `-${variable}`) {
+          this.sortVar = variable;
+        } else {
+          this.sortVar = `-${variable}`;
+        }
         this.columns.forEach((d, i) => {
           if (i === idx) {
-            d.sorted = d.sorted ? -1 * d.sorted : 1;
+            d.sorted = d.sorted ? -1 * d.sorted : -1;
           } else {
             d.sorted = d.sorted || d.sorted === 0 ? 0 : null;
           }
-
         })
 
         this.updateData();
