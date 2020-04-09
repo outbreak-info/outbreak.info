@@ -228,7 +228,7 @@ export default {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.dataSubscription = getEpiData(this.$apiurl, locations, null, "-confirmed_currentCases", 10, 0).subscribe(d => {
+        this.dataSubscription = getEpiData(this.$apiurl, locations, null, "-confirmed", 10, 0).subscribe(d => {
           this.data$ = d;
           this.plottedData = this.data$[0].length > this.lengthThreshold ? this.hideExtra() : this.data$[0];
           this.isFixedY = this.fixedY == "true";
@@ -288,6 +288,7 @@ export default {
       }
     },
     hideExtra: function() {
+      console.log(this.data$)
       const selectedData = this.data$ ? this.data$[0]
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)

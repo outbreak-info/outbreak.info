@@ -254,7 +254,7 @@ export default Vue.extend({
       });
     },
     updateScales: function() {
-      this.x = this.x.domain([0, d3.max(this.data, d => d[`${this.variable}_currentCases`])]);
+      this.x = this.x.domain([0, d3.max(this.data, d => d[this.variable])]);
 
       this.y = this.y
         .range([this.height, 0])
@@ -313,8 +313,8 @@ export default Vue.extend({
         .style("fill", (d, i) => this.colorScale(i))
         // .attr("x", d => this.x(0))
         // .transition(t1)
-        .attr("width", d => this.x(0) - this.x(d[`${this.variable}_currentCases`]))
-        .attr("x", d => this.x(d[`${this.variable}_currentCases`]));
+        .attr("width", d => this.x(0) - this.x(d[this.variable]))
+        .attr("x", d => this.x(d[this.variable]));
 
       // --- text ---
       const textSelector = grpSelector.select(".annotation--country-count");
@@ -328,11 +328,11 @@ export default Vue.extend({
       // merge
       textSelector
         .merge(textEnter)
-        .attr("x", d => this.x(d[`${this.variable}_currentCases`]))
+        .attr("x", d => this.x(d[this.variable]))
         .attr("dx", "-0.5em")
         .attr("y", d => this.y(d.name) + this.y.bandwidth() / 2)
         .style("font-size", this.y.bandwidth())
-        .text(d => d[`${this.variable}_currentCases`].toLocaleString());
+        .text(d => d[this.variable].toLocaleString());
 
       // --- sparklines ---
       this.chart
@@ -402,7 +402,7 @@ export default Vue.extend({
       // merge
       newCasesSelector
         .merge(newCasesEnter)
-        .text(d => d[`${this.variable}_currentIncrease`].toLocaleString());
+        .text(d => d[this.variable].toLocaleString());
     }
   }
 });

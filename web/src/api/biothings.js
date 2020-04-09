@@ -54,7 +54,7 @@ export function getCurrentDate(apiUrl) {
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
   const timestamp = Math.round(new Date().getTime()/1e5);
-  const url = `${apiUrl}query?q=__all__&sort=-date&size=1&fields=date&timestamp=${timestamp}`;
+  const url = `${apiUrl}query?q=mostRecent:true&sort=-date&size=1&fields=date&timestamp=${timestamp}`;
   return from(axios.get(url)).pipe(
     pluck("data", "hits"),
     map(result => {

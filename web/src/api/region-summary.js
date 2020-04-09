@@ -106,12 +106,12 @@ export function getCountryData(apiUrl, region, variable) {
   const timestamp = Math.round(new Date().getTime()/1e5);
 
   return forkJoin([
-    from(axios.get(`${apiUrl}query?q=admin_level:0 AND date:"2020-03-24" AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,name,${variable}_currentCases,${variable}_currentIncrease&timestamp=${timestamp}`)),
+    from(axios.get(`${apiUrl}query?q=admin_level:0 AND mostRecent:true AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,name,${variable},${variable}_numIncrease&timestamp=${timestamp}`)),
     getAll(apiUrl, `admin_level:0 AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,date,${variable}&timestamp=${timestamp}`)
   ]).pipe(
     map(([currentData, timeData]) => {
       // sort current data
-      currentData["data"]["hits"].sort((a, b) => a[`${variable}_currentCases`] - b[`${variable}_currentCases`]);
+      currentData["data"]["hits"].sort((a, b) => a[variable] - b[variable]);
 
       // clean up time data: parse all dates, nest.
       // convert dates to javascript dates

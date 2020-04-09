@@ -64,7 +64,7 @@ export default {
     },
   },
   mounted() {
-    this.tableSubscription = getEpiTable(this.$apiurl, null, [0, 1, 2], "-confirmed_currentCases", 10, 0).subscribe(_ => null);
+    this.tableSubscription = getEpiTable(this.$apiurl, null, [0, 1, 2], "-confirmed", 10, 0).subscribe(_ => null);
   },
   destroyed() {
     this.tableSubscription.unsubscribe();

@@ -272,7 +272,7 @@ export default Vue.extend({
           group: "cases",
           label: "total",
           value: "confirmed_cases",
-          sort_id: "confirmed_currentCases",
+          sort_id: "confirmed",
           sorted: -1,
           essential: true
         },
@@ -280,7 +280,7 @@ export default Vue.extend({
           group: "cases",
           label: "new today",
           value: "confirmed_increase",
-          sort_id: "confirmed_currentIncrease",
+          sort_id: "confirmed_numIncrease",
           sorted: 0,
           essential: false
         },
@@ -288,7 +288,7 @@ export default Vue.extend({
           group: "cases",
           label: "increase today",
           value: "confirmed_pctIncrease",
-          sort_id: "confirmed_currentPctIncrease",
+          sort_id: "confirmed_pctIncrease",
           sorted: 0,
           essential: true
         },
@@ -329,7 +329,7 @@ export default Vue.extend({
           group: "deaths",
           label: "total",
           value: "dead_cases",
-          sort_id: "dead_currentCases",
+          sort_id: "dead",
           sorted: 0,
           essential: true
         },
@@ -337,7 +337,7 @@ export default Vue.extend({
           group: "deaths",
           label: "new today",
           value: "dead_increase",
-          sort_id: "dead_currentIncrease",
+          sort_id: "dead_numIncrease",
           sorted: 0,
           essential: false
         },
@@ -345,7 +345,7 @@ export default Vue.extend({
           group: "deaths",
           label: "increase today",
           value: "dead_pctIncrease",
-          sort_id: "dead_currentPctIncrease",
+          sort_id: "dead_pctIncrease",
           sorted: 0,
           essential: true
         },
@@ -373,7 +373,7 @@ export default Vue.extend({
           group: "recoveries",
           label: "total",
           value: "recovered_cases",
-          sort_id: "recovered_currentCases",
+          sort_id: "recovered",
           sorted: 0,
           essential: true
         },
@@ -381,7 +381,7 @@ export default Vue.extend({
           group: "recoveries",
           label: "new today",
           value: "recovered_increase",
-          sort_id: "recovered_currentIncrease",
+          sort_id: "recovered_numIncrease",
           sorted: 0,
           essential: false
         },
@@ -389,7 +389,7 @@ export default Vue.extend({
           group: "recoveries",
           label: "increase today",
           value: "recovered_pctIncrease",
-          sort_id: "recovered_currentPctIncrease",
+          sort_id: "recovered_pctIncrease",
           sorted: 0,
           essential: true
         },
@@ -403,7 +403,7 @@ export default Vue.extend({
       ],
       searchInput: "",
       filteredCases: null,
-      sortVar: "-confirmed_currentCases",
+      sortVar: "-confirmed",
       page: 0,
       numPerPage: 10,
       pageOpts: [5, 10, 50, 100]
