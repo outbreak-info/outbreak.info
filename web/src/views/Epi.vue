@@ -152,7 +152,15 @@ export default {
       }, {
         label: "daily new deaths",
         value: "dead_numIncrease"
-      }]
+      },
+      // {
+      //   label: "5 day case doubling rate",
+      //   value: "confirmed_doublingRate"
+      // }, {
+      //   label: "5 day death doubling rate",
+      //   value: "dead_doublingRate"
+      // }
+    ]
     };
   },
   computed: {
