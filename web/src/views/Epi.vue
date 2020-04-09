@@ -48,6 +48,8 @@
   <!-- date updated -->
   <DataUpdated />
 
+  <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'" text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing."></Warning>
+
   <div class="d-flex row m-0">
     <!-- bar graph -->
     <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('Increase')">
@@ -149,6 +151,9 @@ export default {
         // }, {
         label: "daily new cases",
         value: "confirmed_numIncrease"
+      }, {
+        label: "daily new hospitalizations (U.S. States only)",
+        value: "testing_hospitalizedIncrease"
       }, {
         label: "daily new deaths",
         value: "dead_numIncrease"
