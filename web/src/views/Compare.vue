@@ -38,7 +38,7 @@
 
   </div>
 
-<!-- Results label -->
+  <!-- Results label -->
   <div class="row mt-4 mb-2">
     <div class="col-sm-12 text-left text-muted">
       <b>{{numResults}}</b> results, sorted by <b v-html="sortVariable.label"></b>
@@ -58,13 +58,17 @@
           </tr>
           <tr>
             <td>
-              <router-link v-if="item.confirmed_doublingRate" :to="{ name: 'Doubling Rates', query: {location: item.location_id, variable:'confirmed'} }">cases: {{formatNumber(item.confirmed_doublingRate)}}
+              <router-link v-if="item.confirmed_doublingRate" :style="[sortVariable.value == 'confirmed_doublingRate' || sortVariable.value == '-confirmed_doublingRate' ? {background: item.fill} : {}]" class="py-1 px-2"
+                :to="{ name: 'Doubling Rates', query: {location: item.location_id, variable:'confirmed'} }">
+                cases: {{formatNumber(item.confirmed_doublingRate)}}
               </router-link>
               <span v-else>cases: {{formatNumber(item.confirmed_doublingRate)}}
               </span>
             </td>
             <td>
-              <router-link v-if="item.dead_doublingRate" :to="{ name: 'Doubling Rates', query: {location: item.location_id, variable:'dead'} }">deaths: {{formatNumber(item.dead_doublingRate)}}
+              <router-link v-if="item.dead_doublingRate" :style="[sortVariable.value == 'dead_doublingRate' || sortVariable.value == '-dead_doublingRate' ? {background: item.fill} : {}]" class="py-1 px-2"
+              :to="{ name: 'Doubling Rates', query: {location: item.location_id, variable:'dead'} }">
+              deaths: {{formatNumber(item.dead_doublingRate)}}
               </router-link>
               <span v-else>deaths: {{formatNumber(item.dead_doublingRate)}}
               </span>
@@ -72,7 +76,7 @@
           </tr>
         </table>
         <router-link :to="{ name: 'Epidemiology', query: {location: item.location_id} }">
-          <h5>{{item.name}}</h5>
+          <h5>{{item.name}}<span v-if="item.state_name">, {{item.state_name}}</span></h5>
         </router-link>
       </div>
     </div>
@@ -90,8 +94,13 @@ import {
   mapState
 } from "vuex";
 import {
-  format
+  format,
+  scaleSequential,
+  max
 } from "d3";
+import {
+  interpolateYlGnBu
+} from "d3-scale-chromatic";
 
 export default {
   name: "Compare",
@@ -166,7 +175,7 @@ export default {
   computed: {
     ...mapState("admin", ["loading"]),
     numResults() {
-      return(this.data.length)
+      return (this.data.length)
     }
   },
   mounted() {
@@ -188,6 +197,18 @@ export default {
 
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 100).subscribe(results => {
         this.data = results;
+
+        const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead"];
+        const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
+        const yMax = max(results, d => d[variable]);
+        const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
+
+        const scale = scaleSequential(interpolateYlGnBu)
+          .domain(domain).clamp(false);
+
+        this.data.forEach(d => {
+          d.fill = scale(d[variable]);
+        })
       })
     },
     formatNumber(value, digits = 1) {
