@@ -5,7 +5,7 @@ const state = {
       id: "JHU",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
       scope: "(non-U.S. data)",
-      description: "Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China",
+      description: 'Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China. See <a target="_blank" rel="noreferrer" href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">data FAQ</a>.',
       url: "https://github.com/CSSEGISandData/COVID-19"
     },
     {
