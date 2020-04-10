@@ -20,7 +20,7 @@
           <h3>Geographic Data</h3>
           <div class="epi-container" v-for="source in geoSources" :key="source.id">
             <h5>
-              <a :href="source.url">{{source.name}}</a>
+              <a :href="source.url" target="_blank" rel="noreferrer">{{source.name}}</a>
             </h5>
             <p>
               {{source.description}}

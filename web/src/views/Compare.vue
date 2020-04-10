@@ -4,6 +4,8 @@
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
+  <Choropleth :data="data"/>
+
 
   <h3 class="my-3">How much are regions improving?</h3>
 
@@ -102,8 +104,13 @@ import {
   interpolateYlGnBu
 } from "d3-scale-chromatic";
 
+import Choropleth from "@/components/Choropleth.vue";
+
 export default {
   name: "Compare",
+  components: {
+    Choropleth
+  },
   props: {
     admin_level: String,
     location: String,
@@ -195,19 +202,22 @@ export default {
         }
       });
 
-      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 100).subscribe(results => {
+      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 1000).subscribe(results => {
         this.data = results;
 
         const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead"];
         const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
         const yMax = max(results, d => d[variable]);
-        const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
+        // const domain = [0,Math.log10(yMax)];
+        const domain = [8,0];
+        // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
 
         const scale = scaleSequential(interpolateYlGnBu)
-          .domain(domain).clamp(false);
+          .domain(domain).clamp(true);
 
         this.data.forEach(d => {
           d.fill = scale(d[variable]);
+          // d.fill = scale(Math.log10(d[variable]));
         })
       })
     },
@@ -218,7 +228,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #th-doubling-rates {
     font-weight: 400;
 }

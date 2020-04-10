@@ -27,7 +27,7 @@ const state = {
       id: "census",
       name: "United States Census Bureau",
       scope: "(Metropolitan areas)",
-      description: "Metropolitan areas are defined by the U.S. Census Bureau's Core Based Statistical Areas. Totals for Metro areas are calculated by aggregating the component U.S. counties into the Core Based Statistical Areas.",
+      description: "Metropolitan areas are defined by the U.S. Census Bureau's Core Based Statistical Areas. Totals for Metro areas are calculated by aggregating the component U.S. counties into the Core Based Statistical Areas. All geographic boundaries for the U.S. are also provided by the Census Bureau.",
       url: "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html"
     }
   ],
