@@ -49,6 +49,17 @@ const routes = [{
       import( /* webpackChunkName: "data" */ "../views/Data.vue")
   },
   {
+    path: "/compare",
+    name: "Compare",
+    props: route => ({
+      admin_level: route.query.admin_level,
+      location: route.query.location,
+      sort: route.query.sort
+    }),
+    component: () =>
+      import( /* webpackChunkName: "compare" */ "../views/Compare.vue")
+  },
+  {
     path: "/sources",
     name: "Sources",
     // route level code-splitting

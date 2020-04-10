@@ -41,6 +41,7 @@
 
     <p class="text-center">
       <router-link class="btn btn-main-outline router-link no-underline m-5" role="button" :to="{ name: 'Epidemiology', query: { location: mostCasesNames } }">Explore cases over time</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-5" role="button" :to="{ name: 'Compare' }">Compare regions</router-link>
     </p>
   </div>
 

@@ -73,6 +73,17 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link"
+                to="/compare"
+                :class="{ active: $route.name == 'Compare' }"
+                >Regions
+              </router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
                 to="/about"
                 :class="{ active: $route.name == 'About' }"
                 >About</router-link
