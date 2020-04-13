@@ -2,8 +2,10 @@
 <div>
   <h1>variable: {{variable}}</h1>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
+    <g ref="regions" class="region-group"></g>
+    <g ref="states" class="state-group"></g>
   </svg>
-  <HistogramLegend :data="data" :variable="variable" :colorScale="colorScale"/>
+  <HistogramLegend :data="data" :variable="variable" :colorScale="colorScale" />
 </div>
 </template>
 
@@ -44,63 +46,77 @@ export default {
         right: 25,
         bottom: 25,
         left: 25
-      }
+      },
+      // refs
+      svg: null,
+      states: null,
+      regions: null
     };
   },
   computed: {},
   mounted() {
     console.log(geodata)
     console.log(this.data)
+    this.setupChoro();
     this.drawMetro();
   },
   methods: {
-    drawMetro() {
-      if(this.data){
+    setupChoro() {
       this.svg = d3.select(this.$refs.svg);
+      this.states = d3.select(this.$refs.states);
+      this.regions = d3.select(this.$refs.regions);
+    },
+    drawMetro() {
+      if (this.data) {
 
-      this.data.forEach(d => {
-        const id = d.location_id.replace("METRO_", "");
-        const idx = geodata.features.findIndex(polygon => polygon.properties.GEOID === id);
-        if(idx > -1){
-          geodata.features[idx]["fill"] = d.fill;
+        this.data.forEach(d => {
+          const id = d.location_id.replace("METRO_", "");
+          const idx = geodata.features.findIndex(polygon => polygon.properties.GEOID === id);
+          if (idx > -1) {
+            geodata.features[idx]["fill"] = d.fill;
 
-        }
-      })
+          }
+        })
 
 
-      var path = d3.geoPath();
-      var projection =d3.geoAlbersUsa()
-      .scale(700)
-      .translate([this.width / 2+10, this.height / 2]);
-       //
-       // d3.geoMercator()
-       //  .scale(300)
-       //  .center([-115.583333, 39.833333])
-       //  .translate([this.width / 2, this.height / 2]);
+        var path = d3.geoPath();
+        var projection = d3.geoAlbersUsa()
+          .scale(700)
+          .translate([this.width / 2 + 10, this.height / 2]);
 
-      this.svg.append("g")
-        .selectAll("path")
-        .data(geodata.features)
-        .enter()
-        .append("path")
-        .attr("class", "region")
-        // draw each region
-        .attr("d", path
-          .projection(projection)
-        )
-        .attr("fill", d => d.fill ? d.fill : "none")
+        this.regions
+          .selectAll("path")
+          .data(geodata.features)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "region")
+                // draw each region
+                .attr("d", path
+                  .projection(projection)
+                )
+                .attr("fill", d => d.fill ? d.fill : "none");
+            },
+            update => update.attr("fill", d => d.fill ? d.fill : "none")
+          )
 
-      this.svg.append("g")
-        .selectAll("path")
-        .data(usstates.features)
-        .enter()
-        .append("path")
-        .attr("class", "state")
-        // draw each region
-        .attr("d", path
-          .projection(projection)
-        )
-    }}
+        this.states
+          .selectAll("path")
+          .data(usstates.features)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "state")
+                // draw each region
+                .attr("d", path
+                  .projection(projection)
+                )
+            }
+          )
+      }
+    }
 
   }
 };
@@ -112,12 +128,18 @@ export default {
 // }
 
 .region {
-  stroke: $grey-60;
-  stroke-width: 0.5;
+    stroke: $grey-60;
+    stroke-width: 0.5;
 }
+
+.region:hover {
+    stroke: $base-grey;
+    stroke-width: 1.5;
+}
+
 .state {
-  fill: none;
-  stroke: $grey-90;
-  stroke-width: 0.5;
+    fill: none;
+    stroke: $grey-90;
+    stroke-width: 0.5;
 }
 </style>

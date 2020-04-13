@@ -99,7 +99,7 @@ export default {
             enter => {
               enter.append("rect")
                 .attr("class", "histogram-bar")
-                .attr("fill", d => this.colorScale((d.x0 + d.x1) / 2))
+                .attr("fill", d => this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : "none")
                 .attr("x", d => this.x(d.x0) + 1)
                 .attr("width", d => Math.max(0, this.x(d.x1) - this.x(d.x0) - 1))
                 .attr("y", d => this.y(d.length))
@@ -107,7 +107,7 @@ export default {
             },
             update => {
               update
-                .attr("fill", d => this.colorScale((d.x0 + d.x1) / 2))
+                .attr("fill", d => this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : "none")
                 .attr("x", d => this.x(d.x0) + 1)
                 .attr("width", d => Math.max(0, this.x(d.x1) - this.x(d.x0) - 1))
                 .attr("y", d => this.y(d.length))

@@ -129,6 +129,7 @@ export default {
   },
   data() {
     return {
+      colorScale: null,
       data: [],
       dataSubscription: null,
       sortVariable: {
@@ -209,7 +210,7 @@ export default {
         const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
         const yMax = max(results, d => d[variable]);
         // const domain = [0,Math.log10(yMax)];
-        const domain = [12,0];
+        const domain = [10,0];
         // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
 
         this.colorScale = scaleSequential(interpolateYlGnBu)
