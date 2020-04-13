@@ -1,7 +1,9 @@
 <template>
 <div>
+  <h1>variable: {{variable}}</h1>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
   </svg>
+  <HistogramLegend :data="data" :variable="variable" :colorScale="colorScale"/>
 </div>
 </template>
 
@@ -10,10 +12,17 @@ import geodata from "@/assets/geo/US_metro.json";
 import usstates from "@/assets/geo/US_states.json";
 import * as d3 from "d3";
 
+import HistogramLegend from "@/components/HistogramLegend.vue"
+
 export default {
   name: "Choropleth",
+  components: {
+    HistogramLegend
+  },
   props: {
     data: Array,
+    variable: String,
+    colorScale: Function,
     width: {
       type: Number,
       default: 500

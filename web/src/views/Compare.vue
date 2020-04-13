@@ -4,7 +4,7 @@
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
-  <Choropleth :data="data"/>
+  <Choropleth :data="data" :colorScale="colorScale" :variable="sortVariable.value"/>
 
 
   <h3 class="my-3">How much are regions improving?</h3>
@@ -209,14 +209,14 @@ export default {
         const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
         const yMax = max(results, d => d[variable]);
         // const domain = [0,Math.log10(yMax)];
-        const domain = [8,0];
+        const domain = [12,0];
         // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
 
-        const scale = scaleSequential(interpolateYlGnBu)
+        this.colorScale = scaleSequential(interpolateYlGnBu)
           .domain(domain).clamp(true);
 
         this.data.forEach(d => {
-          d.fill = scale(d[variable]);
+          d.fill = this.colorScale(d[variable]);
           // d.fill = scale(Math.log10(d[variable]));
         })
       })
