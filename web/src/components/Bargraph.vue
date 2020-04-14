@@ -1,4 +1,4 @@
-<template>
+xVariableLim<template>
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{title}}</h4>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" ref="svg">
@@ -60,7 +60,7 @@ export default Vue.extend({
       type: Number,
       default: null
     },
-    fixedXLim: {
+    xVariableLim: {
       type: Array,
       default: null
     },
@@ -136,8 +136,7 @@ export default Vue.extend({
       }
     },
     updateScales() {
-      console.log(this.fixedXLim)
-      const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.plottedData, d => d.date);
+      const range = this.xVariableLim ? this.xVariableLim : d3.extent(this.plottedData, d => d.date);
 
       this.x = this.x
         .range([0, this.width])
