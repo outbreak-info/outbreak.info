@@ -14,6 +14,13 @@ const state = {
       scope: "(U.S. data)",
       description: 'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
       url: "https://github.com/nytimes/covid-19-data"
+    },
+    {
+      id: "testing",
+      name: "The COVID Tracking Project",
+      scope: "(testing data)",
+      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
+      url: "https://github.com/nytimes/covid-19-data"
     }
   ],
   geoSources: [{
@@ -105,6 +112,21 @@ const state = {
         log: "false",
         variable: "dead",
         xVariable: "daysSince10Deaths"
+      }
+    }
+  },
+    {
+    date: new Date("2020-04-15 0:0"),
+    category: "data",
+    title: "Add testing and hospitalization data for states in the United States",
+    description: 'Incorporate testing and hospitalzation data from the <a href="https://covidtracking.com/" target="_blank" rel="noreferrer">The COVID Tracking Project</a>.',
+    route: {
+      name: 'Epidemiology',
+      query: {
+        location: 'USA_US-MA;USA_US-NY;USA_US-KS;USA_US-NJ',
+        log: "false",
+        variable: "testing_positivity",
+        xVariable: "date"
       }
     }
   }

@@ -1,9 +1,9 @@
 <template>
 <div class="source my-3">
   <small>Source:
-    <span v-for="(source, idx) in sources" :key="idx">
+    <span v-for="(source, idx) in filteredSources" :key="idx">
       <a :href="source.url" target="_blank" rel="noreferrer">{{ source.name}} {{source.scope}}</a>
-      <span v-if="idx < sources.length-1">; </span>
+      <span v-if="idx < filteredSources.length-1">; </span>
     </span>, updated daily. <router-link :to="{ name: 'Sources' }">Read more</router-link>
   </small>
 </div>
@@ -18,9 +18,18 @@ import {
 
 export default Vue.extend({
   name: "DataSource",
-  props: {},
+  props: {
+    ids: Array
+  },
   computed: {
     ...mapState("admin", ["sources"]),
+    filteredSources() {
+      if (this.ids && this.ids.length) {
+        return (this.sources.filter(d => this.ids.includes(d.id)))
+      } else {
+        return (this.sources)
+      }
+    }
   },
   data() {
     return {};

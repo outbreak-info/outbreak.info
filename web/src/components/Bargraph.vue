@@ -42,7 +42,8 @@ export default Vue.extend({
     data: Array,
     width: Number,
     height: Number,
-    variable: String,
+    // variable: String,
+    variableObj: Object,
     id: String,
     color: String,
     title: String,
@@ -91,9 +92,16 @@ export default Vue.extend({
     data: function() {
       this.updatePlot()
     },
-    variable: function() {
-      this.updatePlot()
+    variableObj: {
+      immediate: true,
+      handler(newObj, oldObj) {
+        this.variable = newObj.value;
+        this.updatePlot();
+      }
     },
+    // variable: function() {
+    //   this.updatePlot()
+    // },
     fixedYMax: function() {
       this.updatePlot()
     },
@@ -283,7 +291,7 @@ export default Vue.extend({
 
       ttip.select(".country-name").text(d.name);
       ttip.select(".date").text(d3.timeFormat("%d %b %Y")(d.date));
-      ttip.select(".count").text(`${d[this.variable].toLocaleString()} ${this.variableLabel}`);
+      ttip.select(".count").text(`${d[this.variable].toLocaleString()} ${this.variableObj.ttip}`);
     },
     mouseOff() {
       d3.selectAll(".tooltip")
