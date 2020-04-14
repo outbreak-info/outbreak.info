@@ -22,7 +22,7 @@
       </div>
 
       <div class="d-flex flex-wrap">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', sort: this.sortVariable.value} }">Australian Provinces</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', sort: this.sortVariable.value} }">Australian States</router-link>
         <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', sort: this.sortVariable.value} }">Canadian Provinces</router-link>
         <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', sort: this.sortVariable.value} }">Chinese Provinces</router-link>
 
