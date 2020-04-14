@@ -278,7 +278,7 @@ export default Vue.extend({
           );
       }
 
-      if (this.isLogY) {
+      if (this.isLogY && this.loggable) {
         this.y = d3
           .scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
