@@ -226,6 +226,7 @@ export default Vue.extend({
     },
     drawPlot() {
       if (this.chart) {
+        console.log(this.plottedData)
         const t1 = d3.transition().duration(500);
         const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
 
@@ -251,6 +252,7 @@ export default Vue.extend({
             .attr("id", d => d._id)
             .attr("x", d => this.x(d.date))
             .attr("width", this.x.bandwidth())
+            .attr("fill", this.color)
 
             .call(update => this.animate ? update.transition(t1)
               .attr("y", d => this.y(d[this.variable]))
@@ -276,12 +278,12 @@ export default Vue.extend({
         .style("left", d3.event.x + "px")
         .style("opacity", 1);
 
-      this.chart.selectAll("rect").style("opacity", 0.5);
+      this.chart.selectAll(".bargraph").style("opacity", 0.5);
       this.chart.selectAll(`#${d._id}`).style("opacity", 1);
 
       ttip.select(".country-name").text(d.name);
       ttip.select(".date").text(d3.timeFormat("%d %b %Y")(d.date));
-      ttip.select(".count").text(d[this.variable].toLocaleString());
+      ttip.select(".count").text(`${d[this.variable].toLocaleString()} ${this.variableLabel}`);
     },
     mouseOff() {
       d3.selectAll(".tooltip")
@@ -326,7 +328,7 @@ export default Vue.extend({
 .tooltip {
     position: fixed;
     z-index: 1000;
-    background: #ffffff70;
+    background: #ffffffcf;
     opacity: 0;
     pointer-events:none;
 }
