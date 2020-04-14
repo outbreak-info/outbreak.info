@@ -136,6 +136,7 @@ export default Vue.extend({
       }
     },
     updateScales() {
+      console.log(this.fixedXLim)
       const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.plottedData, d => d.date);
 
       this.x = this.x
@@ -226,9 +227,8 @@ export default Vue.extend({
     },
     drawPlot() {
       if (this.chart) {
-        console.log(this.plottedData)
         const t1 = d3.transition().duration(500);
-        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
+        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData, d => d._id);
 
         barSelector
           .join(
@@ -252,6 +252,7 @@ export default Vue.extend({
             .attr("id", d => d._id)
             .attr("x", d => this.x(d.date))
             .attr("width", this.x.bandwidth())
+            // .attr("height", 0)
             .attr("fill", this.color)
 
             .call(update => this.animate ? update.transition(t1)
