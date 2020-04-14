@@ -144,6 +144,9 @@ export default {
         label: "cumulative recoveries",
         value: "recovered"
       }, {
+        label: "cumulative hospitalizations",
+        value: "testing_hospitalized"
+      }, {
         label: "cumulative deaths",
         value: "dead"
       }, {
