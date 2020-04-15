@@ -10,3 +10,4 @@ outbreak.info is a project from the [Su lab](http://sulab.org/) at Scripps Resea
 
 # Related projects
 - [Outbreak.api](https://github.com/biothings/outbreak.api) -- repo for the back-end API
+- [outbreak.info-resources](https://github.com/SuLab/outbreak.info-resources) -- data schemas and harvesters for COVID-19 resources

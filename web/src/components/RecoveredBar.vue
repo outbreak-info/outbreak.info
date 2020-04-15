@@ -36,13 +36,13 @@ export default Vue.extend({
   computed: {
     recoveredWidth: function() {
       if(this.x){
-      return(this.x(this.data.recovered_currentCases));
+      return(this.x(this.data.recovered));
     }
     return(null)
     },
     deadWidth: function() {
       if(this.x){
-      return(this.x(this.data.dead_currentCases));
+      return(this.x(this.data.dead));
     }
     return(null)
     }
@@ -58,7 +58,7 @@ export default Vue.extend({
     updateAxes () {
       this.x = scaleLinear()
       .range([0, this.width])
-      .domain([0, this.data.confirmed_currentCases]);
+      .domain([0, this.data.confirmed]);
     }
   },
   mounted() {

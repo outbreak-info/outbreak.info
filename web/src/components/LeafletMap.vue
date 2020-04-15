@@ -246,18 +246,18 @@ export default Vue.extend({
     prepData() {
       if (this.data) {
         this.data.forEach(d => {
-          d["fill"] = d[`${this.variable}_currentCases`] ? this.colorScale(d[`${this.variable}_currentIncrease`]) : "#CCC";
-          d["r"] = this.radiusScale(d[`${this.variable}_currentCases`]);
-          d["currentDateFormatted"] = this.formatDate(d[`${this.variable}_currentToday`]);
-          d["numIncreaseFormatted"] = d[`${this.variable}_currentIncrease`] ? d[`${this.variable}_currentIncrease`].toLocaleString() : null;
-          d["pctIncreaseFormatted"] = this.formatPercent(d[`${this.variable}_currentPctIncrease`]);
-          d["totalNumFormatted"] = d[`${this.variable}_currentCases`] ? d[`${this.variable}_currentCases`].toLocaleString() : null;
+          d["fill"] = d[this.variable] ? this.colorScale(d[`${this.variable}_numIncrease`]) : "#CCC";
+          d["r"] = this.radiusScale(d[this.variable]);
+          d["currentDateFormatted"] = this.formatDate(d.date);
+          d["numIncreaseFormatted"] = d[`${this.variable}_numIncrease`] ? d[`${this.variable}_numIncrease`].toLocaleString() : null;
+          d["pctIncreaseFormatted"] = this.formatPercent(d[`${this.variable}_pctIncrease`]);
+          d["totalNumFormatted"] = d[this.variable] ? d[this.variable].toLocaleString() : null;
           if(d.admin_level === 0 && d.num_subnational === 1) {
             d["display"] = [-1, 20];
           } else if(d.admin_level === 0) {
             d["display"] = [-1, 2];
-          } else if(d.admin_level === 1 && d.country_name === "United States of America") {
-            d["display"] = [2, 4];
+          // } else if(d.admin_level === 1 && d.country_name === "United States of America") {
+          //   d["display"] = [2, 4];
           } else if(d.admin_level === 1) {
             d["display"] = [2, 20];
           } else {
@@ -271,7 +271,7 @@ export default Vue.extend({
     colorScale(d) {
       const scale = scaleSequential(interpolateYlGnBu)
         .domain([1,
-          max(this.data, d => d[`${this.variable}_currentIncrease`])
+          max(this.data, d => d[`${this.variable}_numIncrease`])
         ]).clamp(false);
       const domain = scale.domain();
 
@@ -282,7 +282,7 @@ export default Vue.extend({
     },
     radiusScale(d) {
       const scale = scaleSqrt()
-        .domain([1, max(this.data, d => d[`${this.variable}_currentCases`])])
+        .domain([1, max(this.data, d => d[this.variable])])
         .range([3, 40])
         .nice();
       const domain = scale.domain();

@@ -1,4 +1,4 @@
-<template>
+xVariableLim<template>
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{title}}</h4>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" ref="svg">
@@ -14,10 +14,6 @@
     <g :transform="`translate(${margin.left}, ${height + margin.top + 2})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
-    <g :transform="`translate(${margin.left},${0})`" id="county-annotation" v-if="includeAxis && data[0].admin_level == 2">
-      <text y="0" class="missing-data-label">data missing March 10-21</text>
-      <line marker-start="url(#arrow-start)" marker-end="url(#arrow)" y1="30" y2="30" class="missing-data"></line>
-    </g>
     <g class="switch-button-group" transform="translate(0,0)" ref="switch_btn" v-if="includeAxis">
       <rect class="switch-button-rect"></rect>
       <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
@@ -46,7 +42,8 @@ export default Vue.extend({
     data: Array,
     width: Number,
     height: Number,
-    variable: String,
+    // variable: String,
+    variableObj: Object,
     id: String,
     color: String,
     title: String,
@@ -64,7 +61,7 @@ export default Vue.extend({
       type: Number,
       default: null
     },
-    fixedXLim: {
+    xVariableLim: {
       type: Array,
       default: null
     },
@@ -78,8 +75,8 @@ export default Vue.extend({
       margin: {
         top: 15,
         bottom: 60,
-        left: 65,
-        right: 15
+        left: 75,
+        right: 20
       },
       // axes
       y: null,
@@ -95,9 +92,16 @@ export default Vue.extend({
     data: function() {
       this.updatePlot()
     },
-    variable: function() {
-      this.updatePlot()
+    variableObj: {
+      immediate: true,
+      handler(newObj, oldObj) {
+        this.variable = newObj.value;
+        this.updatePlot();
+      }
     },
+    // variable: function() {
+    //   this.updatePlot()
+    // },
     fixedYMax: function() {
       this.updatePlot()
     },
@@ -140,7 +144,7 @@ export default Vue.extend({
       }
     },
     updateScales() {
-      const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.plottedData, d => d.date);
+      const range = this.xVariableLim ? this.xVariableLim : d3.extent(this.plottedData, d => d.date);
 
       this.x = this.x
         .range([0, this.width])
@@ -149,7 +153,7 @@ export default Vue.extend({
       const yMax = this.fixedYMax ? this.fixedYMax : d3.max(this.plottedData, d => d[this.variable]);
 
       if (this.isLogY) {
-        this.yMin = 1;
+        this.yMin = .5;
 
         this.y = d3
           .scaleLog()
@@ -173,7 +177,8 @@ export default Vue.extend({
       this.switchBtn = d3.select(this.$refs.switch_btn);
 
       this.switchBtn.select(".switch-button-rect")
-        .attr("y", this.height + this.margin.top + dySwitch);
+        .attr("y", this.height + this.margin.top + dySwitch)
+        .on("click", () => this.changeScale());;
 
       this.switchBtn.select("path")
         .attr(
@@ -186,14 +191,8 @@ export default Vue.extend({
 
       this.switchBtn.select("text")
         .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
-        .attr("y", this.height + this.margin.top + dySwitch + 20)
-        .on("mouseover", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", true)
-        )
-        .on("mouseout", () =>
-          this.switchBtn.select("rect").classed("switch-button-hover", false)
-        )
-        .on("click", () => this.changeScale());
+        .attr("y", this.height + this.margin.top + dySwitch + 20);
+
 
       if (this.switchBtn.select("text").node()) {
         this.switchBtn
@@ -226,27 +225,17 @@ export default Vue.extend({
 
         this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
             const log = Math.log10(d);
-            return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+            return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0? d3.format(",")(d) : ""
           }) :
           d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
 
         d3.select(this.$refs.yAxis).call(this.yAxis);
-
-        // JHU data is missing between March 10-21 for counties
-        d3.selectAll("#county-annotation")
-          .selectAll("line")
-          .attr("x1", this.x(d3.timeParse("%Y-%m-%d")("2020-03-11")))
-          .attr("x2", this.x(d3.timeParse("%Y-%m-%d")("2020-03-20")));
-
-        d3.selectAll("#county-annotation")
-          .selectAll("text")
-          .attr("x", this.x(d3.timeParse("%Y-%m-%d")("2020-03-16")));
       }
     },
     drawPlot() {
       if (this.chart) {
         const t1 = d3.transition().duration(500);
-        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
+        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData, d => d._id);
 
         barSelector
           .join(
@@ -270,6 +259,8 @@ export default Vue.extend({
             .attr("id", d => d._id)
             .attr("x", d => this.x(d.date))
             .attr("width", this.x.bandwidth())
+            // .attr("height", 0)
+            .attr("fill", this.color)
 
             .call(update => this.animate ? update.transition(t1)
               .attr("y", d => this.y(d[this.variable]))
@@ -282,35 +273,37 @@ export default Vue.extend({
           )
 
         if (this.includeTooltips) {
-          this.chart.selectAll("rect")
+          this.chart.selectAll("rect.bargraph")
             .on("mouseenter", d => this.mouseOn(d))
-            .on("mouseleave", this.mouseOff);
+           .on("mouseleave", this.mouseOff);
         }
       }
     },
     mouseOn(d) {
+
       const ttip = d3.selectAll(".tooltip")
         .style("top", d3.event.y + "px")
         .style("left", d3.event.x + "px")
         .style("opacity", 1);
 
-      this.chart.selectAll("rect").style("opacity", 0.5);
+      this.chart.selectAll(".bargraph").style("opacity", 0.5);
       this.chart.selectAll(`#${d._id}`).style("opacity", 1);
 
       ttip.select(".country-name").text(d.name);
       ttip.select(".date").text(d3.timeFormat("%d %b %Y")(d.date));
-      ttip.select(".count").text(d[this.variable].toLocaleString());
+      ttip.select(".count").text(`${d[this.variable].toLocaleString()} ${this.variableObj.ttip}`);
     },
     mouseOff() {
       d3.selectAll(".tooltip")
-      // .style("opacity", 0);
-      //
-      this.chart.selectAll("rect").style("opacity", 1);
+      .style("opacity", 0);
+      this.chart.selectAll("rect.bargraph").style("opacity", 1);
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
-      this.$router.push({
+      this.$router.replace({
         path: "epidemiology",
+        name: "Epidemiology",
+        params: {disableScroll: true},
         query: {
           location: this.location,
           log: String(this.isLogY),
@@ -343,19 +336,8 @@ export default Vue.extend({
 .tooltip {
     position: fixed;
     z-index: 1000;
-    background: #ffffff70;
+    background: #ffffffcf;
     opacity: 0;
-}
-
-.missing-data {
-    stroke: $grey-70;
-    fill: none;
-    stroke-width: 0.8;
-}
-.missing-data-label {
-    fill: $grey-80;
-    font-size: 0.85em;
-    dominant-baseline: hanging;
-    text-anchor: middle;
+    pointer-events:none;
 }
 </style>

@@ -17,7 +17,9 @@ import {
   format
 } from "d3";
 
-import { getAll } from "@/api/biothings.js";
+import {
+  getAll
+} from "@/api/biothings.js";
 
 
 export const epiDataSubject = new BehaviorSubject([]);
@@ -50,7 +52,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,confirmed_currentCases,dead_currentCases,recovered_currentCases,_id`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id`;
 
   return getAll(apiUrl, queryString)
     .pipe(
@@ -59,9 +61,10 @@ export function getEpiTraces(apiUrl, locations) {
         // convert dates to javascript dates
         results.forEach(d => {
           d['date'] = parseDate(d.date);
+          d['testing_positive'] = d.testing_positive ?  d.testing_positive : 0;
+          d['testing_totalTestResults'] = d.testing_totalTestResults ? d.testing_totalTestResults : 0;
+          d['testing_positivity'] = d.testing_positive ? (d.testing_positive/d.testing_totalTestResults) : 0;
         })
-        // ensure dates are sorted
-        results.sort((a,b) => a.date - b.date);
 
         const nested = nest()
           .key(d => d.location_id)
@@ -70,22 +73,39 @@ export function getEpiTraces(apiUrl, locations) {
 
         // should be the same for all data; pulling out the first one.
         nested.forEach(d => {
-          d["confirmed_currentCases"] = d.value[0].confirmed_currentCases;
-          d["recovered_currentCases"] = d.value[0].recovered_currentCases;
-          d["dead_currentCases"] = d.value[0].dead_currentCases;
+          const today = d.value.filter(d => d.mostRecent);
+          d["currentCases"] = today[0].confirmed;
+          // add in static values to get 0 points for x-shifted cases
+          if (today[0].confirmed >= 100) {
+            d["value"].push({
+              name: today[0].name,
+              confirmed: 100,
+              daysSince100Cases: 0
+            })
+          }
+
+          if (today[0].dead >= 10) {
+            d["value"].push({
+              name: today[0].name,
+              dead: 10,
+              daysSince10Deaths: 0
+            })
+          }
+          if (today[0].dead >= 50) {
+            d["value"].push({
+              name: today[0].name,
+              dead: 50,
+              daysSince50Deaths: 0
+            })
+          }
         })
 
-        // console.log("setting order")
-        // console.log(    nested)
-        //     .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
-        //     .map(d => d.key))
+        // sort colors by the highest confirmed cases
+        const order = results.filter(d => d.mostRecent)
+          .sort((a, b) => b.confirmed - a.confirmed)
+          .map(d => d.location_id);
 
-        store.commit(
-          "colors/setLocations",
-          nested
-          .sort((a, b) => b.confirmed_currentCases - a.confirmed_currentCases)
-          .map(d => d.key)
-        );
+        store.commit("colors/setLocations", order);
         epiDataSubject.next(nested)
         return (nested);
       }),
@@ -134,14 +154,14 @@ export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
 export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime()/1e5);
-  var queryString = locations ? `location_id:("${locations.join('","')}")  AND date:"2020-03-24"` : 'date:"2020-03-24"';
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+  var queryString = locations ? `location_id:("${locations.join('","')}")  AND mostRecent:true` : 'mostRecent:true';
 
-  if(adminLevels && adminLevels.length > 0) {
-    queryString = queryString + `AND admin_level:("${adminLevels.join('" OR "')}")`
+  if (adminLevels && adminLevels.length > 0) {
+    queryString = queryString + ` AND admin_level:("${adminLevels.join('" OR "')}")`
   }
 
-  return from(axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,state_name,wb_region,date,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease,recovered_currentCases,recovered_currentIncrease,recovered_currentPctIncrease,first_dead-first_confirmed,confirmed_currentToday,population&timestamp=${timestamp}`, {
+  return from(axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,state_name,wb_region,date,confirmed,confirmed_numIncrease,confirmed_pctIncrease,dead,dead_numIncrease,dead_pctIncrease,recovered,recovered_numIncrease,recovered_pctIncrease,first_dead-first_confirmed,population&timestamp=${timestamp}`, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -153,27 +173,27 @@ export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
         d['date'] = parseDate(d.date);
         d['country_name'] = d.admin_level === 0 ? d.name : d.country_name;
         d['wb_region'] = d.admin_level === -1 ? d.name : d.wb_region;
-        d["confirmed_cases"] = d.confirmed_currentCases ? d.confirmed_currentCases.toLocaleString() : null;
-        d["confirmed_increase"] = d.confirmed_currentIncrease ? d.confirmed_currentIncrease.toLocaleString() : null;
-        d["confirmed_pctIncrease"] = formatPercent(d.confirmed_currentPctIncrease);
-        d["confirmed_percapita"] = d.population ? (d.confirmed_currentCases ? `1 in ${Math.round(d.population / d.confirmed_currentCases).toLocaleString()}` : "0") : null;
+        d["confirmed_cases"] = d.confirmed ? d.confirmed.toLocaleString() : null;
+        d["confirmed_increase"] = d.confirmed_numIncrease ? d.confirmed_numIncrease.toLocaleString() : null;
+        d["confirmed_pctIncrease"] = formatPercent(d.confirmed_pctIncrease);
+        d["confirmed_percapita"] = d.population ? (d.confirmed ? `1 in ${Math.round(d.population / d.confirmed).toLocaleString()}` : "0") : null;
 
-        d["dead_cases"] = d.dead_currentCases ? d.dead_currentCases.toLocaleString() : null;
-        d["dead_increase"] = d.dead_currentIncrease ? d.dead_currentIncrease.toLocaleString() : null;
-        d["dead_pctIncrease"] = formatPercent(d.dead_currentPctIncrease);
-        d["dead_percapita"] = d.population ? (d.dead_currentCases ? `1 in ${Math.round(d.population / d.dead_currentCases).toLocaleString()}` : "0") : null;
+        d["dead_cases"] = d.dead ? d.dead.toLocaleString() : null;
+        d["dead_increase"] = d.dead_numIncrease ? d.dead_numIncrease.toLocaleString() : null;
+        d["dead_pctIncrease"] = formatPercent(d.dead_pctIncrease);
+        d["dead_percapita"] = d.population ? (d.dead ? `1 in ${Math.round(d.population / d.dead).toLocaleString()}` : "0") : null;
 
 
-        d["recovered_cases"] = d.recovered_currentCases ? d.recovered_currentCases.toLocaleString() : null;
-        d["recovered_increase"] = d.recovered_currentIncrease ? d.recovered_currentIncrease.toLocaleString() : null;
-        d["recovered_pctIncrease"] = formatPercent(d.recovered_currentPctIncrease);
-        d["recovered_percapita"] = d.population ? (d.recovered_currentCases ? `1 in ${Math.round(d.population / d.recovered_currentCases).toLocaleString()}` : "0") : null;
+        d["recovered_cases"] = d.recovered ? d.recovered.toLocaleString() : null;
+        d["recovered_increase"] = d.recovered_numIncrease ? d.recovered_numIncrease.toLocaleString() : null;
+        d["recovered_pctIncrease"] = formatPercent(d.recovered_pctIncrease);
+        d["recovered_percapita"] = d.population ? (d.recovered ? `1 in ${Math.round(d.population / d.recovered).toLocaleString()}` : "0") : null;
       })
       return (results);
 
     }),
     catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+      console.log("%c Error in getting table data!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -181,7 +201,7 @@ export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   )
 }
 
-export function getSparklineTraces(apiUrl, locations, variableString="confirmed,recovered,dead") {
+export function getSparklineTraces(apiUrl, locations, variableString = "confirmed,recovered,dead") {
   if (locations) {
     const parseDate = timeParse("%Y-%m-%d");
     // trigger no-cache behavior by adding timestamp to request
@@ -196,7 +216,7 @@ export function getSparklineTraces(apiUrl, locations, variableString="confirmed,
           delete d["_score"];
         })
 
-        results.sort((a,b) => a.date - b.date);
+        results.sort((a, b) => a.date - b.date);
 
         const nested = nest()
           .key(d => d.location_id)

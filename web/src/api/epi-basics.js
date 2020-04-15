@@ -25,11 +25,11 @@ import store from "@/store";
 export function getLocations(apiUrl) {
   store.state.admin.loading = true;
 
-  return getAll(apiUrl, `date:"2020-03-24"&fields=location_id,name,country_name,state_name,wb_region,admin_level`).pipe(
+  return getAll(apiUrl, `mostRecent:true&fields=location_id,name,country_name,country_iso3,state_name,wb_region,admin_level`).pipe(
     tap(results => {
       let places = results.map(d => {
         return ({
-          label: d.admin_level === 0 ? d.name : (d.admin_level === 1 ? `${d.name}, ${d.country_name}` : `${d.name}, ${d.state_name}`),
+          label: getLabel(d),
           id: d.location_id,
           admin_level: d.admin_level
         })
@@ -75,11 +75,26 @@ export function getLocations(apiUrl) {
   )
 }
 
+function getLabel(entry){
+  if(entry.admin_level === 0) {
+    return entry.name;
+  } else if(entry.admin_level === 1) {
+    return entry.country_iso3 == "USA" ? `${entry.name} State, ${entry.country_name}` : `${entry.name} Province, ${entry.country_name}`;
+  } else if(String(entry.admin_level) == "1.7") {
+    return `${entry.name}`;
+  } else if(String(entry.admin_level) == "1.5") {
+    return `${entry.name} Metropolitan Area`;
+  } else if(String(entry.admin_level) == "2") {
+    return `${entry.name}, ${entry.state_name}`;
+  }
+  return(entry.name);
+}
+
 export function getMostCases(apiUrl, num2Return = 5) {
   store.state.admin.loading = true;
   const timestamp = Math.round(new Date().getTime()/1e5);
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:0&fields=location_id,name&sort=-confirmed_currentCases&size=${num2Return}&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     tap(results => {
       store.state.epidata.mostCases = results;
@@ -115,10 +130,10 @@ export function getSummary(apiUrl, caseThreshold) {
 export function getTotals(apiUrl) {
   const timestamp = Math.round(new Date().getTime()/1e5);
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:"-1"&fields=confirmed_currentCases,dead_currentCases&sort=-confirmed_currentCases&size=100&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     map(results => {
-      const totals = {confirmed: sum(results, d => d.confirmed_currentCases).toLocaleString(), dead: sum(results, d => d.dead_currentCases).toLocaleString()};
+      const totals = {confirmed: sum(results, d => d.confirmed).toLocaleString(), dead: sum(results, d => d.dead).toLocaleString()};
       return (totals)
     }),
     catchError(e => {
@@ -132,7 +147,7 @@ export function getTotals(apiUrl) {
 export function countCountries(apiUrl) {
   const timestamp = Math.round(new Date().getTime()/1e5);
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-24" AND admin_level:0&size=0&facet_size=300&facets=name&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name&timestamp=${timestamp}`)).pipe(
     pluck("data", "facets", "name", "terms"),
     map(results => {
       return (results.length)
@@ -148,7 +163,7 @@ export function countCountries(apiUrl) {
 export function getFirstCases(apiUrl) {
   const timestamp = Math.round(new Date().getTime()/1e5);
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-24"%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     map(results => {
       const summary = {};
@@ -170,7 +185,7 @@ export function getFirstCases(apiUrl) {
 export function getCasesAboveThresh(apiUrl, threshold) {
   const timestamp = Math.round(new Date().getTime()/1e5);
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-24"%20AND%20admin_level:0%20AND%20confirmed_currentIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     map(results => {
       const summary = {};
@@ -194,10 +209,10 @@ export function getGlanceSummary(apiUrl, locations) {
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
   const timestamp = Math.round(new Date().getTime()/1e5);
-  const location_string = locations && locations.length ? ` AND location_id:("${locations.join('","')}")` : `AND admin_level:[0 TO *]&sort=-confirmed_currentIncrease`;
+  const location_string = locations && locations.length ? ` AND location_id:("${locations.join('","')}")` : ` AND admin_level:[0 TO *]&sort=-confirmed_numIncrease`;
   const num2Return = locations && locations.length ? locations.length : 3;
 
-  return from(axios.get(`${apiUrl}query?q=date:"2020-03-24"${location_string}&fields=location_id,name,confirmed_currentCases,confirmed_currentIncrease,confirmed_currentPctIncrease,confirmed_currentToday,dead_currentCases,dead_currentIncrease,dead_currentPctIncrease&size=${num2Return}&timestamp=${timestamp}`)).pipe(
+  return from(axios.get(`${apiUrl}query?q=mostRecent:true${location_string}&fields=location_id,name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,date,dead,dead_numIncrease,dead_pctIncrease&size=${num2Return}&timestamp=${timestamp}`)).pipe(
     pluck("data", "hits"),
     mergeMap(summaryData => getSparklineTraces(apiUrl, summaryData.map(d => d.location_id), "confirmed,dead,confirmed_numIncrease").pipe(
       map(sparks => {
@@ -209,7 +224,7 @@ export function getGlanceSummary(apiUrl, locations) {
         })
 
         summaryData.forEach(d => {
-          d["confirmed_currentToday"] = formatDate(parseDate(d["confirmed_currentToday"]));
+          d["date"] = formatDate(parseDate(d["date"]));
         })
         return(summaryData)
       })

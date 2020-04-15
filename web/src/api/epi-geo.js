@@ -25,23 +25,20 @@ export function getMapData(apiUrl) {
 
   store.state.admin.loading = true;
   // Choosing one specific date, since all dates contain the current info.
-  return getAll(apiUrl, `date:"2020-03-24" AND admin_level:[0 TO *]&fields=location_id,name,num_subnational,country_name,admin_level,lat,long,confirmed_currentCases,
-  confirmed_currentIncrease,
-  confirmed_currentPctIncrease,
-  confirmed_currentToday,
-  dead_currentCases,
-  dead_currentIncrease,
-  dead_currentPctIncrease,
-  dead_currentToday,
-  recovered_currentCases,
-  recovered_currentIncrease,
-  recovered_currentPctIncrease,recovered_currentToday`).pipe(
+  return getAll(apiUrl, `mostRecent:true AND admin_level:[0 TO 1]&fields=location_id,name,num_subnational,country_name,admin_level,lat,long,confirmed,
+  confirmed_numIncrease,
+  confirmed_pctIncrease,
+  date,
+  dead,
+  dead_numIncrease,
+  dead_pctIncrease,
+  recovered,
+  recovered_numIncrease,
+  recovered_pctIncrease`).pipe(
     map(results => {
       results.forEach(d => {
         d["coord"] = [d.lat, d.long];
-        d["confirmed_currentToday"] = parseDate(d["confirmed_currentToday"]);
-        d["recovered_currentToday"] = parseDate(d["recovered_currentToday"]);
-        d["dead_currentToday"] = parseDate(d["dead_currentToday"]);
+        d["date"] = parseDate(d["date"]);
       })
       return (results)
     }),
