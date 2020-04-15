@@ -11,8 +11,7 @@
     <div
       class="col-sm-11 d-flex justify-content-center align-items-center text-center"
     >
-      <p class="m-0">
-        {{ text }}
+      <p class="m-0" v-html="text">
       </p>
     </div>
   </div>

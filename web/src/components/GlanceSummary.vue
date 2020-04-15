@@ -75,7 +75,7 @@
       </div>
       <div class="d-flex flex-column ml-4">
         <h6>new cases per day</h6>
-        <Bargraph :data="data.longitudinal" variable="confirmed_numIncrease" :width="150" :height="40" :id="'glance_' + idx" :color="'#126B93'" />
+        <Bargraph :data="data.longitudinal" :variableObj="{value: 'confirmed_numIncrease'}" :width="150" :height="40" :id="'glance_' + idx" :color="'#126B93'" />
       </div>
     </div>
   </router-link>

@@ -7,7 +7,7 @@
   <!-- autocomplete region selector -->
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <!-- too many to plot -->
-  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold && !variable.includes('numIncrease')">
+  <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold && !variable.includes('Increase')">
     <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
       <label class="b-contain m-auto">
         <span>show more than {{ lengthThreshold }} curves</span>
@@ -26,7 +26,7 @@
   </div>
 
   <!-- fixed y selector for small multiple bar graphs -->
-  <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;" v-if="variable.includes('numIncrease') && dataLength > 1">
+  <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;" v-if="variable.includes('Increase') && dataLength > 1">
     <label class="b-contain m-auto">
       <span>constant y-axis limits</span>
       <input type="checkbox" v-model="isFixedY" />
@@ -36,8 +36,8 @@
 
   <!-- title / drop down variable selector -->
   <h4 class="plot-title pt-5 pb-3">
-    Number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeVariable">
-      <option v-for="option in variableOptions" :value="option.value" :key="option.value">
+    Number of COVID-19 <select v-model="variableObj" class="select-dropdown" @change="changeVariable">
+      <option v-for="option in variableOptions" :value="option" :key="option.value">
         {{ option.label }}
       </option>
     </select>
@@ -48,18 +48,24 @@
   <!-- date updated -->
   <DataUpdated />
 
+  <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
+    text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
+  </Warning>
+  <Warning :animate="true" class="my-4" v-if="noData" text="No results. Testing/hospitalization data are currently only available for U.S. States (not Metro areas or Counties), and recovery data is not available for the U.S."></Warning>
+
   <div class="d-flex row m-0">
     <!-- bar graph -->
-    <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('numIncrease')">
+    <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('Increase')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
-        <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
+        <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
           :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
-      <DataSource />
+      <DataSource :ids="variableObj.sources" />
     </div>
 
     <!-- curve -->
-    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :xVariableInput="xVariable" :log="isLogY" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('numIncrease')" />
+    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'"
+      :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('Increase')" />
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
@@ -134,33 +140,72 @@ export default {
       bargraphWidth: 300,
       bargraphHeight: 400,
       yMax: null,
+      variableObj: {
+        label: "cumulative cases",
+        value: "confirmed",
+        sources: ["NYT", "JHU"]
+      },
       variableOptions: [{
         label: "cumulative cases",
-        value: "confirmed"
+        ttip: "cases",
+        value: "confirmed",
+        sources: ["NYT", "JHU"]
       }, {
         label: "cumulative recoveries",
-        value: "recovered"
+        ttip: "recoveries",
+        value: "recovered",
+        sources: ["NYT", "JHU"]
+      }, {
+        label: "cumulative hospitalizations",
+        ttip: "hospitalizations",
+        value: "testing_hospitalized",
+        sources: ["testing"]
       }, {
         label: "cumulative deaths",
-        value: "dead"
+        ttip: "deaths",
+        value: "dead",
+        sources: ["NYT", "JHU"]
       }, {
         //   label: "cumulative cases & deaths",
         //   value: "both"
         // }, {
         label: "daily new cases",
-        value: "confirmed_numIncrease"
+        ttip: "new cases",
+        value: "confirmed_numIncrease",
+        sources: ["NYT", "JHU"]
+      }, {
+        label: "daily new hospitalizations (U.S. States only)",
+        ttip: "new hospitalizations",
+        value: "testing_hospitalizedIncrease",
+        sources: ["testing"]
       }, {
         label: "daily new deaths",
-        value: "dead_numIncrease"
-      },
-      // {
-      //   label: "5 day case doubling rate",
-      //   value: "confirmed_doublingRate"
-      // }, {
-      //   label: "5 day death doubling rate",
-      //   value: "dead_doublingRate"
-      // }
-    ]
+        ttip: "new deaths",
+        value: "dead_numIncrease",
+        sources: ["NYT", "JHU"]
+        // {
+        //   label: "5 day case doubling rate",
+        //   value: "confirmed_doublingRate"
+        // }, {
+        //   label: "5 day death doubling rate",
+        //   value: "dead_doublingRate"
+        // }
+      }, {
+        label: "cumulative COVID-19 tests (U.S. States only)",
+        ttip: "tests (positive & negative)",
+        value: "testing_totalTestResults",
+        sources: ["testing"]
+      }, {
+        label: "daily new tests (U.S. States only)",
+        ttip: "new tests (positive & negative)",
+        value: "testing_totalTestResultsIncrease",
+        sources: ["testing"]
+      }, {
+        label: "percent positive tests (U.S. States only)",
+        ttip: "positive tests",
+        value: "testing_positivity",
+        sources: ["testing"]
+      }]
     };
   },
   computed: {
@@ -169,6 +214,13 @@ export default {
     colorScale: function() {
       const scale = store.getters["colors/getColor"];
       return scale;
+    },
+    noData: function() {
+      if (this.data$) {
+        return (!this.data$[0].flatMap(d => d.value).map(d => d[this.variable]).some(d => d));
+      } else {
+        return (false)
+      }
     },
     isLogY: function() {
       return (this.log === "true")
@@ -209,6 +261,12 @@ export default {
     // route props
     location: function(newLocation, oldLocation) {
       this.setLocation(newLocation);
+    },
+    variable: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.variableObj = this.variableOptions.filter(d => d.value == newVal)[0];
+      }
     },
     fixedY: function(newValue, oldValue) {
       if (newValue === "true") {
@@ -253,6 +311,7 @@ export default {
       epiTableSubject.next([]);
     },
     changeVariable() {
+      this.variable = this.variableObj.value;
       this.yMax = this.isFixedY ? max(this.plottedData.flatMap(d => d.value), d => d[this.variable]) : null;
       this.$router.replace({
         path: "epidemiology",

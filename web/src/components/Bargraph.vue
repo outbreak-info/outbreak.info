@@ -1,4 +1,4 @@
-<template>
+xVariableLim<template>
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{title}}</h4>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" ref="svg">
@@ -42,7 +42,8 @@ export default Vue.extend({
     data: Array,
     width: Number,
     height: Number,
-    variable: String,
+    // variable: String,
+    variableObj: Object,
     id: String,
     color: String,
     title: String,
@@ -60,7 +61,7 @@ export default Vue.extend({
       type: Number,
       default: null
     },
-    fixedXLim: {
+    xVariableLim: {
       type: Array,
       default: null
     },
@@ -91,9 +92,16 @@ export default Vue.extend({
     data: function() {
       this.updatePlot()
     },
-    variable: function() {
-      this.updatePlot()
+    variableObj: {
+      immediate: true,
+      handler(newObj, oldObj) {
+        this.variable = newObj.value;
+        this.updatePlot();
+      }
     },
+    // variable: function() {
+    //   this.updatePlot()
+    // },
     fixedYMax: function() {
       this.updatePlot()
     },
@@ -136,7 +144,7 @@ export default Vue.extend({
       }
     },
     updateScales() {
-      const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.plottedData, d => d.date);
+      const range = this.xVariableLim ? this.xVariableLim : d3.extent(this.plottedData, d => d.date);
 
       this.x = this.x
         .range([0, this.width])
@@ -227,7 +235,7 @@ export default Vue.extend({
     drawPlot() {
       if (this.chart) {
         const t1 = d3.transition().duration(500);
-        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
+        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData, d => d._id);
 
         barSelector
           .join(
@@ -251,6 +259,8 @@ export default Vue.extend({
             .attr("id", d => d._id)
             .attr("x", d => this.x(d.date))
             .attr("width", this.x.bandwidth())
+            // .attr("height", 0)
+            .attr("fill", this.color)
 
             .call(update => this.animate ? update.transition(t1)
               .attr("y", d => this.y(d[this.variable]))
@@ -276,12 +286,12 @@ export default Vue.extend({
         .style("left", d3.event.x + "px")
         .style("opacity", 1);
 
-      this.chart.selectAll("rect").style("opacity", 0.5);
+      this.chart.selectAll(".bargraph").style("opacity", 0.5);
       this.chart.selectAll(`#${d._id}`).style("opacity", 1);
 
       ttip.select(".country-name").text(d.name);
       ttip.select(".date").text(d3.timeFormat("%d %b %Y")(d.date));
-      ttip.select(".count").text(d[this.variable].toLocaleString());
+      ttip.select(".count").text(`${d[this.variable].toLocaleString()} ${this.variableObj.ttip}`);
     },
     mouseOff() {
       d3.selectAll(".tooltip")
@@ -326,7 +336,7 @@ export default Vue.extend({
 .tooltip {
     position: fixed;
     z-index: 1000;
-    background: #ffffff70;
+    background: #ffffffcf;
     opacity: 0;
     pointer-events:none;
 }
