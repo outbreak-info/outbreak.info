@@ -154,9 +154,9 @@
                 <polygon points="0,0 6,0 6,6 0,12" :class="[item.type, 'dark']"></polygon>
               </svg>
               <small :class="[item.type, 'resource-type', 'mr-2']">{{item.type}}</small>
-              <a target="_blank" rel="noreferrer" :href="item.url">
+              <router-link :to="{ name: item.type, params: {id: item._id} }">
                 <h5>{{item.name}}</h5>
-              </a>
+              </router-link>
             </div>
 
             <div class="row">
@@ -230,6 +230,7 @@ export default {
       resourceTypes: ["What's New", "Datasets", "Publications", "Analyses", "Protocols"],
       new2Display: 3,
       data: [{
+          _id: "virological1",
           type: "Analysis",
           url: "http://virological.org/t/preliminary-in-silico-assessment-of-the-specificity-of-published-molecular-assays-and-design-of-new-assays-using-the-available-whole-genome-sequences-of-2019-ncov/343",
           name: "Preliminary in silico assessment of the specificity of published molecular assays and design of new assays using the available whole genome sequences of 2019-nCoV",
@@ -252,6 +253,7 @@ export default {
           description: "BioLaboro is an application for rapidly designing de novo assays and validating existing PCR detection assays. It is a user-friendly new assay discovery pipeline composed of three tools: BioVelocity®, Primer3, and PSET. BioVelocity® uses a rapid, accurate hashing algorithm to align sequencing reads to a large set of references (e.g. Genbank) (Sozhamannan et al., 2015). BioVelocity® creates a k-mer index to determine all possible matches between query sequences and references simultaneously using a large RAM system (i.e. an IBM Power8). This algorithm makes it possible to very quickly identify sequences conserved within or omitted from a set of target references. Primer3 (http://primer3.sourceforge.net/ 29) is a tool for designing primers and probes for real-time PCR reactions. It considers a range of criteria such as oligonucleotide melting temperature, size, GC content, and primer-dimer possibilities. We use Primer3 along with our signature detection process to identify potential new primer sets. PSET (PCR Signature Erosion Tool) tests PCR assays in silico against the latest versions of public sequence repositories, or other reference datasets, to determine if primers and probes match only to their intended targets. Using this information, an assay provider can be better aware of potential false hits and be better prepared to design new primers when false hits become intractable.",
         },
         {
+          _id: "ihme",
           type: "Analysis",
           url: "https://covid19.healthdata.org/projections",
           name: "COVID-19 U.S. State by State Projections",
@@ -268,7 +270,10 @@ export default {
           lastReviewed: "2020-04-01",
           analysisTechnique: "Whole Genome Sequencing",
           isPartOf: "http://www.healthdata.org/research-article/forecasting-covid-19-impact-hospital-bed-days-icu-days-ventilator-days-and-deaths",
-          isBasedOn: [{type: "Dataset", url:""}],
+          isBasedOn: [{
+            type: "Dataset",
+            url: ""
+          }],
           variableMeasured: "", // something similiar?
           keywords: ["epidemiology", "outbreak size model"],
           infectiousAgent: "SARS-CoV-2",
@@ -276,6 +281,7 @@ export default {
         },
 
         {
+          _id: "jhu",
           type: "Dataset",
           url: "https://github.com/CSSEGISandData/COVID-19",
           description: "This is the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).",
@@ -362,13 +368,12 @@ export default {
 }
 
 .keyword {
-  background: lighten($warning-color, 35%);
-  border-radius: 5px;
+    background: lighten($warning-color, 35%);
+    border-radius: 5px;
 }
-.list-group-item.active{
-  background-color: $secondary-color !important;
-  border-color: $secondary-color !important;
-  color: white !important;
+.list-group-item.active {
+    background-color: $secondary-color !important;
+    border-color: $secondary-color !important;
+    color: white !important;
 }
-
 </style>
