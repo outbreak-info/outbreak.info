@@ -1,6 +1,7 @@
 <template>
 <div class="">
 
+  <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
       <div class="col-sm-12 m-auto">
@@ -11,6 +12,7 @@
 
   <section class="d-flex py-2">
     <div class="row m-0 w-100">
+      <!-- search bar -->
       <div class="col-sm-12 col-md-8">
         <div class="py-3">
           <form autocomplete="off" class="m-auto">
@@ -32,11 +34,15 @@
           </form>
         </div>
       </div>
+
+      <!-- sidebar: links -->
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
         <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link>
         <router-link :to="{ name: 'Sources' }">Where do we get our data?</router-link>
         <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
       </div>
+
+      <!-- what's new -->
       <div class="col-sm-12">
         <div class="text-highlight d-flex justify-content-between align-items-center mb-2">
           <h5>WHAT'S NEW</h5>
@@ -54,8 +60,11 @@
                 {{item.type}}
               </td>
               <td class="resource-name text-left" valign="top">{{item.name}}</td>
-              <td class="resource-affiliation text-left text-muted" valign="top">{{item.author[0].name}}</td>
-              <td class="resource-date" valign="top">{{format(item.dateModified)}}</td>
+              <td class="resource-affiliation text-left text-muted" valign="top">
+                {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
+                <span v-if="item.author.length > 1"> et al.</span>
+              </td>
+              <td class="resource-date" valign="top">{{format(item.date)}}</td>
 
             </tr>
 
@@ -66,6 +75,7 @@
     </div>
   </section>
 
+  <!-- mini-nav for resource types -->
   <section class="d-flex justify-content-end py-2 bg-sec">
     <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-light">
@@ -78,8 +88,10 @@
     </div>
   </section>
 
+  <!-- RESULTS -->
   <section class="d-flex justify-content-end py-2">
     <div class="row m-0">
+      <!-- FILTERS -->
       <div class="col-sm-2 p-0">
         <div class="border-bottom border-secondary alert-secondary p-1">
           <!-- Toggle Header -->
@@ -99,7 +111,7 @@
               <div class="p-1 bg-light">
                 <input type="text" class="border border-secondary p-1" placeholder="Search">
               </div>
-              <!-- Options -->
+              <!-- Filters -->
               <ul class="list-group rounded-0">
                 <li class="list-group-item rounded-0 text-left list-group-item-action p-1 active">
                   <input type="checkbox" class="mr-1" name="item" id="i" value="item" checked="checked">
@@ -119,6 +131,7 @@
         </div>
       </div>
       <div class="col-sm-9 pl-5" id="results">
+        <!-- results header + sort options -->
         <div class="row w-100 d-flex justify-content-between" id="selectors">
           <div class="d-flex align-items-center">
             <h4 class="m-0 mr-4">
@@ -144,6 +157,8 @@
             </option>
           </select>
         </div>
+
+        <!-- Results: loop -->
         <div id="results-container" class="my-3">
           <div class="row w-100 d-flex flex-column text-left py-2 search-result" v-for="(item, idx) in data" :key="idx">
 
@@ -163,10 +178,24 @@
               <!-- LEFT -->
               <div class="col-sm-5 text-muted">
                 <div class="attribution text-body">
-                  <small>{{item.author[0].name}}</small>
+                  <small>
+                    {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
+                    <span v-if="item.author.length > 1"> et al.</span>
+                  </small>
                 </div>
                 <div class="dates">
-                  <small><i class="far fa-clock"></i> updated {{item.dateModified}} • created {{item.dateCreated}}</small>
+                  <small v-if="item.dateModified || item.dateCreated || item.datePublished">
+                    <i class="far fa-clock"></i>
+                    <span v-if="item.dateModified"> updated {{item.dateModified}}
+                    </span>
+                    <span v-if="item.datePublished">
+                      published {{item.datePublished}}
+                    </span>
+                    <span v-if="item.dateCreated">
+                      created {{item.dateCreated}}
+                    </span>
+
+                  </small>
                 </div>
                 <router-link to="search" v-if="item.type=='Dataset'">
                   <small>find analyses/publications that use this data</small>
@@ -184,7 +213,7 @@
 
               <!-- RIGHT     -->
               <div class="col-sm-7 text-muted">
-                {{item.description}}
+                {{item.description ? item.description : item.abstract}}
               </div>
 
               <!-- Bottom -->
@@ -218,7 +247,10 @@ export default {
     }
   },
   mounted() {
-    this.data.sort((a, b) => a.date > b.date ? 1 : -1);
+    this.data.forEach(d => {
+      d["date"] = d.dateModified ? d.dateModified : (d.datePublished ? d.datePublished : d.dateCreated);
+    })
+    this.data.sort((a, b) => a.date > b.date ? -1 : 1);
   },
   computed: {
     newData() {
@@ -251,6 +283,43 @@ export default {
           keywords: ["Whole Genome Sequencing", "Assay Design"],
           infectiousAgent: "SARS-CoV-2",
           description: "BioLaboro is an application for rapidly designing de novo assays and validating existing PCR detection assays. It is a user-friendly new assay discovery pipeline composed of three tools: BioVelocity®, Primer3, and PSET. BioVelocity® uses a rapid, accurate hashing algorithm to align sequencing reads to a large set of references (e.g. Genbank) (Sozhamannan et al., 2015). BioVelocity® creates a k-mer index to determine all possible matches between query sequences and references simultaneously using a large RAM system (i.e. an IBM Power8). This algorithm makes it possible to very quickly identify sequences conserved within or omitted from a set of target references. Primer3 (http://primer3.sourceforge.net/ 29) is a tool for designing primers and probes for real-time PCR reactions. It considers a range of criteria such as oligonucleotide melting temperature, size, GC content, and primer-dimer possibilities. We use Primer3 along with our signature detection process to identify potential new primer sets. PSET (PCR Signature Erosion Tool) tests PCR assays in silico against the latest versions of public sequence repositories, or other reference datasets, to determine if primers and probes match only to their intended targets. Using this information, an assay provider can be better aware of potential false hits and be better prepared to design new primers when false hits become intractable.",
+        }, {
+          _id: "nejm1",
+          type: "Publication",
+          url: "http://doi.org/10.1056/NEJMc2007942",
+          name: "Stability and Viability of SARS-CoV-2",
+          identifier: "1533-4406",
+          doi: "10.1056/NEJMc2007942",
+          pmid: "32283575",
+          datePublished: "2020-04-13",
+          journalName: "The New England journal of medicine",
+          journalNameAbbrev: "N Engl J Med.",
+          volumeNumber: 382,
+          publicationType: ["Letter", "Comment"],
+          abstract: "The letter by van Doremalen et al. (published March 17 at NEJM.org)1 provides important information on the viability of severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2, the virus that causes Covid-19), and the implication that the virus remains viable in aerosols is likely to influence infection-control practices. The authors used a three-jet Collison nebulizer to generate artificial particles that, because of their small size (<5 μm), remained suspended in aerosols. However, the authors did not provide data to support the choice of particle size or viral inoculum.",
+          author: [{
+              "familyName": "Rubens",
+              "givenName": "Jessica H",
+              "affiliation": "Johns Hopkins Hospital, Baltimore, MD sjain5@jhmi.edu."
+            },
+            {
+
+              "familyName": "Karakousis",
+              "givenName": "Petros C",
+              "Initials": "PC",
+              "affiliation": "Johns Hopkins Hospital, Baltimore, MD sjain5@jhmi.edu."
+            },
+            {
+
+              "familyName": "Jain",
+              "givenName": "Sanjay K",
+              "Initials": "SK",
+              "affiliation": "Johns Hopkins Hospital, Baltimore, MD sjain5@jhmi.edu."
+            }
+          ],
+          keywords: ["prevention"],
+          topicCategory: ["prevention"]
+
         },
         {
           _id: "ihme",
@@ -260,9 +329,6 @@ export default {
           author: [{
             name: "Institute for Health Metrics and Evaluation",
             affiliation: "University of Washington"
-          }, {
-            name: "Daniel Negrón",
-            affiliation: "Noblis, Reston, VA 20191"
           }],
           mainEntity: "https://covid19.healthdata.org/",
           dateCreated: "2020-03-30",
