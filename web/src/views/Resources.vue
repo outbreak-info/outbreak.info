@@ -78,10 +78,12 @@
   <!-- mini-nav for resource types -->
   <section class="d-flex justify-content-end py-2 bg-sec">
     <div class="row d-flex justify-content-center w-100">
-      <nav class="navbar navbar-expand-lg navbar-light">
+      <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
-            <a>{{resource}}</a>
+            <router-link class="nav-link no-underline p-0" :to="{ name: 'Resource Type', params: {id: resource.id} }">
+              {{resource.label}}
+            </router-link>
           </li>
         </ul>
       </nav>
@@ -259,7 +261,25 @@ export default {
   },
   data() {
     return {
-      resourceTypes: ["What's New", "Topics", "Datasets", "Publications", "Analyses", "Protocols"],
+      resourceTypes: [{
+        label: "What's New",
+        id: "whats-new"
+      }, {
+        label: "Topics",
+        id: "topics"
+      }, {
+        label: "Publications",
+        id: "publication"
+      }, {
+        label: "Analyses",
+        id: "analysis"
+      }, {
+        label: "Protocols",
+        id: "protocol"
+      }, {
+        label: "Datasets",
+        id: "dataset"
+      }, ],
       new2Display: 3,
       data: [{
           _id: "virological1",
