@@ -20,16 +20,16 @@
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
               </div>
-              <input id="sBar" class="form-control border" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp"
+              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp"
                 @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
-              <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
+              <!-- <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
                 <li class="loading" v-if="isLoading">
                   Loading results...
                 </li>
                 <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
                   {{ result.label }}
                 </li>
-              </ul>
+              </ul> -->
             </div>
           </form>
         </div>
@@ -163,7 +163,6 @@
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
           <div class="row w-100 d-flex flex-column text-left py-2 search-result" v-for="(item, idx) in data" :key="idx">
-
             <div class="d-flex w-100">
               <svg width="6" height="25" class="resource-type mr-1">
                 <rect width="6" height="25" x="0" y="0" :class="[item.type, 'light']"></rect>
@@ -215,7 +214,16 @@
 
               <!-- RIGHT     -->
               <div class="col-sm-7 text-muted">
-                {{item.description ? item.description : item.abstract}}
+                <template v-if="item.descriptionExpanded">
+                  <span v-html="item.longDescription"></span>
+                  <span>
+                    <a class="show-more" v-if="item.descriptionTooLong" href="#" @click.prevent="expandDescription(item)">(show less)</a>
+                  </span>
+                </template>
+                <template v-else>
+                  <span v-html="item.shortDescription"></span>
+                  <span v-if="item.descriptionTooLong">... <a class="show-more" href="#" @click.prevent="expandDescription(item)">(show more)</a></span>
+                </template>
               </div>
 
               <!-- Bottom -->
@@ -246,11 +254,22 @@ export default {
     format: function(dateStr) {
       const parsed = timeParse("%Y-%m-%d")(dateStr);
       return (timeFormat("%d %B")(parsed));
+    },
+    expandDescription: function(item) {
+      item.descriptionExpanded = !item.descriptionExpanded;
+    },
+    onChange: function(item) {
+      console.log("searching")
     }
+
   },
   mounted() {
     this.data.forEach(d => {
       d["date"] = d.dateModified ? d.dateModified : (d.datePublished ? d.datePublished : d.dateCreated);
+      d["longDescription"] = d.description ? d.description : d.abstract;
+      let descriptionArray = d.longDescription.split(" ");
+      d['shortDescription'] = descriptionArray.slice(0, this.maxDescriptionLength).join(" ");
+      d['descriptionTooLong'] = descriptionArray.length >= this.maxDescriptionLength;
     })
     this.data.sort((a, b) => a.date > b.date ? -1 : 1);
   },
@@ -281,8 +300,11 @@ export default {
         id: "dataset"
       }, ],
       new2Display: 3,
+      maxDescriptionLength: 75,
+      search: null,
       data: [{
           _id: "virological1",
+          descriptionExpanded: false,
           type: "Analysis",
           url: "http://virological.org/t/preliminary-in-silico-assessment-of-the-specificity-of-published-molecular-assays-and-design-of-new-assays-using-the-available-whole-genome-sequences-of-2019-ncov/343",
           name: "Preliminary in silico assessment of the specificity of published molecular assays and design of new assays using the available whole genome sequences of 2019-nCoV",
@@ -306,6 +328,7 @@ export default {
         }, {
           _id: "nejm1",
           type: "Publication",
+          descriptionExpanded: false,
           url: "http://doi.org/10.1056/NEJMc2007942",
           name: "Stability and Viability of SARS-CoV-2",
           identifier: "1533-4406",
@@ -344,6 +367,7 @@ export default {
         {
           _id: "ihme",
           type: "Analysis",
+          descriptionExpanded: false,
           url: "https://covid19.healthdata.org/projections",
           name: "COVID-19 U.S. State by State Projections",
           author: [{
@@ -369,6 +393,7 @@ export default {
         {
           _id: "jhu",
           type: "Dataset",
+          descriptionExpanded: false,
           url: "https://github.com/CSSEGISandData/COVID-19",
           description: "This is the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).",
           name: "Novel Coronavirus (COVID-19) Cases",
