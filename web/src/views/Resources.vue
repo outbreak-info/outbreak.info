@@ -52,11 +52,8 @@
           <tbody>
             <tr v-for="(item, idx) in newData" :key="idx" class="new-item">
               <td class="resource-type d-flex align-items-center" :class="item.type">
-                <svg width="8" height="25" class="mr-1">
-                  <rect width="8" height="25" x="0" y="0" :class="[item.type, 'light']"></rect>
-                  <polygon points="8,6 8,12 0,20 0,12" :class="item.type"></polygon>
-                  <polygon points="0,0 8,0 8,6 0,12" :class="[item.type, 'dark']"></polygon>
-                </svg>
+                <StripeAccent :className="item.type"/>
+
                 {{item.type}}
               </td>
               <td class="resource-name text-left" valign="top">{{item.name}}</td>
@@ -163,15 +160,11 @@
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
           <div class="row w-100 d-flex flex-column text-left py-2 search-result" v-for="(item, idx) in data" :key="idx">
-            <div class="d-flex w-100">
-              <svg width="6" height="25" class="resource-type mr-1">
-                <rect width="6" height="25" x="0" y="0" :class="[item.type, 'light']"></rect>
-                <polygon points="6,6 6,12 0,20 0,12" :class="item.type"></polygon>
-                <polygon points="0,0 6,0 6,6 0,12" :class="[item.type, 'dark']"></polygon>
-              </svg>
+            <div class="d-flex w-100 align-items-center">
+              <StripeAccent :className="item.type"/>
               <small :class="[item.type, 'resource-type', 'mr-2']">{{item.type}}</small>
               <router-link :to="{ name: item.type, params: {id: item._id} }">
-                <h5>{{item.name}}</h5>
+                <h5 class="m-0">{{item.name}}</h5>
               </router-link>
             </div>
 
@@ -248,8 +241,14 @@ import {
   timeFormat,
   timeParse
 } from "d3";
+
+import StripeAccent from "@/components/StripeAccent.vue";
+
 export default {
-  name: "App",
+  name: "Resources",
+  components: {
+    StripeAccent
+  },
   methods: {
     format: function(dateStr) {
       const parsed = timeParse("%Y-%m-%d")(dateStr);
@@ -430,7 +429,7 @@ export default {
 }
 
 .resource-affiliation {
-    width: 150px;
+    // width: 150px;
 }
 
 #whats-new td {
@@ -439,30 +438,6 @@ export default {
     padding-bottom: 10px;
     font-size: 0.9em;
     line-height: 1em;
-}
-.Analysis {
-    color: #D13B62;
-    fill: #D13B62;
-}
-
-.Analysis.light {
-    fill: #eeb7c5;
-}
-
-.Analysis.dark {
-    fill: #9b2443;
-}
-
-.Dataset {
-    color: #126B93;
-    fill: #126B93;
-}
-.Dataset.dark {
-    fill: darken(#11537A, 10%);
-}
-
-.Dataset.light {
-    fill: lighten(#507192, 15%);
 }
 
 .filters {

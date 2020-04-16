@@ -22,3 +22,43 @@ $font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
 // accent colors
 $warning-color: #D13B62;
 $secondary-bright: #d8f2ff;
+
+
+// resource type colors
+.Analysis {
+    color: #D13B62;
+    fill: #D13B62;
+}
+
+.Analysis.light {
+    fill: #eeb7c5;
+}
+
+.Analysis.dark {
+    fill: #9b2443;
+}
+
+.Dataset {
+    color: #126B93;
+    fill: #126B93;
+}
+.Dataset.dark {
+    fill: darken(#11537A, 10%);
+}
+
+.Dataset.light {
+    fill: lighten(#507192, 15%);
+}
+
+$publication-color: #e15759;
+.Publication {
+    color: $publication-color;
+    fill: $publication-color;
+}
+.Publication.dark {
+    fill: darken($publication-color, 25%);
+}
+
+.Publication.light {
+    fill: lighten($publication-color, 25%);
+}
