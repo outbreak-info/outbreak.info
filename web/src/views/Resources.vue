@@ -259,7 +259,7 @@ export default {
   },
   data() {
     return {
-      resourceTypes: ["What's New", "Datasets", "Publications", "Analyses", "Protocols"],
+      resourceTypes: ["What's New", "Topics", "Datasets", "Publications", "Analyses", "Protocols"],
       new2Display: 3,
       data: [{
           _id: "virological1",
