@@ -37,6 +37,10 @@
         <div class="keyword-container mt-2">
           <small class="keyword px-2 py-1 mt-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx"> {{keyword}}</small>
         </div>
+        <!-- source -->
+        <div class="keyword-container mt-2">
+          <small>Record provided by <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a></small>
+        </div>
         <!-- abstract -->
         <div class="mt-4" v-html="data.abstract">
         </div>
