@@ -38,6 +38,15 @@ const state = {
       url: "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html"
     }
   ],
+  resources: [{
+    category: "Publications",
+    sources: [{
+      id: "litcovid",
+      name: "LitCovid",
+      url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
+      description: 'LitCovid is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus. It is the most comprehensive resource on the subject, providing a central access to 4929 (and growing) relevant articles in PubMed. The articles are updated daily and are further categorized by different research topics and geographic locations for improved access. You can read more at <a href="https://www.nature.com/articles/d41586-020-00694-1" target="_blank" rel="noreferrer">Chen et al. Nature (2020)</a> and download their data <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/#data-download" rel="noreferrer" target="_blank">here</a>.'
+    }]
+  }],
   updates: [
     {
     date: new Date("2020-04-06 0:0"),

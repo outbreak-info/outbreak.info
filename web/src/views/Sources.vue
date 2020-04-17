@@ -9,7 +9,7 @@
           <h3>Epidemiology Data</h3>
           <div class="epi-container" v-for="source in sources" :key="source.id">
             <h5>
-              <a :href="source.url">{{source.name}}</a>
+              <a :href="source.url" target="_blank" rel="noreferrer">{{source.name}}</a>
             </h5>
             <p v-html="source.description">
             </p>
@@ -20,11 +20,24 @@
           <h3>Geographic Data</h3>
           <div class="epi-container" v-for="source in geoSources" :key="source.id">
             <h5>
-              <a :href="source.url">{{source.name}}</a>
+              <a :href="source.url" target="_blank" rel="noreferrer">{{source.name}}</a>
             </h5>
             <p>
               {{source.description}}
             </p>
+          </div>
+        </div>
+
+        <div class="text-left mt-5">
+          <h3 class="mb-3">Resources</h3>
+          <div v-for="(resource, idx) in resources" :key="idx">
+          <h4>{{resource.category}}</h4>
+          <div class="epi-container" v-for="source in resource.sources" :key="source.id">
+            <h5>
+              <a :href="source.url" target="_blank" rel="noreferrer">{{source.name}}</a>
+            </h5>
+            <p v-html="source.description"></p>
+          </div>
           </div>
         </div>
 
@@ -45,7 +58,7 @@ export default Vue.extend({
   name: "Sources",
   components: {},
     computed: {
-      ...mapState("admin", ["sources", "geoSources"]),
+      ...mapState("admin", ["sources", "geoSources", "resources"]),
   }
 });
 </script>
