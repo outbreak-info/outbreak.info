@@ -62,3 +62,17 @@ $publication-color: #e15759;
 .Publication.light {
     fill: lighten($publication-color, 25%);
 }
+
+// $protocol-color: #76b7b2;
+$protocol-color: #59a14f;
+.Protocol {
+    color: $protocol-color;
+    fill: $protocol-color;
+}
+.Protocol.dark {
+    fill: darken($protocol-color, 25%);
+}
+
+.Protocol.light {
+    fill: lighten($protocol-color, 20%);
+}
