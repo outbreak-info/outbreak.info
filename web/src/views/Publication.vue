@@ -45,48 +45,8 @@
     </div>
 
     <!-- RIGHT SIDE -->
-    <div class="col-md-3 d-flex flex-column my-3">
-      <div class="border-top border-bottom py-3">
-        <!-- date -->
-        <div class="">
-          {{datePublished}}
-        </div>
-        <!-- DOI -->
-        <div class="text-muted">
-          DOI: {{data.doi}}
-        </div>
-      </div>
-
-      <!-- link out -->
-      <div class="py-4 border-bottom">
-        <a class="btn btn-main" :href="data.url" target="_blank" rel="noreferrer">View publication
-        </a>
-      </div>
-      <!-- cite -->
-      <div href="fdfs" class="py-3 border-bottom">
-        <small class="text-muted section-header">download citation</small>
-        <div class="citation-container flex">
-          <a class="mr-3" href="">Endnote</a>
-          <a class="mr-3" href="">Zenodo</a>
-        </div>
-      </div>
-      <!-- edit -->
-      <div class="pt-4 pb-3 border-bottom d-flex flex-column">
-        <div>
-          <a class="btn btn-main-outline" target="_blank" rel="noreferrer">Edit metadata
-          </a>
-        </div>
-        <small class="mt-2 helper text-muted">Improve this record by adding additional information</small>
-      </div>
-      <div class="py-3 border-bottom text-muted">
-        <small class="text-muted section-header">share</small>
-        <div class="d-flex flex-wrap justify-content-center mt-1">
-          <i class="fab fa-twitter mr-3"></i>
-          <i class="fas fa-envelope mr-3"></i>
-          <i class="fas fa-link mr-3"></i>
-          <i class="fas fa-share mr-3"></i>
-        </div>
-      </div>
+    <div class="col-md-3 my-3">
+      <ResourceSidebar :doi="data.doi" :date="datePublished" :url="data.url" type="Publication" v-if="data" />
     </div>
 
   </div>
@@ -96,6 +56,7 @@
 
 <script>
 import StripeAccent from "@/components/StripeAccent.vue";
+import ResourceSidebar from "@/components/ResourceSidebar.vue";
 
 import {
   timeFormat,
@@ -105,6 +66,7 @@ import {
 export default {
   name: "Resources",
   components: {
+    ResourceSidebar
     // StripeAccent
   },
   methods: {},
