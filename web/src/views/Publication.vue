@@ -68,7 +68,7 @@ import {
 } from "d3";
 
 export default {
-  name: "Resources",
+  name: "Publication",
   components: {
     ResourceSidebar
     // StripeAccent
