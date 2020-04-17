@@ -6,7 +6,7 @@
       {{date}}
     </div>
     <!-- DOI -->
-    <div class="text-muted">
+    <div class="text-muted" v-if="doi">
       DOI: {{doi}}
     </div>
   </div>
