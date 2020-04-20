@@ -135,11 +135,11 @@
         <!-- results header + sort options -->
         <div class="row w-100 d-flex justify-content-between" id="selectors">
           <div class="d-flex align-items-center">
-            <h4 class="m-0 mr-4">
-              You searched for COVID-19
+            <h4 class="m-0 mr-4" v-if="search">
+              You searched for {{search}}
             </h4>
             <small class="m-0 text-highlight">
-              3 results
+              {{data.length}} results
             </small>
           </div>
 
@@ -225,7 +225,11 @@
 
               <!-- Bottom -->
               <div class="col-sm-12 keyword-container mt-2">
-                <small class="keyword px-2 py-1 mt-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx"> {{keyword}}</small>
+                <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
+                  <router-link :to='{ name: "Resources", query: {search: `"${keyword}"`} }' class="no-underline text-dark">
+                    {{keyword}}
+                  </router-link>
+                </small>
               </div>
             </div>
 
@@ -248,8 +252,14 @@ import {
 
 import StripeAccent from "@/components/StripeAccent.vue";
 
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 export default {
   name: "Resources",
+  props: {
+    search: String
+  },
   components: {
     StripeAccent
   },
@@ -270,11 +280,26 @@ export default {
     this.data.forEach(d => {
       d["date"] = d.dateModified ? d.dateModified : (d.datePublished ? d.datePublished : d.dateCreated);
       d["longDescription"] = d.description ? d.description : d.abstract;
-      let descriptionArray = d.longDescription.split(" ");
-      d['shortDescription'] = descriptionArray.slice(0, this.maxDescriptionLength).join(" ");
-      d['descriptionTooLong'] = descriptionArray.length >= this.maxDescriptionLength;
+      if (d.longDescription) {
+        let descriptionArray = d.longDescription.split(" ");
+        d['shortDescription'] = descriptionArray.slice(0, this.maxDescriptionLength).join(" ");
+        d['descriptionTooLong'] = descriptionArray.length >= this.maxDescriptionLength;
+      }
     })
     this.data.sort((a, b) => a.date > b.date ? -1 : 1);
+
+
+    tippy(".keyword", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
   },
   computed: {
     newData() {
@@ -304,7 +329,6 @@ export default {
       }, ],
       new2Display: 3,
       maxDescriptionLength: 75,
-      search: null,
       data: [{
           _id: "virological1",
           descriptionExpanded: false,
@@ -414,7 +438,10 @@ export default {
           url: "http://www.chictr.org.cn/showproj.aspx?proj=49217",
           name: "Construction and Analysis of Prognostic Predictive Model of Novel Coronavirus Pneumonia (COVID-19)",
           studyType: "Observational",
-          studyEvent: [{studyEventDate: "2020-02-01", studyEventType: "start"}]
+          studyEvent: [{
+            studyEventDate: "2020-02-01",
+            studyEventType: "start"
+          }]
         },
         {
           _id: "protocols",

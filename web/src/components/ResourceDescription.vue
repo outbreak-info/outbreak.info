@@ -3,8 +3,8 @@
   <div :class='type.replace(/\s/g, "")'>
     <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
     {{type}} <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
-            {{data.publicationType[0]}}
-          </span>
+      {{data.publicationType[0]}}
+    </span>
   </div>
   <!-- title -->
   <h4 class="d-flex align-item-center m-0 mb-2">
@@ -42,7 +42,12 @@
 
   <!-- keywords -->
   <div class="keyword-container flex flex-wrap mt-2">
-    <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx"> {{keyword}}</small>
+
+    <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
+      <router-link :to='{ name: "Resources", query: {search: `"${keyword}"`} }' class="no-underline text-dark">
+        {{keyword}}
+      </router-link>
+    </small>
   </div>
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
@@ -58,6 +63,9 @@
 
 <script lang="js">
 import Vue from "vue";
+
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
 
 import {
   timeFormat,
@@ -87,6 +95,19 @@ export default Vue.extend({
       return (this.formatDate(this.data.dateModified))
     }
   },
+  mounted() {
+    tippy(".keyword", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+  }
 });
 </script>
 
@@ -118,5 +139,4 @@ export default Vue.extend({
 .section-header {
     text-transform: uppercase;
 }
-
 </style>
