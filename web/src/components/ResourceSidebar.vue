@@ -35,11 +35,15 @@
   <div class="py-3 border-bottom text-muted">
     <small class="text-muted section-header">share</small>
     <div class="d-flex flex-wrap justify-content-center mt-1">
-      <a :href="`https://twitter.com/intent/tweet?url=https://outbreak.info/${type.toLowerCase()}/${id}&hashtags=covid-19`" target="_blank" rel="noreferrer" class="twitter-share-button">
+      <a :href="`https://twitter.com/intent/tweet?url=${outbreakUrl}&hashtags=covid-19`" target="_blank" rel="noreferrer" class="twitter-share-button">
         <i class="fab fa-twitter mr-3"></i>
-        </a>
-      <i class="fas fa-envelope mr-3"></i>
-      <i class="fas fa-link mr-3"></i>
+      </a>
+      <a :href="`mailto:?subject=outbreak.info%20${type}&body=${outbreakUrl}`">
+        <i class="fas fa-envelope mr-3"></i>
+      </a>
+      <a @click="copy2Clipboard" href="#">
+        <i class="fas fa-link mr-3"></i>
+      </a>
       <i class="fas fa-share mr-3"></i>
     </div>
   </div>
@@ -48,15 +52,27 @@
 </template>
 
 <script>
-
 export default {
   name: "ResourceSidebar",
   props: {
     id: String,
-    doi: { type: String, default: null},
+    doi: {
+      type: String,
+      default: null
+    },
     type: String,
     date: String,
     url: String
+  },
+  computed: {
+    outbreakUrl() {
+      return (`https://outbreak.info/${this.type.toLowerCase()}/${this.id}`);
+    }
+  },
+  methods: {
+    copy2Clipboard: function() {
+      navigator.clipboard.writeText(this.outbreakUrl);
+    }
   }
 }
 </script>
