@@ -50,7 +50,7 @@
 
     <!-- RIGHT SIDE -->
     <div class="col-md-3 my-3">
-      <ResourceSidebar :doi="data.doi" :date="datePublished" :url="data.url" type="Publication" v-if="data" />
+      <ResourceSidebar :id="data['_id']" :doi="data.doi" :date="datePublished" :url="data.url" type="Publication" v-if="data" />
     </div>
 
   </div>
