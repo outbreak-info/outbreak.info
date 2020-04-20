@@ -79,3 +79,16 @@ $protocol-color: #59a14f;
 .Protocol.light {
     fill: lighten($protocol-color, 20%);
 }
+
+$clinical-trial-color: #b475a3;
+.ClinicalTrial {
+    color: $clinical-trial-color;
+    fill: $clinical-trial-color;
+}
+.ClinicalTrial.dark {
+    fill: darken($clinical-trial-color, 25%);
+}
+
+.ClinicalTrial.light {
+    fill: lighten($clinical-trial-color, 20%);
+}

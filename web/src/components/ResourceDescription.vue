@@ -1,17 +1,17 @@
 <template>
 <div class="d-flex flex-column text-left">
-  <div :class="type">
+  <div :class='type.replace(/\s/g, "")'>
     <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
     {{type}} <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
             {{data.publicationType[0]}}
           </span>
   </div>
   <!-- title -->
-  <h4 class="d-flex align-datas-center m-0 mb-2">
+  <h4 class="d-flex align-item-center m-0 mb-2">
     {{data.name}}
   </h4>
   <!-- authors -->
-  <div class="author-container d-flex flex-wrap">
+  <div class="author-container d-flex flex-wrap" v-if="data.author">
     <div class="author" v-for="(author, idx) in data.author" :key="idx">
       <span>{{author.name ? author.name : author.givenName + " " + author.familyName}}</span>
       <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
@@ -26,7 +26,7 @@
     </a>
   </div>
   <!-- Citation -->
-  <small class="text-muted">
+  <small class="text-muted" v-if="data.dateModified || data.dateCreated || data.dataUpdated">
     <i class="far fa-clock"></i>
     <span v-if="data.dateModified"> updated {{this.formatDate(data.dateModified)}}
     </span>
@@ -79,7 +79,7 @@ export default Vue.extend({
     formatDate(dateStr) {
       const parseDate = timeParse("%Y-%m-%d");
       const formatDate = timeFormat("%d %B %Y");
-      return formatDate(parseDate(dateStr));
+      return dateStr ? formatDate(parseDate(dateStr)) : null;
     }
   },
   computed: {

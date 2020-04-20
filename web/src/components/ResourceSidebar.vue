@@ -1,8 +1,8 @@
 <template>
-<div class="d-flex flex-column">
-  <div class="border-top border-bottom py-3">
+<div class="d-flex flex-column border-top">
+  <div class="border-bottom py-3" v-if="date">
     <!-- date -->
-    <div class="">
+    <div>
       {{date}}
     </div>
     <!-- DOI -->

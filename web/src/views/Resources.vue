@@ -58,8 +58,10 @@
               </td>
               <td class="resource-name text-left" valign="top">{{item.name}}</td>
               <td class="resource-affiliation text-left text-muted" valign="top">
-                {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
-                <span v-if="item.author.length > 1"> et al.</span>
+                <template v-if="item.author">
+                  {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
+                  <span v-if="item.author.length > 1"> et al.</span>
+                </template>
               </td>
               <td class="resource-date" valign="top">{{format(item.date)}}</td>
 
@@ -172,7 +174,7 @@
               <!-- LEFT -->
               <div class="col-sm-5 text-muted">
                 <div class="attribution text-body">
-                  <small>
+                  <small v-if="item.author">
                     {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
                     <span v-if="item.author.length > 1"> et al.</span>
                   </small>
@@ -390,7 +392,6 @@ export default {
           infectiousAgent: "SARS-CoV-2",
           description: "The charts below show projected hospital resource use based on COVID-19 deaths. The model assumes continued social distancing until the end of May 2020. In locations without social distancing measures currently in place, we have assumed they will be in place within seven days of the last model update. If not, the number of deaths and burden on their hospital systems will likely be higher than the model predicts.",
         },
-
         {
           _id: "jhu",
           type: "Dataset",
@@ -405,6 +406,15 @@ export default {
           dateCreated: "2020-01-22",
           dateModified: "2020-04-01",
           lastReviewed: "2020-04-01",
+        },
+        {
+          _id: "ChiCTR2000029953",
+          type: "ClinicalTrial",
+          descriptionExpanded: false,
+          url: "http://www.chictr.org.cn/showproj.aspx?proj=49217",
+          name: "Construction and Analysis of Prognostic Predictive Model of Novel Coronavirus Pneumonia (COVID-19)",
+          studyType: "Observational",
+          studyEvent: [{studyEventDate: "2020-02-01", studyEventType: "start"}]
         },
         {
           _id: "protocols",
