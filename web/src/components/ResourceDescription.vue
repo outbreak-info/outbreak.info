@@ -1,0 +1,122 @@
+<template>
+<div class="d-flex flex-column text-left">
+  <div :class="type">
+    <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
+    {{type}} <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
+            {{data.publicationType[0]}}
+          </span>
+  </div>
+  <!-- title -->
+  <h4 class="d-flex align-datas-center m-0 mb-2">
+    {{data.name}}
+  </h4>
+  <!-- authors -->
+  <div class="author-container d-flex flex-wrap">
+    <div class="author" v-for="(author, idx) in data.author" :key="idx">
+      <span>{{author.name ? author.name : author.givenName + " " + author.familyName}}</span>
+      <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
+      <span v-if="idx == data.author.length - 2  && !data.author.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
+      <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
+    </div>
+    <a @click.prevent="showAffiliation=!showAffiliation" href=""><small class="text-muted ml-2">
+        <span>{{showAffiliation ? 'hide affiliations' : 'view affiliations'}}</span>
+        <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
+        <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
+      </small>
+    </a>
+  </div>
+  <!-- Citation -->
+  <small class="text-muted">
+    <i class="far fa-clock"></i>
+    <span v-if="data.dateModified"> updated {{this.formatDate(data.dateModified)}}
+    </span>
+    <span v-if="data.dateModified && data.datePublished">&bull;</span>
+    <span v-if="data.datePublished">
+      published {{this.formatDate(data.datePublished)}}
+    </span>
+    <span v-if="data.dateModified && data.dateCreated || data.datePublished && data.dateCreated ">&bull;</span>
+    <span v-if="data.dateCreated">
+      created {{this.formatDate(data.dateCreated)}}
+    </span>
+  </small>
+
+  <!-- keywords -->
+  <div class="keyword-container flex flex-wrap mt-2">
+    <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx"> {{keyword}}</small>
+  </div>
+  <!-- source -->
+  <div class="mt-2" v-if="data.curatedBy">
+    <small>Record provided by <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{data.curatedBy.name}}</a></small>
+  </div>
+  <!-- description -->
+  <div class="mt-4" v-html="data.abstract" v-if="data.abstract">
+  </div>
+  <div class="mt-4" v-html="data.description" v-else>
+  </div>
+</div>
+</template>
+
+<script lang="js">
+import Vue from "vue";
+
+import {
+  timeFormat,
+  timeParse
+} from "d3";
+
+export default Vue.extend({
+  name: "ResourceDescription",
+  props: {
+    type: String,
+    data: Object
+  },
+  data() {
+    return ({
+      showAffiliation: false,
+    })
+  },
+  methods: {
+    formatDate(dateStr) {
+      const parseDate = timeParse("%Y-%m-%d");
+      const formatDate = timeFormat("%d %B %Y");
+      return formatDate(parseDate(dateStr));
+    }
+  },
+  computed: {
+    datePublished: function() {
+      return (this.formatDate(this.data.dateModified))
+    }
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+.resource-type {
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-type {
+    opacity: 0.6;
+}
+
+.keyword {
+    background: lighten($warning-color, 35%);
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+.pub-type {
+    opacity: 0.6;
+}
+
+.helper {
+    line-height: 1.2em;
+}
+
+.section-header {
+    text-transform: uppercase;
+}
+
+</style>

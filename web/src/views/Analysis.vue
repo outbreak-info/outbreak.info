@@ -2,58 +2,7 @@
 <div class="container d-flex py-2">
   <div class="row w-100 m-0">
     <div class="col-md-9 my-3">
-      <div class="d-flex flex-column text-left">
-        <div class="Analysis">
-          <!-- <StripeAccent :height="20" :width="4" className="Analysis" /> -->
-          Analysis
-        </div>
-        <!-- title -->
-        <h4 class="d-flex align-datas-center m-0 mb-2">
-          {{data.name}}
-        </h4>
-        <!-- authors -->
-        <div class="author-container d-flex flex-wrap">
-          <div class="author" v-for="(author, idx) in data.author" :key="idx">
-            <span>{{author.name ? author.name : author.givenName + " " + author.familyName}}</span>
-            <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
-            <span v-if="idx == data.author.length - 2  && !data.author.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
-            <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
-          </div>
-          <a @click.prevent="showAffiliation=!showAffiliation" href=""><small class="text-muted ml-2">
-              <span>{{showAffiliation ? 'hide affiliations' : 'view affiliations'}}</span>
-              <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
-              <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
-            </small>
-          </a>
-        </div>
-        <!-- Citation -->
-        <small class="text-muted">
-          <i class="far fa-clock"></i>
-          <span v-if="data.dateModified"> updated {{this.formatDate(data.dateModified)}}
-          </span>
-          <span v-if="data.dateModified && data.datePublished">&bull;</span>
-          <span v-if="data.datePublished">
-            published {{this.formatDate(data.datePublished)}}
-          </span>
-          <span v-if="data.dateModified && data.dateCreated || data.datePublished && data.dateCreated ">&bull;</span>
-          <span v-if="data.dateCreated">
-            created {{this.formatDate(data.dateCreated)}}
-          </span>
-        </small>
-
-        <!-- keywords -->
-        <div class="keyword-container mt-2">
-          <small class="keyword px-2 py-1 mt-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx"> {{keyword}}</small>
-        </div>
-        <!-- source -->
-        <div class="keyword-container mt-2">
-          <small>Record provided by <a href="https" target="_blank" rel="noreferrer">Virological.org</a></small>
-        </div>
-        <!-- description -->
-        <div class="mt-4" v-html="data.description">
-        </div>
-      </div>
-
+      <ResourceDescription :data="data" type="Analysis" />
     </div>
 
     <!-- RIGHT SIDE -->
@@ -68,6 +17,7 @@
 
 <script>
 import StripeAccent from "@/components/StripeAccent.vue";
+import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 
 import {
@@ -78,6 +28,7 @@ import {
 export default {
   name: "Analysis",
   components: {
+    ResourceDescription,
     ResourceSidebar
     // StripeAccent
   },

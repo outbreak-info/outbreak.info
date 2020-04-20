@@ -2,50 +2,7 @@
 <div class="container d-flex py-2">
   <div class="row w-100 m-0">
     <div class="col-md-9 my-3">
-      <div class="d-flex flex-column text-left">
-        <div class="Publication">
-          <!-- <StripeAccent :height="20" :width="4" className="Publication" /> -->
-          Publication <span class="pub-type mx-2" v-if="data.publicationType[0]">
-            <!-- <span class="mx-1">•</span> -->
-            {{data.publicationType[0]}}
-          </span>
-        </div>
-        <!-- title -->
-        <h4 class="d-flex align-items-center m-0 mb-2">
-          {{data.name}}
-        </h4>
-        <!-- authors -->
-        <div class="author-container d-flex flex-wrap">
-          <div class="author" v-for="(author, idx) in data.author" :key="idx">
-            <span>{{author.name ? author.name : author.givenName + " " + author.familyName}}</span>
-            <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
-            <span v-if="idx == data.author.length - 2" v-html="',&nbsp;and&nbsp;'"></span>
-          </div>
-          <a @click.prevent="showAffiliation=!showAffiliation" href=""><small class="text-muted ml-2">
-              <span>{{showAffiliation ? 'hide affiliations' : 'view affiliations'}}</span>
-              <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
-              <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
-            </small>
-          </a>
-        </div>
-        <!-- publication -->
-        <div class="text-muted">
-          {{data.journalName}}, volume {{data.volumeNumber}}, {{datePublished}}
-        </div>
-
-        <!-- keywords -->
-        <div class="keyword-container mt-2">
-          <small class="keyword px-2 py-1 mt-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx"> {{keyword}}</small>
-        </div>
-        <!-- source -->
-        <div class="keyword-container mt-2">
-          <small>Record provided by <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a></small>
-        </div>
-        <!-- abstract -->
-        <div class="mt-4" v-html="data.abstract">
-        </div>
-      </div>
-
+      <ResourceDescription :data="data" type="Publication" />
     </div>
 
     <!-- RIGHT SIDE -->
@@ -60,6 +17,7 @@
 
 <script>
 import StripeAccent from "@/components/StripeAccent.vue";
+import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 
 import {
@@ -70,6 +28,7 @@ import {
 export default {
   name: "Publication",
   components: {
+    ResourceDescription,
     ResourceSidebar
     // StripeAccent
   },
@@ -84,45 +43,59 @@ export default {
   data() {
     return {
       showAffiliation: false,
-      data: {
-        _id: "nejm1",
-        type: "Publication",
-        descriptionExpanded: false,
-        url: "http://doi.org/10.1056/NEJMc2007942",
-        name: "Stability and Viability of SARS-CoV-2",
-        identifier: "1533-4406",
-        doi: "10.1056/NEJMc2007942",
-        pmid: "32283575",
-        datePublished: "2020-04-13",
-        journalName: "The New England journal of medicine",
-        journalNameAbbrev: "N Engl J Med.",
-        volumeNumber: 382,
-        publicationType: ["Letter", "Comment"],
-        abstract: "The letter by van Doremalen et al. (published March 17 at NEJM.org)1 provides important information on the viability of severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2, the virus that causes Covid-19), and the implication that the virus remains viable in aerosols is likely to influence infection-control practices. The authors used a three-jet Collison nebulizer to generate artificial particles that, because of their small size (<5 μm), remained suspended in aerosols. However, the authors did not provide data to support the choice of particle size or viral inoculum.",
-        author: [{
-            "familyName": "Rubens",
-            "givenName": "Jessica H",
-            "affiliation": "Johns Hopkins Hospital, Baltimore, MD sjain5@jhmi.edu."
-          },
-          {
-
-            "familyName": "Karakousis",
-            "givenName": "Petros C",
-            "Initials": "PC",
-            "affiliation": "Johns Hopkins Hospital, Baltimore, MD sjain5@jhmi.edu."
-          },
-          {
-
-            "familyName": "Jain",
-            "givenName": "Sanjay K",
-            "Initials": "SK",
-            "affiliation": "Johns Hopkins Hospital, Baltimore, MD sjain5@jhmi.edu."
-          }
-        ],
-        keywords: ["prevention"],
-        topicCategory: ["prevention"],
-        relatedTo: ["random paper 1", "random paper 2"]
-      },
+      data: {   '@context': {   'outbreak': 'https://discovery.biothings.io/view/outbreak/',
+                          'schema': 'http://schema.org/'},
+          '@type': 'outbreak:Publication',
+          '_id': 'pmid32279462',
+          'abstract': 'Technology integration in teaching is an evolving concept in modern medical education like other study disciplines in India. The domain of medical science education is presently deficient of deploying technology-based practices. Currently, majority of medical schools and colleges continue to choose traditional wet laboratory dissections over new virtual dissections which are being followed in institutions such as All India Institute of Medical Sciences (AIIMS) and handful of other governmental as well as private medical schools of India like AIIMS Rishikesh, AIIMS Jodhpur, Government Medical College Vimsar, Burla, Odisha, GSL Medical College Rajahmundry, Andhra Pradesh, Yennapoya University Mangalore, Dutta Megha Medical College, GMC Chindwara Madhya Pradesh, Symbiosis Institute Pune and Apollo Medical College Chitoor. Not to mention, as the current push for technology integration increases, it is likely that a large number of Indian academic scholars will begin seeing virtual dissections as beneficial to their classroom.',
+          'author': [   {   '@type': 'outbreak:Person',
+                            'affiliation': [   {   '@type': 'outbreak:Organization',
+                                                   'name': 'Department of Anatomy, All India Institute of Medical Sciences, Rishikesh, India.'}],
+                            'familyName': 'Ravi',
+                            'givenName': 'Kumar Satish',
+                            'name': 'Kumar Satish Ravi'},
+                        {   '@type': 'outbreak:Person',
+                            'affiliation': [   {   '@type': 'outbreak:Organization',
+                                                   'name': 'Department of Anatomy, All India Institute of Medical Sciences, Rishikesh, India.'}],
+                            'familyName': 'Ravi',
+                            'givenName': 'Kumar Satish',
+                            'name': 'Kumar Satish Ravi'},
+                        {   '@type': 'outbreak:Person',
+                            'affiliation': [   {   '@type': 'outbreak:Organization',
+                                                   'name': 'Department of Anatomy, All India Institute of Medical Sciences, Rishikesh, India.'}],
+                            'familyName': 'Ravi',
+                            'givenName': 'Kumar Satish',
+                            'name': 'Kumar Satish Ravi'},
+                        {   '@type': 'outbreak:Person',
+                            'affiliation': [   {   '@type': 'outbreak:Organization',
+                                                   'name': 'Department of Anatomy, All India Institute of Medical Sciences, Rishikesh, India.'}],
+                            'familyName': 'Ravi',
+                            'givenName': 'Kumar Satish',
+                            'name': 'Kumar Satish Ravi'},
+                        {   '@type': 'outbreak:Person',
+                            'affiliation': [   {   '@type': 'outbreak:Organization',
+                                                   'name': 'Department of Anatomy, All India Institute of Medical Sciences, Rishikesh, India.'}],
+                            'familyName': 'Ravi',
+                            'givenName': 'Kumar Satish',
+                            'name': 'Kumar Satish Ravi'}],
+          'curatedBy': {   '@type': 'schema:WebSite',
+                           'name': 'litcovid',
+                           'url': 'https://www.ncbi.nlm.nih.gov/research/coronavirus/publication/32279462'},
+          'datePublished': '2020-04-11',
+          'doi': '10.1002/ase.1962',
+          'identifier': '32279462',
+          'issueNumber': '1935-9780',
+          'journalAbbreviation': 'Anat Sci Educ',
+          'journalName': 'Anatomical sciences education',
+          'keywords': [   'Covid-19',
+                          'India',
+                          'body donation',
+                          'cadavers',
+                          'dissection',
+                          'gross anatomy education'],
+          'name': 'Dead body management in times of Covid-19 and its potential impact on the availability of cadavers for medical education in India.',
+          'pmid': '32279462',
+          'publicationType': ['Letter']},
 
     };
   }
@@ -130,26 +103,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.resource-type {
-    font-weight: 700;
-    text-transform: uppercase;
-    opacity: 0.7;
-}
-
-.pub-type {
-    opacity: 0.6;
-}
-
-.helper {
-    line-height: 1.2em;
-}
-
-.section-header {
-    text-transform: uppercase;
-}
-
-.keyword {
-    background: lighten($warning-color, 35%);
-    border-radius: 5px;
-}
 </style>
