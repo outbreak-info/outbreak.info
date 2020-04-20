@@ -44,6 +44,9 @@
       <a @click="copy2Clipboard">
         <i class="share-link fas fa-link mr-3"></i>
       </a>
+      <p :class="{'snackbar': true, 'show': showSnackbar}">
+        copied to clipboard
+      </p>
       <a @click="shareLink" v-if="canShare">
         <i class="share-link fas fa-share mr-3"></i>
       </a>
@@ -66,6 +69,11 @@ export default {
     date: String,
     url: String
   },
+  data() {
+    return ({
+      showSnackbar: false
+    })
+  },
   computed: {
     outbreakUrl() {
       return (window.location.href);
@@ -76,6 +84,10 @@ export default {
   },
   methods: {
     copy2Clipboard: function() {
+      this.showSnackbar = true;
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000)
       navigator.clipboard.writeText(this.outbreakUrl);
     },
     shareLink: function() {
@@ -92,11 +104,11 @@ export default {
 
 <style lang="scss">
 .share-link {
-  color: $link-color;
-  cursor: pointer;
-   &:hover {
-     color: $link-hover;
+    color: $link-color;
+    cursor: pointer;
+    &:hover {
+        color: $link-hover;
 
-   }
+    }
 }
 </style>
