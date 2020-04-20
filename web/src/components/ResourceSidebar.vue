@@ -41,10 +41,12 @@
       <a :href="`mailto:?subject=outbreak.info%20${type}&body=${outbreakUrl}`">
         <i class="fas fa-envelope mr-3"></i>
       </a>
-      <a @click="copy2Clipboard" href="#">
-        <i class="fas fa-link mr-3"></i>
+      <a @click="copy2Clipboard">
+        <i class="share-link fas fa-link mr-3"></i>
       </a>
-      <i class="fas fa-share mr-3"></i>
+      <a @click="shareLink" v-if="canShare">
+        <i class="share-link fas fa-share mr-3"></i>
+      </a>
     </div>
   </div>
 
@@ -66,13 +68,35 @@ export default {
   },
   computed: {
     outbreakUrl() {
-      return (`https://outbreak.info/${this.type.toLowerCase()}/${this.id}`);
+      return (window.location.href);
+    },
+    canShare() {
+      return (navigator.share ? true : false)
     }
   },
   methods: {
     copy2Clipboard: function() {
       navigator.clipboard.writeText(this.outbreakUrl);
+    },
+    shareLink: function() {
+      if (navigator.share) {
+        navigator.share({
+          title: `outbreak.info ${this.type}`,
+          url: window.location.href
+        });
+      }
     }
   }
 }
 </script>
+
+<style lang="scss">
+.share-link {
+  color: $link-color;
+  cursor: pointer;
+   &:hover {
+     color: $link-hover;
+
+   }
+}
+</style>

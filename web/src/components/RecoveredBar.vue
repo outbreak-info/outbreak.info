@@ -84,7 +84,7 @@ export default Vue.extend({
 }
 
 .recovered-cases {
-  fill: #007bff;
+  fill: $link-color;
 }
 
 </style>
