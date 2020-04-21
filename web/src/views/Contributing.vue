@@ -2,7 +2,7 @@
 <div>
   <div class="row m-0">
     <div class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5">
-      <div class="container half-page">
+      <div class="container">
         <h1>Contributing Data Resources</h1>
         <p class="text-left">
           Outbreak.info currently contains {{types.length}} types of resources:
@@ -19,10 +19,42 @@
           Each resource's schema is based on schemas developed by <a href="https://schema.org" target="_blank" rel="noreferrer">schema.org</a>, a project which provides web standards to describe different types of data.
           <a href="https://discovery.biothings.io/view/outbreak" target="_blank" rel="noreferrer">View our schemas</a>.
         </p>
-
       </div>
     </div>
+  </div>
 
+  <div class="container">
+    <h4 class="text-left">How to contribute data</h4>
+    <div class="row mb-2 d-flex">
+
+      <div class="col-sm-4">
+        <div class="card h-100 mx-2 px-1 py-3">
+          <h5>Curate data</h5>
+          <p>
+            Edit existing metadata records
+          </p>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="card h-100 mx-2 px-1 py-3">
+          <h5>Add metadata for a source</h5>
+          <p>
+            Create a metadata record for a new source
+          </p>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="card h-100 mx-2 px-1 py-3">
+          <h5>Suggest a new source to be crawled</h5>
+          <p>
+            Submit an issue to Github
+          </p>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 </template>
@@ -67,3 +99,10 @@ export default Vue.extend({
   }
 });
 </script>
+
+<style lang="scss">
+.card {
+    background: $primary-color;
+    color: white;
+}
+</style>
