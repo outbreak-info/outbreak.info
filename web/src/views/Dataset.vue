@@ -7,7 +7,7 @@
 
     <!-- RIGHT SIDE -->
     <div class="col-md-3 my-3">
-      <ResourceSidebar :id="data['_id']" :doi="data.doi" :date="datePublished" :url="data.url" type="Dataset" v-if="data" />
+      <ResourceSidebar :data="data" :date="datePublished" type="Dataset" v-if="data" />
     </div>
 
   </div>
