@@ -24,6 +24,12 @@
         <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
       </small>
     </a>
+    <div id="author-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
+      <small v-for="(author, idx) in data.author" :key="idx" class="text-muted">
+        {{author.name ? author.name : author.givenName + " " + author.familyName}}:
+        <span v-for="(affiliation, idx) in author.affiliation" :key="idx">{{affiliation.name}}</span>
+      </small>
+    </div>
   </div>
   <!-- Citation -->
   <small class="text-muted" v-if="data.dateModified || data.dateCreated || data.dataUpdated">
