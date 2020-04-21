@@ -6,24 +6,26 @@
       {{date}}
     </div>
     <!-- DOI -->
-    <div class="text-muted" v-if="doi">
-      DOI: {{doi}}
+    <div class="text-muted" v-if="data.doi">
+      DOI: {{data.doi}}
     </div>
   </div>
 
   <!-- link out -->
-  <div class="py-4 border-bottom">
-    <a class="btn btn-main" :href="url" target="_blank" rel="noreferrer">View {{type}}
+  <div class="py-4 border-bottom" v-if="data.url">
+    <a class="btn btn-main" :href="data.url" target="_blank" rel="noreferrer">View {{type}}
     </a>
   </div>
+
   <!-- cite -->
   <div href="fdfs" class="py-3 border-bottom">
     <small class="text-muted section-header">download citation</small>
     <div class="citation-container flex">
-      <a class="mr-3" href="">Endnote</a>
-      <a class="mr-3" href="">Zenodo</a>
+      <a class="mr-3 share-link" @click="downloadCitation()">RIS</a>
+      <a :href="citationRIS" target="_blank" rel="noreferrer" download="outbreakinfo_citation.ris" ref="risDownload"></a>
     </div>
   </div>
+
   <!-- edit -->
   <div class="pt-4 pb-3 border-bottom d-flex flex-column">
     <div>
@@ -57,21 +59,19 @@
 </template>
 
 <script>
+import { formatRIS } from "@/js/citationConverter.js";
+
 export default {
   name: "ResourceSidebar",
   props: {
-    id: String,
-    doi: {
-      type: String,
-      default: null
-    },
+    data: Object,
     type: String,
     date: String,
-    url: String
   },
   data() {
     return ({
-      showSnackbar: false
+      showSnackbar: false,
+      citationRIS: null
     })
   },
   computed: {
@@ -90,6 +90,16 @@ export default {
       }, 3000)
       navigator.clipboard.writeText(this.outbreakUrl);
     },
+    downloadCitation: function() {
+      const ris = formatRIS(this.data);
+
+      if(ris) {
+        this.citationRIS = `data:text/plain;charset=utf-8,${encodeURI(ris)}`;
+        this.$refs.risDownload.href = this.citationRIS;
+        this.$refs.risDownload.click();
+      }
+
+    },
     shareLink: function() {
       if (navigator.share) {
         navigator.share({
@@ -104,10 +114,10 @@ export default {
 
 <style lang="scss">
 .share-link {
-    color: $link-color;
+    color: $link-color !important;
     cursor: pointer;
     &:hover {
-        color: $link-hover;
+        color: $link-hover !important;
 
     }
 }
