@@ -57,7 +57,7 @@
   </div>
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
-    <small>Record provided by <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{data.curatedBy.name}}</a></small>
+    <small>Record provided by <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{data.curatedBy.name}}.</a> <router-link :to="{ name: 'Sources'}"> Learn more</router-link></small>
   </div>
   <!-- description -->
   <div class="mt-4" v-html="data.abstract" v-if="data.abstract">
