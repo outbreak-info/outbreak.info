@@ -116,7 +116,7 @@ const state = {
     }
   },
     {
-    date: new Date("2020-04-15 0:0"),
+    date: new Date("2020-04-21 0:0"),
     category: "data",
     title: "Add testing and hospitalization data for states in the United States",
     description: 'Incorporate testing and hospitalzation data from the <a href="https://covidtracking.com/" target="_blank" rel="noreferrer">The COVID Tracking Project</a>.',
