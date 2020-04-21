@@ -324,6 +324,9 @@ export default {
         label: "Protocols",
         id: "protocol"
       }, {
+        label: "Clinical Trials",
+        id: "clinicaltrial"
+      }, {
         label: "Datasets",
         id: "dataset"
       }, ],
