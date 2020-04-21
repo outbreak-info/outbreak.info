@@ -58,6 +58,15 @@ const routes = [{
       import( /* webpackChunkName: "sources" */ "../views/Sources.vue")
   },
   {
+    path: "/contributing-data",
+    name: "Contributing",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import( /* webpackChunkName: "contributing" */ "../views/Contributing.vue")
+  },
+  {
     path: "/resources",
     name: "Resources",
     props: route => ({
