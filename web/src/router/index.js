@@ -70,7 +70,8 @@ const routes = [{
     path: "/resources",
     name: "Resources",
     props: route => ({
-      search: route.query.search
+      search: route.query.search,
+      type: route.query.type
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

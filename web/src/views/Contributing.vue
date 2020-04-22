@@ -7,7 +7,7 @@
         <p class="text-left">
           Outbreak.info currently contains {{types.length}} types of resources:
           <span v-for="(type, idx) in types" :key="idx">
-            <router-link :to="{ name: type.link}">{{type.label}}</router-link>
+            <router-link :to="{ name: 'Resources', query: {type: type.id}}">{{type.label}}</router-link>
             <span v-if="idx < types.length - 2">, </span>
             <span v-if="idx == types.length - 2">, and </span>
           </span>.
@@ -103,28 +103,28 @@ export default Vue.extend({
       types: [{
           label: "Protocols",
           description: "A detailed series of instructions to perform an experimental technique and/or analysis",
-          link: "Protocol"
+          id: "Protocol"
         },
         {
           label: "Clinical Trials",
           description: "Publicly and privately funded human clinical studies",
-          link: "ClinicalTrial"
+          id: "ClinicalTrial"
         },
         {
           label: "Datasets",
           description: "A collection of primary or secondary data",
-          link: "Dataset"
+          id: "Dataset"
         },
         {
           label: "Analyses",
           description: "Web-based resources that interpret data based off assumptions and frequently update with new data",
-          link: "Analysis"
+          id: "Analysis"
         },
 
         {
           label: "Publications",
           description: "A published report, set of results, or commentary, including preprints and blog posts",
-          link: "Publication"
+          id: "Publication"
         },
       ]
     })
