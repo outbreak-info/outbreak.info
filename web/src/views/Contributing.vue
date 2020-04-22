@@ -28,7 +28,7 @@
     <div class="row mb-2 d-flex">
 
       <div class="col-sm-4">
-        <div class="card h-100 mx-2 px-1 py-3">
+        <div class="card card-link h-100 mx-2 px-1 py-3">
           <h5>Curate data</h5>
           <p>
             Edit existing metadata records
@@ -36,17 +36,17 @@
         </div>
       </div>
 
-      <div class="col-sm-4">
-        <div class="card h-100 mx-2 px-1 py-3">
+      <router-link to="#add-metadata" class="col-sm-4">
+        <div class="card card-link h-100 mx-2 px-1 py-3">
           <h5>Add metadata for a source</h5>
           <p>
             Create a metadata record for a new source
           </p>
         </div>
-      </div>
+      </router-link>
 
       <div class="col-sm-4">
-        <div class="card h-100 mx-2 px-1 py-3">
+        <div class="card card-link h-100 mx-2 px-1 py-3">
           <h5>Suggest a new source to be crawled</h5>
           <p>
             Submit an issue to Github
@@ -56,6 +56,23 @@
 
     </div>
   </div>
+
+
+  <div class="container text-left mt-5" id="add-metadata">
+    <h4>Adding metadata</h4>
+    <div class="d-flex flex-wrap">
+      <div class="my-3 card card-dde p-5 mr-3" v-for="(type, idx) in types" :key="idx">
+        <h6>
+          {{type.label}}
+        </h6>
+        <div>
+          {{type.description}}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>
 </template>
 
@@ -75,23 +92,29 @@ export default Vue.extend({
   data() {
     return ({
       types: [{
-          label: "Analyses",
-          link: "Analysis"
+          label: "Protocols",
+          description: "A detailed series of instructions to perform an experimental technique and/or analysis",
+          link: "Protocol"
         },
         {
           label: "Clinical Trials",
+          description: "Publicly and privately funded human clinical studies",
           link: "ClinicalTrial"
         },
         {
           label: "Datasets",
+          description: "A collection of primary or secondary data",
           link: "Dataset"
         },
         {
-          label: "Protocols",
-          link: "Protocol"
+          label: "Analyses",
+          description: "Web-based resources that interpret data based off assumptions and frequently update with new data",
+          link: "Analysis"
         },
+
         {
           label: "Publications",
+          description: "A published report, set of results, or commentary, including preprints and blog posts",
           link: "Publication"
         },
       ]
@@ -101,8 +124,11 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.card {
+.card-link {
     background: $primary-color;
     color: white;
+}
+.card-dde {
+  max-width: 200px;
 }
 </style>
