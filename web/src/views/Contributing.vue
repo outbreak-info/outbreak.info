@@ -27,14 +27,14 @@
     <h4 class="text-left">How to contribute data</h4>
     <div class="row mb-2 d-flex">
 
-      <div class="col-sm-4">
+      <router-link to="#curate" class="col-sm-4">
         <div class="card card-link h-100 mx-2 px-1 py-3">
           <h5>Curate data</h5>
           <p>
             Edit existing metadata records
           </p>
         </div>
-      </div>
+      </router-link>
 
       <router-link to="#add-metadata" class="col-sm-4">
         <div class="card card-link h-100 mx-2 px-1 py-3">
@@ -57,6 +57,15 @@
     </div>
   </div>
 
+
+  <div class="container text-left mt-5" id="curate">
+    <h4>Curating metadata</h4>
+    <div class="d-flex flex-wrap">
+      <p>
+        Curating metadata is key to making information about our resources more accurate and to increase the discoverability of data. After we harvest data from our various <router-link :to="{ name: 'Sources'}">sources</router-link>, we review the information and add additional <a href="https://github.com/SuLab/outbreak.info-resources/blob/master/covid_topic_categories.tsv" target="_blank" rel="noreferrer">tags</a>.
+      </p>
+    </div>
+  </div>
 
   <div class="container text-left mt-5" id="add-metadata">
     <h4>Adding metadata</h4>

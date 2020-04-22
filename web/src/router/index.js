@@ -37,7 +37,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "latest" */ "../views/Latest.vue")
+      import( /* webpackChunkName: "latest" */ "../views/Latest.vue")
   },
   {
     path: "/data",
@@ -76,7 +76,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "resources" */ "../views/Resources.vue")
+      import( /* webpackChunkName: "resources" */ "../views/Resources.vue")
   },
   {
     path: "/resources/:id",
@@ -85,7 +85,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "resources-types" */ "../views/Resources.vue")
+      import( /* webpackChunkName: "resources-types" */ "../views/Resources.vue")
   },
   {
     path: "/analysis/:id",
@@ -94,7 +94,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "analysis" */ "../views/Analysis.vue")
+      import( /* webpackChunkName: "analysis" */ "../views/Analysis.vue")
   },
   {
     path: "/clinicaltrial/:id",
@@ -103,7 +103,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "clinical-trial" */ "../views/ClinicalTrial.vue")
+      import( /* webpackChunkName: "clinical-trial" */ "../views/ClinicalTrial.vue")
   },
   {
     path: "/dataset/:id",
@@ -112,7 +112,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "dataset" */ "../views/Dataset.vue")
+      import( /* webpackChunkName: "dataset" */ "../views/Dataset.vue")
   },
   {
     path: "/protocol/:id",
@@ -121,7 +121,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "protocol" */ "../views/Protocol.vue")
+      import( /* webpackChunkName: "protocol" */ "../views/Protocol.vue")
   },
   {
     path: "/publication/:id",
@@ -130,7 +130,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "publication" */ "../views/Publication.vue")
+      import( /* webpackChunkName: "publication" */ "../views/Publication.vue")
   },
   {
     path: "/summary",
@@ -183,6 +183,11 @@ const router = new VueRouter({
   linkExactActiveClass: 'active',
   routes,
   scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return {
+        selector: to.hash
+      }
+    }
     if (!to.params.disableScroll) {
       return {
         x: 0,
