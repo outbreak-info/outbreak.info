@@ -279,7 +279,7 @@ export default {
   mounted() {
     this.data.forEach(d => {
       d["date"] = d.dateModified ? d.dateModified : (d.datePublished ? d.datePublished : d.dateCreated);
-      d["longDescription"] = d.description ? d.description : d.abstract;
+      d["longDescription"] = d.abstract ? d.abstract : d.description;
       if (d.longDescription) {
         let descriptionArray = d.longDescription.split(" ");
         d['shortDescription'] = descriptionArray.slice(0, this.maxDescriptionLength).join(" ");
@@ -435,15 +435,253 @@ export default {
           lastReviewed: "2020-04-01",
         },
         {
-          _id: "ChiCTR2000029953",
-          type: "ClinicalTrial",
-          descriptionExpanded: false,
-          url: "http://www.chictr.org.cn/showproj.aspx?proj=49217",
-          name: "Construction and Analysis of Prognostic Predictive Model of Novel Coronavirus Pneumonia (COVID-19)",
-          studyType: "Observational",
-          studyEvent: [{
-            studyEventDate: "2020-02-01",
-            studyEventType: "start"
+          "type": "ClinicalTrial",
+          "_id": "NCT04355676",
+          "identifier": "NCT04355676",
+          "identifierSource": "ClinicalTrials.gov",
+          "url": "https:\\/\\/clinicaltrials.gov\\/ct2\\/show\\/NCT04355676",
+          "name": "A Phase 2 Randomized, Open-Label, Multicenter Study to Evaluate the Activity and Safety of Two Regimens of Low Dose Oral Selinexor in Patients With Moderate or Severe COVID-19",
+          "alternateName": ["Evaluation of Activity and Safety of Two Regimens of Low Dose Oral Selinexor in Participants With Moderate or Severe COVID-19"],
+          "abstract": "The main purpose of this study is to evaluate the activity, safety and reduction in mortality of two regimens of low dose selinexor (KPT-330) in patients with moderate or severe COVID-19.",
+          "description": null,
+          "sponsor": [{
+            "@type": "Organization",
+            "name": "Karyopharm Therapeutics Inc",
+            "class": "industry",
+            "role": "lead sponsor"
+          }],
+          "author": [{
+            "@type": "Person",
+            "name": "Sharon Shacham President and CSO",
+            "role": "Contact"
+          }, {
+            "@type": "Person",
+            "name": "Dayana Michel",
+            "role": "Study Director",
+            "affiliation": "Karyopharm Therapeutics Inc"
+          }],
+          "studyStatus": {
+            "@type": "StudyStatus",
+            "status": "not yet recruiting",
+            "statusDate": "April 2020",
+            "enrollmentCount": 80,
+            "enrollmentType": "anticipated"
+          },
+          "studyEvent": [{
+            "@type": "StudyEvent",
+            "studyEventType": "start",
+            "studyEventDate": "April 30, 2020",
+            "studyEventDateType": "anticipated"
+          }, {
+            "@type": "StudyEvent",
+            "studyEventType": "primary completion",
+            "studyEventDate": "August 30, 2020",
+            "studyEventDateType": "anticipated"
+          }, {
+            "@type": "StudyEvent",
+            "studyEventType": "completion",
+            "studyEventDate": "August 30, 2020",
+            "studyEventDateType": "anticipated"
+          }, {
+            "@type": "StudyEvent",
+            "studyEventType": "first posting to clinicaltrials.gov",
+            "studyEventDate": "April 21, 2020",
+            "studyEventDateType": "actual"
+          }, {
+            "@type": "StudyEvent",
+            "studyEventType": "last posting to clinicaltrials.gov",
+            "studyEventDate": "April 21, 2020",
+            "studyEventDateType": "actual"
+          }, {
+            "@type": "StudyEvent",
+            "studyEventType": "first submission",
+            "studyEventDate": "April 17, 2020"
+          }, {
+            "@type": "StudyEvent",
+            "studyEventType": "first submission that met quality control criteria",
+            "studyEventDate": "April 17, 2020"
+          }, {
+            "@type": "StudyEvent",
+            "studyEventType": "last update submission",
+            "studyEventDate": "April 17, 2020"
+          }],
+          "hasResults": false,
+          "dateCreated": "2020-04-17",
+          "datePublished": "2020-04-21",
+          "dateModified": "2020-04-21",
+          "curatedBy": {
+            "@type": "Organization",
+            "name": "ClinicalTrials.gov",
+            "url": "https:\\/\\/clinicaltrials.gov\\/ct2\\/results?cond=COVID-19",
+            "versionDate": "2020-04-28"
+          },
+          "healthCondition": ["Coronavirus Infection"],
+          "keywords": ["COVID-19", "SARS-CoV-2"],
+          "studyDesign": [{
+            "@type": "StudyDesign",
+            "studyType": "interventional",
+            "designAllocation": "randomized",
+            "designModel": "parallel assignment",
+            "designPrimaryPurpose": "treatment",
+            "phase": ["Phase 2"]
+          }],
+          "outcome": [{
+            "@type": "Outcome",
+            "outcomeMeasure": "Percentage of Participants with at Least a 2 Point Improvement in the Ordinal Scale",
+            "outcomeTimeFrame": "Baseline to Day 14",
+            "outcomeType": "primary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Clinical Improvement (TTCI)",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Overall Death Rate",
+            "outcomeTimeFrame": "Day 14, Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Rate of Mechanical Ventilation",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Mechanical Ventilation",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Overall Survival",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Improvement (2 points) in Clinical Measures Using the Ordinal Scale",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Intensive Care Unit (ICU) Admission",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Rate of Intensive Care Unit (ICU) Admission",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Length of Stay in Hospital",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Percentage of Participants Discharged From Hospital",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Length of Stay in Intensive Care Unit (ICU)",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Duration of Oxygen Supplementation",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Duration of Mechanical Ventilation",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Clinical Improvement in Participants \\u2264 70 Years Old",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Clinical Improvement in Participants > 70 Years Old",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Clinical Improvement in Participants with Pre-existing Diseases",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Change in Oxygenation Index",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Time to Improvement of One Point Using WHO Ordinal Scale Improvement",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Percentage of Participants Experiencing WHO Ordinal Scale Improvement of >1 point",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Change from Baseline in C-reactive protein (CRP) Levels",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Change from Baseline in Ferritin Levels",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Change from Baseline in Lactate Dehydrogenase (LDH) Levels",
+            "outcomeTimeFrame": "Up to Day 28",
+            "outcomeType": "secondary"
+          }, {
+            "@type": "Outcome",
+            "outcomeMeasure": "Number of Participants with Adverse Events (AE)",
+            "outcomeTimeFrame": "From start of study drug administration up to follow-up (Day 30)",
+            "outcomeType": "secondary"
+          }],
+          "eligibilityCriteria": [{
+            "@type": "Eligibility",
+            "inclusionCriteria": ["Confirmed laboratory diagnosis of SARS-CoV2 by standard approved reverse transcription polymerase chain reaction (RT-PCR) assay or equivalent approved testing (by local labs).",
+              "Currently hospitalized and consented within the first 48 hours of hospitalization.", "Informed consent provided as above (patients must be dosed with study drug within 12 hours of consent).",
+              "Has symptoms of moderate or severe COVID-19 as demonstrated by:"
+            ],
+            "minimumAge": "18 years",
+            "gender": "all",
+            "healthyVolunteers": false,
+            "stdAge": ["adult", "older adult"]
+          }],
+          "isBasedOn": [],
+          "relatedTo": null,
+          "studyLocation": [],
+          "armGroup": [{
+            "@type": "ArmGroup",
+            "name": "Selinexor 40mg",
+            "description": "Participants will receive 40 milligram (mg) of selinexor as oral tablets on Days 1 and 3 of each week for up to 2 weeks (14 days). If the participant is tolerating therapy and clinically benefitting, dosing can continue for an additional 2 weeks (28 days).",
+            "role": "experimental",
+            "intervention": [{
+              "@type": "Intervention",
+              "category": "drug",
+              "name": "selinexor",
+              "description": "20 mg selinexor oral tablet."
+            }]
+          }, {
+            "@type": "ArmGroup",
+            "name": "Selinexor 20mg",
+            "description": "Participants will receive 20 milligram (mg) of selinexor oral tablet on Days 1, 3 and 5 of each week for up to 2 weeks (14 days). If the participant is tolerating therapy and clinically benefitting, dosing can continue for an additional 2 weeks (28 days).",
+            "role": "experimental",
+            "intervention": [{
+              "@type": "Intervention",
+              "category": "drug",
+              "name": "selinexor",
+              "description": "20 mg selinexor oral tablet."
+            }]
           }]
         },
         {
