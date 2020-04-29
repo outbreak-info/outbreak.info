@@ -51,10 +51,10 @@
         <table id='whats-new'>
           <tbody>
             <tr v-for="(item, idx) in newData" :key="idx" class="new-item">
-              <td class="resource-type d-flex align-items-center" :class="item.type">
-                <StripeAccent :className="item.type" />
+              <td class="resource-type d-flex align-items-center" :class="item['@type']">
+                <StripeAccent :className="item['@type']" />
 
-                {{item.type}}
+                {{item['@type']}}
               </td>
               <td class="resource-name text-left" valign="top">{{item.name}}</td>
               <td class="resource-affiliation text-left text-muted" valign="top">
@@ -163,9 +163,9 @@
         <div id="results-container" class="my-3">
           <div class="row w-100 d-flex flex-column text-left py-2 search-result" v-for="(item, idx) in data" :key="idx">
             <div class="d-flex w-100 align-items-center">
-              <StripeAccent :className="item.type" />
-              <small :class="[item.type, 'resource-type', 'mr-2']">{{item.type}}</small>
-              <router-link :to="{ name: item.type, params: {id: item._id} }">
+              <StripeAccent :className="item['@type']" />
+              <small :class="[item['@type'], 'resource-type', 'mr-2']">{{item['@type']}}</small>
+              <router-link :to="{ name: item['@type'], params: {id: item._id} }">
                 <h5 class="m-0">{{item.name}}</h5>
               </router-link>
             </div>
@@ -202,13 +202,13 @@
 
                   </small>
                 </div>
-                <router-link to="search" v-if="item.type=='Dataset'">
+                <router-link to="search" v-if="item['@type']=='Dataset'">
                   <small>find analyses/publications that use this data</small>
                 </router-link>
                 <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
                   based on |
                   <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
-                    {{resource.type}}
+                    {{resource["@type"]}}
                   </router-link>
                 </div>
                 <router-link to="search" v-if="item.relatedTo">
@@ -342,7 +342,7 @@ export default {
       data: [{
           _id: "virological1",
           descriptionExpanded: false,
-          type: "Analysis",
+          "@type": "Analysis",
           url: "http://virological.org/t/preliminary-in-silico-assessment-of-the-specificity-of-published-molecular-assays-and-design-of-new-assays-using-the-available-whole-genome-sequences-of-2019-ncov/343",
           name: "Preliminary in silico assessment of the specificity of published molecular assays and design of new assays using the available whole genome sequences of 2019-nCoV",
           author: [{
@@ -364,7 +364,7 @@ export default {
           description: "BioLaboro is an application for rapidly designing de novo assays and validating existing PCR detection assays. It is a user-friendly new assay discovery pipeline composed of three tools: BioVelocity®, Primer3, and PSET. BioVelocity® uses a rapid, accurate hashing algorithm to align sequencing reads to a large set of references (e.g. Genbank) (Sozhamannan et al., 2015). BioVelocity® creates a k-mer index to determine all possible matches between query sequences and references simultaneously using a large RAM system (i.e. an IBM Power8). This algorithm makes it possible to very quickly identify sequences conserved within or omitted from a set of target references. Primer3 (http://primer3.sourceforge.net/ 29) is a tool for designing primers and probes for real-time PCR reactions. It considers a range of criteria such as oligonucleotide melting temperature, size, GC content, and primer-dimer possibilities. We use Primer3 along with our signature detection process to identify potential new primer sets. PSET (PCR Signature Erosion Tool) tests PCR assays in silico against the latest versions of public sequence repositories, or other reference datasets, to determine if primers and probes match only to their intended targets. Using this information, an assay provider can be better aware of potential false hits and be better prepared to design new primers when false hits become intractable.",
         }, {
           _id: "nejm1",
-          type: "Publication",
+          "@type": "Publication",
           descriptionExpanded: false,
           url: "http://doi.org/10.1056/NEJMc2007942",
           name: "Stability and Viability of SARS-CoV-2",
@@ -403,7 +403,7 @@ export default {
         },
         {
           _id: "ihme",
-          type: "Analysis",
+          "@type": "Analysis",
           descriptionExpanded: false,
           url: "https://covid19.healthdata.org/projections",
           name: "COVID-19 U.S. State by State Projections",
@@ -418,7 +418,7 @@ export default {
           analysisTechnique: "Whole Genome Sequencing",
           isPartOf: "http://www.healthdata.org/research-article/forecasting-covid-19-impact-hospital-bed-days-icu-days-ventilator-days-and-deaths",
           isBasedOn: [{
-            type: "Dataset",
+            "@type": "Dataset",
             url: ""
           }],
           variableMeasured: "", // something similiar?
@@ -428,7 +428,7 @@ export default {
         },
         {
           _id: "jhu",
-          type: "Dataset",
+          "@type": "Dataset",
           descriptionExpanded: false,
           url: "https://github.com/CSSEGISandData/COVID-19",
           description: "This is the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).",
@@ -442,7 +442,7 @@ export default {
           lastReviewed: "2020-04-01",
         },
         {
-          "type": "ClinicalTrial",
+          "@type": "ClinicalTrial",
           "_id": "NCT04355676",
           "identifier": "NCT04355676",
           "identifierSource": "ClinicalTrials.gov",
@@ -693,7 +693,7 @@ export default {
         },
         {
           _id: "protocols",
-          type: "Protocol",
+          "@type": "Protocol",
           url: "https://mammoth.bio/2020/02/15/white-paper-a-protocol-for-rapid-detection-of-sars-cov-2-using-crispr-sars-cov-2-detectr/",
           curatedBy: {
             url: "https://www.protocols.io/view/a-protocol-for-rapid-detection-of-the-2019-novel-c-bcmtiu6n",
