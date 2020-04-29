@@ -173,12 +173,19 @@
             <div class="row">
               <!-- LEFT -->
               <div class="col-sm-5 text-muted">
+                <!-- authors -->
                 <div class="attribution text-body">
                   <small v-if="item.author">
                     {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
                     <span v-if="item.author.length > 1"> et al.</span>
                   </small>
                 </div>
+                <!-- publication name -->
+                <div class="publication">
+                  <small v-if="item.journalNameAbbrev">{{item.journalNameAbbrev}}</small>
+                  <small v-else-if="item.journalName">{{item.journalName}}</small>
+                </div>
+                <!-- dates -->
                 <div class="dates">
                   <small v-if="item.dateModified || item.dateCreated || item.datePublished">
                     <i class="far fa-clock"></i>
@@ -198,7 +205,7 @@
                 <router-link to="search" v-if="item.type=='Dataset'">
                   <small>find analyses/publications that use this data</small>
                 </router-link>
-                <div v-if="item.isBasedOn" class="px-1 bg-grey__lightest">
+                <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
                   based on |
                   <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
                     {{resource.type}}
