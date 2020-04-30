@@ -201,9 +201,18 @@
 
                   </small>
                 </div>
+                <!-- CLINCIAL-TRIAL-SPECIFIC  -->
+
+                <!-- clinical trial status -->
+                <div v-if="item.studyStatus">
+                <TrialStatus :status="item.studyStatus" :locations="item.studyLocation"/>
+                </div>
+
+                <!-- clinical trial phase -->
                 <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
                 <TrialPhase :phases="item.studyDesign.phaseNumber"/>
                 </div>
+
 
                 <!-- relatedTo -->
                 <router-link to="search" v-if="item['@type']=='Dataset'">
@@ -222,6 +231,16 @@
 
               <!-- RIGHT     -->
               <div class="col-sm-7 text-muted">
+                    <!-- CLINCIAL-TRIAL-SPECIFIC  -->
+                    <div v-if="item.studyDesign || item.armGroup">
+                    <TrialType :design="item.studyDesign" :arms="item.armGroup"/>
+                    </div>
+
+                    <!-- clinical trial phase -->
+                    <!-- <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
+                    <TrialPhase :phases="item.studyDesign.phaseNumber"/>
+                    </div> -->
+
                 <template v-if="item.descriptionExpanded">
                   <span v-html="item.longDescription"></span>
                   <span>
@@ -263,6 +282,8 @@ import {
 
 import StripeAccent from "@/components/StripeAccent.vue";
 import TrialPhase from "@/components/TrialPhase.vue"
+import TrialStatus from "@/components/TrialStatus.vue"
+import TrialType from "@/components/TrialType.vue"
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -274,7 +295,9 @@ export default {
   },
   components: {
     StripeAccent,
-    TrialPhase
+    TrialPhase,
+    TrialStatus,
+    TrialType
   },
   methods: {
     format: function(dateStr) {
@@ -534,7 +557,7 @@ export default {
             "versionDate": "2020-04-29"
           },
           "healthCondition": ["Use of Stem Cells for COVID-19 Treatment"],
-          "keywords": ["Stem Cells, COVID-19, SARS CoV2, WJ MSCs, Immunomodulation,"],
+          "keywords": ["Stem Cells", "COVID-19", "SARS CoV2", "WJ MSCs", "Immunomodulation"],
           "studyDesign": {
             "@type": "StudyDesign",
             "studyType": "interventional",
@@ -593,7 +616,7 @@ export default {
             "intervention": [{
               "@type": "Intervention",
               "category": "biological",
-              "name": "wj-mscs",
+              "name": "WJ-MSCs",
               "description": "WJ-MSCs will be derived from cord tissue of newborns, screened for HIV1\\/2, HBV, HCV, CMV, Mycoplasma, and cultured to enrich for MSCs.\\n\\nWJ-MSCs will be counted and suspended in 25 ml of Saline solution containing 0.5% human serum Albumin, and will be given to patient intravenously."
             }]
           }]

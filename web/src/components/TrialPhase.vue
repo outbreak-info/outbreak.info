@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="my-2">
   <small class="mr-1">Phase</small>
   <svg :width="width" :height="height">
     <g>
@@ -19,7 +19,7 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "DataUpdated",
+  name: "TrialPhase",
   props: {
     phases: Array
   },
