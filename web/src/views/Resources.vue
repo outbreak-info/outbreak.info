@@ -1,6 +1,6 @@
 <template>
 <div class="">
-
+<TrialPhase :phases="[4]"/>
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
@@ -258,6 +258,7 @@ import {
 } from "d3";
 
 import StripeAccent from "@/components/StripeAccent.vue";
+import TrialPhase from "@/components/TrialPhase.vue"
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -268,7 +269,8 @@ export default {
     search: String
   },
   components: {
-    StripeAccent
+    StripeAccent,
+    TrialPhase
   },
   methods: {
     format: function(dateStr) {
