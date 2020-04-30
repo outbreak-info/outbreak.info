@@ -125,7 +125,7 @@ export default {
         },
         "healthCondition": ["COVID"],
         "keywords": null,
-        "studyDesign": [{
+        "studyDesign": {
           "@type": "StudyDesign",
           "studyType": "interventional",
           "designAllocation": "randomized",
@@ -133,7 +133,7 @@ export default {
           "designPrimaryPurpose": "treatment",
           "phase": ["Phase 2"],
           "phaseNumber": [2]
-        }],
+        },
         "outcome": [{
           "@type": "Outcome",
           "outcomeMeasure": "Time until cessation of oral shedding of SARS-CoV-2 virus",

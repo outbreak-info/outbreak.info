@@ -4,7 +4,7 @@
   <svg :width="width" :height="height">
     <g>
       <polygon class="polygon-phase" :points="`0,0 ${phaseWidth-2*triangleWidth},0 ${phaseWidth-triangleWidth},${height/2} ${phaseWidth-2*triangleWidth},${height} 0,${height}`"></polygon>
-      <text class="text-phase" :x="(phaseWidth-2*triangleWidth)/2" :y="height/2">0</text>
+      <text class="text-phase" :x="(phaseWidth-1.5*triangleWidth)/2" :y="height/2">0</text>
     </g>
     <g :class="{'current-phase': phases.includes(phase)}" v-for="(phase, idx) in allPhases" :key="idx" :transform="`translate(${(phaseWidth - triangleWidth + spacer) *(idx+1) - triangleWidth},0)`">
       <polygon class="polygon-phase" :points="`0,0 ${phaseWidth-triangleWidth},0 ${phaseWidth},${height/2} ${phaseWidth-triangleWidth},${height} 0,${height} ${triangleWidth},${height/2}`"></polygon>

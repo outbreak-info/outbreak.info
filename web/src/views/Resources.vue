@@ -1,6 +1,5 @@
 <template>
 <div class="">
-<TrialPhase :phases="[4]"/>
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
@@ -202,6 +201,11 @@
 
                   </small>
                 </div>
+                <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
+                <TrialPhase :phases="item.studyDesign.phaseNumber"/>
+                </div>
+
+                <!-- relatedTo -->
                 <router-link to="search" v-if="item['@type']=='Dataset'">
                   <small>find analyses/publications that use this data</small>
                 </router-link>
@@ -531,14 +535,14 @@ export default {
           },
           "healthCondition": ["Use of Stem Cells for COVID-19 Treatment"],
           "keywords": ["Stem Cells, COVID-19, SARS CoV2, WJ MSCs, Immunomodulation,"],
-          "studyDesign": [{
+          "studyDesign": {
             "@type": "StudyDesign",
             "studyType": "interventional",
             "designModel": "single group assignment",
             "designPrimaryPurpose": "treatment",
             "phase": ["Phase 1"],
             "phaseNumber": [1]
-          }],
+          },
           "outcome": [{
             "@type": "Outcome",
             "outcomeMeasure": "Clinical outcome",
