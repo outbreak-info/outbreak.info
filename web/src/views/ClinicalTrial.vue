@@ -48,81 +48,82 @@ export default {
     return {
       data: {
         "@type": "ClinicalTrial",
-        "_id": "NCT04342650",
-        "identifier": "NCT04342650",
+        "_id": "NCT04346628",
+        "identifier": "NCT04346628",
         "identifierSource": "ClinicalTrials.gov",
-        "url": "https:\\/\\/clinicaltrials.gov\\/ct2\\/show\\/NCT04342650",
-        "name": "Phase IIb Study to Evaluate the Efficacy and Safety of Chloroquine Diphosphate in the Treatment of Patients With Comorbidities, Without Severe Acute Respiratory Syndrome, Under the New Coronavirus (SARS-CoV2): a Double-blind, Randomized, Placebo-controlled Clinical Trial",
-        "alternateName": ["CloroCOVID19II", "Chloroquine Diphosphate in the Prevention of SARS in Covid-19 Infection"],
-        "abstract": "This is a double-blind, randomized, placebo-controlled clinical trial. A total of 210 individuals aged over 18 years old, without a diagnosis of severe respiratory disease, who came to the study site with clinical and radiological suspicion of SARS-CoV2, will be randomized into two treatment groups at a 1:1 ratio to receive a 5-day CQ diphosphate tablets or placebo (tablet without active ingredient produced with the same physical characteristics).",
+        "url": "https:\\/\\/clinicaltrials.gov\\/ct2\\/show\\/NCT04346628",
+        "name": "A Phase 2 Randomized, Open Label Study of Oral Favipiravir Compared to Standard Supportive Care in Subjects With Mild COVID-19",
+        "alternateName": ["Oral Favipiravir Compared to Standard Supportive Care in Subjects With Mild COVID-19"],
+        "abstract": "The objective of this study is to evaluate the efficacy of oral favipiravir compared with SOC in reducing the duration of viral shedding of SARS-CoV-2 virus in patients with uncomplicated COVID-19 disease.",
         "description": null,
         "sponsor": [{
           "@type": "Organization",
-          "name": "Funda\\u00e7\\u00e3o de Medicina Tropical Dr. Heitor Vieira Dourado",
+          "name": "Stanford University",
           "class": "other",
           "role": "lead sponsor"
         }],
         "author": [{
           "@type": "Person",
-          "name": "Fernando Val, PhD",
-          "role": "Contact"
+          "name": "Yvonne (Bonnie) A Maldonado, MD",
+          "role": "Principal Investigator",
+          "affiliation": "Stanford University"
         }],
         "studyStatus": {
           "@type": "StudyStatus",
-          "status": "recruiting",
+          "status": "not yet recruiting",
           "statusDate": "April 2020",
-          "enrollmentCount": 210,
+          "enrollmentCount": 120,
           "enrollmentType": "anticipated"
         },
         "studyEvent": [{
           "@type": "StudyEvent",
           "studyEventType": "start",
-          "studyEventDate": "April 8, 2020",
-          "studyEventDateType": "actual"
+          "studyEventDate": "April 2020",
+          "studyEventDateType": "anticipated"
         }, {
           "@type": "StudyEvent",
           "studyEventType": "primary completion",
-          "studyEventDate": "September 2020",
+          "studyEventDate": "April 2021",
           "studyEventDateType": "anticipated"
         }, {
           "@type": "StudyEvent",
           "studyEventType": "completion",
-          "studyEventDate": "September 2020",
+          "studyEventDate": "April 2021",
           "studyEventDateType": "anticipated"
         }, {
           "@type": "StudyEvent",
           "studyEventType": "first posting to clinicaltrials.gov",
-          "studyEventDate": "April 13, 2020",
+          "studyEventDate": "April 15, 2020",
           "studyEventDateType": "actual"
         }, {
           "@type": "StudyEvent",
           "studyEventType": "last posting to clinicaltrials.gov",
-          "studyEventDate": "April 14, 2020",
+          "studyEventDate": "April 15, 2020",
           "studyEventDateType": "actual"
         }, {
           "@type": "StudyEvent",
           "studyEventType": "first submission",
-          "studyEventDate": "April 4, 2020"
+          "studyEventDate": "April 10, 2020"
         }, {
           "@type": "StudyEvent",
           "studyEventType": "first submission that met quality control criteria",
-          "studyEventDate": "April 8, 2020"
+          "studyEventDate": "April 14, 2020"
         }, {
           "@type": "StudyEvent",
           "studyEventType": "last update submission",
-          "studyEventDate": "April 10, 2020"
+          "studyEventDate": "April 14, 2020"
         }],
         "hasResults": false,
-        "dateCreated": "2020-04-04",
-        "datePublished": "2020-04-13",
-        "dateModified": "2020-04-14",
+        "dateCreated": "2020-04-10",
+        "datePublished": "2020-04-15",
+        "dateModified": "2020-04-15",
         "curatedBy": {
           "@type": "Organization",
           "name": "ClinicalTrials.gov",
           "url": "https:\\/\\/clinicaltrials.gov\\/ct2\\/results?cond=COVID-19",
-          "versionDate": "2020-04-28"
+          "versionDate": "2020-04-29"
         },
-        "healthCondition": ["COVID-19", "SARS-CoV Infection", "Severe Acute Respiratory Syndrome (SARS) Pneumonia", "Clinical Trial"],
+        "healthCondition": ["COVID"],
         "keywords": null,
         "studyDesign": [{
           "@type": "StudyDesign",
@@ -130,105 +131,94 @@ export default {
           "designAllocation": "randomized",
           "designModel": "parallel assignment",
           "designPrimaryPurpose": "treatment",
-          "phase": ["Phase 2"]
+          "phase": ["Phase 2"],
+          "phaseNumber": [2]
         }],
         "outcome": [{
           "@type": "Outcome",
-          "outcomeMeasure": "Proportion of patients with onset of severe acute respiratory syndrome (SARS)",
-          "outcomeTimeFrame": "7 days after randomization",
+          "outcomeMeasure": "Time until cessation of oral shedding of SARS-CoV-2 virus",
+          "outcomeTimeFrame": "Up to 28 days",
           "outcomeType": "primary"
         }, {
           "@type": "Outcome",
-          "outcomeMeasure": "Mortality rate",
-          "outcomeTimeFrame": "after randomization, up to 28 days",
+          "outcomeMeasure": "Count of participants with clinical worsening of COVID-19 disease",
+          "outcomeTimeFrame": "Up to 28 days",
           "outcomeType": "secondary"
         }, {
           "@type": "Outcome",
-          "outcomeMeasure": "Number of participants in need of intensive care support",
-          "outcomeTimeFrame": "during and after intervention, up to 28 days",
+          "outcomeMeasure": "Sars-CoV-2 viral load",
+          "outcomeTimeFrame": "Up to 28 days",
           "outcomeType": "secondary"
         }, {
           "@type": "Outcome",
-          "outcomeMeasure": "Viral concentration",
-          "outcomeTimeFrame": "After randomization, up to 7 days",
+          "outcomeMeasure": "Count of participants with development of SARS-CoV-2 antibodies",
+          "outcomeTimeFrame": "Up to 28 days",
           "outcomeType": "secondary"
         }, {
           "@type": "Outcome",
-          "outcomeMeasure": "Cumulative incidence of serious adverse events",
-          "outcomeTimeFrame": "During and after intervention, up to 28 days",
+          "outcomeMeasure": "Time until cessation of symptoms",
+          "outcomeTimeFrame": "Up to 28 days",
           "outcomeType": "secondary"
         }, {
           "@type": "Outcome",
-          "outcomeMeasure": "Cumulative incidence of grade 3 and 4 adverse events",
-          "outcomeTimeFrame": "During and after intervention, up to 28 days",
+          "outcomeMeasure": "Cmax of favipiravir",
+          "outcomeTimeFrame": "Days 1 and 10 (samples taken 30 minutes prior to and 1 hour following favipiravir administration)",
           "outcomeType": "secondary"
         }, {
           "@type": "Outcome",
-          "outcomeMeasure": "Proportion of patients with discontinued treatment",
-          "outcomeTimeFrame": "after randomization, up to 28 days",
-          "outcomeType": "secondary"
-        }, {
-          "@type": "Outcome",
-          "outcomeMeasure": "Incidence of cardiac lesions",
-          "outcomeTimeFrame": "after randomization, up to 120 days",
-          "outcomeType": "secondary"
-        }, {
-          "@type": "Outcome",
-          "outcomeMeasure": "Incidence of cardiac disfunctions",
-          "outcomeTimeFrame": "after randomization, up to 120 days",
-          "outcomeType": "secondary"
-        }, {
-          "@type": "Outcome",
-          "outcomeMeasure": "Change in respiratory capacity",
-          "outcomeTimeFrame": "Day 120 after randomization",
+          "outcomeMeasure": "Cmin of favipiravir",
+          "outcomeTimeFrame": "Days 1 and 10 (samples taken 30 minutes prior to and 1 hour following favipiravir administration)",
           "outcomeType": "secondary"
         }],
         "eligibilityCriteria": [{
           "@type": "Eligibility",
-          "inclusionCriteria": ["Suspected cases of COVID-19, due to clinical and radiological data, during the epidemic;", "Adult aged 18 or over, at the time of inclusion",
-            "Not having severe acute respiratory syndrome (SARS), that is, not using mechanical ventilation or supplemental oxygen, peripheral oxygen saturation> 94% in room air, and having a respiratory rate below 24 incursions per minute.",
-            "Patients with comorbidities only, due to the increased risk of developing SARS"
+          "inclusionCriteria": ["Patients with laboratory confirmation of infection with SARS-CoV-2 and who are PCR positive (within five days or fewer prior to enrollment)",
+            "Asymptomatic or mild respiratory disease, defined as a respiratory rate no more than 20 breaths per minute and a normal oxygen saturation"
           ],
-          "exclusionCriteria": ["1. Patients with chronic use of drugs known to prolong QTc interval."],
           "minimumAge": "18 years",
           "gender": "all",
           "healthyVolunteers": false,
           "stdAge": ["adult", "older adult"]
         }],
-        "isBasedOn": [],
+        "isBasedOn": null,
         "relatedTo": null,
         "studyLocation": [{
           "@type": "Place",
-          "name": "Hospital e Pronto Socorro Delphina Rinaldi Abdel Aziz",
-          "studyLocationCity": "Manaus",
-          "studyLocationCountry": "Brazil",
-          "studyLocationState": "Amazonas",
-          "studyLocationStatus": "recruiting"
+          "name": "Stanford University",
+          "studyLocationCity": "Stanford",
+          "studyLocationCountry": "United States",
+          "studyLocationState": "California"
         }],
         "armGroup": [{
           "@type": "ArmGroup",
-          "name": "Intervention",
-          "description": "CQ 450mg twice daily (3 tablets of 150mg, every 12 hours) on day 1, followed by CQ 450mg once daily (3 tablets of 150mg) from D2 to D5. Oral administration.",
-          "role": "active comparator",
+          "name": "Favipiravir",
+          "description": "Participants will receive favipiravir for 10 days plus standard of care treatment for COVID-19 infection.",
+          "role": "experimental",
           "intervention": [{
             "@type": "Intervention",
             "category": "drug",
-            "name": "chloroquine diphosphate",
-            "description": "150mg tablets"
+            "name": "favipiravir",
+            "description": "Favipiravir administered orally, 1800 mg on the first dose (day 1) followed by 800 mg twice daily for the next 9 days (days 2-10)."
+          }, {
+            "@type": "Intervention",
+            "category": "other",
+            "name": "standard of care treatment",
+            "description": "Standard of care treatment for COVID-19 infection"
           }]
         }, {
           "@type": "ArmGroup",
-          "name": "Placebo",
-          "description": "Placebo tables of equal characteristics and duration of treatment.",
-          "role": "placebo comparator",
+          "name": "Standard of Care",
+          "description": "Participants will receive standard of care treatment for COVID-19 infection.",
+          "role": "active comparator",
           "intervention": [{
             "@type": "Intervention",
-            "category": "drug",
-            "name": "placebo oral tablet",
-            "description": "150mg placebo tablets"
+            "category": "other",
+            "name": "standard of care treatment",
+            "description": "Standard of care treatment for COVID-19 infection"
           }]
         }]
       }
+
 
     };
   }

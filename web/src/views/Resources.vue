@@ -443,251 +443,152 @@ export default {
         },
         {
           "@type": "ClinicalTrial",
-          "_id": "NCT04355676",
-          "identifier": "NCT04355676",
+          "_id": "NCT04313322",
+          "identifier": "NCT04313322",
           "identifierSource": "ClinicalTrials.gov",
-          "url": "https:\\/\\/clinicaltrials.gov\\/ct2\\/show\\/NCT04355676",
-          "name": "A Phase 2 Randomized, Open-Label, Multicenter Study to Evaluate the Activity and Safety of Two Regimens of Low Dose Oral Selinexor in Patients With Moderate or Severe COVID-19",
-          "alternateName": ["Evaluation of Activity and Safety of Two Regimens of Low Dose Oral Selinexor in Participants With Moderate or Severe COVID-19"],
-          "abstract": "The main purpose of this study is to evaluate the activity, safety and reduction in mortality of two regimens of low dose selinexor (KPT-330) in patients with moderate or severe COVID-19.",
-          "description": null,
+          "url": "https://clinicaltrials.gov/ct2/show/NCT04313322",
+          "name": "Treatment of COVID-19 Patients Using Wharton's Jelly-Mesenchymal Stem Cells",
+          "alternateName": ["Treatment of COVID-19 Patients Using Wharton's Jelly-Mesenchymal Stem Cells"],
+          "abstract": "The purpose of this study is to investigate the potential use of Wharton's Jelly Mesenchymal stem cells (WJ-MSCs) for treatment of patient diagnosed with Corona Virus SARS-CoV-2 infection, and showing symptoms of COVID-19.",
+          "description": "COVID-19 is a condition caused by infection with Coronoa Virus (SARS-CoV-2). This virus has a high transmission rate and is spreading at very high rates. causing a worldwide pandemic. Patients diagnosed with COVID-19 and confirmed positive with the virus, will be given three IV doses of WJ-MSCs consisting of 1X10e6\\/kg. The three doses will be 3 days apart form each other.\\n\\nPatients will be followed up for a period of three weeks to assess the severity of the condition and measure the viral titers.",
           "sponsor": [{
             "@type": "Organization",
-            "name": "Karyopharm Therapeutics Inc",
-            "class": "industry",
+            "name": "Stem Cells Arabia",
+            "class": "other",
             "role": "lead sponsor"
           }],
           "author": [{
             "@type": "Person",
-            "name": "Sharon Shacham President and CSO",
+            "name": "Adeeb Al Zoubi",
+            "affiliation": ["Stem Cells Arabia"],
+            "title": "President, Chief Scientific Officer",
+            "role": "Principal Investigator"
+          }, {
+            "@type": "Person",
+            "name": "Adeeb M AlZoubi, Ph.D.",
             "role": "Contact"
           }, {
             "@type": "Person",
-            "name": "Dayana Michel",
-            "role": "Study Director",
-            "affiliation": "Karyopharm Therapeutics Inc"
+            "name": "Ahmad Y AlGhadi, M.Sc.",
+            "role": "Contact"
           }],
           "studyStatus": {
             "@type": "StudyStatus",
-            "status": "not yet recruiting",
-            "statusDate": "April 2020",
-            "enrollmentCount": 80,
+            "status": "recruiting",
+            "statusDate": "March 2020",
+            "enrollmentCount": 5,
             "enrollmentType": "anticipated"
           },
           "studyEvent": [{
             "@type": "StudyEvent",
             "studyEventType": "start",
-            "studyEventDate": "April 30, 2020",
+            "studyEventDate": "March 16, 2020",
             "studyEventDateType": "anticipated"
           }, {
             "@type": "StudyEvent",
             "studyEventType": "primary completion",
-            "studyEventDate": "August 30, 2020",
+            "studyEventDate": "June 30, 2020",
             "studyEventDateType": "anticipated"
           }, {
             "@type": "StudyEvent",
             "studyEventType": "completion",
-            "studyEventDate": "August 30, 2020",
+            "studyEventDate": "September 30, 2020",
             "studyEventDateType": "anticipated"
           }, {
             "@type": "StudyEvent",
             "studyEventType": "first posting to clinicaltrials.gov",
-            "studyEventDate": "April 21, 2020",
+            "studyEventDate": "March 18, 2020",
             "studyEventDateType": "actual"
           }, {
             "@type": "StudyEvent",
             "studyEventType": "last posting to clinicaltrials.gov",
-            "studyEventDate": "April 21, 2020",
+            "studyEventDate": "March 18, 2020",
             "studyEventDateType": "actual"
           }, {
             "@type": "StudyEvent",
             "studyEventType": "first submission",
-            "studyEventDate": "April 17, 2020"
+            "studyEventDate": "March 15, 2020"
           }, {
             "@type": "StudyEvent",
             "studyEventType": "first submission that met quality control criteria",
-            "studyEventDate": "April 17, 2020"
+            "studyEventDate": "March 15, 2020"
           }, {
             "@type": "StudyEvent",
             "studyEventType": "last update submission",
-            "studyEventDate": "April 17, 2020"
+            "studyEventDate": "March 15, 2020"
           }],
           "hasResults": false,
-          "dateCreated": "2020-04-17",
-          "datePublished": "2020-04-21",
-          "dateModified": "2020-04-21",
+          "dateCreated": "2020-03-15",
+          "datePublished": "2020-03-18",
+          "dateModified": "2020-03-18",
           "curatedBy": {
             "@type": "Organization",
             "name": "ClinicalTrials.gov",
-            "url": "https:\\/\\/clinicaltrials.gov\\/ct2\\/results?cond=COVID-19",
-            "versionDate": "2020-04-28"
+            "url": "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
+            "versionDate": "2020-04-29"
           },
-          "healthCondition": ["Coronavirus Infection"],
-          "keywords": ["COVID-19", "SARS-CoV-2"],
+          "healthCondition": ["Use of Stem Cells for COVID-19 Treatment"],
+          "keywords": ["Stem Cells, COVID-19, SARS CoV2, WJ MSCs, Immunomodulation,"],
           "studyDesign": [{
             "@type": "StudyDesign",
             "studyType": "interventional",
-            "designAllocation": "randomized",
-            "designModel": "parallel assignment",
+            "designModel": "single group assignment",
             "designPrimaryPurpose": "treatment",
-            "phase": ["Phase 2"]
+            "phase": ["Phase 1"],
+            "phaseNumber": [1]
           }],
           "outcome": [{
             "@type": "Outcome",
-            "outcomeMeasure": "Percentage of Participants with at Least a 2 Point Improvement in the Ordinal Scale",
-            "outcomeTimeFrame": "Baseline to Day 14",
+            "outcomeMeasure": "Clinical outcome",
+            "outcomeTimeFrame": "3 weeks",
             "outcomeType": "primary"
           }, {
             "@type": "Outcome",
-            "outcomeMeasure": "Time to Clinical Improvement (TTCI)",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
+            "outcomeMeasure": "CT Scan",
+            "outcomeTimeFrame": "3 weeks",
+            "outcomeType": "primary"
           }, {
             "@type": "Outcome",
-            "outcomeMeasure": "Overall Death Rate",
-            "outcomeTimeFrame": "Day 14, Day 28",
-            "outcomeType": "secondary"
+            "outcomeMeasure": "RT-PCR results",
+            "outcomeTimeFrame": "3 weeks",
+            "outcomeType": "primary"
           }, {
             "@type": "Outcome",
-            "outcomeMeasure": "Rate of Mechanical Ventilation",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Time to Mechanical Ventilation",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Overall Survival",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Time to Improvement (2 points) in Clinical Measures Using the Ordinal Scale",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Time to Intensive Care Unit (ICU) Admission",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Rate of Intensive Care Unit (ICU) Admission",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Length of Stay in Hospital",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Percentage of Participants Discharged From Hospital",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Length of Stay in Intensive Care Unit (ICU)",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Duration of Oxygen Supplementation",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Duration of Mechanical Ventilation",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Time to Clinical Improvement in Participants \\u2264 70 Years Old",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Time to Clinical Improvement in Participants > 70 Years Old",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Time to Clinical Improvement in Participants with Pre-existing Diseases",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Change in Oxygenation Index",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Time to Improvement of One Point Using WHO Ordinal Scale Improvement",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Percentage of Participants Experiencing WHO Ordinal Scale Improvement of >1 point",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Change from Baseline in C-reactive protein (CRP) Levels",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Change from Baseline in Ferritin Levels",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Change from Baseline in Lactate Dehydrogenase (LDH) Levels",
-            "outcomeTimeFrame": "Up to Day 28",
-            "outcomeType": "secondary"
-          }, {
-            "@type": "Outcome",
-            "outcomeMeasure": "Number of Participants with Adverse Events (AE)",
-            "outcomeTimeFrame": "From start of study drug administration up to follow-up (Day 30)",
+            "outcomeMeasure": "RT-PCR results",
+            "outcomeTimeFrame": "8 weeks",
             "outcomeType": "secondary"
           }],
           "eligibilityCriteria": [{
             "@type": "Eligibility",
-            "inclusionCriteria": ["Confirmed laboratory diagnosis of SARS-CoV2 by standard approved reverse transcription polymerase chain reaction (RT-PCR) assay or equivalent approved testing (by local labs).",
-              "Currently hospitalized and consented within the first 48 hours of hospitalization.", "Informed consent provided as above (patients must be dosed with study drug within 12 hours of consent).",
-              "Has symptoms of moderate or severe COVID-19 as demonstrated by:"
+            "inclusionCriteria": ["COVID-19 positive according to diagnosis and clinical management of COVID-19 criteria."],
+            "exclusionCriteria": ["Participants in other clinical trials", "patients with malignant tumors", "pregnant and lactating women", "co-infection with other infectious viruses or bacteria", "History of several allergies",
+              "Patients with history of pulmonary embolism", "any liver or kidney diseases", "HIV positive patients", "Considered by researchers to be not suitable to participate in this clinical trial",
+              "Chronic heart failure with ejection fraction less than 30%."
             ],
             "minimumAge": "18 years",
             "gender": "all",
-            "healthyVolunteers": false,
+            "healthyVolunteers": null,
             "stdAge": ["adult", "older adult"]
           }],
           "isBasedOn": [],
           "relatedTo": null,
-          "studyLocation": [],
+          "studyLocation": [{
+            "@type": "Place",
+            "name": "Stem Cells Arabia",
+            "studyLocationCity": "Amman",
+            "studyLocationCountry": "Jordan",
+            "studyLocationStatus": "recruiting"
+          }],
           "armGroup": [{
             "@type": "ArmGroup",
-            "name": "Selinexor 40mg",
-            "description": "Participants will receive 40 milligram (mg) of selinexor as oral tablets on Days 1 and 3 of each week for up to 2 weeks (14 days). If the participant is tolerating therapy and clinically benefitting, dosing can continue for an additional 2 weeks (28 days).",
+            "name": "WJ-MSCs",
+            "description": "WJ-MSCs will be derived from cord tissue of newborns, screened for HIV1\\/2, HBV, HCV, CMV, Mycoplasma, and cultured to enrich for MSCs.\\n\\nWJ-MSCs will be counted and suspended in 25 ml of Saline solution containing 0.5% human serum Albumin, and will be given to patient intravenously.",
             "role": "experimental",
             "intervention": [{
               "@type": "Intervention",
-              "category": "drug",
-              "name": "selinexor",
-              "description": "20 mg selinexor oral tablet."
-            }]
-          }, {
-            "@type": "ArmGroup",
-            "name": "Selinexor 20mg",
-            "description": "Participants will receive 20 milligram (mg) of selinexor oral tablet on Days 1, 3 and 5 of each week for up to 2 weeks (14 days). If the participant is tolerating therapy and clinically benefitting, dosing can continue for an additional 2 weeks (28 days).",
-            "role": "experimental",
-            "intervention": [{
-              "@type": "Intervention",
-              "category": "drug",
-              "name": "selinexor",
-              "description": "20 mg selinexor oral tablet."
+              "category": "biological",
+              "name": "wj-mscs",
+              "description": "WJ-MSCs will be derived from cord tissue of newborns, screened for HIV1\\/2, HBV, HCV, CMV, Mycoplasma, and cultured to enrich for MSCs.\\n\\nWJ-MSCs will be counted and suspended in 25 ml of Saline solution containing 0.5% human serum Albumin, and will be given to patient intravenously."
             }]
           }]
         },
