@@ -1,5 +1,11 @@
 <template>
 <div class="d-flex flex-column text-left">
+  <!-- loading -->
+  <div v-if="loading" class="loader">
+    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+  </div>
+
+
   <div :class='type.replace(/\s/g, "")'>
     <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
     {{type}} <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
@@ -57,7 +63,9 @@
   </div>
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
-    <small>Record provided by <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{data.curatedBy.name}}.</a> <router-link :to="{ name: 'Sources'}"> Learn more</router-link></small>
+    <small>Record provided by <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{data.curatedBy.name}}.</a>
+      <router-link :to="{ name: 'Sources'}"> Learn more</router-link>
+    </small>
   </div>
   <!-- description -->
   <div class="mt-4" v-html="data.abstract" v-if="data.abstract">
@@ -78,15 +86,21 @@ import {
   timeParse
 } from "d3";
 
+import {
+  mapState
+} from "vuex";
+
+import {
+  getResourceMetadata
+} from "@/api/resources.js";
+
 export default Vue.extend({
   name: "ResourceDescription",
-  props: {
-    type: String,
-    data: Object
-  },
   data() {
     return ({
       showAffiliation: false,
+      type: null,
+      data: null
     })
   },
   methods: {
@@ -97,11 +111,18 @@ export default Vue.extend({
     }
   },
   computed: {
+    ...mapState("admin", ["loading"]),
     datePublished: function() {
       return (this.formatDate(this.data.dateModified))
     }
   },
   mounted() {
+    const id = this.$route.params.id;
+    this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+      this.data = results;
+      this.type = results["@type"];
+    })
+
     tippy(".keyword", {
       content: "Loading...",
       maxWidth: "200px",

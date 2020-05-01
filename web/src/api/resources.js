@@ -19,12 +19,6 @@ export function getResources(apiUrl, queryString, sort, size, page) {
   if (!queryString) {
     queryString = "__all__";
   }
-  if (!size) {
-    size = 10;
-  }
-  if (!page) {
-    page = 0;
-  }
 
   const maxDescriptionLength = 75;
   store.state.admin.loading = true;
@@ -52,7 +46,34 @@ export function getResources(apiUrl, queryString, sort, size, page) {
       })
 
       resources.sort((a, b) => a.date > b.date ? -1 : 1);
-      return ({results: resources, total: total})
+      return ({
+        results: resources,
+        total: total
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting resource metadata!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+
+export function getResourceMetadata(apiUrl, id) {
+  store.state.admin.loading = true;
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+  return from(axios.get(`${apiUrl}query?q=_id:"${id}"&size=1&timestamp=${timestamp}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      console.log(results);
+
+      return (results[0])
     }),
     catchError(e => {
       console.log("%c Error in getting resource metadata!", "color: red");
