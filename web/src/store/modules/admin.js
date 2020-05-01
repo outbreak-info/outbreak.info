@@ -38,7 +38,17 @@ const state = {
       url: "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html"
     }
   ],
-  resources: [{
+  resources: [
+    {
+        category: "Datasets",
+        sources: [{
+          id: "zenodo",
+          name: "Zenodo",
+          url: "https://zenodo.org/communities/covid-19/",
+          description: 'This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other).'
+        }]
+      },
+      {
       category: "Publications",
       sources: [{
         id: "litcovid",

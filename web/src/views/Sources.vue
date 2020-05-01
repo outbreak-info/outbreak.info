@@ -33,7 +33,7 @@
 
         <div class="text-left mt-5">
           <h3 class="mb-3 border-top pt-4">Resources</h3>
-          <div v-for="(resource, idx) in resources" :key="idx">
+          <div v-for="(resource, idx) in resources" :key="idx" :class="[idx === 0 ? 'mb-5' : 'my-5']">
             <h4>{{resource.category}}</h4>
             <div class="epi-container" v-for="source in resource.sources" :key="source.id">
               <h5>
