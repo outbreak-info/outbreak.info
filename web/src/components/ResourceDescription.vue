@@ -17,25 +17,54 @@
     {{data.name}}
   </h4>
   <!-- authors -->
-  <div class="author-container d-flex flex-wrap" v-if="data.author">
-    <div class="author" v-for="(author, idx) in data.author" :key="idx">
-      <span>{{author.name ? author.name : author.givenName + " " + author.familyName}}</span>
-      <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
-      <span v-if="idx == data.author.length - 2  && !data.author.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
-      <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
-    </div>
-    <a @click.prevent="showAffiliation=!showAffiliation" href=""><small class="text-muted ml-2">
-        <span>{{showAffiliation ? 'hide affiliations' : 'view affiliations'}}</span>
-        <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
-        <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
-      </small>
-    </a>
-    <div id="author-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
-      <small v-for="(author, idx) in data.author" :key="idx" class="text-muted">
-        {{author.name ? author.name : author.givenName + " " + author.familyName}}:
-        <span v-for="(affiliation, idx) in author.affiliation" :key="idx">{{affiliation.name}}</span>
-      </small>
-    </div>
+  <div class="author-container d-flex flex-wrap" v-if="data.author || data.creator">
+    <template v-if="data.author">
+      <div class="author" v-for="(author, idx) in data.author" :key="idx">
+        <span>{{author.name ? author.name : author.givenName + " " + author.familyName}}</span>
+        <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
+        <span v-if="idx == data.author.length - 2  && !data.author.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
+        <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
+      </div>
+
+      <a @click.prevent="showAffiliation=!showAffiliation" href=""><small class="text-muted ml-2">
+          <span>{{showAffiliation ? 'hide affiliations' : 'view affiliations'}}</span>
+          <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
+          <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
+        </small>
+      </a>
+
+      <div id="author-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
+        <small v-for="(author, idx) in data.author" :key="idx" class="text-muted">
+          {{author.name ? author.name : author.givenName + " " + author.familyName}}:
+          <span v-for="(affiliation, idx) in author.affiliation" :key="idx">{{affiliation.name}}</span>
+        </small>
+      </div>
+    </template>
+
+    <template v-else-if="data.creator">
+      <div class="creator" v-for="(creator, idx) in data.creator" :key="idx">
+        <span>{{creator.name ? creator.name : creator.givenName + " " + creator.familyName}}</span>
+        <span v-if="idx < data.creator.length - 2" v-html="',&nbsp;'"></span>
+        <span v-if="idx == data.creator.length - 2  && !data.creator.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
+        <span v-if="idx == data.creator.length - 2 && data.creator.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
+      </div>
+
+      <a @click.prevent="showAffiliation=!showAffiliation" href=""><small class="text-muted ml-2">
+          <span>{{showAffiliation ? 'hide affiliations' : 'view affiliations'}}</span>
+          <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
+          <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
+        </small>
+      </a>
+
+      <div id="creator-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
+        <small v-for="(creator, idx) in data.creator" :key="idx" class="text-muted">
+          {{creator.name ? creator.name : creator.givenName + " " + creator.familyName}}:
+          <span v-for="(affiliation, idx) in creator.affiliation" :key="idx">{{affiliation.name}}</span>
+        </small>
+      </div>
+    </template>
+
+
   </div>
   <!-- Citation -->
   <small class="text-muted" v-if="data.dateModified || data.dateCreated || data.dataUpdated">

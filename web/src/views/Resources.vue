@@ -57,6 +57,10 @@
                   {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
                   <span v-if="item.author.length > 1"> et al.</span>
                 </template>
+                <template v-else-if="item.creator">
+                  {{item.creator[0].name ? item.creator[0].name : item.creator[0].givenName + " " + item.creator[0].familyName}}
+                  <span v-if="item.creator.length > 1"> et al.</span>
+                </template>
               </td>
               <td class="resource-date" valign="top">{{format(item.date)}}</td>
 
@@ -179,6 +183,10 @@
                   <small v-if="item.author">
                     {{item.author[0].name ? item.author[0].name : item.author[0].givenName + " " + item.author[0].familyName}}
                     <span v-if="item.author.length > 1"> et al.</span>
+                  </small>
+                  <small v-else-if="item.creator">
+                    {{item.creator[0].name ? item.creator[0].name : item.creator[0].givenName + " " + item.creator[0].familyName}}
+                    <span v-if="item.creator.length > 1"> et al.</span>
                   </small>
                 </div>
                 <!-- publication name -->
