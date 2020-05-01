@@ -160,7 +160,7 @@
 
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
-          <div class="row w-100 d-flex flex-column text-left py-2 search-result" v-for="(item, idx) in data" :key="idx">
+          <div class="row w-100 d-flex flex-column text-left p-2 search-result" v-for="(item, idx) in data" :key="idx">
             <div class="d-flex w-100 align-items-center">
               <StripeAccent :className="item['@type']" />
               <small :class="[item['@type'], 'resource-type', 'mr-2']">{{item['@type']}}</small>
@@ -205,12 +205,12 @@
 
                 <!-- clinical trial status -->
                 <div v-if="item.studyStatus">
-                <TrialStatus :status="item.studyStatus" :locations="item.studyLocation"/>
+                  <TrialStatus :status="item.studyStatus" :locations="item.studyLocation" />
                 </div>
 
                 <!-- clinical trial phase -->
                 <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
-                <TrialPhase :phases="item.studyDesign.phaseNumber"/>
+                  <TrialPhase :phases="item.studyDesign.phaseNumber" />
                 </div>
 
 
@@ -231,13 +231,13 @@
 
               <!-- RIGHT     -->
               <div class="col-sm-7 text-muted">
-                    <!-- CLINCIAL-TRIAL-SPECIFIC  -->
-                    <div v-if="item.studyDesign || item.armGroup">
-                    <TrialType :design="item.studyDesign" :arms="item.armGroup"/>
-                    </div>
+                <!-- CLINCIAL-TRIAL-SPECIFIC  -->
+                <div v-if="item.studyDesign || item.armGroup">
+                  <TrialType :design="item.studyDesign" :arms="item.armGroup" />
+                </div>
 
-                    <!-- clinical trial phase -->
-                    <!-- <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
+                <!-- clinical trial phase -->
+                <!-- <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
                     <TrialPhase :phases="item.studyDesign.phaseNumber"/>
                     </div> -->
 
@@ -260,6 +260,12 @@
                     {{keyword}}
                   </router-link>
                 </small>
+              </div>
+            </div>
+
+            <div class="row text-right" v-if="item.curatedBy">
+              <div class="col-sm-12" :class="item['@type']">
+                <small>provided by {{item.curatedBy.name}}</small>
               </div>
             </div>
 

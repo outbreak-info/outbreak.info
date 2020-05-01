@@ -41,7 +41,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .status-container {
-    background: lighten($clinical-trial-color, 30%);
+    background: lighten($clinical-trial-color, 32%);
 }
 
 .status {
