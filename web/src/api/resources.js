@@ -42,6 +42,7 @@ export function getResources(apiUrl, queryString, sort, size, page) {
           let descriptionArray = d.longDescription.split(" ");
           d['shortDescription'] = descriptionArray.slice(0, maxDescriptionLength).join(" ");
           d['descriptionTooLong'] = descriptionArray.length >= maxDescriptionLength;
+          d['descriptionExpanded'] = false;
         }
       })
 
