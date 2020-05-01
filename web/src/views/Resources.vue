@@ -287,9 +287,13 @@ import {
 } from "d3";
 
 import StripeAccent from "@/components/StripeAccent.vue";
-import TrialPhase from "@/components/TrialPhase.vue"
-import TrialStatus from "@/components/TrialStatus.vue"
-import TrialType from "@/components/TrialType.vue"
+import TrialPhase from "@/components/TrialPhase.vue";
+import TrialStatus from "@/components/TrialStatus.vue";
+import TrialType from "@/components/TrialType.vue";
+
+import {
+  getResources
+} from "@/api/resources.js";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -319,17 +323,9 @@ export default {
 
   },
   mounted() {
-    this.data.forEach(d => {
-      d["date"] = d.dateModified ? d.dateModified : (d.datePublished ? d.datePublished : d.dateCreated);
-      d["longDescription"] = d.abstract ? d.abstract : d.description;
-      if (d.longDescription) {
-        let descriptionArray = d.longDescription.split(" ");
-        d['shortDescription'] = descriptionArray.slice(0, this.maxDescriptionLength).join(" ");
-        d['descriptionTooLong'] = descriptionArray.length >= this.maxDescriptionLength;
-      }
-    })
-    this.data.sort((a, b) => a.date > b.date ? -1 : 1);
-
+    this.resultsSubscription = getResources(this.$resourceurl, null, "-datePublished", 10, 0).subscribe(results => {
+      this.data = results;
+    });
 
     tippy(".keyword", {
       content: "Loading...",
@@ -345,11 +341,13 @@ export default {
   },
   computed: {
     newData() {
-      return (this.data.slice(0, this.new2Display));
+      return (this.data ? this.data.slice(0, this.new2Display) : null);
     }
   },
   data() {
     return {
+      resultsSubscription: null,
+      data: null,
       resourceTypes: [{
         label: "What's New",
         id: "whats-new"
@@ -373,8 +371,7 @@ export default {
         id: "dataset"
       }, ],
       new2Display: 3,
-      maxDescriptionLength: 75,
-      data: [{
+      data2: [{
           _id: "virological1",
           descriptionExpanded: false,
           "@type": "Analysis",
@@ -613,7 +610,7 @@ export default {
             "studyLocationCity": "Amman",
             "studyLocationCountry": "Jordan",
             "studyLocationStatus": "recruiting"
-          },{
+          }, {
             "studyLocationCountry": "Australia",
           }],
           "armGroup": [{

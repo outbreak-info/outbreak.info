@@ -12,6 +12,7 @@ import "tippy.js/dist/tippy.css";
 Vue.config.productionTip = false;
 // Vue.prototype.$apiurl = "http://kenny.scripps.edu:8000/";
 Vue.prototype.$apiurl = "https://api.outbreak.info/covid19/";
+Vue.prototype.$resourceurl = "https://api.outbreak.info/resources/";
 
 Vue.use(VueRx);
 Vue.use(VueCookies);
