@@ -71,6 +71,8 @@ const routes = [{
     name: "Resources",
     props: route => ({
       search: route.query.search,
+      page: route.query.page,
+      numresults: route.query.numresults,
       type: route.query.type
     }),
     // route level code-splitting

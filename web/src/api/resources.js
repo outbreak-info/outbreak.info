@@ -19,6 +19,12 @@ export function getResources(apiUrl, queryString, sort, size, page) {
   if (!queryString) {
     queryString = "__all__";
   }
+  if (!size) {
+    size = 10;
+  }
+  if (!page) {
+    page = 0;
+  }
 
   const maxDescriptionLength = 75;
   store.state.admin.loading = true;
@@ -28,11 +34,14 @@ export function getResources(apiUrl, queryString, sort, size, page) {
       'Content-Type': 'application/json'
     }
   })).pipe(
-    pluck("data", "hits"),
+    pluck("data"),
     map(results => {
       console.log(results);
 
-      results.forEach(d => {
+      const resources = results.hits;
+      const total = results.total;
+
+      resources.forEach(d => {
         d["date"] = d.dateModified ? d.dateModified : (d.datePublished ? d.datePublished : d.dateCreated);
         d["longDescription"] = d.abstract ? d.abstract : d.description;
         if (d.longDescription) {
@@ -42,8 +51,8 @@ export function getResources(apiUrl, queryString, sort, size, page) {
         }
       })
 
-      results.sort((a, b) => a.date > b.date ? -1 : 1);
-      return (results)
+      resources.sort((a, b) => a.date > b.date ? -1 : 1);
+      return ({results: resources, total: total})
     }),
     catchError(e => {
       console.log("%c Error in getting resource metadata!", "color: red");

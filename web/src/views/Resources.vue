@@ -1,5 +1,10 @@
 <template>
 <div class="">
+  <!-- loading -->
+  <div v-if="loading" class="loader">
+    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+  </div>
+
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
@@ -19,16 +24,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
               </div>
-              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp"
-                @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
-              <!-- <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
-                <li class="loading" v-if="isLoading">
-                  Loading results...
-                </li>
-                <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
-                  {{ result.label }}
-                </li>
-              </ul> -->
+              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @keydown.enter.prevent="onEnter" />
             </div>
           </form>
         </div>
@@ -138,21 +134,27 @@
               You searched for {{search}}
             </h4>
             <small class="m-0 text-highlight">
-              {{data.length}} results
+              {{numResults}} results
             </small>
           </div>
 
-          <select>
-            <option>
+          <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
+            <option v-for="option in pageOpts" :value="option" :key="option">
+              {{ option }} results
+            </option>
+          </select>
+
+          <select v-model="sortValue">
+            <option value="-datePublished">
               date: newest to oldest
             </option>
-            <option>
+            <option value="datePublished">
               date: oldest to newest
             </option>
-            <option>
+            <option value="name.keyword">
               A-Z
             </option>
-            <option>
+            <option value="-name.keyword">
               Z-A
             </option>
           </select>
@@ -277,6 +279,18 @@
     </div>
   </section>
 
+  <br />
+  <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
+    <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: page === 0 }" @click="changePage(-1)">
+      <font-awesome-icon :icon="['fas', 'arrow-left']" />
+    </button>
+    <small>viewing results {{ lowerLim + 1 }} &minus; {{ upperLim }} of
+      {{ numResults }}</small>
+    <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: page === lastPage }" @click="changePage(1)">
+      <font-awesome-icon :icon="['fas', 'arrow-right']" />
+    </button>
+  </div>
+
 </div>
 </template>
 
@@ -290,6 +304,9 @@ import StripeAccent from "@/components/StripeAccent.vue";
 import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
+import {
+  mapState
+} from "vuex";
 
 import {
   getResources
@@ -298,18 +315,59 @@ import {
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faArrowLeft,
+  faArrowRight
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faArrowLeft, faArrowRight);
+
 export default {
   name: "Resources",
   props: {
-    search: String
+    search: String,
+    page: String,
+    numresults: String
   },
   components: {
     StripeAccent,
     TrialPhase,
     TrialStatus,
-    TrialType
+    TrialType,
+    FontAwesomeIcon
   },
   methods: {
+    getResults() {
+      if (!this.numPerPage) {
+        this.numPerPage = 10;
+      }
+      if (!this.page) {
+        this.page = 0;
+      }
+      this.resultsSubscription = getResources(this.$resourceurl, this.search, this.sortValue, this.numPerPage, this.page * this.numPerPage).subscribe(results => {
+        this.data = results.results;
+        this.numResults = results.total;
+
+        tippy(".keyword", {
+          content: "Loading...",
+          maxWidth: "200px",
+          placement: "bottom",
+          animation: "fade",
+          theme: "light",
+          onShow(instance) {
+            let info = instance.reference.dataset.tippyInfo;
+            instance.setContent(info);
+          }
+        });
+      });
+    },
     format: function(dateStr) {
       const parsed = timeParse("%Y-%m-%d")(dateStr);
       return (timeFormat("%d %B")(parsed));
@@ -317,37 +375,98 @@ export default {
     expandDescription: function(item) {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
-    onChange: function(item) {
-      console.log("searching")
-    }
+    onEnter() {
+      this.search = this.searchInput;
+      this.page = 0;
 
+      this.$router.push({
+        path: "resources",
+        query: {
+          search: this.search,
+          page: 0,
+          numresults: 10
+        }
+      })
+    },
+    changePage(step) {
+      this.page += step;
+
+      this.$router.push({
+        path: "resources",
+        query: {
+          search: this.search,
+          page: this.page,
+          numresults: this.numPerPage
+        }
+      })
+    },
+    changePageNum() {
+      this.page = 0;
+
+      this.$router.push({
+        path: "resources",
+        query: {
+          search: this.search,
+          page: this.page,
+          numresults: this.numPerPage
+        }
+      })
+    }
   },
   mounted() {
-    this.resultsSubscription = getResources(this.$resourceurl, null, "-datePublished", 10, 0).subscribe(results => {
-      this.data = results;
-    });
-
-    tippy(".keyword", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      }
-    });
+    this.searchInput = this.search;
+    this.numPerPage = this.numresults;
+    this.getResults();
+  },
+  beforeDestroy() {
+    if (this.resultSubscription) {
+      this.resultSubscrption.unsubscribe();
+    }
   },
   computed: {
+    ...mapState("admin", ["loading"]),
     newData() {
       return (this.data ? this.data.slice(0, this.new2Display) : null);
+    },
+    lowerLim: function() {
+      return this.page * this.numPerPage;
+    },
+    upperLim: function() {
+      const upper = this.page * this.numPerPage + this.numPerPage;
+      return upper > this.numResults ? this.numResults : upper;
+    },
+    lastPage: function() {
+      return this.numResults ?
+        Math.floor(this.numResults / this.numPerPage) :
+        null;
+    }
+  },
+  watch: {
+    search: function(newVal, oldVal) {
+      this.searchInput = this.search;
+      this.getResults();
+    },
+    page: function(newVal, oldVal) {
+      this.getResults();
+    },
+    numresults: function(newVal, oldVal) {
+      this.numPerPage = newVal;
+      this.searchInput = this.search;
+      this.getResults();
+    },
+    sortValue: function(newVal, oldVal) {
+      this.getResults();
     }
   },
   data() {
     return {
       resultsSubscription: null,
       data: null,
+      numResults: 0,
+      searchInput: null,
+      sortValue: "-datePublished",
+      numPerPage: null,
+      pageOpts: [5, 10, 50, 100],
       resourceTypes: [{
         label: "What's New",
         id: "whats-new"
