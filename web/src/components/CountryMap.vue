@@ -19,8 +19,7 @@ import Vue from "vue";
 import GEODATA from "@/assets/geo/countries.json";
 import * as d3 from "d3";
 import {
-  geoInterruptedHomolosine,
-  geoInterruptedBoggs
+geoInterruptedBoggs
 } from "d3-geo-projection";
 
 export default Vue.extend({
@@ -30,11 +29,6 @@ export default Vue.extend({
     fill: {
       type: String,
       default: "#df4ab7"
-    }
-  },
-  watch: {
-    GEODATA() {
-      console.log("geodata changed")
     }
   },
   computed: {},
