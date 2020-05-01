@@ -1,6 +1,5 @@
 <template>
 <div class="">
-  <CountryMap :countries="['Jordan']"/>
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
@@ -291,7 +290,6 @@ import StripeAccent from "@/components/StripeAccent.vue";
 import TrialPhase from "@/components/TrialPhase.vue"
 import TrialStatus from "@/components/TrialStatus.vue"
 import TrialType from "@/components/TrialType.vue"
-import CountryMap from "@/components/CountryMap.vue"
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -305,8 +303,7 @@ export default {
     StripeAccent,
     TrialPhase,
     TrialStatus,
-    TrialType,
-    CountryMap
+    TrialType
   },
   methods: {
     format: function(dateStr) {
@@ -616,6 +613,8 @@ export default {
             "studyLocationCity": "Amman",
             "studyLocationCountry": "Jordan",
             "studyLocationStatus": "recruiting"
+          },{
+            "studyLocationCountry": "Australia",
           }],
           "armGroup": [{
             "@type": "ArmGroup",

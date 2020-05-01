@@ -8,7 +8,7 @@
         {{status.enrollmentType}} size: {{status.enrollmentCount.toLocaleString()}}
       </small>
     </div>
-    <CountryMap :countries="['Jordan']"/>
+    <CountryMap :countries="countries"/>
   </div>
 </template>
 
@@ -19,7 +19,8 @@ import CountryMap from "@/components/CountryMap.vue";
 export default Vue.extend({
   name: "TrialStatus",
   props: {
-    status: Object
+    status: Object,
+    locations: Array
   },
   components: {
     CountryMap
@@ -33,10 +34,16 @@ export default Vue.extend({
       height: 17
     };
   },
+  mounted() {
+    console.log(this.locations)
+  },
   watch: {},
   computed: {
     width() {
       return (this.phaseWidth * 5 + this.spacer * 4)
+    },
+    countries() {
+      return (this.locations.map(d => d.studyLocationCountry).sort((a,b) => a < b ? -1 : 1))
     }
   },
   methods: {},
