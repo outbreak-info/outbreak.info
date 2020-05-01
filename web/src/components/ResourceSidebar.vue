@@ -37,7 +37,7 @@
   <div class="py-3 border-bottom text-muted">
     <small class="text-muted section-header">share</small>
     <div class="d-flex flex-wrap justify-content-center mt-1">
-      <a :href="`https://twitter.com/intent/tweet?url=${outbreakUrl}&hashtags=covid-19`" target="_blank" rel="noreferrer" class="twitter-share-button">
+      <a :href="`https://twitter.com/intent/tweet?url=${outbreakUrl}&hashtags=covid-19,outbreak.info`" target="_blank" rel="noreferrer" class="twitter-share-button">
         <i class="fab fa-twitter mr-3"></i>
       </a>
       <a :href="`mailto:?subject=outbreak.info%20${type}&body=${outbreakUrl}`">

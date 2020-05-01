@@ -1,25 +1,9 @@
 <template>
-<div class="d-flex flex-column text-left">
-  <!-- loading -->
-  <div v-if="loading" class="loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
-  </div>
-
-
-  <div :class='type.replace(/\s/g, "")'>
-    <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
-    {{type}} <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
-      {{data.publicationType[0]}}
-    </span>
-  </div>
-  <!-- title -->
-  <h4 class="d-flex align-item-center m-0 mb-2">
-    {{data.name}}
-  </h4>
+<div class="d-flex flex-column text-left" v-if="data">
   <!-- authors -->
   <div class="author-container d-flex flex-wrap" v-if="data.author || data.creator">
     <template v-if="data.author">
-      <div class="author" v-for="(author, idx) in data.author" :key="idx">
+      <div class="author" v-for="(author, idx) in data.author" :key="idx" id="authors">
         <span>{{author.name ? author.name : author.givenName + " " + author.familyName}}</span>
         <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
         <span v-if="idx == data.author.length - 2  && !data.author.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
@@ -42,7 +26,7 @@
     </template>
 
     <template v-else-if="data.creator">
-      <div class="creator" v-for="(creator, idx) in data.creator" :key="idx">
+      <div class="creator" v-for="(creator, idx) in data.creator" :key="idx" id="authors">
         <span>{{creator.name ? creator.name : creator.givenName + " " + creator.familyName}}</span>
         <span v-if="idx < data.creator.length - 2" v-html="',&nbsp;'"></span>
         <span v-if="idx == data.creator.length - 2  && !data.creator.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
@@ -66,8 +50,8 @@
 
 
   </div>
-  <!-- Citation -->
-  <small class="text-muted" v-if="data.dateModified || data.dateCreated || data.dataUpdated">
+  <!-- dates -->
+  <small class="text-muted" v-if="data.dateModified || data.dateCreated || data.dataUpdated || data.datePublished">
     <i class="far fa-clock"></i>
     <span v-if="data.dateModified"> updated {{this.formatDate(data.dateModified)}}
     </span>
@@ -97,9 +81,11 @@
     </small>
   </div>
   <!-- description -->
-  <div class="mt-4" v-html="data.abstract" v-if="data.abstract">
-  </div>
-  <div class="mt-4" v-html="data.description" v-else>
+  <div class="mt-4" id="description">
+    <div v-html="data.abstract" v-if="data.abstract">
+    </div>
+    <div v-html="data.description" v-else>
+    </div>
   </div>
 </div>
 </template>
@@ -129,7 +115,8 @@ export default Vue.extend({
     return ({
       showAffiliation: false,
       type: null,
-      data: null
+      data: null,
+      resources: ["authors", "description"]
     })
   },
   methods: {

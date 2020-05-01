@@ -71,9 +71,12 @@ export function getResourceMetadata(apiUrl, id) {
   })).pipe(
     pluck("data", "hits"),
     map(results => {
-      console.log(results);
+      const metadata = results[0];
 
-      return (results[0])
+      metadata["date"] = metadata.dateModified ? metadata.dateModified : (metadata.datePublished ? metadata.datePublished : metadata.dateCreated)
+      console.log(metadata);
+
+      return (metadata)
     }),
     catchError(e => {
       console.log("%c Error in getting resource metadata!", "color: red");

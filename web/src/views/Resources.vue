@@ -79,7 +79,7 @@
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
-            <router-link class="nav-link no-underline p-0" :to="{ name: 'Resource Type', params: {id: resource.id} }">
+            <router-link class="nav-link no-underline p-0" :to="{ name: 'Resource Page', params: {id: resource.id} }">
               {{resource.label}}
             </router-link>
           </li>
@@ -170,7 +170,7 @@
             <div class="d-flex w-100 align-items-center">
               <StripeAccent :className="item['@type']" />
               <small :class="[item['@type'], 'resource-type', 'mr-2']">{{item['@type']}}</small>
-              <router-link :to="{ name: item['@type'], params: {id: item._id} }">
+              <router-link :to="{ name: 'Resource Page', params: {id: item._id} }">
                 <h5 class="m-0">{{item.name}}</h5>
               </router-link>
             </div>

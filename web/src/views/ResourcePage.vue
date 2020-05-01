@@ -1,0 +1,116 @@
+<template>
+<div class="d-flex py-2 m-2">
+  <div class="row w-100 m-0">
+    <!-- loading -->
+    <div v-if="loading" class="loader">
+      <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    </div>
+
+    <div class="col-sm-12 text-left" v-if="data">
+      <div :class='type.replace(/\s/g, "")' v-if="type">
+        <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
+        {{type}} <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
+          {{data.publicationType[0]}}
+        </span>
+      </div>
+      <!-- title -->
+      <h4 class="d-flex align-item-center m-0 mb-2">
+        {{data.name}}
+      </h4>
+
+      <!-- mini-nav for resource types -->
+      <section class="d-flex justify-content-end w-100 bg-sec">
+        <div class="row d-flex justify-content-center w-100">
+          <nav class="navbar navbar-expand-lg navbar-dark">
+            <ul class="navbar-nav">
+              <li class="nav-item text-light mr-3" v-for="(resource, idx) in resources" :key="idx">
+                <router-link class="nav-link no-underline p-0" :to="`#${resource}`">
+                  {{resource }}
+                </router-link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-md-9 my-3">
+      <ResourceDescription />
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="col-md-3 my-3">
+      <ResourceSidebar :data="data" :date="dateModified" type="Dataset" v-if="data" />
+    </div>
+
+  </div>
+</div>
+</template>
+
+<script lang="js">
+import Vue from "vue";
+
+import {
+  timeFormat,
+  timeParse
+} from "d3";
+
+import {
+  mapState
+} from "vuex";
+
+import {
+  getResourceMetadata
+} from "@/api/resources.js";
+
+import ResourceDescription from "@/components/ResourceDescription.vue";
+import ResourceSidebar from "@/components/ResourceSidebar.vue";
+
+
+export default Vue.extend({
+  name: "ResourcePage",
+  components: {
+    ResourceDescription,
+    ResourceSidebar
+  },
+  data() {
+    return ({
+      type: null,
+      data: null,
+      resources: ["authors", "description"]
+    })
+  },
+  methods: {
+    formatDate(dateStr) {
+      const parseDate = timeParse("%Y-%m-%d");
+      const formatDate = timeFormat("%d %B %Y");
+      return dateStr ? formatDate(parseDate(dateStr)) : null;
+    }
+  },
+  computed: {
+    ...mapState("admin", ["loading"])
+  },
+  mounted() {
+    const id = this.$route.params.id;
+    this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+      this.data = results;
+      this.type = results["@type"];
+      this.dateModified = this.formatDate(this.data.date);
+    })
+  }
+});
+</script>
+
+<style lang="scss" scoped>
+.pub-type {
+    opacity: 0.6;
+}
+
+.helper {
+    line-height: 1.2em;
+}
+
+.section-header {
+    text-transform: uppercase;
+}
+</style>
