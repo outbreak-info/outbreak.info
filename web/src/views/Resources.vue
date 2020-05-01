@@ -203,14 +203,14 @@
                 </div>
                 <!-- CLINCIAL-TRIAL-SPECIFIC  -->
 
-                <!-- clinical trial status -->
-                <div v-if="item.studyStatus">
-                  <TrialStatus :status="item.studyStatus" :locations="item.studyLocation" />
-                </div>
-
                 <!-- clinical trial phase -->
                 <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
                   <TrialPhase :phases="item.studyDesign.phaseNumber" />
+                </div>
+
+                <!-- clinical trial status -->
+                <div v-if="item.studyStatus">
+                  <TrialStatus :status="item.studyStatus" :locations="item.studyLocation" />
                 </div>
 
 
