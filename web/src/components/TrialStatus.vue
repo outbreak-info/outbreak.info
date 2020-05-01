@@ -7,18 +7,22 @@
       <small class="text-dark">
         {{status.enrollmentType}} size: {{status.enrollmentCount.toLocaleString()}}
       </small>
-
     </div>
+    <CountryMap :countries="['Jordan']"/>
   </div>
 </template>
 
 <script lang="js">
 import Vue from "vue";
+import CountryMap from "@/components/CountryMap.vue";
 
 export default Vue.extend({
   name: "TrialStatus",
   props: {
     status: Object
+  },
+  components: {
+    CountryMap
   },
   data() {
     return {
