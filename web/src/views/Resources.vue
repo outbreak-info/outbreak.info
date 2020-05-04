@@ -98,19 +98,20 @@
     <div class="row m-0">
       <!-- FILTERS -->
       <div class="col-sm-2 p-0">
-        <div class="border-bottom border-secondary alert-secondary p-1">
+        <div class="border-bottom border-secondary alert-secondary p-1 mb-4" v-for="(facet, idx) in facetSummary" :key="idx">
           <!-- Toggle Header -->
           <div class="row m-0">
-            <div class="col-sm-10 p-1">
-              <h6>FITLER TYPE</h6>
+            <div class="col-sm-10 p-1 uppercase">
+              <h6>{{facet.variable}}</h6>
             </div>
-            <div class="col-sm-2 text-center p-1">
+            <div class="col-sm-2 text-center p-1 pointer" v-if="facet.counts.length" @click="facet.expanded = !facet.expanded">
               <!-- toggle fa class up->down -->
-              <i class="fas fa-chevron-down"></i>
+              <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
+              <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
             </div>
           </div>
           <!-- Toggle content -->
-          <form>
+          <form v-if="facet.counts.length && facet.expanded">
             <div>
               <!-- Search -->
               <div class="p-1 bg-light">
@@ -118,23 +119,27 @@
               </div>
               <!-- Filters -->
               <ul class="list-group rounded-0">
-                <li class="list-group-item rounded-0 text-left list-group-item-action p-1 active">
-                  <input type="checkbox" class="mr-1" name="item" id="i" value="item" checked="checked">
-                  <label for="i" class="m-0">
-                    <small>Option Label</small>
-                  </label>
-                </li>
-                <li class="list-group-item rounded-0 text-left list-group-item-action p-1">
-                  <input type="checkbox" class="mr-1" name="item" id="i2" value="item">
-                  <label for="i2" class="m-0">
-                    <small>Option Label</small>
-                  </label>
-                </li>
+                <div v-for="(option, optIdx) in facet.counts" :key="optIdx">
+                  <li class="list-group-item rounded-0 text-left list-group-item-action p-1" :class="{'active': option.checked}" v-if="optIdx < facet.num2Display">
+                    <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="option.checked = !option.checked">
+                    <label :for="optIdx" class="m-0">
+                      <small>{{option.term}} ({{option.count}})</small>
+                    </label>
+                  </li>
+                </div>
               </ul>
+              <small class="pointer link" @click="facet.num2Display += 5" v-if="facet.num2Display < facet.total">show more</small>
             </div>
           </form>
+          <div class="bg-light" v-else>
+            <small>none</small>
+          </div>
         </div>
       </div>
+
+
+
+
       <div class="col-sm-9 pl-5" id="results">
         <!-- results header + sort options -->
         <div class="row w-100 d-flex justify-content-between" id="selectors">
@@ -367,6 +372,7 @@ export default {
       this.resultsSubscription = getResources(this.$resourceurl, this.search, this.sortValue, this.numPerPage, this.page * this.numPerPage).subscribe(results => {
         this.data = results.results;
         this.newData = results.recent;
+        this.facetSummary = results.facets;
         this.numResults = results.total;
 
         tippy(".keyword", {
@@ -453,21 +459,21 @@ export default {
     }
   },
   watch: {
-    // search: function(newVal, oldVal) {
-    //   this.searchInput = this.search;
-    //   this.getResults();
-    // },
-    // page: function(newVal, oldVal) {
-    //   this.getResults();
-    // },
-    // numresults: function(newVal, oldVal) {
-    //   this.numPerPage = newVal;
-    //   this.searchInput = this.search;
-    //   this.getResults();
-    // },
-    // sortValue: function(newVal, oldVal) {
-    //   this.getResults();
-    // }
+    search: function(newVal, oldVal) {
+      this.searchInput = this.search;
+      this.getResults();
+    },
+    page: function(newVal, oldVal) {
+      this.getResults();
+    },
+    numresults: function(newVal, oldVal) {
+      this.numPerPage = newVal;
+      this.searchInput = this.search;
+      this.getResults();
+    },
+    sortValue: function(newVal, oldVal) {
+      this.getResults();
+    }
   },
   data() {
     return {
@@ -501,7 +507,8 @@ export default {
         id: "dataset"
       }, ],
       new2Display: 3,
-      newData: null
+      newData: null,
+      facetSummary: null
     };
   }
 }

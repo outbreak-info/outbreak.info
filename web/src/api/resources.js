@@ -26,6 +26,7 @@ export function getResources(apiUrl, queryString, sort, size, page) {
   return forkJoin([getMostRecent(apiUrl, queryString), getMetadataList(apiUrl, queryString, sort, size, page), getResourceFacets(apiUrl, queryString)]).pipe(
     map(([recent, results, facets]) => {
       results["recent"] = recent;
+      results["facets"] = facets;
       console.log(recent);
       console.log(results);
       console.log(facets);
@@ -119,7 +120,22 @@ export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", 
   })).pipe(
     pluck("data", "facets"),
     map(results => {
-      return (results)
+      const facets = Object.keys(results).map(key => {
+        results[key]["terms"].forEach(d => {
+          d["checked"] = true;
+        })
+        return({
+          variable: key.replace(".keyword", "").replace("@", "").replace("funding.funder.name", "funding").replace("measurementTechnique", "measurement technique").replace("topicCategory", "topic").replace("variableMeasured", "variable measured"),
+          id: key.replace(".keyword", ""),
+          counts: results[key]["terms"],
+          total: results[key]["terms"].length,
+          num2Display: 5,
+          expanded: true
+        })
+      })
+
+
+      return (facets)
     }),
     catchError(e => {
       console.log("%c Error in getting resource facets!", "color: red");
