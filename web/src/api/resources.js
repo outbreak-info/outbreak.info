@@ -1,5 +1,6 @@
 import {
   from,
+  forkJoin,
   EMPTY
 } from "rxjs";
 import axios from "axios";
@@ -8,8 +9,8 @@ import {
   catchError,
   pluck,
   map,
-  expand,
-  reduce,
+  tap,
+
   finalize
 } from "rxjs/operators";
 
@@ -19,9 +20,29 @@ export function getResources(apiUrl, queryString, sort, size, page) {
   if (!queryString) {
     queryString = "__all__";
   }
+  console.log("GETTING RESOURCES")
 
-  const maxDescriptionLength = 75;
   store.state.admin.loading = true;
+  return forkJoin([getMostRecent(apiUrl, queryString), getMetadataList(apiUrl, queryString, sort, size, page), getResourceFacets(apiUrl, queryString)]).pipe(
+    map(([recent, results, facets]) => {
+      results["recent"] = recent;
+      console.log(recent);
+      console.log(results);
+      console.log(facets);
+      return(results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting resource metadata!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+export function getMetadataList(apiUrl, queryString, sort, size, page) {
+  const maxDescriptionLength = 75;
+  // store.state.admin.loading = true;
   const timestamp = Math.round(new Date().getTime() / 1e5);
   return from(axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&timestamp=${timestamp}`, {
     headers: {
@@ -56,8 +77,8 @@ export function getResources(apiUrl, queryString, sort, size, page) {
       console.log("%c Error in getting resource metadata!", "color: red");
       console.log(e);
       return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false))
+    })
+    // finalize(() => (store.state.admin.loading = false))
   )
 }
 
@@ -85,5 +106,49 @@ export function getResourceMetadata(apiUrl, id) {
       return from([]);
     }),
     finalize(() => (store.state.admin.loading = false))
+  )
+}
+
+export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", "keywords.keyword", "topicCategory.keyword", "funding.funder.name.keyword", "measurementTechnique.keyword", "variableMeasured.keyword"]) {
+  const facetString = facets.join(",")
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+  return from(axios.get(`${apiUrl}query?q="${queryString}"&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })).pipe(
+    pluck("data", "facets"),
+    map(results => {
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting resource facets!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
+}
+
+export function getMostRecent(apiUrl, queryString, sortVar="-datePublished", num2Return=3, fields=["@type", "name", "author", "creator", "datePublished", "dateModified", "dateCreated"]) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const fieldString = fields.join(",");
+  return from(axios.get(`${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      results.forEach(d => {
+        d["date"] = d.dateModified ? d.dateModified : (d.datePublished ? d.datePublished : d.dateCreated);
+      })
+
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting resource facets!", "color: red");
+      console.log(e);
+      return from([]);
+    })
   )
 }
