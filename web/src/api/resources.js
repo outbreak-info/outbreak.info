@@ -20,16 +20,12 @@ export function getResources(apiUrl, queryString, sort, size, page) {
   if (!queryString) {
     queryString = "__all__";
   }
-  console.log("GETTING RESOURCES")
-
   store.state.admin.loading = true;
   return forkJoin([getMostRecent(apiUrl, queryString), getMetadataList(apiUrl, queryString, sort, size, page), getResourceFacets(apiUrl, queryString)]).pipe(
     map(([recent, results, facets]) => {
       results["recent"] = recent;
       results["facets"] = facets;
-      console.log(recent);
       console.log(results);
-      console.log(facets);
       return(results)
     }),
     catchError(e => {
@@ -52,8 +48,6 @@ export function getMetadataList(apiUrl, queryString, sort, size, page) {
   })).pipe(
     pluck("data"),
     map(results => {
-      console.log(results);
-
       const resources = results.hits;
       const total = results.total;
 
@@ -111,6 +105,8 @@ export function getResourceMetadata(apiUrl, id) {
 }
 
 export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", "keywords.keyword", "topicCategory.keyword", "funding.funder.name.keyword", "measurementTechnique.keyword", "variableMeasured.keyword"]) {
+  const sortOrder = ["@type", "topicCategory", "keywords", "funding.funder.name", "measurementTechnique", "variableMeasured"];
+
   const facetString = facets.join(",")
   const timestamp = Math.round(new Date().getTime() / 1e5);
   return from(axios.get(`${apiUrl}query?q="${queryString}"&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`, {
@@ -133,6 +129,8 @@ export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", 
           expanded: true
         })
       })
+
+      facets.sort((a,b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id));
 
 
       return (facets)
