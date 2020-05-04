@@ -366,6 +366,7 @@ export default {
       }
       this.resultsSubscription = getResources(this.$resourceurl, this.search, this.sortValue, this.numPerPage, this.page * this.numPerPage).subscribe(results => {
         this.data = results.results;
+        this.newData = results.recent;
         this.numResults = results.total;
 
         tippy(".keyword", {
@@ -438,9 +439,6 @@ export default {
   },
   computed: {
     ...mapState("admin", ["loading"]),
-    newData() {
-      return (this.data ? this.data.slice(0, this.new2Display) : null);
-    },
     lowerLim: function() {
       return this.page * this.numPerPage;
     },
@@ -455,21 +453,21 @@ export default {
     }
   },
   watch: {
-    search: function(newVal, oldVal) {
-      this.searchInput = this.search;
-      this.getResults();
-    },
-    page: function(newVal, oldVal) {
-      this.getResults();
-    },
-    numresults: function(newVal, oldVal) {
-      this.numPerPage = newVal;
-      this.searchInput = this.search;
-      this.getResults();
-    },
-    sortValue: function(newVal, oldVal) {
-      this.getResults();
-    }
+    // search: function(newVal, oldVal) {
+    //   this.searchInput = this.search;
+    //   this.getResults();
+    // },
+    // page: function(newVal, oldVal) {
+    //   this.getResults();
+    // },
+    // numresults: function(newVal, oldVal) {
+    //   this.numPerPage = newVal;
+    //   this.searchInput = this.search;
+    //   this.getResults();
+    // },
+    // sortValue: function(newVal, oldVal) {
+    //   this.getResults();
+    // }
   },
   data() {
     return {
@@ -503,6 +501,7 @@ export default {
         id: "dataset"
       }, ],
       new2Display: 3,
+      newData: null
     };
   }
 }
