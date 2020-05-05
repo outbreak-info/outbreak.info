@@ -45,7 +45,7 @@
 
         <table id='whats-new'>
           <tbody>
-            <tr v-for="(item, idx) in newData" :key="idx" class="new-item d-flex">
+            <tr v-for="(item, idx) in newData" :key="idx" class="new-item">
               <td class="resource-type d-flex align-items-center">
                 <router-link :to="{ name: 'Resource Page', params: {id: item._id} }" class="no-underline m-0" :class="item['@type']">
                   <StripeAccent :className="item['@type']" />
@@ -186,7 +186,7 @@
           <div class="row w-100 d-flex flex-column text-left p-2 search-result" v-for="(item, idx) in data" :key="idx">
             <div class="d-flex w-100 align-items-center">
               <StripeAccent :className="item['@type']" />
-              <small :class="[item['@type'], 'resource-type', 'mr-2']">{{item['@type']}}</small>
+              <small :class="[item['@type'], 'resource-type', 'mr-3']">{{item['@type']}}</small>
               <router-link :to="{ name: 'Resource Page', params: {id: item._id} }">
                 <h5 class="m-0">{{item.name}}</h5>
               </router-link>
@@ -606,6 +606,10 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     opacity: 0.7;
+}
+
+td.resource-type {
+  min-width: 175px;
 }
 
 .resource-date {
