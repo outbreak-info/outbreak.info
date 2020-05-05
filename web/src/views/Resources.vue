@@ -156,7 +156,7 @@
             <small class="text-muted text-left" v-if="filterString">
               filtered by {{filterString}}
             </small>
-            <button @click="clearFilters"  v-if="filterString"><small>clear filters</small></button>
+            <button @click="clearFilters" v-if="filterString"><small>clear filters</small></button>
           </div>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
@@ -353,7 +353,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  debounce, cloneDeep
+  debounce,
+  cloneDeep
 } from "lodash";
 
 library.add(faArrowLeft, faArrowRight);
@@ -378,12 +379,6 @@ export default {
   },
   methods: {
     getResults() {
-      if (!this.numPerPage) {
-        this.numPerPage = 10;
-      }
-      if (!this.selectedPage) {
-        this.selectedPage = 0;
-      }
       this.resultsSubscription = getResources(this.$resourceurl, this.search, this.filterString, this.sortValue, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
         console.log(results)
         this.data = results.results;
@@ -413,13 +408,13 @@ export default {
     },
     selectFilterText(facet, idx) {
       const selectedText = this.facetFilters[idx];
-      if(selectedText != ""){
-      facet.filtered = facet.counts.filter(d => d.term.toLowerCase().includes(selectedText));
-      facet.filtered.forEach(d => d.checked = true);
-    } else {
-      facet.filtered = cloneDeep(facet.counts);
-      facet.filtered.forEach(d => d.checked = false);
-    }
+      if (selectedText != "") {
+        facet.filtered = facet.counts.filter(d => d.term.toLowerCase().includes(selectedText));
+        facet.filtered.forEach(d => d.checked = true);
+      } else {
+        facet.filtered = cloneDeep(facet.counts);
+        facet.filtered.forEach(d => d.checked = false);
+      }
 
 
       this.filterString = this.filters2String();
@@ -432,7 +427,6 @@ export default {
           size: "10"
         }
       })
-      // this.getResults();
     },
     selectFilter: function(facet, option) {
       option.checked = !option.checked;
@@ -447,7 +441,6 @@ export default {
           size: "10"
         }
       })
-      // this.getResults();
     },
     filters2String() {
       const filters = this.facetSummary.map(d => {
@@ -473,7 +466,6 @@ export default {
           size: "10"
         }
       })
-      // this.getResults();
     },
     onEnter() {
       this.search = this.searchInput;
@@ -487,7 +479,6 @@ export default {
           size: "10"
         }
       })
-      // this.getResults();
     },
     changePage(step) {
       this.selectedPage += step;
@@ -497,11 +488,10 @@ export default {
         query: {
           search: this.search,
           filter: this.filterString,
-          page: this.selectedPage,
-          size: this.numPerPage
+          page: String(this.selectedPage),
+          size: String(this.numPerPage)
         }
       })
-      // this.getResults();
     },
     changePageNum() {
       this.selectedPage = 0;
@@ -511,20 +501,11 @@ export default {
         query: {
           search: this.search,
           filter: this.filterString,
-          page: this.selectedPage,
-          size: this.numPerPage
+          page: String(this.selectedPage),
+          size: String(this.numPerPage)
         }
       })
-      // this.getResults();
     }
-  },
-  mounted() {
-    this.searchInput = this.search;
-    this.filterString = this.filter;
-    this.numPerPage = Number(this.size);
-    this.selectedPage = Number(this.page);
-    console.log(this.selectedPage)
-    this.getResults();
   },
   beforeDestroy() {
     if (this.resultSubscription) {
@@ -547,15 +528,17 @@ export default {
     }
   },
   watch: {
-    $route: function(to, from) {
-      console.log("route triggered")
-      this.getResults();
-    },
-    // search: function(newVal, oldVal) {
-    //   console.log("search triggered")
-    //   this.searchInput = this.search;
-    //   this.getResults();
-    // }
+    $route: {
+      immediate: true,
+      handler(to, from) {
+        this.searchInput = this.search ? this.search : null;
+        this.filterString = this.filter ? this.filter : null;
+        this.numPerPage = this.size ? Number(this.size) : 10;
+        this.selectedPage = this.page ? Number(this.page) : 0;
+
+        this.getResults();
+      }
+    }
   },
   data() {
     return {
@@ -614,7 +597,7 @@ export default {
 }
 
 td.resource-type {
-  min-width: 175px;
+    min-width: 175px;
 }
 
 .resource-date {
