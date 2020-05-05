@@ -143,14 +143,19 @@
       <div class="col-sm-9 pl-5" id="results">
         <!-- results header + sort options -->
         <div class="row w-100 d-flex justify-content-between" id="selectors">
+          <div class="d-flex flex-column">
           <div class="d-flex align-items-center">
             <h4 class="m-0 mr-4" v-if="search">
               You searched for {{search}}
             </h4>
-            <small class="m-0 text-highlight">
-              {{numResults}} results
-            </small>
+            <div class="m-0 text-highlight">
+              {{numResults}} {{numResults == 1 ? 'result' : 'results'}}
+            </div>
           </div>
+          <small class="text-muted text-left" v-if="filterString">
+            filtered by {{filterString}}
+          </small>
+        </div>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
             <option v-for="option in pageOpts" :value="option" :key="option">
@@ -351,8 +356,8 @@ export default {
   name: "Resources",
   props: {
     search: String,
-    page: Number,
-    numresults: Number,
+    page: String,
+    numresults: String,
     filter: String
   },
   components: {
@@ -372,7 +377,6 @@ export default {
       }
       this.resultsSubscription = getResources(this.$resourceurl, this.search, this.filterString, this.sortValue, this.numPerPage, this.page * this.numPerPage).subscribe(results => {
         console.log(results)
-        console.log(this.filterString)
         this.data = results.results;
         this.newData = results.recent;
         this.facetSummary = results.facets;
@@ -407,8 +411,8 @@ export default {
         query: {
           search: this.search,
           filter: this.filterString,
-          page: 0,
-          numresults: 10
+          page: "0",
+          numresults: "10"
         }
       })
 
@@ -435,8 +439,8 @@ export default {
         query: {
           search: this.search,
           filter: this.filterString,
-          page: 0,
-          numresults: 10
+          page: "0",
+          numresults: "10"
         }
       })
     },
@@ -454,7 +458,7 @@ export default {
       })
     },
     changePageNum() {
-      this.page = 0;
+      this.page = "0";
 
       this.$router.push({
         path: "resources",
