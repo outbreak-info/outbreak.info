@@ -20,7 +20,12 @@
       <div id="author-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
         <small v-for="(author, idx) in data.author" :key="idx" class="text-muted">
           {{author.name ? author.name : author.givenName + " " + author.familyName}}:
-          <span v-for="(affiliation, idx) in author.affiliation" :key="idx">{{affiliation.name}}</span>
+          <template v-if="Array.isArray(data.author.affiliation)">
+            <span v-for="(affiliation, idx) in author.affiliation" :key="idx">{{affiliation.name}}</span>
+          </template>
+          <template v-else>
+            <span>{{author.affiliation}}</span>
+          </template>
         </small>
       </div>
     </template>
@@ -43,7 +48,12 @@
       <div id="creator-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
         <small v-for="(creator, idx) in data.creator" :key="idx" class="text-muted">
           {{creator.name ? creator.name : creator.givenName + " " + creator.familyName}}:
-          <span v-for="(affiliation, idx) in creator.affiliation" :key="idx">{{affiliation.name}}</span>
+          <template v-if="Array.isArray(data.creator.affiliation)">
+            <span v-for="(affiliation, idx) in creator.affiliation" :key="idx">{{affiliation.name}}</span>
+          </template>
+          <template v-else>
+            <span>{{creator.affiliation}}</span>
+          </template>
         </small>
       </div>
     </template>
