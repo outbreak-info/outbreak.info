@@ -281,8 +281,8 @@
               </div>
 
               <!-- Bottom -->
-              <div class="col-sm-12 keyword-container mt-2">
-                <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
+              <div class="col-sm-12 d-flex flex-wrap keyword-container mt-2">
+                <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
                   <router-link :to='{ name: "Resources", query: {search: `"${keyword}"`} }' class="no-underline text-dark">
                     {{keyword}}
                   </router-link>
