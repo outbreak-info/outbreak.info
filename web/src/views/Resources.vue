@@ -120,7 +120,7 @@
               <!-- Filters -->
               <ul class="list-group rounded-0">
                 <div v-for="(option, optIdx) in facet.counts" :key="optIdx">
-                  <li class="list-group-item rounded-0 text-left list-group-item-action p-1" :class="{'active': option.checked}" v-if="optIdx < facet.num2Display">
+                  <li class="rounded-0 text-left list-group-item-action p-1" :class="[option.checked ? 'list-group-item-info': 'list-group-item']" v-if="optIdx < facet.num2Display">
                     <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)">
                     <label :for="optIdx" class="m-0">
                       <small>{{option.term}} ({{option.count}})</small>
@@ -601,7 +601,7 @@ export default {
     background: lighten($warning-color, 35%);
     border-radius: 5px;
 }
-.list-group-item.active {
+.list-group-item.list-group-item-info {
     background-color: $secondary-color !important;
     border-color: $secondary-color !important;
     color: white !important;
