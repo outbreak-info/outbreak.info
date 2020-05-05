@@ -113,7 +113,7 @@
           <!-- Toggle content -->
           <form v-if="facet.counts.length && facet.expanded">
             <div>
-              <!-- Search -->
+              <!-- Filter search -->
               <div class="p-1 bg-light">
                 <input type="text" class="border border-secondary p-1 w-100" placeholder="Search">
               </div>
@@ -122,8 +122,8 @@
                 <div v-for="(option, optIdx) in facet.counts" :key="optIdx">
                   <li class="rounded-0 text-left list-group-item-action p-1" :class="[option.checked ? 'list-group-item-info': 'list-group-item']" v-if="optIdx < facet.num2Display">
                     <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)">
-                    <label :for="optIdx" class="m-0">
-                      <small>{{option.term}} ({{option.count}})</small>
+                    <label :for="facet.id + optIdx" class="m-0">
+                      <small >{{option.term}} ({{option.count}})</small>
                     </label>
                   </li>
                 </div>
