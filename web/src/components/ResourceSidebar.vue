@@ -34,6 +34,8 @@
     </div>
     <small class="mt-2 helper text-muted">Improve this record by adding additional information</small>
   </div>
+
+  <!-- share -->
   <div class="py-3 border-bottom text-muted">
     <small class="text-muted section-header">share</small>
     <div class="d-flex flex-wrap justify-content-center mt-1">
