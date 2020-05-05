@@ -1,12 +1,13 @@
 <template>
 <div class="d-flex py-2 m-2">
-  <div class="row w-100 m-0">
-    <!-- loading -->
-    <div v-if="loading" class="loader">
-      <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
-    </div>
+  <!-- loading -->
+  <div v-if="loading" class="loader">
+    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+  </div>
 
-    <div class="col-sm-12 text-left" v-if="data">
+  <div class="row w-100 m-0" v-if="data">
+
+    <div class="col-sm-12 text-left">
       <div :class='type.replace(/\s/g, "")' v-if="type">
         <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
         {{type}} <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
@@ -23,9 +24,9 @@
         <div class="row d-flex justify-content-center w-100">
           <nav class="navbar navbar-expand-lg navbar-dark">
             <ul class="navbar-nav">
-              <li class="nav-item text-light mr-3" v-for="(resource, idx) in resources" :key="idx">
-                <router-link class="nav-link no-underline p-0" :to="`#${resource}`">
-                  {{resource }}
+              <li class="nav-item text-light mr-4" v-for="(anchor, idx) in anchors" :key="idx">
+                <router-link class="nav-link no-underline p-0" :to="`#${anchor}`">
+                  {{ anchor }}
                 </router-link>
               </li>
             </ul>
@@ -35,12 +36,56 @@
     </div>
 
     <div class="col-md-9 my-3">
+      <!-- description -->
       <ResourceDescription />
-    </div>
 
+      <div class="mr-5">
+        <!-- downloads -->
+        <div id="downloads" class="text-left border-top border-bottom text-muted py-3 my-3">
+          <h6 class="m-0">Downloads</h6>
+          <ul v-if="data.distribution" id="download-list">
+            <li v-for="(item, idx) in data.distribution" :key="idx">
+              <a :href="item.contentUrl" target="_blank" rel="noreferrer">
+                {{item.name ? item.name : item.contentUrl}}
+              </a>
+            </li>
+
+          </ul>
+          <div v-else>
+            <small>not specified</small>
+          </div>
+        </div>
+
+        <!-- license -->
+        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3">
+          <h6 class="m-0">License</h6>
+          <div v-if="data.license">
+            <a v-if="data.license.startsWith('http')" :href="data.license" target="_blank">{{data.license}}
+            </a>
+            <span v-else v-html="data.license"></span>
+          </div>
+          <div v-else>
+            <small>not specified</small>
+          </div>
+        </div>
+
+        <!-- funding info -->
+        <div id="funder" class="text-left border-bottom text-muted pb-3 mb-3">
+          <h6 class="m-0">Funder</h6>
+          <div v-if="data.funding || data.funder">
+            <span v-if="data.funding">{{data.funding}}</span>
+            <span v-if="data.funder">{{data.funder}}</span>
+          </div>
+          <div v-else>
+            <small>not specified</small>
+          </div>
+        </div>
+      </div>
+
+    </div>
     <!-- RIGHT SIDE -->
     <div class="col-md-3 my-3">
-      <ResourceSidebar :data="data" :date="dateModified" type="Dataset" v-if="data" />
+      <ResourceSidebar :data="data" :date="dateModified" :type="data['@type']" v-if="data" />
     </div>
 
   </div>
@@ -77,7 +122,7 @@ export default Vue.extend({
     return ({
       type: null,
       data: null,
-      resources: ["authors", "description"]
+      anchors: ["authors", "description", "downloads", "license", "funder"]
     })
   },
   methods: {
