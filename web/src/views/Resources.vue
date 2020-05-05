@@ -84,7 +84,7 @@
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
-            <router-link class="nav-link no-underline p-0" :to="{ name: 'Resource Page', params: {id: resource.id} }">
+            <router-link class="nav-link no-underline p-0" :to="{ name: 'Resources', query: {filter: '@type:' + resource.id} }">
               {{resource.label}}
             </router-link>
           </li>
@@ -528,13 +528,14 @@ export default {
       sortValue: "-datePublished",
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
-      resourceTypes: [{
-        label: "What's New",
-        id: "whats-new"
-      }, {
-        label: "Topics",
-        id: "topics"
-      }, {
+      resourceTypes: [
+        {
+      //   label: "What's New",
+      //   id: "whats-new"
+      // }, {
+      //   label: "Topics",
+      //   id: "topics"
+      // }, {
         label: "Publications",
         id: "publication"
       }, {
