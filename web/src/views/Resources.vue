@@ -160,7 +160,7 @@
           </div>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
-            <option v-for="option in pageOpts" :value="String(option)" :key="option">
+            <option v-for="option in pageOpts" :value="option" :key="option">
               {{ option }} results
             </option>
           </select>
@@ -306,12 +306,12 @@
 
   <br />
   <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
-    <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: page === 0 }" @click="changePage(-1)">
+    <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === 0 }" @click="changePage(-1)">
       <font-awesome-icon :icon="['fas', 'arrow-left']" />
     </button>
     <small>viewing results {{ lowerLim + 1 }} &minus; {{ upperLim }} of
       {{ numResults }}</small>
-    <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: page === lastPage }" @click="changePage(1)">
+    <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
       <font-awesome-icon :icon="['fas', 'arrow-right']" />
     </button>
   </div>
@@ -381,10 +381,10 @@ export default {
       if (!this.numPerPage) {
         this.numPerPage = 10;
       }
-      if (!this.page) {
-        this.page = 0;
+      if (!this.selectedPage) {
+        this.selectedPage = 0;
       }
-      this.resultsSubscription = getResources(this.$resourceurl, this.search, this.filterString, this.sortValue, this.numPerPage, this.page * this.numPerPage).subscribe(results => {
+      this.resultsSubscription = getResources(this.$resourceurl, this.search, this.filterString, this.sortValue, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
         console.log(results)
         this.data = results.results;
         this.newData = results.recent;
@@ -432,7 +432,7 @@ export default {
           size: "10"
         }
       })
-      this.getResults();
+      // this.getResults();
     },
     selectFilter: function(facet, option) {
       option.checked = !option.checked;
@@ -447,7 +447,7 @@ export default {
           size: "10"
         }
       })
-      this.getResults();
+      // this.getResults();
     },
     filters2String() {
       const filters = this.facetSummary.map(d => {
@@ -463,8 +463,6 @@ export default {
       // return (filters.map(d => `${d.id}:("${d.vars.map(x => x.term).join('" OR "')}")`));
     },
     clearFilters() {
-      console.log("clearing filters")
-
       this.filterString = null;
       this.$router.push({
         path: "resources",
@@ -475,11 +473,10 @@ export default {
           size: "10"
         }
       })
-      this.getResults();
+      // this.getResults();
     },
     onEnter() {
       this.search = this.searchInput;
-      this.page = 0;
 
       this.$router.push({
         path: "resources",
@@ -490,41 +487,43 @@ export default {
           size: "10"
         }
       })
-      this.getResults();
+      // this.getResults();
     },
     changePage(step) {
-      this.page += step;
+      this.selectedPage += step;
 
       this.$router.push({
         path: "resources",
         query: {
           search: this.search,
           filter: this.filterString,
-          page: this.page,
+          page: this.selectedPage,
           size: this.numPerPage
         }
       })
-      this.getResults();
+      // this.getResults();
     },
     changePageNum() {
-      this.page = "0";
+      this.selectedPage = 0;
 
       this.$router.push({
         path: "resources",
         query: {
           search: this.search,
           filter: this.filterString,
-          page: this.page,
+          page: this.selectedPage,
           size: this.numPerPage
         }
       })
-      this.getResults();
+      // this.getResults();
     }
   },
   mounted() {
     this.searchInput = this.search;
     this.filterString = this.filter;
-    this.numPerPage = this.size;
+    this.numPerPage = Number(this.size);
+    this.selectedPage = Number(this.page);
+    console.log(this.selectedPage)
     this.getResults();
   },
   beforeDestroy() {
@@ -535,10 +534,10 @@ export default {
   computed: {
     ...mapState("admin", ["loading"]),
     lowerLim: function() {
-      return this.page * this.numPerPage;
+      return this.selectedPage * this.numPerPage;
     },
     upperLim: function() {
-      const upper = this.page * this.numPerPage + this.numPerPage;
+      const upper = this.selectedPage * this.numPerPage + this.numPerPage;
       return upper > this.numResults ? this.numResults : upper;
     },
     lastPage: function() {
@@ -548,16 +547,22 @@ export default {
     }
   },
   watch: {
-    search: function(newVal, oldVal) {
-      this.searchInput = this.search;
+    $route: function(to, from) {
+      console.log("route triggered")
       this.getResults();
-    }
+    },
+    // search: function(newVal, oldVal) {
+    //   console.log("search triggered")
+    //   this.searchInput = this.search;
+    //   this.getResults();
+    // }
   },
   data() {
     return {
       resultsSubscription: null,
       data: null,
       numResults: 0,
+      selectedPage: null,
       searchInput: null,
       filterString: null,
       facetFilters: [],

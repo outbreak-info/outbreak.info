@@ -132,13 +132,12 @@ export function getResourceMetadata(apiUrl, id) {
   )
 }
 
-export function getResourceFacets(apiUrl, queryString, filterArr, facets = ["@type.keyword", "keywords.keyword", "topicCategory.keyword", "funding.funder.name.keyword", "measurementTechnique.keyword", "variableMeasured.keyword"]) {
+export function getResourceFacets(apiUrl, queryString, filterArr, facets = ["@type.keyword", "curatedBy.name.keyword", "keywords.keyword", "topicCategory.keyword", "funding.funder.name.keyword", "measurementTechnique.keyword", "variableMeasured.keyword"]) {
   if (!queryString) {
     queryString = "__all__";
   }
 
-  console.log(filterArr)
-  const sortOrder = ["@type", "topicCategory", "keywords", "funding.funder.name", "measurementTechnique", "variableMeasured"];
+  const sortOrder = ["@type", "topicCategory", "curatedBy.name", "keywords", "funding.funder.name", "measurementTechnique", "variableMeasured"];
 
   const facetString = facets.join(",")
   const timestamp = Math.round(new Date().getTime() / 1e5);
@@ -159,7 +158,7 @@ export function getResourceFacets(apiUrl, queryString, filterArr, facets = ["@ty
           d["checked5"] = filterArr
         })
         return ({
-          variable: key.replace(".keyword", "").replace("@", "").replace("funding.funder.name", "funding").replace("measurementTechnique", "measurement technique").replace("topicCategory", "topic").replace("variableMeasured", "variable measured"),
+          variable: key.replace(".keyword", "").replace("@", "").replace("curatedBy.name", "source").replace("funding.funder.name", "funding").replace("measurementTechnique", "measurement technique").replace("topicCategory", "topic").replace("variableMeasured", "variable measured"),
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
           filtered: cloneDeep(results[key]["terms"]),
