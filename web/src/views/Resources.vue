@@ -115,7 +115,7 @@
             <div>
               <!-- Filter search -->
               <form class="p-1 bg-light" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
-                <input type="text" autocomplete="off" class="border border-secondary p-1 w-100" :placeholder="`&#xF002;`" v-model="facetFilters[idx]">
+                <input type="text" autocomplete="off" class="border border-secondary p-1 w-100 font-awesome" :placeholder="`Search ${facet.variable}`" v-model="facetFilters[idx]" @change="filterFacets(facet, idx)">
               </form>
               <!-- Filters -->
               <ul class="list-group rounded-0">
@@ -372,7 +372,7 @@ export default {
     FontAwesomeIcon
   },
   created: function() {
-    this.debounceFilterText = debounce(this.selectFilterText, 500);
+    this.debounceFilterText = debounce(this.selectFilterText, 5000);
   },
   methods: {
     getResults() {
@@ -411,9 +411,6 @@ export default {
     },
     selectFilterText(facet, idx) {
       console.log("filtering")
-      console.log(facet)
-      console.log(idx)
-      console.log(this.facetFilters)
       const selectedText = this.facetFilters[idx];
       facet.filtered = facet.counts.filter(d => d.term.toLowerCase().includes(selectedText));
 
@@ -430,6 +427,16 @@ export default {
       })
       this.getResults();
     },
+    filterFacets(facet, idx) {
+      console.log("just the filter")
+      console.log(facet)
+      console.log(idx)
+      console.log(this.facetFilters)
+      const selectedText = this.facetFilters[idx];
+      facet.filtered = facet.counts.filter(d => d.term.toLowerCase().includes(selectedText));
+
+      facet.filtered.forEach(d => d.checked = true);
+    },
     selectFilter: function(facet, option) {
       option.checked = !option.checked;
 
@@ -443,7 +450,7 @@ export default {
           numresults: "10"
         }
       })
-
+      this.getResults();
     },
     filters2String() {
       const filters = this.facetSummary.map(d => {
@@ -471,6 +478,7 @@ export default {
           numresults: "10"
         }
       })
+      this.getResults();
     },
     changePage(step) {
       this.page += step;
@@ -484,6 +492,7 @@ export default {
           numresults: this.numPerPage
         }
       })
+      this.getResults();
     },
     changePageNum() {
       this.page = "0";
@@ -497,6 +506,7 @@ export default {
           numresults: this.numPerPage
         }
       })
+      this.getResults();
     }
   },
   mounted() {
@@ -528,21 +538,6 @@ export default {
   watch: {
     search: function(newVal, oldVal) {
       this.searchInput = this.search;
-      this.getResults();
-    },
-    page: function(newVal, oldVal) {
-      this.getResults();
-    },
-    numresults: function(newVal, oldVal) {
-      this.numPerPage = newVal;
-      this.searchInput = this.search;
-      this.getResults();
-    },
-    filter: function(newVal, oldVal) {
-      this.filterString = newVal;
-      this.getResults();
-    },
-    sortValue: function(newVal, oldVal) {
       this.getResults();
     }
   },
