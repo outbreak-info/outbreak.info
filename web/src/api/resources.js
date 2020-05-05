@@ -16,17 +16,42 @@ import {
 
 import store from "@/store";
 
-export function getResources(apiUrl, queryString, sort, size, page) {
-  if (!queryString) {
-    queryString = "__all__";
+function filterString2Arr(filterString) {
+  return filterString.split(";").map(d => {
+    const filters = d.split(":");
+    return ({
+      key: filters[0],
+      values: filters[1].split(",")
+    })
+  })
+}
+
+function filterArr2String(filterArr) {
+  return filterArr.map(d => `${d.key}:("${d.values.join('","')}")`).join(" AND ");
+}
+
+export function getResources(apiUrl, queryString, filterString, sort, size, page) {
+  var comboString;
+  var filterArr = [];
+  if (!queryString && !filterString) {
+    comboString = "__all__";
+  } else if (!queryString) {
+    filterArr = filterString2Arr(filterString);
+    comboString = filterArr2String(filterArr);
+  } else if (!filterString) {
+    comboString = queryString;
+  } else {
+    filterArr = filterString2Arr(filterString);
+    comboString = `${queryString} AND ${filterArr2String(filterArr)}`
   }
+
   store.state.admin.loading = true;
-  return forkJoin([getMostRecent(apiUrl, queryString), getMetadataList(apiUrl, queryString, sort, size, page), getResourceFacets(apiUrl, queryString)]).pipe(
+  return forkJoin([getMostRecent(apiUrl, comboString), getMetadataArray(apiUrl, comboString, sort, size, page), getResourceFacets(apiUrl, queryString, filterArr)]).pipe(
     map(([recent, results, facets]) => {
       results["recent"] = recent;
       results["facets"] = facets;
       console.log(results);
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting resource metadata!", "color: red");
@@ -37,7 +62,7 @@ export function getResources(apiUrl, queryString, sort, size, page) {
   )
 }
 
-export function getMetadataList(apiUrl, queryString, sort, size, page) {
+export function getMetadataArray(apiUrl, queryString, sort, size, page) {
   const maxDescriptionLength = 75;
   // store.state.admin.loading = true;
   const timestamp = Math.round(new Date().getTime() / 1e5);
@@ -48,6 +73,7 @@ export function getMetadataList(apiUrl, queryString, sort, size, page) {
   })).pipe(
     pluck("data"),
     map(results => {
+      console.log(results)
       const resources = results.hits;
       const total = results.total;
 
@@ -104,12 +130,17 @@ export function getResourceMetadata(apiUrl, id) {
   )
 }
 
-export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", "keywords.keyword", "topicCategory.keyword", "funding.funder.name.keyword", "measurementTechnique.keyword", "variableMeasured.keyword"]) {
+export function getResourceFacets(apiUrl, queryString, filterArr, facets = ["@type.keyword", "keywords.keyword", "topicCategory.keyword", "funding.funder.name.keyword", "measurementTechnique.keyword", "variableMeasured.keyword"]) {
+  if (!queryString) {
+    queryString = "__all__";
+  }
+
+  console.log(filterArr)
   const sortOrder = ["@type", "topicCategory", "keywords", "funding.funder.name", "measurementTechnique", "variableMeasured"];
 
   const facetString = facets.join(",")
   const timestamp = Math.round(new Date().getTime() / 1e5);
-  return from(axios.get(`${apiUrl}query?q="${queryString}"&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`, {
+  return from(axios.get(`${apiUrl}query?q=${queryString}&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -117,10 +148,15 @@ export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", 
     pluck("data", "facets"),
     map(results => {
       const facets = Object.keys(results).map(key => {
+        const filters = filterArr.filter(d => d.key == key.replace(".keyword", ""));
         results[key]["terms"].forEach(d => {
-          d["checked"] = true;
+          d["checked"] = filters.length == 1 ? filters[0].values.includes(d.term) : false;
+          d["checked2"] = d.term
+          d["checked3"] = filters
+          d["checked4"] = filterArr
+          d["checked5"] = filterArr
         })
-        return({
+        return ({
           variable: key.replace(".keyword", "").replace("@", "").replace("funding.funder.name", "funding").replace("measurementTechnique", "measurement technique").replace("topicCategory", "topic").replace("variableMeasured", "variable measured"),
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
@@ -130,7 +166,7 @@ export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", 
         })
       })
 
-      facets.sort((a,b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id));
+      facets.sort((a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id));
 
 
       return (facets)
@@ -143,7 +179,7 @@ export function getResourceFacets(apiUrl, queryString, facets=["@type.keyword", 
   )
 }
 
-export function getMostRecent(apiUrl, queryString, sortVar="-datePublished", num2Return=3, fields=["@type", "name", "author", "creator", "datePublished", "dateModified", "dateCreated"]) {
+export function getMostRecent(apiUrl, queryString, sortVar = "-datePublished", num2Return = 3, fields = ["@type", "name", "author", "creator", "datePublished", "dateModified", "dateCreated"]) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
   const fieldString = fields.join(",");
   return from(axios.get(`${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {

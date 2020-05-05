@@ -73,7 +73,7 @@ const routes = [{
       search: route.query.search,
       page: route.query.page,
       numresults: route.query.numresults,
-      type: route.query.type
+      filter: route.query.filter
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

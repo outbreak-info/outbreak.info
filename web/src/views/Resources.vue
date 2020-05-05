@@ -115,13 +115,13 @@
             <div>
               <!-- Search -->
               <div class="p-1 bg-light">
-                <input type="text" class="border border-secondary p-1" placeholder="Search">
+                <input type="text" class="border border-secondary p-1 w-100" placeholder="Search">
               </div>
               <!-- Filters -->
               <ul class="list-group rounded-0">
                 <div v-for="(option, optIdx) in facet.counts" :key="optIdx">
                   <li class="list-group-item rounded-0 text-left list-group-item-action p-1" :class="{'active': option.checked}" v-if="optIdx < facet.num2Display">
-                    <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="option.checked = !option.checked">
+                    <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)">
                     <label :for="optIdx" class="m-0">
                       <small>{{option.term}} ({{option.count}})</small>
                     </label>
@@ -351,8 +351,9 @@ export default {
   name: "Resources",
   props: {
     search: String,
-    page: String,
-    numresults: String
+    page: Number,
+    numresults: Number,
+    filter: String
   },
   components: {
     StripeAccent,
@@ -369,7 +370,9 @@ export default {
       if (!this.page) {
         this.page = 0;
       }
-      this.resultsSubscription = getResources(this.$resourceurl, this.search, this.sortValue, this.numPerPage, this.page * this.numPerPage).subscribe(results => {
+      this.resultsSubscription = getResources(this.$resourceurl, this.search, this.filterString, this.sortValue, this.numPerPage, this.page * this.numPerPage).subscribe(results => {
+        console.log(results)
+        console.log(this.filterString)
         this.data = results.results;
         this.newData = results.recent;
         this.facetSummary = results.facets;
@@ -395,6 +398,34 @@ export default {
     expandDescription: function(item) {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
+    selectFilter: function(facet, option) {
+      option.checked = !option.checked;
+
+      this.filterString = this.filters2String();
+      this.$router.push({
+        path: "resources",
+        query: {
+          search: this.search,
+          filter: this.filterString,
+          page: 0,
+          numresults: 10
+        }
+      })
+
+    },
+    filters2String() {
+      const filters = this.facetSummary.map(d => {
+        return ({
+          id: d.id,
+          vars: d.counts.filter(d => d.checked)
+        })
+      }).filter(d => d.vars.length);
+
+      const filterArr = filters.map(d => `${d.id}:${d.vars.map(x => x.term).join(',')}`);
+
+      return (filterArr.join(";"));
+      // return (filters.map(d => `${d.id}:("${d.vars.map(x => x.term).join('" OR "')}")`));
+    },
     onEnter() {
       this.search = this.searchInput;
       this.page = 0;
@@ -403,6 +434,7 @@ export default {
         path: "resources",
         query: {
           search: this.search,
+          filter: this.filterString,
           page: 0,
           numresults: 10
         }
@@ -415,6 +447,7 @@ export default {
         path: "resources",
         query: {
           search: this.search,
+          filter: this.filterString,
           page: this.page,
           numresults: this.numPerPage
         }
@@ -427,6 +460,7 @@ export default {
         path: "resources",
         query: {
           search: this.search,
+          filter: this.filterString,
           page: this.page,
           numresults: this.numPerPage
         }
@@ -435,6 +469,7 @@ export default {
   },
   mounted() {
     this.searchInput = this.search;
+    this.filterString = this.filter;
     this.numPerPage = this.numresults;
     this.getResults();
   },
@@ -471,6 +506,10 @@ export default {
       this.searchInput = this.search;
       this.getResults();
     },
+    filter: function(newVal, oldVal) {
+      this.filterString = newVal;
+      this.getResults();
+    },
     sortValue: function(newVal, oldVal) {
       this.getResults();
     }
@@ -481,6 +520,7 @@ export default {
       data: null,
       numResults: 0,
       searchInput: null,
+      filterString: null,
       sortValue: "-datePublished",
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
