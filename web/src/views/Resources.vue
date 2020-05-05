@@ -115,7 +115,7 @@
             <div>
               <!-- Filter search -->
               <form class="p-1 bg-light" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
-                <input type="text" autocomplete="off" class="border border-secondary p-1 w-100 font-awesome" :placeholder="`Search ${facet.variable}`" v-model="facetFilters[idx]" @change="filterFacets(facet, idx)">
+                <input type="text" autocomplete="off" class="border border-secondary p-1 w-100 font-awesome" :placeholder="`Search ${facet.variable}`" v-model="facetFilters[idx]">
               </form>
               <!-- Filters -->
               <ul class="list-group rounded-0">
@@ -158,7 +158,7 @@
           </div>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
-            <option v-for="option in pageOpts" :value="option" :key="option">
+            <option v-for="option in pageOpts" :value="String(option)" :key="option">
               {{ option }} results
             </option>
           </select>
@@ -361,7 +361,7 @@ export default {
   props: {
     search: String,
     page: String,
-    numresults: String,
+    size: String,
     filter: String
   },
   components: {
@@ -372,7 +372,7 @@ export default {
     FontAwesomeIcon
   },
   created: function() {
-    this.debounceFilterText = debounce(this.selectFilterText, 5000);
+    this.debounceFilterText = debounce(this.selectFilterText, 500);
   },
   methods: {
     getResults() {
@@ -422,7 +422,7 @@ export default {
           search: this.search,
           filter: this.filterString,
           page: "0",
-          numresults: "10"
+          size: "10"
         }
       })
       this.getResults();
@@ -447,7 +447,7 @@ export default {
           search: this.search,
           filter: this.filterString,
           page: "0",
-          numresults: "10"
+          size: "10"
         }
       })
       this.getResults();
@@ -475,7 +475,7 @@ export default {
           search: this.search,
           filter: this.filterString,
           page: "0",
-          numresults: "10"
+          size: "10"
         }
       })
       this.getResults();
@@ -489,7 +489,7 @@ export default {
           search: this.search,
           filter: this.filterString,
           page: this.page,
-          numresults: this.numPerPage
+          size: this.numPerPage
         }
       })
       this.getResults();
@@ -503,7 +503,7 @@ export default {
           search: this.search,
           filter: this.filterString,
           page: this.page,
-          numresults: this.numPerPage
+          size: this.numPerPage
         }
       })
       this.getResults();
@@ -512,7 +512,7 @@ export default {
   mounted() {
     this.searchInput = this.search;
     this.filterString = this.filter;
-    this.numPerPage = this.numresults;
+    this.numPerPage = this.size;
     this.getResults();
   },
   beforeDestroy() {
