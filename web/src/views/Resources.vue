@@ -98,6 +98,7 @@
     <div class="row m-0">
       <!-- FILTERS -->
       <div class="col-sm-2 p-0">
+        <button @click="clearFilters" class="w-100 m-0 mb-1" v-if="filterString"><small>clear filters</small></button>
         <div class="border-bottom border-secondary alert-secondary p-1 mb-4" v-for="(facet, idx) in facetSummary" :key="idx">
           <!-- Toggle Header -->
           <div class="row m-0">
@@ -155,6 +156,7 @@
             <small class="text-muted text-left" v-if="filterString">
               filtered by {{filterString}}
             </small>
+            <button @click="clearFilters"  v-if="filterString"><small>clear filters</small></button>
           </div>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
@@ -351,7 +353,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  debounce
+  debounce, cloneDeep
 } from "lodash";
 
 library.add(faArrowLeft, faArrowRight);
@@ -410,11 +412,16 @@ export default {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
     selectFilterText(facet, idx) {
-      console.log("filtering")
       const selectedText = this.facetFilters[idx];
+      if(selectedText != ""){
       facet.filtered = facet.counts.filter(d => d.term.toLowerCase().includes(selectedText));
-
       facet.filtered.forEach(d => d.checked = true);
+    } else {
+      facet.filtered = cloneDeep(facet.counts);
+      facet.filtered.forEach(d => d.checked = false);
+    }
+
+
       this.filterString = this.filters2String();
       this.$router.push({
         path: "resources",
@@ -426,16 +433,6 @@ export default {
         }
       })
       this.getResults();
-    },
-    filterFacets(facet, idx) {
-      console.log("just the filter")
-      console.log(facet)
-      console.log(idx)
-      console.log(this.facetFilters)
-      const selectedText = this.facetFilters[idx];
-      facet.filtered = facet.counts.filter(d => d.term.toLowerCase().includes(selectedText));
-
-      facet.filtered.forEach(d => d.checked = true);
     },
     selectFilter: function(facet, option) {
       option.checked = !option.checked;
@@ -464,6 +461,21 @@ export default {
 
       return (filterArr.join(";"));
       // return (filters.map(d => `${d.id}:("${d.vars.map(x => x.term).join('" OR "')}")`));
+    },
+    clearFilters() {
+      console.log("clearing filters")
+
+      this.filterString = null;
+      this.$router.push({
+        path: "resources",
+        query: {
+          search: this.search,
+          filter: this.filterString,
+          page: "0",
+          size: "10"
+        }
+      })
+      this.getResults();
     },
     onEnter() {
       this.search = this.searchInput;
@@ -548,7 +560,7 @@ export default {
       numResults: 0,
       searchInput: null,
       filterString: null,
-      facetFilters: ["", "", "", "", "", ""],
+      facetFilters: [],
       sortValue: "-datePublished",
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
