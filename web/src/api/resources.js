@@ -16,6 +16,8 @@ import {
 
 import store from "@/store";
 
+import { cloneDeep } from "lodash";
+
 function filterString2Arr(filterString) {
   return filterString.split(";").map(d => {
     const filters = d.split(":");
@@ -46,7 +48,7 @@ export function getResources(apiUrl, queryString, filterString, sort, size, page
   }
 
   store.state.admin.loading = true;
-  return forkJoin([getMostRecent(apiUrl, comboString), getMetadataArray(apiUrl, comboString, sort, size, page), getResourceFacets(apiUrl, queryString, filterArr)]).pipe(
+  return forkJoin([getMostRecent(apiUrl, comboString), getMetadataArray(apiUrl, comboString, sort, size, page), getResourceFacets(apiUrl, comboString, filterArr)]).pipe(
     map(([recent, results, facets]) => {
       results["recent"] = recent;
       results["facets"] = facets;
@@ -160,6 +162,7 @@ export function getResourceFacets(apiUrl, queryString, filterArr, facets = ["@ty
           variable: key.replace(".keyword", "").replace("@", "").replace("funding.funder.name", "funding").replace("measurementTechnique", "measurement technique").replace("topicCategory", "topic").replace("variableMeasured", "variable measured"),
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
+          filtered: cloneDeep(results[key]["terms"]),
           total: results[key]["terms"].length,
           num2Display: 5,
           expanded: true

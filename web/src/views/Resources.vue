@@ -104,26 +104,26 @@
             <div class="col-sm-10 p-1 uppercase">
               <h6>{{facet.variable}}</h6>
             </div>
-            <div class="col-sm-2 text-center p-1 pointer" v-if="facet.counts.length" @click="facet.expanded = !facet.expanded">
+            <div class="col-sm-2 text-center p-1 pointer" v-if="facet.filtered.length" @click="facet.expanded = !facet.expanded">
               <!-- toggle fa class up->down -->
               <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
               <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
             </div>
           </div>
           <!-- Toggle content -->
-          <form v-if="facet.counts.length && facet.expanded">
+          <form v-if="facet.filtered.length && facet.expanded">
             <div>
               <!-- Filter search -->
-              <div class="p-1 bg-light">
-                <input type="text" class="border border-secondary p-1 w-100" placeholder="Search">
-              </div>
+              <form class="p-1 bg-light" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
+                <input type="text" autocomplete="off" class="border border-secondary p-1 w-100" :placeholder="`&#xF002;`" v-model="facetFilters[idx]">
+              </form>
               <!-- Filters -->
               <ul class="list-group rounded-0">
-                <div v-for="(option, optIdx) in facet.counts" :key="optIdx">
+                <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
                   <li class="rounded-0 text-left list-group-item-action p-1" :class="[option.checked ? 'list-group-item-info': 'list-group-item']" v-if="optIdx < facet.num2Display">
                     <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)">
                     <label :for="facet.id + optIdx" class="m-0">
-                      <small >{{option.term}} ({{option.count}})</small>
+                      <small>{{option.term}} ({{option.count}})</small>
                     </label>
                   </li>
                 </div>
@@ -144,18 +144,18 @@
         <!-- results header + sort options -->
         <div class="row w-100 d-flex justify-content-between" id="selectors">
           <div class="d-flex flex-column">
-          <div class="d-flex align-items-center">
-            <h4 class="m-0 mr-4" v-if="search">
-              You searched for {{search}}
-            </h4>
-            <div class="m-0 text-highlight">
-              {{numResults}} {{numResults == 1 ? 'result' : 'results'}}
+            <div class="d-flex align-items-center">
+              <h4 class="m-0 mr-4" v-if="search">
+                You searched for {{search}}
+              </h4>
+              <div class="m-0 text-highlight">
+                {{numResults}} {{numResults == 1 ? 'result' : 'results'}}
+              </div>
             </div>
+            <small class="text-muted text-left" v-if="filterString">
+              filtered by {{filterString}}
+            </small>
           </div>
-          <small class="text-muted text-left" v-if="filterString">
-            filtered by {{filterString}}
-          </small>
-        </div>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
             <option v-for="option in pageOpts" :value="option" :key="option">
@@ -350,6 +350,10 @@ import {
   faArrowRight
 } from "@fortawesome/free-solid-svg-icons";
 
+import {
+  debounce
+} from "lodash";
+
 library.add(faArrowLeft, faArrowRight);
 
 export default {
@@ -366,6 +370,9 @@ export default {
     TrialStatus,
     TrialType,
     FontAwesomeIcon
+  },
+  created: function() {
+    this.debounceFilterText = debounce(this.selectFilterText, 500);
   },
   methods: {
     getResults() {
@@ -402,6 +409,27 @@ export default {
     expandDescription: function(item) {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
+    selectFilterText(facet, idx) {
+      console.log("filtering")
+      console.log(facet)
+      console.log(idx)
+      console.log(this.facetFilters)
+      const selectedText = this.facetFilters[idx];
+      facet.filtered = facet.counts.filter(d => d.term.toLowerCase().includes(selectedText));
+
+      facet.filtered.forEach(d => d.checked = true);
+      this.filterString = this.filters2String();
+      this.$router.push({
+        path: "resources",
+        query: {
+          search: this.search,
+          filter: this.filterString,
+          page: "0",
+          numresults: "10"
+        }
+      })
+      this.getResults();
+    },
     selectFilter: function(facet, option) {
       option.checked = !option.checked;
 
@@ -421,7 +449,7 @@ export default {
       const filters = this.facetSummary.map(d => {
         return ({
           id: d.id,
-          vars: d.counts.filter(d => d.checked)
+          vars: d.filtered.filter(d => d.checked)
         })
       }).filter(d => d.vars.length);
 
@@ -525,31 +553,31 @@ export default {
       numResults: 0,
       searchInput: null,
       filterString: null,
+      facetFilters: ["", "", "", "", "", ""],
       sortValue: "-datePublished",
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
-      resourceTypes: [
-        {
-      //   label: "What's New",
-      //   id: "whats-new"
-      // }, {
-      //   label: "Topics",
-      //   id: "topics"
-      // }, {
+      resourceTypes: [{
+        //   label: "What's New",
+        //   id: "whats-new"
+        // }, {
+        //   label: "Topics",
+        //   id: "topics"
+        // }, {
         label: "Publications",
-        id: "publication"
+        id: "Publication"
       }, {
         label: "Analyses",
-        id: "analysis"
+        id: "Analysis"
       }, {
         label: "Protocols",
-        id: "protocol"
+        id: "Protocol"
       }, {
         label: "Clinical Trials",
-        id: "clinicaltrial"
+        id: "ClinicalTrial"
       }, {
         label: "Datasets",
-        id: "dataset"
+        id: "Dataset"
       }, ],
       new2Display: 3,
       newData: null,
