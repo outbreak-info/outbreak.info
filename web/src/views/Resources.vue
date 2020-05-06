@@ -256,7 +256,7 @@
                   You searched for {{ search }}
                 </h4>
                 <div class="m-0 text-highlight">
-                  {{ numResults }} {{ numResults == 1 ? "result" : "results" }}
+                  {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
                 </div>
               </div>
               <small class="text-muted text-left" v-if="filterString">
@@ -586,7 +586,7 @@ export default {
   },
   methods: {
     getResults() {
-      const searchTerm = this.searchInput + "*";
+      const searchTerm = this.searchInput ? this.searchInput + "*" : "__all__";
       this.resultsSubscription = getResources(
         this.$resourceurl,
         searchTerm,
