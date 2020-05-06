@@ -1,24 +1,9 @@
-import {
-  from,
-  forkJoin
-} from "rxjs";
+import { from, forkJoin } from "rxjs";
 import axios from "axios";
-import {
-  tap,
-  finalize,
-  catchError,
-  pluck,
-  map,
-} from "rxjs/operators";
-import {
-  nest,
-  timeParse,
-  sum
-} from "d3";
+import { tap, finalize, catchError, pluck, map } from "rxjs/operators";
+import { nest, timeParse, sum } from "d3";
 
-import {
-  getAll
-} from "@/api/biothings.js";
+import { getAll } from "@/api/biothings.js";
 
 import store from "@/store";
 
@@ -27,13 +12,18 @@ export function getStackedRegions(apiUrl) {
   const parseDate = timeParse("%Y-%m-%d");
 
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime()/1e5);
+  const timestamp = Math.round(new Date().getTime() / 1e5);
 
-  return from(axios.get(`${apiUrl}query?q=admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })).pipe(
+  return from(
+    axios.get(
+      `${apiUrl}query?q=admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`,
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
+  ).pipe(
     // tap(d => console.log(d)),
     pluck("data", "hits"),
     map(results => {
@@ -42,11 +32,11 @@ export function getStackedRegions(apiUrl) {
         .key(d => d.date)
         .key(d => d.name)
         .rollup(values => {
-          return ({
+          return {
             confirmed: sum(values, d => d.confirmed),
             dead: sum(values, d => d.dead),
             recovered: sum(values, d => d.recovered)
-          })
+          };
         })
         .entries(results);
 
@@ -79,10 +69,9 @@ export function getStackedRegions(apiUrl) {
           }
         });
 
-        nested["confirmed"].push(objC)
-        nested["dead"].push(objD)
-        nested["recovered"].push(objR)
-
+        nested["confirmed"].push(objC);
+        nested["dead"].push(objD);
+        nested["recovered"].push(objR);
       });
       nested["confirmed"].sort((a, b) => a.date - b.date);
       nested["dead"].sort((a, b) => a.date - b.date);
@@ -96,18 +85,29 @@ export function getStackedRegions(apiUrl) {
       return from([]);
     }),
     finalize(() => (store.state.admin.loading = false))
-  )
+  );
 }
 export function getCountryData(apiUrl, region, variable) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
 
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime()/1e5);
+  const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return forkJoin([
-    from(axios.get(`${apiUrl}query?q=admin_level:0 AND mostRecent:true AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,name,${variable},${variable}_numIncrease&timestamp=${timestamp}`)),
-    getAll(apiUrl, `admin_level:0 AND wb_region:"${encodeURIComponent(region)}"&size=1000&fields=location_id,date,${variable}&timestamp=${timestamp}`)
+    from(
+      axios.get(
+        `${apiUrl}query?q=admin_level:0 AND mostRecent:true AND wb_region:"${encodeURIComponent(
+          region
+        )}"&size=1000&fields=location_id,name,${variable},${variable}_numIncrease&timestamp=${timestamp}`
+      )
+    ),
+    getAll(
+      apiUrl,
+      `admin_level:0 AND wb_region:"${encodeURIComponent(
+        region
+      )}"&size=1000&fields=location_id,date,${variable}&timestamp=${timestamp}`
+    )
   ]).pipe(
     map(([currentData, timeData]) => {
       // sort current data
@@ -116,10 +116,10 @@ export function getCountryData(apiUrl, region, variable) {
       // clean up time data: parse all dates, nest.
       // convert dates to javascript dates
       timeData.forEach(d => {
-        d['date'] = parseDate(d.date);
+        d["date"] = parseDate(d.date);
         delete d["_id"];
         delete d["_score"];
-      })
+      });
       // ensure dates are sorted
       timeData.sort((a, b) => a.date - b.date);
 
@@ -129,13 +129,15 @@ export function getCountryData(apiUrl, region, variable) {
         .entries(timeData);
 
       sparks.forEach(spark => {
-        const idx = currentData["data"]["hits"].findIndex(d => d.location_id === spark.key);
+        const idx = currentData["data"]["hits"].findIndex(
+          d => d.location_id === spark.key
+        );
         if (idx > -1) {
           currentData["data"]["hits"][idx]["data"] = spark.value;
         }
-      })
+      });
 
-      return (currentData["data"]["hits"])
+      return currentData["data"]["hits"];
     }),
     catchError(e => {
       console.log("%c Error in getting regional country counts!", "color: red");
@@ -143,5 +145,5 @@ export function getCountryData(apiUrl, region, variable) {
       return from([]);
     }),
     finalize(() => (store.state.admin.loading = false))
-  )
+  );
 }

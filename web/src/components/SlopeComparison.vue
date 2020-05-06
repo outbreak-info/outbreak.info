@@ -1,18 +1,36 @@
 <template>
-<div class="slope-comparison flex-column align-left">
-
-  <svg :width="width" :height="height" class="slope-comparison">
-    <defs>
-      <marker id="arrowhead" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
-        <path d="M5,0 L12,5 L5,10" class="slope-arrowhead" :class="[slope1 < slope2 ? 'worse' : 'better']" />
-      </marker>
-    </defs>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis axis--x" ref="xAxis"></g>
-    <!-- <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g> -->
-    <g :transform="`translate(${margin.left},${margin.top})`" class="slopes" ref="slopes">
-    </g>
-  </svg>
-</div>
+  <div class="slope-comparison flex-column align-left">
+    <svg :width="width" :height="height" class="slope-comparison">
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="13"
+          markerHeight="10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path
+            d="M5,0 L12,5 L5,10"
+            class="slope-arrowhead"
+            :class="[slope1 < slope2 ? 'worse' : 'better']"
+          />
+        </marker>
+      </defs>
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom})`"
+        class="epi-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <!-- <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g> -->
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        class="slopes"
+        ref="slopes"
+      ></g>
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -84,116 +102,186 @@ export default Vue.extend({
       this.y = d3
         .scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, this.yMax])
+        .domain([0, this.yMax]);
 
-      this.xAxis = d3.axisBottom(this.x).ticks(0).tickSizeOuter(0);
+      this.xAxis = d3
+        .axisBottom(this.x)
+        .ticks(0)
+        .tickSizeOuter(0);
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
       // this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks);
 
       // d3.select(this.$refs.yAxis).call(this.yAxis);
-
     },
     drawSlopes: function() {
-
       // --- poly fill and swoopy arrow ---
-      this.chart.selectAll(".fit-diff").data(this.slope1 && this.slope2 ? [{
-          slope1: this.slope1,
-          slope2: this.slope2
-        }] : [])
-        .join(
-          enter => enter.append("polygon")
-          .attr("class", d => this.slope1 < this.slope2 ? "fit-diff worse" : "fit-diff better")
-          .attr("points", d => `${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(d.slope1)} ${this.x(1)},${this.y(d.slope2)}`),
-          update => update
-          .attr("points", d => `${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(d.slope1)} ${this.x(1)},${this.y(d.slope2)}`),
-          exit => exit.call(exit => exit.remove())
+      this.chart
+        .selectAll(".fit-diff")
+        .data(
+          this.slope1 && this.slope2
+            ? [
+                {
+                  slope1: this.slope1,
+                  slope2: this.slope2
+                }
+              ]
+            : []
         )
-
-
-      this.chart.selectAll(".swoopy-arrow").data(this.slope1 && this.slope2 ? [{
-          slope1: this.slope1,
-          slope2: this.slope2
-        }] : [])
         .join(
-          enter => enter.append("path")
-          .attr("transform", "translate(15, 0)")
-          .attr("marker-end", "url(#arrowhead)")
-          .attr("d", d => `M${this.x(1)} ${this.y(d.slope1)} C ${this.x(1) + 10} ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(d.slope2)}, ${this.x(1)-4} ${this.y(d.slope2)}`)
-          .attr("class", d => d.slope1 < d.slope2 ? "swoopy-arrow worse" : "swoopy-arrow better"),
-          update => update
-          .attr("d", d => `M${this.x(1)} ${this.y(d.slope1)} C ${this.x(1) + 10} ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(d.slope2)}, ${this.x(1)-4} ${this.y(d.slope2)}`)
-          .attr("class", d => d.slope1 < d.slope2 ? "swoopy-arrow worse" : "swoopy-arrow better"),
+          enter =>
+            enter
+              .append("polygon")
+              .attr("class", d =>
+                this.slope1 < this.slope2 ? "fit-diff worse" : "fit-diff better"
+              )
+              .attr(
+                "points",
+                d =>
+                  `${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(
+                    d.slope1
+                  )} ${this.x(1)},${this.y(d.slope2)}`
+              ),
+          update =>
+            update.attr(
+              "points",
+              d =>
+                `${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(
+                  d.slope1
+                )} ${this.x(1)},${this.y(d.slope2)}`
+            ),
           exit => exit.call(exit => exit.remove())
+        );
+
+      this.chart
+        .selectAll(".swoopy-arrow")
+        .data(
+          this.slope1 && this.slope2
+            ? [
+                {
+                  slope1: this.slope1,
+                  slope2: this.slope2
+                }
+              ]
+            : []
         )
+        .join(
+          enter =>
+            enter
+              .append("path")
+              .attr("transform", "translate(15, 0)")
+              .attr("marker-end", "url(#arrowhead)")
+              .attr(
+                "d",
+                d =>
+                  `M${this.x(1)} ${this.y(d.slope1)} C ${this.x(1) +
+                    10} ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
+                    d.slope2
+                  )}, ${this.x(1) - 4} ${this.y(d.slope2)}`
+              )
+              .attr("class", d =>
+                d.slope1 < d.slope2
+                  ? "swoopy-arrow worse"
+                  : "swoopy-arrow better"
+              ),
+          update =>
+            update
+              .attr(
+                "d",
+                d =>
+                  `M${this.x(1)} ${this.y(d.slope1)} C ${this.x(1) +
+                    10} ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
+                    d.slope2
+                  )}, ${this.x(1) - 4} ${this.y(d.slope2)}`
+              )
+              .attr("class", d =>
+                d.slope1 < d.slope2
+                  ? "swoopy-arrow worse"
+                  : "swoopy-arrow better"
+              ),
+          exit => exit.call(exit => exit.remove())
+        );
 
       // --- slope lines ---
-      this.chart.selectAll(".recent-slope").data(this.slope2 ? [this.slope2] : [])
+      this.chart
+        .selectAll(".recent-slope")
+        .data(this.slope2 ? [this.slope2] : [])
         .join(
-          enter => enter.append("line")
-          .attr("x1", this.x(0))
-          .attr("y1", this.y(0))
-          .attr("x2", this.x(1))
-          .attr("y2", d => this.y(d))
-          .attr("class", "recent-slope"),
-          update => update
-          .attr("x1", this.x(0))
-          .attr("y1", this.y(0))
-          .attr("x2", this.x(1))
-          .attr("y2", d => this.y(d)),
+          enter =>
+            enter
+              .append("line")
+              .attr("x1", this.x(0))
+              .attr("y1", this.y(0))
+              .attr("x2", this.x(1))
+              .attr("y2", d => this.y(d))
+              .attr("class", "recent-slope"),
+          update =>
+            update
+              .attr("x1", this.x(0))
+              .attr("y1", this.y(0))
+              .attr("x2", this.x(1))
+              .attr("y2", d => this.y(d)),
           exit => exit.call(exit => exit.remove())
-        )
+        );
 
-      this.chart.selectAll(".penultimate-slope").data(this.slope1 ? [this.slope1] : [])
+      this.chart
+        .selectAll(".penultimate-slope")
+        .data(this.slope1 ? [this.slope1] : [])
         .join(
-          enter => enter.append("line")
-          .attr("x1", this.x(0))
-          .attr("y1", this.y(0))
-          .attr("x2", this.x(1))
-          .attr("y2", d => this.y(d))
-          .attr("class", "penultimate-slope"),
-          update => update
-          .attr("x1", this.x(0))
-          .attr("y1", this.y(0))
-          .attr("x2", this.x(1))
-          .attr("y2", d => this.y(d)),
+          enter =>
+            enter
+              .append("line")
+              .attr("x1", this.x(0))
+              .attr("y1", this.y(0))
+              .attr("x2", this.x(1))
+              .attr("y2", d => this.y(d))
+              .attr("class", "penultimate-slope"),
+          update =>
+            update
+              .attr("x1", this.x(0))
+              .attr("y1", this.y(0))
+              .attr("x2", this.x(1))
+              .attr("y2", d => this.y(d)),
           exit => exit.call(exit => exit.remove())
-        )
+        );
 
       // --- circles ---
-      this.chart.selectAll(".recent-slope-end").data(this.slope2 ? [this.slope2] : [])
+      this.chart
+        .selectAll(".recent-slope-end")
+        .data(this.slope2 ? [this.slope2] : [])
         .join(
-          enter => enter.append("circle")
-          .attr("r", 3)
-          .attr("cx", this.x(1))
-          .attr("cy", d => this.y(d))
-          .attr("class", "recent-slope-end"),
-          update => update
-          .attr("cx", this.x(1))
-          .attr("cy", d => this.y(d)),
+          enter =>
+            enter
+              .append("circle")
+              .attr("r", 3)
+              .attr("cx", this.x(1))
+              .attr("cy", d => this.y(d))
+              .attr("class", "recent-slope-end"),
+          update => update.attr("cx", this.x(1)).attr("cy", d => this.y(d)),
           exit => exit.call(exit => exit.remove())
-        )
+        );
 
-      this.chart.selectAll(".penultimate-slope-end").data(this.slope1 ? [this.slope1] : [])
+      this.chart
+        .selectAll(".penultimate-slope-end")
+        .data(this.slope1 ? [this.slope1] : [])
         .join(
-          enter => enter.append("circle")
-          .attr("r", 3)
-          .attr("cx", this.x(1))
-          .attr("cy", d => this.y(d))
-          .attr("class", "penultimate-slope-end"),
-          update => update
-          .attr("cx", this.x(1))
-          .attr("cy", d => this.y(d)),
+          enter =>
+            enter
+              .append("circle")
+              .attr("r", 3)
+              .attr("cx", this.x(1))
+              .attr("cy", d => this.y(d))
+              .attr("class", "penultimate-slope-end"),
+          update => update.attr("cx", this.x(1)).attr("cy", d => this.y(d)),
           exit => exit.call(exit => exit.remove())
-        )
-
+        );
     }
   }
-})
+});
 </script>
 
-<style lang=scss>
+<style lang="scss">
 .slope-comparison {
   $fit1-color: #59a14f;
   $fit2-color: #f28e2c;
@@ -244,6 +332,5 @@ export default Vue.extend({
     fill: none;
     stroke-width: 1.5;
   }
-
 }
 </style>

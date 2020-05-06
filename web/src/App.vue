@@ -25,9 +25,12 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav" v-if="!$route.meta.hideNavigation">
+        <div
+          class="collapse navbar-collapse"
+          id="navbarNav"
+          v-if="!$route.meta.hideNavigation"
+        >
           <ul class="navbar-nav">
-
             <li class="nav-item">
               <router-link
                 data-toggle="collapse"
@@ -68,6 +71,17 @@
               </router-link>
             </li>
 
+            <!-- <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
+                to="/resources"
+                :class="{ active: $route.name == 'Resources' }"
+                >Resources
+              </router-link>
+            </li> -->
+
             <li class="nav-item">
               <router-link
                 data-toggle="collapse"
@@ -95,18 +109,12 @@
             </a>
           </li>
           <li class="d-inline m-2">
-            <router-link
-              class="text-light"
-              to="/privacy"
+            <router-link class="text-light" to="/privacy"
               >Privacy Policy</router-link
             >
           </li>
           <li class="d-inline m-2">
-            <router-link
-              class="text-light"
-              to="/terms"
-              >Terms</router-link
-            >
+            <router-link class="text-light" to="/terms">Terms</router-link>
           </li>
         </ul>
         <small>
@@ -126,7 +134,7 @@
 import store from "@/store";
 
 import { mapState } from "vuex";
-import { getLocations, getMostCases } from "@/api/epi-basics.js"
+import { getLocations, getMostCases } from "@/api/epi-basics.js";
 
 export default {
   name: "App",
@@ -151,12 +159,12 @@ export default {
     return {
       placeNames$: getLocations(this.$apiurl),
       mostCases$: getMostCases(this.$apiurl)
-    }
+    };
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .no-underline {
   text-decoration: none;
 }
@@ -167,6 +175,5 @@ export default {
   -ms-transition: height 0s;
   -o-transition: height 0s;
   transition: height 0s;
-
 }
 </style>

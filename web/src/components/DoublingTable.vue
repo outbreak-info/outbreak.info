@@ -1,77 +1,90 @@
 <template>
-<div class="doubling-table my-3 d-flex flex-column align-items-center" v-if="data">
-  <h4>Doubling rates</h4>
-  <SlopeComparison :slope1="data.fit1.slope" :slope2="data.fit2.slope" class="mb-2" />
-  <DataUpdated class="mb-3"/>
+  <div
+    class="doubling-table my-3 d-flex flex-column align-items-center"
+    v-if="data"
+  >
+    <h4>Doubling rates</h4>
+    <SlopeComparison
+      :slope1="data.fit1.slope"
+      :slope2="data.fit2.slope"
+      class="mb-2"
+    />
+    <DataUpdated class="mb-3" />
 
-  <table class="m-auto">
-    <tr>
-      <th class="td-days">
-
-      </th>
-      <th class="td-doubling">
-        doubling time (days)
-      </th>
-      <th class="td-slope">
-        slope
-      </th>
-      <th class="td-r2">
-        r<sup>2</sup>
-      </th>
-    </tr>
-    <tr class="tr-current">
-      <th>
-        <!-- <button @click="selectPoints(1)" :class="{'disabled' : fitting2}">
+    <table class="m-auto">
+      <tr>
+        <th class="td-days"></th>
+        <th class="td-doubling">
+          doubling time (days)
+        </th>
+        <th class="td-slope">
+          slope
+        </th>
+        <th class="td-r2">r<sup>2</sup></th>
+      </tr>
+      <tr class="tr-current">
+        <th>
+          <!-- <button @click="selectPoints(1)" :class="{'disabled' : fitting2}">
           {{fitting1 ? "fit these points" : "change points to fit"}}
         </button> -->
-        {{fit2_dates}}
-      </th>
-      <td>
-        {{fit2_time}}
-      </td>
-      <td>
-        {{fit2_slope}}
-      </td>
-      <td>
-        {{fit2_r2}}
-      </td>
-    </tr>
-    <tr class="tr-previous">
-      <th>
-        <!-- <button @click="selectPoints(2)" :class="{'disabled' : fitting1}">
+          {{ fit2_dates }}
+        </th>
+        <td>
+          {{ fit2_time }}
+        </td>
+        <td>
+          {{ fit2_slope }}
+        </td>
+        <td>
+          {{ fit2_r2 }}
+        </td>
+      </tr>
+      <tr class="tr-previous">
+        <th>
+          <!-- <button @click="selectPoints(2)" :class="{'disabled' : fitting1}">
           {{fitting2 ? "fit these points" : "change points to fit"}}
         </button> -->
-        {{fit1_dates}}
-      </th>
-      <td>
-        {{fit1_time}}
-      </td>
-      <td>
-        {{fit1_slope}}
-      </td>
-      <td>
-        {{fit1_r2}}
-      </td>
-    </tr>
-    <tr class="change">
-      <th>
-        change from older data
-      </th>
-      <td :class="[change_time.worse ? 'worse' : 'better']">
-        {{change_time.label}}
-        <font-awesome-icon class="better" :icon="['fas', 'arrow-up']" v-if="!change_time.worse" />
-        <font-awesome-icon class="worse" :icon="['fas', 'arrow-down']" v-if="change_time.worse" />
-      </td>
-      <td class="better-worse text-left" colspan="2" :class="[change_time.worse ? 'worse' : 'better']">
-        {{change_time.worse ? "worse" : "better"}}
-         <!-- <span v-if="change_time.nearZero"> (negligible rate of change)</span> -->
-      </td>
-    </tr>
-  </table>
-
-</div>
+          {{ fit1_dates }}
+        </th>
+        <td>
+          {{ fit1_time }}
+        </td>
+        <td>
+          {{ fit1_slope }}
+        </td>
+        <td>
+          {{ fit1_r2 }}
+        </td>
+      </tr>
+      <tr class="change">
+        <th>
+          change from older data
+        </th>
+        <td :class="[change_time.worse ? 'worse' : 'better']">
+          {{ change_time.label }}
+          <font-awesome-icon
+            class="better"
+            :icon="['fas', 'arrow-up']"
+            v-if="!change_time.worse"
+          />
+          <font-awesome-icon
+            class="worse"
+            :icon="['fas', 'arrow-down']"
+            v-if="change_time.worse"
+          />
+        </td>
+        <td
+          class="better-worse text-left"
+          colspan="2"
+          :class="[change_time.worse ? 'worse' : 'better']"
+        >
+          {{ change_time.worse ? "worse" : "better" }}
+          <!-- <span v-if="change_time.nearZero"> (negligible rate of change)</span> -->
+        </td>
+      </tr>
+    </table>
+  </div>
 </template>
-
 
 <script lang="js">
 import Vue from "vue";
@@ -233,69 +246,69 @@ export default Vue.extend({
 $fit1-color: #59a14f;
 $fit2-color: #f28e2c;
 h4 {
-    margin: 0;
+  margin: 0;
 }
 .align-left {
-    text-align: left;
+  text-align: left;
 }
 
 table {
-    border-collapse: collapse;
-    font-size: 0.85em;
+  border-collapse: collapse;
+  font-size: 0.85em;
 }
 
 .tr-current {
-    background: lighten($fit2-color, 35%);
+  background: lighten($fit2-color, 35%);
 }
 .tr-previous {
-    background: lighten($fit1-color, 45%);
+  background: lighten($fit1-color, 45%);
 }
 
 tr {
-    border-bottom: 1px solid #ececec;
-    // border-bottom: 1px solid $grey-40;
+  border-bottom: 1px solid #ececec;
+  // border-bottom: 1px solid $grey-40;
 }
 
 td {
-    padding: 5px 0;
-    text-align: center;
+  padding: 5px 0;
+  text-align: center;
 }
 
 th {
-    padding: 5px;
-    font-size: 0.95em;
-    font-weight: 400;
-    color: $grey-70;
+  padding: 5px;
+  font-size: 0.95em;
+  font-weight: 400;
+  color: $grey-70;
 }
 
 .sort-hover {
-    display: none;
+  display: none;
 }
 
 .sort-grp.hover .sort-hover,
 .sort-grp:hover .sort-hover {
-    display: inline;
+  display: inline;
 }
 
 .color-bar {
-    border-left-width: 4px;
-    border-left-style: solid;
-    padding-left: 5px !important;
-    // background: #00BCD4;
-    // width: 4px;
-    // height: 100%;
+  border-left-width: 4px;
+  border-left-style: solid;
+  padding-left: 5px !important;
+  // background: #00BCD4;
+  // width: 4px;
+  // height: 100%;
 }
 
 .worse {
-    color: $warning-color;
+  color: $warning-color;
 }
 
 .better {
-    color: $secondary-color;
+  color: $secondary-color;
 }
 
 .change {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .better-worse {
@@ -306,22 +319,22 @@ th {
 
 // widths
 .td-days {
-    width: 60px;
+  width: 60px;
 }
 .td-doubling {
-    width: 75px;
+  width: 75px;
 }
 
 .td-r2,
 .td-slope {
-    width: 50px;
+  width: 50px;
 }
 
 .sortable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .header {
-    width: 100%;
+  width: 100%;
 }
 </style>

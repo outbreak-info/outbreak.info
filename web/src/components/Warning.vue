@@ -11,12 +11,11 @@
     <div
       class="col-sm-11 d-flex justify-content-center align-items-center text-center"
     >
-      <p class="m-0" v-html="text">
-      </p>
+      <p class="m-0" v-html="text"></p>
     </div>
   </div>
 </template>
-<script lang="ts">
+<script lang="js">
 import Vue from "vue";
 export default Vue.extend({
   name: "Warning",

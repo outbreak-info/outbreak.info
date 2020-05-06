@@ -1,0 +1,3 @@
+Sitemap: https://outbreak.info/sitemap.xml
+
+User-agent: *

@@ -1,48 +1,48 @@
 // --- fonts, default colors ---
+
 #app {
-    font-family: $font-family;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: $base-grey;
+  font-family: $font-family;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: $base-grey;
 }
 
 #app text {
-    font-family: $font-family;
+  font-family: $font-family;
 }
-
 // --- svg ---
 .axis--x text,
 .axis--y text,
 .default-black {
-    fill: $base-grey;
+  fill: $base-grey;
 }
-
 @media only screen and (max-width: 600px) {
-  .hero{
+  .hero {
     background-position: center;
     background-size: cover;
     background-image: none !important;
   }
-  p.focustext{
+
+  p.focustext {
     font-size: 1em !important;
   }
 }
 
-.hero{
+.hero {
   background-position: center;
   background-size: cover;
   background-image: url("~@/assets/hero-01.svg");
 }
 
-.nav-hero{
+.nav-hero {
   background-position: top left;
   background-repeat: no-repeat;
   background-size: cover;
   background-image: url("~@/assets/navback-01.svg");
 }
 
-.back-1{
+.back-1 {
   background-position: bottom left;
   background-repeat: no-repeat;
   background-size: contain;
@@ -50,234 +50,233 @@
   min-height: 200px;
 }
 
-.back-2{
+.back-2 {
   background-position: top right;
   background-repeat: no-repeat;
   background-size: contain;
   background-image: url("~@/assets/back2.png");
 }
 
-.bg-grag-main{
+.bg-grag-main {
   background: linear-gradient(to right, $primary-color, $secondary-color);
 }
 
-.bg-grag-grey{
+.bg-grag-grey {
   background: linear-gradient(to right, $grey-80, $grey-60);
 }
-
 // Forms
-
-.b-contain *, .b-contain *::before, .b-contain *::after {
-	box-sizing: content-box !important;
+.b-contain *,
+.b-contain *::after,
+.b-contain *::before {
+  box-sizing: content-box !important;
 }
 
 .b-contain input {
-	position: absolute;
-	z-index: -1;
-	opacity: 0;
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
 }
 
 .b-contain span {
-	line-height: 1.54;
-	font-size: 1rem;
-	font-family: inherit;
+  line-height: 1.54;
+  font-size: 1rem;
+  font-family: inherit;
 }
 
 .b-contain {
-	display: table;
-	position: relative;
-	padding-left: 1.8rem;
-	cursor: pointer;
-	margin-bottom: .5rem;
+  display: table;
+  position: relative;
+  padding-left: 1.8rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
 }
 
 .b-contain input[type="checkbox"] ~ .b-input {
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 1.25rem;
-	width: 1.25rem;
-	background: rgba(241, 245, 248, 1);
-	transition: background 250ms;
-	border: 1px solid rgba(184, 194, 204, 1);
-	border-radius: 0.125rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+  background: rgba(241, 245, 248, 1);
+  transition: background 250ms;
+  border: 1px solid rgba(184, 194, 204, 1);
+  border-radius: 0.125rem;
 }
 
 .b-contain input[type="radio"] ~ .b-input {
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 1.25rem;
-	width: 1.25rem;
-	background: rgba(241, 245, 248, 1);
-	transition: background 250ms;
-	border: 1px solid rgba(184, 194, 204, 1);
-	border-radius: 2.0rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+  background: rgba(241, 245, 248, 1);
+  transition: background 250ms;
+  border: 1px solid rgba(184, 194, 204, 1);
+  border-radius: 2.0rem;
 }
 
 .b-contain input[type="checkbox"] ~ .b-input::after {
-	content: '';
-	position: absolute;
-	display: none;
-	left: .45rem;
-	top: .18rem;
-	width: .25rem;
-	height: .6rem;
-	border: solid rgba(255, 255, 255, 1);
-	border-width: 0 2px 2px 0;
-	transition: background 250ms;
-	transform: rotate(45deg);
+  content: '';
+  position: absolute;
+  display: none;
+  left: 0.45rem;
+  top: 0.18rem;
+  width: 0.25rem;
+  height: 0.6rem;
+  border: solid rgba(255, 255, 255, 1);
+  border-width: 0 2px 2px 0;
+  transition: background 250ms;
+  transform: rotate(45deg);
 }
 
 .b-contain input[type="radio"] ~ .b-input::after {
-	content: '';
-	position: absolute;
-	display: none;
-	left: .25rem;
-	top: .25rem;
-	width: .75rem;
-	height: .75rem;
-	border-radius: 2.0rem;
-	background: rgba(255, 255, 255, 1);
-	transition: background 250ms;
+  content: '';
+  position: absolute;
+  display: none;
+  left: 0.25rem;
+  top: 0.25rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2.0rem;
+  background: rgba(255, 255, 255, 1);
+  transition: background 250ms;
 }
 
 .b-contain input:disabled ~ .b-input::after {
-	border-color: rgba(135, 149, 161, 1);
+  border-color: rgba(135, 149, 161, 1);
 }
 
 .b-contain input:checked ~ .b-input::after {
-	display: block;
+  display: block;
 }
 
-.b-contain:hover input ~ .b-input,
-.b-contain input:focus ~ .b-input {
-	background: rgb(231, 238, 243);
+.b-contain input:focus ~ .b-input,
+.b-contain:hover input ~ .b-input {
+  background: rgb(231, 238, 243);
 }
 
 .b-contain input:focus ~ .b-input {
-	box-shadow: 0 0 0 2px rgba(52,144,220,0.5);
+  box-shadow: 0 0 0 2px rgba(52,144,220,0.5);
 }
 
 .b-contain input:checked ~ .b-input {
-	background: rgba(209, 59, 98, 1);
-	border-color: rgba(159, 30, 64, 1);
+  background: rgba(209, 59, 98, 1);
+  border-color: rgba(159, 30, 64, 1);
 }
 
 .b-contain input[type="checkbox"]:disabled ~ .b-input {
-	background: rgba(241, 245, 248, 1);
-	border-color: rgba(184, 194, 204, 1);
-	opacity: 0.6;
-	cursor: not-allowed;
+  background: rgba(241, 245, 248, 1);
+  border-color: rgba(184, 194, 204, 1);
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .b-contain input[type="radio"]:disabled ~ .b-input {
-	background: rgba(241, 245, 248, 1);
-	border-color: rgba(184, 194, 204, 1);
-	opacity: 0.6;
-	cursor: not-allowed;
+  background: rgba(241, 245, 248, 1);
+  border-color: rgba(184, 194, 204, 1);
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .b-contain input[type="radio"]:disabled ~ .b-input::after {
-	background: rgba(135, 149, 161, 1);
+  background: rgba(135, 149, 161, 1);
 }
 
-.b-contain input:checked:focus ~ .b-input, .b-contain:hover input:not([disabled]):checked ~ .b-input {
-	background: $warning-color;
-	border-color: darken($warning-color,20%);
+.b-contain input:checked:focus ~ .b-input,
+.b-contain:hover input:not([disabled]):checked ~ .b-input {
+  background: $warning-color;
+  border-color: darken($warning-color,20%);
 }
 
 .b-contain .b-input::before {
-	content: '';
-	display: block;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 3rem;
-	height: 3rem;
-	margin-left: -0.85rem;
-	margin-top: -0.85rem;
-	background: rgba(0, 130, 243, 1);
-	border-radius: 2rem;
-	opacity: .6;
-	z-index: 99999;
-	transform: scale(0);
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3rem;
+  height: 3rem;
+  margin-left: -0.85rem;
+  margin-top: -0.85rem;
+  background: rgba(0, 130, 243, 1);
+  border-radius: 2rem;
+  opacity: 0.6;
+  z-index: 99999;
+  transform: scale(0);
 }
-
 @keyframes b-ripple {
-	0% {
-		transform: scale(0);
-	}
+  0% {
+    transform: scale(0);
+  }
 
-	20% {
-		transform: scale(1);
-	}
+  20% {
+    transform: scale(1);
+  }
 
-	100% {
-		opacity: 0;
-		transform: scale(1);
-  	}
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
 }
-
 @keyframes b-ripple-duplicate {
-	0% {
-		transform: scale(0);
-	}
+  0% {
+    transform: scale(0);
+  }
 
-	30% {
-		transform: scale(1);
-	}
+  30% {
+    transform: scale(1);
+  }
 
-	60% {
-		transform: scale(1);
-	}
+  60% {
+    transform: scale(1);
+  }
 
-	100% {
-		opacity: 0;
-		transform: scale(1);
-  	}
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
 }
 
 .b-contain input + .b-input::before {
-	animation: b-ripple 250ms ease-out;
+  animation: b-ripple 250ms ease-out;
 }
 
 .b-contain input:checked + .b-input::before {
-	animation-name: b-ripple-duplicate;
+  animation-name: b-ripple-duplicate;
 }
 
 .b-contain .b-input::before {
-	visibility: hidden;
+  visibility: hidden;
 }
 
 .b-contain input:focus + .b-input::before {
-	visibility: visible;
+  visibility: visible;
 }
 
 .b-contain:first-child .b-input::before {
-	visibility: hidden;
+  visibility: hidden;
 }
-
 // --- common useful things ---
 .router-link-black {
   color: $base-grey !important;
 }
 
-.full-page{
+.full-page {
   min-height: 100vh;
 }
 
-.half-page{
+.half-page {
   min-height: 50vh;
 }
 
-.main{
+.main {
   overflow: hidden;
 }
 
-p.focustext{
+p.focustext {
   font-size: 25px;
 }
+
 .hidden {
   display: none;
 }
@@ -288,12 +287,17 @@ p.focustext{
   pointer-events: none !important;
 }
 
-.leaflet-container .leaflet-control-attribution, .leaflet-container .leaflet-control-scale{
-  opacity: .2;
+.leaflet-container .leaflet-control-attribution,
+.leaflet-container .leaflet-control-scale {
+  opacity: 0.2;
 }
 
-.no-underline{
+.no-underline {
   text-decoration: none;
+}
+
+.font-awesome {
+  font-family: "Font Awesome 5 Brands", "Font Awesome 5 Free", FontAwesome, sans-serif !important;
 }
 
 .box-shadow {
@@ -301,98 +305,132 @@ p.focustext{
 }
 
 .fill-primary-light {
-  background: lighten($primary-color, 25%)
+  background: lighten($primary-color, 25%);
 }
 
-.text-main{
+.text-main {
   color: $primary-color;
 }
 
-.text-sec{
+.text-sec {
   color: $secondary-color;
 }
 
-.text-highlight{
+.text-highlight {
   color: $warning-color;
 }
 
-.bg-light{
+.bg-light {
   background-color: $lightback;
 }
 
-.bg-main{
+.bg-main {
   background-color: $primary-color;
-    &__lighter{
-      background-color: lighten($primary-color,20%);
-    }
-    &__darker{
-      background-color: darken($primary-color,10%);
-    }
+
+  &__lighter {
+    background-color: lighten($primary-color,20%);
+  }
+
+  &__darker {
+    background-color: darken($primary-color,10%);
+  }
 }
 
-.bg-sec{
+.bg-sec {
   background-color: $secondary-color;
-  &__lighter{
+
+  &__lighter {
     background-color: lighten($secondary-color,20%);
   }
-  &__darker{
+
+  &__darker {
     background-color: darken($secondary-color,10%);
   }
 }
 
-.bg-highlight{
+.bg-highlight {
   background-color: $warning-color;
-  &__lighter{
+
+  &__lighter {
     background-color: lighten($warning-color,20%);
   }
-  &__darker{
+
+  &__darker {
     background-color: darken($warning-color,10%);
   }
 }
 
-.bg-grey{
+.bg-grey {
   background-color: $base-grey;
-  &__lighter{
+
+  &__lighter {
     background-color: lighten($base-grey,20%);
   }
-  &__lightest{
+
+  &__lightest {
     background-color: lighten($base-grey,70%);
   }
-  &__darker{
+
+  &__darker {
     background-color: darken($base-grey,10%);
   }
 }
 
-// Animation
+.uppercase {
+  text-transform: uppercase;
+}
 
+.pointer {
+  cursor: pointer;
+}
+
+.link {
+  color: $link-color !important;
+  cursor: pointer;
+
+  &:hover {
+    color: $link-hover !important;
+    text-decoration: underline;
+  }
+}
+// Animation
 @-webkit-keyframes scale-in-center {
   0% {
     -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
     opacity: 1;
   }
+
   100% {
     -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
     opacity: 1;
   }
 }
 @keyframes scale-in-center {
   0% {
     -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
     opacity: 1;
   }
+
   100% {
     -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
     opacity: 1;
   }
 }
 
+.border-section {
+  border-top: 1px solid $base-grey;
+  border-bottom: 1px solid $base-grey;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
 .scale-in-center {
-	-webkit-animation: scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-	        animation: scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  -webkit-animation: scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  animation: scale-in-center 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
 
 .autocomplete {
@@ -441,7 +479,6 @@ input:focus {
   // removing the input focus blue box.
   outline: none;
 }
-
 // placeholder
 .floating-label {
   margin-bottom: 0.25em;
@@ -467,36 +504,118 @@ select {
   box-sizing: border-box;
   -webkit-appearance: none;
   -moz-appearance: none;
-	appearance:none;
-	-webkit-appearance:none;
-	-moz-appearance:none;
-	-ms-appearance:none;
-  padding: .3em 1.5em .3em .3em;
-  color:$secondary-color;
-	background:url("~@/assets/drop2.svg");
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  padding: 0.3em 1.5em 0.3em 0.3em;
+  color: $secondary-color;
+  background: url("~@/assets/drop2.svg");
   background-color: lighten($grey-40,20%);
-	background-repeat:no-repeat;
-  border:thin $secondary-color solid;
-	background-size:16px 16px;
-	background-position:center right 5px;
+  background-repeat: no-repeat;
+  border: thin $secondary-color solid;
+  background-size: 16px 16px;
+  background-position: center right 5px;
 }
 
-select:focus{
-  border:thin $warning-color solid;
-  border:thin $warning-color solid;
+select:focus {
+  border: thin $warning-color solid;
+  border: thin $warning-color solid;
   outline: none;
 }
 
-select:hover{
-  background:url("~@/assets/drop.svg");
+select:hover {
+  background: url("~@/assets/drop.svg");
   background-color: lighten($grey-40,20%);
-	background-repeat:no-repeat;
-  border:thin $secondary-color solid;
-	background-size:16px 16px;
-	background-position:center right 5px;
+  background-repeat: no-repeat;
+  border: thin $secondary-color solid;
+  background-size: 16px 16px;
+  background-position: center right 5px;
 }
 
-.leaflet-container{
-background: linear-gradient(to bottom,  $grey-40  0%, $secondary-color 100%) !important;
-// background: linear-gradient(to top,  $secondary-color  0%, $primary-color 100%) !important;
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+}
+// snackbar popup
+// from https://www.w3schools.com/howto/howto_js_snackbar.asp
+
+.snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 0.75rem;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+}
+
+.snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+@-webkit-keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+.leaflet-container {
+  background: linear-gradient(to bottom, $grey-40 0%, $secondary-color 100%) !important; // background: linear-gradient(to top,  $secondary-color  0%, $primary-color 100%) !important;
 }

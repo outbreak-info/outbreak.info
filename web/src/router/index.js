@@ -6,7 +6,8 @@ import Terms from "../views/Terms.vue";
 
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "Home",
     component: Home
@@ -28,7 +29,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "about" */ "../views/About.vue")
+      import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
     path: "/latest",
@@ -45,8 +46,7 @@ const routes = [{
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import( /* webpackChunkName: "data" */ "../views/Data.vue")
+    component: () => import(/* webpackChunkName: "data" */ "../views/Data.vue")
   },
   {
     path: "/sources",
@@ -55,7 +55,43 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "sources" */ "../views/Sources.vue")
+      import(/* webpackChunkName: "sources" */ "../views/Sources.vue")
+  },
+  {
+    path: "/contributing-data",
+    name: "Contributing",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "contributing" */ "../views/Contributing.vue")
+  },
+  {
+    path: "/resources",
+    name: "Resources",
+    props: route => ({
+      search: route.query.search,
+      page: route.query.page,
+      size: route.query.size,
+      filter: route.query.filter,
+      sort: route.query.sort
+    }),
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "resources" */ "../views/Resources.vue")
+  },
+  {
+    path: "/resources/:id",
+    name: "Resource Page",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(
+        /* webpackChunkName: "resources-types" */ "../views/ResourcePage.vue"
+      )
   },
   {
     path: "/summary",
@@ -67,7 +103,7 @@ const routes = [{
       hideNavigation: true
     },
     component: () =>
-      import( /* webpackChunkName: "summary" */ "../views/Summary.vue")
+      import(/* webpackChunkName: "summary" */ "../views/Summary.vue")
   },
   {
     path: "/epidemiology",
@@ -82,7 +118,7 @@ const routes = [{
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "epi" */ "../views/Epi.vue")
+    component: () => import(/* webpackChunkName: "epi" */ "../views/Epi.vue")
   },
   // {
   //   path: "/timelapse",
@@ -98,21 +134,28 @@ const routes = [{
       variable: route.query.variable
     }),
     component: () =>
-      import( /* webpackChunkName: "doubling-rates" */ "../views/DoublingRates.vue")
+      import(
+        /* webpackChunkName: "doubling-rates" */ "../views/DoublingRates.vue"
+      )
   }
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
-  linkExactActiveClass: 'active',
+  linkExactActiveClass: "active",
   routes,
   scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return {
+        selector: to.hash
+      };
+    }
     if (!to.params.disableScroll) {
       return {
         x: 0,
         y: 0
-      }
+      };
     }
   }
 });
