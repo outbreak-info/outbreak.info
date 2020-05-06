@@ -9,9 +9,9 @@ module.exports = {
   configureWebpack: {
     optimization: {
       splitChunks: {
-        chunks: 'async',
+        chunks: "async",
         minSize: 10000,
-        maxSize: 250000,
+        maxSize: 250000
       }
     }
   }

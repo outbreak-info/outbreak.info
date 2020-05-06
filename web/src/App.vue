@@ -2,7 +2,7 @@
   <div id="app">
     <header id="outbreak-header">
       <nav
-         class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero"
+        class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero"
       >
         <router-link to="/" class="navbar-brand no-underline">
           <img
@@ -25,9 +25,12 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav" v-if="!$route.meta.hideNavigation">
+        <div
+          class="collapse navbar-collapse"
+          id="navbarNav"
+          v-if="!$route.meta.hideNavigation"
+        >
           <ul class="navbar-nav">
-
             <li class="nav-item">
               <router-link
                 data-toggle="collapse"
@@ -106,18 +109,12 @@
             </a>
           </li>
           <li class="d-inline m-2">
-            <router-link
-              class="text-light"
-              to="/privacy"
+            <router-link class="text-light" to="/privacy"
               >Privacy Policy</router-link
             >
           </li>
           <li class="d-inline m-2">
-            <router-link
-              class="text-light"
-              to="/terms"
-              >Terms</router-link
-            >
+            <router-link class="text-light" to="/terms">Terms</router-link>
           </li>
         </ul>
         <small>
@@ -137,7 +134,7 @@
 import store from "@/store";
 
 import { mapState } from "vuex";
-import { getLocations, getMostCases } from "@/api/epi-basics.js"
+import { getLocations, getMostCases } from "@/api/epi-basics.js";
 
 export default {
   name: "App",
@@ -162,7 +159,7 @@ export default {
     return {
       placeNames$: getLocations(this.$apiurl),
       mostCases$: getMostCases(this.$apiurl)
-    }
+    };
   }
 };
 </script>
@@ -178,6 +175,5 @@ export default {
   -ms-transition: height 0s;
   -o-transition: height 0s;
   transition: height 0s;
-
 }
 </style>

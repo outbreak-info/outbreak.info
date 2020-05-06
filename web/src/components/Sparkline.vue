@@ -32,12 +32,14 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      this.updatePlot()
+      this.updatePlot();
     }
   },
   methods: {
     setupPlot() {
-      this.svg = d3.select(`#sparkline-${this.id}-${this.variable}`).select("svg.epi-sparkline");
+      this.svg = d3
+        .select(`#sparkline-${this.id}-${this.variable}`)
+        .select("svg.epi-sparkline");
       this.chart = this.svg.select("#case-counts");
 
       this.chart = this.svg.append("g").attr("class", "sparkline");

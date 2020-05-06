@@ -7,16 +7,13 @@ const state = {
 };
 
 // getters --> computed props
-const getters = {
-};
+const getters = {};
 
 // actions --> async props
-const actions = {
-};
+const actions = {};
 
 // mutations
-const mutations = {
-};
+const mutations = {};
 
 export default {
   namespaced: true,

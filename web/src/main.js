@@ -4,7 +4,7 @@ import router from "./router";
 import store from "./store";
 import VueGtag from "vue-gtag";
 import VueRx from "vue-rx";
-import VueCookies from 'vue-cookies'
+import VueCookies from "vue-cookies";
 
 import "leaflet/dist/leaflet.css";
 import "tippy.js/dist/tippy.css";

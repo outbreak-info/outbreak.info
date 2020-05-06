@@ -1,6 +1,7 @@
 // initial state
 const state = {
-  regionDict: [{
+  regionDict: [
+    {
       display: false,
       displayMore: false,
       region: "East Asia & Pacific: China"
@@ -46,7 +47,7 @@ const state = {
       display: false,
       displayMore: false,
       region: "Cruises"
-    },
+    }
   ]
 };
 
@@ -63,12 +64,12 @@ const mutations = {
     if (idx > -1) {
       state.regionDict[idx]["display"] = payload["display"];
       state.regionDict[idx]["displayMore"] =
-        payload["displayMore"] || payload["displayMore"] === false ?
-        payload["displayMore"] :
-        state.regionDict[idx]["displayMore"];
-      state.regionDict[idx]["currentCases"] = payload["currentCases"] ?
-        payload["currentCases"].toLocaleString() :
-        null;
+        payload["displayMore"] || payload["displayMore"] === false
+          ? payload["displayMore"]
+          : state.regionDict[idx]["displayMore"];
+      state.regionDict[idx]["currentCases"] = payload["currentCases"]
+        ? payload["currentCases"].toLocaleString()
+        : null;
       state.regionDict[idx]["x"] = payload["x"];
       state.regionDict[idx]["y"] = payload["y"];
     } else if (payload["region"] === "all") {

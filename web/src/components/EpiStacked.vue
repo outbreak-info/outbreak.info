@@ -1,6 +1,9 @@
 <template>
   <div class="epidemiology-area">
-    <h4 class="stacked-area-title pt-2 pb-4" v-if="title && data && data.length > 0">
+    <h4
+      class="stacked-area-title pt-2 pb-4"
+      v-if="title && data && data.length > 0"
+    >
       {{ title }}
     </h4>
     <svg :width="width" :height="height" class="epi-summary-svg" :id="id">
@@ -106,8 +109,8 @@ export default Vue.extend({
         `.${d.key
           .replace(/\s/g, "_")
           .replace(/\//g, "_")
-            .replace(/&/g, "_")
-            .replace(/:/g, "_")
+          .replace(/&/g, "_")
+          .replace(/:/g, "_")
           .replace(/\(/g, "_")
           .replace(/\)/g, "_")}`
       ).style("opacity", 1);
@@ -231,7 +234,7 @@ export default Vue.extend({
               5}, ${x2} ${y2}`
           );
 
-          this.chart.select(".case-def-changed").on("mouseover", )
+        this.chart.select(".case-def-changed").on("mouseover");
       }
       this.area = d3
         .area()
@@ -243,7 +246,7 @@ export default Vue.extend({
         .selectAll(".stacked-area-chart")
         .data(this.series);
 
-        areaSelector
+      areaSelector
         .join("path")
         .style("fill", ({ key }) => this.colorScale(key))
         .attr(

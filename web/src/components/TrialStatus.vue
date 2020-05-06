@@ -2,13 +2,14 @@
   <div>
     <div class="status-container d-flex justify-content-between py-1 px-2 my-2">
       <small class="status">
-        {{status.status}}
+        {{ status.status }}
       </small>
       <small class="text-dark">
-        {{status.enrollmentType}} size: {{status.enrollmentCount.toLocaleString()}}
+        {{ status.enrollmentType }} size:
+        {{ status.enrollmentCount.toLocaleString() }}
       </small>
     </div>
-    <CountryMap :countries="countries"/>
+    <CountryMap :countries="countries" />
   </div>
 </template>
 
@@ -52,7 +53,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .status-container {
-    background: lighten($clinical-trial-color, 32%);
+  background: lighten($clinical-trial-color, 32%);
 }
 
 .status {
@@ -60,5 +61,4 @@ export default Vue.extend({
   font-weight: 500;
   color: darken($clinical-trial-color, 15%);
 }
-
 </style>

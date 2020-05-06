@@ -4,7 +4,13 @@
 export function formatRIS(data) {
   const type = getFormat(data);
 
-  const authors = data.author ? data.author.map(d => d.name ? `A1  - ${d.name}` : `A1  - ${d.familyName}, ${d.givenName}`).join("\n") : null;
+  const authors = data.author
+    ? data.author
+        .map(d =>
+          d.name ? `A1  - ${d.name}` : `A1  - ${d.familyName}, ${d.givenName}`
+        )
+        .join("\n")
+    : null;
   const abstract = data.abstract ? `AB  - ${data.abstract}` : null;
   const accession = data.pmid ? `AN  - ${data.pmid}` : null;
   const date = data.datePublished ? `DA  - ${data.datePublished}` : null;
@@ -13,16 +19,40 @@ export function formatRIS(data) {
 
   const issue = data.issueNumber ? `IS  - ${data.issueNumber}` : null;
   const journal = data.journalName ? `JO  - ${data.journalName}` : null;
-  const journalAbbrev = data.journalAbbreviation ? `JA  - ${data.issueNumber}` : null;
-  const keywords = data.keywords ? data.keywords.map(d => `KW  - ${d}`).join("\n") : null;
+  const journalAbbrev = data.journalAbbreviation
+    ? `JA  - ${data.issueNumber}`
+    : null;
+  const keywords = data.keywords
+    ? data.keywords.map(d => `KW  - ${d}`).join("\n")
+    : null;
   const url = data.url ? `L2  - ${data.url}` : null;
-  const link = data.curatedBy && data.curatedBy.url ? `UR  - ${data.curatedBy.url}` : null;
+  const link =
+    data.curatedBy && data.curatedBy.url ? `UR  - ${data.curatedBy.url}` : null;
   const title = data.name ? `TI  - ${data.name}` : null;
   const volume = data.volumeNumber ? `VL  - ${data.volumeNumber}` : null;
   const accessed = data.versionDate ? `Y2  - ${data.versionDate}` : null;
   const end = `ER  - `;
 
-  return ([type, authors, abstract, accession, date, doi, issue, journal, journalAbbrev, keywords, url, link, title, volume, accessed, end].filter(d => d).join("\n"))
+  return [
+    type,
+    authors,
+    abstract,
+    accession,
+    date,
+    doi,
+    issue,
+    journal,
+    journalAbbrev,
+    keywords,
+    url,
+    link,
+    title,
+    volume,
+    accessed,
+    end
+  ]
+    .filter(d => d)
+    .join("\n");
 }
 
 function getFormat(data) {
@@ -36,6 +66,6 @@ function getFormat(data) {
   } else if (type == "Analysis") {
     return "TY  - ELEC";
   } else {
-    return "TY  - GEN"
+    return "TY  - GEN";
   }
 }
