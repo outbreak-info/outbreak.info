@@ -19,12 +19,12 @@
       <!-- search bar -->
       <div class="col-sm-12 col-md-8">
         <div class="py-3">
-          <form autocomplete="off" class="m-auto">
+          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter" @input.prevent="debounceSearchText">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
               </div>
-              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @keydown.enter.prevent="onEnter" />
+              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
             </div>
           </form>
         </div>
@@ -376,10 +376,11 @@ export default {
   },
   created: function() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
+    this.debounceSearchText = debounce(this.onEnter, 500);
   },
   methods: {
     getResults() {
-      this.resultsSubscription = getResources(this.$resourceurl, this.search, this.filterString, this.sortValue, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
+      this.resultsSubscription = getResources(this.$resourceurl, this.searchInput, this.filterString, this.sortValue, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
         console.log(results)
         this.data = results.results;
         this.newData = results.recent;
@@ -421,7 +422,7 @@ export default {
       this.$router.push({
         path: "resources",
         query: {
-          search: this.search,
+          search: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: "10"
@@ -435,7 +436,7 @@ export default {
       this.$router.push({
         path: "resources",
         query: {
-          search: this.search,
+          search: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: "10"
@@ -460,7 +461,7 @@ export default {
       this.$router.push({
         path: "resources",
         query: {
-          search: this.search,
+          search: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: "10"
@@ -468,12 +469,11 @@ export default {
       })
     },
     onEnter() {
-      this.search = this.searchInput;
-
+      console.log("SEARCH ENTERED")
       this.$router.push({
         path: "resources",
         query: {
-          search: this.search,
+          search: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: "10"
@@ -486,7 +486,7 @@ export default {
       this.$router.push({
         path: "resources",
         query: {
-          search: this.search,
+          search: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage)
@@ -499,7 +499,7 @@ export default {
       this.$router.push({
         path: "resources",
         query: {
-          search: this.search,
+          search: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage)
