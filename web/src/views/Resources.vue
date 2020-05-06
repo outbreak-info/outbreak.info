@@ -165,7 +165,7 @@
             </option>
           </select>
 
-          <select v-model="sortValue">
+          <select v-model="sortValue" @change="changeSort">
             <option value="-datePublished">
               date: newest to oldest
             </option>
@@ -363,6 +363,7 @@ export default {
   name: "Resources",
   props: {
     search: String,
+    sort: String,
     page: String,
     size: String,
     filter: String
@@ -425,7 +426,8 @@ export default {
           search: this.searchInput,
           filter: this.filterString,
           page: "0",
-          size: "10"
+          size: String(this.numPerPage),
+          sort: this.sortValue
         }
       })
     },
@@ -439,7 +441,8 @@ export default {
           search: this.searchInput,
           filter: this.filterString,
           page: "0",
-          size: "10"
+          size: String(this.numPerPage),
+          sort: this.sortValue
         }
       })
     },
@@ -464,19 +467,32 @@ export default {
           search: this.searchInput,
           filter: this.filterString,
           page: "0",
-          size: "10"
+          size: String(this.numPerPage),
+          sort: this.sortValue
         }
       })
     },
     onEnter() {
-      console.log("SEARCH ENTERED")
       this.$router.push({
         path: "resources",
         query: {
           search: this.searchInput,
           filter: this.filterString,
           page: "0",
-          size: "10"
+          size: String(this.numPerPage),
+          sort: this.sortValue
+        }
+      })
+    },
+    changeSort() {
+      this.$router.push({
+        path: "resources",
+        query: {
+          search: this.searchInput,
+          filter: this.filterString,
+          page: "0",
+          size: String(this.numPerPage),
+          sort: this.sortValue
         }
       })
     },
@@ -489,7 +505,8 @@ export default {
           search: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
-          size: String(this.numPerPage)
+          size: String(this.numPerPage),
+          sort: this.sortValue
         }
       })
     },
@@ -502,7 +519,8 @@ export default {
           search: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
-          size: String(this.numPerPage)
+          size: String(this.numPerPage),
+          sort: this.sortValue
         }
       })
     }
@@ -535,6 +553,7 @@ export default {
         this.filterString = this.filter ? this.filter : null;
         this.numPerPage = this.size ? Number(this.size) : 10;
         this.selectedPage = this.page ? Number(this.page) : 0;
+        this.sortValue = this.sort ? this.sort : "-datePublished";
 
         this.getResults();
       }
