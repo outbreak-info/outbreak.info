@@ -51,6 +51,9 @@ export function getResources(
     comboString = `${queryString} AND ${filterArr2String(filterArr)}`;
   }
 
+// TEMP: fix to deal with weird mapping issues
+  sort = "";
+
   store.state.admin.loading = true;
   return forkJoin([
     getMostRecent(apiUrl, comboString),
@@ -244,7 +247,8 @@ export function getResourceFacets(
 export function getMostRecent(
   apiUrl,
   queryString,
-  sortVar = "-datePublished",
+  sortVar = "",
+  // sortVar = "-datePublished",
   num2Return = 3,
   fields = [
     "@type",

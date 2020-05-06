@@ -120,7 +120,7 @@
                   </template>
                 </td>
                 <td class="resource-date" valign="top">
-                  {{ format(item.date) }}
+                  <span v-if="item.date">{{ format(item.date) }}</span>
                 </td>
               </tr>
             </tbody>
@@ -256,7 +256,7 @@
                   You searched for {{ search }}
                 </h4>
                 <div class="m-0 text-highlight">
-                  {{ numResults }} {{ numResults == 1 ? "result" : "results" }}
+                  {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
                 </div>
               </div>
               <small class="text-muted text-left" v-if="filterString">
@@ -586,9 +586,10 @@ export default {
   },
   methods: {
     getResults() {
+      const searchTerm = this.searchInput ? this.searchInput + "*" : "__all__";
       this.resultsSubscription = getResources(
         this.$resourceurl,
-        this.searchInput,
+        searchTerm,
         this.filterString,
         this.sortValue,
         this.numPerPage,
@@ -785,7 +786,7 @@ export default {
       searchInput: null,
       filterString: null,
       facetFilters: [],
-      sortValue: "-datePublished",
+      sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
       resourceTypes: [
