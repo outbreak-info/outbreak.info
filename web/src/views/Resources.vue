@@ -120,7 +120,7 @@
                   </template>
                 </td>
                 <td class="resource-date" valign="top">
-                  {{ format(item.date) }}
+                  <span v-if="item.date">{{ format(item.date) }}</span>
                 </td>
               </tr>
             </tbody>
