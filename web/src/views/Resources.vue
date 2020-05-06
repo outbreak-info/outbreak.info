@@ -143,7 +143,7 @@
 
       <div class="col-sm-9 pl-5" id="results">
         <!-- results header + sort options -->
-        <div class="row w-100 d-flex justify-content-between" id="selectors">
+        <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
           <div class="d-flex flex-column">
             <div class="d-flex align-items-center">
               <h4 class="m-0 mr-4" v-if="search">
@@ -157,6 +157,17 @@
               filtered by {{filterString}}
             </small>
             <button @click="clearFilters" v-if="filterString"><small>clear filters</small></button>
+
+            <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
+              <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === 0 }" @click="changePage(-1)">
+                <font-awesome-icon :icon="['fas', 'arrow-left']" />
+              </button>
+              <small>viewing results {{ lowerLim + 1 }} &minus; {{ upperLim }} of
+                {{ numResults }}</small>
+              <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
+                <font-awesome-icon :icon="['fas', 'arrow-right']" />
+              </button>
+            </div>
           </div>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
@@ -180,6 +191,7 @@
             </option>
           </select>
         </div>
+
 
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
