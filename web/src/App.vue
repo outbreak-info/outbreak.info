@@ -68,7 +68,7 @@
               </router-link>
             </li>
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -77,7 +77,7 @@
                 :class="{ active: $route.name == 'Resources' }"
                 >Resources
               </router-link>
-            </li>
+            </li> -->
 
             <li class="nav-item">
               <router-link
