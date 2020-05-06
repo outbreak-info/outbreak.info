@@ -30,7 +30,7 @@
                 ? author.name
                 : author.givenName + " " + author.familyName
             }}</b>:
-          <template v-if="Array.isArray(data.author.affiliation)">
+          <template v-if="Array.isArray(author.affiliation)">
             <span v-for="(affiliation, idx) in author.affiliation" :key="idx">{{ affiliation.name }}</span>
           </template>
           <template v-else>
@@ -68,7 +68,7 @@
                 ? creator.name
                 : creator.givenName + " " + creator.familyName
             }}</b>:
-          <template v-if="Array.isArray(data.creator.affiliation)">
+          <template v-if="Array.isArray(creator.affiliation)">
             <span v-for="(affiliation, idx) in creator.affiliation" :key="idx">{{ affiliation.name }}</span>
           </template>
           <template v-else>
@@ -77,6 +77,13 @@
         </small>
       </div>
     </template>
+  </div>
+  
+  <!-- mini-citation -->
+  <div v-if="data['@type'] == 'Publication'" class="text-muted">
+    <span v-if="data.journalName">{{data.journalName}}</span>
+    <span v-if="data.volumeNumber">, volume {{data.volumeNumber}}</span>
+    <span v-if="data.issueNumber">, issue {{data.issueNumber}}</span>
   </div>
   <!-- dates -->
   <small class="text-muted" v-if="
@@ -130,8 +137,8 @@
   </div>
   <!-- description -->
   <div class="mt-4" id="description">
-    <div v-html="data.abstract" v-if="data.abstract"></div>
-    <div v-html="data.description" v-else></div>
+    <div v-html="data.description" v-if="data.description"></div>
+    <div v-html="data.abstract" v-else></div>
   </div>
 </div>
 </template>
@@ -181,6 +188,7 @@ export default Vue.extend({
   mounted() {
     const id = this.$route.params.id;
     this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+      console.log(results)
       this.data = results;
       this.type = results["@type"];
     })

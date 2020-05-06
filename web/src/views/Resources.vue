@@ -446,7 +446,7 @@ export default {
 
       this.resultsSubscription = getResources(
         this.$resourceurl,
-        this.searchInput,
+        searchTerm,
         this.filterString,
         this.sortValue,
         this.numPerPage,
@@ -643,7 +643,7 @@ export default {
       searchInput: null,
       filterString: null,
       facetFilters: [],
-      sortValue: "-datePublished",
+      sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
       resourceTypes: [{
