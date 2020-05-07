@@ -9,7 +9,7 @@
   </div>
   <!-- interventions -->
   <div v-if="data.studyDesign || data.armGroup" class="col-sm-9 mb-1">
-    <TrialType :design="data.studyDesign" :arms="data.armGroup" />
+    <TrialType :design="data.studyDesign" :arms="data.interventions" />
   </div>
 </div>
 

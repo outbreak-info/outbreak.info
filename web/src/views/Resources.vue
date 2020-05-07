@@ -315,7 +315,7 @@
               <div class="col-sm-7 text-muted">
                 <!-- CLINCIAL-TRIAL-SPECIFIC  -->
                 <div v-if="item.studyDesign || item.armGroup">
-                  <TrialType :design="item.studyDesign" :arms="item.armGroup" />
+                  <TrialType :design="item.studyDesign" :arms="item.interventions" />
                 </div>
 
                 <!-- clinical trial phase -->
