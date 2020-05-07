@@ -3,7 +3,7 @@
   <!-- health condition -->
   <div id="condition" v-if="data.healthCondition">
     {{data.healthCondition.length == 1 ? "Condition:" : "Conditions"}}
-    <SearchLink :data="data.studyDesign.healthCondition" tooltipLabel="trials" filterField="@type:ClinicalTrial" searchField="data.studyDesign.healthCondition" />
+    <SearchLink :data="data.healthCondition" tooltipLabel="trials" filterField="@type:ClinicalTrial" searchField="data.healthCondition" />
 
   </div>
 
