@@ -1,6 +1,6 @@
 <template>
   <div class="my-2">
-    <small class="mr-1">Phase</small>
+    <small class="mr-1" v-if="includeLabel">Phase</small>
     <svg :width="width" :height="height">
       <g>
         <polygon
@@ -51,7 +51,11 @@ import Vue from "vue";
 export default Vue.extend({
   name: "TrialPhase",
   props: {
-    phases: Array
+    phases: Array,
+    includeLabel: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -65,7 +69,7 @@ export default Vue.extend({
   watch: {},
   computed: {
     width() {
-      return (this.phaseWidth * 5 + this.spacer * 4)
+      return (this.phaseWidth * 4 + this.spacer * 4)
     }
   },
   methods: {},

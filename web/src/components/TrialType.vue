@@ -3,7 +3,7 @@
     <small class="accent mr-2">
       {{ design.studyType }}
     </small>
-    <small class="text-dark" v-for="(arm, idx) in arms" :key="idx">
+    <small class="text-dark mr-3" v-for="(arm, idx) in arms" :key="idx">
       <div v-for="(intervention, key) in arm.intervention" :key="key">
         <i
           class="fas fa-pills bright"

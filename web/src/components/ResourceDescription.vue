@@ -78,13 +78,21 @@
       </div>
     </template>
   </div>
-  
+  <div class="sponsor text-muted" v-if="data.sponsor" id="sponsor">
+    sponsored by <span v-for="(sponsor, idx) in data.sponsor" :key="idx">
+      {{sponsor.name}}
+      <span v-if="sponsor.role"> ({{sponsor.role}})</span>
+      <span v-if="idx < sponsor.length - 1">,nbsp;</span>
+    </span>
+  </div>
+
   <!-- mini-citation -->
   <div v-if="data['@type'] == 'Publication'" class="text-muted">
     <span v-if="data.journalName">{{data.journalName}}</span>
     <span v-if="data.volumeNumber">, volume {{data.volumeNumber}}</span>
     <span v-if="data.issueNumber">, issue {{data.issueNumber}}</span>
   </div>
+
   <!-- dates -->
   <small class="text-muted" v-if="
         data.dateModified ||
@@ -135,6 +143,9 @@
       <router-link :to="{ name: 'Sources' }"> Learn more</router-link>
     </small>
   </div>
+
+  <ClinicalTrialSummary :data="data" v-if="type == 'ClinicalTrial'"/>
+
   <!-- description -->
   <div class="mt-4" id="description">
     <div v-html="data.description" v-if="data.description"></div>
@@ -162,14 +173,20 @@ import {
   getResourceMetadata
 } from "@/api/resources.js";
 
+import ClinicalTrialSummary from "@/components/ClinicalTrialSummary.vue";
+
 export default Vue.extend({
   name: "ResourceDescription",
+  props: {
+    data: Object,
+    type: String
+  },
+  components: {
+    ClinicalTrialSummary
+  },
   data() {
     return ({
-      showAffiliation: false,
-      type: null,
-      data: null,
-      resources: ["authors", "description"]
+      showAffiliation: false
     })
   },
   methods: {
@@ -187,11 +204,11 @@ export default Vue.extend({
   },
   mounted() {
     const id = this.$route.params.id;
-    this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
-      console.log(results)
-      this.data = results;
-      this.type = results["@type"];
-    })
+    // this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+    //   console.log(results)
+    //   this.data = results;
+    //   this.type = results["@type"];
+    // })
 
     tippy(".keyword", {
       content: "Loading...",

@@ -439,7 +439,8 @@ export default {
       var searchTerm;
 
       if (this.searchInput) {
-        searchTerm = this.searchInput.startsWith('"') ? this.searchInput : this.searchInput + "*";
+        searchTerm = this.searchInput.startsWith('"') ? this.searchInput : this.searchInput;
+        // searchTerm = this.searchInput.startsWith('"') ? this.searchInput : this.searchInput + "*";
       } else {
         searchTerm = "__all__";
       };

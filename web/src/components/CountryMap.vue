@@ -50,7 +50,6 @@ export default Vue.extend({
     }
   },
   mounted() {
-    console.log(GEODATA)
     this.setupChoro();
     this.drawMetro();
   },
