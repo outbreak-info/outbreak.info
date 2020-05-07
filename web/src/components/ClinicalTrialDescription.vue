@@ -26,7 +26,7 @@
     <div id="eligibility" class="text-left border-bottom text-muted pb-3 mb-3">
       <h6 class="m-0">Eligibility</h6>
       <div v-if="data.eligibilityCriteria">
-        <TrialEligibility :data="data" />
+        <TrialEligibility :data="data.eligibilityCriteria" />
       </div>
       <div v-else>
         <small>not specified</small>
@@ -37,7 +37,7 @@
     <div id="outcome" class="text-left border-bottom text-muted pb-3 mb-3">
       <h6 class="m-0">Outcome</h6>
       <div v-if="data.outcome">
-        <TrialOutcome :data="data" />
+        <TrialOutcome :data="data.outcome" />
       </div>
       <div v-else>
         <small>not specified</small>

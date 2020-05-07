@@ -1,18 +1,14 @@
 <template>
-  <div class="d-flex flex-column">
-    <svg
-      :width="width + margin.left + margin.right"
-      :height="height + margin.top + margin.bottom"
-      ref="svg"
-    >
-      <g ref="countries" class="country-group"></g>
-    </svg>
-    <div class="country-container d-flex">
-      <small class="m-0 mr-1" v-for="(country, idx) in countries" :key="idx">
-        {{ country }}<span v-if="idx < countries.length - 1">,</span>
-      </small>
-    </div>
+<div class="d-flex flex-column">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
+    <g ref="countries" class="country-group"></g>
+  </svg>
+  <div class="country-container d-flex">
+    <small class="m-0 mr-1" v-for="(country, idx) in countries" :key="idx">
+      {{ country }}<span v-if="idx < countries.length - 1">,</span>
+    </small>
   </div>
+</div>
 </template>
 
 <script lang="js">
@@ -21,13 +17,17 @@ import Vue from "vue";
 import GEODATA from "@/assets/geo/countries.json";
 import * as d3 from "d3";
 import {
-geoInterruptedBoggs
+  geoInterruptedBoggs
 } from "d3-geo-projection";
 
 export default Vue.extend({
   name: "CountryMap",
   props: {
     countries: Array,
+    width: {
+      type: Number,
+      default: 200
+    },
     fill: {
       type: String,
       default: "#df4ab7"
@@ -45,7 +45,6 @@ export default Vue.extend({
       // refs
       svg: null,
       regions: null,
-      width: 200,
       height: null
     }
   },
@@ -92,11 +91,11 @@ export default Vue.extend({
 
 <style lang="scss">
 .region {
-  // fill: mix($grey-40, $grey-30);
-  // stroke-width: 0.5;
+    // fill: mix($grey-40, $grey-30);
+    // stroke-width: 0.5;
 }
 
 .country-container {
-  color: saturate($clinical-trial-color, 15%);
+    color: saturate($clinical-trial-color, 15%);
 }
 </style>

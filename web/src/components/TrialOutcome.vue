@@ -1,21 +1,39 @@
 <template>
 <div>
+
+
+  <div class="orange-title uppercase mt-2">
+    Primary
+  </div>
+  <ul>
+    <li v-for="(outcome,idx) in primary" :key="idx">
+      {{outcome.outcomeMeasure}} <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
+    </li>
+  </ul>
+  <div class="orange-title uppercase">
+    secondary
+  </div>
+  <ul>
+    <li v-for="(outcome,idx) in secondary" :key="idx">
+      {{outcome.outcomeMeasure}} <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
+    </li>
+  </ul>
 </div>
 </template>
 
 <script>
-// import {
-//   timeFormat,
-//   timeParse
-// } from "d3";
-
-// import tippy from "tippy.js";
-// import "tippy.js/themes/light.css";
-
 export default {
   name: "TrialOutcome",
   props: {
-    data: Object
+    data: Array
+  },
+  computed: {
+    primary() {
+      return this.data.filter(d => d.outcomeType === "primary");
+    },
+    secondary() {
+      return this.data.filter(d => d.outcomeType !== "primary");
+    }
   },
   data() {
     return {}

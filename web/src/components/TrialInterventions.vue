@@ -15,7 +15,7 @@
       <!-- role -->
       <div class="">
         Role: <span class="text-dark" v-if="arm.role">{{arm.role}}</span>
-        <span v-else>not specified</span>
+        <span v-else><small>not specified</small></span>
       </div>
 
       <!-- description -->
@@ -75,12 +75,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.orange-title {
-    color: #f28e2c;
-    // color: $warning-color;
-    // color: #e15759;
-    font-size: 0.9em;
-}
 
 .bright {
     color: saturate($clinical-trial-color, 20%);
