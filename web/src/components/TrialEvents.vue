@@ -49,7 +49,7 @@ export default {
     },
     parseDate: function(date) {
       // const parseDate = timeParse("%Y-%m-%d");
-      return (timeParse("%B %d, %Y")(date))
+      return (timeParse("%Y-%m-%d")(date))
     }
   },
   mounted() {
