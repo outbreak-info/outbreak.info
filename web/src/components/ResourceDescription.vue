@@ -128,6 +128,14 @@
 
   <!-- keywords -->
   <div class="keyword-container flex flex-wrap mt-2">
+    <small class="topic uppercase px-2 py-1 my-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
+      <router-link :to="{
+            name: 'Resources',
+            query: { search: `&quot;${topic}&quot;` }
+          }" class="no-underline">
+        {{ topic }}
+      </router-link>
+    </small>
     <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
       <router-link :to="{
             name: 'Resources',
@@ -205,11 +213,18 @@ export default Vue.extend({
   },
   mounted() {
     const id = this.$route.params.id;
-    // this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
-    //   console.log(results)
-    //   this.data = results;
-    //   this.type = results["@type"];
-    // })
+
+    tippy(".topic", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
 
     tippy(".keyword", {
       content: "Loading...",
@@ -235,6 +250,16 @@ export default Vue.extend({
 
 .pub-type {
     opacity: 0.6;
+}
+
+.topic {
+    background: $warning-color;
+    color: white;
+    border-radius: 5px;
+    white-space: nowrap;
+    & a {
+      color: white;
+    }
 }
 
 .keyword {
