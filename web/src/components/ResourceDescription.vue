@@ -136,7 +136,7 @@
         {{ topic }}
       </router-link>
     </small>
-    <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
+    <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
       <router-link :to="{
             name: 'Resources',
             query: { search: `&quot;${keyword}&quot;` }
@@ -260,6 +260,11 @@ export default Vue.extend({
     & a {
       color: white;
     }
+}
+
+.keyword-container {
+  display: flex;
+  min-width: 0;
 }
 
 .keyword {
