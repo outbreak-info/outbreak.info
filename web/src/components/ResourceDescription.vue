@@ -158,7 +158,12 @@
   <!-- description -->
   <div class="mt-4" id="description">
     <div v-html="data.description" v-if="data.description"></div>
-    <div v-html="data.abstract" v-else></div>
+    <div v-html="data.abstract" v-else-if="data.abstract"></div>
+    <div v-else>
+      <h6 class="m-0 text-muted">Description</h6>
+    <small class="text-muted">not provided</small>
+    </div>
+
   </div>
 </div>
 </template>
@@ -213,6 +218,8 @@ export default Vue.extend({
   },
   mounted() {
     const id = this.$route.params.id;
+
+    console.log(this.data)
 
     tippy(".topic", {
       content: "Loading...",
