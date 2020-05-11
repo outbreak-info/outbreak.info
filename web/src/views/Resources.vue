@@ -19,7 +19,7 @@
       <!-- search bar -->
       <div class="col-sm-12 col-md-8">
         <div class="py-3">
-          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter" @input.prevent="debounceSearchText">
+          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
@@ -436,14 +436,7 @@ export default {
   },
   methods: {
     getResults() {
-      var searchTerm;
-
-      if (this.searchInput) {
-        searchTerm = this.searchInput.startsWith('"') ? this.searchInput : this.searchInput;
-        // searchTerm = this.searchInput.startsWith('"') ? this.searchInput : this.searchInput + "*";
-      } else {
-        searchTerm = "__all__";
-      };
+      var searchTerm = this.searchInput;
 
       this.resultsSubscription = getResources(
         this.$resourceurl,

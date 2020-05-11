@@ -63,7 +63,6 @@ export function getResources(
     map(([recent, results, facets]) => {
       results["recent"] = recent;
       results["facets"] = facets;
-      console.log(results);
       return results;
     }),
     catchError(e => {
