@@ -4,11 +4,11 @@
 
 
   <!-- clinical trial phase -->
-  <div v-if="data.studyDesign && data.studyDesign.phaseNumber" class="col-sm-3">
+  <div v-if="data.studyDesign && data.studyDesign.phaseNumber">
     <TrialPhase :phases="data.studyDesign.phaseNumber" />
   </div>
   <!-- interventions -->
-  <div v-if="data.studyDesign || data.armGroup" class="col-sm-9 mb-1">
+  <div v-if="data.studyDesign || data.armGroup" class="mb-1">
     <TrialType :design="data.studyDesign" :arms="data.interventions" />
   </div>
 </div>

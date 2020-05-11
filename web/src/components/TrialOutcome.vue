@@ -10,14 +10,16 @@
       {{outcome.outcomeMeasure}} <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
     </li>
   </ul>
-  <div class="orange-title uppercase">
-    secondary
-  </div>
-  <ul>
-    <li v-for="(outcome,idx) in secondary" :key="idx">
-      {{outcome.outcomeMeasure}} <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
-    </li>
-  </ul>
+  <template v-if="secondary.length">
+    <div class="orange-title uppercase">
+      secondary
+    </div>
+    <ul>
+      <li v-for="(outcome,idx) in secondary" :key="idx">
+        {{outcome.outcomeMeasure}} <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
+      </li>
+    </ul>
+  </template>
 </div>
 </template>
 
