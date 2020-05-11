@@ -134,6 +134,15 @@ export default Vue.extend({
       const parseDate = timeParse("%Y-%m-%d");
       const formatDate = timeFormat("%d %B %Y");
       return dateStr ? formatDate(parseDate(dateStr)) : null;
+    },
+    embedSchemaMD() {
+      if (this.data) {
+        let mdScript = document.createElement("script");
+        mdScript.setAttribute("type", "application/ld+json");
+        mdScript.setAttribute("title", `schema.org ${this.data["@type"]}`);
+        mdScript.innerHTML = JSON.stringify(this.data);
+        document.head.appendChild(mdScript);
+      }
     }
   },
   computed: {
@@ -147,10 +156,12 @@ export default Vue.extend({
   },
   mounted() {
     const id = this.$route.params.id;
+
     this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
       this.data = results;
       this.type = results["@type"];
       this.dateModified = this.formatDate(this.data.date);
+      this.embedSchemaMD();
     })
   }
 });
