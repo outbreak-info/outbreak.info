@@ -139,3 +139,10 @@ $other-color: #777; // grey
 .MediaObject.light, .CreativeWork.light, .ImageObject.light, .PresentationDigitalDocument.light, .BreadcrumbList.light {
     fill: lighten($other-color, 20%);
 }
+
+.orange-title {
+    color: #f28e2c;
+    // color: $warning-color;
+    // color: #e15759;
+    font-size: 0.9em;
+}

@@ -23,7 +23,7 @@
         </small>
       </a>
 
-      <div id="author-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
+      <div id="author-affiliations" class="d-flex flex-column w-100 mb-3" v-if="showAffiliation">
         <small v-for="(author, idx) in data.author" :key="idx" class="text-muted">
           <b>{{
               author.name
@@ -61,7 +61,7 @@
         </small>
       </a>
 
-      <div id="creator-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
+      <div id="creator-affiliations" class="d-flex flex-column w-100 mb-3" v-if="showAffiliation">
         <small v-for="(creator, idx) in data.creator" :key="idx" class="text-muted">
           <b>{{
               creator.name
@@ -78,48 +78,65 @@
       </div>
     </template>
   </div>
-  
+  <div class="sponsor text-muted" v-if="data.sponsor" id="sponsor">
+    sponsored by <span v-for="(sponsor, idx) in data.sponsor" :key="idx">
+      {{sponsor.name}}
+      <span v-if="sponsor.role"> ({{sponsor.role}})</span>
+      <span v-if="idx < sponsor.length - 1">,&nbsp;</span>
+    </span>
+  </div>
+
   <!-- mini-citation -->
   <div v-if="data['@type'] == 'Publication'" class="text-muted">
     <span v-if="data.journalName">{{data.journalName}}</span>
     <span v-if="data.volumeNumber">, volume {{data.volumeNumber}}</span>
     <span v-if="data.issueNumber">, issue {{data.issueNumber}}</span>
   </div>
+
   <!-- dates -->
-  <small class="text-muted" v-if="
+  <div id="dates">
+    <small class="text-muted badge bg-grey__lightest" v-if="
         data.dateModified ||
           data.dateCreated ||
           data.dataUpdated ||
           data.datePublished ||
           data.curatedBy.versionDate
       ">
-    <i class="far fa-clock"></i>
-    <span v-if="data.dateModified">
-      updated {{ this.formatDate(data.dateModified) }}
-    </span>
+      <i class="far fa-clock"></i>
+      <span v-if="data.dateModified">
+        updated {{ this.formatDate(data.dateModified) }}
+      </span>
 
-    <span v-if="data.datePublished && data.dateModified
-        ">&bull;</span>
-    <span v-if="data.datePublished">
-      published {{ this.formatDate(data.datePublished) }}
-    </span>
+      <span v-if="data.datePublished && data.dateModified
+        " class="mx-2">&bull;</span>
+      <span v-if="data.datePublished">
+        published {{ this.formatDate(data.datePublished) }}
+      </span>
 
-    <span v-if="data.dateCreated && (data.datePublished || data.dateModified)  ">&bull;</span>
+      <span v-if="data.dateCreated && (data.datePublished || data.dateModified)" class="mx-2">&bull;</span>
 
-    <span v-if="data.dateCreated">
-      created {{ this.formatDate(data.dateCreated) }}
-    </span>
+      <span v-if="data.dateCreated">
+        created {{ this.formatDate(data.dateCreated) }}
+      </span>
 
-    <span v-if="data.curatedBy && data.curatedBy.versionDate && (data.dateCreated || data.datePublished || data.dateModified)
-        ">&bull;</span>
-    <span v-if="data.curatedBy && data.curatedBy.versionDate">
-      accessed {{ this.formatDate(data.curatedBy.versionDate) }}
-    </span>
-  </small>
+      <span v-if="data.curatedBy && data.curatedBy.versionDate && (data.dateCreated || data.datePublished || data.dateModified)" class="mx-2">&bull;</span>
+      <span v-if="data.curatedBy && data.curatedBy.versionDate">
+        accessed {{ this.formatDate(data.curatedBy.versionDate) }}
+      </span>
+    </small>
+  </div>
 
   <!-- keywords -->
   <div class="keyword-container flex flex-wrap mt-2">
-    <small class="keyword px-2 py-1 my-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
+    <small class="topic uppercase px-2 py-1 my-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
+      <router-link :to="{
+            name: 'Resources',
+            query: { search: `&quot;${topic}&quot;` }
+          }" class="no-underline">
+        {{ topic }}
+      </router-link>
+    </small>
+    <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
       <router-link :to="{
             name: 'Resources',
             query: { search: `&quot;${keyword}&quot;` }
@@ -135,10 +152,18 @@
       <router-link :to="{ name: 'Sources' }"> Learn more</router-link>
     </small>
   </div>
+
+  <ClinicalTrialSummary :data="data" v-if="type == 'ClinicalTrial'" />
+
   <!-- description -->
   <div class="mt-4" id="description">
     <div v-html="data.description" v-if="data.description"></div>
-    <div v-html="data.abstract" v-else></div>
+    <div v-html="data.abstract" v-else-if="data.abstract"></div>
+    <div v-else>
+      <h6 class="m-0 text-muted">Description</h6>
+    <small class="text-muted">not provided</small>
+    </div>
+
   </div>
 </div>
 </template>
@@ -162,14 +187,20 @@ import {
   getResourceMetadata
 } from "@/api/resources.js";
 
+import ClinicalTrialSummary from "@/components/ClinicalTrialSummary.vue";
+
 export default Vue.extend({
   name: "ResourceDescription",
+  props: {
+    data: Object,
+    type: String
+  },
+  components: {
+    ClinicalTrialSummary
+  },
   data() {
     return ({
-      showAffiliation: false,
-      type: null,
-      data: null,
-      resources: ["authors", "description"]
+      showAffiliation: false
     })
   },
   methods: {
@@ -187,11 +218,20 @@ export default Vue.extend({
   },
   mounted() {
     const id = this.$route.params.id;
-    this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
-      console.log(results)
-      this.data = results;
-      this.type = results["@type"];
-    })
+
+    console.log(this.data)
+
+    tippy(".topic", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
 
     tippy(".keyword", {
       content: "Loading...",
@@ -217,6 +257,21 @@ export default Vue.extend({
 
 .pub-type {
     opacity: 0.6;
+}
+
+.topic {
+    background: $warning-color;
+    color: white;
+    border-radius: 5px;
+    white-space: nowrap;
+    & a {
+      color: white;
+    }
+}
+
+.keyword-container {
+  display: flex;
+  min-width: 0;
 }
 
 .keyword {
