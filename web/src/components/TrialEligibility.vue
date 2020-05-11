@@ -24,7 +24,7 @@
 
   <!-- healthy volunteers -->
   <div id="healthy-eligiblity">
-  <!-- <div id="healthy-eligiblity" v-if="data.healthyVolunteers || data.healthyVolunteers === false"> -->
+    <!-- <div id="healthy-eligiblity" v-if="data.healthyVolunteers || data.healthyVolunteers === false"> -->
     Allows healthy volunteers:
     <span class="text-dark">
       {{data.healthyVolunteers ? "yes" : (data.healthyVolunteers === false ? "no" : "not specified")}}
@@ -64,15 +64,25 @@
       <small>not specified</small>
     </div>
   </div>
+  <div id="unparsed-criteria" v-if="data.criteriaText">
+    <small class="text-muted">
+      Think something looks off with the inclusion/exclusion criteria?
+      <a @click.prevent="showCriteria = !showCriteria" href="">{{
+            showCriteria ? "Hide criteria" : "Show original criteria"
+          }} before parsing </a>
+      <i class="fas fa-angle-double-down mx-1" v-if="!showCriteria"></i>
+      <i class="fas fa-angle-double-up mx-1" v-if="showCriteria"></i>
+    </small>
 
-  <SearchLink/>
-
+    <div v-if="showCriteria">
+      {{data.criteriaText}}
+    </div>
+  </div>
 </div>
 </template>
 
 <script>
-
-import SearchLink from "@/components/SearchLink";
+// import SearchLink from "@/components/SearchLink";
 
 export default {
   name: "TrialEligibility",
@@ -80,10 +90,12 @@ export default {
     data: Object
   },
   components: {
-    SearchLink
+    // SearchLink
   },
   data() {
-    return {}
+    return {
+      showCriteria: true
+    }
   },
   computed: {
     inclMale() {
@@ -93,11 +105,11 @@ export default {
       return ["all", "both", "female"].includes(this.data.gender.toLowerCase());
     },
     acceptedAges() {
-      if(this.data.minimumAge && this.data.maximumAge) {
+      if (this.data.minimumAge && this.data.maximumAge) {
         return `${this.data.minimumAge} &minus; ${this.data.maximumAge}`;
-      } else if(this.data.minimumAge) {
+      } else if (this.data.minimumAge) {
         return `${this.data.minimumAge} +`;
-      } else if(this.data.maximumAge) {
+      } else if (this.data.maximumAge) {
         return `0 &minus; ${this.data.maximumAge}`;
       } else {
         return "not specified";
@@ -109,10 +121,10 @@ export default {
 
 <style lang="scss" scoped>
 .icon-2x {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 .bright {
-  color: saturate($clinical-trial-color, 20%);
+    color: saturate($clinical-trial-color, 20%);
 }
 </style>
