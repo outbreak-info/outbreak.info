@@ -268,10 +268,10 @@ export default Vue.extend({
       this.type = results["@type"];
       this.dateModified = this.formatDate(this.data.date);
 
-      document.dispatchEvent(new Event('ZoteroItemUpdated', {
-        bubbles: true,
-        cancelable: true
-      }))
+      // document.dispatchEvent(new Event('ZoteroItemUpdated', {
+      //   bubbles: true,
+      //   cancelable: true
+      // }))
     })
   }
 });
