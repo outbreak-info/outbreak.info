@@ -23,7 +23,7 @@
         </small>
       </a>
 
-      <div id="author-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
+      <div id="author-affiliations" class="d-flex flex-column w-100 mb-3" v-if="showAffiliation">
         <small v-for="(author, idx) in data.author" :key="idx" class="text-muted">
           <b>{{
               author.name
@@ -61,7 +61,7 @@
         </small>
       </a>
 
-      <div id="creator-affiliations" class="d-flex flex-column w-100" v-if="showAffiliation">
+      <div id="creator-affiliations" class="d-flex flex-column w-100 mb-3" v-if="showAffiliation">
         <small v-for="(creator, idx) in data.creator" :key="idx" class="text-muted">
           <b>{{
               creator.name
@@ -82,7 +82,7 @@
     sponsored by <span v-for="(sponsor, idx) in data.sponsor" :key="idx">
       {{sponsor.name}}
       <span v-if="sponsor.role"> ({{sponsor.role}})</span>
-      <span v-if="idx < sponsor.length - 1">,nbsp;</span>
+      <span v-if="idx < sponsor.length - 1">,&nbsp;</span>
     </span>
   </div>
 
@@ -94,36 +94,37 @@
   </div>
 
   <!-- dates -->
-  <small class="text-muted" v-if="
+  <div id="dates">
+    <small class="text-muted badge bg-grey__lightest" v-if="
         data.dateModified ||
           data.dateCreated ||
           data.dataUpdated ||
           data.datePublished ||
           data.curatedBy.versionDate
       ">
-    <i class="far fa-clock"></i>
-    <span v-if="data.dateModified">
-      updated {{ this.formatDate(data.dateModified) }}
-    </span>
+      <i class="far fa-clock"></i>
+      <span v-if="data.dateModified">
+        updated {{ this.formatDate(data.dateModified) }}
+      </span>
 
-    <span v-if="data.datePublished && data.dateModified
-        ">&bull;</span>
-    <span v-if="data.datePublished">
-      published {{ this.formatDate(data.datePublished) }}
-    </span>
+      <span v-if="data.datePublished && data.dateModified
+        " class="mx-2">&bull;</span>
+      <span v-if="data.datePublished">
+        published {{ this.formatDate(data.datePublished) }}
+      </span>
 
-    <span v-if="data.dateCreated && (data.datePublished || data.dateModified)  ">&bull;</span>
+      <span v-if="data.dateCreated && (data.datePublished || data.dateModified)" class="mx-2">&bull;</span>
 
-    <span v-if="data.dateCreated">
-      created {{ this.formatDate(data.dateCreated) }}
-    </span>
+      <span v-if="data.dateCreated">
+        created {{ this.formatDate(data.dateCreated) }}
+      </span>
 
-    <span v-if="data.curatedBy && data.curatedBy.versionDate && (data.dateCreated || data.datePublished || data.dateModified)
-        ">&bull;</span>
-    <span v-if="data.curatedBy && data.curatedBy.versionDate">
-      accessed {{ this.formatDate(data.curatedBy.versionDate) }}
-    </span>
-  </small>
+      <span v-if="data.curatedBy && data.curatedBy.versionDate && (data.dateCreated || data.datePublished || data.dateModified)" class="mx-2">&bull;</span>
+      <span v-if="data.curatedBy && data.curatedBy.versionDate">
+        accessed {{ this.formatDate(data.curatedBy.versionDate) }}
+      </span>
+    </small>
+  </div>
 
   <!-- keywords -->
   <div class="keyword-container flex flex-wrap mt-2">
@@ -144,7 +145,7 @@
     </small>
   </div>
 
-  <ClinicalTrialSummary :data="data" v-if="type == 'ClinicalTrial'"/>
+  <ClinicalTrialSummary :data="data" v-if="type == 'ClinicalTrial'" />
 
   <!-- description -->
   <div class="mt-4" id="description">

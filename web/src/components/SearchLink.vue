@@ -2,7 +2,7 @@
 <span>
   <span v-for="(item, idx) in data" class="text-dark" :key="idx">
     <router-link :to="{ name: 'Resources', query: {search: searchStr(item), filter: filterField} }" :data-tippy-info="tooltipText(item)" class="search-link">{{item}}</router-link>
-    <span v-if="idx < data.length -1">,nbsp;</span>
+    <span v-if="idx < data.length -1">,&nbsp;</span>
   </span>
 </span>
 </template>

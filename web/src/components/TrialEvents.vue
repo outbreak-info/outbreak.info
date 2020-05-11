@@ -4,6 +4,10 @@
     <TrialStatus :status="data.studyStatus" :includeDate="true" :locations="data.studyLocation" :mapWidth="500" />
   </div>
 
+  <div class="mt-3 mb-2">
+    Has results: <span class="text-dark">{{data.hasResults ? "yes" : (data.hasResults === false ? "no" : "not specified")}}</span>
+  </div>
+
   <div v-if="data.studyEvent">
     <div class="mt-3 mb-2">
       Study Timeline
@@ -44,11 +48,9 @@ export default {
   },
   methods: {
     formatDate: function(date) {
-      // const parseDate = timeParse("%Y-%m-%d");
       return (timeFormat("%e %B %Y")(date))
     },
     parseDate: function(date) {
-      // const parseDate = timeParse("%Y-%m-%d");
       return (timeParse("%Y-%m-%d")(date))
     }
   },
@@ -57,7 +59,7 @@ export default {
     if (this.data.studyEvent) {
       this.data.studyEvent.forEach(d => {
         d["date"] = this.parseDate(d.studyEventDate);
-        d["dateStr"] = this.formatDate(d.date);
+        d["dateStr"] = d.date ? this.formatDate(d.date) : d.studyEventDate;
         d["inPast"] = d.date <= today;
       });
 
