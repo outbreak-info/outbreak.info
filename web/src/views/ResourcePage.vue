@@ -137,17 +137,118 @@ export default Vue.extend({
     }
   },
   metaInfo() {
-    const metadata = this.data ? this.data : null;
+    var metadata = null;
+    // Based on https://scholar.google.com/intl/en/scholar/inclusion.html#indexing
+    // Dublin Core ref: https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-4
+    var citationTags = [];
+    if (this.data) {
+      metadata = this.data;
+
+      citationTags.push({
+        title: "DC.type",
+        content: this.data["@type"],
+        vmid: "DC.type"
+      });
+
+      citationTags.push({
+        title: "citation_title",
+        content: this.data.name,
+        vmid: "citation_title"
+      });
+
+      if (this.data.description) {
+        citationTags.push({
+          title: "DC.description",
+          content: this.data.description,
+          vmid: "DC.description"
+        });
+      }
+
+      if (this.data.abstract) {
+        citationTags.push({
+          title: "DC.abstract",
+          content: this.data.abstract,
+          vmid: "DC.abstract"
+        });
+      }
+
+      if (this.data.doi) {
+        citationTags.push({
+          title: "DC.identifier.DOI",
+          content: this.data.doi,
+          vmid: "DC.identifier.DOI"
+        });
+      }
+
+      if (this.data.datePublished) {
+        citationTags.push({
+          title: "citation_publication_date",
+          content: this.data.datePublished,
+          vmid: "citation_publication_date"
+        });
+      }
+
+      if (this.data.journalName) {
+        citationTags.push({
+          title: "citation_journal_title",
+          content: this.data.journalName,
+          vmid: "citation_journal_title"
+        });
+      }
+
+      if (this.data.volumeNumber) {
+        citationTags.push({
+          title: "citation_volume",
+          content: this.data.volumeNumber,
+          vmid: "citation_volume"
+        });
+      }
+
+      if (this.data.issueNumber) {
+        citationTags.push({
+          title: "citation_issue",
+          content: this.data.issueNumber,
+          vmid: "citation_issue"
+        });
+      }
+
+      if (this.data.pagination) {
+        citationTags.push({
+          title: "citation_issue",
+          content: this.data.issueNumber,
+          vmid: "citation_issue"
+        });
+      }
+
+      if (this.data.author) {
+        citationTags = citationTags.concat(this.data.author.map(d => {
+          return ({
+            title: "citation_author",
+            content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
+            vmid: "citation_author"
+          })
+        }))
+      }
+
+      if (this.data.creator) {
+        citationTags = citationTags.concat(this.data.creator.map(d => {
+          return ({
+            title: "DC.creator",
+            content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
+            vmid: "DC.creator"
+          })
+        }))
+      }
+
+    }
+
+
     return {
       script: [{
         type: 'application/ld+json',
         json: metadata
       }],
-      meta: [{
-        title: 'description',
-        name: 'description',
-        content: 'my standard description',
-      }]
+      meta: citationTags
     }
   },
   computed: {
@@ -166,6 +267,11 @@ export default Vue.extend({
       this.data = results;
       this.type = results["@type"];
       this.dateModified = this.formatDate(this.data.date);
+
+      document.dispatchEvent(new Event('ZoteroItemUpdated', {
+        bubbles: true,
+        cancelable: true
+      }))
     })
   }
 });
