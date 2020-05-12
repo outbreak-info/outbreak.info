@@ -75,7 +75,13 @@
         <div id="funder" class="text-left border-bottom text-muted pb-3 mb-3">
           <h6 class="m-0">Funder</h6>
           <div v-if="data.funding || data.funder">
-            <span v-if="data.funding">{{ data.funding }}</span>
+            <div v-if="data.funding">
+              <ul>
+                <li v-for="(funding, idx) in data.funding" :key="idx">
+                  <b v-for="(funder, idx) in funding.funder" :key="idx">{{funder.name}}</b>: {{funding.identifier}}
+                </li>
+              </ul>
+            </div>
             <span v-if="data.funder">{{ data.funder }}</span>
           </div>
           <div v-else>
