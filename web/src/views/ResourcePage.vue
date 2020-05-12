@@ -143,6 +143,17 @@ export default Vue.extend({
     var citationTags = [];
     if (this.data) {
       metadata = this.data;
+      metadata["includedInDataCatalog"] = {
+        @type: "DataCatalog",
+        name: "outbreak.info",
+        description: "During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research.
+        outbreak.info is a resource to aggregate all this information into a single location.",
+        url: "https://outbreak.info/resources",
+        publisher: {
+          name: "outbreak.info",
+          url: "https://outbreak.info/"
+        }
+      }
 
       citationTags.push({
         title: "DC.type",
