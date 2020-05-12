@@ -150,6 +150,7 @@ export default Vue.extend({
         outbreak.info is a resource to aggregate all this information into a single location.",
         url: "https://outbreak.info/resources",
         publisher: {
+          @type: "Organization",
           name: "outbreak.info",
           url: "https://outbreak.info/"
         }
