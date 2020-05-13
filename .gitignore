@@ -4,5 +4,8 @@ web/package-lock.json
 web/performance.xlsx
 cleanup_scripts/table_backup.html
 web/src/assets/resources/clinicaltrialsgov_full.png
-web/src/assets/resources/dataverse_project.png
 web/src/assets/resources/omicsdi_48x48.png
+web/src/assets/resources/who.jpg
+web/src/assets/resources/who_ictrp.png
+web/src/assets/resources/zenodo.png
+web/src/assets/resources/dataverse_project.png

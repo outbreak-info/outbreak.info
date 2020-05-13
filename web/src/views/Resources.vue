@@ -352,6 +352,9 @@
             <div class="row text-right" v-if="item.curatedBy">
               <div class="col-sm-12" :class="item['@type']">
                 <small>provided by {{ item.curatedBy.name }}</small>
+                <a :href="item.curatedBy.url" target="_blank" rel="noreferrer" v-if="getLogo(item.curatedBy.name)">
+                <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" height="25" class="ml-2" />
+                </a>
               </div>
             </div>
           </div>
@@ -471,6 +474,11 @@ export default {
     },
     expandDescription: function(item) {
       item.descriptionExpanded = !item.descriptionExpanded;
+    },
+    getLogo(curator){
+      console.log(this.resources)
+      const source = this.resources.flatMap(d => d.sources).filter(d => d.id == curator.toLowerCase());
+      return source.length == 1 ? source[0].img : null;
     },
     selectFilterText(facet, idx) {
       const selectedText = this.facetFilters[idx];
@@ -600,7 +608,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("admin", ["loading"]),
+    ...mapState("admin", ["loading", "resources"]),
     lowerLim: function() {
       return this.selectedPage * this.numPerPage;
     },

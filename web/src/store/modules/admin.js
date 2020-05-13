@@ -7,6 +7,7 @@ const state = {
       name:
         "Johns Hopkins University Center for Systems Science and Engineering",
       scope: "(non-U.S. data)",
+      img: "jhu.png",
       description:
         'Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China. See <a target="_blank" rel="noreferrer" href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">data FAQ</a>.',
       url: "https://github.com/CSSEGISandData/COVID-19"
@@ -14,6 +15,7 @@ const state = {
     {
       id: "NYT",
       name: "The New York Times",
+      img: "nytimes.png",
       scope: "(U.S. data)",
       description:
         'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
@@ -23,6 +25,7 @@ const state = {
       id: "testing",
       name: "The COVID Tracking Project",
       scope: "(testing data)",
+      img: "ustesting.svg",
       description:
         'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
       url: "https://github.com/nytimes/covid-19-data"
@@ -32,6 +35,7 @@ const state = {
     {
       id: "naturaleath",
       name: "Natural Earth",
+      img: "naturalearth.png",
       scope: "(country names)",
       description: "Country names and World Bank region locations",
       url: "https://www.naturalearthdata.com/downloads/"
@@ -40,6 +44,7 @@ const state = {
       id: "census",
       name: "United States Census Bureau",
       scope: "(Metropolitan areas)",
+      img: "census.svg",
       description:
         "Metropolitan areas are defined by the U.S. Census Bureau's Core Based Statistical Areas. Totals for Metro areas are calculated by aggregating the component U.S. counties into the Core Based Statistical Areas.",
       url:
@@ -53,6 +58,7 @@ const state = {
         {
           id: "zenodo",
           name: "Zenodo",
+          img: "zenodo.svg",
           url: "https://zenodo.org/communities/covid-19/",
           description:
             "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other)."
@@ -65,16 +71,26 @@ const state = {
         {
           id: "litcovid",
           name: "LitCovid",
+          img: "litcovid.png",
           url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
           description:
             'LitCovid is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus. It is the most comprehensive resource on the subject, providing a central access to 4929 (and growing) relevant articles in PubMed. The articles are updated daily and are further categorized by different research topics and geographic locations for improved access. You can read more at <a href="https://www.nature.com/articles/d41586-020-00694-1" target="_blank" rel="noreferrer">Chen et al. Nature (2020)</a> and download their data <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/#data-download" rel="noreferrer" target="_blank">here</a>.'
         },
         {
           id: "biorxiv",
-          name: "bioRixv & medRxiv",
+          name: "bioRixv",
+          img: "biorxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
           description:
-            '<p>bioRxiv (pronounced "bio-archive") is a free online archive and distribution service for unpublished preprints in the life sciences. It is operated by Cold Spring Harbor Laboratory, a not-for-profit research and educational institution. By posting preprints on bioRxiv, authors are able to make their findings immediately available to the scientific community and receive feedback on draft manuscripts before they are submitted to journals.</p><p>medRxiv (pronounced "med-archive") is a free online archive and distribution server for complete but unpublished manuscripts (preprints) in the medical, clinical, and related health sciences. Preprints are preliminary reports of work that have not been certified by peer review. They should not be relied on to guide clinical practice or health-related behavior and should not be reported in news media as established information.</p>'
+            'bioRxiv (pronounced "bio-archive") is a free online archive and distribution service for unpublished preprints in the life sciences. It is operated by Cold Spring Harbor Laboratory, a not-for-profit research and educational institution. By posting preprints on bioRxiv, authors are able to make their findings immediately available to the scientific community and receive feedback on draft manuscripts before they are submitted to journals.'
+        },
+        {
+          id: "medrxiv",
+          name: "medRxiv",
+          img: "medrxiv.png",
+          url: "https://connect.biorxiv.org/relate/content/181",
+          description:
+            'medRxiv (pronounced "med-archive") is a free online archive and distribution server for complete but unpublished manuscripts (preprints) in the medical, clinical, and related health sciences. Preprints are preliminary reports of work that have not been certified by peer review. They should not be relied on to guide clinical practice or health-related behavior and should not be reported in news media as established information.'
         }
       ]
     },
@@ -84,6 +100,7 @@ const state = {
         {
           id: "nct",
           name: "ClinicalTrials.gov",
+          img: "clinicaltrialsgov.png",
           url: "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
           description:
             "ClinicalTrials.gov is a database of privately and publicly funded clinical studies conducted around the world."
@@ -91,6 +108,7 @@ const state = {
         {
           id: "who",
           name: "WHO International Clinical Trials Registry Platform",
+          img: "who.svg",
           url: "https://www.who.int/ictrp/en/",
           description:
             "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source."

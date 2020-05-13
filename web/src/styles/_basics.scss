@@ -11,6 +11,10 @@
 #app text {
   font-family: $font-family;
 }
+
+::placeholder {
+  font-family: $font-family;
+}
 // --- svg ---
 .axis--x text,
 .axis--y text,

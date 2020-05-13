@@ -19,12 +19,14 @@
               v-for="source in sources"
               :key="source.id"
             >
-              <h5>
-                <a :href="source.url" target="_blank" rel="noreferrer">{{
-                  source.name
-                }}</a>
-              </h5>
-              <p v-html="source.description"></p>
+            <h5 class="m-0 mb-1">
+              <a :href="source.url" target="_blank" rel="noreferrer"  class="d-flex align-items-center justify-content-between">{{
+                source.name
+              }}
+              <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" height = "32" v-if="source.img" />
+            </a>
+            </h5>
+              <p v-html="source.description" class="text-justify"></p>
             </div>
           </div>
 
@@ -35,12 +37,14 @@
               v-for="source in geoSources"
               :key="source.id"
             >
-              <h5>
-                <a :href="source.url" target="_blank" rel="noreferrer">{{
-                  source.name
-                }}</a>
-              </h5>
-              <p>
+            <h5 class="m-0 mb-1">
+              <a :href="source.url" target="_blank" rel="noreferrer"  class="d-flex align-items-center justify-content-between">{{
+                source.name
+              }}
+              <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" height = "32" v-if="source.img"/>
+            </a>
+            </h5>
+              <p class="text-justify">
                 {{ source.description }}
               </p>
             </div>
@@ -59,12 +63,14 @@
                 v-for="source in resource.sources"
                 :key="source.id"
               >
-                <h5>
-                  <a :href="source.url" target="_blank" rel="noreferrer">{{
+                <h5 class="m-0 mb-1">
+                  <a :href="source.url" target="_blank" rel="noreferrer"  class="d-flex align-items-center justify-content-between">{{
                     source.name
-                  }}</a>
+                  }}
+                  <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" height = "32" v-if="source.img" />
+                </a>
                 </h5>
-                <p v-html="source.description"></p>
+                <p class="text-justify" v-html="source.description"></p>
               </div>
             </div>
           </div>
