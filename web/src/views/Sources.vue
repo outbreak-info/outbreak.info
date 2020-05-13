@@ -5,7 +5,7 @@
         class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5"
       >
         <div class="container half-page">
-          <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center justify-content-between mb-5">
             <h1>Data Sources</h1>
             <router-link class="btn btn-main" :to="{ name: 'Contributing' }"
               >Contribute data</router-link
