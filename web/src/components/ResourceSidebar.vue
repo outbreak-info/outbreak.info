@@ -6,7 +6,15 @@
         {{ date }}
       </div>
       <!-- DOI -->
-      <div class="text-muted" v-if="data.doi">DOI: {{ data.doi }}</div>
+      <div v-if="data.doi" class="text-muted" >
+      DOI: <a class="text-muted" :href="`https://doi.org/${data.doi}`" target="_blank">{{ data.doi }}</a>
+      </div>
+
+      <div class="text-muted" v-if="!data.pmid">ID: {{ data._id }}</div>
+      <div v-if="data.pmid" class="text-muted" >
+      PMID: <a class="text-muted" :href="`https://pubmed.ncbi.nlm.nih.gov/${data.pmid}`" target="_blank">{{ data.pmid }}</a>
+      </div>
+
     </div>
 
     <!-- link out -->

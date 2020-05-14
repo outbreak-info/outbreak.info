@@ -94,7 +94,7 @@ export default {
   },
   data() {
     return {
-      showCriteria: true
+      showCriteria: false
     }
   },
   computed: {
