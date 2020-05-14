@@ -220,6 +220,7 @@
               <small :class="[item['@type'], 'resource-type', 'mr-3']">{{
                   item["@type"]
                 }}</small>
+                <!-- name -->
               <router-link :to="{ name: 'Resource Page', params: { id: item._id } }">
                 <h5 class="m-0">{{ item.name }}</h5>
               </router-link>
@@ -230,7 +231,7 @@
               <div class="col-sm-5 text-muted">
                 <!-- authors -->
                 <div class="attribution text-body">
-                  <small v-if="item.author">
+                  <small v-if="item.author && item.author.length">
                     {{
                         item.author[0].name
                           ? item.author[0].name
@@ -329,10 +330,13 @@
                     <a class="show-more" v-if="item.descriptionTooLong" href="#" @click.prevent="expandDescription(item)">(show less)</a>
                   </span>
                 </template>
-                <template v-else>
+                <template v-else-if="item.shortDescription">
                   <span v-html="item.shortDescription"></span>
                   <span v-if="item.descriptionTooLong">...
                     <a class="show-more" href="#" @click.prevent="expandDescription(item)">(show more)</a></span>
+                </template>
+                <template v-else>
+                  No description provided
                 </template>
               </div>
 
@@ -476,8 +480,7 @@ export default {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
     getLogo(curator){
-      console.log(this.resources)
-      const source = this.resources.flatMap(d => d.sources).filter(d => d.id == curator.toLowerCase());
+      const source = this.resources.flatMap(d => d.sources).filter(d => d.id === curator.toLowerCase() || d.name.toLowerCase() === curator.toLowerCase());
       return source.length == 1 ? source[0].img : null;
     },
     selectFilterText(facet, idx) {

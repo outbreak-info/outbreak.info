@@ -14,12 +14,12 @@
         </small>
       </span>
     </div>
-    <small class="text-dark">
+    <small class="text-dark" v-if="status.enrollmentCount">
       {{ status.enrollmentType }} size:
       {{ status.enrollmentCount.toLocaleString() }}
     </small>
   </div>
-  <CountryMap :countries="countries" :width="mapWidth"/>
+  <CountryMap :countries="countries" :width="mapWidth" v-if="countries.length"/>
 </div>
 </template>
 

@@ -82,7 +82,7 @@
     sponsored by <span v-for="(sponsor, idx) in data.sponsor" :key="idx">
       {{sponsor.name}}
       <span v-if="sponsor.role"> ({{sponsor.role}})</span>
-      <span v-if="idx < sponsor.length - 1">,&nbsp;</span>
+      <span v-if="idx < data.sponsor.length - 1">,&nbsp;</span>
     </span>
   </div>
 
@@ -95,35 +95,37 @@
 
   <!-- dates -->
   <div id="dates">
-    <small class="text-muted badge bg-grey__lightest" v-if="
+    <div v-if="
         data.dateModified ||
           data.dateCreated ||
           data.dataUpdated ||
           data.datePublished ||
-          data.curatedBy.versionDate
-      ">
-      <i class="far fa-clock"></i>
-      <span v-if="data.dateModified">
+          data.curatedBy.versionDate" class="text-muted">
+
+      <span class="badge bg-grey__lightest" v-if="data.dateModified">
+        <i class="far fa-clock mr-1"></i>
         updated {{ this.formatDate(data.dateModified) }}
       </span>
 
       <span v-if="data.datePublished && data.dateModified
-        " class="mx-2">&bull;</span>
-      <span v-if="data.datePublished">
+        " class="mx-1">&bull;</span>
+      <span class="badge bg-grey__lightest" v-if="data.datePublished">
+        <i class="far fa-clock mr-1" v-if="!data.dateModified"></i>
         published {{ this.formatDate(data.datePublished) }}
       </span>
 
-      <span v-if="data.dateCreated && (data.datePublished || data.dateModified)" class="mx-2">&bull;</span>
+      <span v-if="data.dateCreated && (data.datePublished || data.dateModified)" class="mx-1">&bull;</span>
 
-      <span v-if="data.dateCreated">
+      <span class="badge bg-grey__lightest" v-if="data.dateCreated">
+        <i class="far fa-clock mr-1" v-if="!data.datePublished && !data.dateModified"></i>
         created {{ this.formatDate(data.dateCreated) }}
       </span>
 
-      <span v-if="data.curatedBy && data.curatedBy.versionDate && (data.dateCreated || data.datePublished || data.dateModified)" class="mx-2">&bull;</span>
-      <span v-if="data.curatedBy && data.curatedBy.versionDate">
+      <span v-if="data.curatedBy && data.curatedBy.versionDate && (data.dateCreated || data.datePublished || data.dateModified)" class="mx-1">&bull;</span>
+      <span class="badge bg-grey__lightest" v-if="data.curatedBy && data.curatedBy.versionDate">
         accessed {{ this.formatDate(data.curatedBy.versionDate) }}
       </span>
-    </small>
+    </div>
   </div>
 
   <!-- keywords -->
@@ -148,8 +150,10 @@
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
     <small>Record provided by
-      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}.</a>
-      <router-link :to="{ name: 'Sources' }"> Learn more</router-link>
+      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}
+      <img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25" class="ml-1 mr-4" />
+      </a>
+      <router-link :to="{ name: 'Sources' }">Learn more</router-link>
     </small>
   </div>
 
@@ -204,6 +208,10 @@ export default Vue.extend({
     })
   },
   methods: {
+    getLogo(curator){
+      const source = this.resources.flatMap(d => d.sources).filter(d => d.id === curator.toLowerCase() || d.name.toLowerCase() === curator.toLowerCase());
+      return source.length == 1 ? source[0].img : null;
+    },
     formatDate(dateStr) {
       const parseDate = timeParse("%Y-%m-%d");
       const formatDate = timeFormat("%d %B %Y");
@@ -211,7 +219,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    ...mapState("admin", ["loading"]),
+    ...mapState("admin", ["loading", "resources"]),
     datePublished: function() {
       return (this.formatDate(this.data.dateModified))
     }
