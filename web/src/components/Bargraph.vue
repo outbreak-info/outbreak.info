@@ -1,4 +1,4 @@
-xVariableLim<template>
+<template>
   <div
     class="bargraph-group d-flex flex-column"
     :id="`bargraph-${id}-${variable}`"
@@ -283,7 +283,7 @@ export default Vue.extend({
           .tickSizeOuter(0)
           .tickValues(
             this.x.domain().filter(function(d, i) {
-              return !(i % 14);
+              return !(i % 28);
             })
           )
           .tickFormat(d3.timeFormat("%d %b"));
