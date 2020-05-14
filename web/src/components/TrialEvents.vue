@@ -4,6 +4,25 @@
     <TrialStatus :status="data.studyStatus" :includeDate="true" :locations="data.studyLocation" :mapWidth="500" />
   </div>
 
+  <div class="mt-3 mb-2" v-if="locations">
+    Study Locations
+    <ul>
+      <li v-for="(location, idx) in locations" :key="idx">
+        {{location.key}}
+        <ul>
+          <li v-for="(subnational, idx2) in location.values" :key="idx2">
+            <span class="text-dark font-weight-500">{{subnational.name}}</span>
+            <span v-if="subnational.studyLocationCity || subnational.studyLocationState">&nbsp;(</span>
+            <span v-if="subnational.studyLocationCity">{{subnational.studyLocationCity}}</span>
+            <span v-if="subnational.studyLocationCity && subnational.studyLocationState">,&nbsp;</span>
+            <span v-if="subnational.studyLocationState">{{subnational.studyLocationState}}</span>
+            <span v-if="subnational.studyLocationCity || subnational.studyLocationState">)</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
   <div class="mt-3 mb-2">
     Has results: <span class="text-dark">{{data.hasResults ? "yes" : (data.hasResults === false ? "no" : "not specified")}}</span>
   </div>
@@ -33,7 +52,7 @@
 <script>
 import {
   timeFormat,
-  timeParse
+  timeParse, nest
 } from "d3";
 
 import TrialStatus from "@/components/TrialStatus.vue";
@@ -45,6 +64,20 @@ export default {
   },
   components: {
     TrialStatus
+  },
+  computed: {
+    locations() {
+      if(this.data.studyLocation) {
+        const nested = nest()
+        .key(d => d.studyLocationCountry)
+        .entries(this.data.studyLocation.slice().sort((a,b) => a.studyLocationCountry < b.studyLocationCountry ? -1 : 1));
+        console.log(nested)
+
+        return(nested)
+      } else {
+        return(null)
+      }
+    }
   },
   methods: {
     formatDate: function(date) {

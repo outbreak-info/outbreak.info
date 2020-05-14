@@ -79,7 +79,8 @@ export default Vue.extend({
               .attr("d", path
                 .projection(projection)
               )
-              .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec");
+              .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec")
+              .attr("stroke", d => this.countries.includes(d.properties.NAME) ? "white" : "none");
           },
           update => update
           .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec")
@@ -92,7 +93,7 @@ export default Vue.extend({
 <style lang="scss">
 .region {
     // fill: mix($grey-40, $grey-30);
-    // stroke-width: 0.5;
+    stroke-width: 0.5;
 }
 
 .country-container {

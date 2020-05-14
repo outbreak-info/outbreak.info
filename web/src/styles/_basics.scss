@@ -15,6 +15,11 @@
 ::placeholder {
   font-family: $font-family;
 }
+
+.font-weight-500 {
+  font-weight: 500 !important;
+}
+
 // --- svg ---
 .axis--x text,
 .axis--y text,
