@@ -1,6 +1,6 @@
 <template>
-<div class="d-flex my-2">
-  <small class="accent mr-2">
+<div class="d-flex flex-wrap my-2">
+  <small class="accent mr-2" v-if="design && design.studyType">
     {{ design.studyType }}
   </small>
   <small class="text-dark mr-3" v-for="(intervention, key) in arms" :key="key">

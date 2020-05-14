@@ -14,7 +14,7 @@
         </small>
       </span>
     </div>
-    <small class="text-dark">
+    <small class="text-dark" v-if="status.enrollmentCount">
       {{ status.enrollmentType }} size:
       {{ status.enrollmentCount.toLocaleString() }}
     </small>
