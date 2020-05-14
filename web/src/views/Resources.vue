@@ -231,7 +231,7 @@
               <div class="col-sm-5 text-muted">
                 <!-- authors -->
                 <div class="attribution text-body">
-                  <small v-if="item.author">
+                  <small v-if="item.author && item.author.length">
                     {{
                         item.author[0].name
                           ? item.author[0].name

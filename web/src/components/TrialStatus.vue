@@ -19,7 +19,7 @@
       {{ status.enrollmentCount.toLocaleString() }}
     </small>
   </div>
-  <CountryMap :countries="countries" :width="mapWidth"/>
+  <CountryMap :countries="countries" :width="mapWidth" v-if="countries.length"/>
 </div>
 </template>
 
