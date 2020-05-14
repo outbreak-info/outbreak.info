@@ -26,7 +26,7 @@
               <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" height = "32" v-if="source.img" />
             </a>
             </h5>
-              <p v-html="source.description" class="text-justify"></p>
+              <p v-html="source.description" class="text-justify mb-4"></p>
             </div>
           </div>
 
@@ -44,7 +44,7 @@
               <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" height = "32" v-if="source.img"/>
             </a>
             </h5>
-              <p class="text-justify">
+              <p class="text-justify mb-4">
                 {{ source.description }}
               </p>
             </div>
@@ -59,7 +59,7 @@
             >
               <h4>{{ resource.category }}</h4>
               <div
-                class="epi-container"
+                class="resources-container"
                 v-for="source in resource.sources"
                 :key="source.id"
               >
@@ -70,7 +70,7 @@
                   <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" height = "32" v-if="source.img" />
                 </a>
                 </h5>
-                <p class="text-justify" v-html="source.description"></p>
+                <p class="text-justify mb-4" v-html="source.description"></p>
               </div>
             </div>
           </div>
