@@ -148,7 +148,9 @@
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
     <small>Record provided by
-      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}.</a>
+      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}
+      <img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25" class="ml-1 mr-4" />
+      </a>
       <router-link :to="{ name: 'Sources' }"> Learn more</router-link>
     </small>
   </div>
@@ -204,6 +206,10 @@ export default Vue.extend({
     })
   },
   methods: {
+    getLogo(curator){
+      const source = this.resources.flatMap(d => d.sources).filter(d => d.id === curator.toLowerCase() || d.name.toLowerCase() === curator.toLowerCase());
+      return source.length == 1 ? source[0].img : null;
+    },
     formatDate(dateStr) {
       const parseDate = timeParse("%Y-%m-%d");
       const formatDate = timeFormat("%d %B %Y");
@@ -211,7 +217,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    ...mapState("admin", ["loading"]),
+    ...mapState("admin", ["loading", "resources"]),
     datePublished: function() {
       return (this.formatDate(this.data.dateModified))
     }

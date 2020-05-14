@@ -63,7 +63,7 @@ export default Vue.extend({
       var projection = geoInterruptedBoggs()
         .center([0, 0])
         .translate([this.width / 2, this.height / 2])
-        .scale(this.width / 1.5 / Math.PI);
+        .scale(this.width / 1.64 / Math.PI);
 
       // regional data
       this.regions
