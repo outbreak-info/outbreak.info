@@ -7,7 +7,7 @@
   </div>
   <ul>
     <li v-for="(outcome,idx) in primary" :key="idx">
-      {{outcome.outcomeMeasure}} <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
+      <span class="text-dark font-weight-500">{{outcome.outcomeMeasure}}</span> <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
     </li>
   </ul>
   <template v-if="secondary.length">
@@ -16,7 +16,7 @@
     </div>
     <ul>
       <li v-for="(outcome,idx) in secondary" :key="idx">
-        {{outcome.outcomeMeasure}} <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
+        <span class="text-dark">{{outcome.outcomeMeasure}}</span> <span v-if="outcome.outcomeTimeFrame">({{outcome.outcomeTimeFrame}})</span>
       </li>
     </ul>
   </template>
