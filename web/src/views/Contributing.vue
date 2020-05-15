@@ -11,7 +11,7 @@
             resources:
             <span v-for="(type, idx) in types" :key="idx">
               <router-link
-                :to="{ name: 'Resources', query: { type: type.id } }"
+                :to="{ name: 'Resources', query: { filter: '@type:' + type.id } }"
                 >{{ type.label }}</router-link
               >
               <span v-if="idx < types.length - 2">, </span>
@@ -136,12 +136,12 @@ export default Vue.extend({
   data() {
     return {
       types: [
-        {
-          label: "Protocols",
-          description:
-            "A detailed series of instructions to perform an experimental technique and/or analysis",
-          id: "Protocol"
-        },
+        // {
+        //   label: "Protocols",
+        //   description:
+        //     "A detailed series of instructions to perform an experimental technique and/or analysis",
+        //   id: "Protocol"
+        // },
         {
           label: "Clinical Trials",
           description: "Publicly and privately funded human clinical studies",
@@ -152,12 +152,12 @@ export default Vue.extend({
           description: "A collection of primary or secondary data",
           id: "Dataset"
         },
-        {
-          label: "Analyses",
-          description:
-            "Web-based resources that interpret data based off assumptions and frequently update with new data",
-          id: "Analysis"
-        },
+        // {
+        //   label: "Analyses",
+        //   description:
+        //     "Web-based resources that interpret data based off assumptions and frequently update with new data",
+        //   id: "Analysis"
+        // },
 
         {
           label: "Publications",
