@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="min-height: 75vh;">
     <div class="row m-0">
       <div
         class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5"
@@ -32,7 +32,7 @@
             >, a project which provides web standards to describe different
             types of data.
             <a
-              href="https://discovery.biothings.io/view/outbreak"
+              href="https://discovery.biothings.io/view/outbreak/"
               target="_blank"
               rel="noreferrer"
               >View our schemas</a
@@ -43,6 +43,15 @@
     </div>
 
     <div class="container">
+      <h4 class="text-left">How to contribute data</h4>
+      <p class="text-left">
+        Check back later for more information on how to contribute data. In the meantime, you're welcome to fill out a
+        <a href="https://github.com/SuLab/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D" target="_blank" rel="noreferrer">
+          Github Issue</a> to request adding a new source.
+      </p>
+    </div>
+
+    <!-- <div class="container">
       <h4 class="text-left">How to contribute data</h4>
       <div class="row mb-2 d-flex">
         <router-link to="#curate" class="col-sm-4">
@@ -109,7 +118,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
