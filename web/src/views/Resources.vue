@@ -32,7 +32,7 @@
 
       <!-- sidebar: links -->
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
-        <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link>
+        <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
         <router-link :to="{ name: 'Sources' }">Where do we get our data?</router-link>
         <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
       </div>
@@ -228,7 +228,9 @@
 
             <div class="row">
               <!-- LEFT -->
-              <div class="col-sm-5 text-muted">
+
+              <div class="col-sm-5 text-muted d-flex flex-column justify-content-between">
+                <div class="">
                 <!-- authors -->
                 <div class="attribution text-body">
                   <small v-if="item.author && item.author.length">
@@ -312,6 +314,16 @@
                 </router-link>
               </div>
 
+                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5" v-if="item.curatedBy">
+                  <div class="col-sm-12" :class="item['@type']">
+                    <small>provided by {{ item.curatedBy.name }}</small>
+                    <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
+                    <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" height="25" class="ml-2" />
+                    </router-link>
+                  </div>
+                </div>
+              </div>
+
               <!-- RIGHT     -->
               <div class="col-sm-7 text-muted">
                 <!-- CLINCIAL-TRIAL-SPECIFIC  -->
@@ -353,14 +365,6 @@
               </div>
             </div>
 
-            <div class="row text-right" v-if="item.curatedBy">
-              <div class="col-sm-12" :class="item['@type']">
-                <small>provided by {{ item.curatedBy.name }}</small>
-                <a :href="item.curatedBy.url" target="_blank" rel="noreferrer" v-if="getLogo(item.curatedBy.name)">
-                <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" height="25" class="ml-2" />
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </div>
