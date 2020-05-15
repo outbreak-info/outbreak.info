@@ -47,7 +47,7 @@
       <p class="text-left">
         Check back later for more information on how to contribute data. In the meantime, you're welcome to fill out a
         <a href="https://github.com/SuLab/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D" target="_blank" rel="noreferrer">
-          Github Issue</a> to request adding a new source.
+          Github Issue</a> to request adding a new source or send an email to <a href="mailto:help@outbreak.info?subject=Data Source">help@outbreak.info</a>.
       </p>
     </div>
 

@@ -191,7 +191,7 @@
       <h3 class="my-3">Contact Us</h3>
       <p>
         If you have any questions about this Privacy Policy, please
-        <a href="mailto:blog@sulab.org" target="_blank"> Contact Us </a>.
+        <a href="mailto:help@outbreak.info" target="_blank"> Contact Us </a>.
       </p>
     </div>
   </div>
