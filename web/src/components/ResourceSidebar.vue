@@ -40,7 +40,7 @@
     </div>
 
     <!-- edit -->
-    <div class="pt-4 pb-3 border-bottom d-flex flex-column">
+    <!-- <div class="pt-4 pb-3 border-bottom d-flex flex-column">
       <div>
         <a
           class="btn btn-main-outline router-link no-underline"
@@ -54,7 +54,7 @@
       <small class="mt-2 helper text-muted"
         >Improve this record by adding additional information</small
       >
-    </div>
+    </div> -->
 
     <!-- share -->
     <div class="py-3 border-bottom text-muted">

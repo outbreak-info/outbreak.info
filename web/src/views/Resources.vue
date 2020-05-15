@@ -34,7 +34,7 @@
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
         <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
         <router-link :to="{ name: 'Sources' }">Where do we get our data?</router-link>
-        <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
+        <!-- <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link> -->
       </div>
 
       <!-- what's new -->
@@ -665,14 +665,14 @@ export default {
           label: "Publications",
           id: "Publication"
         },
-        {
-          label: "Analyses",
-          id: "Analysis"
-        },
-        {
-          label: "Protocols",
-          id: "Protocol"
-        },
+        // {
+        //   label: "Analyses",
+        //   id: "Analysis"
+        // },
+        // {
+        //   label: "Protocols",
+        //   id: "Protocol"
+        // },
         {
           label: "Clinical Trials",
           id: "ClinicalTrial"
