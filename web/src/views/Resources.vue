@@ -145,7 +145,7 @@
                       ]" v-if="optIdx < facet.num2Display">
                     <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
                     <label :for="facet.id + optIdx" class="m-0">
-                      <small>{{ option.term }} ({{ option.count }})</small>
+                      <small>{{ option.term }} ({{ option.count.toLocaleString() }})</small>
                     </label>
                   </li>
                 </div>
@@ -203,10 +203,10 @@
             <option value="datePublished">
               date: oldest to newest
             </option>
-            <option value="name.keyword">
+            <option value="name">
               A-Z
             </option>
-            <option value="-name.keyword">
+            <option value="-name">
               Z-A
             </option>
           </select>
