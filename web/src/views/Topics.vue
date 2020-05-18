@@ -16,13 +16,15 @@
 
 <script>
 import {
-  getQuerySummaries
+  getQuerySummaries, getCTSummary
 } from "@/api/resources.js";
 
 import Marimekko from "@/components/Marimekko.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
+
+import * as d3 from "d3";
 
 export default {
   name: "Resources",
@@ -33,6 +35,22 @@ export default {
     this.resultSubscription = getQuerySummaries(this.drugs, this.$resourceurl).subscribe(results => {
       console.log(results)
       this.results = results;
+    });
+
+    getCTSummary(this.$resourceurl).subscribe(results => {
+      console.log(results)
+
+      results.forEach(d => {
+        d["status"] = d.studyStatus ? d.studyStatus.status: null;
+        d["interv"] = d.armGroup ? d.armGroup.map(arm => {
+          return arm.intervention ? arm.intervention.map(intervention => intervention.name).join("+") : null;
+        }).join(" vs ") : null;
+      })
+
+      const x = d3.nest()
+      .key(d => d.interv)
+      .entries(results);
+      console.log(x)
     });
   },
   beforeDestroy() {

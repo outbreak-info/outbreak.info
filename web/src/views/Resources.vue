@@ -5,6 +5,8 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
+  <ResourceTimeline />
+
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
@@ -95,6 +97,13 @@
     <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
+          <li class="navbar-nav">
+            <router-link class="nav-link no-underline p-0" :to="{
+                  name: 'Topics'
+                }">
+              Topics
+            </router-link>
+          </li>
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Resources',
@@ -395,6 +404,7 @@ import StripeAccent from "@/components/StripeAccent.vue";
 import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
+import ResourceTimeline from "@/components/ResourceTimeline.vue";
 import {
   mapState
 } from "vuex";
@@ -439,7 +449,8 @@ export default {
     TrialPhase,
     TrialStatus,
     TrialType,
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    ResourceTimeline
   },
   created: function() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);

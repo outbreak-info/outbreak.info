@@ -325,3 +325,19 @@ export function getQuerySummary(queryString, apiUrl, fields="@type,name,identifi
       return (results)
     }))
 }
+
+export function getCTSummary(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return from(axios.get(
+    `${apiUrl}query?q=name:%22hydroxychloroquine%22%20OR%20description:%22hydroxychloroquine%22&fields=armGroup.name,armGroup.intervention,dateCreated,%20studyStatus&size=1000&timestamp=${timestamp}`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      return (results)
+    }))
+}
