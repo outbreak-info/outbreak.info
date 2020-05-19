@@ -1,4 +1,8 @@
-import { from, forkJoin, EMPTY } from "rxjs";
+import {
+  from,
+  forkJoin,
+  EMPTY
+} from "rxjs";
 import axios from "axios";
 import {
   // finalize,
@@ -11,7 +15,15 @@ import {
 
 import store from "@/store";
 
-import { cloneDeep } from "lodash";
+import {
+  timeParse,
+  timeFormat,
+  utcParse
+} from "d3";
+
+import {
+  cloneDeep
+} from "lodash";
 
 function filterString2Arr(filterString) {
   return filterString.split(";").map(d => {
@@ -78,8 +90,7 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&timestamp=${timestamp}`,
-      {
+      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -93,11 +104,11 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
       const total = results.total;
 
       resources.forEach(d => {
-        d["date"] = d.dateModified
-          ? d.dateModified
-          : d.datePublished
-          ? d.datePublished
-          : d.dateCreated;
+        d["date"] = d.dateModified ?
+          d.dateModified :
+          d.datePublished ?
+          d.datePublished :
+          d.dateCreated;
         d["longDescription"] = d.abstract ? d.abstract : d.description;
         if (d.longDescription) {
           let descriptionArray = d.longDescription.split(" ");
@@ -139,11 +150,11 @@ export function getResourceMetadata(apiUrl, id) {
     map(results => {
       const metadata = results[0];
 
-      metadata["date"] = metadata.dateModified
-        ? metadata.dateModified
-        : metadata.datePublished
-        ? metadata.datePublished
-        : metadata.dateCreated;
+      metadata["date"] = metadata.dateModified ?
+        metadata.dateModified :
+        metadata.datePublished ?
+        metadata.datePublished :
+        metadata.dateCreated;
       console.log(metadata);
 
       return metadata;
@@ -189,8 +200,7 @@ export function getResourceFacets(
   const timestamp = Math.round(new Date().getTime() / 1e5);
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`,
-      {
+      `${apiUrl}query?q=${queryString}&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -260,8 +270,7 @@ export function getMostRecent(
   const fieldString = fields.join(",");
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`,
-      {
+      `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -271,11 +280,11 @@ export function getMostRecent(
     pluck("data", "hits"),
     map(results => {
       results.forEach(d => {
-        d["date"] = d.dateModified
-          ? d.dateModified
-          : d.datePublished
-          ? d.datePublished
-          : d.dateCreated;
+        d["date"] = d.dateModified ?
+          d.dateModified :
+          d.datePublished ?
+          d.datePublished :
+          d.dateCreated;
       });
 
       return results;
@@ -286,4 +295,114 @@ export function getMostRecent(
       return from([]);
     })
   );
+}
+
+export function getQuerySummaries(queries, apiUrl) {
+  queries.forEach(d => {
+    d["query"] = encodeURIComponent(`("${d.terms.join('" OR "')}")`);
+  });
+
+  return forkJoin(...queries.map(d => getQuerySummary(d.query, apiUrl))).pipe(
+    map(results => {
+      results.forEach((d, idx) => {
+        d["key"] = queries[idx];
+      })
+      return (results)
+    })
+  )
+}
+
+export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author", facets = "@type, curatedBy.name") {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return from(axios.get(
+    // `${apiUrl}query?q=name:${queryString} OR description:${queryString}&timestamp=${timestamp}&size=100&fields=${fields}&facets=${facets}&facet_size=100`, {
+    `${apiUrl}query?q=name:${queryString} OR description:${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )).pipe(
+    pluck("data"),
+    map(results => {
+      return (results)
+    }))
+}
+
+export function getCTSummary(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return from(axios.get(
+    `${apiUrl}query?q=name:%22hydroxychloroquine%22%20OR%20description:%22hydroxychloroquine%22&fields=armGroup.name,armGroup.intervention,dateCreated,%20studyStatus&size=1000&timestamp=${timestamp}`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      return (results)
+    }))
+}
+
+export function getSourceSummary(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return forkJoin([getSourceCounts(apiUrl), getResourcesMetadata(apiUrl)]).pipe(
+    map(([results, metadata]) => {
+      results["dateModified"] = metadata;
+      return (results)
+    })
+  )
+}
+
+
+export function getSourceCounts(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return from(axios.get(
+    `${apiUrl}query?aggs=@type(curatedBy.name)&facet_size=100&timestamp=${timestamp}`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )).pipe(pluck("data"), map(results => {
+    const cleaned = results.facets["@type"]["terms"].flatMap(d => {
+      const source = {
+        name: d.term
+      };
+      // Temp, till `curatedBy` added for Zenodo
+      const zenodo = d["count"] - d["curatedBy.name"]["total"];
+
+      d["curatedBy.name"]["terms"].forEach(source => {
+        source["name"] = source.term.replace("ClinicalTrials.gov", "NCT").replace("WHO International Clinical Trials Registry Platform", "WHO");
+      })
+      if (zenodo) {
+        d["curatedBy.name"]["terms"].push({
+          name: "Zenodo",
+          count: zenodo
+        });
+      }
+
+      source["children"] = d["curatedBy.name"]["terms"];
+      return (source)
+    })
+    return ({
+      total: results.total.toLocaleString(),
+      sources: {name: "root", children: cleaned}
+    })
+  }))
+}
+
+export function getResourcesMetadata(apiUrl) {
+  const formatDate = timeFormat("%d %B %Y")
+  return from(axios.get(`${apiUrl}metadata`)).pipe(
+    pluck("data", "build_date"),
+    map(metadata => {
+      const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
+      const dateUpdated = strictIsoParse(metadata);
+
+      return (formatDate(dateUpdated))
+    })
+  )
 }

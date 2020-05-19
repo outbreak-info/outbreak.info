@@ -68,9 +68,15 @@ const routes = [
   },
   {
     path: "/resources",
+    name: "Resource Summary",
+    component: () =>
+      import(/* webpackChunkName: "resource-summary" */ "../views/ResourceSummary.vue")
+  },
+  {
+    path: "/resources/search",
     name: "Resources",
     props: route => ({
-      search: route.query.search,
+      q: route.query.q,
       page: route.query.page,
       size: route.query.size,
       filter: route.query.filter,

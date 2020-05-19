@@ -39,7 +39,7 @@
 
       <!-- what's new -->
       <div class="col-sm-12">
-        <NewResources :newData="newData" />
+        <NewResources :newData="newData"/>
       </div>
     </div>
   </section>
@@ -49,6 +49,13 @@
     <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
+          <li class="navbar-nav">
+            <router-link class="nav-link no-underline p-0" :to="{
+                  name: 'Topics'
+                }">
+              Topics
+            </router-link>
+          </li>
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Resources',
@@ -118,8 +125,8 @@
         <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
           <div class="d-flex flex-column">
             <div class="d-flex align-items-center">
-              <h4 class="m-0 mr-4" v-if="search">
-                You searched for {{ search }}
+              <h4 class="m-0 mr-4" v-if="q">
+                You searched for {{ q }}
               </h4>
               <div class="m-0 text-highlight">
                 {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
@@ -254,7 +261,7 @@
                   </div>
 
                   <!-- relatedTo -->
-                  <router-link to="search" v-if="item['@type'] == 'Dataset'">
+                  <!-- <router-link to="search" v-if="item['@type'] == 'Dataset'">
                     <small>find analyses/publications that use this data</small>
                   </router-link>
                   <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
@@ -266,6 +273,15 @@
                   <router-link to="search" v-if="item.relatedTo">
                     <small>related resources</small>
                   </router-link>
+                  <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
+                    based on |
+                    <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
+                      {{ resource["@type"] }}
+                    </router-link>
+                  </div>
+                  <router-link to="search" v-if="item.relatedTo">
+                    <small>related resources</small>
+                  </router-link> -->
                 </div>
 
                 <div class="text-right border-top pt-2 mt-2 ml-2 mr-5" v-if="item.curatedBy">
@@ -311,7 +327,7 @@
                 <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
                   <router-link :to="{
                         name: 'Resources',
-                        query: { search: `&quot;${keyword}&quot;` }
+                        query: { q: `&quot;${keyword}&quot;` }
                       }" class="no-underline text-dark">
                     {{ keyword }}
                   </router-link>
@@ -384,7 +400,7 @@ library.add(faArrowLeft, faArrowRight);
 export default {
   name: "Resources",
   props: {
-    search: String,
+    q: String,
     sort: String,
     page: String,
     size: String,
@@ -454,9 +470,9 @@ export default {
 
       this.filterString = this.filters2String();
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -469,9 +485,9 @@ export default {
 
       this.filterString = this.filters2String();
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -499,9 +515,9 @@ export default {
     clearFilters() {
       this.filterString = null;
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -511,9 +527,9 @@ export default {
     },
     onEnter() {
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -523,9 +539,9 @@ export default {
     },
     changeSort() {
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -537,9 +553,9 @@ export default {
       this.selectedPage += step;
 
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),
@@ -551,9 +567,9 @@ export default {
       this.selectedPage = 0;
 
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),
@@ -586,7 +602,7 @@ export default {
     $route: {
       immediate: true,
       handler(to, from) {
-        this.searchInput = this.search ? this.search : null;
+        this.searchInput = this.q ? this.q : null;
         this.filterString = this.filter ? this.filter : null;
         this.numPerPage = this.size ? Number(this.size) : 10;
         this.selectedPage = this.page ? Number(this.page) : 0;
@@ -649,38 +665,6 @@ export default {
     padding-left: 1rem;
 }
 
-// table
-.resource-type {
-    font-size: 1em;
-    font-weight: 700;
-    text-transform: uppercase;
-    opacity: 0.7;
-}
-
-td.resource-type {
-    min-width: 175px;
-}
-
-.resource-date {
-    width: 80px;
-}
-
-.resource-affiliation {
-    // width: 150px;
-}
-
-#whats-new td {
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-bottom: 10px;
-    font-size: 0.9em;
-    line-height: 1em;
-}
-
-.filters {
-    background: lighten(yellow, 35%);
-}
-
 .search-result {
     border-bottom: 3px solid $grey-40;
     padding: 5px;
@@ -694,6 +678,7 @@ td.resource-type {
     background: lighten($warning-color, 35%);
     border-radius: 5px;
 }
+
 .list-group-item.list-group-item-info {
     background-color: $secondary-color !important;
     border-color: $secondary-color !important;

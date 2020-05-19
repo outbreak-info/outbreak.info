@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import Vue from "vue";
 
 import * as d3 from "d3";
