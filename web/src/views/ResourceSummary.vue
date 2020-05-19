@@ -1,7 +1,6 @@
 <template>
 <div>
 
-
   <div class="row m-0" id="resource-overview">
     <div class="col-sm-12 bg-light text-left justify-content-center align-items-center my-5">
       <h2 class="">Finding resources is hard</h2>
@@ -19,6 +18,12 @@
     </div>
   </div>
 
+<div id="resource-counts row m-0">
+  <h3 class="col-sm-12 text-left text-highlight">{{counts.total}} resources</h3>
+  <small class="text-muted badge bg-grey__lightest" v-if="counts.dateModified"
+    ><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
+  </small>
+</div>
 
   <div class="row m-0 w-100 mb-3">
     <!-- search bar -->
@@ -45,7 +50,7 @@
 
 <script>
 import {
-  getMostRecent
+  getMostRecent, getSourceSummary
 } from "@/api/resources.js";
 
 import NewResources from "@/components/NewResources.vue";
@@ -59,6 +64,7 @@ export default {
     return {
       recentSubscription: null,
       newData: [],
+      counts: [],
       searchInput: null
     }
   },
@@ -77,9 +83,14 @@ export default {
       console.log(results)
       this.newData = results;
     });
+    this.countSubscription = getSourceSummary(this.$resourceurl).subscribe(results => {
+      console.log(results)
+      this.counts = results;
+    });
   },
   beforeDestroy() {
     this.recentSubscription.unsubscribe();
+    this.countSubscription.unsubscribe();
   }
 }
 </script>

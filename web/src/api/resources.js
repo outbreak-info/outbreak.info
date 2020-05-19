@@ -15,6 +15,8 @@ import {
 
 import store from "@/store";
 
+import { timeParse, timeFormat, utcParse } from "d3";
+
 import {
   cloneDeep
 } from "lodash";
@@ -306,7 +308,7 @@ export function getQuerySummaries(queries, apiUrl) {
   )
 }
 
-export function getQuerySummary(queryString, apiUrl, fields="@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author", facets="@type, curatedBy.name") {
+export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author", facets = "@type, curatedBy.name") {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(axios.get(
@@ -337,4 +339,62 @@ export function getCTSummary(apiUrl) {
     map(results => {
       return (results)
     }))
+}
+
+export function getSourceSummary(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return forkJoin([getSourceCounts(apiUrl), getResourcesMetadata(apiUrl)]).pipe(
+    map(([results, metadata]) => {
+      results["dateModified"] = metadata;
+      return(results)
+    })
+  )
+}
+
+
+export function getSourceCounts(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return from(axios.get(
+    `${apiUrl}query?aggs=@type(curatedBy.name)&facet_size=100&timestamp=${timestamp}`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )).pipe(pluck("data"), map(results => {
+    const cleaned = results.facets["@type"]["terms"].flatMap(d => {
+      // Temp, till
+      const zenodo = d["count"] - d["curatedBy.name"]["total"];
+      d["curatedBy.name"]["terms"].forEach(source => {
+        source["type"] = d.term;
+      })
+
+      if (zenodo) {
+        d["curatedBy.name"]["terms"].push({
+          type: d.term,
+          term: "Zenodo",
+          count: zenodo
+        });
+      }
+      return (d["curatedBy.name"]["terms"])
+    })
+    return ({
+      total: results.total.toLocaleString(),
+      sources: cleaned
+    })
+  }))
+}
+
+export function getResourcesMetadata(apiUrl) {
+  const formatDate = timeFormat("%d %B %Y")
+  return from(axios.get(`${apiUrl}metadata`)).pipe(
+    pluck("data", "build_date"),
+    map(metadata => {
+      const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
+      const dateUpdated = strictIsoParse(metadata);
+
+      return (formatDate(dateUpdated))
+    })
+  )
 }
