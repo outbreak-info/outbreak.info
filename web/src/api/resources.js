@@ -168,10 +168,10 @@ export function getResourceFacets(
   filterArr,
   facets = [
     "@type",
-    "curatedBy.name.keyword",
+    "curatedBy.name",
     "keywords",
     "topicCategory",
-    "funding.funder.name.keyword",
+    "funding.funder.name",
     "measurementTechnique",
     "variableMeasured"
   ]

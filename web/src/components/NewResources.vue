@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-if="newData">
   <div class="text-highlight d-flex justify-content-between align-items-center mb-2">
     <h5>WHAT'S NEW</h5>
   </div>
@@ -59,7 +59,7 @@ import {
 import StripeAccent from "@/components/StripeAccent.vue";
 
 export default {
-  name: "Resources",
+  name: "NewResources",
   props: {
     newData: Array
   },

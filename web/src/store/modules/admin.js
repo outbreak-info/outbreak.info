@@ -62,6 +62,14 @@ const state = {
           url: "https://zenodo.org/communities/covid-19/",
           description:
             "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other)."
+        },
+        {
+          id: "pdb",
+          name: "The Protein Data Bank",
+          img: "pdb.png",
+          url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
+          description:
+            "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies."
         }
       ]
     },
