@@ -13,7 +13,7 @@
           </div>
 
           <div class="text-left">
-            <h3>Epidemiology Data</h3>
+            <h3 id="epidemiology">Epidemiology Data</h3>
             <div
               class="epi-container"
               v-for="source in sources"
@@ -31,7 +31,7 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3>Geographic Data</h3>
+            <h3 id="geographic">Geographic Data</h3>
             <div
               class="epi-container"
               v-for="source in geoSources"
@@ -51,7 +51,7 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3 class="mb-3 border-top pt-4">Resources</h3>
+            <h3 id="resources" class="mb-3 border-top pt-4">Resources</h3>
             <div
               v-for="(resource, idx) in resources"
               :key="idx"
