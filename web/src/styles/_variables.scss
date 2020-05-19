@@ -29,9 +29,10 @@ $link-hover: #0056b3;
 
 // resource type colors
 // analysis: red
+$analysis-color: #D13B62;
 .Analysis {
-    color: #D13B62;
-    fill: #D13B62;
+    color: $analysis-color;
+    fill: $analysis-color;
 }
 
 .Analysis.light {
@@ -43,9 +44,10 @@ $link-hover: #0056b3;
 }
 
 // dataset: blue
+$dataset-color: #126B93;
 .Dataset {
-    color: #126B93;
-    fill: #126B93;
+    color: $dataset-color;
+    fill: $dataset-color;
 }
 .Dataset.dark {
     fill: darken(#11537A, 10%);

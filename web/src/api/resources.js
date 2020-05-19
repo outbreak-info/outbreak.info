@@ -15,7 +15,11 @@ import {
 
 import store from "@/store";
 
-import { timeParse, timeFormat, utcParse } from "d3";
+import {
+  timeParse,
+  timeFormat,
+  utcParse
+} from "d3";
 
 import {
   cloneDeep
@@ -347,7 +351,7 @@ export function getSourceSummary(apiUrl) {
   return forkJoin([getSourceCounts(apiUrl), getResourcesMetadata(apiUrl)]).pipe(
     map(([results, metadata]) => {
       results["dateModified"] = metadata;
-      return(results)
+      return (results)
     })
   )
 }
@@ -364,24 +368,28 @@ export function getSourceCounts(apiUrl) {
     }
   )).pipe(pluck("data"), map(results => {
     const cleaned = results.facets["@type"]["terms"].flatMap(d => {
-      // Temp, till
+      const source = {
+        name: d.term
+      };
+      // Temp, till `curatedBy` added for Zenodo
       const zenodo = d["count"] - d["curatedBy.name"]["total"];
-      d["curatedBy.name"]["terms"].forEach(source => {
-        source["type"] = d.term;
-      })
 
+      d["curatedBy.name"]["terms"].forEach(source => {
+        source["name"] = source.term.replace("ClinicalTrials.gov", "NCT").replace("WHO International Clinical Trials Registry Platform", "WHO");
+      })
       if (zenodo) {
         d["curatedBy.name"]["terms"].push({
-          type: d.term,
-          term: "Zenodo",
+          name: "Zenodo",
           count: zenodo
         });
       }
-      return (d["curatedBy.name"]["terms"])
+
+      source["children"] = d["curatedBy.name"]["terms"];
+      return (source)
     })
     return ({
       total: results.total.toLocaleString(),
-      sources: cleaned
+      sources: {name: "root", children: cleaned}
     })
   }))
 }

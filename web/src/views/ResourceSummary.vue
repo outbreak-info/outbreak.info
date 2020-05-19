@@ -13,36 +13,46 @@
       </p>
       <p>
         We're developing a searchable index of datasets, publications, and clinical trials that tries to make sense of all this information. By standardizing the information that describes these resources, outbreak.info makes COVID-19 information
-        more discoverable. <router-link :to = "{path: 'sources', hash: 'resources'}"> Learn about our data sources</router-link>
+        more discoverable. <router-link :to="{path: 'sources', hash: 'resources'}"> Learn about our data sources</router-link>
       </p>
     </div>
   </div>
 
-<div id="resource-counts row m-0">
-  <h3 class="col-sm-12 text-left text-highlight">{{counts.total}} resources</h3>
-  <small class="text-muted badge bg-grey__lightest" v-if="counts.dateModified"
-    ><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
-  </small>
-</div>
+  <div class="d-flex">
 
-  <div class="row m-0 w-100 mb-3">
-    <!-- search bar -->
-    <div class="col-sm-12 col-md-8">
-      <div class="py-3">
-        <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+
+    <div id="resource-counts" class="d-flex ml-3 flex-column align-items-center" v-if="counts.total">
+      <h3 class="text-left text-highlight">{{counts.total}} resources</h3>
+      <small class="text-muted badge bg-grey__lightest" v-if="counts.dateModified"><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
+      </small>
+
+      <CirclePacking class="circle-packing" :data="counts.sources" />
+    </div>
+
+    <div class="w-100 mb-3 d-flex flex-column">
+      <!-- search bar -->
+      <div class="col-sm-12 col-md-8">
+        <div class="py-3">
+          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+              </div>
+              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
             </div>
-            <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
+
+      <!-- results listing -->
+      <table>
+        
+      </table>
     </div>
   </div>
 
   <div class="row m-0 w-100">
-    <NewResources :newData="newData" class="col-sm-12"/>
+    <NewResources :newData="newData" class="col-sm-12" />
   </div>
 
 </div>
@@ -50,15 +60,18 @@
 
 <script>
 import {
-  getMostRecent, getSourceSummary
+  getMostRecent,
+  getSourceSummary
 } from "@/api/resources.js";
 
 import NewResources from "@/components/NewResources.vue";
+import CirclePacking from "@/components/CirclePacking.vue";
 
 export default {
   name: "ResourceSummary",
   components: {
-    NewResources
+    NewResources,
+    CirclePacking
   },
   data() {
     return {
@@ -80,9 +93,9 @@ export default {
   },
   mounted() {
     this.recentSubscription = getMostRecent(this.$resourceurl, "__all__", "-datePublished", 5).subscribe(results => {
-      console.log(results)
       this.newData = results;
     });
+
     this.countSubscription = getSourceSummary(this.$resourceurl).subscribe(results => {
       console.log(results)
       this.counts = results;
@@ -94,3 +107,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.circle-packing {
+    margin-top: -70px;
+}
+</style>

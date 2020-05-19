@@ -45,7 +45,7 @@ import Vue from "vue";
 import * as d3 from "d3";
 // from https://observablehq.com/@d3/marimekko-chart
 export default Vue.extend({
-  name: "Sparkline",
+  name: "Marimekko",
   props: {
     // data: Array,
     // width: Number,
