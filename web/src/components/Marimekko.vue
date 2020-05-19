@@ -47,7 +47,7 @@ import * as d3 from "d3";
 export default Vue.extend({
   name: "Marimekko",
   props: {
-    // data: Array,
+    data: Array
     // width: Number,
     // height: Number,
     // variable: String,
@@ -56,49 +56,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      data: [{
-          x: "hydroxychloroquine",
-          y: "Clinical Trial",
-          value: 238
-        },
-        {
-          x: "hydroxychloroquine",
-          y: "Publication",
-          value: 124
-        }, {
-          x: "azithromycin",
-          y: "Publication",
-          value: 25
-        }, {
-          x: "azithromycin",
-          y: "Clinical Trial",
-          value: 76
-        }, {
-          x: "tocilizumab",
-          y: "Clinical Trial",
-          value: 68
-        }, {
-          x: "tocilizumab",
-          y: "Publication",
-          value: 29
-        }, {
-          x: "lopinavir/ritonavir",
-          y: "Publication",
-          value: 19
-        }, {
-          x: "lopinavir/ritonavir",
-          y: "Clinical Trial",
-          value: 67
-        }, {
-          x: "convalescent plasma",
-          y: "Clinical Trial",
-          value: 80
-        }, {
-          x: "convalescent plasma",
-          y: "Publication",
-          value: 30
-        }
-      ],
       root: null,
       colorScale: null,
       width: 850,
@@ -141,7 +98,7 @@ export default Vue.extend({
               .entries(this.data)
           },
           d => d.values
-        ).sum(d => d.value))
+        ).sum(d => d.count))
         .each(d => {
           d.x0 += this.margin.left;
           d.x1 += this.margin.left;
@@ -158,7 +115,7 @@ export default Vue.extend({
         .size([
           this.width - this.margin.left - this.margin.right,
           this.height - this.margin.top - this.margin.bottom
-        ])(hierarchy.sum(d => d.value)
+        ])(hierarchy.sum(d => d.count)
           .sort((a, b) => b.value - a.value));
     },
     updatePlot() {
@@ -233,6 +190,7 @@ export default Vue.extend({
     }
   },
   mounted() {
+    console.log(this.data)
     this.setupPlot();
     this.updatePlot();
   }

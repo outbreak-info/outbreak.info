@@ -2,11 +2,13 @@
 <div class="mx-3 my-5">
   <div id="treatments" class="text-left">
     <h3>Resources related to treatments</h3>
-    <Marimekko />
-    <div v-for="(treatment, idx) in drugs" :key="idx" class="mb-4">
-      <h6 class="m-0">{{treatment.name}}</h6>
+    <Marimekko :data="types" v-if="types" />
+    <div v-for="(treatment, idx) in results" :key="idx" class="mb-4">
+      <router-link :to="{name:'Resources', query:{ q: treatment.key.query}}">
+        <h6 class="m-0">{{treatment.key.name}}</h6>
+      </router-link>
       <small class="text-muted m-0">
-        {{treatment.label}}
+        {{treatment.key.label}}
       </small>
     </div>
   </div>
@@ -16,7 +18,8 @@
 
 <script>
 import {
-  getQuerySummaries, getCTSummary
+  getQuerySummaries,
+  getCTSummary
 } from "@/api/resources.js";
 
 import Marimekko from "@/components/Marimekko.vue";
@@ -37,24 +40,29 @@ export default {
       this.results = results;
     });
 
-    getCTSummary(this.$resourceurl).subscribe(results => {
-      console.log(results)
-
-      results.forEach(d => {
-        d["status"] = d.studyStatus ? d.studyStatus.status: null;
-        d["interv"] = d.armGroup ? d.armGroup.map(arm => {
-          return arm.intervention ? arm.intervention.map(intervention => intervention.name).join("+") : null;
-        }).join(" vs ") : null;
-      })
-
-      const x = d3.nest()
-      .key(d => d.interv)
-      .entries(results);
-      console.log(x)
-    });
+    // getCTSummary(this.$resourceurl).subscribe(results => {
+    //   console.log(results)
+    //
+    //   results.forEach(d => {
+    //     d["status"] = d.studyStatus ? d.studyStatus.status: null;
+    //     d["interv"] = d.armGroup ? d.armGroup.map(arm => {
+    //       return arm.intervention ? arm.intervention.map(intervention => intervention.name).join("+") : null;
+    //     }).join(" vs ") : null;
+    //   })
+    //
+    //   const x = d3.nest()
+    //   .key(d => d.interv)
+    //   .entries(results);
+    //   console.log(x)
+    // });
   },
   beforeDestroy() {
     this.resultSubscription.unsubscribe();
+  },
+  computed: {
+    types: function() {
+      return this.results ? this.results.flatMap(d => d.types) : null;
+    }
   },
   data() {
     return {

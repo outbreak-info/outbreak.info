@@ -306,6 +306,10 @@ export function getQuerySummaries(queries, apiUrl) {
     map(results => {
       results.forEach((d, idx) => {
         d["key"] = queries[idx];
+        d.types.forEach(type => {
+          type["x"] = d.key.name;
+          type["y"] = type.term
+        })
       })
       return (results)
     })
@@ -317,7 +321,7 @@ export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identi
 
   return from(axios.get(
     // `${apiUrl}query?q=name:${queryString} OR description:${queryString}&timestamp=${timestamp}&size=100&fields=${fields}&facets=${facets}&facet_size=100`, {
-    `${apiUrl}query?q=name:${queryString} OR description:${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}`, {
+    `${apiUrl}query?q=${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}&facets=${facets}&facet_size=25`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -325,6 +329,7 @@ export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identi
   )).pipe(
     pluck("data"),
     map(results => {
+      results["types"] = results["facets"]["@type"]["terms"];
       return (results)
     }))
 }
