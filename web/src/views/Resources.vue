@@ -41,53 +41,7 @@
 
       <!-- what's new -->
       <div class="col-sm-12">
-        <div class="text-highlight d-flex justify-content-between align-items-center mb-2">
-          <h5>WHAT'S NEW</h5>
-        </div>
-
-        <table id="whats-new">
-          <tbody>
-            <tr v-for="(item, idx) in newData" :key="idx" class="new-item">
-              <td class="resource-type d-flex align-items-center">
-                <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="no-underline m-0" :class="item['@type']">
-                  <StripeAccent :className="item['@type']" />
-
-                  {{ item["@type"] }}
-                </router-link>
-              </td>
-              <td class="resource-name text-left" valign="top">
-                <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="no-underline m-0 text-dark">
-                  {{ item.name }}
-                </router-link>
-              </td>
-              <td class="resource-affiliation text-left text-muted" valign="top">
-                <template v-if="item.author">
-                  {{
-                      item.author[0].name
-                        ? item.author[0].name
-                        : item.author[0].givenName +
-                          " " +
-                          item.author[0].familyName
-                    }}
-                  <span v-if="item.author.length > 1"> et al.</span>
-                </template>
-                <template v-else-if="item.creator">
-                  {{
-                      item.creator[0].name
-                        ? item.creator[0].name
-                        : item.creator[0].givenName +
-                          " " +
-                          item.creator[0].familyName
-                    }}
-                  <span v-if="item.creator.length > 1"> et al.</span>
-                </template>
-              </td>
-              <td class="resource-date" valign="top">
-                <span v-if="item.date">{{ format(item.date) }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <NewResources :newData="newData"/>
       </div>
     </div>
   </section>
@@ -229,7 +183,7 @@
               <small :class="[item['@type'], 'resource-type', 'mr-3']">{{
                   item["@type"]
                 }}</small>
-                <!-- name -->
+              <!-- name -->
               <router-link :to="{ name: 'Resource Page', params: { id: item._id } }">
                 <h5 class="m-0">{{ item.name }}</h5>
               </router-link>
@@ -240,94 +194,94 @@
 
               <div class="col-sm-5 text-muted d-flex flex-column justify-content-between">
                 <div class="">
-                <!-- authors -->
-                <div class="attribution text-body">
-                  <small v-if="item.author && item.author.length">
-                    {{
+                  <!-- authors -->
+                  <div class="attribution text-body">
+                    <small v-if="item.author && item.author.length">
+                      {{
                         item.author[0].name
                           ? item.author[0].name
                           : item.author[0].givenName +
                             " " +
                             item.author[0].familyName
                       }}
-                    <span v-if="item.author.length > 1"> et al.</span>
-                  </small>
-                  <small v-else-if="item.creator">
-                    {{
+                      <span v-if="item.author.length > 1"> et al.</span>
+                    </small>
+                    <small v-else-if="item.creator">
+                      {{
                         item.creator[0].name
                           ? item.creator[0].name
                           : item.creator[0].givenName +
                             " " +
                             item.creator[0].familyName
                       }}
-                    <span v-if="item.creator.length > 1"> et al.</span>
-                  </small>
-                </div>
-                <!-- publication name -->
-                <div class="publication">
-                  <small v-if="item.journalNameAbbrev">{{
+                      <span v-if="item.creator.length > 1"> et al.</span>
+                    </small>
+                  </div>
+                  <!-- publication name -->
+                  <div class="publication">
+                    <small v-if="item.journalNameAbbrev">{{
                       item.journalNameAbbrev
                     }}</small>
-                  <small v-else-if="item.journalName">{{
+                    <small v-else-if="item.journalName">{{
                       item.journalName
                     }}</small>
-                </div>
-                <!-- dates -->
-                <div class="dates">
-                  <small v-if="
+                  </div>
+                  <!-- dates -->
+                  <div class="dates">
+                    <small v-if="
                         item.dateModified ||
                           item.dateCreated ||
                           item.datePublished
                       ">
-                    <i class="far fa-clock"></i>
-                    <span v-if="item.dateModified">
-                      updated {{ item.dateModified }}
-                    </span>
-                    <span v-if="item.dateModified && item.datePublished">&bull;</span>
-                    <span v-if="item.datePublished">
-                      published {{ item.datePublished }}
-                    </span>
-                    <span v-if="
+                      <i class="far fa-clock"></i>
+                      <span v-if="item.dateModified">
+                        updated {{ item.dateModified }}
+                      </span>
+                      <span v-if="item.dateModified && item.datePublished">&bull;</span>
+                      <span v-if="item.datePublished">
+                        published {{ item.datePublished }}
+                      </span>
+                      <span v-if="
                           (item.dateModified && item.dateCreated) ||
                             (item.datePublished && item.dateCreated)
                         ">&bull;</span>
-                    <span v-if="item.dateCreated">
-                      created {{ item.dateCreated }}
-                    </span>
-                  </small>
-                </div>
-                <!-- CLINCIAL-TRIAL-SPECIFIC  -->
+                      <span v-if="item.dateCreated">
+                        created {{ item.dateCreated }}
+                      </span>
+                    </small>
+                  </div>
+                  <!-- CLINCIAL-TRIAL-SPECIFIC  -->
 
-                <!-- clinical trial phase -->
-                <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
-                  <TrialPhase :phases="item.studyDesign.phaseNumber" />
-                </div>
+                  <!-- clinical trial phase -->
+                  <div v-if="item.studyDesign && item.studyDesign.phaseNumber">
+                    <TrialPhase :phases="item.studyDesign.phaseNumber" />
+                  </div>
 
-                <!-- clinical trial status -->
-                <div v-if="item.studyStatus">
-                  <TrialStatus :status="item.studyStatus" :locations="item.studyLocation" />
-                </div>
+                  <!-- clinical trial status -->
+                  <div v-if="item.studyStatus">
+                    <TrialStatus :status="item.studyStatus" :locations="item.studyLocation" />
+                  </div>
 
-                <!-- relatedTo -->
-                <router-link to="search" v-if="item['@type'] == 'Dataset'">
-                  <small>find analyses/publications that use this data</small>
-                </router-link>
-                <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
-                  based on |
-                  <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
-                    {{ resource["@type"] }}
+                  <!-- relatedTo -->
+                  <router-link to="search" v-if="item['@type'] == 'Dataset'">
+                    <small>find analyses/publications that use this data</small>
+                  </router-link>
+                  <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
+                    based on |
+                    <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
+                      {{ resource["@type"] }}
+                    </router-link>
+                  </div>
+                  <router-link to="search" v-if="item.relatedTo">
+                    <small>related resources</small>
                   </router-link>
                 </div>
-                <router-link to="search" v-if="item.relatedTo">
-                  <small>related resources</small>
-                </router-link>
-              </div>
 
                 <div class="text-right border-top pt-2 mt-2 ml-2 mr-5" v-if="item.curatedBy">
                   <div class="col-sm-12" :class="item['@type']">
                     <small>provided by {{ item.curatedBy.name }}</small>
                     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
-                    <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" height="25" class="ml-2" />
+                      <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" height="25" class="ml-2" />
                     </router-link>
                   </div>
                 </div>
@@ -405,6 +359,7 @@ import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
 import ResourceTimeline from "@/components/ResourceTimeline.vue";
+import NewResources from "@/components/NewResources.vue";
 import {
   mapState
 } from "vuex";
@@ -450,7 +405,8 @@ export default {
     TrialStatus,
     TrialType,
     FontAwesomeIcon,
-    ResourceTimeline
+    ResourceTimeline,
+    NewResources
   },
   created: function() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
@@ -494,7 +450,7 @@ export default {
     expandDescription: function(item) {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
-    getLogo(curator){
+    getLogo(curator) {
       const source = this.resources.flatMap(d => d.sources).filter(d => d.id === curator.toLowerCase() || d.name.toLowerCase() === curator.toLowerCase());
       return source.length == 1 ? source[0].img : null;
     },
@@ -707,38 +663,6 @@ export default {
     padding-left: 1rem;
 }
 
-// table
-.resource-type {
-    font-size: 1em;
-    font-weight: 700;
-    text-transform: uppercase;
-    opacity: 0.7;
-}
-
-td.resource-type {
-    min-width: 175px;
-}
-
-.resource-date {
-    width: 80px;
-}
-
-.resource-affiliation {
-    // width: 150px;
-}
-
-#whats-new td {
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-bottom: 10px;
-    font-size: 0.9em;
-    line-height: 1em;
-}
-
-.filters {
-    background: lighten(yellow, 35%);
-}
-
 .search-result {
     border-bottom: 3px solid $grey-40;
     padding: 5px;
@@ -752,6 +676,7 @@ td.resource-type {
     background: lighten($warning-color, 35%);
     border-radius: 5px;
 }
+
 .list-group-item.list-group-item-info {
     background-color: $secondary-color !important;
     border-color: $secondary-color !important;
