@@ -76,7 +76,7 @@ const routes = [
     path: "/resources/search",
     name: "Resources",
     props: route => ({
-      q: route.query.search,
+      q: route.query.q,
       page: route.query.page,
       size: route.query.size,
       filter: route.query.filter,

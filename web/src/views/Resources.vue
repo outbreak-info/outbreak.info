@@ -127,8 +127,8 @@
         <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
           <div class="d-flex flex-column">
             <div class="d-flex align-items-center">
-              <h4 class="m-0 mr-4" v-if="search">
-                You searched for {{ search }}
+              <h4 class="m-0 mr-4" v-if="q">
+                You searched for {{ q }}
               </h4>
               <div class="m-0 text-highlight">
                 {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
@@ -596,7 +596,7 @@ export default {
     $route: {
       immediate: true,
       handler(to, from) {
-        this.searchInput = this.search ? this.search : null;
+        this.searchInput = this.q ? this.q : null;
         this.filterString = this.filter ? this.filter : null;
         this.numPerPage = this.size ? Number(this.size) : 10;
         this.selectedPage = this.page ? Number(this.page) : 0;
