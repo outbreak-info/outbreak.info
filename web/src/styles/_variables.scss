@@ -30,7 +30,7 @@ $link-hover: #0056b3;
 // resource type colors
 // analysis: red
 $analysis-color: #D13B62;
-.Analysis {
+.Analysis, .analysis {
     color: $analysis-color;
     fill: $analysis-color;
 }
@@ -45,7 +45,7 @@ $analysis-color: #D13B62;
 
 // dataset: blue
 $dataset-color: #126B93;
-.Dataset {
+.Dataset, .dataset {
     color: $dataset-color;
     fill: $dataset-color;
 }
@@ -59,7 +59,7 @@ $dataset-color: #126B93;
 
 // coral
 $publication-color: #e15759;
-.Publication, .ScholarlyArticle {
+.Publication, .ScholarlyArticle, .publication {
     color: $publication-color;
     fill: $publication-color;
 }
@@ -74,7 +74,7 @@ $publication-color: #e15759;
 // green
 // $protocol-color: #76b7b2; // green-blue
 $protocol-color: #59a14f;
-.Protocol {
+.Protocol, .protocol {
     color: $protocol-color;
     fill: $protocol-color;
 }
@@ -88,7 +88,7 @@ $protocol-color: #59a14f;
 
 // clinical trial: purple
 $clinical-trial-color: #b475a3;
-.ClinicalTrial {
+.ClinicalTrial, .clinicaltrial {
     color: $clinical-trial-color;
     fill: $clinical-trial-color;
 }
@@ -104,7 +104,7 @@ $clinical-trial-color: #b475a3;
 // $software-color: #76b7b2; // teal
 // $software-color: #edc949; // yellow
 $software-color: saturate(#9c755f, 10%); // brown
-.SoftwareSourceCode {
+.SoftwareSourceCode, .softwaresourcecode {
     color: $software-color;
     fill: $software-color;
 }
@@ -117,7 +117,7 @@ $software-color: saturate(#9c755f, 10%); // brown
 }
 
 $book-color: #ff98a8; // pink
-.Book {
+.Book, .book {
     color: $book-color;
     fill: $book-color;
 }

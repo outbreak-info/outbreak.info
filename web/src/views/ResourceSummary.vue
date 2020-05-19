@@ -31,7 +31,7 @@
 
     <div class="w-100 mb-3 d-flex flex-column">
       <!-- search bar -->
-      <div class="col-sm-12 col-md-8">
+      <!-- <div class="col-sm-12 col-md-8"> -->
         <div class="py-3">
           <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
             <div class="input-group">
@@ -42,11 +42,26 @@
             </div>
           </form>
         </div>
-      </div>
+      <!-- </div> -->
 
       <!-- results listing -->
-      <table>
-        
+      <table v-if="counts.sources" class="text-left" id="source-counts">
+        <div v-for="(item, idx) in counts.sources.children" :key="idx">
+          <tr class="text-muted text-uppercase">
+            <td :class="item.name + ' p-0 pt-3'"  colspan="2">
+              {{item.name}}
+            </td>
+          </tr>
+          <tr v-for="(child, iChild) in item.children" :key="iChild">
+            <td class="p-0 source-name">
+              <small>{{child.name == child.term || child.name == "Zenodo" ? child.name : `${child.term} (${child.name})`}}</small>
+            </td>
+            <td class="p-0">
+              <small>{{child.count.toLocaleString()}}</small>
+            </td>
+          </tr>
+
+        </div>
       </table>
     </div>
   </div>
@@ -111,5 +126,13 @@ export default {
 <style lang="scss" scoped>
 .circle-packing {
     margin-top: -70px;
+}
+
+#source-counts td {
+  line-height: 0.9em;
+}
+
+.source-name {
+  width: 135px;
 }
 </style>
