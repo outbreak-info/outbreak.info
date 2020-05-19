@@ -33,7 +33,7 @@
       <!-- sidebar: links -->
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
         <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
-        <router-link :to = "{path: 'sources', hash: 'resources'}">>Where do we get our data?</router-link>
+        <router-link :to="{path: 'sources', hash: 'resources'}">Where do we get our data?</router-link>
         <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
       </div>
 
@@ -272,6 +272,15 @@
                   </div>
                   <router-link to="search" v-if="item.relatedTo">
                     <small>related resources</small>
+                  </router-link>
+                  <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
+                    based on |
+                    <router-link to="search" v-for="(resource, idx) in item.isBasedOn" :key="idx">
+                      {{ resource["@type"] }}
+                    </router-link>
+                  </div>
+                  <router-link to="search" v-if="item.relatedTo">
+                    <small>related resources</small>
                   </router-link> -->
                 </div>
 
@@ -357,6 +366,7 @@ import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
 import NewResources from "@/components/NewResources.vue";
+
 import {
   mapState
 } from "vuex";
