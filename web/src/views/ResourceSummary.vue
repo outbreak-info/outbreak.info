@@ -41,7 +41,7 @@
             <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
           </div>
         </form>
-        <div class="d-flex">
+        <div class="d-flex mt-1">
           <span class="mr-2">Try:</span>
           <span class="mr-3 d-flex align-items-center" v-for="(demo, idx) in demos" :key="idx">
             <router-link :to="{name: 'Resources', query: {q: demo.query}} ">
