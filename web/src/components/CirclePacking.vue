@@ -157,7 +157,7 @@ export default Vue.extend({
 }
 
 .depth1 {
-    fill: none;
+    fill: none !important;
     stroke: $other-color;
     stroke-width: 1;
     stroke-dasharray: 6,4;
@@ -242,6 +242,11 @@ export default Vue.extend({
 .annotation--type.clinicaltrial {
     font-size: 1.15em;
     fill: darken($clinical-trial-color, 25%);
+}
+
+
+.annotation--type.dataset {
+    fill: darken($dataset-color, 25%);
 }
 
 .annotation--count {

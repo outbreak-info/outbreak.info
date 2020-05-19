@@ -2,7 +2,7 @@
 <div>
 
   <div class="row m-0" id="resource-overview">
-    <div class="col-sm-12 bg-light text-left justify-content-center align-items-center my-5">
+    <div class="col-sm-12 bg-light text-left justify-content-center align-items-center mt-5">
       <h2 class="">Finding resources is hard</h2>
       <p>
         During the COVID-19 epidemic, researchers from around the world have not only been working around the clock to better understand the disease and the virus that causes it, but they are also sharing this knowledge at an unprecented speed. This
@@ -29,40 +29,50 @@
       <CirclePacking class="circle-packing" :data="counts.sources" />
     </div>
 
-    <div class="w-100 mb-3 d-flex flex-column">
+    <div class="w-100 mx-5 d-flex flex-column justify-content-between">
       <!-- search bar -->
       <!-- <div class="col-sm-12 col-md-8"> -->
-        <div class="py-3">
-          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
-              </div>
-              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
+      <div class="py-3">
+        <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
             </div>
-          </form>
+            <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
+          </div>
+        </form>
+        <div class="d-flex">
+          <span class="mr-2">Try:</span>
+          <span class="mr-3 d-flex align-items-center" v-for="(demo, idx) in demos" :key="idx">
+            <router-link :to="{name: 'Resources', query: {q: demo.query}} ">
+              {{demo.label}}
+              <i class="fas fa-angle-double-right"></i>
+            </router-link>
+
+          </span>
         </div>
+      </div>
       <!-- </div> -->
 
       <!-- results listing -->
-      <table v-if="counts.sources" class="text-left" id="source-counts">
-        <div v-for="(item, idx) in counts.sources.children" :key="idx">
-          <tr class="text-muted text-uppercase">
-            <td :class="item.name + ' p-0 pt-3'"  colspan="2">
+      <div v-if="counts.sources" class="text-left d-flex flex-wrap" id="source-counts">
+        <div v-for="(item, idx) in counts.sources.children" :key="idx" class="mr-5 mb-4 p-3 sources">
+          <div class="text-muted text-uppercase font-weight-500">
+            <div :class="item.name" colspan="2">
               {{item.name}}
-            </td>
-          </tr>
-          <tr v-for="(child, iChild) in item.children" :key="iChild">
-            <td class="p-0 source-name">
+            </div>
+          </div>
+          <div v-for="(child, iChild) in item.children" :key="iChild" class="d-flex">
+            <div class="p-0 source-name">
               <small>{{child.name == child.term || child.name == "Zenodo" ? child.name : `${child.term} (${child.name})`}}</small>
-            </td>
-            <td class="p-0">
+            </div>
+            <div class="p-0">
               <small>{{child.count.toLocaleString()}}</small>
-            </td>
-          </tr>
+            </div>
+          </div>
 
         </div>
-      </table>
+      </div>
     </div>
   </div>
 
@@ -90,6 +100,16 @@ export default {
   },
   data() {
     return {
+      demos: [{
+        label: "remdesivir",
+        query: "remdesivir"
+      }, {
+        label: "antibodies",
+        query: "antibodies"
+      }, {
+        label: "x-ray diffraction",
+        query: '"x-ray diffraction"'
+      }],
       recentSubscription: null,
       newData: [],
       counts: [],
@@ -126,13 +146,18 @@ export default {
 <style lang="scss" scoped>
 .circle-packing {
     margin-top: -70px;
+    margin-bottom: -70px;
 }
 
-#source-counts td {
-  line-height: 0.9em;
+.sources {
+    background: white;
+}
+
+#source-counts div {
+    line-height: 0.9em;
 }
 
 .source-name {
-  width: 135px;
+    width: 135px;
 }
 </style>
