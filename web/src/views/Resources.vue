@@ -320,7 +320,7 @@
                 <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
                   <router-link :to="{
                         name: 'Resources',
-                        query: { search: `&quot;${keyword}&quot;` }
+                        query: { q: `&quot;${keyword}&quot;` }
                       }" class="no-underline text-dark">
                     {{ keyword }}
                   </router-link>
@@ -393,7 +393,7 @@ library.add(faArrowLeft, faArrowRight);
 export default {
   name: "Resources",
   props: {
-    search: String,
+    q: String,
     sort: String,
     page: String,
     size: String,
@@ -464,9 +464,9 @@ export default {
 
       this.filterString = this.filters2String();
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -479,9 +479,9 @@ export default {
 
       this.filterString = this.filters2String();
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -509,9 +509,9 @@ export default {
     clearFilters() {
       this.filterString = null;
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -521,9 +521,9 @@ export default {
     },
     onEnter() {
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -533,9 +533,9 @@ export default {
     },
     changeSort() {
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
@@ -547,9 +547,9 @@ export default {
       this.selectedPage += step;
 
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),
@@ -561,9 +561,9 @@ export default {
       this.selectedPage = 0;
 
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput,
+          q: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),

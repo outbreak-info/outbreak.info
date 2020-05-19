@@ -65,9 +65,9 @@ export default {
   methods: {
     onEnter() {
       this.$router.push({
-        path: "resources",
+        name: "Resources",
         query: {
-          search: this.searchInput
+          q: this.searchInput
         }
       });
     }

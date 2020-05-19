@@ -68,9 +68,15 @@ const routes = [
   },
   {
     path: "/resources",
+    name: "Resource Summary",
+    component: () =>
+      import(/* webpackChunkName: "resource-summary" */ "../views/ResourceSummary.vue")
+  },
+  {
+    path: "/resources/search",
     name: "Resources",
     props: route => ({
-      search: route.query.search,
+      q: route.query.search,
       page: route.query.page,
       size: route.query.size,
       filter: route.query.filter,
@@ -81,24 +87,6 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "resources" */ "../views/Resources.vue")
-  },
-  {
-    path: "/resource-summary",
-    name: "Resource Summary",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "resource-summary" */ "../views/ResourceSummary.vue")
-  },
-  {
-    path: "/topics",
-    name: "Topics",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "topics" */ "../views/Topics.vue")
   },
   {
     path: "/resources/:id",
