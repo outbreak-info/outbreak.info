@@ -3,7 +3,7 @@
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
     <g ref="countries" class="country-group"></g>
   </svg>
-  <div class="country-container d-flex">
+  <div class="country-container d-flex flex-wrap">
     <small class="m-0 mr-1" v-for="(country, idx) in countries" :key="idx">
       {{ country }}<span v-if="idx < countries.length - 1">,</span>
     </small>

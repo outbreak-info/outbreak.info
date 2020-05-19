@@ -57,8 +57,6 @@ export function getResources(
     comboString = `${queryString} AND ${filterArr2String(filterArr)}`;
   }
 
-  // TEMP: fix to deal with weird mapping issues
-  sort = "";
 
   store.state.admin.loading = true;
   return forkJoin([
@@ -169,13 +167,13 @@ export function getResourceFacets(
   queryString,
   filterArr,
   facets = [
-    "@type.keyword",
+    "@type",
     "curatedBy.name.keyword",
-    "keywords.keyword",
-    "topicCategory.keyword",
+    "keywords",
+    "topicCategory",
     "funding.funder.name.keyword",
-    "measurementTechnique.keyword",
-    "variableMeasured.keyword"
+    "measurementTechnique",
+    "variableMeasured"
   ]
 ) {
   if (!queryString) {
@@ -250,8 +248,7 @@ export function getResourceFacets(
 export function getMostRecent(
   apiUrl,
   queryString,
-  sortVar = "",
-  // sortVar = "-datePublished",
+  sortVar = "-datePublished",
   num2Return = 3,
   fields = [
     "@type",
