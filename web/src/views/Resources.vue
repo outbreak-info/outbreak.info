@@ -5,8 +5,6 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-  <ResourceTimeline />
-
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 w-100">
@@ -263,7 +261,7 @@
                   </div>
 
                   <!-- relatedTo -->
-                  <router-link to="search" v-if="item['@type'] == 'Dataset'">
+                  <!-- <router-link to="search" v-if="item['@type'] == 'Dataset'">
                     <small>find analyses/publications that use this data</small>
                   </router-link>
                   <div v-if="item.isBasedOn && item.isBasedOn.length" class="px-1 bg-grey__lightest">
@@ -274,7 +272,7 @@
                   </div>
                   <router-link to="search" v-if="item.relatedTo">
                     <small>related resources</small>
-                  </router-link>
+                  </router-link> -->
                 </div>
 
                 <div class="text-right border-top pt-2 mt-2 ml-2 mr-5" v-if="item.curatedBy">
@@ -358,7 +356,6 @@ import StripeAccent from "@/components/StripeAccent.vue";
 import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
-import ResourceTimeline from "@/components/ResourceTimeline.vue";
 import NewResources from "@/components/NewResources.vue";
 import {
   mapState
@@ -405,7 +402,6 @@ export default {
     TrialStatus,
     TrialType,
     FontAwesomeIcon,
-    ResourceTimeline,
     NewResources
   },
   created: function() {
