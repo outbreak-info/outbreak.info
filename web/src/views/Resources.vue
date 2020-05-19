@@ -33,7 +33,7 @@
       <!-- sidebar: links -->
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
         <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
-        <router-link :to="{ name: 'Sources' }">Where do we get our data?</router-link>
+        <router-link :to = "{path: 'sources', hash: 'resources'}">>Where do we get our data?</router-link>
         <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
       </div>
 
@@ -475,10 +475,6 @@ export default {
           }
         });
       });
-    },
-    format: function(dateStr) {
-      const parsed = timeParse("%Y-%m-%d")(dateStr);
-      return timeFormat("%d %B")(parsed);
     },
     expandDescription: function(item) {
       item.descriptionExpanded = !item.descriptionExpanded;
