@@ -20,8 +20,8 @@ export default Vue.extend({
   data() {
     return {
       colorScale: null,
-      width: 550,
-      height: 550,
+      width: 420,
+      height: 420,
       margin: {
         top: 10,
         bottom: 10,
@@ -107,7 +107,7 @@ export default Vue.extend({
 
       const text = this.svg
         .selectAll(".annotation--type")
-        .data(this.nodes.filter(d => d.depth == 1));
+        .data(this.nodes.filter(d => d.depth == 1 && d.value > 1000));
 
       const textPaths = this.svgDefs
         .selectAll("path")
@@ -240,7 +240,7 @@ export default Vue.extend({
 }
 
 .annotation--type.clinicaltrial {
-    font-size: 1.15em;
+    font-size: 1em;
     fill: darken($clinical-trial-color, 25%);
 }
 

@@ -297,6 +297,14 @@ export function getMostRecent(
   );
 }
 
+export function getMostRecentGroup(apiUrl, sortVar, num2Return) {
+  return forkJoin([getMostRecent(apiUrl, "@type:Publication", sortVar, num2Return), getMostRecent(apiUrl, "@type:Dataset", sortVar, num2Return), getMostRecent(apiUrl, "@type:ClinicalTrial", sortVar, num2Return)]).pipe(
+    map(([pubs, datasets, trials]) => {
+      return({publication: pubs, dataset: datasets, clinicaltrial: trials})
+    })
+  )
+}
+
 export function getQuerySummaries(queries, apiUrl) {
   queries.forEach(d => {
     d["query"] = encodeURIComponent(`("${d.terms.join('" OR "')}")`);

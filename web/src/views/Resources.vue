@@ -49,13 +49,13 @@
     <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
-          <li class="navbar-nav">
+          <!-- <li class="navbar-nav">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Topics'
                 }">
               Topics
             </router-link>
-          </li>
+          </li> -->
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Resources',
