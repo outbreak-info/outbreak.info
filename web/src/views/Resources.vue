@@ -474,6 +474,7 @@ export default {
         query: {
           q: this.searchInput,
           filter: this.filterString,
+          params: { disableScroll: true },
           page: "0",
           size: String(this.numPerPage),
           sort: this.sortValue
@@ -486,6 +487,7 @@ export default {
       this.filterString = this.filters2String();
       this.$router.push({
         name: "Resources",
+        params: { disableScroll: true },
         query: {
           q: this.searchInput,
           filter: this.filterString,
