@@ -104,7 +104,7 @@
       <div class="text-center text-muted">
         <ul>
           <li class="d-inline m-2">
-            <a href="mailto:blog@sulab.org" target="_blank" class="text-light">
+            <a href="mailto:help@outbreak.info" target="_blank" class="text-light">
               Contact Us
             </a>
           </li>
