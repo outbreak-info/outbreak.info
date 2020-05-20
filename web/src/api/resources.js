@@ -139,8 +139,10 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
 export function getResourceMetadata(apiUrl, id) {
   store.state.admin.loading = true;
   const timestamp = Math.round(new Date().getTime() / 1e5);
+  const query = id.startsWith("zenodo") ? id : `_id:"${id}"`;
+  
   return from(
-    axios.get(`${apiUrl}query?q=_id:"${id}"&size=1&timestamp=${timestamp}`, {
+    axios.get(`${apiUrl}query?q=${query}&size=1&timestamp=${timestamp}`, {
       headers: {
         "Content-Type": "application/json"
       }
