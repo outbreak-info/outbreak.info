@@ -20,7 +20,7 @@
           </router-link>
         </td>
         <td class="resource-affiliation text-left text-muted" valign="top">
-          <template v-if="item.author">
+          <template v-if="item.author && item.author.length">
             {{
               item.author[0].name
                 ? item.author[0].name
@@ -30,7 +30,7 @@
             }}
             <span v-if="item.author.length > 1"> et al.</span>
           </template>
-          <template v-else-if="item.creator">
+          <template v-else-if="item.creator && item.creator.length">
             {{
               item.creator[0].name
                 ? item.creator[0].name
