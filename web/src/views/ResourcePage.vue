@@ -95,6 +95,9 @@
       <ResourceSidebar :data="data" :date="dateModified" :type="data['@type']" v-if="data" />
     </div>
   </div>
+  <div v-else class="min-height">
+    Sorry, data on {{id}} is not found. Let us know at <a :href="`mailto:help@outbreak.info?subject=Missing metadata for id ${id}`">help@outbreak.info</a>
+  </div>
 </div>
 </template>
 
@@ -129,6 +132,7 @@ export default Vue.extend({
     return ({
       type: null,
       data: null,
+      id: null,
       anchors: {
         default: ["authors", "description", "downloads", "license", "funder"],
         ClinicalTrial: ["authors", "sponsor", "description", "design", "interventions", "eligibility", "outcome", "status"]
@@ -278,9 +282,9 @@ export default Vue.extend({
     }
   },
   mounted() {
-    const id = this.$route.params.id;
+    this.id = this.$route.params.id;
 
-    this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+    this.resultsSubscription = getResourceMetadata(this.$resourceurl, this.id).subscribe(results => {
       this.data = results;
       this.type = results["@type"];
       this.dateModified = this.formatDate(this.data.date);
@@ -306,4 +310,8 @@ export default Vue.extend({
 .section-header {
     text-transform: uppercase;
 }
+.min-height {
+  min-height: 72vh;
+}
+
 </style>

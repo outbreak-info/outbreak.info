@@ -67,6 +67,12 @@ const routes = [
       import(/* webpackChunkName: "contributing" */ "../views/Contributing.vue")
   },
   {
+    path: "/topics",
+    name: "Topics",
+    component: () =>
+      import(/* webpackChunkName: "topics" */ "../views/Topics.vue")
+  },
+  {
     path: "/resources",
     name: "Resource Summary",
     component: () =>

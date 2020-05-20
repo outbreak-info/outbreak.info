@@ -33,7 +33,7 @@
       <!-- sidebar: links -->
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
         <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
-        <router-link :to="{path: 'sources', hash: 'resources'}">Where do we get our data?</router-link>
+        <router-link :to="{path: '/sources', hash: 'resources'}">Where do we get our data?</router-link>
         <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
       </div>
 
@@ -49,13 +49,13 @@
     <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
-          <li class="navbar-nav">
+          <!-- <li class="navbar-nav">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Topics'
                 }">
               Topics
             </router-link>
-          </li>
+          </li> -->
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Resources',
@@ -474,6 +474,7 @@ export default {
         query: {
           q: this.searchInput,
           filter: this.filterString,
+          params: { disableScroll: true },
           page: "0",
           size: String(this.numPerPage),
           sort: this.sortValue
@@ -486,6 +487,7 @@ export default {
       this.filterString = this.filters2String();
       this.$router.push({
         name: "Resources",
+        params: { disableScroll: true },
         query: {
           q: this.searchInput,
           filter: this.filterString,

@@ -1,11 +1,12 @@
 <template>
 <div>
 
-  <div class="row m-0" id="resource-overview">
-    <div class="col-sm-12 bg-light text-left justify-content-center align-items-center mt-5">
+  <div class="d-flex justify-content-center align-items-center my-3" id="resource-overview">
+    <div class="ml-3 text-left ">
       <h2 class="">Finding resources is hard</h2>
       <p>
-        During the COVID-19 epidemic, researchers from around the world have not only been working around the clock to better understand the disease and the virus that causes it, but they are also sharing this knowledge at an unprecented speed. This
+        During the COVID-19 epidemic, researchers from around the world have not only been working around the clock to better understand the disease and the virus that causes it, but they are also sharing this knowledge at an unprecedented speed.
+        This
         openness allows research to happen much more quickly.
       </p>
       <p>
@@ -16,10 +17,6 @@
         more discoverable. <router-link :to="{path: 'sources', hash: 'resources'}"> Learn about our data sources</router-link>
       </p>
     </div>
-  </div>
-
-  <div class="d-flex">
-
 
     <div id="resource-counts" class="d-flex ml-3 flex-column align-items-center" v-if="counts.total">
       <h3 class="text-left text-highlight">{{counts.total}} resources</h3>
@@ -28,11 +25,13 @@
 
       <CirclePacking class="circle-packing" :data="counts.sources" />
     </div>
+  </div>
 
+  <div class="d-flex">
     <div class="w-100 mx-5 d-flex flex-column justify-content-between">
       <!-- search bar -->
-      <!-- <div class="col-sm-12 col-md-8"> -->
-      <div class="py-3">
+      <div class="col-sm-12 col-md-8">
+      <div class="pb-4">
         <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
           <div class="input-group">
             <div class="input-group-prepend">
@@ -52,32 +51,99 @@
           </span>
         </div>
       </div>
-      <!-- </div> -->
 
-      <!-- results listing -->
-      <div v-if="counts.sources" class="text-left d-flex flex-wrap" id="source-counts">
-        <div v-for="(item, idx) in counts.sources.children" :key="idx" class="mr-5 mb-4 p-3 sources">
-          <div class="text-muted text-uppercase font-weight-500">
-            <div :class="item.name" colspan="2">
-              {{item.name}}
-            </div>
-          </div>
-          <div v-for="(child, iChild) in item.children" :key="iChild" class="d-flex">
-            <div class="p-0 source-name">
-              <small>{{child.name == child.term || child.name == "Zenodo" ? child.name : `${child.term} (${child.name})`}}</small>
-            </div>
-            <div class="p-0">
-              <small>{{child.count.toLocaleString()}}</small>
-            </div>
-          </div>
-
-        </div>
-      </div>
     </div>
   </div>
+  </div>
 
-  <div class="row m-0 w-100">
-    <NewResources :newData="newData" class="col-sm-12" />
+  <div class="row m-0 w-100 text-left">
+    <div class="col-sm-12 text-highlight d-flex justify-content-between align-items-center mb-2">
+      <h5 class="text-uppercase">What's new</h5>
+    </div>
+
+    <div class="col-md-4 col-sm-6 pr-3  d-flex flex-column" v-if="newPubs">
+      <h6 class="Publication">Publications</h6>
+      <div class="mb-3" v-for="(item, idx) in newPubs" :key="idx">
+        <span class="opacity-40 font-weight-700 mr-2">{{format(item.datePublished)}}</span>
+        <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="">{{item.name}}</router-link>
+        <template v-if="item.author">
+          [{{
+            item.author[0].name
+              ? item.author[0].name
+              : item.author[0].givenName +
+                " " +
+                item.author[0].familyName}}<span v-if="item.author.length > 1"> et al.]</span>
+          <span v-else>]</span>
+        </template>
+        <template v-else-if="item.creator">
+          [{{
+            item.creator[0].name
+              ? item.creator[0].name
+              : item.creator[0].givenName +
+                " " +
+                item.creator[0].familyName
+          }}<span v-if="item.creator.length > 1"> et al.]</span>
+          <span v-else>]</span>
+        </template>
+      </div>
+      <router-link :to="{name: 'Resources', query:{filter: '@type:Publication'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all publications</router-link>
+    </div>
+
+    <div class="col-md-4 col-sm-6 pr-3 d-flex flex-column" v-if="newTrials">
+      <h6 class="ClinicalTrial">Clinical Trials</h6>
+      <div class="mb-3" v-for="(item, idx) in newTrials" :key="idx">
+        <span class="opacity-40 font-weight-700 mr-2">{{format(item.datePublished)}}</span>
+        <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="item.name">{{item.name}}</router-link>
+        <template v-if="item.author && item.author.length">
+          [{{
+            item.author[0].name
+              ? item.author[0].name
+              : item.author[0].givenName +
+                " " +
+                item.author[0].familyName}}<span v-if="item.author.length > 1"> et al.]</span>
+          <span v-else>]</span>
+        </template>
+        <template v-else-if="item.creator && item.creator.length">
+          [{{
+            item.creator[0].name
+              ? item.creator[0].name
+              : item.creator[0].givenName +
+                " " +
+                item.creator[0].familyName
+          }}<span v-if="item.creator.length > 1"> et al.]</span>
+          <span v-else>]</span>
+        </template>
+      </div>
+      <router-link :to="{name: 'Resources', query:{filter: '@type:ClinicalTrial'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all clinical trials</router-link>
+    </div>
+
+    <div class="col-md-4 pr-3 d-flex flex-column" v-if="newDatasets">
+      <h6 class="Dataset">Datasets</h6>
+      <div class="mb-3" v-for="(item, idx) in newDatasets" :key="idx">
+        <span class="opacity-40 font-weight-700 mr-2">{{format(item.datePublished)}}</span>
+        <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="">{{item.name}}</router-link>
+        <template v-if="item.author && item.author.length">
+          [{{
+            item.author[0].name
+              ? item.author[0].name
+              : item.author[0].givenName +
+                " " +
+                item.author[0].familyName}}<span v-if="item.author.length > 1"> et al.]</span>
+          <span v-else>]</span>
+        </template>
+        <template v-else-if="item.creator && item.creator.length">
+          [{{
+            item.creator[0].name
+              ? item.creator[0].name
+              : item.creator[0].givenName +
+                " " +
+                item.creator[0].familyName
+          }}<span v-if="item.creator.length > 1"> et al.]</span>
+          <span v-else>]</span>
+        </template>
+      </div>
+      <router-link :to="{name: 'Resources', query:{filter: '@type:Dataset'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all datasets</router-link>
+    </div>
   </div>
 
 </div>
@@ -85,17 +151,22 @@
 
 <script>
 import {
-  getMostRecent,
+  getMostRecentGroup,
   getSourceSummary
 } from "@/api/resources.js";
 
-import NewResources from "@/components/NewResources.vue";
+// import NewResources from "@/components/NewResources.vue";
 import CirclePacking from "@/components/CirclePacking.vue";
+
+import {
+  timeFormat,
+  timeParse
+} from "d3";
 
 export default {
   name: "ResourceSummary",
   components: {
-    NewResources,
+    // NewResources,
     CirclePacking
   },
   data() {
@@ -111,12 +182,18 @@ export default {
         query: '"x-ray diffraction"'
       }],
       recentSubscription: null,
-      newData: [],
+      newPubs: [],
+      newDatasets: [],
+      newTrials: [],
       counts: [],
       searchInput: null
     }
   },
   methods: {
+    format: function(dateStr) {
+      const parsed = timeParse("%Y-%m-%d")(dateStr);
+      return timeFormat("%d %B %Y")(parsed);
+    },
     onEnter() {
       this.$router.push({
         name: "Resources",
@@ -127,12 +204,14 @@ export default {
     }
   },
   mounted() {
-    this.recentSubscription = getMostRecent(this.$resourceurl, "__all__", "-datePublished", 5).subscribe(results => {
-      this.newData = results;
+    this.recentSubscription = getMostRecentGroup(this.$resourceurl, "-datePublished", 5).subscribe(results => {
+      console.log(results)
+      this.newPubs = results["publication"];
+      this.newDatasets = results["dataset"];
+      this.newTrials = results["clinicaltrial"];
     });
 
     this.countSubscription = getSourceSummary(this.$resourceurl).subscribe(results => {
-      console.log(results)
       this.counts = results;
     });
   },
@@ -145,8 +224,8 @@ export default {
 
 <style lang="scss" scoped>
 .circle-packing {
-    margin-top: -70px;
-    margin-bottom: -70px;
+    margin-top: -50px;
+    margin-bottom: -50px;
 }
 
 .sources {
@@ -159,5 +238,9 @@ export default {
 
 .source-name {
     width: 135px;
+}
+
+.opacity-40 {
+    opacity: 0.4;
 }
 </style>

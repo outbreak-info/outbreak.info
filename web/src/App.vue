@@ -71,7 +71,7 @@
               </router-link>
             </li>
 
-            <!-- <li class="nav-item">
+            <li class="nav-item">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -80,7 +80,7 @@
                 :class="{ active: $route.name == 'Resources' }"
                 >Resources
               </router-link>
-            </li> -->
+            </li>
 
             <li class="nav-item">
               <router-link
@@ -104,7 +104,7 @@
       <div class="text-center text-muted">
         <ul>
           <li class="d-inline m-2">
-            <a href="mailto:blog@sulab.org" target="_blank" class="text-light">
+            <a href="mailto:help@outbreak.info" target="_blank" class="text-light">
               Contact Us
             </a>
           </li>
