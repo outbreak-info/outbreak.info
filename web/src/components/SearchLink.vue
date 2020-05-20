@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     searchStr(item) {
-      return (`${this.searchField}:"${item}"`)
+      return (this.searchField ? `${this.searchField}:"${item}"` : item)
     },
     tooltipText(item) {
       const ttip = this.tooltipLabel ? `Search for ${item} ${this.tooltipLabel}` : `Search for ${item}`;
