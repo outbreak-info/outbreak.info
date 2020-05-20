@@ -4,7 +4,7 @@
     <TrialStatus :status="data.studyStatus" :includeDate="true" :locations="data.studyLocation" :mapWidth="500" />
   </div>
 
-  <div class="mt-3 mb-2" v-if="locations">
+  <div class="mt-3 mb-2" v-if="locations && locations.length">
     Study Locations
     <ul>
       <li v-for="(location, idx) in locations" :key="idx">
