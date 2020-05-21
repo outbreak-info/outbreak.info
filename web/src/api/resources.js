@@ -68,9 +68,21 @@ export function getResources(
   return forkJoin([
     getMostRecent(apiUrl, comboString),
     getMetadataArray(apiUrl, comboString, sort, size, page),
-    getResourceFacets(apiUrl, comboString, filterArr)
+    getResourceFacets(apiUrl, queryString, filterArr), // call to get the counts for the supplied query
+    getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
   ]).pipe(
-    map(([recent, results, facets]) => {
+    map(([recent, results, allFacets, currentFacets]) => {
+      const facets = allFacets.map(all => {
+        all.counts.map(obj => {
+          const current = currentFacets.find(curr => curr.id === all.id);
+          var newval = current["counts"].find(item => obj.term === item.term);
+          newval = newval ? newval : {term: obj.term, count: 0}
+          Object.assign(obj, newval)
+        })
+        all["filtered"]= cloneDeep(all.counts);
+          return(all)
+      })
+
       results["recent"] = recent;
       results["facets"] = facets;
       return results;
@@ -140,7 +152,7 @@ export function getResourceMetadata(apiUrl, id) {
   store.state.admin.loading = true;
   const timestamp = Math.round(new Date().getTime() / 1e5);
   const query = id.startsWith("zenodo") ? id : `_id:"${id}"`;
-  
+
   return from(
     axios.get(`${apiUrl}query?q=${query}&size=1&timestamp=${timestamp}`, {
       headers: {
@@ -218,10 +230,6 @@ export function getResourceFacets(
         results[key]["terms"].forEach(d => {
           d["checked"] =
             filters.length == 1 ? filters[0].values.includes(d.term) : false;
-          d["checked2"] = d.term;
-          d["checked3"] = filters;
-          d["checked4"] = filterArr;
-          d["checked5"] = filterArr;
         });
         return {
           variable: key
@@ -234,7 +242,7 @@ export function getResourceFacets(
             .replace("variableMeasured", "variable measured"),
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
-          filtered: cloneDeep(results[key]["terms"]),
+          // filtered: cloneDeep(results[key]["terms"]),
           total: results[key]["terms"].length,
           num2Display: 5,
           expanded: true
