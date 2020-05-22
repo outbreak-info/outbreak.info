@@ -68,17 +68,18 @@ export function getResources(
   return forkJoin([
     getMostRecent(apiUrl, comboString),
     getMetadataArray(apiUrl, comboString, sort, size, page),
-    getResourceFacets(apiUrl, queryString, filterArr), // call to get the counts for the supplied query
-    getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
+    getResourceFacets(apiUrl, queryString, filterArr) // call to get the counts for the supplied query
+    // getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
   ]).pipe(
-    map(([recent, results, allFacets, currentFacets]) => {
+    map(([recent, results, allFacets]) => {
+    // map(([recent, results, allFacets, currentFacets]) => {
       const facets = allFacets.map(all => {
-        all.counts.map(obj => {
-          const current = currentFacets.find(curr => curr.id === all.id);
-          var newval = current["counts"].find(item => obj.term === item.term);
-          newval = newval ? newval : {term: obj.term, count: 0}
-          Object.assign(obj, newval)
-        })
+        // all.counts.map(obj => {
+        //   const current = currentFacets.find(curr => curr.id === all.id);
+        //   var newval = current["counts"].find(item => obj.term === item.term);
+        //   newval = newval ? newval : {term: obj.term, count: 0}
+        //   Object.assign(obj, newval)
+        // })
         all["filtered"]= cloneDeep(all.counts);
           return(all)
       })

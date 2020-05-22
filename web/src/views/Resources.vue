@@ -39,7 +39,7 @@
 
       <!-- what's new -->
       <div class="col-sm-12">
-        <NewResources :newData="newData"/>
+        <NewResources :newData="newData" />
       </div>
     </div>
   </section>
@@ -106,7 +106,9 @@
                       ]" v-if="optIdx < facet.num2Display">
                     <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
                     <label :for="facet.id + optIdx" class="m-0">
-                      <small>{{ option.term }} ({{ option.count.toLocaleString() }})</small>
+                      <small>{{ option.term }}
+                        <!-- ({{ option.count.toLocaleString() }}) -->
+                      </small>
                     </label>
                   </li>
                 </div>
@@ -474,7 +476,9 @@ export default {
         query: {
           q: this.searchInput,
           filter: this.filterString,
-          params: { disableScroll: true },
+          params: {
+            disableScroll: true
+          },
           page: "0",
           size: String(this.numPerPage),
           sort: this.sortValue
@@ -487,7 +491,9 @@ export default {
       this.filterString = this.filters2String();
       this.$router.push({
         name: "Resources",
-        params: { disableScroll: true },
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
