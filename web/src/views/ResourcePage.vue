@@ -117,6 +117,10 @@ import {
   getResourceMetadata
 } from "@/api/resources.js";
 
+import {
+  cloneDeep
+} from "lodash";
+
 import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 import ClinicalTrialDescription from "@/components/ClinicalTrialDescription.vue";
@@ -152,7 +156,13 @@ export default Vue.extend({
     // Dublin Core ref: https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-4
     var citationTags = [];
     if (this.data) {
-      metadata = this.data;
+      metadata = cloneDeep(this.data);
+
+      // phaseNumber causes problems
+      if (metadata.studyDesign && metadata.studyDesign.phaseNumber) {
+        delete metadata.studyDesign.phaseNumber;
+      };
+
       metadata["includedInDataCatalog"] = {
         "@type": "DataCatalog",
         name: "outbreak.info",
@@ -311,7 +321,6 @@ export default Vue.extend({
     text-transform: uppercase;
 }
 .min-height {
-  min-height: 72vh;
+    min-height: 72vh;
 }
-
 </style>
