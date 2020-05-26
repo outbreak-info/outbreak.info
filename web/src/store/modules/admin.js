@@ -1,15 +1,12 @@
 // initial state
 const state = {
   loading: false,
-  sources: [
-    {
+  sources: [{
       id: "JHU",
-      name:
-        "Johns Hopkins University Center for Systems Science and Engineering",
+      name: "Johns Hopkins University Center for Systems Science and Engineering",
       scope: "(non-U.S. data)",
       img: "jhu.png",
-      description:
-        'Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China. See <a target="_blank" rel="noreferrer" href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">data FAQ</a>.',
+      description: 'Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China. See <a target="_blank" rel="noreferrer" href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">data FAQ</a>.',
       url: "https://github.com/CSSEGISandData/COVID-19"
     },
     {
@@ -17,8 +14,7 @@ const state = {
       name: "The New York Times",
       img: "nytimes.png",
       scope: "(U.S. data)",
-      description:
-        'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
+      description: 'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
       url: "https://github.com/nytimes/covid-19-data"
     },
     {
@@ -26,13 +22,11 @@ const state = {
       name: "The COVID Tracking Project",
       scope: "(testing data)",
       img: "ustesting.svg",
-      description:
-        'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
+      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
       url: "https://github.com/nytimes/covid-19-data"
     }
   ],
-  geoSources: [
-    {
+  geoSources: [{
       id: "naturaleath",
       name: "Natural Earth",
       img: "naturalearth.png",
@@ -45,92 +39,84 @@ const state = {
       name: "United States Census Bureau",
       scope: "(Metropolitan areas)",
       img: "census.svg",
-      description:
-        "Metropolitan areas are defined by the U.S. Census Bureau's Core Based Statistical Areas. Totals for Metro areas are calculated by aggregating the component U.S. counties into the Core Based Statistical Areas.",
-      url:
-        "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html"
+      description: "Metropolitan areas are defined by the U.S. Census Bureau's Core Based Statistical Areas. Totals for Metro areas are calculated by aggregating the component U.S. counties into the Core Based Statistical Areas.",
+      url: "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html"
     }
   ],
-  resources: [
-    {
+  resources: [{
       category: "Datasets",
-      sources: [
-        {
-          id: "zenodo",
-          name: "Zenodo",
-          img: "zenodo.svg",
-          url: "https://zenodo.org/communities/covid-19/",
-          description:
-            "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other)."
+      sources: [{
+          id: "figshare",
+          name: "Figshare",
+          img: "figshare_icon.svg",
+          url: "https://covid19.figshare.com/",
+          description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner."
         },
         {
           id: "pdb",
           name: "The Protein Data Bank",
           img: "pdb.png",
           url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
-          description:
-            "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies."
+          description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies."
+        },
+        {
+          id: "zenodo",
+          name: "Zenodo",
+          img: "zenodo.svg",
+          url: "https://zenodo.org/communities/covid-19/",
+          description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other)."
         }
       ]
     },
     {
       category: "Publications",
-      sources: [
-        {
+      sources: [{
           id: "litcovid",
           name: "LitCovid",
           img: "litcovid.png",
           url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
-          description:
-            'LitCovid is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus. It is the most comprehensive resource on the subject, providing a central access to 4929 (and growing) relevant articles in PubMed. The articles are updated daily and are further categorized by different research topics and geographic locations for improved access. You can read more at <a href="https://www.nature.com/articles/d41586-020-00694-1" target="_blank" rel="noreferrer">Chen et al. Nature (2020)</a> and download their data <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/#data-download" rel="noreferrer" target="_blank">here</a>.'
+          description: 'LitCovid is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus. It is the most comprehensive resource on the subject, providing a central access to 4929 (and growing) relevant articles in PubMed. The articles are updated daily and are further categorized by different research topics and geographic locations for improved access. You can read more at <a href="https://www.nature.com/articles/d41586-020-00694-1" target="_blank" rel="noreferrer">Chen et al. Nature (2020)</a> and download their data <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/#data-download" rel="noreferrer" target="_blank">here</a>.'
         },
         {
           id: "biorxiv",
           name: "bioRixv",
           img: "biorxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
-          description:
-            'bioRxiv (pronounced "bio-archive") is a free online archive and distribution service for unpublished preprints in the life sciences. It is operated by Cold Spring Harbor Laboratory, a not-for-profit research and educational institution. By posting preprints on bioRxiv, authors are able to make their findings immediately available to the scientific community and receive feedback on draft manuscripts before they are submitted to journals.'
+          description: 'bioRxiv (pronounced "bio-archive") is a free online archive and distribution service for unpublished preprints in the life sciences. It is operated by Cold Spring Harbor Laboratory, a not-for-profit research and educational institution. By posting preprints on bioRxiv, authors are able to make their findings immediately available to the scientific community and receive feedback on draft manuscripts before they are submitted to journals.'
         },
         {
           id: "medrxiv",
           name: "medRxiv",
           img: "medrxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
-          description:
-            'medRxiv (pronounced "med-archive") is a free online archive and distribution server for complete but unpublished manuscripts (preprints) in the medical, clinical, and related health sciences. Preprints are preliminary reports of work that have not been certified by peer review. They should not be relied on to guide clinical practice or health-related behavior and should not be reported in news media as established information.'
+          description: 'medRxiv (pronounced "med-archive") is a free online archive and distribution server for complete but unpublished manuscripts (preprints) in the medical, clinical, and related health sciences. Preprints are preliminary reports of work that have not been certified by peer review. They should not be relied on to guide clinical practice or health-related behavior and should not be reported in news media as established information.'
         }
       ]
     },
     {
       category: "Clinical Trials",
-      sources: [
-        {
+      sources: [{
           id: "nct",
           name: "ClinicalTrials.gov",
           img: "clinicaltrialsgov.png",
           url: "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
-          description:
-            "ClinicalTrials.gov is a database of privately and publicly funded clinical studies conducted around the world."
+          description: "ClinicalTrials.gov is a database of privately and publicly funded clinical studies conducted around the world."
         },
         {
           id: "who",
           name: "WHO International Clinical Trials Registry Platform",
           img: "who.svg",
           url: "https://www.who.int/ictrp/en/",
-          description:
-            "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source."
+          description: "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source."
         }
       ]
     }
   ],
-  updates: [
-    {
+  updates: [{
       date: new Date("2020-05-19 0:0"),
       category: "data",
       title: "Added searchable resources",
-      description:
-        'Added resource metadata for publications from <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a> and <a href="https://connect.biorxiv.org/relate/content/181" target="_blank" rel="noreferrer">bioRixv and medRxiv</a>; clinical trials from <a href="https://clinicaltrials.gov/ct2/results?cond=COVID-19" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and  <a href="https://www.who.int/ictrp/en/" target="_blank" rel="noreferrer">WHO International Clinical Trials Registry Platform</a>; and datasets from <a href="https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true" target="_blank" rel="noreferrer">The Protein Data Bank</a> and <a href="https://zenodo.org/communities/covid-19/" target="_blank" rel="noreferrer">Zenodo</a>. <a href="/sources#resources">View more about sources</a>',
+      description: 'Added resource metadata for publications from <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a> and <a href="https://connect.biorxiv.org/relate/content/181" target="_blank" rel="noreferrer">bioRixv and medRxiv</a>; clinical trials from <a href="https://clinicaltrials.gov/ct2/results?cond=COVID-19" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and  <a href="https://www.who.int/ictrp/en/" target="_blank" rel="noreferrer">WHO International Clinical Trials Registry Platform</a>; and datasets from <a href="https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true" target="_blank" rel="noreferrer">The Protein Data Bank</a> and <a href="https://zenodo.org/communities/covid-19/" target="_blank" rel="noreferrer">Zenodo</a>. <a href="/sources#resources">View more about sources</a>',
       route: {
         name: "Resource Summary",
       }
@@ -139,8 +125,7 @@ const state = {
       date: new Date("2020-04-06 0:0"),
       category: "data",
       title: "Changed United States epidemiology data source",
-      description:
-        'Switched the data source for U.S. epidemiological data from <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank" rel="noreferrer">Johns Hopkins</a> to the <a href="https://github.com/nytimes/covid-19-data" target="_blank" rel="noreferrer">New York Times</a>.',
+      description: 'Switched the data source for U.S. epidemiological data from <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank" rel="noreferrer">Johns Hopkins</a> to the <a href="https://github.com/nytimes/covid-19-data" target="_blank" rel="noreferrer">New York Times</a>.',
       route: {
         name: "Epidemiology",
         query: {
@@ -153,8 +138,7 @@ const state = {
       date: new Date("2020-04-06 0:0"),
       category: "feature",
       title: "Added United States Metropolitan Areas aggregations",
-      description:
-        "Using the U.S. Census Bureau's Core Based Statistical Areas, calculated case and death totals for metropolitan areas, which are groups of U.S. counties.",
+      description: "Using the U.S. Census Bureau's Core Based Statistical Areas, calculated case and death totals for metropolitan areas, which are groups of U.S. counties.",
       route: {
         name: "Epidemiology",
         query: {
@@ -167,8 +151,7 @@ const state = {
       date: new Date("2020-03-31 0:0"),
       category: "feature",
       title: "Added daily case and death counts",
-      description:
-        "Created daily histograms of confirmed cases or deaths pre day by location.",
+      description: "Created daily histograms of confirmed cases or deaths pre day by location.",
       route: {
         name: "Epidemiology",
         query: {
@@ -181,8 +164,7 @@ const state = {
       date: new Date("2020-03-31 0:0"),
       category: "feature",
       title: "Created iframe-embeddable summary boxes",
-      description:
-        "Added customizable summary boxes, which can be embedded within iframes. Locations should be specified by `location_id` (usually the ISO3 or FIPS code) and should be separated by semicolons.",
+      description: "Added customizable summary boxes, which can be embedded within iframes. Locations should be specified by `location_id` (usually the ISO3 or FIPS code) and should be separated by semicolons.",
       route: {
         name: "Summary",
         query: {
@@ -194,8 +176,7 @@ const state = {
       date: new Date("2020-03-24 0:0"),
       category: "feature",
       title: "Added doubling rates",
-      description:
-        "Created summary of the doubling rates for a location in the last five days compared to the previous five days.",
+      description: "Created summary of the doubling rates for a location in the last five days compared to the previous five days.",
       route: {
         name: "Doubling Rates",
         query: {
@@ -206,10 +187,8 @@ const state = {
     {
       date: new Date("2020-04-10 0:0"),
       category: "feature",
-      title:
-        "Normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
-      description:
-        "For epidemiology plots over time, allow the x-axis to shift to a normalized timepoint: when the location had 100 cumulative confirmed cases, 10 cumulative deaths, or 50 cumulative deaths.",
+      title: "Normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
+      description: "For epidemiology plots over time, allow the x-axis to shift to a normalized timepoint: when the location had 100 cumulative confirmed cases, 10 cumulative deaths, or 50 cumulative deaths.",
       route: {
         name: "Epidemiology",
         query: {
@@ -223,10 +202,8 @@ const state = {
     {
       date: new Date("2020-04-21 0:0"),
       category: "data",
-      title:
-        "Add testing and hospitalization data for states in the United States",
-      description:
-        'Incorporate testing and hospitalzation data from the <a href="https://covidtracking.com/" target="_blank" rel="noreferrer">The COVID Tracking Project</a>.',
+      title: "Add testing and hospitalization data for states in the United States",
+      description: 'Incorporate testing and hospitalzation data from the <a href="https://covidtracking.com/" target="_blank" rel="noreferrer">The COVID Tracking Project</a>.',
       route: {
         name: "Epidemiology",
         query: {
