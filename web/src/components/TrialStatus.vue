@@ -1,25 +1,31 @@
 <template>
 <div>
-  <div class="status-container d-flex justify-content-between align-items-center py-1 px-2 my-2">
-    <div class="d-flex align-items-center">
-      <!-- status -->
-      <small class="status">
-        {{ status.status }}
-      </small>
-      <!-- status date -->
-      <span class="ml-3" v-if="includeDate">
-        <small>
-          <i class="far fa-clock text-muted mr-1"></i>
-          as of {{ status.statusDate }}
+  <div class="d-flex flex-column  mb-3">
+    <div class="status-container d-flex justify-content-between align-items-center py-1 px-2 mt-2">
+      <div class="d-flex align-items-center">
+        <!-- status -->
+        <small class="status">
+          {{ status.status }}
         </small>
-      </span>
+        <!-- status date -->
+        <span class="ml-3" v-if="includeDate">
+          <small>
+            <i class="far fa-clock text-muted mr-1"></i>
+            as of {{ status.statusDate }}
+          </small>
+        </span>
+      </div>
+
+      <small class="text-dark" v-if="status.enrollmentCount">
+        {{ status.enrollmentType }} size:
+        {{ status.enrollmentCount.toLocaleString() }}
+      </small>
     </div>
-    <small class="text-dark" v-if="status.enrollmentCount">
-      {{ status.enrollmentType }} size:
-      {{ status.enrollmentCount.toLocaleString() }}
+    <small v-if="status.whyStopped" class="status-stopped  px-2">
+      Why stopped: {{status.whyStopped}}
     </small>
   </div>
-  <CountryMap :countries="countries" :width="mapWidth" v-if="countries.length"/>
+  <CountryMap :countries="countries" :width="mapWidth" v-if="countries.length" />
 </div>
 </template>
 
@@ -78,5 +84,10 @@ export default Vue.extend({
     text-transform: uppercase;
     font-weight: 500;
     color: darken($clinical-trial-color, 15%);
+}
+
+.status-stopped {
+    color: white;
+    background: $clinical-trial-color;
 }
 </style>

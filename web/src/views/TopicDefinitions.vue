@@ -57,7 +57,6 @@ export default Vue.extend({
           })
           .entries(data)
           .sort((a, b) => a.key < b.key ? -1 : 1);
-        console.log(this.topicArr)
       })
     }
   },
