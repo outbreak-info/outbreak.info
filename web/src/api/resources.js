@@ -72,7 +72,7 @@ export function getResources(
     // getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
   ]).pipe(
     map(([recent, results, allFacets]) => {
-    // map(([recent, results, allFacets, currentFacets]) => {
+      // map(([recent, results, allFacets, currentFacets]) => {
       const facets = allFacets.map(all => {
         // all.counts.map(obj => {
         //   const current = currentFacets.find(curr => curr.id === all.id);
@@ -80,8 +80,8 @@ export function getResources(
         //   newval = newval ? newval : {term: obj.term, count: 0}
         //   Object.assign(obj, newval)
         // })
-        all["filtered"]= cloneDeep(all.counts);
-          return(all)
+        all["filtered"] = cloneDeep(all.counts);
+        return (all)
       })
 
       results["recent"] = recent;
@@ -170,7 +170,8 @@ export function getResourceMetadata(apiUrl, id) {
         metadata.datePublished ?
         metadata.datePublished :
         metadata.dateCreated;
-      console.log(metadata);
+
+      delete metadata["_score"];
 
       return metadata;
     }),
@@ -311,7 +312,11 @@ export function getMostRecent(
 export function getMostRecentGroup(apiUrl, sortVar, num2Return) {
   return forkJoin([getMostRecent(apiUrl, "@type:Publication", sortVar, num2Return), getMostRecent(apiUrl, "@type:Dataset", sortVar, num2Return), getMostRecent(apiUrl, "@type:ClinicalTrial", sortVar, num2Return)]).pipe(
     map(([pubs, datasets, trials]) => {
-      return({publication: pubs, dataset: datasets, clinicaltrial: trials})
+      return ({
+        publication: pubs,
+        dataset: datasets,
+        clinicaltrial: trials
+      })
     })
   )
 }
@@ -413,7 +418,10 @@ export function getSourceCounts(apiUrl) {
     })
     return ({
       total: results.total.toLocaleString(),
-      sources: {name: "root", children: cleaned}
+      sources: {
+        name: "root",
+        children: cleaned
+      }
     })
   }))
 }
