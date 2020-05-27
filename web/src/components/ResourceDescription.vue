@@ -100,6 +100,7 @@
           data.dateCreated ||
           data.dataUpdated ||
           data.datePublished ||
+            data.curatedBy.curationDate ||
           data.curatedBy.versionDate" class="text-muted">
 
       <span class="badge bg-grey__lightest" v-if="data.dateModified">
@@ -123,7 +124,12 @@
 
       <span v-if="data.curatedBy && data.curatedBy.versionDate && (data.dateCreated || data.datePublished || data.dateModified)" class="mx-1">&bull;</span>
       <span class="badge bg-grey__lightest" v-if="data.curatedBy && data.curatedBy.versionDate">
-        accessed {{ this.formatDate(data.curatedBy.versionDate) }}
+        version {{ this.formatDate(data.curatedBy.versionDate) }}
+      </span>
+
+      <span v-if="data.curatedBy && data.curatedBy.curationDate && (data.dateCreated || data.datePublished || data.dateModified ||  data.curatedBy.versionDate )" class="mx-1">&bull;</span>
+      <span class="badge bg-grey__lightest" v-if="data.curatedBy && data.curatedBy.curationDate">
+        accessed {{ this.formatDate(data.curatedBy.curationDate) }}
       </span>
     </div>
   </div>
@@ -151,7 +157,7 @@
   <div class="mt-2" v-if="data.curatedBy">
     <small>Record provided by
       <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}
-      <img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25" class="ml-1 mr-4" />
+        <img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25" class="ml-1 mr-4" />
       </a>
       <router-link :to="{ name: 'Sources' }">Learn more</router-link>
     </small>
@@ -165,7 +171,7 @@
     <div v-html="data.abstract" v-else-if="data.abstract"></div>
     <div v-else>
       <h6 class="m-0 text-muted">Description</h6>
-    <small class="text-muted">not provided</small>
+      <small class="text-muted">not provided</small>
     </div>
 
   </div>
@@ -208,7 +214,7 @@ export default Vue.extend({
     })
   },
   methods: {
-    getLogo(curator){
+    getLogo(curator) {
       const source = this.resources.flatMap(d => d.sources).filter(d => d.id === curator.toLowerCase() || d.name.toLowerCase() === curator.toLowerCase());
       return source.length == 1 ? source[0].img : null;
     },
@@ -227,7 +233,7 @@ export default Vue.extend({
   mounted() {
     const id = this.$route.params.id;
 
-    console.log(this.data)
+    // console.log(this.data)
 
     tippy(".topic", {
       content: "Loading...",
@@ -273,13 +279,13 @@ export default Vue.extend({
     border-radius: 5px;
     white-space: nowrap;
     & a {
-      color: white;
+        color: white;
     }
 }
 
 .keyword-container {
-  display: flex;
-  min-width: 0;
+    display: flex;
+    min-width: 0;
 }
 
 .keyword {
