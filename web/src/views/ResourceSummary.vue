@@ -205,13 +205,14 @@ export default {
   },
   mounted() {
     this.recentSubscription = getMostRecentGroup(this.$resourceurl, "-datePublished", 5).subscribe(results => {
-      console.log(results)
+      // console.log(results)
       this.newPubs = results["publication"];
       this.newDatasets = results["dataset"];
       this.newTrials = results["clinicaltrial"];
     });
 
     this.countSubscription = getSourceSummary(this.$resourceurl).subscribe(results => {
+      // console.log(results)
       this.counts = results;
     });
   },

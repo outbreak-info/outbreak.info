@@ -71,7 +71,6 @@ export default {
         const nested = nest()
         .key(d => d.studyLocationCountry)
         .entries(this.data.studyLocation.slice().sort((a,b) => a.studyLocationCountry < b.studyLocationCountry ? -1 : 1));
-        console.log(nested)
 
         return(nested)
       } else {

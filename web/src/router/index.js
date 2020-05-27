@@ -6,8 +6,7 @@ import Terms from "../views/Terms.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     name: "Home",
     component: Home
@@ -29,7 +28,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+      import( /* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
     path: "/latest",
@@ -38,7 +37,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "latest" */ "../views/Latest.vue")
+      import( /* webpackChunkName: "latest" */ "../views/Latest.vue")
   },
   {
     path: "/data",
@@ -46,7 +45,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "data" */ "../views/Data.vue")
+    component: () => import( /* webpackChunkName: "data" */ "../views/Data.vue")
   },
   {
     path: "/sources",
@@ -55,7 +54,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "sources" */ "../views/Sources.vue")
+      import( /* webpackChunkName: "sources" */ "../views/Sources.vue")
   },
   {
     path: "/contributing-data",
@@ -64,25 +63,25 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "contributing" */ "../views/Contributing.vue")
+      import( /* webpackChunkName: "contributing" */ "../views/Contributing.vue")
   },
   {
     path: "/topics",
     name: "Topics",
     component: () =>
-      import(/* webpackChunkName: "topics" */ "../views/Topics.vue")
+      import( /* webpackChunkName: "topics" */ "../views/Topics.vue")
   },
   {
     path: "/topics/definitions",
     name: "Topic Definitions",
     component: () =>
-      import(/* webpackChunkName: "topic-definitions" */ "../views/TopicDefinitions.vue")
+      import( /* webpackChunkName: "topic-definitions" */ "../views/TopicDefinitions.vue")
   },
   {
     path: "/resources",
     name: "Resource Summary",
     component: () =>
-      import(/* webpackChunkName: "resource-summary" */ "../views/ResourceSummary.vue")
+      import( /* webpackChunkName: "resource-summary" */ "../views/ResourceSummary.vue")
   },
   {
     path: "/resources/search",
@@ -98,7 +97,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "resources" */ "../views/Resources.vue")
+      import( /* webpackChunkName: "resources" */ "../views/Resources.vue")
   },
   {
     path: "/resources/:id",
@@ -108,9 +107,18 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(
-        /* webpackChunkName: "resources-types" */ "../views/ResourcePage.vue"
-      )
+        /* webpackChunkName: "resources-types" */
+        "../views/ResourcePage.vue"
+      ),
+      beforeEnter(to, from, next) {
+        console.log("before page")
+        console.log(to)
+        console.log(to.params.id)
+        // this.id = to.params.id;
+        next();
+      }
   },
+
   {
     path: "/summary",
     name: "Summary",
@@ -121,7 +129,7 @@ const routes = [
       hideNavigation: true
     },
     component: () =>
-      import(/* webpackChunkName: "summary" */ "../views/Summary.vue")
+      import( /* webpackChunkName: "summary" */ "../views/Summary.vue")
   },
   {
     path: "/epidemiology",
@@ -136,7 +144,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "epi" */ "../views/Epi.vue")
+    component: () => import( /* webpackChunkName: "epi" */ "../views/Epi.vue")
   },
   // {
   //   path: "/timelapse",
@@ -153,7 +161,8 @@ const routes = [
     }),
     component: () =>
       import(
-        /* webpackChunkName: "doubling-rates" */ "../views/DoublingRates.vue"
+        /* webpackChunkName: "doubling-rates" */
+        "../views/DoublingRates.vue"
       )
   }
 ];

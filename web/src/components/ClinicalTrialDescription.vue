@@ -57,21 +57,35 @@
     </div>
   </div>
 
+  <!-- publications -->
+  <div id="publications" class="text-left border-bottom text-muted pb-3 mb-3">
+    <h6 class="m-0">Publications</h6>
+    <div v-if="data.citedBy || citations">
+      {{data.citedBy}}
+      <template v-if="citations">
+        <div v-for="(citation, idx) in citations" :key="idx"  class="text-dark">
+          <Citation :data="citation"/>
+        </div>
+      </template>
+    </div>
+    <div v-else>
+      <small>not found</small>
+    </div>
+  </div>
+
 </div>
 </template>
 
 
 <script>
-// import {
-//   timeFormat,
-//   timeParse
-// } from "d3";
+import { getCTPublications, getResourceMetadata } from "@/api/resources.js";
 
 import TrialDesign from "@/components/TrialDesign.vue";
 import TrialInterventions from "@/components/TrialInterventions.vue";
 import TrialEligibility from "@/components/TrialEligibility.vue";
 import TrialOutcome from "@/components/TrialOutcome.vue";
 import TrialEvents from "@/components/TrialEvents.vue";
+import Citation from "@/components/Citation.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -86,10 +100,22 @@ export default {
     TrialInterventions,
     TrialEligibility,
     TrialOutcome,
-    TrialEvents
+    TrialEvents,
+    Citation
   },
   data() {
-    return {}
+    return {
+      citations: null,
+      citationSubscription: null
+    }
+  },
+  mounted() {
+    this.citationSubscription = getCTPublications(this.$resourceurl, this.data["_id"]).subscribe(citations => {
+      this.citations = citations.length ? citations : null;
+    });
+  },
+  beforeDestroy() {
+    this.citationSubscription.unsubscribe();
   }
 };
 </script>

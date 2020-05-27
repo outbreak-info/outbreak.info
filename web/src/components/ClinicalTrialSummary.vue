@@ -46,11 +46,6 @@ export default {
     TrialStatus,
     TrialType,
   },
-
-  mounted() {
-    console.log(this.data)
-  },
-
   data() {
     return {}
   }

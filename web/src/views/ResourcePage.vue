@@ -139,7 +139,7 @@ export default Vue.extend({
       id: null,
       anchors: {
         default: ["authors", "description", "downloads", "license", "funder"],
-        ClinicalTrial: ["authors", "sponsor", "description", "design", "interventions", "eligibility", "outcome", "status"]
+        ClinicalTrial: ["authors", "sponsor", "description", "design", "interventions", "eligibility", "outcome", "status", "publications"]
       }
     })
   },
@@ -148,7 +148,36 @@ export default Vue.extend({
       const parseDate = timeParse("%Y-%m-%d");
       const formatDate = timeFormat("%d %B %Y");
       return dateStr ? formatDate(parseDate(dateStr)) : null;
+    },
+    getData(id) {
+      console.log("Getting data")
+      this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+        console.log(results);
+        this.data = results;
+        this.type = results["@type"];
+        this.dateModified = this.formatDate(this.data.date);
+
+        // document.dispatchEvent(new Event('ZoteroItemUpdated', {
+        //   bubbles: true,
+        //   cancelable: true
+        // }))
+      })
     }
+  },
+  // beforeRouteEnter(to, from, next) {
+  //   console.log("BEFORE ENTER")
+  //   console.log(to)
+  //   console.log(to.params.id)
+  //   console.log(this)
+  //   // this.id = to.params.id;
+  //   this.getData(to.params.id);
+  //   next();
+  // },
+  beforeRouteUpdate(to, from, next) {
+    console.log("UPDATE")
+    this.id = to.params.id;
+    this.getData(to.params.id);
+    next();
   },
   metaInfo() {
     var metadata = null;
@@ -294,16 +323,7 @@ export default Vue.extend({
   mounted() {
     this.id = this.$route.params.id;
 
-    this.resultsSubscription = getResourceMetadata(this.$resourceurl, this.id).subscribe(results => {
-      this.data = results;
-      this.type = results["@type"];
-      this.dateModified = this.formatDate(this.data.date);
-
-      // document.dispatchEvent(new Event('ZoteroItemUpdated', {
-      //   bubbles: true,
-      //   cancelable: true
-      // }))
-    })
+    this.getData(this.id);
   }
 });
 </script>
