@@ -309,13 +309,13 @@
                     </div> -->
 
                 <template v-if="item.descriptionExpanded">
-                  <span v-html="item.longDescription"></span>
+                  <span class="text-break" v-html="item.longDescription"></span>
                   <span>
                     <a class="show-more" v-if="item.descriptionTooLong" href="#" @click.prevent="expandDescription(item)">(show less)</a>
                   </span>
                 </template>
                 <template v-else-if="item.shortDescription">
-                  <span v-html="item.shortDescription"></span>
+                  <span class="text-break" v-html="item.shortDescription"></span>
                   <span v-if="item.descriptionTooLong">...
                     <a class="show-more" href="#" @click.prevent="expandDescription(item)">(show more)</a></span>
                 </template>
