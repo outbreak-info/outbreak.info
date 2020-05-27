@@ -432,9 +432,37 @@ export function getResourcesMetadata(apiUrl) {
     pluck("data", "build_date"),
     map(metadata => {
       const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
-      const dateUpdated = strictIsoParse(metadata);
-
-      return (formatDate(dateUpdated))
+      if (metadata) {
+        const dateUpdated = metadata ? strictIsoParse(metadata) : null;
+        return (formatDate(dateUpdated))
+      } else {
+        return (null)
+      }
     })
   )
+}
+
+
+export function getCTPublications(apiUrl, id) {
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+
+  return from(
+    axios.get(
+      `${apiUrl}query?q=${id} AND @type:Publication&timestamp=${timestamp}`, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
+  ).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      return results;
+    }),
+    catchError(e => {
+      console.log("%c Error in getting resource facets!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  );
 }
