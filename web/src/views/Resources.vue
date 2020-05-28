@@ -646,10 +646,6 @@ export default {
         //   label: "Analyses",
         //   id: "Analysis"
         // },
-        // {
-        //   label: "Protocols",
-        //   id: "Protocol"
-        // },
         {
           label: "Clinical Trials",
           id: "ClinicalTrial"
@@ -657,6 +653,10 @@ export default {
         {
           label: "Datasets",
           id: "Dataset"
+        },
+        {
+          label: "Protocols",
+          id: "Protocol"
         }
       ],
       new2Display: 3,

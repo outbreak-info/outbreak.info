@@ -49,6 +49,7 @@ const state = {
           id: "figshare",
           name: "Figshare",
           img: "figshare_icon.svg",
+          img_lg: "figshare.svg",
           url: "https://covid19.figshare.com/",
           description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner."
         },
@@ -110,9 +111,31 @@ const state = {
           description: "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source."
         }
       ]
+    },
+    {
+      category: "Protocols",
+      sources: [{
+        id: "protocolsio",
+        name: "protocols.io",
+        img: "protocolsio.png",
+        img_lg: "protocolsio_full.png",
+        url: "https://www.protocols.io/groups/coronavirus-method-development-community",
+        description: "protocols.io is a platform for sharing for science methods, assays, clinical trials, operational procedures and checklists."
+      }]
     }
   ],
   updates: [{
+      date: new Date("2020-05-28 0:0"),
+      category: "data",
+      title: "Added Figshare and protocols.io",
+      description: 'Added resource metadata from <a href="https://covid19.figshare.com/" target="_blank" rel="noreferrer">Figshare</a> and protocols from <a href="https://www.protocols.io/groups/coronavirus-method-development-community" target="_blank" rel="noreferrer">protocols.io</a>. <a href="/sources#resources">View more about sources</a>',
+      route: {
+        name: "Resources",
+        query: {
+        filter: 'curatedBy.name:"Figshare,protocols.io"'  
+        }
+      }
+    }, {
       date: new Date("2020-05-19 0:0"),
       category: "data",
       title: "Added searchable resources",
