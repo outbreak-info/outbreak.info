@@ -150,7 +150,6 @@ export default Vue.extend({
       return dateStr ? formatDate(parseDate(dateStr)) : null;
     },
     getData(id) {
-      console.log("Getting data")
       this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
         console.log(results);
         this.data = results;
@@ -164,17 +163,7 @@ export default Vue.extend({
       })
     }
   },
-  // beforeRouteEnter(to, from, next) {
-  //   console.log("BEFORE ENTER")
-  //   console.log(to)
-  //   console.log(to.params.id)
-  //   console.log(this)
-  //   // this.id = to.params.id;
-  //   this.getData(to.params.id);
-  //   next();
-  // },
   beforeRouteUpdate(to, from, next) {
-    console.log("UPDATE")
     this.id = to.params.id;
     this.getData(to.params.id);
     next();
