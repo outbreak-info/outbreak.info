@@ -109,14 +109,7 @@ const routes = [{
       import(
         /* webpackChunkName: "resources-types" */
         "../views/ResourcePage.vue"
-      ),
-      beforeEnter(to, from, next) {
-        console.log("before page")
-        console.log(to)
-        console.log(to.params.id)
-        // this.id = to.params.id;
-        next();
-      }
+      )
   },
 
   {
