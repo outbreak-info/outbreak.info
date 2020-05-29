@@ -15,6 +15,9 @@ We also welcome [suggestions for new sources](https://github.com/SuLab/outbreak.
 
 
 ## General Process
+# requirements.txt
+* Create a file containing the package requirements for the parser.py file, including versions, which can be installed via `pip install -r requirements.txt`
+
 ### parser.py
 1. Pull all the metadata for the COVID-19 / SARS-CoV-2 sources.
 2. Ensure that the field names align with the [outbreak.info schema](https://github.com/SuLab/outbreak.info-resources/blob/master/yaml/outbreak.json).
