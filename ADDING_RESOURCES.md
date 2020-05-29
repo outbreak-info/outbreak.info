@@ -15,7 +15,7 @@ We also welcome [suggestions for new sources](https://github.com/SuLab/outbreak.
 
 
 ## General Process
-# requirements.txt
+### requirements.txt
 * Create a file containing the package requirements for the parser.py file, including versions, which can be installed via `pip install -r requirements.txt`
 
 ### parser.py
