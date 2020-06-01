@@ -51,13 +51,12 @@ export default Vue.extend({
   },
   methods: {
     tooltipOn(d) {
-      console.log("mnouse")
       const event = d3.event;
       d3.select(this.$refs.circle_tooltip)
         .classed("hidden", false)
         .style("top", d3.event.layerY + "px")
         .style("left", d3.event.layerX + "px")
-        .html(`Search ${d.data.name}`);
+        .html(d.depth === 1 ? `Search ${d.data.name}s` : `Search ${d.data.name} ${d.parent.data.name}s`);
 
       this.svg
         .selectAll(".circle-group")
@@ -91,7 +90,6 @@ export default Vue.extend({
         .style("opacity", 1);
     },
     searchResource(d) {
-      console.log("click")
       if (d.depth == 1) {
         this.$router.push({
           name: "Resources",
