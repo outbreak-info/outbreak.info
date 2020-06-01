@@ -4,7 +4,10 @@
   <p class="text-muted">
     Find resources with authors or funding from the National Institute of Allergy and Infectious Diseases
   </p>
-  <router-link :to="{name: 'Resources', query: {q: queryString}}">View search results</router-link>
+  <router-link :to="{name: 'Resources', query: {q: queryString}}"
+  class="btn btn-main-outline router-link no-underline m-3 mb-5 align-self-center">
+    View all results
+  </router-link>
 
   <div class="d-flex justify-content-between">
     <div class="d-flex flex-column">
@@ -15,7 +18,7 @@
       <ResourceTimeline :data="dates" v-if="dates"/>
     </div>
   </div>
-
+<WhatsNew :query="queryString"/>
 </div>
 </template>
 
@@ -27,6 +30,7 @@ import {
 } from "@/api/resources.js";
 
 import CirclePacking from "@/components/CirclePacking.vue";
+import WhatsNew from "@/components/WhatsNew.vue";
 import ResourceTimeline from "@/components/ResourceTimeline.vue";
 
 import tippy from "tippy.js";
@@ -37,6 +41,7 @@ import * as d3 from "d3";
 export default {
   name: "NIAID",
   components: {
+    WhatsNew,
     CirclePacking,
     ResourceTimeline
   },
@@ -46,32 +51,32 @@ export default {
       this.results = results;
       this.dates = results[0].facets.datePublished.terms;
 
-      const keys = results[0]["hits"].flatMap(d => d.keywords)
-      const keywords = d3.nest()
-        .key(d => d ? d.toLowerCase() : "unknown")
-        .rollup(values => values.length)
-        .entries(keys)
-        .sort((a, b) => b.value - a.value);
+      // const keys = results[0]["hits"].flatMap(d => d.keywords)
+      // const keywords = d3.nest()
+      //   .key(d => d ? d.toLowerCase() : "unknown")
+      //   .rollup(values => values.length)
+      //   .entries(keys)
+      //   .sort((a, b) => b.value - a.value);
+      //
+      // console.log(keywords);
 
-      console.log(keywords);
       const authors = d3.nest()
         .key(d => d ? d : "unknown")
         .rollup(values => values.length)
         .entries(results[0]["hits"].flatMap(d => d.author).flatMap(d => d.name ? d.name : (d.givenName ? `${d.givenName} ${d.familyName}` : "unknown")))
         .sort((a, b) => b.value - a.value);
-
       console.log(authors);
+
       const affiliation = d3.nest()
         .key(d => d ? d : "unknown")
         .rollup(values => values.length)
         .entries(results[0]["hits"].flatMap(d => d.author).flatMap(d => d.affiliation ? d.affiliation : "unknown").flatMap(d => d.name))
         .sort((a, b) => b.value - a.value);
-
       console.log(affiliation);
     });
 
     this.countSubscription = getSourceCounts(this.$resourceurl, this.queryString).subscribe(results => {
-      console.log(results)
+      // console.log(results)
       this.counts = results;
     });
   },

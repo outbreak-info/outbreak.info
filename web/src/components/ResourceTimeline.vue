@@ -1,5 +1,7 @@
 <template>
-<div class="sparkline-group">
+<div class="sparkline-group d-flex flex-column text-left">
+  <h6 class="m-0">Results by publication date</h6>
+  <small class="text-muted">7 day rolling average</small>
   <svg :width="width" :height="height" class="epi-sparkline" ref="timeline">
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 3})`" class="resource-timeline-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="resource-timeline-axis axis--y" ref="yAxis"></g>
@@ -134,7 +136,7 @@ export default Vue.extend({
         top: 10,
         right: 50,
         bottom: 25,
-        left: 50
+        left: 25
       },
       // data
       plotted: null,

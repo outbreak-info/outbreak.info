@@ -266,6 +266,7 @@ export function getResourceFacets(
 export function getMostRecent(
   apiUrl,
   queryString,
+  filterString,
   sortVar = "-datePublished",
   num2Return = 3,
   fields = [
@@ -280,6 +281,8 @@ export function getMostRecent(
 ) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
   const fieldString = fields.join(",");
+
+  queryString = queryString ? `${queryString} AND ${filterString}`: filterString;
   return from(
     axios.get(
       `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
@@ -309,8 +312,10 @@ export function getMostRecent(
   );
 }
 
-export function getMostRecentGroup(apiUrl, sortVar, num2Return) {
-  return forkJoin([getMostRecent(apiUrl, "@type:Publication", sortVar, num2Return), getMostRecent(apiUrl, "@type:Dataset", sortVar, num2Return), getMostRecent(apiUrl, "@type:ClinicalTrial", sortVar, num2Return)]).pipe(
+export function getMostRecentGroup(apiUrl, queryString, sortVar, num2Return) {
+  return forkJoin([getMostRecent(apiUrl, queryString, "@type:Publication", sortVar, num2Return),
+  getMostRecent(apiUrl,  queryString, "@type:Dataset", sortVar, num2Return),
+  getMostRecent(apiUrl,  queryString, "@type:ClinicalTrial", sortVar, num2Return)]).pipe(
     map(([pubs, datasets, trials]) => {
       return ({
         publication: pubs,
