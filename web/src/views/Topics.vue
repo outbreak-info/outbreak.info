@@ -30,7 +30,7 @@ import "tippy.js/themes/light.css";
 import * as d3 from "d3";
 
 export default {
-  name: "Resources",
+  name: "Topics",
   components: {
     Marimekko
   },

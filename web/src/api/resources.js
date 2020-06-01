@@ -340,7 +340,7 @@ export function getQuerySummaries(queries, apiUrl) {
   )
 }
 
-export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author", facets = "@type, curatedBy.name") {
+export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author,keywords", facets = "@type, curatedBy.name") {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(axios.get(
@@ -377,7 +377,7 @@ export function getCTSummary(apiUrl) {
 export function getSourceSummary(apiUrl) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
-  return forkJoin([getSourceCounts(apiUrl), getResourcesMetadata(apiUrl)]).pipe(
+  return forkJoin([getSourceCounts(apiUrl, "__all__"), getResourcesMetadata(apiUrl)]).pipe(
     map(([results, metadata]) => {
       results["dateModified"] = metadata;
       return (results)
@@ -386,11 +386,11 @@ export function getSourceSummary(apiUrl) {
 }
 
 
-export function getSourceCounts(apiUrl) {
+export function getSourceCounts(apiUrl, queryString) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(axios.get(
-    `${apiUrl}query?aggs=@type(curatedBy.name)&facet_size=100&timestamp=${timestamp}`, {
+    `${apiUrl}query?q=${queryString}&aggs=@type(curatedBy.name)&facet_size=100&timestamp=${timestamp}`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -404,7 +404,7 @@ export function getSourceCounts(apiUrl) {
       const zenodo = d["count"] - d["curatedBy.name"]["total"];
 
       d["curatedBy.name"]["terms"].forEach(source => {
-        source["name"] = source.term.replace("ClinicalTrials.gov", "NCT").replace("WHO International Clinical Trials Registry Platform", "WHO");
+        source["name"] = source.term.replace("The Protein Data Bank", "PDB").replace("ClinicalTrials.gov", "NCT").replace("WHO International Clinical Trials Registry Platform", "WHO");
       })
       if (zenodo) {
         d["curatedBy.name"]["terms"].push({

@@ -72,6 +72,12 @@ const routes = [{
       import( /* webpackChunkName: "topics" */ "../views/Topics.vue")
   },
   {
+    path: "/niaid",
+    name: "NIAID",
+    component: () =>
+      import( /* webpackChunkName: "topics" */ "../views/NIAID.vue")
+  },
+  {
     path: "/topics/definitions",
     name: "Topic Definitions",
     component: () =>
