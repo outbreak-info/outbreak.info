@@ -3,7 +3,7 @@
   <svg :width="width" :height="height" class="circle-packing" ref="circle_packing">
     <defs></defs>
   </svg>
-  <div ref="circle_tooltip" class="circle-pack-tooltip box-shadow rounded position-absolute  px-3 py-2">
+  <div ref="circle_tooltip" class="circle-pack-tooltip box-shadow rounded hidden position-absolute  px-3 py-2">
   </div>
 </div>
 </template>

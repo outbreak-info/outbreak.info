@@ -1,6 +1,6 @@
 <template>
-<div>
-  <h3>NIAID-related resources</h3>
+<div class="my-5 mx-4">
+  <h1>NIAID-related resources</h1>
   <p class="text-muted">
     Find resources with authors or funding from the National Institute of Allergy and Infectious Diseases
   </p>

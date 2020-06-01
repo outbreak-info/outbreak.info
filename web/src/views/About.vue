@@ -10,7 +10,7 @@
           <img
             src="@/assets/logo-full-01.svg"
             alt="Outbreak.info"
-            class="w-75 mb-5"
+            class="w-50 mb-5"
           />
           <p class="text-left focustext">
             In response to the current outbreak of SARS-CoV-2 (the virus that
