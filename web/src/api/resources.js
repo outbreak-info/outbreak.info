@@ -60,7 +60,7 @@ export function getResources(
     comboString = queryString;
   } else {
     filterArr = filterString2Arr(filterString);
-    comboString = `${queryString} AND ${filterArr2String(filterArr)}`;
+    comboString = `(${queryString}) AND ${filterArr2String(filterArr)}`;
   }
 
 
