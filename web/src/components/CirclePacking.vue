@@ -1,8 +1,10 @@
 <template>
-<div>
+<div class="position-relative">
   <svg :width="width" :height="height" class="circle-packing" ref="circle_packing">
     <defs></defs>
   </svg>
+  <div ref="circle_tooltip" class="circle-pack-tooltip box-shadow rounded position-absolute  px-3 py-2">
+  </div>
 </div>
 </template>
 
@@ -16,6 +18,7 @@ export default Vue.extend({
   name: "CirclePacking",
   props: {
     data: Object,
+    query: String
   },
   data() {
     return {
@@ -31,6 +34,7 @@ export default Vue.extend({
       // axes
       y: d3.scaleLinear(),
       x: d3.scaleTime(),
+      opacity: d3.scaleLinear().range([1, 0.3]),
       // refs
       svg: null,
       svgDefs: null,
@@ -46,6 +50,72 @@ export default Vue.extend({
     }
   },
   methods: {
+    tooltipOn(d) {
+      console.log("mnouse")
+      const event = d3.event;
+      d3.select(this.$refs.circle_tooltip)
+        .classed("hidden", false)
+        .style("top", d3.event.layerY + "px")
+        .style("left", d3.event.layerX + "px")
+        .html(`Search ${d.data.name}`);
+
+      this.svg
+        .selectAll(".circle-group")
+        .style("opacity", 0.25);
+
+      this.svg
+        .selectAll(".annotation--type")
+        .style("opacity", 0.25);
+
+      this.svg
+        .select(`.${d.data.name.replace(" ", "_")}`)
+        .style("opacity", 1);
+
+      if (d.depth === 1) {
+        this.svg
+          .selectAll(`.${d.data.name}`)
+          .style("opacity", 1);
+      }
+
+    },
+    tooltipOff(d) {
+      d3.select(this.$refs.circle_tooltip)
+        .classed("hidden", true);
+
+      this.svg
+        .selectAll(".annotation--type")
+        .style("opacity", 1);
+
+      this.svg
+        .selectAll(".circle-group")
+        .style("opacity", 1);
+    },
+    searchResource(d) {
+      console.log("click")
+      if (d.depth == 1) {
+        this.$router.push({
+          name: "Resources",
+          query: {
+            q: this.query,
+            filter: `@type:${d.data.name}`,
+            page: "0",
+            size: "10",
+            sort: "-datePublished"
+          }
+        });
+      } else {
+        this.$router.push({
+          name: "Resources",
+          query: {
+            q: this.query ? `curatedBy.name:"${d.data.term}" AND (${this.query})` : `curatedBy.name:"${d.data.term}"`,
+            filter: `@type:${d.parent.data.name}`,
+            page: "0",
+            size: "10",
+            sort: "-datePublished"
+          }
+        });
+      }
+    },
     setupPlot() {
       this.svg = d3
         .select(this.$refs.circle_packing);
@@ -58,6 +128,13 @@ export default Vue.extend({
         .padding(3);
     },
     prepData() {
+      this.data.children.forEach(source => {
+        source.children.sort((a, b) => b.count - a.count);
+
+        source.children.forEach((d, i) => {
+          d['idx'] = i / (source.children.length - 1);
+        })
+      })
       let root = d3.hierarchy(this.data)
         .sum(d => d.count)
         .sort(function(a, b) {
@@ -77,37 +154,49 @@ export default Vue.extend({
       return (r > 0 ? `M${cx-r},${cy}a${r},${r} 0 1,1 ${2*r},0a${r},${r} 0 1,1 -${2*r},0` : null)
     },
     drawPlot() {
-      const textThresh = 500;
+      const dataMax = d3.max(this.data.children.flatMap(d => d.children).flatMap(d => d.count));
+      const textThresh = dataMax / 30;
 
       const circles = this.svg
         .selectAll("circle")
         .data(this.nodes.filter(d => d.depth));
 
+
       circles.join(enter => {
-        const grp = enter.append("g");
+        const grp = enter.append("g")
+          .attr("class", d => `circle-group pointer ${d.data.name.replace(" ", "_")}`);
+
         grp.append("circle")
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
-        .attr("r", d => d.r)
-        .attr("class", d => d.depth == 1 ? `resource-count ${d.data.name} depth${d.depth}` : `resource-count ${d.parent.data.name} depth${d.depth}`)
-        .classed("tiny", d => d.value < 100)
-          grp.filter(d => d.depth == 2 && d.value > textThresh).append("text")
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y)
+          .attr("r", d => d.r)
+          .attr("class", d => d.depth == 1 ? `resource-count ${d.data.name} depth${d.depth}` : `resource-count ${d.parent.data.name} depth${d.depth}`)
+          .attr("id", d => `circle-${d.data.name.replace(" ", "_")}`)
+          .attr("fill-opacity", d => this.opacity(d.data.idx))
+          .classed("tiny", d => d.value < 100)
+          .on("mouseover", d => this.tooltipOn(d))
+          .on("mouseout", d => this.tooltipOff())
+          .on("click", d => this.searchResource(d))
+
+        // text annotation
+        grp.filter(d => d.depth == 2 && d.value > textThresh).append("text")
           .attr("x", d => d.x)
           .attr("y", d => d.y)
           .append("tspan")
           .text(d => d.data.name)
-          .attr("class", "annotation--source")
+          .attr("class", d => d.depth == 1 ? `annotation--source ${d.data.name} depth${d.depth}` : `annotation--source ${d.parent.data.name} depth${d.depth}`)
           .append("tspan")
           .text(d => d.value.toLocaleString())
           .attr("x", d => d.x)
           .attr("dy", "1.1em")
           .attr("class", "annotation--count")
+          .on("click", d => this.searchResource(d));
       })
 
 
       const text = this.svg
         .selectAll(".annotation--type")
-        .data(this.nodes.filter(d => d.depth == 1 && d.value > 1000));
+        .data(this.nodes.filter(d => d.depth == 1 && d.value > 10));
 
       const textPaths = this.svgDefs
         .selectAll("path")
@@ -126,19 +215,11 @@ export default Vue.extend({
           .attr("href", (d, i) => `#textpath${i}`)
           // .attr("textLength", 200)
           .attr("startOffset", "50%")
-          .attr("class", d => `annotation--type ${d.data.name}`)
+          .attr("class", d => `annotation--type pointer ${d.data.name}`)
           .text(d => d.data.name.replace("clinicaltrial", "clinical trial"))
-
-        // .attr("x", d => d.x)
-        // .attr("y", d => d.y)
-        // .append("tspan")
-
-
-        // .append("tspan")
-        // .text(d => d.value.toLocaleString())
-        // .attr("x", d => d.x)
-        // .attr("dy", "1.1em")
-        // .attr("class", "annotation--count")
+          .on("mouseover", d => this.tooltipOn(d))
+          .on("mouseout", d => this.tooltipOff())
+          .on("click", d => this.searchResource(d));
       })
 
     }
@@ -230,6 +311,11 @@ export default Vue.extend({
     font-weight: 500;
 }
 
+.annotation--source {
+    fill: $base-grey !important;
+    pointer-events: none;
+}
+
 .annotation--type {
     text-transform: uppercase;
 }
@@ -244,7 +330,6 @@ export default Vue.extend({
     fill: darken($clinical-trial-color, 25%);
 }
 
-
 .annotation--type.dataset {
     fill: darken($dataset-color, 25%);
 }
@@ -255,5 +340,7 @@ export default Vue.extend({
     font-weight: 400;
 }
 
-
+.circle-pack-tooltip {
+    background: white;
+}
 </style>
