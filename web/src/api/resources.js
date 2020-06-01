@@ -340,12 +340,12 @@ export function getQuerySummaries(queries, apiUrl) {
   )
 }
 
-export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author,keywords", facets = "@type, curatedBy.name") {
+export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author,keywords", facets = "@type, curatedBy.name,datePublished") {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(axios.get(
     // `${apiUrl}query?q=name:${queryString} OR description:${queryString}&timestamp=${timestamp}&size=100&fields=${fields}&facets=${facets}&facet_size=100`, {
-    `${apiUrl}query?q=${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}&facets=${facets}&facet_size=25`, {
+    `${apiUrl}query?q=${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}&facets=${facets}&facet_size=1000`, {
       headers: {
         "Content-Type": "application/json"
       }
