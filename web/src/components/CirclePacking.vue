@@ -174,8 +174,8 @@ export default Vue.extend({
           .attr("id", d => `circle-${d.data.name.replace(" ", "_")}`)
           .attr("fill-opacity", d => this.opacity(d.data.idx))
           .classed("tiny", d => d.value < 100)
-          .on("mouseover", d => this.tooltipOn(d))
-          .on("mouseout", d => this.tooltipOff())
+          .on("mouseenter", d => this.tooltipOn(d))
+          .on("mouseleave", d => this.tooltipOff())
           .on("click", d => this.searchResource(d))
 
         // text annotation
@@ -190,6 +190,8 @@ export default Vue.extend({
           .attr("x", d => d.x)
           .attr("dy", "1.1em")
           .attr("class", "annotation--count")
+          .on("mouseenter", d => this.tooltipOn(d))
+          .on("mouseleave", d => this.tooltipOff())
           .on("click", d => this.searchResource(d));
       })
 
