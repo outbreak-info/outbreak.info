@@ -1,11 +1,15 @@
 <template>
 <div class="my-5 mx-4">
   <h1>NIAID-related resources</h1>
-  <p class="text-muted">
+  <p class="text-muted mb-0">
     Find resources with authors or funding from the National Institute of Allergy and Infectious Diseases
   </p>
-  <router-link :to="{name: 'Resources', query: {q: queryString}}"
-  class="btn btn-main-outline router-link no-underline m-3 mb-5 align-self-center">
+  <p class="text-muted font-italic m-0">
+    <small>
+      Note: only resources which explicitly specify the affiliation of authors or funding sources will be listed.
+    </small>
+  </p>
+  <router-link :to="{name: 'Resources', query: {q: queryString}}" class="btn btn-main-outline router-link no-underline mt-5 align-self-center">
     View all results
   </router-link>
 
@@ -15,10 +19,10 @@
       <CirclePacking class="circle-packing" :data="counts.sources" :query="queryString" v-if="counts" />
     </div>
     <div class="d-flex flex-column">
-      <ResourceTimeline :data="dates" v-if="dates"/>
+      <ResourceTimeline :data="dates" v-if="dates" />
     </div>
   </div>
-<WhatsNew :query="queryString"/>
+  <WhatsNew :query="queryString" />
 </div>
 </template>
 
