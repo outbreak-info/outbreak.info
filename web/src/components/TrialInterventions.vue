@@ -38,7 +38,7 @@
           <i class="fas fa-capsules bright" v-if="intervention.category == 'dietary supplement'"></i>
           <i class="fas fa-user-nurse bright" v-if="intervention.category == 'procedure'"></i>
           <i class="fas fa-radiation bright" v-if="intervention.category == 'radiation'"></i>
-          <SearchLink :data="[intervention.name]" filterField="@type:ClinicalTrial" tooltipLabel="trials" class="bright ml-1"/>
+          <SearchLink :data="[intervention.name]" filterField="@type:clinicaltrial" tooltipLabel="trials" class="bright ml-1"/>
         </small>
         <!-- intervention type -->
         <div v-if="intervention.category">

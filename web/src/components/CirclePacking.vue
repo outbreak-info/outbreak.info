@@ -95,7 +95,7 @@ export default Vue.extend({
           name: "Resources",
           query: {
             q: this.query,
-            filter: `@type:${d.data.name}`,
+            filter: `@type:${d.data.name.toLowerCase()}`,
             page: "0",
             size: "10",
             sort: "-datePublished"
@@ -106,7 +106,7 @@ export default Vue.extend({
           name: "Resources",
           query: {
             q: this.query ? `curatedBy.name:"${d.data.term}" AND (${this.query})` : `curatedBy.name:"${d.data.term}"`,
-            filter: `@type:${d.parent.data.name}`,
+            filter: `@type:${d.parent.data.name.toLowerCase()}`,
             page: "0",
             size: "10",
             sort: "-datePublished"
