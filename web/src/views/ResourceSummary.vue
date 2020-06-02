@@ -51,7 +51,11 @@
         </div>
       </div>
 
+      <router-link :to="{name: 'Resources'}" class="btn btn-main-outline router-link no-underline mt-2 mb-5">
+        View all resources
+      </router-link>
     </div>
+
   </div>
   </div>
 
