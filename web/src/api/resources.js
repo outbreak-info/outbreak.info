@@ -315,12 +315,15 @@ export function getMostRecent(
 export function getMostRecentGroup(apiUrl, queryString, sortVar, num2Return) {
   return forkJoin([getMostRecent(apiUrl, queryString, "@type:Publication", sortVar, num2Return),
   getMostRecent(apiUrl,  queryString, "@type:Dataset", sortVar, num2Return),
-  getMostRecent(apiUrl,  queryString, "@type:ClinicalTrial", sortVar, num2Return)]).pipe(
-    map(([pubs, datasets, trials]) => {
+  getMostRecent(apiUrl,  queryString, "@type:ClinicalTrial", sortVar, num2Return),
+  getMostRecent(apiUrl,  queryString, "@type:Protocol", sortVar, num2Return)]
+).pipe(
+    map(([pubs, datasets, trials, protocols]) => {
       return ({
         publication: pubs,
         dataset: datasets,
-        clinicaltrial: trials
+        clinicaltrial: trials,
+        protocol: protocols
       })
     })
   )
