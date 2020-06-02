@@ -640,7 +640,7 @@ export default {
           //   id: "topics"
           // }, {
           label: "Publications",
-          id: "Publication"
+          id: "publication"
         },
         // {
         //   label: "Analyses",
@@ -648,15 +648,15 @@ export default {
         // },
         {
           label: "Clinical Trials",
-          id: "ClinicalTrial"
+          id: "clinicaltrial"
         },
         {
           label: "Datasets",
-          id: "Dataset"
+          id: "dataset"
         },
         {
           label: "Protocols",
-          id: "Protocol"
+          id: "protocol"
         }
       ],
       new2Display: 3,
