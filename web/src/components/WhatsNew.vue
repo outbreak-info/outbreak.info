@@ -5,35 +5,35 @@
   </div>
 
   <div class="col-sm-6 col-md-3 col-sm-6 pr-4  d-flex flex-column" v-if="newPubs">
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:publication'}}" class="no-underline Publication">
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:publication'}}" class="no-underline Publication">
       <h6>Publications</h6>
       </router-link>
     <NewList :data="newPubs" />
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:publication'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all publications</router-link>
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:publication'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all publications</router-link>
   </div>
 
   <div class="col-sm-6 col-md-3 col-sm-6 pr-4 d-flex flex-column" v-if="newTrials">
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:clinicaltrial'}}" class="no-underline ClinicalTrial">
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:clinicaltrial'}}" class="no-underline ClinicalTrial">
       <h6>Clinical Trials</h6>
       </router-link>
     <NewList :data="newTrials" />
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:clinicaltrial'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all clinical trials</router-link>
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:clinicaltrial'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all clinical trials</router-link>
   </div>
 
   <div class="col-sm-6 col-md-3 pr-4 d-flex flex-column" v-if="newDatasets">
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:dataset'}}" class="no-underline Dataset">
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:dataset'}}" class="no-underline Dataset">
       <h6>Datasets</h6>
       </router-link>
     <NewList :data="newDatasets" />
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:dataset'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all datasets</router-link>
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:dataset'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all datasets</router-link>
   </div>
 
   <div class="col-sm-6 col-md-3 pr-4 d-flex flex-column" v-if="newProtocols">
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:protocol'}}" class="no-underline Protocol">
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:protocol'}}" class="no-underline Protocol">
       <h6>Protocols</h6>
       </router-link>
     <NewList :data="newProtocols" />
-    <router-link :to="{name: 'Resources', query:{q: query, filter: '@type:protocol'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all protoocols</router-link>
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:protocol'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all protoocols</router-link>
   </div>
 </div>
 </template>
