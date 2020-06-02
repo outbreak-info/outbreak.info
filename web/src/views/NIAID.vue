@@ -1,5 +1,11 @@
 <template>
 <div class="my-5 mx-4">
+  <!-- loading -->
+  <div v-if="loading" class="loader">
+    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+  </div>
+
+
   <h1>NIAID-related resources</h1>
   <p class="text-muted mb-0">
     Find resources with authors or funding from the National Institute of Allergy and Infectious Diseases
@@ -9,15 +15,17 @@
       Note: only resources which explicitly specify the affiliation of authors or funding sources will be listed.
     </small>
   </p>
-  <router-link :to="{name: 'Resources', query: {q: queryString}}" class="btn btn-main-outline router-link no-underline mt-5 align-self-center">
+  <router-link :to="{name: 'Resources', query: {q: queryString}}" class="btn btn-main-outline router-link no-underline mt-5 mb-3 align-self-center">
     View all results
   </router-link>
 
-  <div class="d-flex justify-content-between">
+  <div class="d-flex justify-content-between align-items-center">
     <div class="d-flex flex-column">
-      <h3 v-if="counts" class="text-highlight m-0 mt-3">{{counts.total}} resources</h3>
+      <h3 v-if="counts" class="text-highlight m-0">{{counts.total}} resources</h3>
       <CirclePacking class="circle-packing" :data="counts.sources" :query="queryString" v-if="counts" />
     </div>
+    <HorizontalBargraph :data="authors" title="Top authors" v-if="authors"/>
+    <HorizontalBargraph :data="affiliations" title="Author affiliations"   v-if="affiliations"/>
     <div class="d-flex flex-column">
       <ResourceTimeline :data="dates" v-if="dates" />
     </div>
@@ -33,8 +41,14 @@ import {
   getSourceCounts
 } from "@/api/resources.js";
 
-import CirclePacking from "@/components/CirclePacking.vue";
+import {
+  mapState
+} from "vuex";
+
+
 import WhatsNew from "@/components/WhatsNew.vue";
+import CirclePacking from "@/components/CirclePacking.vue";
+import HorizontalBargraph from "@/components/HorizontalBargraph.vue";
 import ResourceTimeline from "@/components/ResourceTimeline.vue";
 
 import tippy from "tippy.js";
@@ -47,6 +61,7 @@ export default {
   components: {
     WhatsNew,
     CirclePacking,
+    HorizontalBargraph,
     ResourceTimeline
   },
   mounted() {
@@ -64,19 +79,17 @@ export default {
       //
       // console.log(keywords);
 
-      const authors = d3.nest()
+      this.authors = d3.nest()
         .key(d => d ? d : "unknown")
         .rollup(values => values.length)
         .entries(results[0]["hits"].flatMap(d => d.author).flatMap(d => d.name ? d.name : (d.givenName ? `${d.givenName} ${d.familyName}` : "unknown")))
         .sort((a, b) => b.value - a.value);
-      console.log(authors);
 
-      const affiliation = d3.nest()
+      this.affiliations = d3.nest()
         .key(d => d ? d : "unknown")
         .rollup(values => values.length)
         .entries(results[0]["hits"].flatMap(d => d.author).flatMap(d => d.affiliation ? d.affiliation : "unknown").flatMap(d => d.name))
         .sort((a, b) => b.value - a.value);
-      console.log(affiliation);
     });
 
     this.countSubscription = getSourceCounts(this.$resourceurl, this.queryString).subscribe(results => {
@@ -89,6 +102,7 @@ export default {
     this.countSubscription.unsubscribe();
   },
   computed: {
+    ...mapState("admin", ["loading"]),
     types: function() {
       return this.results ? this.results.flatMap(d => d.types) : null;
     },
@@ -103,6 +117,8 @@ export default {
       counts: null,
       results: null,
       dates: null,
+      authors: null,
+      affiliations: null,
       query: [{
         terms: ["NIAID", "National Institute of Allergy and Infectious Diseases"]
         // 'sponsor.name:"national institute of allergy and infectious diseases (niaid)"']

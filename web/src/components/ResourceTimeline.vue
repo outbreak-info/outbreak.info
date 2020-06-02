@@ -25,7 +25,7 @@ export default Vue.extend({
     },
     height: {
       type: Number,
-      default: 200
+      default: 225
     }
   },
   methods: {
