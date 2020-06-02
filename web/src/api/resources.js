@@ -60,7 +60,7 @@ export function getResources(
     comboString = queryString;
   } else {
     filterArr = filterString2Arr(filterString);
-    comboString = `${queryString} AND ${filterArr2String(filterArr)}`;
+    comboString = `(${queryString}) AND ${filterArr2String(filterArr)}`;
   }
 
 
@@ -266,6 +266,7 @@ export function getResourceFacets(
 export function getMostRecent(
   apiUrl,
   queryString,
+  filterString,
   sortVar = "-datePublished",
   num2Return = 3,
   fields = [
@@ -280,6 +281,8 @@ export function getMostRecent(
 ) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
   const fieldString = fields.join(",");
+
+  queryString = queryString ? `${queryString} AND ${filterString}`: filterString;
   return from(
     axios.get(
       `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
@@ -309,8 +312,10 @@ export function getMostRecent(
   );
 }
 
-export function getMostRecentGroup(apiUrl, sortVar, num2Return) {
-  return forkJoin([getMostRecent(apiUrl, "@type:Publication", sortVar, num2Return), getMostRecent(apiUrl, "@type:Dataset", sortVar, num2Return), getMostRecent(apiUrl, "@type:ClinicalTrial", sortVar, num2Return)]).pipe(
+export function getMostRecentGroup(apiUrl, queryString, sortVar, num2Return) {
+  return forkJoin([getMostRecent(apiUrl, queryString, "@type:Publication", sortVar, num2Return),
+  getMostRecent(apiUrl,  queryString, "@type:Dataset", sortVar, num2Return),
+  getMostRecent(apiUrl,  queryString, "@type:ClinicalTrial", sortVar, num2Return)]).pipe(
     map(([pubs, datasets, trials]) => {
       return ({
         publication: pubs,
@@ -340,12 +345,12 @@ export function getQuerySummaries(queries, apiUrl) {
   )
 }
 
-export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author", facets = "@type, curatedBy.name") {
+export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author,keywords", facets = "@type, curatedBy.name,datePublished") {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(axios.get(
     // `${apiUrl}query?q=name:${queryString} OR description:${queryString}&timestamp=${timestamp}&size=100&fields=${fields}&facets=${facets}&facet_size=100`, {
-    `${apiUrl}query?q=${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}&facets=${facets}&facet_size=25`, {
+    `${apiUrl}query?q=${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}&facets=${facets}&facet_size=1000`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -377,7 +382,7 @@ export function getCTSummary(apiUrl) {
 export function getSourceSummary(apiUrl) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
-  return forkJoin([getSourceCounts(apiUrl), getResourcesMetadata(apiUrl)]).pipe(
+  return forkJoin([getSourceCounts(apiUrl, "__all__"), getResourcesMetadata(apiUrl)]).pipe(
     map(([results, metadata]) => {
       results["dateModified"] = metadata;
       return (results)
@@ -386,11 +391,11 @@ export function getSourceSummary(apiUrl) {
 }
 
 
-export function getSourceCounts(apiUrl) {
+export function getSourceCounts(apiUrl, queryString) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(axios.get(
-    `${apiUrl}query?aggs=@type(curatedBy.name)&facet_size=100&timestamp=${timestamp}`, {
+    `${apiUrl}query?q=${queryString}&aggs=@type(curatedBy.name)&facet_size=100&timestamp=${timestamp}`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -404,7 +409,7 @@ export function getSourceCounts(apiUrl) {
       const zenodo = d["count"] - d["curatedBy.name"]["total"];
 
       d["curatedBy.name"]["terms"].forEach(source => {
-        source["name"] = source.term.replace("ClinicalTrials.gov", "NCT").replace("WHO International Clinical Trials Registry Platform", "WHO");
+        source["name"] = source.term.replace("The Protein Data Bank", "PDB").replace("ClinicalTrials.gov", "NCT").replace("WHO International Clinical Trials Registry Platform", "WHO");
       })
       if (zenodo) {
         d["curatedBy.name"]["terms"].push({

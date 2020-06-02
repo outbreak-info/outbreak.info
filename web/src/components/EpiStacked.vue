@@ -195,47 +195,8 @@ export default Vue.extend({
         .call(this.yAxis);
     },
     drawPlot: function() {
-      const dateCaseDefChange = new Date("2020-02-13");
 
       // --- annotations ---
-      if (this.includeChinaAnnot) {
-        const annotGrp = this.chart.select(".case-def-changed");
-
-        annotGrp.exit().remove();
-
-        const annotTextSelector = annotGrp.select("text");
-
-        const annotTextEnter = annotGrp.append("text");
-
-        annotTextSelector
-          .merge(annotTextEnter)
-          .attr("x", this.x(dateCaseDefChange))
-          .attr("y", this.y(80000))
-          .text("Case definition changed");
-
-        const x1 = this.x(new Date("2020-02-08"));
-        const x2 = this.x(new Date("2020-02-12"));
-        const y1 = this.y(77000);
-        const y2 = this.y(55000);
-
-        const annotArrowSelector = annotGrp.select("path");
-        const annotArrowEnter = annotGrp
-          .append("path")
-          .attr("class", "swoopy-arrow")
-          .attr("id", "switch-btn-swoopy-arrow")
-          .attr("marker-end", "url(#arrow)");
-
-        annotArrowSelector
-          .merge(annotArrowEnter)
-          // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
-          .attr(
-            "d",
-            `M ${x1} ${y1} C ${x1 + 5} ${y1 + 45}, ${x2 - 10} ${y2 -
-              5}, ${x2} ${y2}`
-          );
-
-        this.chart.select(".case-def-changed").on("mouseover");
-      }
       this.area = d3
         .area()
         .x(d => this.x(d.data.date))

@@ -1,7 +1,9 @@
 <template>
-  <div class="full-page">
-    <div class="container py-5 text-left">
-      <h2 class="my-3 text-highlight">Terms of Use</h2>
+  <div class="row" style="min-height: 75vh;">
+    <div class="col-sm-12 my-5">
+
+    <div class="container text-left">
+      <h1 class="text-highlight">Terms of Use</h1>
       <h4>Disclaimer</h4>
       <p>
         Every effort has been made to ensure the accuracy and completeness of
@@ -16,6 +18,7 @@
         further analysis and review.
       </p>
     </div>
+  </div>
   </div>
 </template>
 
