@@ -25,7 +25,7 @@
           <nav class="navbar navbar-expand-lg navbar-dark">
             <ul class="navbar-nav">
               <li class="nav-item text-light mr-4" v-for="(anchor, idx) in anchorsArr" :key="idx">
-                <router-link class="nav-link no-underline p-0" :to="`#${anchor}`">
+                <router-link class="nav-link no-underline p-0" :to="`#${anchor.replace(' ', '_')}`">
                   {{ anchor }}
                 </router-link>
               </li>
@@ -88,6 +88,41 @@
             <small>not specified</small>
           </div>
         </div>
+
+        <!-- based on -->
+        <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3">
+          <h6 class="m-0">Based on</h6>
+          <div v-if="data.isBasedOn && data.isBasedOn.length">
+            <Citation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx"/>
+          </div>
+          <div v-else>
+            <small>not specified</small>
+          </div>
+        </div>
+
+        <!-- cited by -->
+        <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="data['@type'] != 'ClinicalTrial'">
+          <h6 class="m-0">Cited by</h6>
+          <div v-if="data.citedBy && data.citedBy.length">
+            <Citation :data="item" v-for="(item, idx) in data.citedBy" :key="idx"/>
+          </div>
+          <div v-else>
+            <small>not specified</small>
+          </div>
+        </div>
+
+        <!-- related -->
+        <div id="related" class="text-left border-bottom text-muted pb-3 mb-3">
+          <h6 class="m-0">Related resources</h6>
+          <div v-if="data.relatedTo && data.relatedTo.length">
+            <Citation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx"/>
+          </div>
+          <div v-else>
+            <small>not specified</small>
+          </div>
+        </div>
+
+
       </div>
     </div>
     <!-- RIGHT SIDE -->
@@ -124,13 +159,15 @@ import {
 import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 import ClinicalTrialDescription from "@/components/ClinicalTrialDescription.vue";
+import Citation from "@/components/Citation.vue";
 
 export default Vue.extend({
   name: "ResourcePage",
   components: {
     ResourceDescription,
     ResourceSidebar,
-    ClinicalTrialDescription
+    ClinicalTrialDescription,
+    Citation
   },
   data() {
     return ({
@@ -138,8 +175,8 @@ export default Vue.extend({
       data: null,
       id: null,
       anchors: {
-        default: ["authors", "description", "downloads", "license", "funder"],
-        ClinicalTrial: ["authors", "sponsor", "description", "design", "interventions", "eligibility", "outcome", "status", "publications"]
+        default: ["authors", "description", "downloads", "license", "funder", "based on", "cited by", "related"],
+        ClinicalTrial: ["authors", "sponsor", "description", "design", "interventions", "eligibility", "outcome", "status", "publications", "based on", "related"]
       }
     })
   },
