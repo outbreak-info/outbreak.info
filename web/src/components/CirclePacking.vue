@@ -154,6 +154,7 @@ export default Vue.extend({
     drawPlot() {
       const dataMax = d3.max(this.data.children.flatMap(d => d.children).flatMap(d => d.count));
       const textThresh = dataMax / 30;
+      const typeThresh = dataMax / 40;
 
       const circles = this.svg
         .selectAll("circle")
@@ -196,7 +197,7 @@ export default Vue.extend({
 
       const text = this.svg
         .selectAll(".annotation--type")
-        .data(this.nodes.filter(d => d.depth == 1 && d.value > 10));
+        .data(this.nodes.filter(d => d.depth == 1 && d.value > typeThresh));
 
       const textPaths = this.svgDefs
         .selectAll("path")
@@ -331,7 +332,7 @@ export default Vue.extend({
 }
 
 .annotation--type.dataset {
-    fill: darken($dataset-color, 25%);
+    fill: darken($dataset-color, 15%);
 }
 
 .annotation--count {
