@@ -8,7 +8,7 @@
 
   <h1>NIAID-related resources</h1>
   <p class="text-muted mb-0">
-    Find resources with authors or funding from the National Institute of Allergy and Infectious Diseases
+    Find NIAID-related resources, including sources with authors or funding from the National Institute of Allergy and Infectious Diseases
   </p>
   <p class="text-muted font-italic m-0">
     <small>

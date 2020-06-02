@@ -160,17 +160,8 @@
           </select>
 
           <select v-model="sortValue" @change="changeSort">
-            <option value="-datePublished">
-              date: newest to oldest
-            </option>
-            <option value="datePublished">
-              date: oldest to newest
-            </option>
-            <option value="name">
-              A-Z
-            </option>
-            <option value="-name">
-              Z-A
+            <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
+              {{option.label}}
             </option>
           </select>
         </div>
@@ -614,7 +605,7 @@ export default {
         this.filterString = this.filter ? this.filter : null;
         this.numPerPage = this.size ? Number(this.size) : 10;
         this.selectedPage = this.page ? Number(this.page) : 0;
-        this.sortValue = this.sort ? this.sort : "-datePublished";
+        this.sortValue = this.sort;
 
         this.getResults();
       }
@@ -632,6 +623,27 @@ export default {
       sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
+      sortOpts: [{
+          value: "",
+          label: "best match"
+        },
+        {
+          value: "-datePublished",
+          label: "date: newest to oldest"
+        },
+        {
+          value: "datePublished",
+          label: "date: oldest to newest"
+        },
+        {
+          value: "name",
+          label: "A-Z"
+        },
+        {
+          value: "-name",
+          label: "Z-A"
+        }
+      ],
       resourceTypes: [{
           //   label: "What's New",
           //   id: "whats-new"
@@ -640,7 +652,7 @@ export default {
           //   id: "topics"
           // }, {
           label: "Publications",
-          id: "Publication"
+          id: "publication"
         },
         // {
         //   label: "Analyses",
@@ -648,15 +660,15 @@ export default {
         // },
         {
           label: "Clinical Trials",
-          id: "ClinicalTrial"
+          id: "clinicaltrial"
         },
         {
           label: "Datasets",
-          id: "Dataset"
+          id: "dataset"
         },
         {
           label: "Protocols",
-          id: "Protocol"
+          id: "protocol"
         }
       ],
       new2Display: 3,
