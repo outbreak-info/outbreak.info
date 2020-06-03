@@ -423,7 +423,7 @@ export default {
         this.numPerPage,
         this.selectedPage * this.numPerPage
       ).subscribe(results => {
-        console.log(results);
+        console.log(results.recent);
         this.data = results.results;
         this.newData = results.recent;
         this.facetSummary = results.facets;

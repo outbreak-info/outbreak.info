@@ -66,7 +66,7 @@ export function getResources(
 
   store.state.admin.loading = true;
   return forkJoin([
-    getMostRecent(apiUrl, comboString),
+    getMostRecent(apiUrl, comboString, null),
     getMetadataArray(apiUrl, comboString, sort, size, page),
     getResourceFacets(apiUrl, queryString, filterArr) // call to get the counts for the supplied query
     // getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
@@ -282,7 +282,7 @@ export function getMostRecent(
   const timestamp = Math.round(new Date().getTime() / 1e5);
   const fieldString = fields.join(",");
 
-  queryString = queryString ? `${queryString} AND ${filterString}`: filterString;
+  queryString = queryString ? (filterString ? `(${queryString}) AND ${filterString}` : `(${queryString})`): filterString;
   return from(
     axios.get(
       `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
