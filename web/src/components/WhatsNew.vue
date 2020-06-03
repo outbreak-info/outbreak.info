@@ -33,7 +33,7 @@
       <h6>Protocols</h6>
       </router-link>
     <NewList :data="newProtocols" />
-    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:protocol'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all protoocols</router-link>
+    <router-link :to="{name: 'Resources', query:{q: query, sort: '-datePublished', filter: '@type:protocol'}}" class="btn btn-main-outline router-link no-underline m-3 align-self-center">View all protocols</router-link>
   </div>
 </div>
 </template>
