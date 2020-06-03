@@ -436,7 +436,7 @@ export function getSourceCounts(apiUrl, queryString) {
 
 export function getResourcesMetadata(apiUrl) {
   const formatDate = timeFormat("%d %B %Y")
-  return from(axios.get(`${apiUrl}metadata`)).pipe(
+  return from(axios.get(`${apiUrl}litcovid/metadata`)).pipe(
     pluck("data", "build_date"),
     map(metadata => {
       const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
