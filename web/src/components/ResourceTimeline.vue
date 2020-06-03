@@ -32,12 +32,12 @@ export default Vue.extend({
     prepData() {
       const parseDate = d3.timeParse("%Y-%m-%d");
 
-      function movingAverage(date, values, N = 3) {
-        const dateRange = d3.timeDay.range(d3.timeWeek.floor(date), d3.timeWeek.ceil(date));
-        const lowDate = d3.timeDay.offset(date, -1 * N);
-        const highDate = d3.timeDay.offset(date, N);
+      function movingAverage(date, values, firstDate, lastDate, N = 3) {
+        const lowDate = Math.max(d3.timeDay.offset(date, -1 * N), firstDate);
+        const highDate = Math.min(d3.timeDay.offset(date, N), lastDate);
         const filtered = values.filter(d => d.date <= highDate && d.date >= lowDate);
-        return (d3.sum(filtered, d => d.count)/7)
+        const daySpan = Math.round((highDate - lowDate)/(24 * 3600 * 1000)) + 1;
+        return (d3.sum(filtered, d => d.count)/daySpan)
       }
 
       function weeklySum(date, values, N = 3) {
@@ -52,12 +52,12 @@ export default Vue.extend({
         d["date"] = parseDate(d.term);
       })
 
-      this.data.forEach(d => {
-        d["avg"] = movingAverage(d.date, this.data)
-        d["avg2"] = weeklySum(d.date, this.data)
-      })
+      const firstDate = d3.min(this.data, d => d.date)
+      const lastDate = d3.max(this.data, d => d.date);
 
-      console.log(this.data)
+      this.data.forEach(d => {
+        d["avg"] = movingAverage(d.date, this.data, firstDate, lastDate)
+      })
 
       this.data.sort((a, b) => a.date - b.date);
 
