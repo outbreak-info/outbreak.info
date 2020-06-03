@@ -46,8 +46,11 @@
               {{demo.label}}
               <i class="fas fa-angle-double-right"></i>
             </router-link>
-
           </span>
+          <router-link :to="{name: 'NIAID'} ">
+            NIAID-related
+            <i class="fas fa-angle-double-right"></i>
+          </router-link>
         </div>
       </div>
 
