@@ -78,7 +78,14 @@
             <div v-if="data.funding">
               <ul>
                 <li v-for="(funding, idx) in data.funding" :key="idx">
-                  <b v-for="(funder, idx) in funding.funder" :key="idx">{{funder.name}}</b>: {{funding.identifier}}
+                  <div v-for="(funder, idx) in funding.funder" :key="idx">
+                    <b v-if="funder.name">{{funder.name}}</b>
+                    <span v-if="funder.name && funding.identifier">:&nbsp;</span>
+                    <span v-if="funding.identifier">{{funding.identifier}}</span>
+                  </div>
+                  <div v-if="funding.description">
+                    {{funding.description}}
+                  </div>
                 </li>
               </ul>
             </div>
