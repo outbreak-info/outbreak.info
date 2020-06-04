@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="mb-3">
   <template v-if="data['@type']">
     <StripeAccent :className="data['@type']" />
     <small :class="[data['@type'], 'resource-type', 'mr-2']">{{
@@ -46,6 +46,8 @@
 
 <template v-else>
 {{data.citation}}
+<a :href="data.url" target="_blank" rel="noreferrer" v-if="data.url">{{data.pmid ? "PMID " + data.pmid : "link"}}</a>
+<a :href="'https://pubmed.ncbi.nlm.nih.gov/' + data.pmid" target="_blank" rel="noreferrer" v-else-if="data.pmid">{{"PMID " + data.pmid}}</a>
 </template>
 </div>
 </template>
