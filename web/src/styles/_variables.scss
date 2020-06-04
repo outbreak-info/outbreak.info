@@ -28,19 +28,20 @@ $link-color: #007bff;
 $link-hover: #0056b3;
 
 // resource type colors
-// analysis: red
-$analysis-color: #D13B62;
+// analysis: teal
+$analysis-color: darken(saturate(#76b7b2, 20%), 15%);
+
 .Analysis, .analysis {
     color: $analysis-color;
     fill: $analysis-color;
 }
 
-.Analysis.light {
-    fill: #eeb7c5;
+.Analysis.dark {
+    fill: darken($analysis-color, 15%);
 }
 
-.Analysis.dark {
-    fill: #9b2443;
+.Analysis.light {
+    fill: lighten($analysis-color, 25%);
 }
 
 // dataset: blue
@@ -158,6 +159,20 @@ $book-color: #ff98a8; // pink
 
 .Book.light {
     fill: lighten($book-color, 12%);
+}
+
+$website-color: #f28e2c; // orange
+.WebSite, .Website, .website {
+    color: $website-color;
+    fill: $website-color;
+}
+
+.WebSite.dark {
+    fill: darken($website-color, 20%);
+}
+
+.WebSite.light {
+    fill: lighten($website-color, 25%);
 }
 
 $other-color: #777; // grey

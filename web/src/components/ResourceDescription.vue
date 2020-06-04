@@ -87,7 +87,7 @@
   </div>
 
   <!-- mini-citation -->
-  <div v-if="data['@type'] == 'Publication'" class="text-muted">
+  <div v-if="data['@type'] && data['@type'] == 'Publication'" class="text-muted">
     <span v-if="data.journalName">{{data.journalName}}</span>
     <span v-if="data.volumeNumber">, volume {{data.volumeNumber}}</span>
     <span v-if="data.issueNumber">, issue {{data.issueNumber}}</span>
