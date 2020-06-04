@@ -1,5 +1,5 @@
 <template>
-<div class="mb-3 text-muted">
+<div class="mb-3 text-muted" v-if="data">
   <template v-if="data['@type']">
     <StripeAccent :className="data['@type']" />
     <small :class="[data['@type'], 'resource-type', 'mr-2']">{{
@@ -62,7 +62,7 @@ import {
 import StripeAccent from "@/components/StripeAccent.vue";
 
 export default Vue.extend({
-  name: "ResourceDescription",
+  name: "Citation",
   props: {
     data: Object
   },
