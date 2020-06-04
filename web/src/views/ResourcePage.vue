@@ -100,7 +100,7 @@
         <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3">
           <h6 class="m-0 mb-2">Based on</h6>
           <div v-if="data.isBasedOn && data.isBasedOn.length">
-            <Citation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx"/>
+            <Citation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx" />
           </div>
           <div v-else>
             <small>not specified</small>
@@ -111,7 +111,7 @@
         <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="data['@type'] != 'ClinicalTrial'">
           <h6 class="m-0 mb-2">Cited by</h6>
           <div v-if="data.citedBy && data.citedBy.length">
-            <Citation :data="item" v-for="(item, idx) in data.citedBy" :key="idx"/>
+            <Citation :data="item" v-for="(item, idx) in data.citedBy" :key="idx" />
           </div>
           <div v-else>
             <small>not specified</small>
@@ -122,7 +122,7 @@
         <div id="related" class="text-left border-bottom text-muted pb-3 mb-3">
           <h6 class="m-0 mb-2">Related resources</h6>
           <div v-if="data.relatedTo && data.relatedTo.length">
-            <Citation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx"/>
+            <Citation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx" />
           </div>
           <div v-else>
             <small>not specified</small>
@@ -224,6 +224,8 @@ export default Vue.extend({
       if (metadata.studyDesign && metadata.studyDesign.phaseNumber) {
         delete metadata.studyDesign.phaseNumber;
       };
+      // [null] will have problems embedding...
+      metadata.citedBy = metadata.citedBy.filter(d => d);
 
       metadata["includedInDataCatalog"] = {
         "@type": "DataCatalog",
