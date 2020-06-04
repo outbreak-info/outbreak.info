@@ -113,7 +113,7 @@
 
         <!-- related -->
         <div id="related" class="text-left border-bottom text-muted pb-3 mb-3">
-          <h6 class="m-0">Related resources</h6>
+          <h6 class="m-0 mb-2">Related resources</h6>
           <div v-if="data.relatedTo && data.relatedTo.length">
             <Citation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx"/>
           </div>
