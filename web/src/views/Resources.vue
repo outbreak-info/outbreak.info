@@ -423,7 +423,7 @@ export default {
         this.numPerPage,
         this.selectedPage * this.numPerPage
       ).subscribe(results => {
-        console.log(results);
+        console.log(results.recent);
         this.data = results.results;
         this.newData = results.recent;
         this.facetSummary = results.facets;
@@ -605,7 +605,7 @@ export default {
         this.filterString = this.filter ? this.filter : null;
         this.numPerPage = this.size ? Number(this.size) : 10;
         this.selectedPage = this.page ? Number(this.page) : 0;
-        this.sortValue = this.sort;
+        this.sortValue = this.sort ? this.sort : "";
 
         this.getResults();
       }

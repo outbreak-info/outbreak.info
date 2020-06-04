@@ -46,12 +46,19 @@
               {{demo.label}}
               <i class="fas fa-angle-double-right"></i>
             </router-link>
-
           </span>
+          <router-link :to="{name: 'NIAID'} ">
+            NIAID-related
+            <i class="fas fa-angle-double-right"></i>
+          </router-link>
         </div>
       </div>
 
+      <router-link :to="{name: 'Resources'}" class="btn btn-main-outline router-link no-underline mt-2 mb-5">
+        View all resources
+      </router-link>
     </div>
+
   </div>
   </div>
 

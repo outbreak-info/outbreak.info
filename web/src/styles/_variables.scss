@@ -58,6 +58,12 @@ $dataset-color: #126B93;
     fill: lighten(#507192, 15%);
 }
 
+a.Dataset  {
+  &:hover {
+    color: darken(#11537A, 10%);
+  }
+}
+
 // coral
 $publication-color: #e15759;
 .Publication, .ScholarlyArticle, .publication {
@@ -70,6 +76,12 @@ $publication-color: #e15759;
 
 .Publication.light, .ScholarlyArticle.light {
     fill: lighten($publication-color, 25%);
+}
+
+a.Publication  {
+  &:hover {
+    color: darken($publication-color, 25%);
+  }
 }
 
 // green
@@ -87,18 +99,31 @@ $protocol-color: #59a14f;
     fill: lighten($protocol-color, 20%);
 }
 
+a.Protocol  {
+  &:hover {
+    color: darken($protocol-color, 25%);
+  }
+}
+
 // clinical trial: purple
 $clinical-trial-color: #b475a3;
 .ClinicalTrial, .clinicaltrial {
     color: $clinical-trial-color;
     fill: $clinical-trial-color;
 }
+
 .ClinicalTrial.dark {
     fill: darken($clinical-trial-color, 25%);
 }
 
 .ClinicalTrial.light {
     fill: lighten($clinical-trial-color, 20%);
+}
+
+a.ClinicalTrial  {
+  &:hover {
+    color: darken($clinical-trial-color, 25%);
+  }
 }
 
 // $software-color: #f28e2c; // orange
@@ -115,6 +140,12 @@ $software-color: saturate(#9c755f, 10%); // brown
 
 .SoftwareSourceCode.light {
     fill: lighten($software-color, 20%);
+}
+
+a.SoftwareSourceCode  {
+  &:hover {
+    color: darken($software-color, 15%);
+  }
 }
 
 $book-color: #ff98a8; // pink

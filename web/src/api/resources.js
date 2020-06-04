@@ -66,7 +66,7 @@ export function getResources(
 
   store.state.admin.loading = true;
   return forkJoin([
-    getMostRecent(apiUrl, comboString),
+    getMostRecent(apiUrl, comboString, null),
     getMetadataArray(apiUrl, comboString, sort, size, page),
     getResourceFacets(apiUrl, queryString, filterArr) // call to get the counts for the supplied query
     // getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
@@ -279,13 +279,15 @@ export function getMostRecent(
     "dateCreated"
   ]
 ) {
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const today = new Date();
+  const formatDate = timeFormat("%Y-%m-%d");
+  const timestamp = Math.round(today.getTime() / 1e5);
   const fieldString = fields.join(",");
 
-  queryString = queryString ? `${queryString} AND ${filterString}`: filterString;
+  queryString = queryString ? (filterString ? `(${queryString}) AND ${filterString}` : `(${queryString})`): filterString;
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString} AND datePublished:[* TO ${formatDate(today)}]&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -435,8 +437,8 @@ export function getSourceCounts(apiUrl, queryString) {
 }
 
 export function getResourcesMetadata(apiUrl) {
-  const formatDate = timeFormat("%d %B %Y")
-  return from(axios.get(`${apiUrl}metadata`)).pipe(
+  const formatDate = timeFormat("%d %B %Y");
+  return from(axios.get(`${apiUrl}biorxiv/metadata`)).pipe(
     pluck("data", "build_date"),
     map(metadata => {
       const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");

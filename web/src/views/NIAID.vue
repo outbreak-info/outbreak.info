@@ -19,7 +19,7 @@
     View all results
   </router-link>
 
-  <div class="d-flex justify-content-between align-items-center">
+  <div class="d-flex justify-content-between align-items-center flex-wrap">
     <div class="d-flex flex-column">
       <h3 v-if="counts" class="text-highlight m-0">{{counts.total}} resources</h3>
       <CirclePacking class="circle-packing" :data="counts.sources" :query="queryString" v-if="counts" />
@@ -66,7 +66,6 @@ export default {
   },
   mounted() {
     this.resultSubscription = getQuerySummaries(this.query, this.$resourceurl).subscribe(results => {
-      console.log(results)
       this.results = results;
       this.dates = results[0].facets.datePublished.terms;
 
