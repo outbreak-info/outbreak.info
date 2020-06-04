@@ -1,5 +1,5 @@
 <template>
-<div class="mb-3">
+<div class="mb-3 text-muted">
   <template v-if="data['@type']">
     <StripeAccent :className="data['@type']" />
     <small :class="[data['@type'], 'resource-type', 'mr-2']">{{
@@ -23,19 +23,18 @@
     <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
     <span v-if="idx >= data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
     <span v-if="idx == data.author.length - 2 && data.author.length > 2" v-html="',&nbsp;and&nbsp;'"></span>
-  </span>
+  </span>.
 </template>
-<span class="mx-1" v-if="data.journalName">{{data.journalName}}</span>
-<span class="badge bg-grey__lightest" v-if="data.dateModified">
-  <i class="far fa-clock mr-1"></i>
-  updated {{ this.formatDate(data.dateModified) }}
-</span>
 
 <!-- journal name -->
 <span v-if="data.journalName" class="mx-1">{{data.journalName}}</span>
 <span v-else-if="data.journalNameAbbrev" class="mx-1">{{data.journalNameAbbrev}}</span>
 
 <!-- dates -->
+<span class="badge bg-grey__lightest" v-if="data.dateModified">
+  <i class="far fa-clock mr-1"></i>
+  updated {{ this.formatDate(data.dateModified) }}
+</span>
 <span v-if="data.datePublished && data.dateModified
     " class="mx-1">&bull;</span>
 <span class="badge bg-grey__lightest" v-if="data.datePublished">
@@ -76,7 +75,7 @@ export default Vue.extend({
       const formatDate = timeFormat("%d %B %Y");
       if (dateStr) {
         const parsed = parseDate(dateStr);
-        return parsed ? parsed : dateStr;
+        return parsed ? formatDate(parsed) : dateStr;
       }
       return (null)
     }
