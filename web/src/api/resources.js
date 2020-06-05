@@ -112,16 +112,10 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
   ).pipe(
     pluck("data"),
     map(results => {
-      console.log(results);
       const resources = results.hits;
       const total = results.total;
 
       resources.forEach(d => {
-        d["date"] = d.dateModified ?
-          d.dateModified :
-          d.datePublished ?
-          d.datePublished :
-          d.dateCreated;
         d["longDescription"] = d.abstract ? d.abstract : d.description;
         if (d.longDescription) {
           let descriptionArray = d.longDescription.split(" ");
@@ -134,7 +128,6 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
         }
       });
 
-      resources.sort((a, b) => (a.date > b.date ? -1 : 1));
       return {
         results: resources,
         total: total
