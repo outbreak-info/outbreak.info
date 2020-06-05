@@ -156,10 +156,9 @@
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
     <small>Record provided by
-      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}
-        <img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25" class="ml-1 mr-4" />
+      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}<img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25" class="ml-1 mr-4" />
       </a>
-      <router-link :to="{ name: 'Sources' }">Learn more</router-link>
+<router-link :to="{ name: 'Sources' }">Learn more</router-link>
     </small>
   </div>
 
