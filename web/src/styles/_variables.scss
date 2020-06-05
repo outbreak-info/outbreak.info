@@ -177,16 +177,32 @@ $website-color: #f28e2c; // orange
     fill: lighten($website-color, 25%);
 }
 
+$image-color: #edc949; // yellow
+.ImageObject  {
+    color: saturate(darken($image-color, 15%), 0%);
+    fill: saturate(darken($image-color, 5%), 10%);
+}
+
+.ImageObject.dark {
+    fill: darken($image-color, 20%);
+}
+
+.ImageObject.light {
+    fill: lighten($image-color, 15%);
+}
+
+
+
 $other-color: #777; // grey
-.MediaObject, .CreativeWork, .ImageObject, .PresentationDigitalDocument, .BreadcrumbList {
+.CreativeWork, .MediaObject, .PresentationDigitalDocument, .BreadcrumbList {
     color: $other-color;
     fill: $other-color;
 }
-.MediaObject.dark, .CreativeWork.dark, .ImageObject.dark, .PresentationDigitalDocument.dark, .BreadcrumbList.dark {
+.CreativeWork.dark, .MediaObject.dark, .PresentationDigitalDocument.dark, .BreadcrumbList.dark {
     fill: darken($other-color, 20%);
 }
 
-.MediaObject.light, .CreativeWork.light, .ImageObject.light, .PresentationDigitalDocument.light, .BreadcrumbList.light {
+.CreativeWork.light, .MediaObject.light, .PresentationDigitalDocument.light, .BreadcrumbList.light {
     fill: lighten($other-color, 20%);
 }
 

@@ -314,6 +314,14 @@ export default Vue.extend({
     fill: $analysis-color;
 }
 
+.imageobject.depth1 {
+    stroke: $image-color;
+}
+
+.imageobject.depth2 {
+    fill: $image-color;
+}
+
 .annotation--source,
 .annotation--type {
     text-anchor: middle;

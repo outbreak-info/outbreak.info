@@ -19,7 +19,7 @@ const categoricalPalette = [
   "#e15759", // coral (Publication)
   "#76b7b2", // teal (Analysis)
   "#59a14f", // green (Protocol)
-  "#edc949", // yellow
+  "#edc949", // yellow (ImageObject)
   "#b475a3", // purple (ClinicalTrial)
   "#ff98a8", // pink (Book)
   "#9c755f", // brown (SoftwareSourceCode)
