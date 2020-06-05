@@ -10,7 +10,7 @@
               : author.givenName + " " + author.familyName
           }}</span>
         <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
-        <span v-if="idx >= data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
+        <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
         <span v-if="idx == data.author.length - 2 && data.author.length > 2" v-html="',&nbsp;and&nbsp;'"></span>
       </div>
 
