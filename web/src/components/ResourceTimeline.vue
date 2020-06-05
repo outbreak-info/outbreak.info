@@ -1,7 +1,7 @@
 <template>
-<div class="sparkline-group d-flex flex-column text-left">
+<div class="timeline-group d-flex flex-column text-left">
   <h6 class="m-0">Results by publication date</h6>
-  <small class="text-muted">7 day rolling average</small>
+  <small class="text-accent text-right">7 day rolling average</small>
   <svg :width="width" :height="height" class="epi-sparkline" ref="timeline">
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 3})`" class="resource-timeline-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="resource-timeline-axis axis--y" ref="yAxis"></g>
@@ -36,8 +36,8 @@ export default Vue.extend({
         const lowDate = Math.max(d3.timeDay.offset(date, -1 * N), firstDate);
         const highDate = Math.min(d3.timeDay.offset(date, N), lastDate);
         const filtered = values.filter(d => d.date <= highDate && d.date >= lowDate);
-        const daySpan = Math.round((highDate - lowDate)/(24 * 3600 * 1000)) + 1;
-        return (d3.sum(filtered, d => d.count)/daySpan)
+        const daySpan = Math.round((highDate - lowDate) / (24 * 3600 * 1000)) + 1;
+        return (d3.sum(filtered, d => d.count) / daySpan)
       }
 
       function weeklySum(date, values, N = 3) {
@@ -70,11 +70,15 @@ export default Vue.extend({
 
       this.chart = this.svg.append("g").attr("class", "resource-timeline").attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
 
+      // this.line = d3
+      //   .area()
+      //   .x(d => this.x(d.date))
+      //   .y0(d => this.y(0))
+      //   .y1(d => this.y(d.avg));
       this.area = d3
-        .area()
+        .line()
         .x(d => this.x(d.date))
-        .y0(d => this.y(0))
-        .y1(d => this.y(d.avg));
+        .y(d => this.y(d.avg));
     },
     updatePlot() {
       if (this.data) {
@@ -85,13 +89,19 @@ export default Vue.extend({
       }
     },
     updateScales() {
+      const dateRange = d3.extent(this.plotted, d => d.date);
+
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(d3.extent(this.plotted, d => d.date));
 
+      this.xBand = this.xBand
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain(d3.timeDay.range(dateRange[0], d3.timeDay.offset(dateRange[1], 1)));
+
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, d3.max(this.plotted, d => d.avg)]);
+        .domain([0, d3.max(this.plotted, d => d.count)]);
 
 
       this.xAxis = d3
@@ -115,7 +125,23 @@ export default Vue.extend({
       d3.select(this.$refs.yAxis).call(this.yAxis);
     },
     drawPlot() {
-      const sparkSelector = this.chart.selectAll(".sparkline").data([this.plotted]);
+      const sparkSelector = this.chart
+        .selectAll(".sparkline")
+        .data([this.plotted]);
+
+      const barSelector = this.chart.append("g")
+        .attr("class", "timeline-count-group")
+        .selectAll("rect")
+        .data(this.plotted);
+
+      barSelector.join(enter => {
+        enter.append("rect")
+          .attr("class", "resource-timeline-bar")
+          .attr("x", d => this.xBand(d.date))
+          .attr("y", d => this.y(d.count))
+          .attr("width", this.xBand.bandwidth())
+          .attr("height", d => this.y(0) - this.y(d.count))
+      })
 
       const sparkEnter = sparkSelector
         .enter()
@@ -137,7 +163,7 @@ export default Vue.extend({
     return {
       margin: {
         top: 10,
-        right: 50,
+        right: 20,
         bottom: 25,
         left: 25
       },
@@ -146,6 +172,7 @@ export default Vue.extend({
       // axes
       y: d3.scaleLinear(),
       x: d3.scaleTime(),
+      xBand: d3.scaleBand(),
       xAxis: null,
       yAxis: null,
       // refs
@@ -157,8 +184,20 @@ export default Vue.extend({
 })
 </script>
 <style lang="scss">
-.resource-timeline {
-    fill: $grey-60;
+.timeline-group .text-accent {
+    color: $warning-color;
+    margin-right: 20px;
+}
+
+.resource-timeline path {
+    stroke: $warning-color;
+    stroke-width: 2;
+    fill: none;
+}
+
+.resource-timeline-bar {
+    fill: $grey-45;
+    stroke: none;
 }
 
 .resource-timeline-axis {
