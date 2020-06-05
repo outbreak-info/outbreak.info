@@ -81,7 +81,7 @@
           <div v-if="data.funding || data.funder">
             <div v-if="data.funding">
               <ul>
-                <li v-for="(funding, idx) in data.funding" :key="idx">
+                <li v-for="(funding, idx) in data.funding" :key="idx" class="mb-3">
                   <template v-if="Array.isArray(funding.funder)">
                     <div v-for="(funder, idx) in funding.funder" :key="idx">
                       <b v-if="funder.name">{{funder.name}}</b>
@@ -91,13 +91,13 @@
                   </template>
 
                   <template v-else>
-                    <div>
-                      <b v-if="funding.funder.name">{{funding.funder.name}}</b>
-                      <span v-if="funding.funder.name && funding.identifier">:&nbsp;</span>
+                    <div class="m-0">
+                      <b v-if="funding.funder && funding.funder.name">{{funding.funder.name}}</b>
+                      <span v-if="funding.funder && funding.funder.name && funding.identifier">:&nbsp;</span>
                       <span v-if="funding.identifier">{{funding.identifier}}</span>
                     </div>
                   </template>
-                  <div v-if="funding.description">
+                  <div v-if="funding.description" class="line-height-1">
                     {{funding.description}}
                   </div>
                 </li>
@@ -400,5 +400,9 @@ export default Vue.extend({
 }
 .min-height {
     min-height: 72vh;
+}
+
+.line-height-1 {
+  line-height: 1.1em;
 }
 </style>
