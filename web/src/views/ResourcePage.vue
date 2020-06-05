@@ -6,6 +6,10 @@
   </div>
 
   <div class="row w-100 m-0" v-if="data">
+    <div class="col-sm-12" v-if="retracted">
+      <Warning :animate="true" class="w-100 mb-2" :text="`This ${data['@type']} has been retracted.`"> </Warning>
+    </div>
+
     <div class="col-sm-12 text-left">
       <div :class="type.replace(/\s/g, '')" v-if="type">
         <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
@@ -78,11 +82,21 @@
             <div v-if="data.funding">
               <ul>
                 <li v-for="(funding, idx) in data.funding" :key="idx">
-                  <div v-for="(funder, idx) in funding.funder" :key="idx">
-                    <b v-if="funder.name">{{funder.name}}</b>
-                    <span v-if="funder.name && funding.identifier">:&nbsp;</span>
-                    <span v-if="funding.identifier">{{funding.identifier}}</span>
-                  </div>
+                  <template v-if="Array.isArray(funding.funder)">
+                    <div v-for="(funder, idx) in funding.funder" :key="idx">
+                      <b v-if="funder.name">{{funder.name}}</b>
+                      <span v-if="funder.name && funding.identifier">:&nbsp;</span>
+                      <span v-if="funding.identifier">{{funding.identifier}}</span>
+                    </div>
+                  </template>
+
+                  <template v-else>
+                    <div>
+                      <b v-if="funding.funder.name">{{funding.funder.name}}</b>
+                      <span v-if="funding.funder.name && funding.identifier">:&nbsp;</span>
+                      <span v-if="funding.identifier">{{funding.identifier}}</span>
+                    </div>
+                  </template>
                   <div v-if="funding.description">
                     {{funding.description}}
                   </div>
@@ -167,6 +181,7 @@ import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 import ClinicalTrialDescription from "@/components/ClinicalTrialDescription.vue";
 import Citation from "@/components/Citation.vue";
+import Warning from "@/components/Warning.vue";
 
 export default Vue.extend({
   name: "ResourcePage",
@@ -174,7 +189,8 @@ export default Vue.extend({
     ResourceDescription,
     ResourceSidebar,
     ClinicalTrialDescription,
-    Citation
+    Citation,
+    Warning
   },
   data() {
     return ({
@@ -353,6 +369,13 @@ export default Vue.extend({
         return (this.anchors[this.type])
       }
       return (this.anchors["default"])
+    },
+    retracted() {
+      if (this.data.publicationType) {
+        return (this.data.publicationType.includes("Retracted Publication"))
+      } else {
+        return (false)
+      }
     }
   },
   mounted() {
