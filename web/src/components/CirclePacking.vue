@@ -290,6 +290,14 @@ export default Vue.extend({
     fill: $book-color;
 }
 
+.website.depth1 {
+    stroke: $website-color;
+}
+
+.website.depth2 {
+    fill: $website-color;
+}
+
 .softwaresourcecode.depth1 {
     stroke: $software-color;
 }
@@ -297,6 +305,7 @@ export default Vue.extend({
 .softwaresourcecode.depth2 {
     fill: $software-color;
 }
+
 .analysis.depth1 {
     stroke: $analysis-color;
 }

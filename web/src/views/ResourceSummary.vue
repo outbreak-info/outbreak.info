@@ -109,7 +109,7 @@ export default {
     }
   },
   mounted() {
-    this.countSubscription = getSourceSummary(this.$resourceurl).subscribe(results => {
+    this.countSubscription = getSourceSummary(this.$resourceurl, "__all__").subscribe(results => {
       // console.log(results)
       this.counts = results;
     });

@@ -377,10 +377,10 @@ export function getCTSummary(apiUrl) {
     }))
 }
 
-export function getSourceSummary(apiUrl) {
+export function getSourceSummary(apiUrl, query) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
-  return forkJoin([getSourceCounts(apiUrl, "__all__"), getResourcesMetadata(apiUrl)]).pipe(
+  return forkJoin([getSourceCounts(apiUrl, query), getResourcesMetadata(apiUrl)]).pipe(
     map(([results, metadata]) => {
       results["dateModified"] = metadata;
       return (results)

@@ -20,12 +20,15 @@
   </router-link>
 
   <div class="d-flex justify-content-between align-items-center flex-wrap">
-    <div class="d-flex flex-column">
+    <div class="d-flex flex-column align-items-center">
       <h3 v-if="counts" class="text-highlight m-0">{{counts.total}} resources</h3>
+      <small class="text-muted badge bg-grey__lightest" v-if="counts && counts.dateModified"><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
+      </small>
+
       <CirclePacking class="circle-packing" :data="counts.sources" :query="queryString" v-if="counts" />
     </div>
-    <HorizontalBargraph :data="authors" title="Top authors" v-if="authors"/>
-    <HorizontalBargraph :data="affiliations" title="Author affiliations"   v-if="affiliations"/>
+    <HorizontalBargraph :data="authors" title="Top authors" v-if="authors" />
+    <HorizontalBargraph :data="affiliations" title="Author affiliations" v-if="affiliations" />
     <div class="d-flex flex-column">
       <ResourceTimeline :data="dates" v-if="dates" />
     </div>
@@ -38,7 +41,7 @@
 <script>
 import {
   getQuerySummaries,
-  getSourceCounts
+  getSourceSummary
 } from "@/api/resources.js";
 
 import {
@@ -91,8 +94,8 @@ export default {
         .sort((a, b) => b.value - a.value);
     });
 
-    this.countSubscription = getSourceCounts(this.$resourceurl, this.queryString).subscribe(results => {
-      // console.log(results)
+    this.countSubscription = getSourceSummary(this.$resourceurl, this.queryString).subscribe(results => {
+      console.log(results)
       this.counts = results;
     });
   },
@@ -128,3 +131,11 @@ export default {
   }
 }
 </script>
+
+
+<style lang="scss" scoped>
+.circle-packing {
+    margin-top: -50px;
+    margin-bottom: -50px;
+  }
+    </style>
