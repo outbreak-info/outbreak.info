@@ -7,7 +7,11 @@ const state = {
       scope: "(non-U.S. data)",
       img: "jhu.png",
       description: 'Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China. See <a target="_blank" rel="noreferrer" href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">data FAQ</a>.',
-      url: "https://github.com/CSSEGISandData/COVID-19"
+      url: "https://github.com/CSSEGISandData/COVID-19",
+      license: {
+        url: "https://github.com/CSSEGISandData/COVID-19/blob/master/README.md"
+      },
+      citation: "COVID-19 Dashboard by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU) (2020)"
     },
     {
       id: "NYT",
@@ -15,7 +19,12 @@ const state = {
       img: "nytimes.png",
       scope: "(U.S. data)",
       description: 'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
-      url: "https://github.com/nytimes/covid-19-data"
+      url: "https://github.com/nytimes/covid-19-data",
+      license: {
+        url: "https://github.com/nytimes/covid-19-data/blob/master/LICENSE",
+        name: "CC BY-NC"
+      },
+      citation: "Data provided by the New York Times"
     },
     {
       id: "testing",
@@ -23,7 +32,12 @@ const state = {
       scope: "(testing data)",
       img: "ustesting.svg",
       description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
-      url: "https://github.com/nytimes/covid-19-data"
+      url: "https://covidtracking.com/",
+      license: {
+        url: "https://covidtracking.com/license",
+        name: "CC BY-NC"
+      },
+      citation: "The COVID Tracking Project at The Atlantic"
     }
   ],
   geoSources: [{
@@ -32,7 +46,12 @@ const state = {
       img: "naturalearth.png",
       scope: "(country names)",
       description: "Country names and World Bank region locations",
-      url: "https://www.naturalearthdata.com/downloads/"
+      url: "https://www.naturalearthdata.com/downloads/",
+      license: {
+        url: "https://www.naturalearthdata.com/about/terms-of-use/",
+        name: "CC0"
+      },
+      citation: "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
     },
     {
       id: "census",
@@ -51,14 +70,22 @@ const state = {
           img: "figshare_icon.svg",
           img_lg: "figshare.svg",
           url: "https://covid19.figshare.com/",
-          description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner."
+          description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner.",
+          license: {
+            url: "https://knowledge.figshare.com/articles/item/data-access-policy"
+          }
         },
         {
           id: "pdb",
           name: "The Protein Data Bank",
           img: "pdb.png",
           url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
-          description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies."
+          description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
+          license: {
+            url: 'https://www.rcsb.org/pages/usage-policy',
+            name: 'CC0 1.0 Universal'
+          },
+          citation: "https://www.rcsb.org/pages/policies#References"
         },
         {
           id: "zenodo",
@@ -132,7 +159,7 @@ const state = {
       route: {
         name: "Resources",
         query: {
-        filter: 'curatedBy.name:"Figshare,protocols.io"'  
+          filter: 'curatedBy.name:"Figshare,protocols.io"'
         }
       }
     }, {
