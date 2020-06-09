@@ -47,7 +47,7 @@ import DataUsage from "@/components/DataUsage.vue";
 import CiteUs from "@/components/CiteUs.vue";
 
 import { timeFormat } from "d3";
-import { cloneDeep } from "lodash";
+import { cloneDeep, uniq } from "lodash";
 
 export default {
   name: "DownloadData",
@@ -112,10 +112,10 @@ export default {
       prepData() {
         this.downloadable = cloneDeep(this.data);
         if(this.type == "epidemiology"){
-        this.downloadable = this.downloadable.flatMap(location => location.value)
+        this.downloadable = this.downloadable.flatMap(location => location.value).filter(d => !d.calculated)
 
         this.downloadable.forEach(d => {
-          d["source"] = d.country_iso3 === "USA" || d.location_id === "USA" ? "The New York Times, The COVID Tracking Project" : "JHU COVID-19 Data Repository";
+          d["source"] = d.country_name == "United States of America" || d.country_iso3 === "USA" || d.location_id === "USA" ? "The New York Times, The COVID Tracking Project" : "JHU COVID-19 Data Repository";
           d["date"] = this.formatDate(d.date);
         delete d._score;
         delete d.color;
@@ -128,6 +128,28 @@ export default {
           })
         }
       },
+      data2Str(data, columnDelimiter = "\t") {
+        const lineDelimiter = '\n';
+
+      let colnames = uniq(data.flatMap(d => Object.keys(d)));
+
+      var dwnld_data = "";
+      dwnld_data += colnames.join(columnDelimiter);
+      dwnld_data += lineDelimiter;
+
+      data.forEach(function(item) {
+        let counter = 0;
+        colnames.forEach(function(key) {
+          if (counter > 0) dwnld_data += columnDelimiter;
+
+          // For null values, return empty string.
+          dwnld_data += (item[key] || item[key] === 0 || item[key] === false) ? item[key] : "";
+          counter++;
+        });
+        dwnld_data += lineDelimiter;
+      });
+      return(dwnld_data)
+    },
     downloadJson() {
       this.prepData();
       const dataString = JSON.stringify(this.downloadable);
@@ -135,6 +157,9 @@ export default {
       },
     downloadTsv() {
       this.prepData();
+      const dataString = this.data2Str(this.downloadable);
+      console.log(this.downloadable);
+      this.downloadData(dataString, "text/tab-separated-values;charset=utf-8", this.filename + ".tsv")
       }
     },
     mounted() {

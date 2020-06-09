@@ -68,7 +68,8 @@ export function getEpiTraces(apiUrl, locations) {
           d["value"].push({
             name: today[0].name,
             confirmed: 100,
-            daysSince100Cases: 0
+            daysSince100Cases: 0,
+            calculated: true
           });
         }
 
@@ -76,14 +77,16 @@ export function getEpiTraces(apiUrl, locations) {
           d["value"].push({
             name: today[0].name,
             dead: 10,
-            daysSince10Deaths: 0
+            daysSince10Deaths: 0,
+            calculated: true
           });
         }
         if (today[0].dead >= 50) {
           d["value"].push({
             name: today[0].name,
             dead: 50,
-            daysSince50Deaths: 0
+            daysSince50Deaths: 0,
+            calculated: true
           });
         }
       });
