@@ -4,7 +4,7 @@ const state = {
   sources: [{
       id: "JHU",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
-      scope: "(non-U.S. data)",
+      scope: "non-U.S. data",
       img: "jhu.png",
       description: 'Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China. See <a target="_blank" rel="noreferrer" href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">data FAQ</a>.',
       url: "https://github.com/CSSEGISandData/COVID-19",
@@ -17,7 +17,7 @@ const state = {
       id: "NYT",
       name: "The New York Times",
       img: "nytimes.png",
-      scope: "(U.S. data)",
+      scope: "U.S. data",
       description: 'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
       url: "https://github.com/nytimes/covid-19-data",
       license: {
@@ -29,7 +29,7 @@ const state = {
     {
       id: "testing",
       name: "The COVID Tracking Project",
-      scope: "(testing data)",
+      scope: "testing data",
       img: "ustesting.svg",
       description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
       url: "https://covidtracking.com/",

@@ -4,7 +4,7 @@
       >Source:
       <span v-for="(source, idx) in filteredSources" :key="idx">
         <a :href="source.url" target="_blank" rel="noreferrer"
-          >{{ source.name }} {{ source.scope }}</a
+          >{{ source.name }} <span v-if="source.scope">({{ source.scope }})</span></a
         >
         <span v-if="idx < filteredSources.length - 1">; </span> </span
       >, updated daily.
