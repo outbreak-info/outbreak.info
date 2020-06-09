@@ -109,6 +109,14 @@
             </a>
           </li>
           <li class="d-inline m-2">
+            <router-link class="text-light" :to="{name: 'Sources'}"
+              >Data Sources</router-link>
+          </li>
+          <li class="d-inline m-2">
+            <router-link class="text-light" :to="{name: 'Citation'}"
+              >How to Cite</router-link>
+          </li>
+          <li class="d-inline m-2">
             <router-link class="text-light" to="/privacy"
               >Privacy Policy</router-link
             >
