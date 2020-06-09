@@ -69,7 +69,7 @@
 
 
     <!-- download data -->
-    <DownloadData v-if="data$" :data="data$[1]['hits']" />
+    <DownloadData v-if="data$"  type="epidemiology" :data="data$[0]" />
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />

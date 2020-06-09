@@ -1,20 +1,43 @@
 <template>
 <div>
-
+  <!-- button to download -->
   <div class="w-100">
-    <button class="btn btn-main-outline router-link no-underline m-5" role="button" @click="downloadData">download data</button>
+    <button class="btn btn-main-outline router-link no-underline m-5" role="button" @click="showDialogBox">download {{downloadLabel}}</button>
+    <a class="hidden" ref="download_link"></a>
   </div>
+
+
   <div id="download-dialog" class="dialog position-fixed text-left d-flex flex-column text-light rounded w-75 h-75 px-5 py-4" v-if="showDialog">
-    <h3>Download data</h3>
+    <h2>Download</h2>
     <!-- <a href="#download" class="my-4">download files</a> -->
     <DataUsage />
     <CiteUs class="mt-5" />
 
     <!-- Actual data download -->
-    <h2 class="my-3">Download data</h2>
+    <h2 class="my-3">Download</h2>
+    <div v-if="type == 'epidemiology'" class="mb-4">
+      <h4 class="m-0">Figure</h4>
+      <a class="text-uppercase pointer" @click="downloadSvg">
+        <p class="focustext m-0">
+          svg
+        </p>
+      </a>
+    </div>
+
+    <h4 class="m-0">Data</h4>
+    <a class="text-uppercase pointer" @click="downloadJson">
+      <p class="focustext m-0">
+        json
+      </p>
+    </a>
+    <a class="text-uppercase pointer" @click="downloadTsv">
+      <p class="focustext m-0">
+        tsv
+      </p>
+    </a>
 
     <!-- close button -->
-    <button class="btn btn-main router-link no-underline m-5 background-white" role="button" @click="closeDialog">close</button>
+    <button class="btn btn-main router-link no-underline m-5 background-white" role="button" @click="closeDialogBox">close</button>
   </div>
 </div>
 </template>
@@ -23,10 +46,18 @@
 import DataUsage from "@/components/DataUsage.vue";
 import CiteUs from "@/components/CiteUs.vue";
 
+import { timeFormat } from "d3";
+import { cloneDeep } from "lodash";
+
 export default {
   name: "DownloadData",
   props: {
-    data: Array
+    data: Array,
+    type: String,
+    downloadLabel: {
+      type: String,
+      default: "figure & data"
+    }
   },
   components: {
     DataUsage,
@@ -34,28 +65,87 @@ export default {
   },
   data() {
     return({
-showDialog: true
+      showDialog: false,
+      downloadable: []
     })
   },
+  computed: {
+    today() {
+      const today = new Date();
+      return(this.formatDate(today))
+    },
+    filename() {
+      if(this.data.length === 1 && this.type == "epidemiology"){
+      return(`${this.data[0].key}_outbreakinfo_epidemiology_data_${this.today}`)
+    } else {
+      return(`outbreakinfo_epidemiology_data_${this.today}`)
+    }
+
+    }
+  },
   methods: {
-    closeDialog() {
+    formatDate(dateString) {
+      const formatDate = timeFormat("%Y-%m-%d");
+      return(formatDate(dateString))
+    },
+    closeDialogBox() {
       this.showDialog = false;
     },
-    downloadData() {
+    showDialogBox() {
       this.showDialog = true;
+    },
+    downloadData(dwnld_data, encodingFormat, filename) {
+        // code adapted from CViSB
+        const blob = new Blob([dwnld_data], { type: encodingFormat });
+        const hiddenElement = this.$refs.download_link;
+        hiddenElement.href = window.URL.createObjectURL(blob);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = filename;
+        hiddenElement.click();
+        this.showDialog = false;
+    },
+    downloadSvg() {
         console.log("Downloading data")
         console.log(this.data)
+        console.log(this.filename)
+      },
+      prepData() {
+        this.downloadable = cloneDeep(this.data);
+        if(this.type == "epidemiology"){
+        this.downloadable = this.downloadable.flatMap(location => location.value)
+
+        this.downloadable.forEach(d => {
+          d["source"] = d.country_iso3 === "USA" || d.location_id === "USA" ? "The New York Times, The COVID Tracking Project" : "JHU COVID-19 Data Repository";
+          d["date"] = this.formatDate(d.date);
+        delete d._score;
+        delete d.color;
+      })}
+        else {
+          this.downloadable.forEach(d => {
+            d["source"] = d.curatedBy ? d.curatedBy.name : null;
+          delete d._score;
+          delete d.color;
+          })
+        }
+      },
+    downloadJson() {
+      this.prepData();
+      const dataString = JSON.stringify(this.downloadable);
+      this.downloadData(dataString, "text/json;charset=utf-8", this.filename + ".json")
+      },
+    downloadTsv() {
+      this.prepData();
       }
     },
     mounted() {
       this.$nextTick(function() {
-        // window.addEventListener("click", this.closeDialog), { passive: true };
+        // window.addEventListener("click", this.closeDialogBox), { passive: true };
         // Close on escape
         document.addEventListener(
           "keyup",
           evt => {
             if (evt.keyCode === 27) {
-              this.closeDialog();
+              this.closeDialogBox();
             }
           },
           { passive: true }
@@ -63,8 +153,8 @@ showDialog: true
       });
     },
     destroyed() {
-      // window.removeEventListener("click", this.closeDialog);
-      document.removeEventListener("keyup", this.closeDialog);
+      // window.removeEventListener("click", this.closeDialogBox);
+      document.removeEventListener("keyup", this.closeDialogBox);
     },
   }
   </script>
