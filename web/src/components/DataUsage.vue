@@ -1,7 +1,7 @@
 <template>
 <div>
   <h5 class="m-0">Data usage policy</h5>
-  <span class="badge bg-grey__lightest my-2">
+  <span class="badge bg-grey__lightest my-2 text-dark">
     <i class="far fa-clock mr-1"></i>
     updated June 2020
   </span>
