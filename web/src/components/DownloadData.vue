@@ -108,13 +108,18 @@ svg: "http://www.w3.org/2000/svg"
     },
     downloadData(dwnld_data, encodingFormat, filename) {
         // code adapted from CViSB
-        const blob = new Blob([dwnld_data], { type: encodingFormat });
+        const blob = new Blob(dwnld_data, { type: encodingFormat });
+
         const hiddenElement = this.$refs.download_link;
         hiddenElement.href = window.URL.createObjectURL(blob);
         hiddenElement.target = '_blank';
         hiddenElement.download = filename;
         hiddenElement.click();
         this.showDialog = false;
+
+        setTimeout(function() {
+          window.URL.revokeObjectURL(hiddenElement.href);
+        }, 10);
     },
     downloadSvg() {
       // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
@@ -125,10 +130,9 @@ svg: "http://www.w3.org/2000/svg"
         var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
 
         const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
-        this.svgDownloader(svgObject[0])
+        this.downloadData(svgObject[0].source, "text/xml", this.filename + ".svg")
         console.log(svgObject)
       },
-
         getSvgSources(svgs, emptySvgDeclarationComputed) {
           var svgInfo = [];
           var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
@@ -211,23 +215,6 @@ svg: "http://www.w3.org/2000/svg"
      explicitlySetStyle(allElements[i]);
    }
  },
- svgDownloader(source) {
-   const filename = this.filename + ".svg";
-
-   var url = window.URL.createObjectURL(new Blob(source.source, { "type" : "text/xml" }));
-
-   var a = document.createElement("a");
-   window.document.body.appendChild(a);
-   a.setAttribute("class", "svg-crowbar");
-   a.setAttribute("download", filename + ".svg");
-   a.setAttribute("href", url);
-   a.style["display"] = "none";
-   a.click();
-
-   setTimeout(function() {
-     window.URL.revokeObjectURL(url);
-   }, 10);
- },
       prepData() {
         this.downloadable = cloneDeep(this.data);
         if(this.type == "epidemiology"){
@@ -272,12 +259,12 @@ svg: "http://www.w3.org/2000/svg"
     downloadJson() {
       this.prepData();
       const dataString = JSON.stringify(this.downloadable);
-      this.downloadData(dataString, "text/json;charset=utf-8", this.filename + ".json")
+      this.downloadData([dataString], "text/json;charset=utf-8", this.filename + ".json")
       },
     downloadTsv() {
       this.prepData();
       const dataString = this.data2Str(this.downloadable);
-      this.downloadData(dataString, "text/tab-separated-values;charset=utf-8", this.filename + ".tsv")
+      this.downloadData([dataString], "text/tab-separated-values;charset=utf-8", this.filename + ".tsv")
       }
     },
     mounted() {
