@@ -5,7 +5,7 @@
   <div id="outbreakinfo-citation" class="mb-2 py-3 border-top border-bottom">
     <h6 class="m-0">outbreak.info</h6>
     <p class="m-0">
-      <i>outbreak.info</i>. Available online: <a href="http://outbreak.info/">http://outbreak.info/</a> (2020)
+      Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I. <i>outbreak.info</i>. Available online: <a href="http://outbreak.info/">http://outbreak.info/</a> (2020)
     </p>
     <small class="d-block">
       <span class="font-weight-500">data license</span>: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>
@@ -15,9 +15,9 @@
 
   <div id="epi-citation" class="mb-2 py-3 border-bottom">
     <h6 class="m-0">Epidemiology data</h6>
-    <div v-for="(source, eIdx) in sources" :key="eIdx" class="mb-3 line-height-1">
+    <div v-for="(source, eIdx) in sources" :key="eIdx" class="mb-4 line-height-1">
       <span class="text-highlight">{{source.scope}}:</span> <span v-html="source.citation"></span>
-      <small v-if="source.license" class="d-block">
+      <small v-if="source.license" class="d-block  mt-1">
         <span class="font-weight-500">data license</span>: <a :href="source.license.url" v-if="source.license.name">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url">{{source.license.url}}</a>
       </small>
     </div>
@@ -26,9 +26,9 @@
   <div id="epi-citation" class="mb-2 py-3 border-bottom">
     <h6 class="m-0">Resources</h6>
     <div v-for="(sourceGroup, rIdx) in resources" :key="rIdx">
-      <div v-for="(source, sIdx) in sourceGroup.sources" :key="sIdx"  class="mb-3  line-height-1">
+      <div v-for="(source, sIdx) in sourceGroup.sources" :key="sIdx"  class="mb-4  line-height-1">
       <span class="text-highlight">{{source.name}}:</span> <span v-html="source.citation"></span>
-      <small v-if="source.license" class="d-block">
+      <small v-if="source.license" class="d-block mt-1">
         <span class="font-weight-500">data license</span>: <a :href="source.license.url" v-if="source.license.name">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url">{{source.license.url}}</a>
       </small>
       </div>
