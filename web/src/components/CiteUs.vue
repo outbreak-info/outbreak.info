@@ -5,7 +5,7 @@
   <div id="outbreakinfo-citation" class="mb-2 py-3 border-top border-bottom">
     <h6 class="m-0">outbreak.info</h6>
     <p class="m-0">
-      Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I. <i>outbreak.info</i>. Available online: <a href="http://outbreak.info/">http://outbreak.info/</a> (2020)
+      Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I. <i>outbreak.info</i>. Available online: <a href="https://outbreak.info/">https://outbreak.info/</a> (2020)
     </p>
     <small class="d-block">
       <span class="font-weight-500">data license</span>: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>
