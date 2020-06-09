@@ -9,6 +9,12 @@
 
   <div id="download-dialog" class="dialog position-fixed text-left d-flex flex-column text-light rounded w-75 h-75 px-5 py-4" v-if="showDialog">
     <h2>Download</h2>
+    <a class="text-uppercase pointer" @click="downloadSvg">
+      <p class="focustext m-0">
+        svg
+      </p>
+    </a>
+
     <!-- <a href="#download" class="my-4">download files</a> -->
     <DataUsage />
     <CiteUs class="mt-5" />
@@ -54,6 +60,7 @@ export default {
   props: {
     data: Array,
     type: String,
+    figureClass: String,
     downloadLabel: {
       type: String,
       default: "figure & data"
@@ -65,8 +72,13 @@ export default {
   },
   data() {
     return({
-      showDialog: false,
-      downloadable: []
+      showDialog: true,
+      downloadable: [],
+      prefix: {
+xmlns: "http://www.w3.org/2000/xmlns/",
+xlink: "http://www.w3.org/1999/xlink",
+svg: "http://www.w3.org/2000/svg"
+}
     })
   },
   computed: {
@@ -105,10 +117,117 @@ export default {
         this.showDialog = false;
     },
     downloadSvg() {
+      // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
         console.log("Downloading data")
-        console.log(this.data)
-        console.log(this.filename)
+        const refs = document.getElementsByClassName("epi-curve");
+        var emptySvg = window.document.createElementNS(this.prefix.svg, 'svg');
+        window.document.body.appendChild(emptySvg);
+        var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
+
+        const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
+        this.svgDownloader(svgObject[0])
+        console.log(svgObject)
       },
+
+        getSvgSources(svgs, emptySvgDeclarationComputed) {
+          var svgInfo = [];
+          var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+
+          // apparently nodes, while array-like, don't have a `forEach` property attached to them... hence this syntax
+          [].forEach.call(svgs, svg => {
+
+            svg.setAttribute("version", "1.1");
+
+            // removing attributes so they aren't doubled up
+            svg.removeAttribute("xmlns");
+            svg.removeAttribute("xlink");
+
+
+            // These are needed for the svg
+            if (!svg.hasAttributeNS(this.prefix.xmlns, "xmlns")) {
+              svg.setAttributeNS(this.prefix.xmlns, "xmlns", this.prefix.svg);
+            }
+
+            if (!svg.hasAttributeNS(this.prefix.xmlns, "xmlns:xlink")) {
+              svg.setAttributeNS(this.prefix.xmlns, "xmlns:xlink", this.prefix.xlink);
+            }
+
+            // necessary to nest styles inline
+            this.setInlineStyles(svg, emptySvgDeclarationComputed);
+
+            var source = (new XMLSerializer()).serializeToString(svg);
+            var rect = svg.getBoundingClientRect();
+            svgInfo.push({
+              top: rect.top,
+              left: rect.left,
+              width: rect.width,
+              height: rect.height,
+              class: svg.getAttribute("class"),
+              id: svg.getAttribute("id"),
+              name: svg.getAttribute("name"),
+              childElementCount: svg.childElementCount,
+              source: [doctype + source]
+            });
+          });
+          return svgInfo;
+        },
+        setInlineStyles(svg, emptySvgDeclarationComputed) {
+
+   function explicitlySetStyle (element) {
+     var cSSStyleDeclarationComputed = getComputedStyle(element);
+     var i, len, key, value;
+     var computedStyleStr = "";
+     for (i=0, len=cSSStyleDeclarationComputed.length; i<len; i++) {
+       key=cSSStyleDeclarationComputed[i];
+       value=cSSStyleDeclarationComputed.getPropertyValue(key);
+       if (value!==emptySvgDeclarationComputed.getPropertyValue(key)) {
+         computedStyleStr+=key+":"+value+";";
+       }
+     }
+     element.setAttribute('style', computedStyleStr);
+   }
+   function traverse(obj){
+     var tree = [];
+     tree.push(obj);
+     visit(obj);
+     function visit(node) {
+       if (node && node.hasChildNodes()) {
+         var child = node.firstChild;
+         while (child) {
+           if (child.nodeType === 1 && child.nodeName != 'SCRIPT'){
+             tree.push(child);
+             visit(child);
+           }
+           child = child.nextSibling;
+         }
+       }
+     }
+     return tree;
+   }
+   // hardcode computed css styles inside svg
+   var allElements = traverse(svg);
+   var i = allElements.length;
+   while (i--){
+     explicitlySetStyle(allElements[i]);
+   }
+ },
+ svgDownloader(source) {
+   const filename = this.filename + ".svg";
+
+   var url = window.URL.createObjectURL(new Blob(source.source, { "type" : "text/xml" }));
+
+   var a = document.createElement("a");
+   window.document.body.appendChild(a);
+   a.setAttribute("class", "svg-crowbar");
+   a.setAttribute("download", filename + ".svg");
+   a.setAttribute("href", url);
+   a.style["display"] = "none";
+   a.click();
+
+   setTimeout(function() {
+     window.URL.revokeObjectURL(url);
+   }, 10);
+ },
       prepData() {
         this.downloadable = cloneDeep(this.data);
         if(this.type == "epidemiology"){
@@ -158,7 +277,6 @@ export default {
     downloadTsv() {
       this.prepData();
       const dataString = this.data2Str(this.downloadable);
-      console.log(this.downloadable);
       this.downloadData(dataString, "text/tab-separated-values;charset=utf-8", this.filename + ".tsv")
       }
     },

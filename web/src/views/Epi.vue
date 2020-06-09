@@ -69,7 +69,7 @@
 
 
     <!-- download data -->
-    <DownloadData v-if="data$"  type="epidemiology" :data="data$[0]" />
+    <DownloadData v-if="data$"  type="epidemiology" figureClass="epi-curve" :data="data$[0]" />
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
