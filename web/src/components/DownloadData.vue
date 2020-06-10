@@ -175,7 +175,7 @@ export default {
       const resourcesString = this.resources.flatMap(d => d.sources).map(d => `${d.name}: ${d.citation}`).join("\n\n")
 
       return (
-`${filename}
+        `${filename}
 
 Downloaded: ${this.today}
 Source: ${sourceText}
@@ -205,8 +205,12 @@ ${resourcesString}
       var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
 
       const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
-      this.downloadAll(svgObject[0].source, "text/xml", this.filename + ".svg")
-      console.log(svgObject)
+      const filenames = svgObject.map(svg => this.filename +  "_" + svg.name + ".svg").join(", ");
+
+      this.downloadData([this.getMetadata(filenames)], "text/plain", `${this.filename}_README.txt`);
+      svgObject.forEach(svg =>
+        this.downloadData(svg.source, "text/xml", this.filename + "_" + svg.name + ".svg")
+      )
     },
     getSvgSources(svgs, emptySvgDeclarationComputed) {
       var svgInfo = [];
@@ -249,20 +253,20 @@ ${resourcesString}
           id: svg.getAttribute("id"),
           name: svg.getAttribute("name"),
           childElementCount: svg.childElementCount,
-          source: [doctype + `<svg width="${rect.width}" height="${rect.height + 80}">` + header + '<g transform="translate(0,15)">' + source + footer + "</g></svg>"]
+          source: [doctype + `<svg width="${rect.width}" height="${rect.height + 100}">` + header + '<g transform="translate(0,35)">' + source + footer + "</g></svg>"]
         });
       });
       return svgInfo;
     },
-    getHeader(width){
-      return(`<svg id="title" width="${width}" height="20">
+    getHeader(width) {
+      return (`<svg id="title" width="${width}" height="20">
       <text x="0" y="0" transform="translate(10,10)" fill="currentColor"
         style="dominant-baseline: hanging; font-size:18px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
       Number of COVID-19 cumulative cases</text>
       </svg>`)
     },
     getFooter(width, height) {
-      return(`<svg width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
+      return (`<svg width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
       <g id="background">
       <rect width="${width}" height="50" style="fill: #dee2e6"></rect>
       </g>
@@ -379,7 +383,7 @@ ${resourcesString}
       if (data) {
         this.downloadable = cloneDeep(data);
         if (this.type == "epidemiology") {
-          this.downloadable = this.downloadable.flatMap(location => location.value).filter(d => !d.calculated)
+          this.downloadable = this.downloadable.flatMap(location => location.value).filter(d => !d.calculated);
 
           this.downloadable.forEach(d => {
             d["source"] = d.country_name == "United States of America" || d.country_iso3 === "USA" || d.location_id === "USA" ? "The New York Times, The COVID Tracking Project" : "JHU COVID-19 Data Repository";

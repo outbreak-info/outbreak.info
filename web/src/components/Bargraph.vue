@@ -7,7 +7,7 @@
     <svg
       :width="width + margin.left + margin.right"
       :height="height + margin.top + margin.bottom"
-      class="epi-bargraph"
+      class="epi-bargraph" :name="title"
       ref="svg"
     >
       <defs>
