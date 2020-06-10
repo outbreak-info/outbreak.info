@@ -179,7 +179,6 @@ export default {
 
 Downloaded: ${this.today}
 Source: ${window.location.origin}/${this.$route.fullPath}${queryText}
-outbreak.info version:
 
 Please cite the data sources, as appropriate, and follow the terms of their licenses:
 \n\n${"-".repeat(75)}
