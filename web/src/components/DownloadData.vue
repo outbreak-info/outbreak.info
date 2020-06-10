@@ -236,6 +236,10 @@ ${resourcesString}
 
         var source = (new XMLSerializer()).serializeToString(svg);
         var rect = svg.getBoundingClientRect();
+
+        const footer = this.getFooter(rect.width, rect.height);
+        const header = this.getHeader(rect.width);
+
         svgInfo.push({
           top: rect.top,
           left: rect.left,
@@ -245,10 +249,77 @@ ${resourcesString}
           id: svg.getAttribute("id"),
           name: svg.getAttribute("name"),
           childElementCount: svg.childElementCount,
-          source: [doctype + source]
+          source: [doctype + `<svg width="${rect.width}" height="${rect.height + 80}">` + header + '<g transform="translate(0,15)">' + source + footer + "</g></svg>"]
         });
       });
       return svgInfo;
+    },
+    getHeader(width){
+      return(`<svg id="title" width="${width}" height="20">
+      <text x="0" y="0" transform="translate(10,10)" fill="currentColor"
+        style="dominant-baseline: hanging; font-size:18px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
+      Number of COVID-19 cumulative cases</text>
+      </svg>`)
+    },
+    getFooter(width, height) {
+      return(`<svg width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
+      <g id="background">
+      <rect width="${width}" height="50" style="fill: #dee2e6"></rect>
+      </g>
+
+          <g id="top_border">
+            <line x1="0" y1="2" x2="${width}" y2="2" stroke="#126B93" stroke-width="5"></line>
+          </g>
+
+      <g id="citation" transform="translate(10,5)">
+        <g transform="translate(0, -8)" id="logo">
+          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="25px"
+          	 viewBox="0 0 396.4 396.4" style="enable-background:new 0 0 396.4 396.4;" xml:space="preserve">
+          <g>
+          	<circle cx="198.2" cy="203" r="180"/>
+          	<g>
+          		<circle style="fill:#114068;" cx="198.2" cy="204.7" r="151.6"/>
+          	</g>
+          	<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="195.2239" y1="53.7053" x2="333.4954" y2="293.1985">
+          		<stop  offset="0" style="stop-color:#39C2E2"/>
+          		<stop  offset="0.6781" style="stop-color:#39C2E2;stop-opacity:0"/>
+          	</linearGradient>
+          	<path style="fill:url(#SVGID_1_);" d="M196.1,212.6l114.2,94c24.5-26.9,39.6-62.6,39.6-101.9c0-83.7-67.9-151.6-151.6-151.6
+          		c-0.7,0-1.4,0.1-2.1,0.1V212.6z"/>
+          	<g>
+          		<path style="fill:#FFFFFF;" d="M198.2,272.2c-32.4,0-58.8-26.4-58.8-58.8s26.4-58.8,58.8-58.8s58.8,26.4,58.8,58.8
+          			S230.6,272.2,198.2,272.2z M198.2,161.6c-28.5,0-51.7,23.2-51.7,51.7s23.2,51.7,51.7,51.7c28.5,0,51.7-23.2,51.7-51.7
+          			S226.7,161.6,198.2,161.6z"/>
+          	</g>
+          	<g>
+          		<path style="fill:#FFFFFF;" d="M198.2,330.8c-64.7,0-117.4-52.7-117.4-117.4S133.5,95.9,198.2,95.9c64.7,0,117.4,52.7,117.4,117.4
+          			S262.9,330.8,198.2,330.8z M198.2,103c-60.8,0-110.3,49.5-110.3,110.3s49.5,110.3,110.3,110.3s110.3-49.5,110.3-110.3
+          			S259,103,198.2,103z"/>
+          	</g>
+          	<g>
+          		<circle style="fill:#D13B62;" cx="269.7" cy="172.8" r="18.7"/>
+          	</g>
+          	<g>
+          		<circle style="fill:#D13B62;" cx="126.5" cy="259.3" r="9.4"/>
+          	</g>
+          	<g>
+          		<circle style="fill:#D13B62;" cx="225.3" cy="259.3" r="27.1"/>
+          	</g>
+          	<path style="fill:#FFFFFF;" d="M194.6,23c-0.3,0.6,0,2.4,0,3.1v186.4c0,2.3,1.6,4.1,3.6,4.1s3.6-1.9,3.6-4.1V26.1
+          		c0-0.7,0.3-2.5,0-3.1c-0.9,0-2,0-2.9,0C197.6,23,195.8,23,194.6,23z"/>
+          </g>
+          </svg>
+          </g>
+          <g id="outbreak-info" transform="translate(0, 22.3)">
+            <text x="0" y="0" transform="translate(30,0)" style="font-size:17px; dominant-baseline: middle;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">outbreak.info</text>
+            <text x="0" y="0" transform="translate(${width - 30},0)" style="dominant-baseline: middle; font-size:13px; text-anchor: end;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">10 June 2020</text>
+          </g>
+
+          <g id="sources" transform="translate(0, 36)">
+            <text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 11px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: JHU</text>
+          </g>
+          </g>
+        </svg>`)
     },
     setInlineStyles(svg, emptySvgDeclarationComputed) {
 
