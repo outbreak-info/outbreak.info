@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div v-if="loading" class="loader dialog d-flex flex-column align-items-center">
+  <div v-if="loading && showLoading" class="loader dialog d-flex flex-column align-items-center">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
     <div class="text-light mt-3">Fetching data, please be patient</div>
     <div class="text-light">
@@ -99,6 +99,7 @@ export default {
   data() {
     return ({
       showDialog: false,
+      showLoading: false,
       downloadable: null,
       dataSubscription: null,
       progress: 0,
@@ -255,8 +256,10 @@ export default {
     prepData(fileType) {
       if (!this.downloadable && this.query && this.api) {
         this.showDialog = false;
+        this.showLoading = true;
         this.dataSubscription = getAll(this.api, this.query).subscribe(results => {
           this.downloadable = this.cleanData(results, fileType);
+          this.showLoading = false;
         })
       } else {
         this.cleanData(this.data, fileType);

@@ -432,7 +432,6 @@ export default {
         this.facetSummary = results.facets;
         this.numResults = results.total;
         this.esQuery = results.query;
-        console.log(results)
 
         tippy(".keyword", {
           content: "Loading...",
