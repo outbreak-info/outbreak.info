@@ -1,7 +1,9 @@
 // initial state
 const state = {
   loading: false,
-  outbreak: {authors: "Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."},
+  outbreak: {
+    authors: "Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."
+  },
   sources: [{
       id: "JHU",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
@@ -189,6 +191,43 @@ const state = {
     }
   ],
   updates: [{
+      date: new Date("2020-06-12 0:0"),
+      category: "feature",
+      title: "Downloadable visualizations and epidemiology data",
+      description: 'All visualizations and their underlying data can be downloaded as .jsons, .tsvs, or .svgs.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "BRA;RUS;IND",
+          variable: 'confirmed_numIncrease'
+        }
+      }
+    },
+    {
+      date: new Date("2020-06-12 0:0"),
+      category: "feature",
+      title: "Downloadable resource metadata",
+      description: 'All metadata for COVID-19 and SARS-CoV-2 resources can be downloaded as .jsons or .tsvs. Results from searches like <a href=https://outbreak.info/resources/search?q=remdesivir&filter=%40type%3Aclinicaltrial&page=0&size=10&sort=>Remdesivir Clinical Trials</a> or entire data sources, like <a href=http://localhost:8080/sources#Publication>all publications</a>, can be downloaded.',
+      route: {
+        name: "Resources",
+        query: {
+          q: "remdesivir"
+        }
+      }
+    },
+    {
+      date: new Date("2020-06-11 0:0"),
+      category: "feature",
+      title: "Added 7-day rolling averages for case counts",
+      description: 'To visualize the trendline for daily new cases or deaths, added a 7-day rolling average (+/- 3 days) to the visualizations.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "BRA;RUS;IND",
+          variable: 'confirmed_numIncrease'
+        }
+      }
+    }, {
       date: new Date("2020-05-28 0:0"),
       category: "data",
       title: "Added Figshare and protocols.io",

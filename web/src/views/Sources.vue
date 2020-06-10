@@ -26,7 +26,7 @@
 
           <div v-for="(resource, idx) in resources" :key="idx" :class="[idx === 0 ? 'mb-5' : 'my-5']">
             <div class="d-flex justify-content-between align-items-center my-2">
-              <h4>{{ resource.category }}</h4>
+              <h4 :id="resource.id">{{ resource.category }}</h4>
               <DownloadData :downloadLabel="`all ${resource.category}`" type="resources" :query="`@type:${resource.id}`" :api="$resourceurl"/>
             </div>
 
