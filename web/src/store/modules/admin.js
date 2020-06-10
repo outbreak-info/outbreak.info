@@ -1,6 +1,7 @@
 // initial state
 const state = {
   loading: false,
+  outbreak: {authors: "Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."},
   sources: [{
       id: "JHU",
       name: "Johns Hopkins University Center for Systems Science and Engineering",

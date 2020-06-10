@@ -28,6 +28,7 @@
       </a>
 
       <!-- <a href="#download" class="my-4">download files</a> -->
+      <!-- Data Usage and citations -->
       <DataUsage />
       <CiteUs class="mt-5" />
 
@@ -69,10 +70,14 @@ import {
   mapState
 } from "vuex";
 
-import { getAll, progressState$ } from "@/api/biothings.js";
+import {
+  getAll,
+  progressState$
+} from "@/api/biothings.js";
 
 import {
-  timeFormat, format
+  timeFormat,
+  format
 } from "d3";
 import {
   cloneDeep,
@@ -112,7 +117,7 @@ export default {
     })
   },
   computed: {
-    ...mapState("admin", ["loading"]),
+    ...mapState("admin", ["loading", "outbreak", "sources", "resources"]),
     today() {
       const today = new Date();
       return (this.formatDate(today))
@@ -120,7 +125,7 @@ export default {
     filename() {
       if (this.data && this.data.length === 1 && this.type == "epidemiology") {
         return (`${this.data[0].key}_outbreakinfo_epidemiology_data_${this.today}`)
-      } else if(this.type=="resources"){
+      } else if (this.type == "resources") {
         return (`outbreakinfo_resources_metadata_${this.today}`)
       } else {
         return (`outbreakinfo_epidemiology_data_${this.today}`)
@@ -134,13 +139,17 @@ export default {
       return (formatDate(dateString))
     },
     formatPercent(value) {
-      return(format(".0%")(value))
+      return (format(".0%")(value))
     },
     closeDialogBox() {
       this.showDialog = false;
     },
     showDialogBox() {
       this.showDialog = true;
+    },
+    downloadAll(dwnld_data, encodingFormat, filename) {
+      this.downloadData(dwnld_data, encodingFormat, filename);
+      this.downloadData([this.getMetadata(filename)], "text/plain", `${this.filename}_README.txt`);
     },
     downloadData(dwnld_data, encodingFormat, filename) {
       // code adapted from CViSB
@@ -159,6 +168,35 @@ export default {
         window.URL.revokeObjectURL(hiddenElement.href);
       }, 10);
     },
+    getMetadata(filename) {
+      const queryText = this.query ? `\nQuery: ${this.query}` : null;
+
+      const epiString = this.sources.map(d => `${d.scope}: ${d.citation}`).join("\n\n");
+      const resourcesString = this.resources.flatMap(d => d.sources).map(d => `${d.name}: ${d.citation}`).join("\n\n")
+
+      return (
+`${filename}
+
+Downloaded: ${this.today}
+Source: ${window.location.origin}/${this.$route.fullPath}${queryText}
+outbreak.info version:
+
+Please cite the data sources, as appropriate, and follow the terms of their licenses:
+\n\n${"-".repeat(75)}
+outbreak.info
+${"-".repeat(75)}
+${this.outbreak.authors} outbreak.info. Available online: https://outbreak.info/ (2020)
+\n\n${"-".repeat(75)}
+epidemiology
+${"-".repeat(75)}
+${epiString}
+\n\n${"-".repeat(75)}
+resources
+${"-".repeat(75)}
+${resourcesString}
+\n\n${"-".repeat(75)}
+`)
+    },
     downloadSvg() {
       // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
       console.log("Downloading data")
@@ -168,7 +206,7 @@ export default {
       var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
 
       const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
-      this.downloadData(svgObject[0].source, "text/xml", this.filename + ".svg")
+      this.downloadAll(svgObject[0].source, "text/xml", this.filename + ".svg")
       console.log(svgObject)
     },
     getSvgSources(svgs, emptySvgDeclarationComputed) {
@@ -267,7 +305,7 @@ export default {
         this.cleanData(this.data, fileType);
       }
     },
-    cleanData(data, fileType){
+    cleanData(data, fileType) {
       if (data) {
         this.downloadable = cloneDeep(data);
         if (this.type == "epidemiology") {
@@ -294,7 +332,7 @@ export default {
           })
         }
 
-        if(fileType == "tsv") {
+        if (fileType == "tsv") {
           this.downloadTsv();
         } else {
           this.downloadJson();
@@ -326,11 +364,11 @@ export default {
     },
     downloadJson() {
       const dataString = JSON.stringify(this.downloadable);
-      this.downloadData([dataString], "text/json;charset=utf-8", this.filename + ".json")
+      this.downloadAll([dataString], "text/json;charset=utf-8", this.filename + ".json");
     },
     downloadTsv() {
       const dataString = this.data2Str(this.downloadable);
-      this.downloadData([dataString], "text/tab-separated-values;charset=utf-8", this.filename + ".tsv")
+      this.downloadAll([dataString], "text/tab-separated-values;charset=utf-8", this.filename + ".tsv")
     }
   },
   mounted() {
@@ -354,10 +392,10 @@ export default {
     });
   },
   destroyed() {
-    if(this.dataSubscription) {
+    if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }
-    if(this.progressSubscription) {
+    if (this.progressSubscription) {
       this.progressSubscription.unsubscribe();
     }
     // window.removeEventListener("click", this.closeDialogBox);
@@ -389,7 +427,7 @@ export default {
   }
 
   #download-dialog.text-light a {
-      color: rgba(255,255, 255, 0.5) !important; //#3d9bff 
+      color: rgba(255,255, 255, 0.5) !important; //#3d9bff
       &:hover {
           color: #85c0ff !important;
       }
