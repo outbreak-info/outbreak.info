@@ -86,6 +86,7 @@ export function getResources(
 
       results["recent"] = recent;
       results["facets"] = facets;
+      results["query"] = comboString;
       return results;
     }),
     catchError(e => {

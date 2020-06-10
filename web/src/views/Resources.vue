@@ -122,7 +122,7 @@
         </div>
       </div>
 
-      <div class="col-sm-9 pl-5" id="results">
+      <div class="col-sm-10 pl-5" id="results">
         <!-- results header + sort options -->
         <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
           <div class="d-flex flex-column">
@@ -152,6 +152,8 @@
               </button>
             </div>
           </div>
+
+          <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl"/>
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
             <option v-for="option in pageOpts" :value="option" :key="option">
@@ -359,6 +361,7 @@ import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
 import NewResources from "@/components/NewResources.vue";
+import DownloadData from "@/components/DownloadData.vue";
 
 import {
   mapState
@@ -405,7 +408,8 @@ export default {
     TrialStatus,
     TrialType,
     FontAwesomeIcon,
-    NewResources
+    NewResources,
+    DownloadData
   },
   created: function() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
@@ -427,6 +431,8 @@ export default {
         this.newData = results.recent;
         this.facetSummary = results.facets;
         this.numResults = results.total;
+        this.esQuery = results.query;
+        console.log(results)
 
         tippy(".keyword", {
           content: "Loading...",
@@ -618,6 +624,7 @@ export default {
       selectedPage: null,
       searchInput: null,
       filterString: null,
+      esQuery: null,
       facetFilters: [],
       sortValue: null,
       numPerPage: null,
