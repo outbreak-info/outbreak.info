@@ -15,17 +15,12 @@ export function getStackedRegions(apiUrl) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(
-    axios.get(
-      `${apiUrl}query?q=admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`,
-      {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
+    getAll(
+      apiUrl,
+      `admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`
     )
   ).pipe(
-    // tap(d => console.log(d)),
-    pluck("data", "hits"),
+    tap(d => console.log(d)),
     map(results => {
       // nest by date
       const regionNest = nest()
