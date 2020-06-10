@@ -15,7 +15,7 @@
 
   <div class="d-inline">
     <!-- button to download -->
-    <button class="btn-main-outline router-link no-underline my-1 ba" role="button" @click="showDialogBox"><small>download {{downloadLabel}}</small></button>
+    <button class="btn-main-outline router-link no-underline my-1" role="button" @click="showDialogBox"><small>download {{downloadLabel}}</small></button>
     <a class="hidden" ref="download_link"></a>
 
 
@@ -120,6 +120,8 @@ export default {
     filename() {
       if (this.data && this.data.length === 1 && this.type == "epidemiology") {
         return (`${this.data[0].key}_outbreakinfo_epidemiology_data_${this.today}`)
+      } else if(this.type=="resources"){
+        return (`outbreakinfo_resources_metadata_${this.today}`)
       } else {
         return (`outbreakinfo_epidemiology_data_${this.today}`)
       }
@@ -386,14 +388,14 @@ export default {
       }
   }
 
-  .text-light a {
-      color: #3d9bff !important;
+  #download-dialog.text-light a {
+      color: rgba(255,255, 255, 0.5) !important; //#3d9bff 
       &:hover {
           color: #85c0ff !important;
       }
   }
 
-  .text-light .text-highlight {
+  #download-dialog.text-light .text-highlight {
       color: #ff7096 !important;
   }
 
