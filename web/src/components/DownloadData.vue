@@ -1,15 +1,15 @@
 <template>
 <div>
-  <div v-if="loading" class="loader d-flex flex-column align-items-center">
+  <div v-if="loading" class="loader dialog d-flex flex-column align-items-center">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
     <div class="text-light mt-3">Fetching data, please be patient</div>
     <div class="text-light">
       {{formatPercent(progress)}} complete
     </div>
-    <svg width="200" height="20">
-      <rect x="0" y="0" :width="200" height="20" class="progress-background"></rect>
-      <rect x="0" y="0" :width="200*progress" height="20" class="progress-bar"></rect>
-      <rect x="0" y="0" :width="200" height="20" class="progress-stroke"></rect>
+    <svg :width="progressBarWidth" height="20">
+      <rect x="0" y="0" :width="progressBarWidth" height="20" class="progress-background"></rect>
+      <rect x="0" y="0" :width="progressBarWidth*progress" height="20" class="progress-bar"></rect>
+      <rect x="0" y="0" :width="progressBarWidth" height="20" class="progress-stroke"></rect>
     </svg>
   </div>
 
@@ -102,6 +102,7 @@ export default {
       downloadable: null,
       dataSubscription: null,
       progress: 0,
+      progressBarWidth: 225,
       prefix: {
         xmlns: "http://www.w3.org/2000/xmlns/",
         xlink: "http://www.w3.org/1999/xlink",
@@ -252,12 +253,9 @@ export default {
       }
     },
     prepData(fileType) {
-      console.log(this.downloadable)
       if (!this.downloadable && this.query && this.api) {
-        console.log("fetching the data")
+        this.showDialog = false;
         this.dataSubscription = getAll(this.api, this.query).subscribe(results => {
-          console.log("yee haw, data")
-          console.log(results)
           this.downloadable = this.cleanData(results, fileType);
         })
       } else {
@@ -332,7 +330,6 @@ export default {
   },
   mounted() {
     this.progressSubscription = progressState$.subscribe(progress => {
-      console.log(progress)
       this.progress = progress;
     })
 
