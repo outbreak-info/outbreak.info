@@ -169,7 +169,7 @@ export default {
       }, 10);
     },
     getMetadata(filename) {
-      const queryText = this.query ? `\nQuery: ${this.query}` : null;
+      const sourceText = this.query ? `${window.location.origin}/${this.$route.fullPath}\nQuery: ${this.query}` : `${window.location.origin}/${this.$route.fullPath}`;
 
       const epiString = this.sources.map(d => `${d.scope}: ${d.citation}`).join("\n\n");
       const resourcesString = this.resources.flatMap(d => d.sources).map(d => `${d.name}: ${d.citation}`).join("\n\n")
@@ -178,9 +178,9 @@ export default {
 `${filename}
 
 Downloaded: ${this.today}
-Source: ${window.location.origin}/${this.$route.fullPath}${queryText}
+Source: ${sourceText}
 
-Please cite the data sources, as appropriate, and follow the terms of their licenses:
+\n\n\nPlease cite the data sources, as appropriate, and follow the terms of their licenses:
 \n\n${"-".repeat(75)}
 outbreak.info
 ${"-".repeat(75)}
