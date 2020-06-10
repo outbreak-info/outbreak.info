@@ -1,15 +1,26 @@
-import { from, EMPTY } from "rxjs";
+import {
+  from,
+  EMPTY,
+  BehaviorSubject
+} from "rxjs";
 import axios from "axios";
 import {
-  // finalize,
+  finalize,
   catchError,
   pluck,
   map,
   expand,
   reduce
 } from "rxjs/operators";
-import { timeParse, timeFormat, utcParse } from "d3";
+import {
+  timeParse,
+  timeFormat,
+  utcParse
+} from "d3";
 import store from "@/store";
+
+export const progressSubject = new BehaviorSubject(0);
+export const progressState$ = progressSubject.asObservable();
 
 export function getDateUpdated(apiUrl) {
   const today = new Date();
@@ -63,9 +74,9 @@ export function getCurrentDate(apiUrl) {
 
 export function getAll(apiUrl, queryString) {
   store.state.admin.loading = true;
-  return getOne(apiUrl, queryString).pipe(
+  return getOne(apiUrl, queryString, 0).pipe(
     expand((data, _) =>
-      data.next ? getOne(apiUrl, queryString, data.next) : EMPTY
+      data.next ? getOne(apiUrl, queryString, data.count, data.next) : EMPTY
     ),
     pluck("results"),
     reduce((acc, data) => {
@@ -81,12 +92,15 @@ export function getAll(apiUrl, queryString) {
       console.log("%c Error in fetching all!", "color: red");
       console.log(e);
       return from([]);
+    }),
+    finalize(() => {
+      progressSubject.next(0);
+      store.state.admin.loading = false;
     })
-    // finalize(() => (store.state.admin.loading = false))
   );
 }
 
-export function getOne(apiUrl, queryString, scrollID = null) {
+export function getOne(apiUrl, queryString, count, scrollID = null) {
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = new Date().getTime();
 
@@ -98,8 +112,16 @@ export function getOne(apiUrl, queryString, scrollID = null) {
   return from(axios.get(url)).pipe(
     pluck("data"),
     map(results => {
+      var pct;
+      if (!results["total"] || (count + 1) * 1000 > results["total"]) {
+        pct = 1;
+      } else {
+        pct = (count + 1) * 1000 / results["total"];
+      }
+      progressSubject.next(pct);
       return {
         next: results["_scroll_id"],
+        count: count + 1,
         results: results["hits"]
       };
     }),

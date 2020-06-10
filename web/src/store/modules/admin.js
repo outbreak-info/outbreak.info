@@ -64,46 +64,8 @@ const state = {
     }
   ],
   resources: [{
-      category: "Datasets",
-      sources: [{
-          id: "figshare",
-          name: "Figshare",
-          img: "figshare_icon.svg",
-          img_lg: "figshare.svg",
-          url: "https://covid19.figshare.com/",
-          description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner.",
-          license: {
-            url: "https://knowledge.figshare.com/articles/item/data-access-policy"
-          },
-          citation: 'Figshare. <i>COVID-19 Open Research Data</i>. Available online: <a href="https://covid19.figshare.com/" target="_blank">https://covid19.figshare.com/</a> (2020)'
-        },
-        {
-          id: "pdb",
-          name: "The Protein Data Bank",
-          img: "pdb.png",
-          url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
-          description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
-          license: {
-            url: 'https://www.rcsb.org/pages/usage-policy',
-            name: 'CC0'
-          },
-          citation: '<a href="https://www.rcsb.org/pages/policies#References target="_blank"">PDB Citation Policies</a>'
-        },
-        {
-          id: "zenodo",
-          name: "Zenodo",
-          img: "zenodo.svg",
-          url: "https://zenodo.org/communities/covid-19/",
-          description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other).",
-          license: {
-            url: "https://about.zenodo.org/policies/"
-          },
-          citation: 'Zenodo. <i>Coronavirus Disease Research Community - COVID-19</i>. Available online: <a href="https://zenodo.org/communities/covid-19/" target="_blank">https://zenodo.org/communities/covid-19/</a> (2020)'
-        }
-      ]
-    },
-    {
       category: "Publications",
+      id: "Publication",
       sources: [{
           id: "litcovid",
           name: "LitCovid",
@@ -141,6 +103,7 @@ const state = {
     },
     {
       category: "Clinical Trials",
+      id: "ClinicalTrial",
       sources: [{
           id: "nct",
           name: "ClinicalTrials.gov",
@@ -166,7 +129,49 @@ const state = {
       ]
     },
     {
+      category: "Datasets",
+      id: "Dataset",
+      sources: [{
+          id: "figshare",
+          name: "Figshare",
+          img: "figshare_icon.svg",
+          img_lg: "figshare.svg",
+          url: "https://covid19.figshare.com/",
+          description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner.",
+          license: {
+            url: "https://knowledge.figshare.com/articles/item/data-access-policy"
+          },
+          citation: 'Figshare. <i>COVID-19 Open Research Data</i>. Available online: <a href="https://covid19.figshare.com/" target="_blank">https://covid19.figshare.com/</a> (2020)'
+        },
+        {
+          id: "pdb",
+          name: "The Protein Data Bank",
+          img: "pdb.png",
+          url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
+          description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
+          license: {
+            url: 'https://www.rcsb.org/pages/usage-policy',
+            name: 'CC0'
+          },
+          citation: '<a href="https://www.rcsb.org/pages/policies#References target="_blank"">PDB Citation Policies</a>'
+        },
+        {
+          id: "zenodo",
+          name: "Zenodo",
+          img: "zenodo.svg",
+          url: "https://zenodo.org/communities/covid-19/",
+          description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other).",
+          license: {
+            url: "https://about.zenodo.org/policies/"
+          },
+          citation: 'Zenodo. <i>Coronavirus Disease Research Community - COVID-19</i>. Available online: <a href="https://zenodo.org/communities/covid-19/" target="_blank">https://zenodo.org/communities/covid-19/</a> (2020)'
+        }
+      ]
+    },
+
+    {
       category: "Protocols",
+      id: "Protocol",
       sources: [{
         id: "protocolsio",
         name: "protocols.io",

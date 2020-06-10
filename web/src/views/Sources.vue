@@ -19,9 +19,19 @@
         </div>
 
         <div class="text-left mt-5">
-          <h3 id="resources" class="mb-3 border-top pt-4">Resources</h3>
+          <div class="mb-3 pt-4 border-top d-flex justify-content-between align-items-center">
+            <h3 id="resources" class="">Resources</h3>
+            <DownloadData downloadLabel="all resources" type="resources" query="__all__" :api="$resourceurl"/>
+          </div>
+
           <div v-for="(resource, idx) in resources" :key="idx" :class="[idx === 0 ? 'mb-5' : 'my-5']">
-            <h4>{{ resource.category }}</h4>
+            <div class="d-flex justify-content-between align-items-center my-2">
+              <h4>{{ resource.category }}</h4>
+              <DownloadData :downloadLabel="`all ${resource.category}`" type="resources" :query="`@type:${resource.id}`" :api="$resourceurl"/>
+            </div>
+
+
+
             <SourceDescription :sources="resource.sources" />
           </div>
         </div>
@@ -39,11 +49,13 @@ import {
 } from "vuex";
 
 import SourceDescription from "@/components/SourceDescription.vue";
+import DownloadData from "@/components/DownloadData.vue";
 
 export default Vue.extend({
   name: "Sources",
   components: {
-    SourceDescription
+    SourceDescription,
+    DownloadData
   },
   computed: {
     ...mapState("admin", ["sources", "geoSources", "resources"])
