@@ -8,8 +8,9 @@
         >
         <span v-if="idx < filteredSources.length - 1">; </span> </span
       >, updated daily.
-      <router-link :to="{ name: 'Sources' }">Read more</router-link>
+      <router-link :to="{ name: 'Sources' }" class="mx-2">Read more</router-link>
     </small>
+    <DownloadData v-if="data" :type="dataType" :figureRef="figureRef" :data="data" />
   </div>
 </template>
 
@@ -17,11 +18,18 @@
 import Vue from "vue";
 
 import { mapState } from "vuex";
+import DownloadData from "@/components/DownloadData.vue";
 
 export default Vue.extend({
   name: "DataSource",
   props: {
-    ids: Array
+    ids: Array,
+    data: Array,
+    dataType: String,
+    figureRef: String
+  },
+  components: {
+    DownloadData
   },
   computed: {
     ...mapState("admin", ["sources"]),

@@ -120,10 +120,11 @@
       <div class="row px-2" v-if="nestedData && nestedData.length > 0">
         <div class="col-sm-12 col-md-12">
           <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
+
         </div>
       </div>
     </div>
-    <DataSource v-if="nestedData && nestedData.length > 0" />
+    <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" figureRef="epi-summary-svg"/>
   </section>
 
   <section class="case-data-table p-1">

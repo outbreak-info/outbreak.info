@@ -1,10 +1,8 @@
 <template>
-<div>
+<div class="d-inline">
   <!-- button to download -->
-  <div class="w-100">
-    <button class="btn btn-main-outline router-link no-underline m-5" role="button" @click="showDialogBox">download {{downloadLabel}}</button>
-    <a class="hidden" ref="download_link"></a>
-  </div>
+  <button class="btn-main-outline router-link no-underline my-1 ba" role="button" @click="showDialogBox"><small>download {{downloadLabel}}</small></button>
+  <a class="hidden" ref="download_link"></a>
 
 
   <div id="download-dialog" class="dialog position-fixed text-left d-flex flex-column text-light rounded w-75 h-75 px-5 py-4" v-if="showDialog">
@@ -60,10 +58,10 @@ export default {
   props: {
     data: Array,
     type: String,
-    figureClass: String,
+    figureRef: String,
     downloadLabel: {
       type: String,
-      default: "figure & data"
+      default: "vis & data"
     }
   },
   components: {
@@ -72,7 +70,7 @@ export default {
   },
   data() {
     return({
-      showDialog: true,
+      showDialog: false,
       downloadable: [],
       prefix: {
 xmlns: "http://www.w3.org/2000/xmlns/",
@@ -124,7 +122,7 @@ svg: "http://www.w3.org/2000/svg"
     downloadSvg() {
       // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
         console.log("Downloading data")
-        const refs = document.getElementsByClassName("epi-curve");
+        const refs = document.getElementsByClassName(this.figureRef);
         var emptySvg = window.document.createElementNS(this.prefix.svg, 'svg');
         window.document.body.appendChild(emptySvg);
         var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
@@ -226,6 +224,13 @@ svg: "http://www.w3.org/2000/svg"
         delete d._score;
         delete d.color;
       })}
+        else if(this.type == "regions"){
+
+        this.downloadable.forEach(d => {
+          d["source"] = "JHU COVID-19 Data Repository, The New York Times";
+          d["date"] = this.formatDate(d.date);
+        delete d._score;
+      })}
         else {
           this.downloadable.forEach(d => {
             d["source"] = d.curatedBy ? d.curatedBy.name : null;
@@ -303,7 +308,7 @@ svg: "http://www.w3.org/2000/svg"
     overflow-y: auto;
   }
 
-  .background-white {
+  .btn-main.background-white {
     background: white !important;
     color: $primary-color !important;
     &:hover {
