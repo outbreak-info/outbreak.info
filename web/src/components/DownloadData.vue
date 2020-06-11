@@ -26,11 +26,6 @@
           svg
         </p>
       </a>
-      <a class="text-uppercase pointer" @click="downloadTsv">
-        <p class="focustext m-0">
-          tsv
-        </p>
-      </a>
 
       <!-- <a href="#download" class="my-4">download files</a> -->
       <!-- Data Usage and citations -->
@@ -406,8 +401,6 @@ ${resourcesString}
             delete d._score;
           })
         } else if(this.type == "resources") {
-          console.log(this.downloadable);
-
           this.downloadable.forEach(d => {
             d["source"] = d.curatedBy ? d.curatedBy.name : null;
             delete d._score;
@@ -445,13 +438,12 @@ ${resourcesString}
 
           // For null values, return empty string.
           // Make sure the values are encased in quotes, in case the item[key] includes html like `\n` which will break the parsing
-          dwnld_data += (item[key] || item[key] === 0 || item[key] === false) ? `"${item[key]}"` : "";
+          dwnld_data += (item[key] || item[key] === 0 || item[key] === false) ? `${JSON.stringify(item[key])}` : "";
           counter++;
         });
         dwnld_data += lineDelimiter;
       });
 
-      console.log(dwnld_data)
       return (dwnld_data)
     },
     downloadJson() {
