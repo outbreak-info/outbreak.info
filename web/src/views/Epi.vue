@@ -60,8 +60,6 @@
         <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
           :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
-      <DataSource :ids="variableObj.sources" />
-    </div>
 
       <!-- source / download data -->
       <DataSource :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :data="data$[0]" v-if="data$" />
@@ -78,6 +76,7 @@
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
+</div>
 </div>
 </template>
 
