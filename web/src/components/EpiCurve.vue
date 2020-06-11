@@ -9,6 +9,7 @@
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
+
     <g ref="switchX" class="switch-x-button-group" transform="translate(0,0)">
       <path class="swoopy-arrow" id="switch-x-btn-swoopy-arrow"></path>
     </g>
@@ -797,6 +798,7 @@ export default Vue.extend({
 
 .annotation--region-name {
     dominant-baseline: middle;
+    stroke: none !important;
 }
 
 .tooltip--text {
