@@ -96,7 +96,7 @@ export default Vue.extend({
   },
   computed: {
     noRollingAvg() {
-    return(!['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable));
+    return(!['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate);
     }
   },
   watch: {
