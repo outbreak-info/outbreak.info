@@ -133,7 +133,7 @@ const state = {
     }
   ],
   updates: [{
-      date: new Date("2020-06-10 0:0"),
+      date: new Date("2020-06-11 0:0"),
       category: "data",
       title: "Added Harvard Dataverse",
       description: 'Added resource metadata from <a href="https://dataverse.harvard.edu/dataverse/covid19" target="_blank" rel="noreferrer">Harvard Dataverse</a>. <a href="/sources#resources">View more about sources</a>',
