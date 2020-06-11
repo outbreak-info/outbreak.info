@@ -247,7 +247,7 @@ export default Vue.extend({
       legendCircles: null,
       colorMax: null,
       legendColors: null,
-      legendGap: 20,
+      legendGap: 40,
       margin: {
         gap: 2,
         circles: 25,
@@ -386,7 +386,7 @@ export default Vue.extend({
       const domain = scale.domain();
 
       // const circles = range(domain[0], domain[1], (domain[1] - domain[0]) / 4);
-      const circles = [0, 1, 100, 1000, 10000, domain[1]].filter(
+      const circles = [0, domain[1]/100, domain[1]/10, domain[1]].filter(
         d => d <= domain[1]
       );
       this.legendCircles = circles.map((d, i) => {
@@ -401,9 +401,9 @@ export default Vue.extend({
             i * this.legendGap
         };
       });
-      this.legendHeight = max(this.legendCircles, d => d.r) * 2;
+      this.legendHeight = max(this.legendCircles, d => d.r) * 2 + 25;
       this.legendWidth =
-        sum(this.legendCircles, d => d.r) * 2 + 4 * this.legendGap;
+        sum(this.legendCircles, d => d.r) * 2 + 2.25 * this.legendGap;
       return scale(d);
     },
     formatPercent(pct) {
