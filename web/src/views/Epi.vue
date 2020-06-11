@@ -55,7 +55,7 @@
 
   <div class="d-flex row m-0">
     <!-- bar graph -->
-    <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('Increase')">
+    <div class="d-flex flex-column align-items-center" v-if="data$ && data$[0] && this.variable.includes('Increase')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
         <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
           :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />

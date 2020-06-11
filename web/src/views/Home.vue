@@ -142,7 +142,7 @@
       as of {{ currentDate$ }}
     </h4>
     <LeafletMap :data="mapData$" :variable="selectedVariable" />
-     <DownloadData v-if="mapData$" type="regions" figureRef="leaflet-zoom-animated" :data="mapData$" />
+     <DownloadData v-if="mapData$" type="regions" figureRef="leaflet-zoom-animated" :data="mapData$" class="mt-2 mb-5"/>
   </section>
 
   <section>

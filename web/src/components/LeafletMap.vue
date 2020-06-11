@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="this.height && this.data && this.data.length > 0"
-    class="full-page container d-flex flex-column align-items-center full-page mt-4"
+    class="d-flex flex-column align-items-center mt-4"
     id="mapContainer"
   >
     <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
@@ -9,7 +9,6 @@
         :zoom="zoom"
         :center="center"
         :options="mapOptions"
-        style="height: 80%"
         @update:center="centerUpdate"
         @update:zoom="zoomUpdate"
         ref="map"
@@ -291,7 +290,7 @@ export default Vue.extend({
   },
   methods: {
     setWidth() {
-      const aspectRatio = 1.3;
+      const aspectRatio = 1.5;
       this.width = window.innerWidth * 0.9;
       const idealHeight = this.width / aspectRatio;
       if (idealHeight < window.innerHeight) {
@@ -468,9 +467,7 @@ export default Vue.extend({
   & .legend {
     background: #ffffff99;
     position: absolute;
-    bottom: calc(
-      20% + 0.5em
-    ); // leaflet inserts a position=relative div w/ height = 80%
+    bottom: 0.5em;
     left: 0.5em;
     z-index: 1000;
   }
