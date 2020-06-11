@@ -26,6 +26,11 @@
           svg
         </p>
       </a>
+      <a class="text-uppercase pointer" @click="downloadTsv">
+        <p class="focustext m-0">
+          tsv
+        </p>
+      </a>
 
       <!-- <a href="#download" class="my-4">download files</a> -->
       <!-- Data Usage and citations -->
@@ -198,7 +203,6 @@ ${resourcesString}
     },
     downloadSvg() {
       // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
-      console.log("Downloading data")
       const refs = document.getElementsByClassName(this.figureRef);
       var emptySvg = window.document.createElementNS(this.prefix.svg, 'svg');
       window.document.body.appendChild(emptySvg);
@@ -381,7 +385,10 @@ ${resourcesString}
     },
     cleanData(data, fileType) {
       if (data) {
+        // create a copy so the real stuff isn't mutated
         this.downloadable = cloneDeep(data);
+
+        // clean up based on the type of data being exported
         if (this.type == "epidemiology") {
           this.downloadable = this.downloadable.flatMap(location => location.value).filter(d => !d.calculated);
 
@@ -397,6 +404,14 @@ ${resourcesString}
             d["source"] = "JHU COVID-19 Data Repository, The New York Times";
             d["date"] = this.formatDate(d.date);
             delete d._score;
+          })
+        } else if(this.type == "resources") {
+          console.log(this.downloadable);
+
+          this.downloadable.forEach(d => {
+            d["source"] = d.curatedBy ? d.curatedBy.name : null;
+            delete d._score;
+            delete d.color;
           })
         } else {
           this.downloadable.forEach(d => {
@@ -429,11 +444,14 @@ ${resourcesString}
           if (counter > 0) dwnld_data += columnDelimiter;
 
           // For null values, return empty string.
-          dwnld_data += (item[key] || item[key] === 0 || item[key] === false) ? item[key] : "";
+          // Make sure the values are encased in quotes, in case the item[key] includes html like `\n` which will break the parsing
+          dwnld_data += (item[key] || item[key] === 0 || item[key] === false) ? `"${item[key]}"` : "";
           counter++;
         });
         dwnld_data += lineDelimiter;
       });
+
+      console.log(dwnld_data)
       return (dwnld_data)
     },
     downloadJson() {
