@@ -65,6 +65,14 @@ const state = {
   resources: [{
       category: "Datasets",
       sources: [{
+          id: "dataverse",
+          name: "Harvard Dataverse",
+          img: "dataverse_icon.png",
+          img_lg: "dataverse.png",
+          url: "https://dataverse.harvard.edu/dataverse/covid19",
+          description: "This is a general collection of COVID-19 data deposited in the Harvard Dataverse repository. The list in this collection is maintained by the Harvard Dataverse data curation team (IQSS and Harvard Library). Researchers who deposit their related data into Harvard Dataverse will have their data linked to this collection, to increase discoverability of their data."
+        },
+        {
           id: "figshare",
           name: "Figshare",
           img: "figshare_icon.svg",
@@ -152,6 +160,17 @@ const state = {
     }
   ],
   updates: [{
+      date: new Date("2020-06-11 0:0"),
+      category: "data",
+      title: "Added Harvard Dataverse",
+      description: 'Added resource metadata from <a href="https://dataverse.harvard.edu/dataverse/covid19" target="_blank" rel="noreferrer">Harvard Dataverse</a>. <a href="/sources#resources">View more about sources</a>',
+      route: {
+        name: "Resources",
+        query: {
+          filter: 'curatedBy.name:"Dataverse"'
+        }
+      }
+    }, {
       date: new Date("2020-05-28 0:0"),
       category: "data",
       title: "Added Figshare and protocols.io",
