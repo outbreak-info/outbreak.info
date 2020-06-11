@@ -59,10 +59,14 @@ export function getEpiTraces(apiUrl, locations) {
         .rollup(values => values)
         .entries(results);
 
-      // should be the same for all data; pulling out the first one.
       nested.forEach(d => {
         const today = d.value.filter(d => d.mostRecent);
+        // should be the same for all data; pulling out the first one.
         d["currentCases"] = today[0].confirmed;
+
+        // sorting so transition appears correctly
+        d.value.sort((a,b) => a.date - b.date);
+
         // add in static values to get 0 points for x-shifted cases
         if (today[0].confirmed >= 100) {
           d["value"].push({
