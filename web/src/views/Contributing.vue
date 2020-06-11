@@ -31,7 +31,13 @@
   <div class="container">
     <h4 class="text-left">How to contribute data</h4>
     <p class="text-left">
-      Check back later for more information on how to contribute data. In the meantime, you're welcome to fill out a
+      The easiest way to contribute data is to deposit your analysis, clinical trial, dataset, protocol, or publication in one of the <router-link :to="{ name: 'Sources'}">sources from which we already harvest metadata</router-link>.  When you add your resources to any of these repositories, they will automatically be added to our resource database.
+    </p>
+    <p class="text-left">
+      Check back later for more information on other information how to contribute data.
+    </p>
+    <p class="text-left">
+      If you'd like to suggest a resource repository, you can create a
       <a href="https://github.com/SuLab/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D" target="_blank" rel="noreferrer">
         Github Issue</a> to request adding a new source or send an email to <a href="mailto:help@outbreak.info?subject=Data Source">help@outbreak.info</a>.
     </p>
