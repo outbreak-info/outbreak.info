@@ -204,7 +204,7 @@ const state = {
       }
     },
     {
-      date: new Date("2020-06-12 0:0"),
+      date: new Date("2020-06-11 0:0"),
       category: "feature",
       title: "Downloadable resource metadata",
       description: 'All metadata for COVID-19 and SARS-CoV-2 resources can be downloaded as .jsons or .tsvs. Results from searches like <a href=https://outbreak.info/resources/search?q=remdesivir&filter=%40type%3Aclinicaltrial&page=0&size=10&sort=>Remdesivir Clinical Trials</a> or entire data sources, like <a href=http://localhost:8080/sources#Publication>all publications</a>, can be downloaded.',
