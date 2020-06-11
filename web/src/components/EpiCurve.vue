@@ -1,6 +1,6 @@
 <template>
-<div class="col-sm-12 epidemiology-curves flex-column align-items-center">
-  <svg :width="width" :height="height" class="epi-curve" ref="svg" :name="title">
+<div class="col-sm-12 epidemiology-curves flex-column align-items-center" style="margin-bottom: 45px">
+  <svg :width="width" :height="height-45" class="epi-curve" ref="svg" :name="title">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
@@ -9,7 +9,8 @@
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
-
+  </svg>
+  <svg :width="width" :height="height" class="swoopy-arrow position-absolute" ref="svg_arrows">
     <g ref="switchX" class="switch-x-button-group" transform="translate(0,0)">
       <path class="swoopy-arrow" id="switch-x-btn-swoopy-arrow"></path>
     </g>
@@ -57,8 +58,7 @@ const transitionDuration = 3500;
 
 export default Vue.extend({
   name: "EpiCurve",
-  components: {
-  },
+  components: {},
   props: {
     data: Array,
     location: String,
@@ -115,7 +115,10 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      return(`Number of COVID-19 ${this.variableObj.label}`)
+      if(this.data.length == 1) {
+      return (`Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+    } else {
+      return (`Number of COVID-19 ${this.variableObj.label}`)}
     }
   },
   watch: {
@@ -503,8 +506,7 @@ export default Vue.extend({
       regionGroups
         .merge(regionsEnter)
         .attr("id", d => d.key)
-        .attr("fill", d => this.colorScale(d.key))
-        .attr("stroke", d => this.colorScale(d.key));
+        .attr("fill", d => this.colorScale(d.key));
 
       // --- region annotation ---
       // using force direction to make sure they don't overlap.
@@ -579,6 +581,7 @@ export default Vue.extend({
         .select(".epi-line");
 
       pathSelector
+      .attr("stroke", d => this.colorScale(d.key))
         .merge(pathEnter)
         .datum(d => d.value)
         .attr("id", d => d[0] ? `epi-line ${d[0].location_id}` : "epi-line-blank")

@@ -2,28 +2,35 @@
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{ title }}</h4>
   {{noRollingAvg}}
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" ref="svg">
-    <defs>
-      <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
-      </marker>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
+  <div class="position-relative">
+    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" ref="svg">
+      <defs>
+        <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
+          <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
+        </marker>
+        <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
 
-    <g :transform="`translate(${margin.left}, ${height + margin.top + 2})`" class="epi-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
-    <g class="annotations" :class="{hidden: noRollingAvg}">
-      <text class="annotation--rolling-average" :x="margin.left" :y="margin.top">7 day rolling average</text>
-    </g>
-    <g class="switch-button-group" transform="translate(0,0)" ref="switch_btn" v-if="includeAxis">
-      <rect class="switch-button-rect"></rect>
-      <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
-      <text class="switch-button" x="5"></text>
-    </g>
-  </svg>
+      <g :transform="`translate(${margin.left}, ${height + margin.top + 2})`" class="epi-axis axis--x" ref="xAxis" id="xAxis"></g>
+      <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis" id="yAxis"></g>
+      <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
+      <g :transform="`translate(${margin.left},${margin.top})`" id="rolling-average" class="bargraph" ref="rolling_average"></g>
+      <g class="annotations" :class="{hidden: noRollingAvg}">
+        <text class="annotation--rolling-average" :x="margin.left" :y="margin.top">7 day rolling average</text>
+      </g>
+    </svg>
+    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0"
+    class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
+      <g class="switch-button-group" transform="translate(5,0)" ref="switch_btn" v-if="includeAxis">
+        <rect class="switch-button-rect"></rect>
+        <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
+        <text class="switch-button" x="5"></text>
+      </g>
+    </svg>
+  </div>
+
   <div class="tooltip p-2">
     <h6 class="country-name m-0"></h6>
     <p class="date m-0"></p>
@@ -91,15 +98,16 @@ export default Vue.extend({
       // methods
       line: null,
       // refs
-      chart: null
+      chart: null,
+      average: null
     };
   },
   computed: {
     plotTitle() {
-      return(`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
+      return (`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
     },
     noRollingAvg() {
-    return(!['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate);
+      return (!['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate);
     }
   },
   watch: {
@@ -139,6 +147,7 @@ export default Vue.extend({
         .select(`#bargraph-${this.id}-${this.variable}`)
         .select("svg.epi-bargraph");
       this.chart = this.svg.select("#case-counts");
+      this.average = this.svg.select("#rolling-average");
 
       this.line = d3
         .line()
@@ -357,7 +366,7 @@ export default Vue.extend({
         );
 
         if (["confirmed_numIncrease", "dead_numIncrease", "recovered_numIncrease"].includes(this.variable)) {
-          const lineSelector = this.chart
+          const lineSelector = this.average
             .selectAll(".rolling-average")
             .data([this.plottedData], d => d._id);
 
@@ -377,14 +386,14 @@ export default Vue.extend({
                   var totalLength = this.getTotalLength();
                   return totalLength;
                 })
-                .call(update => update.transition(t1).delay(0).duration((this.plottedData.length + 1)*50)  .ease(d3.easeLinear)
+                .call(update => update.transition(t1).delay(0).duration((this.plottedData.length + 1) * 50).ease(d3.easeLinear)
                   .attr("stroke-dashoffset", 0))
             },
 
             update => {
               update
                 .attr("d", this.line)
-              }
+            }
           );
         }
 
