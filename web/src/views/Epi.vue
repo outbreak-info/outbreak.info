@@ -64,7 +64,7 @@
     </div>
 
       <!-- source / download data -->
-      <DataSource :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :data="data$[0]" />
+      <DataSource :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :data="data$[0]" v-if="data$" />
     </div>
 
     <!-- curve -->
@@ -78,7 +78,6 @@
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
-  </div>
 </div>
 </template>
 
