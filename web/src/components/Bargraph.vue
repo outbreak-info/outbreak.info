@@ -21,8 +21,7 @@
         <text class="annotation--rolling-average" :x="margin.left" :y="margin.top">7 day rolling average</text>
       </g>
     </svg>
-    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0"
-    class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
+    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
       <g class="switch-button-group" transform="translate(5,0)" ref="switch_btn" v-if="includeAxis">
         <rect class="switch-button-rect"></rect>
         <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
@@ -152,7 +151,7 @@ export default Vue.extend({
       this.line = d3
         .line()
         .x(d => this.x(d.date))
-        .y(d => this.y(d["confirmed_rolling"] / 100));
+        .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")] / 100));
     },
     prepData: function() {
       if (this.data && this.includeAxis) {
@@ -298,7 +297,7 @@ export default Vue.extend({
         const t1 = d3.transition().duration(500);
         const barSelector = this.chart
           .selectAll(".bargraph")
-          .data(this.plottedData, d => d._id);
+          .data(this.plottedData.filter(d => d[this.variable]), d => d._id);
 
         barSelector.join(
           enter =>
@@ -368,7 +367,7 @@ export default Vue.extend({
         if (["confirmed_numIncrease", "dead_numIncrease", "recovered_numIncrease"].includes(this.variable)) {
           const lineSelector = this.average
             .selectAll(".rolling-average")
-            .data([this.plottedData], d => d._id);
+            .data([this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")])], d => d._id);
 
           lineSelector.join(
             enter => {
@@ -386,13 +385,23 @@ export default Vue.extend({
                   var totalLength = this.getTotalLength();
                   return totalLength;
                 })
-                .call(update => update.transition(t1).delay(0).duration((this.plottedData.length + 1) * 50).ease(d3.easeLinear)
+                .call(update => update.transition(t1).delay(0).duration((this.plottedData.length + 1) * 10 + 500).ease(d3.easeLinear)
                   .attr("stroke-dashoffset", 0))
             },
 
             update => {
               update
                 .attr("d", this.line)
+                .attr("stroke-dasharray", function() {
+                  var totalLength = this.getTotalLength();
+                  return totalLength + " " + totalLength;
+                })
+                .attr("stroke-dashoffset", function() {
+                  var totalLength = this.getTotalLength();
+                  return totalLength;
+                })
+                .call(update => update.transition(t1).delay(0).duration((this.plottedData.length + 1) * 10 + 500).ease(d3.easeLinear)
+                  .attr("stroke-dashoffset", 0))
             }
           );
         }
