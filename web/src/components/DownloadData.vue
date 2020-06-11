@@ -21,11 +21,6 @@
 
     <div id="download-dialog" class="dialog position-fixed text-left d-flex flex-column text-light rounded w-75 h-75 px-5 py-4" v-if="showDialog">
       <h2>Download</h2>
-      <a class="text-uppercase pointer" @click="downloadSvg">
-        <p class="focustext m-0">
-          svg
-        </p>
-      </a>
 
       <!-- <a href="#download" class="my-4">download files</a> -->
       <!-- Data Usage and citations -->
