@@ -2,7 +2,7 @@
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{ title }}</h4>
   {{noRollingAvg}}
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="title" ref="svg">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" ref="svg">
     <defs>
       <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
@@ -95,6 +95,9 @@ export default Vue.extend({
     };
   },
   computed: {
+    plotTitle() {
+      return(`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
+    },
     noRollingAvg() {
     return(!['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate);
     }

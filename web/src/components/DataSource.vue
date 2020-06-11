@@ -10,7 +10,7 @@
       >, updated daily.
       <router-link :to="{ name: 'Sources' }" class="mx-2">Read more</router-link>
     </small>
-    <DownloadData class="ml-3" id="download-btn" v-if="data" :type="dataType" :figureRef="figureRef" :data="data" />
+    <DownloadData class="ml-3" id="download-btn" v-if="data" :type="dataType" :figureRef="figureRef" :data="data" :sourceString="sourceString" />
   </div>
 </template>
 
@@ -39,6 +39,9 @@ export default Vue.extend({
       } else {
         return this.sources;
       }
+    },
+    sourceString() {
+      return(this.filteredSources.map(d => d.scope ? `${d.name} (${d.scope})` : `${d.name}`).join("; ") + ", updated daily")
     }
   },
   data() {

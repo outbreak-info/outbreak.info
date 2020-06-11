@@ -1,6 +1,6 @@
 <template>
 <div class="col-sm-12 epidemiology-curves flex-column align-items-center">
-  <svg :width="width" :height="height" class="epi-curve" ref="svg">
+  <svg :width="width" :height="height" class="epi-curve" ref="svg" :name="title">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
         <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
@@ -111,6 +111,11 @@ export default Vue.extend({
       // methods
       line: null
     };
+  },
+  computed: {
+    title() {
+      return(`Number of COVID-19 ${this.variableObj.label}`)
+    }
   },
   watch: {
     data: function() {

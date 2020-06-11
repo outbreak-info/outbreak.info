@@ -95,6 +95,10 @@ export default {
     downloadLabel: {
       type: String,
       default: "vis & data"
+    },
+    sourceString: {
+      type: String,
+      default: "Johns Hopkins University Center for Systems Science and Engineering (non-U.S. data); The New York Times (U.S. data); The COVID Tracking Project (testing data), updated daily."
     }
   },
   components: {
@@ -119,23 +123,25 @@ export default {
   computed: {
     ...mapState("admin", ["loading", "outbreak", "sources", "resources"]),
     today() {
-      const today = new Date();
-      return (this.formatDate(today))
+      return(new Date());
+    },
+    todayFormatted() {
+      return (this.formatDate(this.today))
     },
     filename() {
       if (this.data && this.data.length === 1 && this.type == "epidemiology") {
-        return (`${this.data[0].key}_outbreakinfo_epidemiology_data_${this.today}`)
+        return (`${this.data[0].key}_outbreakinfo_epidemiology_data_${this.todayFormatted}`)
       } else if (this.type == "resources") {
-        return (`outbreakinfo_resources_metadata_${this.today}`)
+        return (`outbreakinfo_resources_metadata_${this.todayFormatted}`)
       } else {
-        return (`outbreakinfo_epidemiology_data_${this.today}`)
+        return (`outbreakinfo_epidemiology_data_${this.todayFormatted}`)
       }
 
     }
   },
   methods: {
-    formatDate(dateString) {
-      const formatDate = timeFormat("%Y-%m-%d");
+    formatDate(dateString, formatString="%Y-%m-%d") {
+      const formatDate = timeFormat(formatString);
       return (formatDate(dateString))
     },
     formatPercent(value) {
@@ -240,8 +246,10 @@ ${resourcesString}
         var source = (new XMLSerializer()).serializeToString(svg);
         var rect = svg.getBoundingClientRect();
 
+        const title = svg.getAttribute("name");
         const footer = this.getFooter(rect.width, rect.height);
-        const header = this.getHeader(rect.width);
+        const header = this.getHeader(rect.width, title);
+
 
         svgInfo.push({
           top: rect.top,
@@ -250,18 +258,18 @@ ${resourcesString}
           height: rect.height,
           class: svg.getAttribute("class"),
           id: svg.getAttribute("id"),
-          name: svg.getAttribute("name"),
+          name: title,
           childElementCount: svg.childElementCount,
           source: [doctype + `<svg width="${rect.width}" height="${rect.height + 100}">` + header + '<g transform="translate(0,35)">' + source + footer + "</g></svg>"]
         });
       });
       return svgInfo;
     },
-    getHeader(width) {
+    getHeader(width, title) {
       return (`<svg id="title" width="${width}" height="20">
       <text x="0" y="0" transform="translate(10,10)" fill="currentColor"
         style="dominant-baseline: hanging; font-size:18px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
-      Number of COVID-19 cumulative cases</text>
+      ${title}</text>
       </svg>`)
     },
     getFooter(width, height) {
@@ -315,11 +323,11 @@ ${resourcesString}
           </g>
           <g id="outbreak-info" transform="translate(0, 22.3)">
             <text x="0" y="0" transform="translate(30,0)" style="font-size:17px; dominant-baseline: middle;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">outbreak.info</text>
-            <text x="0" y="0" transform="translate(${width - 30},0)" style="dominant-baseline: middle; font-size:13px; text-anchor: end;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">10 June 2020</text>
+            <text x="0" y="0" transform="translate(${width - 30},0)" style="dominant-baseline: middle; font-size:13px; text-anchor: end;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">${this.formatDate(this.today, "%d %B %Y")}</text>
           </g>
 
           <g id="sources" transform="translate(0, 36)">
-            <text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 11px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: JHU</text>
+            <text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 10px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: ${this.sourceString}</text>
           </g>
           </g>
         </svg>`)
