@@ -142,6 +142,7 @@
       as of {{ currentDate$ }}
     </h4>
     <LeafletMap :data="mapData$" :variable="selectedVariable" />
+     <DownloadData v-if="mapData$" type="regions" figureRef="leaflet-zoom-animated" :data="mapData$" />
   </section>
 
   <section>
@@ -167,6 +168,7 @@ import EpiTable from "@/components/EpiTable.vue";
 import LeafletMap from "@/components/LeafletMap.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
+import DownloadData from "@/components/DownloadData.vue";
 // import Warning from "@/components/Warning.vue";
 import {
   getStackedRegions
@@ -201,7 +203,8 @@ export default {
     EpiTable,
     LeafletMap,
     SearchBar,
-    Logos
+    Logos,
+    DownloadData
     // Warning
   },
   data() {
