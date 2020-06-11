@@ -25,13 +25,12 @@
       </option>
     </select>
   </small>
-  <DataSource :ids="variableObj.sources" />
+
 </div>
 </template>
 
 <script lang="js">
 import Vue from "vue";
-import DataSource from "@/components/DataSource.vue";
 
 import {
   epiDataState$
@@ -58,7 +57,6 @@ const transitionDuration = 3500;
 export default Vue.extend({
   name: "EpiCurve",
   components: {
-    DataSource,
   },
   props: {
     data: Array,

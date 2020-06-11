@@ -1,5 +1,5 @@
 <template>
-  <div class="source my-3">
+  <div class="source my-3 d-flex align-items-center">
     <small
       >Source:
       <span v-for="(source, idx) in filteredSources" :key="idx">
@@ -10,7 +10,7 @@
       >, updated daily.
       <router-link :to="{ name: 'Sources' }" class="mx-2">Read more</router-link>
     </small>
-    <DownloadData v-if="data" :type="dataType" :figureRef="figureRef" :data="data" />
+    <DownloadData class="ml-3" id="download-btn" v-if="data" :type="dataType" :figureRef="figureRef" :data="data" />
   </div>
 </template>
 
@@ -50,4 +50,5 @@ export default Vue.extend({
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

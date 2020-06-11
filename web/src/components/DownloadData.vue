@@ -15,7 +15,7 @@
 
   <div class="d-inline">
     <!-- button to download -->
-    <button class="btn-main-outline router-link no-underline my-1" role="button" @click="showDialogBox"><small>download {{downloadLabel}}</small></button>
+    <button class="download-btn btn-main-outline router-link no-underline my-1" role="button" @click="showDialogBox"><small>download {{downloadLabel}}</small></button>
     <a class="hidden" ref="download_link"></a>
 
 
@@ -205,7 +205,7 @@ ${resourcesString}
       var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
 
       const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
-      const filenames = svgObject.map(svg => this.filename +  "_" + svg.name + ".svg").join(", ");
+      const filenames = svgObject.map(svg => this.filename + "_" + svg.name + ".svg").join(", ");
 
       this.downloadData([this.getMetadata(filenames)], "text/plain", `${this.filename}_README.txt`);
       svgObject.forEach(svg =>
@@ -525,5 +525,7 @@ ${resourcesString}
     fill: none;
   }
 
-
+.download-btn {
+  min-width: 160px;
+}
   </style>
