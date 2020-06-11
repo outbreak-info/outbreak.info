@@ -60,16 +60,19 @@
         <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
           :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
-      <DataSource :ids="variableObj.sources" />
+
+      <!-- source / download data -->
+      <DataSource :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :data="data$[0]" />
     </div>
 
     <!-- curve -->
-    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'"
-      :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('Increase')" />
+    <template v-if="plottedData && showCurves && !this.variable.includes('Increase')">
+      <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'"
+        :showAll="showAll" />
 
-
-    <!-- download data -->
-    <DownloadData v-if="data$" type="epidemiology" figureRef="epi-curve" :data="data$[0]" />
+      <!-- source / download data -->
+      <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
+    </template>
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
@@ -86,7 +89,6 @@ import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
 import Bargraph from "@/components/Bargraph.vue";
 import Warning from "@/components/Warning.vue";
-import DownloadData from "@/components/DownloadData.vue"
 
 import {
   getEpiData,
@@ -111,8 +113,7 @@ export default {
     EpiCurve,
     EpiTable,
     Bargraph,
-    Autocomplete,
-    DownloadData
+    Autocomplete
   },
   props: {
     variable: {
