@@ -368,59 +368,72 @@ export default Vue.extend({
           )
         );
 
+        var lineSelector;
         if (["confirmed_numIncrease", "dead_numIncrease", "recovered_numIncrease"].includes(this.variable)) {
-          const lineSelector = this.average
+          lineSelector = this.average
             .selectAll(".rolling-average")
             .data([this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")])], d => d._id);
-
-          lineSelector.join(
-            enter => {
-              enter
-                .append("path")
-                .attr("class", "rolling-average")
-                .style("stroke", this.colorAverage)
-                .datum(d => d)
-                .join("path")
-                .attr("d", this.line)
-                .attr("stroke-dasharray", function() {
-                  var totalLength = this.getTotalLength();
-                  return totalLength + " " + totalLength;
-                })
-                .attr("stroke-dashoffset", function() {
-                  var totalLength = this.getTotalLength();
-                  return totalLength;
-                })
-                .call(update => this.animate ? update
-                  .transition(t1)
-                  .delay(0)
-                  .duration((this.plottedData.length + 1) * 10 + 500)
-                  .ease(d3.easeLinear)
-                  .attr("stroke-dashoffset", 0) :
-                  update.attr("stroke-dashoffset", 0)
-                )
-            },
-            update => {
-              update
-                .attr("d", this.line)
-                .attr("stroke-dasharray", function() {
-                  var totalLength = this.getTotalLength();
-                  return totalLength + " " + totalLength;
-                })
-                .attr("stroke-dashoffset", function() {
-                  var totalLength = this.getTotalLength();
-                  return totalLength;
-                })
-                .call(update => this.animate ? update
-                  .transition(t1)
-                  .delay(0)
-                  .duration((this.plottedData.length + 1) * 10 + 500)
-                  .ease(d3.easeLinear)
-                  .attr("stroke-dashoffset", 0) :
-                  update.attr("stroke-dashoffset", 0)
-                )
-            }
-          );
+        } else {
+          lineSelector = this.average
+            .selectAll(".rolling-average")
+            .data([], d => d._id);
         }
+
+        lineSelector.join(
+          enter => {
+            enter
+              .append("path")
+              .attr("class", "rolling-average")
+              .style("stroke", this.colorAverage)
+              .datum(d => d)
+              .join("path")
+              .attr("d", this.line)
+              .attr("stroke-dasharray", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength + " " + totalLength;
+              })
+              .attr("stroke-dashoffset", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength;
+              })
+              .call(update => this.animate ? update
+                .transition(t1)
+                .delay(0)
+                .duration((this.plottedData.length + 1) * 10 + 500)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0) :
+                update.attr("stroke-dashoffset", 0)
+              )
+          },
+          update => {
+            update
+              .attr("d", this.line)
+              .attr("stroke-dasharray", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength + " " + totalLength;
+              })
+              .attr("stroke-dashoffset", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength;
+              })
+              .call(update => this.animate ? update
+                .transition(t1)
+                .delay(0)
+                .duration((this.plottedData.length + 1) * 10 + 500)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0) :
+                update.attr("stroke-dashoffset", 0)
+              )
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        );
 
         if (this.includeTooltips) {
           this.chart
