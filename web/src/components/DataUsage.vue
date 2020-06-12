@@ -10,18 +10,12 @@
   </p>
 
   <p>
-    For content that we redistribute from other sources, we ask that you follow the data provider's license and cite them appropriately, as shown <a href="#citing">below</a>.
-  </p>
-
-  <p>
-    outbreak.info and content we create is published under a
-    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">Creative Commons CC BY-4.0 license</a>,
-    which requires users to
-    attribute the source and license type (CC BY-4.0) when sharing our data or website content.
+    For content that we redistribute from other sources, please follow the data provider's license and cite them appropriately, as shown <a href="#citing">below</a>.
   </p>
 
   <p class="m-0 mb-1">
-    For content we create, you are welcome to copy, distribute, and develop data, visualizations, and website content for any use, including any personal, editorial, academic, or research purposes.
+    All data and content that our team creates is covered by the
+    <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noreferrer">Creative Commons CC0 Waiver</a>, which states that you can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission. However, consistent with scientific norms, we ask that you cite <router-link to="/">outbreak.info</router-link> in any tools or publications that use <router-link to="/">outbreak.info</router-link>.
   </p>
 
   <small class="m-0">Data usage policy loosely adapted from <a href="https://covidtracking.com/license" target="_blank" rel="noreferrer">COVID Tracking Project.</a>

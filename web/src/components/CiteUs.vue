@@ -8,7 +8,7 @@
       {{outbreak.authors}} <i>outbreak.info</i>. Available online: <a href="https://outbreak.info/">https://outbreak.info/</a> (2020)
     </p>
     <small class="d-block">
-      <span class="font-weight-500">data license</span>: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>
+      <span class="font-weight-500">data license</span>: <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
     </small>
 
   </div>
