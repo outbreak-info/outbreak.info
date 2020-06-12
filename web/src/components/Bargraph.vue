@@ -390,10 +390,15 @@ export default Vue.extend({
                   var totalLength = this.getTotalLength();
                   return totalLength;
                 })
-                .call(update => update.transition(t1).delay(0).duration((this.plottedData.length + 1) * 10 + 500).ease(d3.easeLinear)
-                  .attr("stroke-dashoffset", 0))
+                .call(update => this.animate ? update
+                  .transition(t1)
+                  .delay(0)
+                  .duration((this.plottedData.length + 1) * 10 + 500)
+                  .ease(d3.easeLinear)
+                  .attr("stroke-dashoffset", 0) :
+                  update.attr("stroke-dashoffset", 0)
+                )
             },
-
             update => {
               update
                 .attr("d", this.line)
@@ -405,8 +410,14 @@ export default Vue.extend({
                   var totalLength = this.getTotalLength();
                   return totalLength;
                 })
-                .call(update => update.transition(t1).delay(0).duration((this.plottedData.length + 1) * 10 + 500).ease(d3.easeLinear)
-                  .attr("stroke-dashoffset", 0))
+                .call(update => this.animate ? update
+                  .transition(t1)
+                  .delay(0)
+                  .duration((this.plottedData.length + 1) * 10 + 500)
+                  .ease(d3.easeLinear)
+                  .attr("stroke-dashoffset", 0) :
+                  update.attr("stroke-dashoffset", 0)
+                )
             }
           );
         }
@@ -476,7 +487,6 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-
 .tooltip {
     position: fixed;
     z-index: 1000;

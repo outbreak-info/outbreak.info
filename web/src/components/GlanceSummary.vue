@@ -130,6 +130,7 @@
             :height="40"
             :id="'glance_' + idx"
             :color="'#126B93'"
+            colorAverage="#D13B62"
           />
         </div>
       </div>
