@@ -1,7 +1,6 @@
 <template>
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{ title }}</h4>
-  {{noRollingAvg}}
   <div class="position-relative">
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" ref="svg">
       <defs>
@@ -102,15 +101,13 @@ export default Vue.extend({
       line: null,
       // refs
       chart: null,
-      average: null
+      average: null,
+      noRollinAvg: true
     };
   },
   computed: {
     plotTitle() {
       return (`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
-    },
-    noRollingAvg() {
-      return (!['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate);
     }
   },
   watch: {
@@ -121,6 +118,7 @@ export default Vue.extend({
       immediate: true,
       handler(newObj, oldObj) {
         this.variable = newObj.value;
+        this.noRollingAvg = !['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate;
         this.updatePlot();
       }
     },
