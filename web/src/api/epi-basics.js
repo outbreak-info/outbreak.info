@@ -243,7 +243,7 @@ export function getGlanceSummary(apiUrl, locations) {
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true${location_string}&fields=location_id,name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,date,dead,dead_numIncrease,dead_pctIncrease&size=${num2Return}&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true${location_string}&fields=location_id,name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,date,dead,dead_numIncrease,dead_pctIncrease,dead_rolling,confirmed_rolling&size=${num2Return}&timestamp=${timestamp}`
     )
   ).pipe(
     pluck("data", "hits"),
@@ -251,7 +251,7 @@ export function getGlanceSummary(apiUrl, locations) {
       getSparklineTraces(
         apiUrl,
         summaryData.map(d => d.location_id),
-        "confirmed,dead,confirmed_numIncrease"
+        "confirmed,dead,confirmed_numIncrease,dead_numIncrease,confirmed_rolling,dead_rolling"
       ).pipe(
         map(sparks => {
           sparks.forEach(spark => {

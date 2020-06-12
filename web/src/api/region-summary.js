@@ -20,7 +20,7 @@ export function getStackedRegions(apiUrl) {
       `admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`
     )
   ).pipe(
-    tap(d => console.log(d)),
+    // tap(d => console.log(d)),
     map(results => {
       // nest by date
       const regionNest = nest()

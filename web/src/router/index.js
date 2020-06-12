@@ -22,6 +22,18 @@ const routes = [{
     component: Terms
   },
   {
+    path: "/license",
+    name: "License",
+    component: () =>
+      import( /* webpackChunkName: "license" */ "../views/License.vue")
+  },
+  {
+    path: "/citation",
+    name: "Citation",
+    component: () =>
+      import( /* webpackChunkName: "license" */ "../views/Citation.vue")
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting

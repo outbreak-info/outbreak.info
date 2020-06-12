@@ -6,7 +6,7 @@
     >
       {{ title }}
     </h4>
-    <svg :width="width" :height="height" class="epi-summary-svg" :id="id">
+    <svg :width="width" :height="height" class="epi-summary-svg" :id="id" :name="title">
       <defs>
         <marker
           id="arrow"

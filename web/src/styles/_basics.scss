@@ -10,6 +10,7 @@
 
 #app text {
   font-family: $font-family;
+  stroke: none !important;
 }
 
 ::placeholder {
@@ -298,6 +299,10 @@ p.focustext {
   opacity: 0.5;
   cursor: auto !important;
   pointer-events: none !important;
+}
+
+.line-height-1 {
+  line-height: 1.1em;
 }
 
 .leaflet-container .leaflet-control-attribution,

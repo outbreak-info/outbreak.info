@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="this.height && this.data && this.data.length > 0"
-    class="full-page container d-flex flex-column align-items-center full-page mt-4"
+    class="d-flex flex-column align-items-center mt-4"
     id="mapContainer"
   >
     <div :style="{ height: height + 'px', width: width + 'px' }" id="case-map">
@@ -9,7 +9,6 @@
         :zoom="zoom"
         :center="center"
         :options="mapOptions"
-        style="height: 80%"
         @update:center="centerUpdate"
         @update:zoom="zoomUpdate"
         ref="map"
@@ -247,7 +246,7 @@ export default Vue.extend({
       legendCircles: null,
       colorMax: null,
       legendColors: null,
-      legendGap: 20,
+      legendGap: 40,
       margin: {
         gap: 2,
         circles: 25,
@@ -291,7 +290,7 @@ export default Vue.extend({
   },
   methods: {
     setWidth() {
-      const aspectRatio = 1.3;
+      const aspectRatio = 1.5;
       this.width = window.innerWidth * 0.9;
       const idealHeight = this.width / aspectRatio;
       if (idealHeight < window.innerHeight) {
@@ -386,7 +385,7 @@ export default Vue.extend({
       const domain = scale.domain();
 
       // const circles = range(domain[0], domain[1], (domain[1] - domain[0]) / 4);
-      const circles = [0, 1, 100, 1000, 10000, domain[1]].filter(
+      const circles = [0, domain[1]/100, domain[1]/10, domain[1]].filter(
         d => d <= domain[1]
       );
       this.legendCircles = circles.map((d, i) => {
@@ -401,9 +400,9 @@ export default Vue.extend({
             i * this.legendGap
         };
       });
-      this.legendHeight = max(this.legendCircles, d => d.r) * 2;
+      this.legendHeight = max(this.legendCircles, d => d.r) * 2 + 25;
       this.legendWidth =
-        sum(this.legendCircles, d => d.r) * 2 + 4 * this.legendGap;
+        sum(this.legendCircles, d => d.r) * 2 + 2.25 * this.legendGap;
       return scale(d);
     },
     formatPercent(pct) {
@@ -468,9 +467,7 @@ export default Vue.extend({
   & .legend {
     background: #ffffff99;
     position: absolute;
-    bottom: calc(
-      20% + 0.5em
-    ); // leaflet inserts a position=relative div w/ height = 80%
+    bottom: 0.5em;
     left: 0.5em;
     z-index: 1000;
   }

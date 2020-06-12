@@ -1,35 +1,38 @@
 // initial state
 const state = {
   loading: false,
+  outbreak: {
+    authors: "Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."
+  },
   sources: [{
       id: "JHU",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
-      scope: "(non-U.S. data)",
+      scope: "non-U.S. data",
       img: "jhu.png",
       description: 'Confirmed cases, recovered cases, and deaths over time for countries outside the United States, and provinces in Australia, Canada, and China. See <a target="_blank" rel="noreferrer" href="https://systems.jhu.edu/research/public-health/2019-ncov-map-faqs/">data FAQ</a>.',
       url: "https://github.com/CSSEGISandData/COVID-19",
       license: {
         url: "https://github.com/CSSEGISandData/COVID-19/blob/master/README.md"
       },
-      citation: "COVID-19 Dashboard by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (JHU) (2020)"
+      citation: 'Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. <i>COVID-19 Data Repository</i>. Available online: <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank">https://github.com/CSSEGISandData/COVID-19</a> (2020)'
     },
     {
       id: "NYT",
       name: "The New York Times",
       img: "nytimes.png",
-      scope: "(U.S. data)",
+      scope: "U.S. data",
       description: 'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
       url: "https://github.com/nytimes/covid-19-data",
       license: {
         url: "https://github.com/nytimes/covid-19-data/blob/master/LICENSE",
         name: "CC BY-NC"
       },
-      citation: "Data provided by the New York Times"
+      citation: 'The New York Times. <i>Coronavirus (Covid-19) Data in the United States</i>. Available online: <a href="https://github.com/nytimes/covid-19-data" target="_blank">https://github.com/nytimes/covid-19-data</a> (2020)'
     },
     {
       id: "testing",
       name: "The COVID Tracking Project",
-      scope: "(testing data)",
+      scope: "testing data",
       img: "ustesting.svg",
       description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
       url: "https://covidtracking.com/",
@@ -37,33 +40,100 @@ const state = {
         url: "https://covidtracking.com/license",
         name: "CC BY-NC"
       },
-      citation: "The COVID Tracking Project at The Atlantic"
+      citation: 'The Atlantic. <i>The COVID Tracking Project</i>. Available online: <a href="https://covidtracking.com/" target="_blank">https://covidtracking.com/</a> (2020)'
     }
   ],
   geoSources: [{
       id: "naturaleath",
       name: "Natural Earth",
       img: "naturalearth.png",
-      scope: "(country names)",
+      scope: "country names",
       description: "Country names and World Bank region locations",
       url: "https://www.naturalearthdata.com/downloads/",
       license: {
         url: "https://www.naturalearthdata.com/about/terms-of-use/",
         name: "CC0"
       },
-      citation: "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
+      citation: 'Natural Earth. <i>Admin 0 – Countries Cultural Vectors</i>. Available online: <a href="https://www.naturalearthdata.com/downloads/" target="_blank">https://www.naturalearthdata.com/downloads/</a> (2020)'
     },
     {
       id: "census",
       name: "United States Census Bureau",
-      scope: "(Metropolitan areas)",
+      scope: "Metropolitan areas",
       img: "census.svg",
       description: "Metropolitan areas are defined by the U.S. Census Bureau's Core Based Statistical Areas. Totals for Metro areas are calculated by aggregating the component U.S. counties into the Core Based Statistical Areas.",
-      url: "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html"
+      url: "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html",
+      citation: 'United States Census Bureau. <i>Metropolitan and Micropolitan Statistical Areas and Related Statistical Areas</i>. Available online: <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html" target="_blank">https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html</a> (2020)'
     }
   ],
   resources: [{
+      category: "Publications",
+      id: "Publication",
+      sources: [{
+          id: "litcovid",
+          name: "LitCovid",
+          img: "litcovid.png",
+          url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
+          description: 'LitCovid is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus. It is the most comprehensive resource on the subject, providing a central access to 4929 (and growing) relevant articles in PubMed. The articles are updated daily and are further categorized by different research topics and geographic locations for improved access. You can read more at <a href="https://www.nature.com/articles/d41586-020-00694-1" target="_blank" rel="noreferrer">Chen et al. Nature (2020)</a> and download their data <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/#data-download" rel="noreferrer" target="_blank">here</a>.',
+          license: {
+            url: "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+          },
+          citation: 'Chen Q, Allot A, Lu Z. <i>Keep up with the latest coronavirus research</i>. Nature. 2020;579(7798):193.'
+        },
+        {
+          id: "biorxiv",
+          name: "bioRixv",
+          img: "biorxiv.png",
+          url: "https://connect.biorxiv.org/relate/content/181",
+          description: 'bioRxiv (pronounced "bio-archive") is a free online archive and distribution service for unpublished preprints in the life sciences. It is operated by Cold Spring Harbor Laboratory, a not-for-profit research and educational institution. By posting preprints on bioRxiv, authors are able to make their findings immediately available to the scientific community and receive feedback on draft manuscripts before they are submitted to journals.',
+          license: {
+            url: "https://www.biorxiv.org/about-biorxiv"
+          },
+          citation: '<a href="https://www.biorxiv.org/about-biorxiv target="_blank"">How to cite a bioRxiv preprint</a>'
+        },
+        {
+          id: "medrxiv",
+          name: "medRxiv",
+          img: "medrxiv.png",
+          url: "https://connect.biorxiv.org/relate/content/181",
+          description: 'medRxiv (pronounced "med-archive") is a free online archive and distribution server for complete but unpublished manuscripts (preprints) in the medical, clinical, and related health sciences. Preprints are preliminary reports of work that have not been certified by peer review. They should not be relied on to guide clinical practice or health-related behavior and should not be reported in news media as established information.',
+          license: {
+            url: "https://www.medrxiv.org/about/FAQ"
+          },
+          citation: '<a href="https://www.medrxiv.org/about/FAQ" target="_blank">How to cite a medRxiv preprint</a>'
+        }
+      ]
+    },
+    {
+      category: "Clinical Trials",
+      id: "ClinicalTrial",
+      sources: [{
+          id: "nct",
+          name: "ClinicalTrials.gov",
+          img: "clinicaltrialsgov.png",
+          url: "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
+          description: 'ClinicalTrials.gov is a database of privately and publicly funded clinical studies conducted around the world. Some modifications were made to the data to standardize how metadata are reported and to align to our <a href=""',
+          license: {
+            url: "https://clinicaltrials.gov/ct2/about-site/terms-conditions#Use"
+          },
+          citation: 'ClinicalTrials.gov. <i>Clinical studies related to the coronavirus disease (COVID-19)</i>. Available online: <a href="https://clinicaltrials.gov/ct2/results?cond=COVID-19" target="_blank">https://clinicaltrials.gov/ct2/results?cond=COVID-19</a> (2020)'
+        },
+        {
+          id: "who",
+          name: "WHO International Clinical Trials Registry Platform",
+          img: "who.svg",
+          url: "https://www.who.int/ictrp/en/",
+          description: "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source.",
+          license: {
+            url: "https://www.who.int/about/who-we-are/publishing-policies/copyright"
+          },
+          citation: '<a href="https://www.who.int/ictrp/How_to_cite.pdf?ua=1" target="_blank">WHO Citation Policy</a>'
+        }
+      ]
+    },
+    {
       category: "Datasets",
+      id: "Dataset",
       sources: [{
           id: "dataverse",
           name: "Harvard Dataverse",
@@ -71,8 +141,7 @@ const state = {
           img_lg: "dataverse.png",
           url: "https://dataverse.harvard.edu/dataverse/covid19",
           description: "This is a general collection of COVID-19 data deposited in the Harvard Dataverse repository. The list in this collection is maintained by the Harvard Dataverse data curation team (IQSS and Harvard Library). Researchers who deposit their related data into Harvard Dataverse will have their data linked to this collection, to increase discoverability of their data."
-        },
-        {
+        }, {
           id: "figshare",
           name: "Figshare",
           img: "figshare_icon.svg",
@@ -81,7 +150,8 @@ const state = {
           description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner.",
           license: {
             url: "https://knowledge.figshare.com/articles/item/data-access-policy"
-          }
+          },
+          citation: 'Figshare. <i>COVID-19 Open Research Data</i>. Available online: <a href="https://covid19.figshare.com/" target="_blank">https://covid19.figshare.com/</a> (2020)'
         },
         {
           id: "pdb",
@@ -91,76 +161,82 @@ const state = {
           description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
           license: {
             url: 'https://www.rcsb.org/pages/usage-policy',
-            name: 'CC0 1.0 Universal'
+            name: 'CC0'
           },
-          citation: "https://www.rcsb.org/pages/policies#References"
+          citation: '<a href="https://www.rcsb.org/pages/policies#References target="_blank"">PDB Citation Policies</a>'
         },
         {
           id: "zenodo",
           name: "Zenodo",
           img: "zenodo.svg",
           url: "https://zenodo.org/communities/covid-19/",
-          description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other)."
+          description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other).",
+          license: {
+            url: "https://about.zenodo.org/policies/"
+          },
+          citation: 'Zenodo. <i>Coronavirus Disease Research Community - COVID-19</i>. Available online: <a href="https://zenodo.org/communities/covid-19/" target="_blank">https://zenodo.org/communities/covid-19/</a> (2020)'
         }
       ]
     },
-    {
-      category: "Publications",
-      sources: [{
-          id: "litcovid",
-          name: "LitCovid",
-          img: "litcovid.png",
-          url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
-          description: 'LitCovid is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus. It is the most comprehensive resource on the subject, providing a central access to 4929 (and growing) relevant articles in PubMed. The articles are updated daily and are further categorized by different research topics and geographic locations for improved access. You can read more at <a href="https://www.nature.com/articles/d41586-020-00694-1" target="_blank" rel="noreferrer">Chen et al. Nature (2020)</a> and download their data <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/#data-download" rel="noreferrer" target="_blank">here</a>.'
-        },
-        {
-          id: "biorxiv",
-          name: "bioRixv",
-          img: "biorxiv.png",
-          url: "https://connect.biorxiv.org/relate/content/181",
-          description: 'bioRxiv (pronounced "bio-archive") is a free online archive and distribution service for unpublished preprints in the life sciences. It is operated by Cold Spring Harbor Laboratory, a not-for-profit research and educational institution. By posting preprints on bioRxiv, authors are able to make their findings immediately available to the scientific community and receive feedback on draft manuscripts before they are submitted to journals.'
-        },
-        {
-          id: "medrxiv",
-          name: "medRxiv",
-          img: "medrxiv.png",
-          url: "https://connect.biorxiv.org/relate/content/181",
-          description: 'medRxiv (pronounced "med-archive") is a free online archive and distribution server for complete but unpublished manuscripts (preprints) in the medical, clinical, and related health sciences. Preprints are preliminary reports of work that have not been certified by peer review. They should not be relied on to guide clinical practice or health-related behavior and should not be reported in news media as established information.'
-        }
-      ]
-    },
-    {
-      category: "Clinical Trials",
-      sources: [{
-          id: "nct",
-          name: "ClinicalTrials.gov",
-          img: "clinicaltrialsgov.png",
-          url: "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
-          description: "ClinicalTrials.gov is a database of privately and publicly funded clinical studies conducted around the world."
-        },
-        {
-          id: "who",
-          name: "WHO International Clinical Trials Registry Platform",
-          img: "who.svg",
-          url: "https://www.who.int/ictrp/en/",
-          description: "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source."
-        }
-      ]
-    },
+
     {
       category: "Protocols",
+      id: "Protocol",
       sources: [{
         id: "protocolsio",
         name: "protocols.io",
         img: "protocolsio.png",
         img_lg: "protocolsio_full.png",
         url: "https://www.protocols.io/groups/coronavirus-method-development-community",
-        description: "protocols.io is a platform for sharing for science methods, assays, clinical trials, operational procedures and checklists."
+        description: "protocols.io is a platform for sharing for science methods, assays, clinical trials, operational procedures and checklists.",
+        license: {
+          name: "CC BY",
+          url: "https://www.protocols.io/terms#tos1"
+        },
+        citation: 'protocols.io. <i>Coronavirus Method Development Community</i>. Available online: <a href="https://www.protocols.io/groups/coronavirus-method-development-community" target="_blank">https://www.protocols.io/groups/coronavirus-method-development-community</a> (2020)'
       }]
     }
   ],
   updates: [{
-      date: new Date("2020-06-11 0:0"),
+      date: new Date("2020-06-12 0:0"),
+      category: "feature",
+      title: "Downloadable visualizations and epidemiology data",
+      description: 'All visualizations and their underlying data can be downloaded as .jsons, .tsvs, or .svgs.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "BRA;RUS;IND",
+          variable: 'confirmed_numIncrease'
+        }
+      }
+    },
+    {
+      date: new Date("2020-06-12 0:0"),
+      category: "feature",
+      title: "Downloadable resource metadata",
+      description: 'All metadata for COVID-19 and SARS-CoV-2 resources can be downloaded as .jsons or .tsvs. Results from searches like <a href=https://outbreak.info/resources/search?q=remdesivir&filter=%40type%3Aclinicaltrial&page=0&size=10&sort=>Remdesivir Clinical Trials</a> or entire data sources, like <a href=http://localhost:8080/sources#Publication>all publications</a>, can be downloaded.',
+      route: {
+        name: "Resources",
+        query: {
+          q: "remdesivir"
+        }
+      }
+    },
+    {
+      date: new Date("2020-06-12 0:0"),
+      category: "feature",
+      title: "Added 7-day rolling averages for case counts",
+      description: 'To visualize the trendline for daily new cases or deaths, added a 7-day rolling average (+/- 3 days) to the visualizations.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "BRA;RUS;IND",
+          variable: 'confirmed_numIncrease'
+        }
+      }
+    },
+    {
+      date: new Date("2020-06-12 0:0"),
       category: "data",
       title: "Added Harvard Dataverse",
       description: 'Added resource metadata from <a href="https://dataverse.harvard.edu/dataverse/covid19" target="_blank" rel="noreferrer">Harvard Dataverse</a>. <a href="/sources#resources">View more about sources</a>',

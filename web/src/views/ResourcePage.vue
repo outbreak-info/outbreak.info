@@ -401,8 +401,4 @@ export default Vue.extend({
 .min-height {
     min-height: 72vh;
 }
-
-.line-height-1 {
-  line-height: 1.1em;
-}
 </style>

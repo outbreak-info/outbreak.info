@@ -38,7 +38,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling`;
 
   return getAll(apiUrl, queryString).pipe(
     map(results => {
@@ -59,16 +59,21 @@ export function getEpiTraces(apiUrl, locations) {
         .rollup(values => values)
         .entries(results);
 
-      // should be the same for all data; pulling out the first one.
       nested.forEach(d => {
         const today = d.value.filter(d => d.mostRecent);
+        // should be the same for all data; pulling out the first one.
         d["currentCases"] = today[0].confirmed;
+
+        // sorting so transition appears correctly
+        d.value.sort((a,b) => a.date - b.date);
+
         // add in static values to get 0 points for x-shifted cases
         if (today[0].confirmed >= 100) {
           d["value"].push({
             name: today[0].name,
             confirmed: 100,
-            daysSince100Cases: 0
+            daysSince100Cases: 0,
+            calculated: true
           });
         }
 
@@ -76,14 +81,16 @@ export function getEpiTraces(apiUrl, locations) {
           d["value"].push({
             name: today[0].name,
             dead: 10,
-            daysSince10Deaths: 0
+            daysSince10Deaths: 0,
+            calculated: true
           });
         }
         if (today[0].dead >= 50) {
           d["value"].push({
             name: today[0].name,
             dead: 50,
-            daysSince50Deaths: 0
+            daysSince50Deaths: 0,
+            calculated: true
           });
         }
       });

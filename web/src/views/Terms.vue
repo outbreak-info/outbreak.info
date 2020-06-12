@@ -2,7 +2,7 @@
   <div class="row" style="min-height: 75vh;">
     <div class="col-sm-12 my-5">
 
-    <div class="container text-left">
+    <div class="container text-left mb-5">
       <h1 class="text-highlight">Terms of Use</h1>
       <h4>Disclaimer</h4>
       <p>
@@ -18,15 +18,23 @@
         further analysis and review.
       </p>
     </div>
+
+    <DataUsage class="container text-left"/>
+    <CiteUs class="container text-left mt-5"/>
   </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import Vue from "vue";
+import DataUsage from "@/components/DataUsage.vue";
+import CiteUs from "@/components/CiteUs.vue";
 
 export default Vue.extend({
   name: "Terms",
-  components: {}
+  components: {
+    DataUsage,
+    CiteUs
+  }
 });
 </script>

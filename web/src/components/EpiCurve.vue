@@ -1,69 +1,38 @@
 <template>
-  <div class="col-sm-12 epidemiology-curves flex-column align-items-center">
-    <svg :width="width" :height="height" class="epi-curve" ref="svg">
-      <defs>
-        <marker
-          id="arrow"
-          markerWidth="13"
-          markerHeight="10"
-          refX="9"
-          refY="5"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-        </marker>
-      </defs>
-      <g
-        :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
-        class="epi-axis axis--x"
-        ref="xAxis"
-      ></g>
-      <g
-        :transform="`translate(${margin.left}, ${margin.top})`"
-        class="epi-axis axis--y"
-        ref="yAxis"
-      ></g>
-      <g
-        :transform="`translate(${margin.left},${margin.top})`"
-        id="epi-curve"
-        ref="epi_curve"
-      ></g>
-      <g ref="switchX" class="switch-x-button-group" transform="translate(0,0)">
-        <path class="swoopy-arrow" id="switch-x-btn-swoopy-arrow"></path>
-      </g>
-      <g
-        ref="switchY"
-        class="switch-y-button-group"
-        transform="translate(5,0)"
-        v-if="loggable"
-      >
-        <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
-        <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
-        <text class="switch-button" id="switch-y-btn-text"></text>
-      </g>
-    </svg>
-    <small
-      class="d-flex position-absolute justify-content-end pr-5 x-axis-select"
-      ref="xSelector"
-    >
-      <select v-model="xVariable" class="select-dropdown" @change="changeScale">
-        <option
-          v-for="option in xVarOptions"
-          :value="option.value"
-          :key="option.value"
-        >
-          {{ option.label }}
-        </option>
-      </select>
-    </small>
-    <DataSource :ids="variableObj.sources" />
-  </div>
+<div class="col-sm-12 epidemiology-curves flex-column align-items-center" style="margin-bottom: 45px">
+  <svg :width="width" :height="height-45" class="epi-curve" ref="svg" :name="title">
+    <defs>
+      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+      </marker>
+    </defs>
+    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
+    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
+    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
+  </svg>
+  <svg :width="width" :height="height" class="swoopy-arrow-group position-absolute" ref="svg_arrows">
+    <g ref="switchX" class="switch-x-button-group" transform="translate(0,0)">
+      <path class="swoopy-arrow" id="switch-x-btn-swoopy-arrow"></path>
+    </g>
+    <g ref="switchY" class="switch-y-button-group" transform="translate(5,0)" v-if="loggable">
+      <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
+      <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
+      <text class="switch-button" id="switch-y-btn-text"></text>
+    </g>
+  </svg>
+  <small class="d-flex position-absolute justify-content-end pr-5 x-axis-select" ref="xSelector">
+    <select v-model="xVariable" class="select-dropdown" @change="changeScale">
+      <option v-for="option in xVarOptions" :value="option.value" :key="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </small>
+
+</div>
 </template>
 
 <script lang="js">
 import Vue from "vue";
-import DataSource from "@/components/DataSource.vue";
 
 import {
   epiDataState$
@@ -89,9 +58,7 @@ const transitionDuration = 3500;
 
 export default Vue.extend({
   name: "EpiCurve",
-  components: {
-    DataSource,
-  },
+  components: {},
   props: {
     data: Array,
     location: String,
@@ -145,6 +112,14 @@ export default Vue.extend({
       // methods
       line: null
     };
+  },
+  computed: {
+    title() {
+      if(this.data.length == 1) {
+      return (`Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+    } else {
+      return (`Number of COVID-19 ${this.variableObj.label}`)}
+    }
   },
   watch: {
     data: function() {
@@ -531,8 +506,7 @@ export default Vue.extend({
       regionGroups
         .merge(regionsEnter)
         .attr("id", d => d.key)
-        .attr("fill", d => this.colorScale(d.key))
-        .attr("stroke", d => this.colorScale(d.key));
+        .attr("fill", d => this.colorScale(d.key));
 
       // --- region annotation ---
       // using force direction to make sure they don't overlap.
@@ -607,6 +581,7 @@ export default Vue.extend({
         .select(".epi-line");
 
       pathSelector
+      .attr("stroke", d => this.colorScale(d.key))
         .merge(pathEnter)
         .datum(d => d.value)
         .attr("id", d => d[0] ? `epi-line ${d[0].location_id}` : "epi-line-blank")
@@ -647,13 +622,15 @@ export default Vue.extend({
           .attr("cx", d => this.x(d[this.xVariable]))
           .attr("cy", d => this.y(d[this.variable]))
           .attr("opacity", 0)
-          .call(update => update.transition(t2).delay((d, i) => i * 20)
-            .attr("opacity", 1)),
+          // .attr("opacity", d => d.mostRecent ? 1 : 0)
+          .call(update => update.transition(t2).delay(1500)
+            .attr("opacity", d => d.mostRecent ? 1 : 0)),
           update => update
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
-          .attr("opacity", 1)
+          .attr("opacity", 0)
           .call(update => update.transition(t2)
+          .attr("opacity", d => d.mostRecent ? 1 : 0)
             .attr("cx", d => this.x(d[this.xVariable]))
             .attr("cy", d => this.y(d[this.variable]))),
           exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
@@ -812,85 +789,91 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .epi-axis text {
-  font-size: 12pt;
+    font-size: 12pt;
 }
 
 .epi-line {
-  fill: none;
-  stroke-width: 2;
+    fill: none;
+    stroke-width: 2;
 }
 
 .epi-point {
-  // opacity: 0.4;
+    // opacity: 0.4;
 }
 
 .annotation--region-name {
-  dominant-baseline: middle;
+    dominant-baseline: middle;
+    stroke: none !important;
 }
 
 .tooltip--text {
-  dominant-baseline: hanging;
-  stroke: none !important;
+    dominant-baseline: hanging;
+    stroke: none !important;
 }
 
 .tooltip--date {
-  font-weight: 300;
+    font-weight: 300;
 }
 
 .tooltip--case-count {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .switch-button {
-  pointer-events: none;
-  dominant-baseline: text-after-edge;
-  // fill: $grey-90 !important;
-  font-weight: 300 !important;
-  font-size: 12.8px;
-  fill: $secondary-color;
+    pointer-events: none;
+    dominant-baseline: text-after-edge;
+    // fill: $grey-90 !important;
+    font-weight: 300 !important;
+    font-size: 12.8px;
+    fill: $secondary-color;
 
-  &:hover {
-  }
+    &:hover {}
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-  stroke: $grey-70;
-  fill: none;
-  stroke-width: 0.8;
+    stroke: $grey-70;
+    fill: none;
+    stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-  stroke-width: 1;
+    stroke-width: 1;
 }
 
 .switch-button-rect {
-  cursor: pointer;
-  fill: white;
-  rx: 5;
-  ry: 5;
-  stroke: $secondary-color;
-  stroke-width: 1;
-  shape-rendering: crispedges;
-  &:hover {
-    fill: $secondary-bright;
-  }
+    cursor: pointer;
+    fill: white;
+    rx: 5;
+    ry: 5;
+    stroke: $secondary-color;
+    stroke-width: 1;
+    shape-rendering: crispedges;
+    &:hover {
+        fill: $secondary-bright;
+    }
 }
 
-.switch-button-hover {
-}
+.switch-button-hover {}
 
 .epidemiology-curves line.case-def-changed-line {
-  stroke: $grey-60;
-  stroke-width: 0.75;
-  shape-rendering: crispedges;
-  stroke-dasharray: 6, 6;
+    stroke: $grey-60;
+    stroke-width: 0.75;
+    shape-rendering: crispedges;
+    stroke-dasharray: 6, 6;
 }
 .epidemiology-curves .case-def-changed text {
-  text-anchor: start;
+    text-anchor: start;
 }
 
 .x-axis-select {
-  // top: -29px;
-  // right: 20px;
+    // top: -29px;
+    // right: 20px;
+}
+
+.swoopy-arrow-group {
+  pointer-events: none;
+  & rect {
+    pointer-events: auto !important;
+  }
 }
 </style>
