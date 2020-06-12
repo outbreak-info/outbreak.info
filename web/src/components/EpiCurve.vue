@@ -10,7 +10,7 @@
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
   </svg>
-  <svg :width="width" :height="height" class="swoopy-arrow position-absolute" ref="svg_arrows">
+  <svg :width="width" :height="height" class="swoopy-arrow-group position-absolute" ref="svg_arrows">
     <g ref="switchX" class="switch-x-button-group" transform="translate(0,0)">
       <path class="swoopy-arrow" id="switch-x-btn-swoopy-arrow"></path>
     </g>
@@ -622,13 +622,15 @@ export default Vue.extend({
           .attr("cx", d => this.x(d[this.xVariable]))
           .attr("cy", d => this.y(d[this.variable]))
           .attr("opacity", 0)
-          .call(update => update.transition(t2).delay((d, i) => i * 20)
-            .attr("opacity", 1)),
+          // .attr("opacity", d => d.mostRecent ? 1 : 0)
+          .call(update => update.transition(t2).delay(1500)
+            .attr("opacity", d => d.mostRecent ? 1 : 0)),
           update => update
           .attr("class", d => `epi-point ${d.location_id}`)
           .attr("id", d => `${d._id}`)
-          .attr("opacity", 1)
+          .attr("opacity", 0)
           .call(update => update.transition(t2)
+          .attr("opacity", d => d.mostRecent ? 1 : 0)
             .attr("cx", d => this.x(d[this.xVariable]))
             .attr("cy", d => this.y(d[this.variable]))),
           exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
@@ -866,5 +868,9 @@ export default Vue.extend({
 .x-axis-select {
     // top: -29px;
     // right: 20px;
+}
+
+.swoopy-arrow-group {
+  pointer-events: none;
 }
 </style>
