@@ -251,7 +251,7 @@ export function getGlanceSummary(apiUrl, locations) {
       getSparklineTraces(
         apiUrl,
         summaryData.map(d => d.location_id),
-        "confirmed,dead,confirmed_numIncrease,confirmed_rolling,dead_rolling"
+        "confirmed,dead,confirmed_numIncrease,dead_numIncrease,confirmed_rolling,dead_rolling"
       ).pipe(
         map(sparks => {
           sparks.forEach(spark => {
