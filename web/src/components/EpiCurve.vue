@@ -872,5 +872,8 @@ export default Vue.extend({
 
 .swoopy-arrow-group {
   pointer-events: none;
+  & rect {
+    pointer-events: auto !important;
+  }
 }
 </style>

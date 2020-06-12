@@ -151,7 +151,7 @@ export default Vue.extend({
       this.line = d3
         .line()
         .x(d => this.x(d.date))
-        .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")] / 100));
+        .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
     },
     prepData: function() {
       if (this.data && this.includeAxis) {
@@ -471,7 +471,7 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-$rolling-color: $warning-color;
+$rolling-color: black;//$warning-color;
 
 .tooltip {
     position: fixed;
@@ -484,7 +484,7 @@ $rolling-color: $warning-color;
 .rolling-average {
     stroke: $rolling-color;
     fill: none;
-    stroke-width: 2;
+    stroke-width: 2.5;
 }
 
 .annotation--rolling-average {
@@ -495,5 +495,9 @@ $rolling-color: $warning-color;
 
 .epi-bargraph-arrows {
   pointer-events: none;
+  & rect {
+    pointer-events: auto !important;
+  }
 }
+
 </style>
