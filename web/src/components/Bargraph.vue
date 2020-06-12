@@ -18,7 +18,7 @@
       <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
       <g :transform="`translate(${margin.left},${margin.top})`" id="rolling-average" class="bargraph" ref="rolling_average"></g>
       <g class="annotations" :class="{hidden: noRollingAvg}">
-        <text class="annotation--rolling-average" :x="margin.left" :y="margin.top">7 day rolling average</text>
+        <text class="annotation--rolling-average" :x="margin.left" :y="margin.top" :style="{'fill': this.colorAverage}">7 day rolling average</text>
       </g>
     </svg>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
@@ -56,6 +56,10 @@ export default Vue.extend({
     variableObj: Object,
     id: String,
     color: String,
+    colorAverage: {
+      type: String,
+      default: "black"
+    },
     title: String,
     log: Boolean,
     location: String,
@@ -374,6 +378,7 @@ export default Vue.extend({
               enter
                 .append("path")
                 .attr("class", "rolling-average")
+                .style("stroke", this.colorAverage)
                 .datum(d => d)
                 .join("path")
                 .attr("d", this.line)
@@ -471,7 +476,6 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-$rolling-color: black;//$warning-color;
 
 .tooltip {
     position: fixed;
@@ -482,22 +486,19 @@ $rolling-color: black;//$warning-color;
 }
 
 .rolling-average {
-    stroke: $rolling-color;
     fill: none;
     stroke-width: 2.5;
 }
 
 .annotation--rolling-average {
-    fill: $rolling-color;
     font-size: 0.75em;
     dominant-baseline: hanging;
 }
 
 .epi-bargraph-arrows {
-  pointer-events: none;
-  & rect {
-    pointer-events: auto !important;
-  }
+    pointer-events: none;
+    & rect {
+        pointer-events: auto !important;
+    }
 }
-
 </style>
