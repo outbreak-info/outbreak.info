@@ -492,4 +492,8 @@ $rolling-color: $warning-color;
     font-size: 0.75em;
     dominant-baseline: hanging;
 }
+
+.epi-bargraph-arrows {
+  pointer-events: none;
+}
 </style>
