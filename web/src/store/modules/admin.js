@@ -140,6 +140,8 @@ const state = {
           img: "dataverse_icon.png",
           img_lg: "dataverse.png",
           url: "https://dataverse.harvard.edu/dataverse/covid19",
+          license: {url: "https://dataverse.org/best-practices/harvard-dataverse-general-terms-use"},
+          citation: '<a href="https://dataverse.org/best-practices/data-citation target="_blank"">Dataverse Citation Policies</a>',
           description: "This is a general collection of COVID-19 data deposited in the Harvard Dataverse repository. The list in this collection is maintained by the Harvard Dataverse data curation team (IQSS and Harvard Library). Researchers who deposit their related data into Harvard Dataverse will have their data linked to this collection, to increase discoverability of their data."
         }, {
           id: "figshare",
