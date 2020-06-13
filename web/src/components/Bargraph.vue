@@ -17,7 +17,8 @@
       <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
       <g :transform="`translate(${margin.left},${margin.top})`" id="rolling-average" class="bargraph" ref="rolling_average"></g>
       <g class="annotations" :class="{hidden: noRollingAvg}">
-        <text class="annotation--rolling-average" :x="margin.left" :y="margin.top" :style="{'fill': this.colorAverage}">7 day rolling average</text>
+        <line :style="{'stroke': this.colorAverage, 'stroke-width': 2.5}" :x1="margin.left + 5" :x2="margin.left + 20" :y1="margin.top+6" :y2="margin.top+6"></line>
+        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage}">7 day rolling average</text>
       </g>
     </svg>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
@@ -312,6 +313,7 @@ export default Vue.extend({
           .attr("y", d => this.y(this.yMin))
           .attr("height", 0)
           .attr("fill", this.color)
+          .attr("opacity", 0.55)
           .call(update =>
             this.animate ?
             update
@@ -405,6 +407,7 @@ export default Vue.extend({
           },
           update => {
             update
+            .style("stroke", this.colorAverage)
               .attr("d", this.line)
               .attr("stroke-dasharray", function() {
                 var totalLength = this.getTotalLength();
