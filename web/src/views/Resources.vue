@@ -113,7 +113,7 @@
                   </li>
                 </div>
               </ul>
-              <small class="pointer link" @click="facet.num2Display += 5" v-if="facet.num2Display < facet.total">show more</small>
+              <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
             </div>
           </form>
           <div class="bg-light" v-else>
