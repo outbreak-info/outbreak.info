@@ -186,7 +186,9 @@ export function getResourceFacets(
     "@type",
     "curatedBy.name",
     "keywords",
-    "topicCategory",
+    // "topicCategory",
+    "interventions.name",
+    "sponsor.name",
     "funding.funder.name",
     "measurementTechnique",
     "variableMeasured"
@@ -197,13 +199,15 @@ export function getResourceFacets(
   }
 
   const sortOrder = [
-    "@type",
-    "topicCategory",
-    "curatedBy.name",
-    "keywords",
-    "funding.funder.name",
-    "measurementTechnique",
-    "variableMeasured"
+    "type",
+    // "topicCategory",
+    "source",
+    "funding",
+    "trial sponsor",
+    "trial intervention",
+    "measurement technique",
+    "variable measured",
+    "keywords"
   ];
 
   const facetString = facets.join(",");
@@ -231,6 +235,8 @@ export function getResourceFacets(
           variable: key
             .replace(".keyword", "")
             .replace("@", "")
+            .replace("interventions.name", "trial intervention")
+            .replace("sponsor.name", "trial sponsor")
             .replace("curatedBy.name", "source")
             .replace("funding.funder.name", "funding")
             .replace("measurementTechnique", "measurement technique")
@@ -245,7 +251,7 @@ export function getResourceFacets(
         };
       });
 
-      facets.sort((a, b) => sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id));
+      facets.sort((a, b) => sortOrder.indexOf(a.variable) - sortOrder.indexOf(b.variable));
 
       return facets;
     }),
