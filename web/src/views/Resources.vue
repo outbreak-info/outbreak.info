@@ -59,7 +59,7 @@
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Resources',
-                  query: { filter: '@type:' + resource.id }
+                  query: { q: searchInput, filter: '@type:' + resource.id }
                 }">
               {{ resource.label }}
             </router-link>
