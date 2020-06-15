@@ -33,7 +33,11 @@ export default Vue.extend({
       default: "#df4ab7"
     }
   },
-  computed: {},
+  watch: {
+    countries: function () {
+      this.drawMetro();
+      }
+  },
   data() {
     return {
       margin: {
@@ -83,7 +87,15 @@ export default Vue.extend({
               .attr("stroke", d => this.countries.includes(d.properties.NAME) ? "white" : "none");
           },
           update => update
-          .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec")
+          .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec"),
+          exit =>
+                    exit.call(exit =>
+                      exit
+                      .transition()
+                      .duration(10)
+                      .style("opacity", 1e-5)
+                      .remove()
+                    )
         )
     }
   }
