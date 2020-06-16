@@ -284,10 +284,15 @@ export function getMostRecent(
   const timestamp = Math.round(today.getTime() / 1e5);
   const fieldString = fields.join(",");
 
-  queryString = queryString ? (filterString ? `(${queryString}) AND ${filterString}` : `(${queryString})`): filterString;
+if(queryString != "__all__") {
+  queryString = queryString ? (filterString ? `(${queryString}) AND datePublished:[* TO ${formatDate(today)}] AND ${filterString}` : `(${queryString}) AND datePublished:[* TO ${formatDate(today)}]`): `${filterString} AND datePublished:[* TO ${formatDate(today)}]`;
+} else {
+  queryString = filterString ? `${filterString} AND datePublished:[* TO ${formatDate(today)}]` : `datePublished:[* TO ${formatDate(today)}]`;
+}
+
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString} AND datePublished:[* TO ${formatDate(today)}]&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }
