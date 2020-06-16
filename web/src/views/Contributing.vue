@@ -43,6 +43,16 @@
     </p>
   </div>
 
+  <div class="container mt-5">
+    <h4 class="text-left">How to help curate data</h4>
+    <p class="text-left">
+      Keeping track of the growing list of COVID-19 and SARS-CoV-2 resources is a challenge, as is curating the information to make it more findable and discoverable.
+    </p>
+    <p class="text-left">
+      If you're interested in helping us add additional data sources and/or curating our existing database, please email <a href="mailto:help@outbreak.info?subject=Data Source">help@outbreak.info</a>.
+    </p>
+  </div>
+
   <!-- <div class="container">
       <h4 class="text-left">How to contribute data</h4>
       <div class="row mb-2 d-flex">
