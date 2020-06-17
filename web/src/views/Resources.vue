@@ -633,11 +633,11 @@ export default {
           label: "best match"
         },
         {
-          value: "-datePublished",
+          value: "-date",
           label: "date: newest to oldest"
         },
         {
-          value: "datePublished",
+          value: "date",
           label: "date: oldest to newest"
         },
         {

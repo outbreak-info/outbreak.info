@@ -29,7 +29,7 @@
   <div class="d-flex">
     <div class="w-100 mx-5 d-flex flex-column justify-content-between">
       <!-- search bar -->
-      <div class="col-sm-12 col-md-8">
+      <div class="col-md-12 col-lg-8">
       <div class="pb-4">
         <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
           <div class="input-group">

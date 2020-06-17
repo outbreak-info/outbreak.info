@@ -159,12 +159,6 @@ export function getResourceMetadata(apiUrl, id) {
     map(results => {
       const metadata = results[0];
 
-      metadata["date"] = metadata.dateModified ?
-        metadata.dateModified :
-        metadata.datePublished ?
-        metadata.datePublished :
-        metadata.dateCreated;
-
       delete metadata["_score"];
 
       return metadata;
@@ -267,27 +261,24 @@ export function getMostRecent(
   apiUrl,
   queryString,
   filterString,
-  sortVar = "-datePublished",
+  sortVar = "-date",
   num2Return = 3,
   fields = [
     "@type",
     "name",
     "author",
     "creator",
-    "datePublished",
-    "dateModified",
-    "dateCreated"
+    "date"
   ]
 ) {
   const today = new Date();
-  const formatDate = timeFormat("%Y-%m-%d");
   const timestamp = Math.round(today.getTime() / 1e5);
   const fieldString = fields.join(",");
 
 if(queryString != "__all__") {
-  queryString = queryString ? (filterString ? `(${queryString}) AND datePublished:[* TO ${formatDate(today)}] AND ${filterString}` : `(${queryString}) AND datePublished:[* TO ${formatDate(today)}]`): `${filterString} AND datePublished:[* TO ${formatDate(today)}]`;
+  queryString = queryString ? (filterString ? `(${queryString}) AND ${filterString}` : `(${queryString})`): filterString;
 } else {
-  queryString = filterString ? `${filterString} AND datePublished:[* TO ${formatDate(today)}]` : `datePublished:[* TO ${formatDate(today)}]`;
+  queryString = filterString ? filterString : `__all__`;
 }
 
   return from(
@@ -301,14 +292,6 @@ if(queryString != "__all__") {
   ).pipe(
     pluck("data", "hits"),
     map(results => {
-      results.forEach(d => {
-        d["date"] = d.dateModified ?
-          d.dateModified :
-          d.datePublished ?
-          d.datePublished :
-          d.dateCreated;
-      });
-
       return results;
     }),
     catchError(e => {
@@ -355,7 +338,7 @@ export function getQuerySummaries(queries, apiUrl) {
   )
 }
 
-export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,datePublihsed,journalName, journalNameAbbrev, author,keywords", facets = "@type, curatedBy.name,datePublished") {
+export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,date,journalName, journalNameAbbrev, author,keywords", facets = "@type, curatedBy.name,date") {
   const timestamp = Math.round(new Date().getTime() / 1e5);
 
   return from(axios.get(
@@ -369,6 +352,14 @@ export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identi
     pluck("data"),
     map(results => {
       results["types"] = results["facets"]["@type"]["terms"];
+
+      const dateParse = timeParse("%Y-%m-%dT00:00:00.000Z");
+
+      results["facets"]["date"]["terms"].forEach(d => {
+        d["date"] = dateParse(d.term)
+      })
+
+
       return (results)
     }))
 }

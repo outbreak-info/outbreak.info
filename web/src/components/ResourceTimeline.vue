@@ -30,7 +30,7 @@ export default Vue.extend({
   },
   methods: {
     prepData() {
-      const parseDate = d3.timeParse("%Y-%m-%d");
+      console.log(this.data)
 
       function movingAverage(date, values, firstDate, lastDate, N = 3) {
         const lowDate = Math.max(d3.timeDay.offset(date, -1 * N), firstDate);
@@ -47,10 +47,6 @@ export default Vue.extend({
         const filtered = values.filter(d => d.date <= highDate && d.date >= lowDate);
         return (d3.sum(filtered, d => d.count))
       }
-
-      this.data.forEach(d => {
-        d["date"] = parseDate(d.term);
-      })
 
       const firstDate = d3.min(this.data, d => d.date)
       const lastDate = d3.max(this.data, d => d.date);
@@ -98,6 +94,8 @@ export default Vue.extend({
       this.xBand = this.xBand
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(d3.timeDay.range(dateRange[0], d3.timeDay.offset(dateRange[1], 1)));
+
+        console.log(this.xBand)
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])

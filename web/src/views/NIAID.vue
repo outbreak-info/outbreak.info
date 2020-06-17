@@ -69,8 +69,9 @@ export default {
   },
   mounted() {
     this.resultSubscription = getQuerySummaries(this.query, this.$resourceurl).subscribe(results => {
+      console.log(results)
       this.results = results;
-      this.dates = results[0].facets.datePublished.terms;
+      this.dates = results[0].facets.date.terms;
 
       // const keys = results[0]["hits"].flatMap(d => d.keywords)
       // const keywords = d3.nest()

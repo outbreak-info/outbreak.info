@@ -98,7 +98,7 @@ export default Vue.extend({
             filter: `@type:${d.data.name.toLowerCase()}`,
             page: "0",
             size: "10",
-            sort: "-datePublished"
+            sort: "-date"
           }
         });
       } else {
@@ -109,7 +109,7 @@ export default Vue.extend({
             filter: `@type:${d.parent.data.name.toLowerCase()}`,
             page: "0",
             size: "10",
-            sort: "-datePublished"
+            sort: "-date"
           }
         });
       }

@@ -69,7 +69,7 @@ export default {
   methods: {
     format: function(dateStr) {
       const parsed = timeParse("%Y-%m-%d")(dateStr);
-      return timeFormat("%d %B")(parsed);
+      return parsed ? timeFormat("%d %B")(parsed) : null;
     }
   }
 }

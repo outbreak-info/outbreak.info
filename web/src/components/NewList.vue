@@ -1,7 +1,7 @@
 <template>
 <div>
   <div class="mb-3" v-for="(item, idx) in data" :key="idx">
-    <span class="opacity-40 font-weight-700 mr-2">{{format(item.datePublished)}}</span>
+    <span class="opacity-40 font-weight-700 mr-2" v-if="item.date">{{format(item.date)}}</span>
     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="item.name">{{item.name}}</router-link>
     <template v-if="item.author && item.author.length">
       [{{
@@ -42,7 +42,7 @@ export default Vue.extend({
   methods: {
     format: function(dateStr) {
       const parsed = timeParse("%Y-%m-%d")(dateStr);
-      return timeFormat("%d %B %Y")(parsed);
+      return parsed ? timeFormat("%d %B %Y")(parsed) : null;
     }
   }
 })
