@@ -114,7 +114,6 @@
         </select>
         by Region
       </h4>
-      <DataUpdated />
     </template>
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
       <div class="row px-2" v-if="nestedData && nestedData.length > 0">
@@ -162,7 +161,6 @@
 import EpiStacked from "@/components/EpiStacked.vue";
 import CountryBarGraph from "@/components/CountryBarGraph.vue";
 import CaseSummary from "@/components/CaseSummary.vue";
-import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import LeafletMap from "@/components/LeafletMap.vue";
@@ -198,7 +196,6 @@ export default {
     EpiStacked,
     CountryBarGraph,
     CaseSummary,
-    DataUpdated,
     DataSource,
     EpiTable,
     LeafletMap,

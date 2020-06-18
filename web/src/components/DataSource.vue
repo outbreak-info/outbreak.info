@@ -10,7 +10,11 @@
       >, updated daily.
       <router-link :to="{ name: 'Sources' }" class="mx-2">Read more</router-link>
     </small>
+
+    <!-- date updated -->
+    <DataUpdated />
     <DownloadData class="ml-3" id="download-btn" v-if="data" :type="dataType" :figureRef="figureRef" :data="data" :sourceString="sourceString" />
+
   </div>
 </template>
 
@@ -19,6 +23,7 @@ import Vue from "vue";
 
 import { mapState } from "vuex";
 import DownloadData from "@/components/DownloadData.vue";
+import DataUpdated from "@/components/DataUpdated.vue";
 
 export default Vue.extend({
   name: "DataSource",
@@ -29,7 +34,8 @@ export default Vue.extend({
     figureRef: String
   },
   components: {
-    DownloadData
+    DownloadData,
+    DataUpdated
   },
   computed: {
     ...mapState("admin", ["sources"]),

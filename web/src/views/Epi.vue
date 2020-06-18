@@ -45,8 +45,6 @@
     <span v-if="locationName"> in {{ locationName }}</span>
   </h4>
 
-  <!-- date updated -->
-  <DataUpdated />
 
   <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
     text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
@@ -82,7 +80,6 @@
 
 <script>
 // @ is an alias to /src
-import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
@@ -108,7 +105,6 @@ export default {
   name: "Epidemiology",
   components: {
     DataSource,
-    DataUpdated,
     Warning,
     EpiCurve,
     EpiTable,
@@ -118,7 +114,7 @@ export default {
   props: {
     variable: {
       type: String,
-      default: "confirmed"
+      default: "confirmed_numIncrease"
     },
     log: {
       type: String,
@@ -144,7 +140,7 @@ export default {
       lengthThreshold: 8,
       showAll: false,
       isFixedY: false,
-      bargraphWidth: 300,
+      bargraphWidth: 550,
       bargraphHeight: 400,
       yMax: null,
       variableObj: {
@@ -383,13 +379,14 @@ export default {
       this.addable = selected;
     },
     setDims: function() {
-      const minWidth = 300;
+      const minWidth = 550;
       const hwRatio = 0.75;
       const marginPadding = 80; // size of margin
       const framePadding = 16; // size of margin
       const dimWidth = document.getElementById("bar-group") ?
         document.getElementById("bar-group").offsetWidth :
         minWidth;
+
       if (dimWidth < 350) {
         this.bargraphWidth = 300;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
@@ -400,10 +397,10 @@ export default {
         this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
       } else if (dimWidth < 1200) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 3;
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
       } else {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 4;
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 3;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
       }
     },

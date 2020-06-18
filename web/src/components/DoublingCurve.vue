@@ -1,6 +1,5 @@
 <template>
   <div class="doubling-curves d-flex flex-column align-items-center">
-    <DataUpdated />
     <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
       <Warning
         :animate="true"
@@ -54,7 +53,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import Warning from "@/components/Warning.vue";
 
@@ -77,7 +75,6 @@ const transitionDuration = 500;
 export default Vue.extend({
   name: "DoublingCurve",
   components: {
-    DataUpdated,
     DataSource,
     Warning
   },

@@ -3,7 +3,6 @@
     <div class="m-auto d-flex justify-content-center py-5">
       <div>
         <h4>Latest Data</h4>
-        <DataUpdated />
 
         <!-- Pagination -->
         <div class="d-flex justify-space-between mt-4">
@@ -287,7 +286,6 @@ import {
   format,
   timeFormat
 } from "d3";
-import DataUpdated from "@/components/DataUpdated.vue";
 import Sparkline from "@/components/Sparkline.vue";
 import RecoveredBar from "@/components/RecoveredBar.vue";
 import tippy from "tippy.js";
@@ -327,7 +325,6 @@ export default Vue.extend({
   name: "EpiTable",
   components: {
     FontAwesomeIcon,
-    DataUpdated,
     Sparkline,
     RecoveredBar
   },
