@@ -4,7 +4,7 @@
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
-  <Choropleth :data="data" :colorScale="colorScale" :variable="sortVariable.value"/>
+  <Choropleth :data="data" :colorScale="colorScale" :variable="sortVariable.value" />
 
 
   <h3 class="my-3">How much are regions improving?</h3>
@@ -50,36 +50,41 @@
   <!-- Loop over results -->
   <div class="row">
     <div class="col-sm-12 d-flex flex-wrap">
-      <div class="d-flex flex-column m-1" v-for="(item, idx) in data" :key="idx">
+      <div class="d-flex flex-column m-1">
 
         <table>
           <tr>
-            <th colspan="2" class="text-muted" id="th-doubling-rates">
-              doubling rates past 5 days
+            <th>
+
+            </th>
+            <th class="text-left">
+              location
+            </th>
+            <th>
+              cases / day
+            </th>
+            <th>
+              deaths / day
             </th>
           </tr>
-          <tr>
+          <tr v-for="(item, idx) in data" :key="idx">
             <td>
-              <router-link v-if="item.confirmed_doublingRate" :style="[sortVariable.value == 'confirmed_doublingRate' || sortVariable.value == '-confirmed_doublingRate' ? {background: item.fill} : {}]" class="py-1 px-2"
-                :to="{ name: 'Doubling Rates', query: {location: item.location_id, variable:'confirmed'} }">
-                cases: {{formatNumber(item.confirmed_doublingRate)}}
+              {{idx}}
+            </td>
+            <td class="text-left">
+              <router-link :to="{ name: 'Epidemiology', query: {location: item.location_id} }">
+                <h5>{{item.name}}<span v-if="item.state_name">, {{item.state_name}}</span></h5>
               </router-link>
-              <span v-else>cases: {{formatNumber(item.confirmed_doublingRate)}}
-              </span>
             </td>
             <td>
-              <router-link v-if="item.dead_doublingRate" :style="[sortVariable.value == 'dead_doublingRate' || sortVariable.value == '-dead_doublingRate' ? {background: item.fill} : {}]" class="py-1 px-2"
-              :to="{ name: 'Doubling Rates', query: {location: item.location_id, variable:'dead'} }">
-              deaths: {{formatNumber(item.dead_doublingRate)}}
-              </router-link>
-              <span v-else>deaths: {{formatNumber(item.dead_doublingRate)}}
-              </span>
+              {{item.confirmed_numIncrease.toLocaleString()}}
             </td>
+            <td>
+              {{item.dead_numIncrease.toLocaleString()}}
+            </td>
+
           </tr>
         </table>
-        <router-link :to="{ name: 'Epidemiology', query: {location: item.location_id} }">
-          <h5>{{item.name}}<span v-if="item.state_name">, {{item.state_name}}</span></h5>
-        </router-link>
       </div>
     </div>
   </div>
@@ -133,40 +138,16 @@ export default {
       data: [],
       dataSubscription: null,
       sortVariable: {
-        label: "case doubling rate (fastest &rarr; slowest)",
-        value: "confirmed_doublingRate"
+        label: "highest cases/day",
+        value: "-confirmed_numIncrease"
       },
       sortOptions: [{
-          label: "case doubling rate (fastest &rarr; slowest)",
-          value: "confirmed_doublingRate"
+          label: "highest cases/day",
+          value: "-confirmed_numIncrease"
         },
         {
-          label: "case doubling rate (slowest &rarr; fastest)",
-          value: "-confirmed_doublingRate"
-        },
-        {
-          label: "death doubling rate (fastest &rarr; slowest)",
-          value: "dead_doublingRate"
-        },
-        {
-          label: "death doubling rate (slowest &rarr; fastest)",
-          value: "-dead_doublingRate"
-        },
-        {
-          label: "largest improvement in case doubling rate",
-          value: "f"
-        },
-        {
-          label: "smallest improvement in case doubling rate",
-          value: "s"
-        },
-        {
-          label: "highest number of cases",
-          value: "-confirmed"
-        },
-        {
-          label: "lowest number of cases",
-          value: "confirmed"
+          label: "lowest cases/day",
+          value: "confirmed_numIncrease"
         },
         {
           label: "highest number of deaths",
@@ -204,13 +185,14 @@ export default {
       });
 
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 1000).subscribe(results => {
+
         this.data = results;
 
-        const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead"];
+        const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead", "-confirmed_numIncrease", "-dead_numIncrease"];
         const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
         const yMax = max(results, d => d[variable]);
         // const domain = [0,Math.log10(yMax)];
-        const domain = [10,0];
+        const domain = [10, 0];
         // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
 
         this.colorScale = scaleSequential(interpolateYlGnBu)
