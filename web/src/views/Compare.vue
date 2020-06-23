@@ -188,19 +188,18 @@ export default {
 
         this.data = results;
 
-        const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead", "-confirmed_numIncrease", "-dead_numIncrease"];
+        const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead", "confirmed_numIncrease", "dead_numIncrease"];
         const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
         const yMax = max(results, d => d[variable]);
-        // const domain = [0,Math.log10(yMax)];
-        const domain = [10, 0];
+        const domain = [0,Math.log10(yMax)];
         // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
 
         this.colorScale = scaleSequential(interpolateYlGnBu)
           .domain(domain).clamp(true);
 
         this.data.forEach(d => {
-          d.fill = this.colorScale(d[variable]);
-          // d.fill = scale(Math.log10(d[variable]));
+          // d.fill = this.colorScale(d[variable]);
+          d.fill = this.colorScale(Math.log10(d[variable]));
         })
       })
     },

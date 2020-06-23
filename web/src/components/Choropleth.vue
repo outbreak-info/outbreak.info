@@ -81,7 +81,8 @@ export default {
             geodata.features[idx]["fill"] = d.fill;
             geodata.features[idx]["location_id"] = d.location_id;
             geodata.features[idx]["name"] = d.name;
-            geodata.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
+            geodata.features[idx]["value"] = d3.format(",.0f")(d[this.variable]);
+            // geodata.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
         })
 
