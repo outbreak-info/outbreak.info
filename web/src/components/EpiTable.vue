@@ -1,138 +1,280 @@
 <template>
-<div class="epi-table my-3" v-if="data && colorScale">
-  <div class="m-auto d-flex justify-content-center py-5">
-    <div>
-      <h4>Latest Data</h4>
-      <DataUpdated />
+  <div class="epi-table my-3" v-if="data && colorScale">
+    <div class="m-auto d-flex justify-content-center py-5">
+      <div>
+        <h4>Latest Data</h4>
 
-      <!-- Pagination -->
-      <div class="d-flex justify-space-between mt-4">
-        <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
-        <div class="region-selector d-flex mr-5">
-          <label class="b-contain m-auto pr-3">
-            <span>World Bank Regions</span>
-            <input type="checkbox" value="-1" v-model.lazy="selectedAdminLevels" />
-            <div class="b-input"></div>
-          </label>
-          <label class="b-contain m-auto pr-3">
-            <span>Countries</span>
-            <input type="checkbox" value="0" v-model.lazy="selectedAdminLevels" />
-            <div class="b-input"></div>
-          </label>
-          <label class="b-contain m-auto pr-3">
-            <span>States/Provinces</span>
-            <input type="checkbox" value="1" v-model.lazy="selectedAdminLevels" />
-            <div class="b-input"></div>
-          </label>
-          <label class="b-contain m-auto pr-3">
-            <span>U.S. Metropolitan Areas</span>
-            <input type="checkbox" value="1.5" v-model.lazy="selectedAdminLevels" />
-            <div class="b-input"></div>
-          </label>
-          <label class="b-contain m-auto pr-3">
-            <span>U.S. Counties</span>
-            <input type="checkbox" value="2" v-model.lazy="selectedAdminLevels" />
-            <div class="b-input"></div>
-          </label>
+        <!-- Pagination -->
+        <div class="d-flex justify-space-between mt-4">
+          <!-- <input v-model="searchInput" @input="filterHits" type="text" class="form-control mr-5" id="filter-locations" placeholder="Search" aria-label="search" aria-describedby="sb" /> -->
+          <div class="region-selector d-flex mr-5">
+            <label class="b-contain m-auto pr-3">
+              <span>World Bank Regions</span>
+              <input
+                type="checkbox"
+                value="-1"
+                v-model.lazy="selectedAdminLevels"
+              />
+              <div class="b-input"></div>
+            </label>
+            <label class="b-contain m-auto pr-3">
+              <span>Countries</span>
+              <input
+                type="checkbox"
+                value="0"
+                v-model.lazy="selectedAdminLevels"
+              />
+              <div class="b-input"></div>
+            </label>
+            <label class="b-contain m-auto pr-3">
+              <span>States/Provinces</span>
+              <input
+                type="checkbox"
+                value="1"
+                v-model.lazy="selectedAdminLevels"
+              />
+              <div class="b-input"></div>
+            </label>
+            <label class="b-contain m-auto pr-3">
+              <span>U.S. Metropolitan Areas</span>
+              <input
+                type="checkbox"
+                value="1.5"
+                v-model.lazy="selectedAdminLevels"
+              />
+              <div class="b-input"></div>
+            </label>
+            <label class="b-contain m-auto pr-3">
+              <span>U.S. Counties</span>
+              <input
+                type="checkbox"
+                value="2"
+                v-model.lazy="selectedAdminLevels"
+              />
+              <div class="b-input"></div>
+            </label>
+          </div>
+          <select
+            v-model="numPerPage"
+            @change="changePageNum()"
+            class="select-dropdown"
+          >
+            <option v-for="option in pageOpts" :value="option" :key="option">
+              {{ option }} results
+            </option>
+          </select>
         </div>
-        <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
-          <option v-for="option in pageOpts" :value="option" :key="option">
-            {{ option }} results
-          </option>
-        </select>
       </div>
     </div>
+
+    <div class="p-2">
+      <table
+        class="m-auto table table-responsive"
+        v-if="data && data.length > 0"
+      >
+        <tr class="table-header-merged">
+          <th
+            v-for="(column, idx) in mergedColumns"
+            :key="idx"
+            :colspan="column.colspan"
+            :class="[column.colspan > 1 ? 'th-merged' : 'th-nomerge']"
+          >
+            {{ column.label }}
+          </th>
+          <th></th>
+        </tr>
+        <tr class="table-header">
+          <th
+            v-for="(column, idx) in columns"
+            :key="idx"
+            :id="`th-${column.value}`"
+            :class="{
+              sortable: column.sorted,
+              'd-none d-md-table-cell': !column.essential
+            }"
+            @click="sortColumn(column.sort_id)"
+          >
+            <div class="sort-grp">
+              {{ column.label }}
+              <font-awesome-icon
+                :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']"
+                :icon="['fas', 'sort']"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-up']"
+                v-if="column.sorted === 1"
+              />
+              <font-awesome-icon
+                class="sort-btn"
+                :icon="['fas', 'arrow-down']"
+                v-if="column.sorted === -1"
+              />
+            </div>
+          </th>
+          <th id="td-outcomes">
+            outcomes
+            <svg width="70px" height="44px" class="mt-2">
+              <rect
+                width="13"
+                height="13"
+                class="outcome-legend-rect recovered-cases"
+                x="0"
+                y="0"
+              ></rect>
+              <rect
+                width="13"
+                height="13"
+                class="outcome-legend-rect total-cases"
+                x="0"
+                y="16"
+              ></rect>
+              <rect
+                width="13"
+                height="13"
+                class="outcome-legend-rect dead-cases"
+                x="0"
+                y="32"
+              ></rect>
+              <text class="outcome-legend" x="17" y="0">recovered</text>
+              <text class="outcome-legend" x="17" y="16">unknown</text>
+              <text class="outcome-legend" x="17" y="32">dead</text>
+            </svg>
+          </th>
+        </tr>
+
+        <tr v-for="row in data" class="table-data" :key="row.location_id">
+          <td
+            v-for="(column, idx) in columns"
+            :key="idx"
+            :class="{
+              'align-left px-3 location color-bar': column.label === 'location',
+              'd-none d-md-table-cell': !column.essential
+            }"
+            :style="{ 'border-color': row.color }"
+          >
+            <!-- location -->
+            <span v-if="column.label === 'location'">
+              <!-- if routable -->
+              <router-link
+                :to="{
+                  name: 'Epidemiology',
+                  query: { location: row.location_id }
+                }"
+                class="router-link font-weight-bold"
+                v-if="routable"
+              >
+                {{
+                  row.admin_level == 2
+                    ? row[column.value] + ", " + row.state_name
+                    : row[column.value]
+                }}
+                <i
+                  class="fas fa-chevron-right"
+                  :style="{ color: row.color }"
+                ></i
+              ></router-link>
+              <!-- not routable location name -->
+              <span v-else>{{
+                row.admin_level == 2
+                  ? row[column.value] + ", " + row.state_name
+                  : row[column.value]
+              }}</span>
+            </span>
+            <!-- spacer -->
+            <span v-else-if="column.value === ''" class="spacer px-2"> </span>
+            <!-- sparklines -->
+            <span
+              v-else-if="column.value === 'confirmed_sparkline'"
+              class="align-right"
+            >
+              {{ row[column.value] }}
+              <Sparkline
+                :data="[row.longitudinal]"
+                variable="confirmed"
+                :width="80"
+                :height="23"
+                :id="row.location_id"
+                :color="row.color"
+              />
+            </span>
+            <span v-else-if="column.value === 'dead_sparkline'">
+              {{ row[column.value] }}
+              <Sparkline
+                :data="[row.longitudinal]"
+                variable="dead"
+                :width="80"
+                :height="23"
+                :id="row.location_id"
+                :color="row.color"
+              />
+            </span>
+            <span v-else-if="column.value === 'recovered_sparkline'">
+              {{ row[column.value] }}
+              <Sparkline
+                :data="[row.longitudinal]"
+                variable="recovered"
+                :width="80"
+                :height="23"
+                :id="row.location_id"
+                :color="row.color"
+              />
+            </span>
+            <span
+              v-else-if="column.value.includes('pctIncrease')"
+              class="correction-explanation"
+              :data-tippy-info="
+                row[column.value] === 'case count corrected'
+                  ? 'total was higher yesterday'
+                  : null
+              "
+            >
+              {{ row[column.value] }}
+            </span>
+            <span
+              v-else-if="
+                column.value.includes('dead') ||
+                  column.value.includes('recovered') ||
+                  column.value.includes('_increase')
+              "
+            >
+              {{ row[column.value] ? row[column.value] : 0 }}
+            </span>
+            <!-- normal -->
+            <span v-else>{{ row[column.value] }}</span>
+          </td>
+          <td>
+            <RecoveredBar :data="row" :color="row.color" />
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br />
+    <div
+      class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto"
+    >
+      <button
+        aria-label="previous-button"
+        class="pagination-btn pagination-left"
+        :class="{ disabled: page === 0 }"
+        @click="changePage(-1)"
+      >
+        <font-awesome-icon :icon="['fas', 'arrow-left']" />
+      </button>
+      <small
+        >viewing locations {{ lowerLim + 1 }} &minus; {{ upperLim }} of
+        {{ total }}</small
+      >
+      <button
+        aria-label="next-button"
+        class="pagination-btn pagination-left"
+        :class="{ disabled: page === lastPage }"
+        @click="changePage(1)"
+      >
+        <font-awesome-icon :icon="['fas', 'arrow-right']" />
+      </button>
+    </div>
   </div>
-
-  <div class="p-2">
-    <table class="m-auto table table-responsive" v-if="data && data.length > 0">
-      <tr class="table-header-merged">
-        <th v-for="(column, idx) in mergedColumns" :key="idx" :colspan="column.colspan" :class="[column.colspan > 1 ? 'th-merged' : 'th-nomerge']">
-          {{column.label}}
-        </th>
-        <th>
-
-        </th>
-      </tr>
-      <tr class="table-header">
-        <th v-for="(column, idx) in columns" :key="idx" :id="`th-${column.value}`" :class="{'sortable': column.sorted, 'd-none d-md-table-cell': !column.essential}" @click="sortColumn(column.sort_id)">
-          <div class="sort-grp">
-            {{column.label}}
-            <font-awesome-icon :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']" :icon="['fas', 'sort']" />
-            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === 1" />
-            <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === -1" />
-          </div>
-        </th>
-        <th id="td-outcomes">
-          outcomes
-          <svg width="70px" height="44px" class="mt-2">
-            <rect width="13" height="13" class="outcome-legend-rect recovered-cases" x="0" y="0"></rect>
-            <rect width="13" height="13" class="outcome-legend-rect total-cases" x="0" y="16"></rect>
-            <rect width="13" height="13" class="outcome-legend-rect dead-cases" x="0" y="32"></rect>
-            <text class="outcome-legend" x="17" y="0">recovered</text>
-            <text class="outcome-legend" x="17" y="16">unknown</text>
-            <text class="outcome-legend" x="17" y="32">dead</text>
-          </svg>
-        </th>
-      </tr>
-
-      <tr v-for="row in data" class="table-data" :key="row.location_id">
-        <td v-for="(column, idx) in columns" :key="idx" :class="{'align-left px-3 location color-bar': column.label === 'location','d-none d-md-table-cell': !column.essential}" :style="{ 'border-color': row.color }">
-          <!-- location -->
-          <span v-if="column.label === 'location'">
-            <!-- if routable -->
-            <router-link :to="{
-                name: 'Epidemiology',
-                query: { location: row.location_id }
-              }" class="router-link font-weight-bold" v-if="routable">
-              {{row.admin_level == 2 ? row[column.value] + ", " + row.state_name : row[column.value]}} <i class="fas fa-chevron-right" :style="{color: row.color}"></i></router-link>
-            <!-- not routable location name -->
-            <span v-else>{{row.admin_level == 2 ? row[column.value] + ", " + row.state_name : row[column.value]}}</span>
-          </span>
-          <!-- spacer -->
-          <span v-else-if="column.value === ''" class="spacer px-2">
-          </span>
-          <!-- sparklines -->
-          <span v-else-if="column.value === 'confirmed_sparkline'" class="align-right">
-            {{row[column.value]}}
-            <Sparkline :data="[row.longitudinal]" variable="confirmed" :width="80" :height="23" :id="row.location_id" :color="row.color" />
-          </span>
-          <span v-else-if="column.value === 'dead_sparkline'">
-            {{row[column.value]}}
-            <Sparkline :data="[row.longitudinal]" variable="dead" :width="80" :height="23" :id="row.location_id" :color="row.color" />
-          </span>
-          <span v-else-if="column.value === 'recovered_sparkline'">
-            {{row[column.value]}}
-            <Sparkline :data="[row.longitudinal]" variable="recovered" :width="80" :height="23" :id="row.location_id" :color="row.color" />
-          </span>
-          <span v-else-if="column.value.includes('pctIncrease')" class="correction-explanation" :data-tippy-info="row[column.value] === 'case count corrected' ? 'total was higher yesterday' : null">
-            {{row[column.value]}}
-          </span>
-          <span v-else-if="column.value.includes('dead') || column.value.includes('recovered') || column.value.includes('_increase')">
-            {{row[column.value] ? row[column.value] : 0}}
-          </span>
-          <!-- normal -->
-          <span v-else>{{row[column.value]}}</span>
-        </td>
-        <td>
-          <RecoveredBar :data="row" :color="row.color" />
-        </td>
-      </tr>
-
-    </table>
-  </div>
-  <br />
-  <div class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto">
-    <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: page === 0 }" @click="changePage(-1)">
-      <font-awesome-icon :icon="['fas', 'arrow-left']" />
-    </button>
-    <small>viewing locations {{ lowerLim + 1 }} &minus; {{ upperLim }} of
-      {{ total }}</small>
-    <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: page === lastPage }" @click="changePage(1)">
-      <font-awesome-icon :icon="['fas', 'arrow-right']" />
-    </button>
-  </div>
-</div>
 </template>
 
 <script lang="js">
@@ -144,7 +286,6 @@ import {
   format,
   timeFormat
 } from "d3";
-import DataUpdated from "@/components/DataUpdated.vue";
 import Sparkline from "@/components/Sparkline.vue";
 import RecoveredBar from "@/components/RecoveredBar.vue";
 import tippy from "tippy.js";
@@ -184,7 +325,6 @@ export default Vue.extend({
   name: "EpiTable",
   components: {
     FontAwesomeIcon,
-    DataUpdated,
     Sparkline,
     RecoveredBar
   },
@@ -519,103 +659,103 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 h4 {
-    margin: 0;
+  margin: 0;
 }
 .align-left {
-    text-align: left;
+  text-align: left;
 }
 
 table {
-    border-collapse: collapse;
-    font-size: 0.85em;
+  border-collapse: collapse;
+  font-size: 0.85em;
 }
 
 tr {
-    border-bottom: 1px solid #cacaca;
-    // border-bottom: 1px solid $grey-40;
+  border-bottom: 1px solid #cacaca;
+  // border-bottom: 1px solid $grey-40;
 }
 
 tr.table-header-merged {
-    border-bottom: none;
-    // border-bottom: 1px solid $grey-40;
+  border-bottom: none;
+  // border-bottom: 1px solid $grey-40;
 }
 
 .th-merged {
-    border-bottom: 3px solid #cacaca;
+  border-bottom: 3px solid #cacaca;
 }
 
 .th-nomerge {
-    border-bottom: none !important;
+  border-bottom: none !important;
 }
 
 td {
-    padding: 5px;
-    text-align: center;
-    vertical-align: middle;
-    border: none;
+  padding: 5px;
+  text-align: center;
+  vertical-align: middle;
+  border: none;
 }
 
 th {
-    font-size: 0.95em;
-    font-weight: 400;
-    color: $grey-70;
+  font-size: 0.95em;
+  font-weight: 400;
+  color: $grey-70;
 }
 
 .sort-hover {
-    display: none;
+  display: none;
 }
 
 .sort-grp.hover .sort-hover,
 .sort-grp:hover .sort-hover {
-    display: inline;
+  display: inline;
 }
 
 .color-bar {
-    border-left-width: 10px;
-    border-left-style: solid;
-    padding-left: 5px !important;
-    // background: #00BCD4;
-    // width: 4px;
-    // height: 100%;
+  border-left-width: 10px;
+  border-left-style: solid;
+  padding-left: 5px !important;
+  // background: #00BCD4;
+  // width: 4px;
+  // height: 100%;
 }
 
 // widths
 #th-name {
-    width: 140px;
+  width: 140px;
 }
 
 #th-first_dead-first_confirmed {
-    width: 100px;
+  width: 100px;
 }
 
 .td-pct-increase {
-    width: 90px;
+  width: 90px;
 }
 .td-new-cases {
-    width: 70px;
+  width: 70px;
 }
 .td-total {
-    width: 70px;
+  width: 70px;
 }
 
 .sortable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .header {
-    width: 100%;
+  width: 100%;
 }
 
 .align-right {
-    align: right;
+  align: right;
 }
 
 .outcome-legend {
-    dominant-baseline: hanging;
-    font-size: 0.9em;
+  dominant-baseline: hanging;
+  font-size: 0.9em;
 }
 .outcome-legend-rect {
-    stroke: $base-grey;
-    stroke-width: 0.5;
+  stroke: $base-grey;
+  stroke-width: 0.5;
 }
 </style>

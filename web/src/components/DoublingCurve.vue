@@ -1,36 +1,63 @@
 <template>
-<div class="doubling-curves d-flex flex-column align-items-center">
-  <DataUpdated />
-  <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
-    <Warning :animate="true" class="mt-2" text="Click on the graph to select new points"></Warning>
-    <div class="alert done-btn p-2 row m-0 rounded-0 mt-2 scale-in-center" @click="executeFit">done</div>
-  </div>
+  <div class="doubling-curves d-flex flex-column align-items-center">
+    <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
+      <Warning
+        :animate="true"
+        class="mt-2"
+        text="Click on the graph to select new points"
+      ></Warning>
+      <div
+        class="alert done-btn p-2 row m-0 rounded-0 mt-2 scale-in-center"
+        @click="executeFit"
+      >
+        done
+      </div>
+    </div>
 
-  <svg :width="width" :height="height" class="doubling-curve">
-    <defs>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="transition-mask"></g>
-  </svg>
-  <DataSource />
-</div>
+    <svg :width="width" :height="height" class="doubling-curve">
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="13"
+          markerHeight="10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
+        class="epi-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        class="epi-axis axis--y"
+        ref="yAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="epi-curve"
+      ></g>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="transition-mask"
+      ></g>
+    </svg>
+    <DataSource />
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import Warning from "@/components/Warning.vue";
 
 import * as d3 from "d3";
-import {
-  cloneDeep
-} from "lodash";
+import { cloneDeep } from "lodash";
 
 import store from "@/store";
 
@@ -48,14 +75,13 @@ const transitionDuration = 500;
 export default Vue.extend({
   name: "DoublingCurve",
   components: {
-    DataUpdated,
     DataSource,
     Warning
   },
   props: {
     data: Object,
     toFit: Number,
-    variable: String,
+    variable: String
   },
   data() {
     return {
@@ -101,17 +127,17 @@ export default Vue.extend({
   },
   computed: {
     fitIdx1() {
-      return(d3.range(this.fit1.minIdx, this.fit1.maxIdx))
+      return d3.range(this.fit1.minIdx, this.fit1.maxIdx);
     },
     fitIdx2() {
-      return(d3.range(this.fit2.minIdx, this.fit2.maxIdx))
+      return d3.range(this.fit2.minIdx, this.fit2.maxIdx);
     },
     drawable() {
       if (this.toFit) {
         this.removeFit();
         this.drawRect();
       }
-      return (this.toFit)
+      return this.toFit;
     },
     locationName() {
       if (this.plottedData.length === 1) {
@@ -194,7 +220,7 @@ export default Vue.extend({
       }
     },
     drawRect() {
-      console.log("drawing rect")
+      console.log("drawing rect");
       // this.drawable = !this.drawable;
       // allow drawing of rects
       // based off https://bl.ocks.org/romsson/568e166d702b4a464347
@@ -208,37 +234,41 @@ export default Vue.extend({
           .attr("width", 0)
           .attr("height", 0);
 
-        d3.select(".doubling-curve").on("mousemove", () => mousemove(x, y, variable));
-      }
+        d3.select(".doubling-curve").on("mousemove", () =>
+          mousemove(x, y, variable)
+        );
+      };
 
       const mouseup = function() {
         d3.select(".doubling-curve").on("mousemove", null);
-      }
+      };
 
       const mousemove = function(x, y, variable) {
-        console.log(y)
+        console.log(y);
         const mouseLoc = d3.mouse(d3.event.target);
         console.log(mouseLoc);
         console.log(d3.event);
 
-        const rect = d3.select(".doubling-curve")
-          .select(".selection-box");
+        const rect = d3.select(".doubling-curve").select(".selection-box");
 
         const x1 = mouseLoc[0];
         const x2 = +rect.attr("x");
         const y1 = mouseLoc[1];
         const y2 = +rect.attr("y");
 
-        rect.attr("width", Math.max(0, x1 - x2))
+        rect
+          .attr("width", Math.max(0, x1 - x2))
           .attr("height", Math.max(0, y1 - y2));
 
-        const circles = d3.selectAll("circle")
-          .classed("highlight", d => {
-            return d && d[variable] && y(d[variable]) <= y2 && y(d[variable]) >= y1
-          });
+        const circles = d3.selectAll("circle").classed("highlight", d => {
+          return (
+            d && d[variable] && y(d[variable]) <= y2 && y(d[variable]) >= y1
+          );
+        });
       };
 
-      this.svg = d3.select("svg.doubling-curve")
+      this.svg = d3
+        .select("svg.doubling-curve")
         .on("mousedown", () => mousedown(this.x, this.y, this.variable))
         .on("mouseup", mouseup);
     },
@@ -247,7 +277,7 @@ export default Vue.extend({
       this.$emit("executeFit", this.toFit);
     },
     removeFit: function() {
-      console.log("removing fit")
+      console.log("removing fit");
       this.chart.selectAll(".epi-line").style("opacity", 0.3);
       if (this.toFit === 2) {
         this.chart.selectAll("circle").classed("penultimate-data", false);
@@ -283,26 +313,26 @@ export default Vue.extend({
     updateScales: function() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(
-          d3.extent(this.plottedData.map(d => d.date))
-        );
+        .domain(d3.extent(this.plottedData.map(d => d.date)));
 
       this.y = d3
         .scaleLog()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([
-          1,
-          d3.max(this.plottedData.map(d => d[this.variable]))
-        ]);
+        .domain([1, d3.max(this.plottedData.map(d => d[this.variable]))]);
 
       this.xAxis = d3.axisBottom(this.x).ticks(this.numXTicks);
 
       d3.select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks).tickFormat((d, i) => {
-        const log = Math.log10(d);
-        return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
-      });
+      this.yAxis = d3
+        .axisLeft(this.y)
+        .ticks(this.numYTicks)
+        .tickFormat((d, i) => {
+          const log = Math.log10(d);
+          return Math.abs(Math.round(log) - log) < 1e-6
+            ? d3.format(",")(d)
+            : "";
+        });
 
       d3.select(this.$refs.yAxis).call(this.yAxis);
     },
@@ -322,19 +352,18 @@ export default Vue.extend({
         //Create a (random) dash pattern
         //The first number specifies the length of the visible part, the dash
         //The second number specifies the length of the invisible part
-        var dashing = "12,6"
+        var dashing = "12,6";
 
         //This returns the length of adding all of the numbers in dashing
         //(the length of one pattern in essence)
         //So for "6,6", for example, that would return 6+6 = 12
-        var dashLength =
-          dashing
+        var dashLength = dashing
           .split(/[\s,]/)
           .map(function(a) {
-            return parseFloat(a) || 0
+            return parseFloat(a) || 0;
           })
           .reduce(function(a, b) {
-            return a + b
+            return a + b;
           });
 
         //How many of these dash patterns will fit inside the entire path?
@@ -350,45 +379,63 @@ export default Vue.extend({
         var dashArray = newDashes + " 0, " + totalLength;
         return totalLength + " " + totalLength;
         // return dashArray
-      }
+      };
 
       const penultimateFitSelector = this.chart
         .selectAll(".penultimate-fit")
         .data([this.fit1]);
 
       penultimateFitSelector.join(
-        enter => enter.append("line")
-        .attr("class", "epi-line penultimate-fit")
-        // .transition(t1)
-        .attr("x1", d => this.x(d.x1))
-        .attr("x2", d => this.x(d.x2))
-        .attr("y1", d => this.y(d.y1))
-        .attr("y2", d => this.y(d.y2))
-        .attr("stroke-dasharray", function() {
-          return calcDashArray(this);
-        })
-        .attr("stroke-dashoffset", function() {
-          var totalLength = this.getTotalLength();
-          return totalLength;
-        })
-        .call(update => update.transition(t1).ease(d3.easeLinear)
-          .attr("stroke-dashoffset", 0)),
-        update => update.attr("x1", d => this.x(d.x1))
-        .attr("x2", d => this.x(d.x2))
-        .attr("y1", d => this.y(d.y1))
-        .attr("y2", d => this.y(d.y2))
-        .attr("stroke-dasharray", function() {
-          return calcDashArray(this);
-        })
-        .attr("stroke-dashoffset", function() {
-          var totalLength = this.getTotalLength();
-          return totalLength;
-        })
-        .call(update => update.transition(t1).ease(d3.easeLinear)
-          .attr("stroke-dashoffset", 0)),
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-      )
-
+        enter =>
+          enter
+            .append("line")
+            .attr("class", "epi-line penultimate-fit")
+            // .transition(t1)
+            .attr("x1", d => this.x(d.x1))
+            .attr("x2", d => this.x(d.x2))
+            .attr("y1", d => this.y(d.y1))
+            .attr("y2", d => this.y(d.y2))
+            .attr("stroke-dasharray", function() {
+              return calcDashArray(this);
+            })
+            .attr("stroke-dashoffset", function() {
+              var totalLength = this.getTotalLength();
+              return totalLength;
+            })
+            .call(update =>
+              update
+                .transition(t1)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0)
+            ),
+        update =>
+          update
+            .attr("x1", d => this.x(d.x1))
+            .attr("x2", d => this.x(d.x2))
+            .attr("y1", d => this.y(d.y1))
+            .attr("y2", d => this.y(d.y2))
+            .attr("stroke-dasharray", function() {
+              return calcDashArray(this);
+            })
+            .attr("stroke-dashoffset", function() {
+              var totalLength = this.getTotalLength();
+              return totalLength;
+            })
+            .call(update =>
+              update
+                .transition(t1)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0)
+            ),
+        exit =>
+          exit.call(exit =>
+            exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+          )
+      );
 
       // y = -313.6766 + 0.0176x
       const recentFitSelector = this.chart
@@ -396,37 +443,58 @@ export default Vue.extend({
         .data([this.fit2]);
 
       recentFitSelector.join(
-        enter => enter.append("line")
-        .attr("class", "epi-line recent-fit")
-        // .transition(t1)
-        .attr("x1", d => this.x(d.x1))
-        .attr("x2", d => this.x(d.x2))
-        .attr("y1", d => this.y(d.y1))
-        .attr("y2", d => this.y(d.y2))
-        .attr("stroke-dasharray", function() {
-          return calcDashArray(this);
-        })
-        .attr("stroke-dashoffset", function() {
-          var totalLength = this.getTotalLength();
-          return totalLength;
-        })
-        .call(update => update.transition(t1).delay(this.transitionDuration + 50).ease(d3.easeLinear)
-          .attr("stroke-dashoffset", 0)),
-        update => update.attr("x1", d => this.x(d.x1))
-        .attr("x2", d => this.x(d.x2))
-        .attr("y1", d => this.y(d.y1))
-        .attr("y2", d => this.y(d.y2))
-        .attr("stroke-dasharray", function() {
-          return calcDashArray(this);
-        })
-        .attr("stroke-dashoffset", function() {
-          var totalLength = this.getTotalLength();
-          return totalLength;
-        })
-        .call(update => update.transition(t1).delay(this.transitionDuration + 50).ease(d3.easeLinear)
-          .attr("stroke-dashoffset", 0)),
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-      )
+        enter =>
+          enter
+            .append("line")
+            .attr("class", "epi-line recent-fit")
+            // .transition(t1)
+            .attr("x1", d => this.x(d.x1))
+            .attr("x2", d => this.x(d.x2))
+            .attr("y1", d => this.y(d.y1))
+            .attr("y2", d => this.y(d.y2))
+            .attr("stroke-dasharray", function() {
+              return calcDashArray(this);
+            })
+            .attr("stroke-dashoffset", function() {
+              var totalLength = this.getTotalLength();
+              return totalLength;
+            })
+            .call(update =>
+              update
+                .transition(t1)
+                .delay(this.transitionDuration + 50)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0)
+            ),
+        update =>
+          update
+            .attr("x1", d => this.x(d.x1))
+            .attr("x2", d => this.x(d.x2))
+            .attr("y1", d => this.y(d.y1))
+            .attr("y2", d => this.y(d.y2))
+            .attr("stroke-dasharray", function() {
+              return calcDashArray(this);
+            })
+            .attr("stroke-dashoffset", function() {
+              var totalLength = this.getTotalLength();
+              return totalLength;
+            })
+            .call(update =>
+              update
+                .transition(t1)
+                .delay(this.transitionDuration + 50)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0)
+            ),
+        exit =>
+          exit.call(exit =>
+            exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+          )
+      );
 
       // --- show cases as dot plot ---
       const dotGroups = this.dots
@@ -440,7 +508,7 @@ export default Vue.extend({
       const dotsEnter = dotGroups
         .enter()
         .append("circle")
-        .attr("r", this.radius)
+        .attr("r", this.radius);
       dotGroups
         .merge(dotsEnter)
         .attr("id", d => d.id)
@@ -449,9 +517,6 @@ export default Vue.extend({
         .attr("cy", d => this.y(d[this.variable]))
         .classed("recent-data", d => this.fitIdx2.includes(d.idx))
         .classed("penultimate-data", d => this.fitIdx1.includes(d.idx));
-
-
-
 
       // --- tooltips ---
       // need to be outside the path/dot groups, so they're on top of all the curves.
@@ -546,7 +611,6 @@ export default Vue.extend({
       // d3.selectAll("circle")
       //   .on("mouseover", d => this.tooltipOn(d))
       //   .on("mouseout", d => this.tooltipOff(d));
-
     }
   }
 });
@@ -558,75 +622,75 @@ $fit1-color: #59a14f;
 $fit2-color: #f28e2c;
 
 .doubling-curves {
-    & .epi-axis {
-        -webkit-user-select: none;
-        /* Safari */
-        -moz-user-select: none;
-        /* Firefox */
-        -ms-user-select: none;
-        /* IE10+/Edge */
-        user-select: none;
-        /* Standard */
-    }
-    & .circle-confirmed {
-        fill: #bab0ab;
-        fill-opacity: 0.75;
-    }
+  & .epi-axis {
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    /* Standard */
+  }
+  & .circle-confirmed {
+    fill: #bab0ab;
+    fill-opacity: 0.75;
+  }
 
-    & .recent-data {
-        fill: $fit2-color;
-        fill-opacity: 0.5;
-    }
+  & .recent-data {
+    fill: $fit2-color;
+    fill-opacity: 0.5;
+  }
 
-    & .penultimate-data {
-        fill: $fit1-color;
-        fill-opacity: 0.5;
-    }
+  & .penultimate-data {
+    fill: $fit1-color;
+    fill-opacity: 0.5;
+  }
 
-    & .epi-axis text {
-        font-size: 12pt;
-    }
+  & .epi-axis text {
+    font-size: 12pt;
+  }
 
-    & .epi-line {
-        fill: none;
-        stroke-width: 2;
-    }
+  & .epi-line {
+    fill: none;
+    stroke-width: 2;
+  }
 
-    & .recent-fit {
-        stroke: $fit2-color;
-    }
-    & .penultimate-fit {
-        stroke: $fit1-color;
-    }
+  & .recent-fit {
+    stroke: $fit2-color;
+  }
+  & .penultimate-fit {
+    stroke: $fit1-color;
+  }
 
-    & .tooltip--text {
-        dominant-baseline: hanging;
-        stroke: none !important;
-    }
+  & .tooltip--text {
+    dominant-baseline: hanging;
+    stroke: none !important;
+  }
 
-    & .tooltip--date {
-        font-weight: 300;
-    }
+  & .tooltip--date {
+    font-weight: 300;
+  }
 
-    & .tooltip--case-count {
-        font-weight: 500;
-    }
-    & .selection-box {
-        opacity: 0.2;
-    }
-    .highlight {
-        fill: green !important;
-    }
+  & .tooltip--case-count {
+    font-weight: 500;
+  }
+  & .selection-box {
+    opacity: 0.2;
+  }
+  .highlight {
+    fill: green !important;
+  }
 
-    .done-btn {
-        background: lighten($warning-color, 40%);
-        border: 1px solid $warning-color;
-        cursor: pointer;
-        color: $warning-color;
-        text-transform: uppercase;
-        font-size: 0.8em;
-        font-weight: 600;
-        align-items: center;
-    }
+  .done-btn {
+    background: lighten($warning-color, 40%);
+    border: 1px solid $warning-color;
+    cursor: pointer;
+    color: $warning-color;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    font-weight: 600;
+    align-items: center;
+  }
 }
 </style>

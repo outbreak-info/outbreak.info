@@ -1,89 +1,126 @@
 <template>
 <div class="at-a-glance box-shadow p-2 position-relative">
   <router-link class="no-underline" :data-tippy-info="`view ${data.name} over time`" :to="{
-          name: 'Epidemiology',
-          query: { location: data.location_id }
-        }">
-    <h5 class="underline m-0">{{data.name}}</h5>
+        name: 'Epidemiology',
+        query: { location: data.location_id }
+      }">
+    <h5 class="underline m-0">{{ data.name }}</h5>
     <div class="text-muted badge bg-grey__lightest">
-      {{updatedDate}}
+      {{ updatedDate }}
     </div>
+
 
     <div class="d-flex">
-      <div class="d-flex align-items-end justify-content-start router-link-black mr-2 p-1">
 
-        <div class="d-flex flex-column text-left">
-          <h6>cases</h6>
-          <div class="muted">
-            <span class="accent">{{cases}}</span>: today
+      <!-- cases increase -->
+      <router-link class="no-underline" :data-tippy-info="`view ${data.name} over time`" :to="{
+            name: 'Epidemiology',
+            query: { location: data.location_id, variable:'confirmed_numIncrease' }
+          }">
+        <div class="d-flex align-items-end justify-content-start router-link-black mr-2 p-1">
+          <div class="d-flex flex-column text-left">
+            <h6>cases</h6>
+            <div class="muted">
+              <span class="accent">{{ cases }}</span>: today
+            </div>
+            <div class="muted">
+              <span class="yesterday">{{ casesYesterday }}</span>: yesterday
+            </div>
           </div>
-          <div class="muted">
-            <span class="yesterday">{{casesYesterday}}</span>: yesterday
+          <svg class="mx-1" height="3em" width="20px">
+            <defs>
+              <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+                <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+              </marker>
+            </defs>
+            <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
+          </svg>
+          <div class="d-flex flex-column number-changes">
+            <div class="changes">+ {{ casesIncrease }}</div>
+            <div class="changes">
+              <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.confirmed_pctIncrease > 0" />
+              {{ casesPct }}
+            </div>
           </div>
         </div>
-        <svg class="mx-1" height="3em" width="20px">
-          <defs>
-            <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-              <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-            </marker>
-          </defs>
-          <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
-        </svg>
-        <div class="d-flex flex-column number-changes">
-          <div class="changes">
-            + {{casesIncrease}}
-          </div>
-          <div class="changes">
-            <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.confirmed_pctIncrease > 0" /> {{casesPct}}
-          </div>
-        </div>
-      </div>
+      </router-link>
 
-      <div class="d-flex align-items-end justify-content-start router-link-black ml-2 p-1 pl-2" id="deaths">
-
-        <div class="d-flex flex-column text-left">
-          <h6>deaths</h6>
-          <div class="muted">
-            <span class="accent">{{deaths}}</span>: today
+      <!-- deaths -->
+      <router-link class="no-underline" :data-tippy-info="`view ${data.name} over time`" :to="{
+    name: 'Epidemiology',
+    query: { location: data.location_id, variable:'dead_numIncrease' }
+  }">
+        <div class="d-flex align-items-end justify-content-start router-link-black ml-2 p-1 pl-2" id="deaths">
+          <div class="d-flex flex-column text-left">
+            <h6>deaths</h6>
+            <div class="muted">
+              <span class="accent">{{ deaths }}</span>: today
+            </div>
+            <div class="muted">
+              <span class="yesterday">{{ deadYesterday }}</span>: yesterday
+            </div>
           </div>
-          <div class="muted">
-            <span class="yesterday">{{deadYesterday}}</span>: yesterday
+          <svg class="mx-1" height="3em" width="20px">
+            <defs>
+              <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+                <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+              </marker>
+            </defs>
+            <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
+          </svg>
+          <div class="d-flex flex-column number-changes">
+            <div class="changes">+ {{ deadIncrease }}</div>
+            <div class="changes">
+              <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.dead_pctIncrease > 0" />
+              {{ deadPct }}
+            </div>
           </div>
         </div>
-        <svg class="mx-1" height="3em" width="20px">
-          <defs>
-            <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-              <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-            </marker>
-          </defs>
-          <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
-        </svg>
-        <div class="d-flex flex-column number-changes">
-          <div class="changes">
-            + {{deadIncrease}}
-          </div>
-          <div class="changes">
-            <font-awesome-icon class="increasing" :icon="['fas', 'arrow-up']" v-if="data.dead_pctIncrease > 0" /> {{deadPct}}
-          </div>
-        </div>
-      </div>
+      </router-link>
     </div>
+
+    <!-- SPARKS -->
     <div class="d-flex router-link-black mini-graphs mt-2 p-1">
       <div class="d-flex flex-column">
         <h6>cumulative cases</h6>
         <Sparkline :data="[data.longitudinal]" variable="confirmed" :width="150" :height="40" :id="'glance_' + idx" :color="'#126B93'" />
       </div>
+
+      <!-- case increase barplot -->
       <div class="d-flex flex-column ml-4">
-        <h6>new cases per day</h6>
-        <Bargraph :data="data.longitudinal" variable="confirmed_numIncrease" :width="150" :height="40" :id="'glance_' + idx" :color="'#126B93'" />
+        <router-link
+          class="no-underline"
+          :data-tippy-info="`view ${data.name} over time`"
+          :to="{
+            name: 'Epidemiology',
+            query: { location: data.location_id, variable:'confirmed_numIncrease' }
+          }"
+        >
+        <h6 class="text-dark">new cases per day</h6>
+        <Bargraph :data="data.longitudinal" :variableObj="{ value: 'confirmed_numIncrease' }" :width="150" :height="40" :id="'glance_' + idx" :color="'#126B93'" colorAverage="#D13B62" />
+      </router-link>
+      </div>
+
+      <!-- death increase barplot -->
+      <div class="d-flex flex-column ml-4">
+        <router-link
+          class="no-underline"
+          :data-tippy-info="`view ${data.name} over time`"
+          :to="{
+            name: 'Epidemiology',
+            query: { location: data.location_id, variable:'dead_numIncrease' }
+          }"
+        >
+        <h6 class="text-dark">new deaths per day</h6>
+        <Bargraph :data="data.longitudinal" :variableObj="{ value: 'dead_numIncrease' }" :width="150" :height="40" :id="'glance2_' + idx" :color="'#126B93'" colorAverage="#D13B62" />
+      </router-link>
       </div>
     </div>
   </router-link>
   <div class="delete-me d-flex align-items-center justify-content-center flex-column" v-if="deletable" @click="removeSummary">
     <font-awesome-icon :icon="['far', 'trash-alt']" class="delete-icon" />
-    <h6 class="mt-2">remove {{data.name}}</h6>
+    <h6 class="mt-2">remove {{ data.name }}</h6>
   </div>
-
 </div>
 </template>
 
@@ -154,7 +191,7 @@ export default Vue.extend({
   },
   computed: {
     updatedDate() {
-      return this.data.date
+      return this.data.date;
     },
     cases() {
       return this.data.confirmed.toLocaleString();
@@ -166,7 +203,9 @@ export default Vue.extend({
       return this.formatPct(this.data.confirmed_pctIncrease);
     },
     casesYesterday() {
-      return (this.data.confirmed - this.data.confirmed_numIncrease).toLocaleString();
+      return (
+        this.data.confirmed - this.data.confirmed_numIncrease
+      ).toLocaleString();
     },
     deaths() {
       return this.data.dead.toLocaleString();
@@ -183,7 +222,6 @@ export default Vue.extend({
   }
 });
 </script>
-
 
 <style lang="scss" scoped>
 .at-a-glance {

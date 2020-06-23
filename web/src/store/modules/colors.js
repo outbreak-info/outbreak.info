@@ -14,17 +14,17 @@ const state = {
 
 // based off Tableau 10, sync'd with out color palette and with a slight increase in saturation for many.
 const categoricalPalette = [
-  "#507ea3",
-  "#f28e2c",
-  "#e15759",
-  "#76b7b2",
-  "#59a14f",
-  "#edc949",
-  "#b475a3",
-  "#ff98a8",
-  "#9c755f",
-  "#bab0ab",
-  "#154d7e",
+  "#507ea3", // blue (Dataset)
+  "#f28e2c", // orange (WebSite)
+  "#e15759", // coral (Publication)
+  "#76b7b2", // teal (Analysis)
+  "#59a14f", // green (Protocol)
+  "#edc949", // yellow (ImageObject)
+  "#b475a3", // purple (ClinicalTrial)
+  "#ff98a8", // pink (Book)
+  "#9c755f", // brown (SoftwareSourceCode)
+  "#bab0ab", // grey
+  "#154d7e", // dark blue
   "#ba6000",
   "#aa2230",
   "#418d88",

@@ -1,10 +1,11 @@
 import {
   from,
-  EMPTY
+  EMPTY,
+  BehaviorSubject
 } from "rxjs";
 import axios from "axios";
 import {
-  // finalize,
+  finalize,
   catchError,
   pluck,
   map,
@@ -18,12 +19,14 @@ import {
 } from "d3";
 import store from "@/store";
 
+export const progressSubject = new BehaviorSubject(0);
+export const progressState$ = progressSubject.asObservable();
+
 export function getDateUpdated(apiUrl) {
   const today = new Date();
-  const timestamp = Math.round(today.getTime()/1e5);
+  const timestamp = Math.round(today.getTime() / 1e5);
   const url = `${apiUrl}metadata?timestamp=${timestamp}`;
   return from(axios.get(url)).pipe(
-
     pluck("data", "build_date"),
     map(result => {
       const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
@@ -37,7 +40,7 @@ export function getDateUpdated(apiUrl) {
         } else if (updatedDiff <= 24) {
           lastUpdated = `${Math.round(updatedDiff)}h`;
         } else {
-          lastUpdated = `${Math.round(updatedDiff/24)}d`
+          lastUpdated = `${Math.round(updatedDiff / 24)}d`;
         }
       }
       return lastUpdated;
@@ -47,13 +50,13 @@ export function getDateUpdated(apiUrl) {
       console.log(e);
       return from([]);
     })
-  )
+  );
 }
 
 export function getCurrentDate(apiUrl) {
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = Math.round(new Date().getTime()/1e5);
+  const timestamp = Math.round(new Date().getTime() / 1e5);
   const url = `${apiUrl}query?q=mostRecent:true&sort=-date&size=1&fields=date&timestamp=${timestamp}`;
   return from(axios.get(url)).pipe(
     pluck("data", "hits"),
@@ -66,34 +69,38 @@ export function getCurrentDate(apiUrl) {
       console.log(e);
       return from([]);
     })
-  )
+  );
 }
 
 export function getAll(apiUrl, queryString) {
   store.state.admin.loading = true;
-  return getOne(apiUrl, queryString).pipe(
-    expand((data, _) => data.next ? getOne(apiUrl, queryString, data.next) : EMPTY),
+  return getOne(apiUrl, queryString, 0).pipe(
+    expand((data, _) =>
+      data.next ? getOne(apiUrl, queryString, data.count, data.next) : EMPTY
+    ),
     pluck("results"),
     reduce((acc, data) => {
       return acc.concat(data);
     }, []),
-    map((all_data) => {
+    map(all_data => {
       // last iteration returns undefined; filter out
       all_data = all_data.filter(d => d);
 
-      return (all_data);
+      return all_data;
     }),
     catchError(e => {
       console.log("%c Error in fetching all!", "color: red");
       console.log(e);
       return from([]);
     }),
-    // finalize(() => (store.state.admin.loading = false))
-  )
+    finalize(() => {
+      progressSubject.next(0);
+      store.state.admin.loading = false;
+    })
+  );
 }
 
-
-export function getOne(apiUrl, queryString, scrollID = null) {
+export function getOne(apiUrl, queryString, count, scrollID = null) {
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = new Date().getTime();
 
@@ -105,16 +112,24 @@ export function getOne(apiUrl, queryString, scrollID = null) {
   return from(axios.get(url)).pipe(
     pluck("data"),
     map(results => {
-      return ({
+      var pct;
+      if (!results["total"] || (count + 1) * 1000 > results["total"]) {
+        pct = 1;
+      } else {
+        pct = (count + 1) * 1000 / results["total"];
+      }
+      progressSubject.next(pct);
+      return {
         next: results["_scroll_id"],
+        count: count + 1,
         results: results["hits"]
-      })
+      };
     }),
     catchError(e => {
       console.log("%c Error in fetching one!", "color: red");
       console.log(e);
       return from([]);
-    }),
+    })
     // finalize(() => (store.state.admin.loading = false))
-  )
+  );
 }

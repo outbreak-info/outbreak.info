@@ -1,55 +1,63 @@
 <template>
-<div class="country-bar-graph flex-column align-left" :id="`region-graphs-${id}`" ref="countryBars">
-  <h4 class="plot-title">Current total COVID-19 {{ variable }} in
-    <span @click="handleClick" class="region-name">{{ region }}</span></h4>
+  <div
+    class="country-bar-graph flex-column align-left"
+    :id="`region-graphs-${id}`"
+    ref="countryBars"
+  >
+    <h4 class="plot-title">
+      Current total COVID-19 {{ variable }} in
+      <span @click="handleClick" class="region-name">{{ region }}</span>
+    </h4>
 
-  <svg :width="`${width +
-    margin.left +
-    margin.right +
-    sparkWidth +
-    newCasesWidth +
-    4 * margin.gap}`"
-    :height="`${height + margin.top + margin.bottom }`" class="region-country-counts">
-    <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts"></g>
-  </svg>
+    <svg
+      :width="
+        `${width +
+          margin.left +
+          margin.right +
+          sparkWidth +
+          newCasesWidth +
+          4 * margin.gap}`
+      "
+      :height="`${height + margin.top + margin.bottom}`"
+      class="region-country-counts"
+    >
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="case-counts"
+      ></g>
+    </svg>
 
-  <div class="btn-links">
-    <!-- <router-link v-if="isOverflow" :to="{ name: '', params: {} }">view all countries</router-link>> -->
+    <div class="btn-links">
+      <!-- <router-link v-if="isOverflow" :to="{ name: '', params: {} }">view all countries</router-link>> -->
 
-    <button class="btn-item click-affordance py-1" :style="{ background: lightColor }" @click="handleClick">
-      view cases over time
-    </button>
-    <button class="btn-item btn btn-main m-2" @click="closeWindow">
-      <font-awesome-icon :icon="['far', 'window-close']" />
-    </button>
+      <button
+        class="btn-item click-affordance py-1"
+        :style="{ background: lightColor }"
+        @click="handleClick"
+      >
+        view cases over time
+      </button>
+      <button class="btn-item btn btn-main m-2" @click="closeWindow">
+        <font-awesome-icon :icon="['far', 'window-close']" />
+      </button>
+    </div>
   </div>
-</div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
 import * as d3 from "d3";
-import {
-  cloneDeep
-} from "lodash";
+import { cloneDeep } from "lodash";
 
 import store from "@/store";
 
-import {
-  getCountryData
-} from "@/api/region-summary.js";
+import { getCountryData } from "@/api/region-summary.js";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faWindowClose
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faWindowClose } from "@fortawesome/free-regular-svg-icons";
 
 library.add(faWindowClose);
 
@@ -117,7 +125,11 @@ export default Vue.extend({
     }
   },
   created() {
-    this.dataSubscription = getCountryData(this.$apiurl, this.region, this.variable).subscribe(data => {
+    this.dataSubscription = getCountryData(
+      this.$apiurl,
+      this.region,
+      this.variable
+    ).subscribe(data => {
       this.data = data;
     });
   },
@@ -130,13 +142,17 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.$nextTick(function() {
-      window.addEventListener("click", this.clickClose), {passive: true};
+      window.addEventListener("click", this.clickClose), { passive: true };
 
-      document.addEventListener("keyup", evt => {
-        if (evt.keyCode === 27) {
-          this.closeWindow();
-        }
-      }, {passive: true});
+      document.addEventListener(
+        "keyup",
+        evt => {
+          if (evt.keyCode === 27) {
+            this.closeWindow();
+          }
+        },
+        { passive: true }
+      );
     });
   },
   destroyed() {
@@ -161,7 +177,7 @@ export default Vue.extend({
       });
     },
     routeToLoc: function(location_name) {
-      const location = this.data.filter(d => d.name === location_name)
+      const location = this.data.filter(d => d.name === location_name);
       const location_id = location ? location[0].location_id : null;
 
       if (location_id) {
@@ -179,7 +195,12 @@ export default Vue.extend({
     },
     clickClose: function(evt) {
       const classID = evt.target.className.baseVal;
-      if (!classID || (classID!== "region-country-counts" && classID !== "legend-name" && !classID.includes("stacked-area-chart"))) {
+      if (
+        !classID ||
+        (classID !== "region-country-counts" &&
+          classID !== "legend-name" &&
+          !classID.includes("stacked-area-chart"))
+      ) {
         this.closeWindow();
       }
     },
@@ -191,7 +212,11 @@ export default Vue.extend({
       });
     },
     updateData() {
-      this.changeDataSubscription = getCountryData(this.$apiurl, this.region, this.variable).subscribe(data => {
+      this.changeDataSubscription = getCountryData(
+        this.$apiurl,
+        this.region,
+        this.variable
+      ).subscribe(data => {
         this.data = data;
       });
     },
@@ -204,18 +229,20 @@ export default Vue.extend({
       }
     },
     getHeight: function() {
-      const idealHeight = this.barHeight * this.data.length +
-      (this.data.length - 2) * this.innerPadding;
-      if(idealHeight > window.innerHeight*0.8) {
-      this.height = window.innerHeight*0.8;
-      const num2Plot = Math.floor((this.height - 2* this.innerPadding)/(this.barHeight + this.innerPadding));
-      this.data = this.data.slice(-num2Plot);
-      this.isOverflow = true;
-    } else{
-      this.height = idealHeight;
-    }
-
-
+      const idealHeight =
+        this.barHeight * this.data.length +
+        (this.data.length - 2) * this.innerPadding;
+      if (idealHeight > window.innerHeight * 0.8) {
+        this.height = window.innerHeight * 0.8;
+        const num2Plot = Math.floor(
+          (this.height - 2 * this.innerPadding) /
+            (this.barHeight + this.innerPadding)
+        );
+        this.data = this.data.slice(-num2Plot);
+        this.isOverflow = true;
+      } else {
+        this.height = idealHeight;
+      }
     },
     setupPlot: function() {
       this.svg = d3
@@ -267,9 +294,10 @@ export default Vue.extend({
       this.yAxis = d3.axisRight(this.y);
 
       this.svg.select(".axis--y").call(this.yAxis);
-      this.svg.select(".axis--y").selectAll("text")
+      this.svg
+        .select(".axis--y")
+        .selectAll("text")
         .on("click", d => this.routeToLoc(d));
-
     },
     drawPlot: function() {
       const t1 = d3.transition().duration(1000);
@@ -280,9 +308,7 @@ export default Vue.extend({
         .data(this.data);
 
       // exit
-      grpSelector
-        .exit()
-        .remove();
+      grpSelector.exit().remove();
 
       // enter
       const grpEnter = grpSelector
@@ -352,7 +378,7 @@ export default Vue.extend({
         .attr(
           "transform",
           d =>
-          `translate(${this.width +
+            `translate(${this.width +
               this.margin.gap +
               this.margin.right}, ${this.y(d.name)})`
         )
@@ -372,10 +398,10 @@ export default Vue.extend({
         .attr(
           "x",
           this.width +
-          this.margin.gap * 3 +
-          this.margin.right +
-          this.sparkWidth +
-          this.newCasesWidth / 2
+            this.margin.gap * 3 +
+            this.margin.right +
+            this.sparkWidth +
+            this.newCasesWidth / 2
         )
         .attr("y", -5)
         .text("new today");
@@ -389,7 +415,7 @@ export default Vue.extend({
         .attr(
           "transform",
           d =>
-          `translate(${this.width +
+            `translate(${this.width +
               this.margin.gap * 3 +
               this.margin.right +
               this.sparkWidth}, ${0})`
@@ -412,75 +438,75 @@ export default Vue.extend({
 <style lang="scss">
 .country-bar-graph .axis--y path,
 .country-bar-graph .tick line {
-    display: none;
+  display: none;
 }
 
 .country-bar-graph .axis--y text {
-    text-anchor: end;
-    &:hover {
-        text-decoration: underline;
-        cursor: pointer;
-    }
+  text-anchor: end;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 
 .region-name {
   &:hover {
-      text-decoration: underline;
-      cursor: pointer;
+    text-decoration: underline;
+    cursor: pointer;
   }
 }
 
 .bar-axis {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .annotation--country-count,
 .new-cases {
-    dominant-baseline: central;
-    stroke: none;
-    font-weight: 700 !important;
+  dominant-baseline: central;
+  stroke: none;
+  font-weight: 700 !important;
 }
 
 .annotation--country-count {
-    text-anchor: end;
+  text-anchor: end;
 }
 
 .sparkline {
-    // stroke-width: 0.1;
-    stroke: none;
-    stroke-linecap: round;
+  // stroke-width: 0.1;
+  stroke: none;
+  stroke-linecap: round;
 }
 
 .subtitle {
-    text-anchor: middle;
-    font-size: 0.7em;
-    opacity: 0.7;
-    dominant-baseline: ideographic;
+  text-anchor: middle;
+  font-size: 0.7em;
+  opacity: 0.7;
+  dominant-baseline: ideographic;
 }
 
 rect.country-count {
-    shape-rendering: crispedges;
+  shape-rendering: crispedges;
 }
 
 .btn-item:first-child {
-    margin-right: auto;
-    margin-left: auto;
+  margin-right: auto;
+  margin-left: auto;
 }
 .btn-item:last-child {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .btn-links {
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 .btn-item {
-    display: flex;
-    margin: 1px;
-    padding: 5px;
+  display: flex;
+  margin: 1px;
+  padding: 5px;
 }
 </style>

@@ -1,25 +1,35 @@
 <template>
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
-  <h4 v-if="title">{{title}}</h4>
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" ref="svg">
-    <defs>
-      <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
-      </marker>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
+  <h4 v-if="title">{{ title }}</h4>
+  <div class="position-relative">
+    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" ref="svg">
+      <defs>
+        <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
+          <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
+        </marker>
+        <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
 
-    <g :transform="`translate(${margin.left}, ${height + margin.top + 2})`" class="epi-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
-    <g class="switch-button-group" transform="translate(0,0)" ref="switch_btn" v-if="includeAxis">
-      <rect class="switch-button-rect"></rect>
-      <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
-      <text class="switch-button" x="5"></text>
-    </g>
-  </svg>
+      <g :transform="`translate(${margin.left}, ${height + margin.top + 2})`" class="epi-axis axis--x" ref="xAxis" id="xAxis"></g>
+      <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis" id="yAxis"></g>
+      <g :transform="`translate(${margin.left},${margin.top})`" id="case-counts" class="bargraph" ref="case_counts"></g>
+      <g :transform="`translate(${margin.left},${margin.top})`" id="rolling-average" class="bargraph" ref="rolling_average"></g>
+      <g class="annotations" :class="{hidden: noRollingAvg}">
+        <line :style="{'stroke': this.colorAverage, 'stroke-width': 2.5}" :x1="margin.left + 5" :x2="margin.left + 20" :y1="margin.top+6" :y2="margin.top+6"></line>
+        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage}">7 day rolling average</text>
+      </g>
+    </svg>
+    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
+      <g class="switch-button-group" transform="translate(5,0)" ref="switch_btn" v-if="includeAxis">
+        <rect class="switch-button-rect"></rect>
+        <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
+        <text class="switch-button" x="5"></text>
+      </g>
+    </svg>
+  </div>
+
   <div class="tooltip p-2">
     <h6 class="country-name m-0"></h6>
     <p class="date m-0"></p>
@@ -42,9 +52,14 @@ export default Vue.extend({
     data: Array,
     width: Number,
     height: Number,
-    variable: String,
+    // variable: String,
+    variableObj: Object,
     id: String,
     color: String,
+    colorAverage: {
+      type: String,
+      default: "black"
+    },
     title: String,
     log: Boolean,
     location: String,
@@ -60,7 +75,7 @@ export default Vue.extend({
       type: Number,
       default: null
     },
-    fixedXLim: {
+    xVariableLim: {
       type: Array,
       default: null
     },
@@ -79,49 +94,74 @@ export default Vue.extend({
       },
       // axes
       y: null,
-      x: d3.scaleBand().paddingInner(0.1),
+      x: d3.scaleBand().paddingInner(0),
       numYTicks: 6,
       isLogY: false,
       yMin: 0,
+      // methods
+      line: null,
       // refs
-      chart: null
+      chart: null,
+      average: null,
+      noRollinAvg: true
     };
+  },
+  computed: {
+    plotTitle() {
+      return (`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
+    }
   },
   watch: {
     data: function() {
-      this.updatePlot()
+      this.updatePlot();
     },
-    variable: function() {
-      this.updatePlot()
+    variableObj: {
+      immediate: true,
+      handler(newObj, oldObj) {
+        this.variable = newObj.value;
+        this.noRollingAvg = !['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate;
+        this.updatePlot();
+      }
     },
+    // variable: function() {
+    //   this.updatePlot()
+    // },
     fixedYMax: function() {
-      this.updatePlot()
+      this.updatePlot();
     },
     log: {
       immediate: true,
       handler(newVal, oldVal) {
         this.isLogY = newVal;
         this.updatePlot();
-      },
+      }
     },
     width: function() {
-      this.updatePlot()
+      this.updatePlot();
     },
     height: function() {
-      this.updatePlot()
+      this.updatePlot();
     }
   },
   methods: {
     setupPlot() {
-      this.svg = d3.select(`#bargraph-${this.id}-${this.variable}`).select("svg.epi-bargraph");
+      this.svg = d3
+        .select(`#bargraph-${this.id}-${this.variable}`)
+        .select("svg.epi-bargraph");
       this.chart = this.svg.select("#case-counts");
+      this.average = this.svg.select("#rolling-average");
+
+      this.line = d3
+        .line()
+        .x(d => this.x(d.date))
+        .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
     },
     prepData: function() {
       if (this.data && this.includeAxis) {
         this.logData = cloneDeep(this.data).filter(d => d[this.variable]);
         this.logData.forEach(d => {
-          d['confirmed_log'] = Math.log10(d.confirmed_numIncrease)
-        })
+          d["confirmed_log"] = Math.log10(d.confirmed_numIncrease);
+        });
         this.plottedData = this.isLogY ? this.logData : this.data;
       } else {
         this.plottedData = this.data;
@@ -130,32 +170,41 @@ export default Vue.extend({
     updatePlot() {
       this.prepData();
 
-      if (this.plottedData && this.plottedData[0] && this.width && this.height) {
+      if (
+        this.plottedData &&
+        this.plottedData[0] &&
+        this.width &&
+        this.height
+      ) {
         this.updateScales();
         this.drawPlot();
       }
     },
     updateScales() {
-      const range = this.fixedXLim ? this.fixedXLim : d3.extent(this.plottedData, d => d.date);
+      const range = this.xVariableLim ?
+        this.xVariableLim :
+        d3.extent(this.plottedData, d => d.date);
 
       this.x = this.x
         .range([0, this.width])
         .domain(d3.timeDay.range(range[0], d3.timeDay.offset(range[1], 1)));
 
-      const yMax = this.fixedYMax ? this.fixedYMax : d3.max(this.plottedData, d => d[this.variable]);
+      const yMax = this.fixedYMax ?
+        this.fixedYMax :
+        d3.max(this.plottedData, d => d[this.variable]);
 
       if (this.isLogY) {
-        this.yMin = .5;
+        this.yMin = 0.5;
 
         this.y = d3
           .scaleLog()
           .range([this.height, 0])
           .domain([this.yMin, yMax]);
-
       } else {
         this.yMin = 0;
 
-        this.y = d3.scaleLinear()
+        this.y = d3
+          .scaleLinear()
           .range([this.height, 0])
           .domain([this.yMin, yMax]);
       }
@@ -168,23 +217,32 @@ export default Vue.extend({
 
       this.switchBtn = d3.select(this.$refs.switch_btn);
 
-      this.switchBtn.select(".switch-button-rect")
+      this.switchBtn
+        .select(".switch-button-rect")
         .attr("y", this.height + this.margin.top + dySwitch)
-        .on("click", () => this.changeScale());;
+        .on("click", () => this.changeScale());
 
-      this.switchBtn.select("path")
-        .attr(
-          "d",
-          `M ${xSwoop} ${this.height + this.margin.top + this.margin.bottom + ySwoop}
-            C ${xSwoop } ${this.height + this.margin.top + this.margin.bottom + ySwoop - 10},
-            ${this.margin.left + ySwoop - 10} ${this.height + this.margin.top + 5},
-            ${this.margin.left + ySwoop + 5} ${this.height + this.margin.top }`
-        );
+      this.switchBtn.select("path").attr(
+        "d",
+        `M ${xSwoop} ${this.height +
+          this.margin.top +
+          this.margin.bottom +
+          ySwoop}
+            C ${xSwoop} ${this.height +
+          this.margin.top +
+          this.margin.bottom +
+          ySwoop -
+          10},
+            ${this.margin.left + ySwoop - 10} ${this.height +
+          this.margin.top +
+          5},
+            ${this.margin.left + ySwoop + 5} ${this.height + this.margin.top}`
+      );
 
-      this.switchBtn.select("text")
+      this.switchBtn
+        .select("text")
         .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
         .attr("y", this.height + this.margin.top + dySwitch + 20);
-
 
       if (this.switchBtn.select("text").node()) {
         this.switchBtn
@@ -206,20 +264,33 @@ export default Vue.extend({
       }
 
       if (this.includeAxis) {
-        this.xAxis = d3.axisBottom(this.x)
+        this.xAxis = d3
+          .axisBottom(this.x)
           .tickSizeOuter(0)
-          .tickValues(this.x.domain().filter(function(d, i) {
-            return !(i % 14)
-          }))
+          .tickValues(
+            this.x.domain().filter(function(d, i) {
+              return !(i % 28);
+            })
+          )
           .tickFormat(d3.timeFormat("%d %b"));
 
         d3.select(this.$refs.xAxis).call(this.xAxis);
 
-        this.yAxis = this.isLogY ? d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
+        this.yAxis = this.isLogY ?
+          d3
+          .axisLeft(this.y)
+          .tickSizeOuter(0)
+          .ticks(this.numYTicks)
+          .tickFormat((d, i) => {
             const log = Math.log10(d);
-            return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0? d3.format(",")(d) : ""
+            return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0 ?
+              d3.format(",")(d) :
+              "";
           }) :
-          d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
+          d3
+          .axisLeft(this.y)
+          .tickSizeOuter(0)
+          .ticks(this.numYTicks);
 
         d3.select(this.$refs.yAxis).call(this.yAxis);
       }
@@ -227,73 +298,180 @@ export default Vue.extend({
     drawPlot() {
       if (this.chart) {
         const t1 = d3.transition().duration(500);
-        const barSelector = this.chart.selectAll(".bargraph").data(this.plottedData);
+        const barSelector = this.chart
+          .selectAll(".bargraph")
+          .data(this.plottedData.filter(d => d[this.variable]), d => d._id);
 
-        barSelector
-          .join(
-            enter => enter.append("rect")
-            .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
-            .attr("id", d => d._id)
-            .attr("x", d => this.x(d.date))
-            .attr("width", this.x.bandwidth())
-            .attr("y", d => this.y(this.yMin))
-            .attr("height", 0)
-            .attr("fill", this.color)
-            .call(update => this.animate ? update.transition(t1).delay((d, i) => i * 20)
-              .attr("y", d => this.y(d[this.variable]))
-              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
-              update.attr("y", d => this.y(d[this.variable]))
-              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
-            ),
+        barSelector.join(
+          enter =>
+          enter
+          .append("rect")
+          .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
+          .attr("id", d => d._id)
+          .attr("x", d => this.x(d.date))
+          .attr("width", this.x.bandwidth())
+          .attr("y", d => this.y(this.yMin))
+          .attr("height", 0)
+          .attr("fill", this.color)
+          .attr("opacity", 0.55)
+          .call(update =>
+            this.animate ?
+            update
+            .transition(t1)
+            .delay((d, i) => i * 10)
+            .attr("y", d => this.y(d[this.variable]))
+            .attr(
+              "height",
+              d => this.y(this.yMin) - this.y(d[this.variable])
+            ) :
+            update
+            .attr("y", d => this.y(d[this.variable]))
+            .attr(
+              "height",
+              d => this.y(this.yMin) - this.y(d[this.variable])
+            )
+          ),
 
-            update => update
-            .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
-            .attr("id", d => d._id)
-            .attr("x", d => this.x(d.date))
-            .attr("width", this.x.bandwidth())
+          update =>
+          update
+          .attr("class", d => `bargraph ${d.location_id}-${this.variable}`)
+          .attr("id", d => d._id)
+          .attr("x", d => this.x(d.date))
+          .attr("width", this.x.bandwidth())
+          // .attr("height", 0)
+          .attr("fill", this.color)
 
-            .call(update => this.animate ? update.transition(t1)
-              .attr("y", d => this.y(d[this.variable]))
-              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable])) :
-              update.attr("y", d => this.y(d[this.variable]))
-              .attr("height", d => this.y(this.yMin) - this.y(d[this.variable]))
-            ),
+          .call(update =>
+            this.animate ?
+            update
+            .transition(t1)
+            .attr("y", d => this.y(d[this.variable]))
+            .attr(
+              "height",
+              d => this.y(this.yMin) - this.y(d[this.variable])
+            ) :
+            update
+            .attr("y", d => this.y(d[this.variable]))
+            .attr(
+              "height",
+              d => this.y(this.yMin) - this.y(d[this.variable])
+            )
+          ),
 
-            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
           )
+        );
+
+        var lineSelector;
+        if (["confirmed_numIncrease", "dead_numIncrease", "recovered_numIncrease"].includes(this.variable)) {
+          lineSelector = this.average
+            .selectAll(".rolling-average")
+            .data([this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")])], d => d._id);
+        } else {
+          lineSelector = this.average
+            .selectAll(".rolling-average")
+            .data([], d => d._id);
+        }
+
+        lineSelector.join(
+          enter => {
+            enter
+              .append("path")
+              .attr("class", "rolling-average")
+              .style("stroke", this.colorAverage)
+              .datum(d => d)
+              .join("path")
+              .attr("d", this.line)
+              .attr("stroke-dasharray", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength + " " + totalLength;
+              })
+              .attr("stroke-dashoffset", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength;
+              })
+              .call(update => this.animate ? update
+                .transition(t1)
+                .delay(0)
+                .duration((this.plottedData.length + 1) * 10 + 500)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0) :
+                update.attr("stroke-dashoffset", 0)
+              )
+          },
+          update => {
+            update
+            .style("stroke", this.colorAverage)
+              .attr("d", this.line)
+              .attr("stroke-dasharray", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength + " " + totalLength;
+              })
+              .attr("stroke-dashoffset", function() {
+                var totalLength = this.getTotalLength();
+                return totalLength;
+              })
+              .call(update => this.animate ? update
+                .transition(t1)
+                .delay(0)
+                .duration((this.plottedData.length + 1) * 10 + 500)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0) :
+                update.attr("stroke-dashoffset", 0)
+              )
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        );
 
         if (this.includeTooltips) {
-          this.chart.selectAll("rect.bargraph")
+          this.chart
+            .selectAll("rect.bargraph")
             .on("mouseenter", d => this.mouseOn(d))
-           .on("mouseleave", this.mouseOff);
+            .on("mouseleave", this.mouseOff);
         }
       }
     },
     mouseOn(d) {
-
-      const ttip = d3.selectAll(".tooltip")
+      const ttip = d3
+        .selectAll(".tooltip")
         .style("top", d3.event.y + "px")
         .style("left", d3.event.x + "px")
         .style("opacity", 1);
 
-      this.chart.selectAll("rect").style("opacity", 0.5);
+      this.chart.selectAll(".bargraph").style("opacity", 0.5);
       this.chart.selectAll(`#${d._id}`).style("opacity", 1);
 
       ttip.select(".country-name").text(d.name);
       ttip.select(".date").text(d3.timeFormat("%d %b %Y")(d.date));
-      ttip.select(".count").text(d[this.variable].toLocaleString());
+      ttip
+        .select(".count")
+        .text(`${d[this.variable].toLocaleString()} ${this.variableObj.ttip}`);
     },
     mouseOff() {
-      d3.selectAll(".tooltip")
-      .style("opacity", 0);
-      this.chart.selectAll("rect.bargraph").style("opacity", 1);
+      d3.selectAll(".tooltip").style("opacity", 0);
+      this.chart.selectAll("rect.bargraph").style("opacity", 0.5);
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
       this.$router.replace({
         path: "epidemiology",
         name: "Epidemiology",
-        params: {disableScroll: true},
+        params: {
+          disableScroll: true
+        },
         query: {
           location: this.location,
           log: String(this.isLogY),
@@ -326,8 +504,25 @@ export default Vue.extend({
 .tooltip {
     position: fixed;
     z-index: 1000;
-    background: #ffffff70;
+    background: #ffffffcf;
     opacity: 0;
-    pointer-events:none;
+    pointer-events: none;
+}
+
+.rolling-average {
+    fill: none;
+    stroke-width: 2.5;
+}
+
+.annotation--rolling-average {
+    font-size: 0.75em;
+    dominant-baseline: hanging;
+}
+
+.epi-bargraph-arrows {
+    pointer-events: none;
+    & rect {
+        pointer-events: auto !important;
+    }
 }
 </style>

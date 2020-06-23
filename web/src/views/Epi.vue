@@ -36,43 +36,50 @@
 
   <!-- title / drop down variable selector -->
   <h4 class="plot-title pt-5 pb-3">
-    Number of COVID-19 <select v-model="variable" class="select-dropdown" @change="changeVariable">
-      <option v-for="option in variableOptions" :value="option.value" :key="option.value">
+    Number of COVID-19
+    <select v-model="variableObj" class="select-dropdown" @change="changeVariable">
+      <option v-for="option in variableOptions" :value="option" :key="option.value">
         {{ option.label }}
       </option>
     </select>
-    <span v-if="locationName">
-      in {{ locationName }}</span>
+    <span v-if="locationName"> in {{ locationName }}</span>
   </h4>
 
-  <!-- date updated -->
-  <DataUpdated />
 
-  <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'" text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing."></Warning>
+  <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
+    text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
+  </Warning>
   <Warning :animate="true" class="my-4" v-if="noData" text="No results. Testing/hospitalization data are currently only available for U.S. States (not Metro areas or Counties), and recovery data is not available for the U.S."></Warning>
 
   <div class="d-flex row m-0">
     <!-- bar graph -->
-    <div class="d-flex flex-column" v-if="data$ && data$[0] && this.variable.includes('Increase')">
+    <div class="d-flex flex-column align-items-center" v-if="data$ && data$[0] && this.variable.includes('Increase')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
-        <Bargraph v-for="(countryData,idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variable="variable" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
+        <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
           :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
-      <DataSource />
+
+      <!-- source / download data -->
+      <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :data="data$[0]" v-if="data$" />
     </div>
 
     <!-- curve -->
-    <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variable="variable" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'" :showAll="showAll" v-if="plottedData && showCurves && !this.variable.includes('Increase')" />
+    <template v-if="plottedData && showCurves && !this.variable.includes('Increase')">
+      <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'"
+        :showAll="showAll" />
+
+      <!-- source / download data -->
+      <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
+    </template>
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
-  </div>
+</div>
 </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import DataUpdated from "@/components/DataUpdated.vue";
 import DataSource from "@/components/DataSource.vue";
 import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
@@ -84,7 +91,7 @@ import {
   getEpiData,
   epiDataSubject,
   epiTableSubject
-} from "@/api/epi-traces.js"
+} from "@/api/epi-traces.js";
 import store from "@/store";
 import {
   mapState
@@ -98,7 +105,6 @@ export default {
   name: "Epidemiology",
   components: {
     DataSource,
-    DataUpdated,
     Warning,
     EpiCurve,
     EpiTable,
@@ -108,7 +114,7 @@ export default {
   props: {
     variable: {
       type: String,
-      default: "confirmed"
+      default: "confirmed_numIncrease"
     },
     log: {
       type: String,
@@ -134,48 +140,85 @@ export default {
       lengthThreshold: 8,
       showAll: false,
       isFixedY: false,
-      bargraphWidth: 300,
+      bargraphWidth: 550,
       bargraphHeight: 400,
       yMax: null,
-      variableOptions: [{
+      variableObj: {
         label: "cumulative cases",
-        value: "confirmed"
-      }, {
-        label: "cumulative recoveries",
-        value: "recovered"
-      }, {
-        label: "cumulative deaths",
-        value: "dead"
-      }, {
-        //   label: "cumulative cases & deaths",
-        //   value: "both"
-        // }, {
-        label: "daily new cases",
-        value: "confirmed_numIncrease"
-      }, {
-        label: "daily new hospitalizations (U.S. States only)",
-        value: "testing_hospitalizedIncrease"
-      }, {
-        label: "daily new deaths",
-        value: "dead_numIncrease"
-        // {
-        //   label: "5 day case doubling rate",
-        //   value: "confirmed_doublingRate"
-        // }, {
-        //   label: "5 day death doubling rate",
-        //   value: "dead_doublingRate"
-        // }
-      }, {
-        label: "cumulative COVID-19 tests (U.S. States only)",
-        value: "testing_totalTestResults"
-      }, {
-        label: "daily new tests (U.S. States only)",
-        value: "testing_totalTestResultsIncrease"
-      }, {
-        label: "percent positive tests (U.S. States only)",
-        value: "testing_positivity"
-      }
-    ]
+        value: "confirmed",
+        sources: ["NYT", "JHU"]
+      },
+      variableOptions: [{
+          label: "cumulative cases",
+          ttip: "cases",
+          value: "confirmed",
+          sources: ["NYT", "JHU"]
+        },
+        {
+          label: "cumulative recoveries",
+          ttip: "recoveries",
+          value: "recovered",
+          sources: ["NYT", "JHU"]
+        },
+        {
+          label: "cumulative hospitalizations",
+          ttip: "hospitalizations",
+          value: "testing_hospitalized",
+          sources: ["testing"]
+        },
+        {
+          label: "cumulative deaths",
+          ttip: "deaths",
+          value: "dead",
+          sources: ["NYT", "JHU"]
+        },
+        {
+          //   label: "cumulative cases & deaths",
+          //   value: "both"
+          // }, {
+          label: "daily new cases",
+          ttip: "new cases",
+          value: "confirmed_numIncrease",
+          sources: ["NYT", "JHU"]
+        },
+        {
+          label: "daily new hospitalizations (U.S. States only)",
+          ttip: "new hospitalizations",
+          value: "testing_hospitalizedIncrease",
+          sources: ["testing"]
+        },
+        {
+          label: "daily new deaths",
+          ttip: "new deaths",
+          value: "dead_numIncrease",
+          sources: ["NYT", "JHU"]
+          // {
+          //   label: "5 day case doubling rate",
+          //   value: "confirmed_doublingRate"
+          // }, {
+          //   label: "5 day death doubling rate",
+          //   value: "dead_doublingRate"
+          // }
+        },
+        {
+          label: "cumulative COVID-19 tests (U.S. States only)",
+          ttip: "tests (positive & negative)",
+          value: "testing_totalTestResults",
+          sources: ["testing"]
+        },
+        {
+          label: "daily new tests (U.S. States only)",
+          ttip: "new tests (positive & negative)",
+          value: "testing_totalTestResultsIncrease",
+          sources: ["testing"]
+        },
+        {
+          label: "percent positive tests (U.S. States only)",
+          ttip: "positive tests",
+          value: "testing_positivity",
+          sources: ["testing"]
+        }
+      ]
     };
   },
   computed: {
@@ -186,29 +229,39 @@ export default {
       return scale;
     },
     noData: function() {
-      if(this.data$){
-      return(!this.data$[0].flatMap(d => d.value).map(d => d[this.variable]).some(d => d));
-    } else {
-      return(false)
-    }
+      if (this.data$) {
+        return !this.data$[0]
+          .flatMap(d => d.value)
+          .map(d => d[this.variable])
+          .some(d => d);
+      } else {
+        return false;
+      }
     },
     isLogY: function() {
-      return (this.log === "true")
+      return this.log === "true";
     },
     dataLength() {
       return this.data$ ? this.data$[0].length : null;
     },
     locationName() {
-      if (this.data$ && this.data$[0].length === 1 && this.data$[0][0].value[0].name) {
+      if (
+        this.data$ &&
+        this.data$[0].length === 1 &&
+        this.data$[0][0].value[0].name
+      ) {
         return this.data$[0][0].value[0].name;
       }
       return null;
     },
     xLim() {
       if (this.data$ && this.data$[0]) {
-        return (extent(this.data$[0].flatMap(d => d.value), d => d.date));
+        return extent(
+          this.data$[0].flatMap(d => d.value),
+          d => d.date
+        );
       } else {
-        return (null)
+        return null;
       }
     }
   },
@@ -232,9 +285,20 @@ export default {
     location: function(newLocation, oldLocation) {
       this.setLocation(newLocation);
     },
+    variable: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.variableObj = this.variableOptions.filter(
+          d => d.value == newVal
+        )[0];
+      }
+    },
     fixedY: function(newValue, oldValue) {
       if (newValue === "true") {
-        this.yMax = max(this.plottedData.flatMap(d => d.value), d => d[this.variable]);
+        this.yMax = max(
+          this.plottedData.flatMap(d => d.value),
+          d => d[this.variable]
+        );
         this.isFixedY = true;
       } else {
         this.yMax = null;
@@ -258,11 +322,26 @@ export default {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
         this.selectedPlaces = locations;
-        this.dataSubscription = getEpiData(this.$apiurl, locations, null, "-confirmed", 10, 0).subscribe(d => {
+        this.dataSubscription = getEpiData(
+          this.$apiurl,
+          locations,
+          null,
+          "-confirmed",
+          10,
+          0
+        ).subscribe(d => {
           this.data$ = d;
-          this.plottedData = this.data$[0].length > this.lengthThreshold ? this.hideExtra() : this.data$[0];
+          this.plottedData =
+            this.data$[0].length > this.lengthThreshold ?
+            this.hideExtra() :
+            this.data$[0];
           this.isFixedY = this.fixedY == "true";
-          this.yMax = this.isFixedY ? max(this.plottedData.flatMap(d => d.value), d => d[this.variable]) : null;
+          this.yMax = this.isFixedY ?
+            max(
+              this.plottedData.flatMap(d => d.value),
+              d => d[this.variable]
+            ) :
+            null;
         });
         // need to call subscription in order to trigger calling API function and passing subscription to child
       } else {
@@ -275,7 +354,13 @@ export default {
       epiTableSubject.next([]);
     },
     changeVariable() {
-      this.yMax = this.isFixedY ? max(this.plottedData.flatMap(d => d.value), d => d[this.variable]) : null;
+      this.variable = this.variableObj.value;
+      this.yMax = this.isFixedY ?
+        max(
+          this.plottedData.flatMap(d => d.value),
+          d => d[this.variable]
+        ) :
+        null;
       this.$router.replace({
         path: "epidemiology",
         query: {
@@ -294,11 +379,14 @@ export default {
       this.addable = selected;
     },
     setDims: function() {
-      const minWidth = 300;
+      const minWidth = 550;
       const hwRatio = 0.75;
       const marginPadding = 80; // size of margin
       const framePadding = 16; // size of margin
-      const dimWidth = document.getElementById("bar-group") ? document.getElementById("bar-group").offsetWidth : minWidth;
+      const dimWidth = document.getElementById("bar-group") ?
+        document.getElementById("bar-group").offsetWidth :
+        minWidth;
+
       if (dimWidth < 350) {
         this.bargraphWidth = 300;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
@@ -309,19 +397,20 @@ export default {
         this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
       } else if (dimWidth < 1200) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 3;
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
       } else {
-
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 4;
+        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 3;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
       }
     },
     hideExtra: function() {
-      const selectedData = this.data$ ? this.data$[0]
+      const selectedData = this.data$ ?
+        this.data$[0]
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)
-        .slice(0, this.lengthThreshold) : null;
+        .slice(0, this.lengthThreshold) :
+        null;
 
       const toAdd = this.data$[0]
         .slice()

@@ -3,49 +3,62 @@
   <div class="row m-0">
     <div class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5">
       <div class="container half-page">
-        <h1>Data Sources</h1>
+        <div class="d-flex align-items-center justify-content-between mb-5">
+          <h1>Data Sources</h1>
+          <router-link class="btn btn-main" :to="{ name: 'Contributing' }">Contribute data</router-link>
+        </div>
 
         <div class="text-left">
-          <h3>Epidemiology Data</h3>
-          <div class="epi-container" v-for="source in sources" :key="source.id">
-            <h5>
-              <a :href="source.url">{{source.name}}</a>
-            </h5>
-            <p v-html="source.description">
-            </p>
-          </div>
+          <h3 id="epidemiology">Epidemiology Data</h3>
+          <SourceDescription :sources="sources" />
         </div>
 
         <div class="text-left mt-5">
-          <h3>Geographic Data</h3>
-          <div class="epi-container" v-for="source in geoSources" :key="source.id">
-            <h5>
-              <a :href="source.url" target="_blank" rel="noreferrer">{{source.name}}</a>
-            </h5>
-            <p>
-              {{source.description}}
-            </p>
-          </div>
+          <h3 id="geographic">Geographic Data</h3>
+          <SourceDescription :sources="geoSources" />
         </div>
 
+        <div class="text-left mt-5">
+          <div class="mb-3 pt-4 border-top d-flex justify-content-between align-items-center">
+            <h3 id="resources" class="">Resources</h3>
+            <DownloadData downloadLabel="all resources" type="resources" query="__all__" :api="$resourceurl"/>
+          </div>
 
+          <div v-for="(resource, idx) in resources" :key="idx" :class="[idx === 0 ? 'mb-5' : 'my-5']">
+            <div class="d-flex justify-content-between align-items-center my-2">
+              <h4 :id="resource.id">{{ resource.category }}</h4>
+              <DownloadData :downloadLabel="`all ${resource.category}`" type="resources" :query="`@type:${resource.id}`" :api="$resourceurl"/>
+            </div>
+
+
+
+            <SourceDescription :sources="resource.sources" />
+          </div>
+        </div>
       </div>
     </div>
-
   </div>
 </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import Vue from "vue";
 
-import { mapState } from "vuex";
+import {
+  mapState
+} from "vuex";
+
+import SourceDescription from "@/components/SourceDescription.vue";
+import DownloadData from "@/components/DownloadData.vue";
 
 export default Vue.extend({
   name: "Sources",
-  components: {},
-    computed: {
-      ...mapState("admin", ["sources", "geoSources"]),
+  components: {
+    SourceDescription,
+    DownloadData
+  },
+  computed: {
+    ...mapState("admin", ["sources", "geoSources", "resources"])
   }
 });
 </script>

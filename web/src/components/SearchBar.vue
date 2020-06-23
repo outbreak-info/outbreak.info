@@ -4,8 +4,8 @@
     <div class="input-group-prepend">
       <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
     </div>
-    <input id="sBar" class="form-control border-0" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter.prevent="onEnter"
-      @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
+    <input id="sBar" class="form-control border-0" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp"
+      @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
       <li class="loading" v-if="isLoading">
         Loading results...
@@ -64,7 +64,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState("epidata", ["allPlaces"]),
+    ...mapState("epidata", ["allPlaces"])
   },
   watch: {
     items: function(val, oldValue) {
@@ -76,7 +76,9 @@ export default Vue.extend({
     }
   },
   mounted() {
-    document.addEventListener("click", this.handleClickOutside, {passive: true});
+    document.addEventListener("click", this.handleClickOutside, {
+      passive: true
+    });
   },
   destroyed() {
     document.removeEventListener("click", this.handleClickOutside);
@@ -103,10 +105,15 @@ export default Vue.extend({
       this.isOpen = false;
       if (this.routeTo) {
         this.search = "";
-        this.$router.replace(`${this.routeTo}location=${this.selected.id}`)
+        this.$router.push({
+          path: this.routeTo,
+          query: {
+            location: this.selected.id
+          }
+        });
       } else {
         this.search = this.selected.label;
-        this.$emit("location", this.selected.id)
+        this.$emit("location", this.selected.id);
       }
     },
     onArrowDown(evt) {
@@ -131,9 +138,14 @@ export default Vue.extend({
       this.isOpen = false;
       this.arrowCounter = -1;
       if (this.routeTo && this.routeTo !== "") {
-        this.$router.replace(`/epidemiology?location=${this.selected.id}`)
+        this.$router.push({
+          path: this.routeTo,
+          query: {
+            location: this.selected.id
+          }
+        });
       } else {
-        this.$emit("location", this.selected.id)
+        this.$emit("location", this.selected.id);
       }
     },
     onBackspace() {
@@ -162,6 +174,4 @@ export default Vue.extend({
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

@@ -12,6 +12,8 @@ $grey-90: lighten($base-grey, 10%);
 $grey-80: lighten($base-grey, 20%);
 $grey-70: lighten($base-grey, 30%);
 $grey-60: lighten($base-grey, 40%);
+$grey-50: lighten($base-grey, 50%);
+$grey-45: lighten($base-grey, 55%);
 $grey-40: lighten($base-grey, 60%);
 $grey-30: lighten($base-grey, 70%);
 $grey-alpha15: rgba($base-grey, 0.15);
@@ -22,3 +24,191 @@ $font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
 // accent colors
 $warning-color: #D13B62;
 $secondary-bright: #d8f2ff;
+
+// <a> link color, from bootstrap
+$link-color: #007bff;
+$link-hover: #0056b3;
+
+// resource type colors
+// analysis: teal
+$analysis-color: darken(saturate(#76b7b2, 20%), 15%);
+
+.Analysis, .analysis {
+    color: $analysis-color;
+    fill: $analysis-color;
+}
+
+.Analysis.dark {
+    fill: darken($analysis-color, 15%);
+}
+
+.Analysis.light {
+    fill: lighten($analysis-color, 25%);
+}
+
+// dataset: blue
+$dataset-color: #126B93;
+.Dataset, .dataset {
+    color: $dataset-color;
+    fill: $dataset-color;
+}
+.Dataset.dark {
+    fill: darken(#11537A, 10%);
+}
+
+.Dataset.light {
+    fill: lighten(#507192, 15%);
+}
+
+a.Dataset  {
+  &:hover {
+    color: darken(#11537A, 10%);
+  }
+}
+
+// coral
+$publication-color: #e15759;
+.Publication, .ScholarlyArticle, .publication {
+    color: $publication-color;
+    fill: $publication-color;
+}
+.Publication.dark, .ScholarlyArticle.dark {
+    fill: darken($publication-color, 25%);
+}
+
+.Publication.light, .ScholarlyArticle.light {
+    fill: lighten($publication-color, 25%);
+}
+
+a.Publication  {
+  &:hover {
+    color: darken($publication-color, 25%);
+  }
+}
+
+// green
+// $protocol-color: #76b7b2; // green-blue
+$protocol-color: #59a14f;
+.Protocol, .protocol {
+    color: $protocol-color;
+    fill: $protocol-color;
+}
+.Protocol.dark {
+    fill: darken($protocol-color, 25%);
+}
+
+.Protocol.light {
+    fill: lighten($protocol-color, 20%);
+}
+
+a.Protocol  {
+  &:hover {
+    color: darken($protocol-color, 25%);
+  }
+}
+
+// clinical trial: purple
+$clinical-trial-color: #b475a3;
+.ClinicalTrial, .clinicaltrial {
+    color: $clinical-trial-color;
+    fill: $clinical-trial-color;
+}
+
+.ClinicalTrial.dark {
+    fill: darken($clinical-trial-color, 25%);
+}
+
+.ClinicalTrial.light {
+    fill: lighten($clinical-trial-color, 20%);
+}
+
+a.ClinicalTrial  {
+  &:hover {
+    color: darken($clinical-trial-color, 25%);
+  }
+}
+
+// $software-color: #f28e2c; // orange
+// $software-color: #76b7b2; // teal
+// $software-color: #edc949; // yellow
+$software-color: saturate(#9c755f, 10%); // brown
+.SoftwareSourceCode, .softwaresourcecode {
+    color: $software-color;
+    fill: $software-color;
+}
+.SoftwareSourceCode.dark {
+    fill: darken($software-color, 15%);
+}
+
+.SoftwareSourceCode.light {
+    fill: lighten($software-color, 20%);
+}
+
+a.SoftwareSourceCode  {
+  &:hover {
+    color: darken($software-color, 15%);
+  }
+}
+
+$book-color: #ff98a8; // pink
+.Book, .book {
+    color: $book-color;
+    fill: $book-color;
+}
+.Book.dark {
+    fill: desaturate(darken($book-color, 20%), 45%);
+}
+
+.Book.light {
+    fill: lighten($book-color, 12%);
+}
+
+$website-color: #f28e2c; // orange
+.WebSite, .Website, .website {
+    color: $website-color;
+    fill: $website-color;
+}
+
+.WebSite.dark {
+    fill: darken($website-color, 20%);
+}
+
+.WebSite.light {
+    fill: lighten($website-color, 25%);
+}
+
+$image-color: #edc949; // yellow
+.ImageObject  {
+    color: saturate(darken($image-color, 15%), 0%);
+    fill: saturate(darken($image-color, 5%), 10%);
+}
+
+.ImageObject.dark {
+    fill: darken($image-color, 20%);
+}
+
+.ImageObject.light {
+    fill: lighten($image-color, 15%);
+}
+
+
+
+$other-color: #777; // grey
+.CreativeWork, .MediaObject, .PresentationDigitalDocument, .BreadcrumbList {
+    color: $other-color;
+    fill: $other-color;
+}
+.CreativeWork.dark, .MediaObject.dark, .PresentationDigitalDocument.dark, .BreadcrumbList.dark {
+    fill: darken($other-color, 20%);
+}
+
+.CreativeWork.light, .MediaObject.light, .PresentationDigitalDocument.light, .BreadcrumbList.light {
+    fill: lighten($other-color, 20%);
+}
+
+.orange-title {
+    color: #f28e2c;
+    // color: $warning-color;
+    // color: #e15759;
+    font-size: 0.9em;
+}
