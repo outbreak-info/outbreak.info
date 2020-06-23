@@ -156,8 +156,8 @@ export default {
       // Send GA event
       // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
         this.$gtag.event("download", {
-        'event_category': this.type,
-        'event_label': `downloading (${encodingFormat}) data from [${this.$route.fullPath}]`
+        'event_category': `${this.type}_${this.downloadLabel}`,
+        'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`
       })
 
       // code adapted from CViSB
