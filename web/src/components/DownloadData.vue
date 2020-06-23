@@ -153,6 +153,14 @@ export default {
       this.downloadData([this.getMetadata(filename)], "text/plain", `${this.filename}_README.txt`);
     },
     downloadData(dwnld_data, encodingFormat, filename) {
+      // Send GA event
+      // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
+        this.$gtag.event("download", {
+        'event_category': this.type,
+        'event_label': `downloading ${this.type} data as ${encodingFormat}`,
+        'value': this.$route.fullPath
+      })
+
       // code adapted from CViSB
       const blob = new Blob(dwnld_data, {
         type: encodingFormat
