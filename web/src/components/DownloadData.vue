@@ -150,15 +150,20 @@ export default {
     },
     downloadAll(dwnld_data, encodingFormat, filename) {
       this.downloadData(dwnld_data, encodingFormat, filename);
-      this.downloadData([this.getMetadata(filename)], "text/plain", `${this.filename}_README.txt`);
+      this.downloadData([this.getMetadata(filename)], "text/plain", `${this.filename}_README.txt`, true);
     },
-    downloadData(dwnld_data, encodingFormat, filename) {
+    downloadData(dwnld_data, encodingFormat, filename, isReadme=false) {
       // Send GA event
       // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
+      if(isReadme){
+        this.$gtag.event("download", {
+        'event_category': `${this.type}_${this.downloadLabel}_README`,
+        'event_label': `downloading {${this.downloadLabel} README} data from [${this.$route.fullPath}] as (${encodingFormat})`
+      }) } else {
         this.$gtag.event("download", {
         'event_category': `${this.type}_${this.downloadLabel}`,
         'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`
-      })
+      }
 
       // code adapted from CViSB
       const blob = new Blob(dwnld_data, {
@@ -214,7 +219,7 @@ ${resourcesString}
       const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
       const filenames = svgObject.map(svg => this.filename + "_" + svg.name + ".svg").join(", ");
 
-      this.downloadData([this.getMetadata(filenames)], "text/plain", `${this.filename}_README.txt`);
+      this.downloadData([this.getMetadata(filenames)], "text/plain", `${this.filename}_README.txt`, true);
       svgObject.forEach(svg =>
         this.downloadData(svg.source, "text/xml", this.filename + "_" + svg.name + ".svg")
       )
