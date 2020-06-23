@@ -462,7 +462,7 @@ export default Vue.extend({
     },
     mouseOff() {
       d3.selectAll(".tooltip").style("opacity", 0);
-      this.chart.selectAll("rect.bargraph").style("opacity", 1);
+      this.chart.selectAll("rect.bargraph").style("opacity", 0.5);
     },
     changeScale: function() {
       this.isLogY = !this.isLogY;
