@@ -118,7 +118,7 @@ export default {
   computed: {
     ...mapState("admin", ["loading", "outbreak", "sources", "resources"]),
     today() {
-      return(new Date());
+      return (new Date());
     },
     todayFormatted() {
       return (this.formatDate(this.today))
@@ -135,7 +135,7 @@ export default {
     }
   },
   methods: {
-    formatDate(dateString, formatString="%Y-%m-%d") {
+    formatDate(dateString, formatString = "%Y-%m-%d") {
       const formatDate = timeFormat(formatString);
       return (formatDate(dateString))
     },
@@ -152,17 +152,19 @@ export default {
       this.downloadData(dwnld_data, encodingFormat, filename);
       this.downloadData([this.getMetadata(filename)], "text/plain", `${this.filename}_README.txt`, true);
     },
-    downloadData(dwnld_data, encodingFormat, filename, isReadme=false) {
+    downloadData(dwnld_data, encodingFormat, filename, isReadme = false) {
       // Send GA event
       // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
-      if(isReadme){
+      if (isReadme) {
         this.$gtag.event("download", {
-        'event_category': `${this.type}_${this.downloadLabel}_README`,
-        'event_label': `downloading {${this.downloadLabel} README} data from [${this.$route.fullPath}] as (${encodingFormat})`
-      }) } else {
+          'event_category': `${this.type}_${this.downloadLabel}_README`,
+          'event_label': `downloading {${this.downloadLabel} README} data from [${this.$route.fullPath}] as (${encodingFormat})`
+        })
+      } else {
         this.$gtag.event("download", {
-        'event_category': `${this.type}_${this.downloadLabel}`,
-        'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`
+          'event_category': `${this.type}_${this.downloadLabel}`,
+          'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`
+        })
       }
 
       // code adapted from CViSB
@@ -415,7 +417,7 @@ ${resourcesString}
             d["date"] = this.formatDate(d.date);
             delete d._score;
           })
-        } else if(this.type == "resources") {
+        } else if (this.type == "resources") {
           this.downloadable.forEach(d => {
             d["source"] = d.curatedBy ? d.curatedBy.name : null;
             delete d._score;
