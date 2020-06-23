@@ -17,7 +17,7 @@ Vue.prototype.$resourceurl = "https://api.outbreak.info/resources/";
 
 Vue.use(VueRx);
 Vue.use(VueCookies);
-Vue.use(VueMeta);https://www.dropbox.com/s/82v6ch025nbucpp/Screenshot%202020-06-23%2014.32.14.png?dl=0
+Vue.use(VueMeta); //https://www.dropbox.com/s/82v6ch025nbucpp/Screenshot%202020-06-23%2014.32.14.png?dl=0
 
 Vue.use(
   VueGtag,
