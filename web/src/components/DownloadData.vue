@@ -157,8 +157,7 @@ export default {
       // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
         this.$gtag.event("download", {
         'event_category': this.type,
-        'event_label': `downloading ${this.type} data as ${encodingFormat}`,
-        'value': this.$route.fullPath
+        'event_label': `downloading (${encodingFormat}) data from [${this.$route.fullPath}]`
       })
 
       // code adapted from CViSB
