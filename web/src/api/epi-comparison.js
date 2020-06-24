@@ -25,7 +25,7 @@ import store from "@/store";
 export function getComparisonData(apiUrl, location, adminLevel, sort, page, size) {
   store.state.admin.loading = true;
 
-  const queryString = location ? `${location} AND admin_level:("${1.5}")` : `country_iso3:USA AND admin_level:${1.5}`;
+  const queryString = location ? `${location} AND admin_level:("${adminLevel}")` : `admin_level:${adminLevel}`;
 
   console.log(adminLevel)
 

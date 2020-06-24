@@ -4,28 +4,31 @@
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
-  <Choropleth :data="data" :colorScale="colorScale" :variable="sortVariable.value" />
+
+  <!-- Region buttons -->
+  <div class="d-flex flex-wrap">
+    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :to="{ name: 'Compare', query: {admin_level: '0', sort: this.sortVariable.value} }">All countries</router-link>
+    <div class="d-flex flex-column">
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', sort: this.sortVariable.value} }">U.S. States</router-link>
+      <div class="d-flex">
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1.5', sort: this.sortVariable.value} }">U.S. Metro Areas</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', sort: this.sortVariable.value} }">U.S. Counties</router-link>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap">
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', sort: this.sortVariable.value} }">Australian States</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', sort: this.sortVariable.value} }">Canadian Provinces</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', sort: this.sortVariable.value} }">Chinese Provinces</router-link>
+
+    </div>
+  </div>
+
+  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="sortVariable.value" />
 
 
   <div class="row">
-    <!-- Region buttons -->
-    <div class="col-sm-6 col-md-8 d-flex flex-wrap">
-      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :to="{ name: 'Compare', query: {admin_level: '0', sort: this.sortVariable.value} }">All countries</router-link>
-      <div class="d-flex flex-column">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', sort: this.sortVariable.value} }">U.S. States</router-link>
-        <div class="d-flex">
-          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1.5', sort: this.sortVariable.value} }">U.S. Metro Areas</router-link>
-          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', sort: this.sortVariable.value} }">U.S. Counties</router-link>
-        </div>
-      </div>
 
-      <div class="d-flex flex-wrap">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', sort: this.sortVariable.value} }">Australian States</router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', sort: this.sortVariable.value} }">Canadian Provinces</router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', sort: this.sortVariable.value} }">Chinese Provinces</router-link>
-
-      </div>
-    </div>
 
     <!-- sort options -->
     <div class="col-sm-6 col-md-4">
@@ -184,7 +187,7 @@ export default {
   methods: {
     getData() {
       this.$router.push({
-        path: "compare",
+        path: "maps",
         query: {
           location: this.location,
           admin_level: this.admin_level,

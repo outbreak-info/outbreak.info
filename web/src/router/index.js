@@ -43,8 +43,13 @@ const routes = [{
       import( /* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
-    path: "/compare",
+    path: "/maps",
     name: "Compare",
+    props: route => ({
+      admin_level: route.query.admin_level,
+      location: route.query.location,
+      sort: route.query.sort
+    }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -67,17 +72,6 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import( /* webpackChunkName: "data" */ "../views/Data.vue")
-  },
-  {
-    path: "/compare",
-    name: "Compare",
-    props: route => ({
-      admin_level: route.query.admin_level,
-      location: route.query.location,
-      sort: route.query.sort
-    }),
-    component: () =>
-      import( /* webpackChunkName: "compare" */ "../views/Compare.vue")
   },
   {
     path: "/sources",
