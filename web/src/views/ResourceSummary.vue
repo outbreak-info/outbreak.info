@@ -19,7 +19,7 @@
 
     <div id="resource-counts" class="d-flex ml-3 flex-column align-items-center" v-if="counts.total">
       <h3 class="text-left text-highlight">{{counts.total}} resources</h3>
-      <small class="text-muted badge bg-grey__lightest hidden" v-if="counts.dateModified"><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
+      <small class="text-muted badge bg-grey__lightest" v-if="counts.dateModified"><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
       </small>
 
       <CirclePacking class="circle-packing" :data="counts.sources" />
