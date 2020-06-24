@@ -43,7 +43,6 @@ export default {
   },
   watch: {
     data: function() {
-      console.log("WATCH")
       this.drawMetro();
     }
   },
@@ -89,8 +88,6 @@ export default {
         } else {
           this.regionData = [];
         }
-        console.log(this.regionData)
-
 
         this.data.forEach(d => {
           const id = d.location_id.split("_").slice(-1)[0].replace("US-", "");

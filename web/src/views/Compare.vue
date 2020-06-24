@@ -7,36 +7,35 @@
 
   <!-- Region buttons -->
   <div class="d-flex flex-wrap">
-    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :to="{ name: 'Compare', query: {admin_level: '0', sort: this.sortVariable.value} }">All countries</router-link>
+    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All countries</router-link>
     <div class="d-flex flex-column">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', sort: this.sortVariable.value} }">U.S. States</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
       <div class="d-flex">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1.5', sort: this.sortVariable.value} }">U.S. Metro Areas</router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', sort: this.sortVariable.value} }">U.S. Counties</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
       </div>
     </div>
 
-    <div class="d-flex flex-wrap">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', sort: this.sortVariable.value} }">Australian States</router-link>
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', sort: this.sortVariable.value} }">Canadian Provinces</router-link>
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', sort: this.sortVariable.value} }">Chinese Provinces</router-link>
+    <!-- <div class="d-flex flex-wrap">
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', variable: this.selectedVariable.value} }">Australian States</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', variable: this.selectedVariable.value} }">Canadian Provinces</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', variable: this.selectedVariable.value} }">Chinese Provinces</router-link>
 
-    </div>
+    </div> -->
   </div>
-
-  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="sortVariable.value" :variableLabel="sortVariable.label" />
+  <select v-model="selectedVariable" class="select-dropdown">
+    <option v-for="option in sortOptions" :value="option" :key="option.value" v-html="option.label">
+    </option>
+  </select>
+  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.label" />
 
 
   <div class="row">
 
 
-    <!-- sort options -->
+    <!-- variable options -->
     <div class="col-sm-6 col-md-4">
-      <span class="mr-2">Sort:</span>
-      <select v-model="sortVariable" class="select-dropdown">
-        <option v-for="option in sortOptions" :value="option" :key="option.value" v-html="option.label">
-        </option>
-      </select>
+
     </div>
 
   </div>
@@ -104,13 +103,15 @@ import {
   getComparisonData
 } from "@/api/epi-comparison.js";
 
+import { jenks } from "@/js/jenks.js";
+
 import {
   mapState
 } from "vuex";
 import {
   format,
-  scaleSequential, scaleSequentialLog,scaleSymlog,
-  max, min
+  scaleQuantile, scaleThreshold,
+  max, min, range
 } from "d3";
 import {
   interpolateYlGnBu, interpolatePiYG
@@ -129,7 +130,7 @@ export default {
     sort: String
   },
   watch: {
-    sortVariable() {
+    selectedVariable() {
       this.getData();
     },
     admin_level() {
@@ -142,30 +143,32 @@ export default {
   data() {
     return {
       colorScale: null,
+      numColors: 11,
       data: [],
       dataSubscription: null,
+      selectedVariable: {
+        label: "2 week change in cases/day",
+        value: "confirmed_change"
+      },
       sortVariable: {
         label: "2 week change in cases/day",
         value: "confirmed_change"
       },
-      sortOptions: [{
-          label: "highest cases/day",
-          value: "-confirmed_rolling"
+      sortOptions: [
+        {
+          label: "new cases/day",
+          value: "confirmed_rolling"
         },
         {
-          label: "lowest cases/day",
-          value: "confirmed_rolling"
+          label: "new deaths/day",
+          value: "dead_rolling"
         },
         {
           label: "2 week change in cases/day",
           value: "confirmed_change"
         },
         {
-          label: "highest number of deaths",
-          value: "-dead"
-        },
-        {
-          label: "lowest number of deaths",
+          label: "total deaths",
           value: "dead"
         }
 
@@ -191,6 +194,7 @@ export default {
         query: {
           location: this.location,
           admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
           sort: this.sortVariable.value
         }
       });
@@ -199,21 +203,24 @@ export default {
 
         this.data = results;
 
-        const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead", "confirmed_numIncrease", "dead_numIncrease"];
-        const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
-        const yMax = max(results, d => d[variable]);
-        const yMin = min(results, d => d[variable]);
-        const maxVal = max([Math.abs(yMin), Math.abs(yMax)]);
-        const domain = [maxVal, -maxVal];
-        // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
+        // const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead", "confirmed_numIncrease", "dead_numIncrease"];
+        // const yMax = max(results, d => d[this.selectedVariable.value]);
+        // const yMin = min(results, d => d[this.selectedVariable.value]);
+        // const maxVal = max([Math.abs(yMin), Math.abs(yMax)]);
+        // const domain = [maxVal, -maxVal];
 
-        this.colorScale = scaleSequential(interpolatePiYG)
+        const colorRange = range(0,1, 1/this.numColors).map(d => interpolatePiYG(d)).reverse();
+        // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
+        const domain = jenks(results.map(d => d[this.selectedVariable.value]), this.numColors);
+
         // this.colorScale = scaleSequential(interpolateYlGnBu)
-          .domain(domain).clamp(true);
+        this.colorScale = scaleQuantile()
+        .range(colorRange)
+        .domain(domain);
 
         this.data.forEach(d => {
-          d.fill = this.colorScale(d[variable]);
-          // d.fill = this.colorScale(Math.log10(d[variable]));
+          d.fill = this.colorScale(d[this.selectedVariable.value]);
+          // d.fill = this.colorScale(Math.log10(d[this.selectedVariable.value]));
         })
       })
     },

@@ -3,28 +3,18 @@
   <div>
     {{variableLabel}}
   </div>
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom*2" ref="legned_svg">
-    <defs>
-      <linearGradient
-        id="gradient-legend"
-        x1="0%"
-        y1="0%"
-        x2="100%"
-        y2="0%"
-      >
-        <stop
-          v-for="(color, i) in legendColors"
-          :key="i"
-          :offset="(i / legendColors.length) * 100 + '%'"
-          :style="`stop-color:${color}; stop-opacity:1`"
-        />
-      </linearGradient>
-    </defs>
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom*2" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
-    <rect x="0" y="0" :width="width" height="10" fill="url(#gradient-legend)"
-    stroke="black"
-    :stroke-width="0.5" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`"></rect>
+    <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
+      <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill"
+      :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
+      </rect>
+      <rect x="0" y="0" :width="width" height="10"
+      stroke="black" fill="none"
+      :stroke-width="0.5"></rect>
+    </g>
+
   </svg>
 </div>
 </template>
@@ -69,7 +59,7 @@ export default {
       legendColors: null,
       // binned data
       bins: null,
-      numBins: 40,
+      numBins: 50,
       // refs
       chart: null,
       xAxisRef: null
@@ -95,7 +85,16 @@ export default {
       this.xAxisRef.call(this.xAxis);
 
       // legend gradient
-      this.legendColors = this.x.ticks().map(d => this.colorScale(d));
+      console.log(this.colorScale)
+      this.legendColors = this.colorScale.range()
+      .map((color,i) => {
+        return({
+        fill: color,
+        width: this.x(this.colorScale.domain()[i+1]) - this.x(this.colorScale.domain()[i]),
+        x0: this.x(this.colorScale.domain()[i])
+        })
+
+      })
 
       d3.selectAll(".axis").call(this.xAxis);
 

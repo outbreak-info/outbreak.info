@@ -48,6 +48,7 @@ const routes = [{
     props: route => ({
       admin_level: route.query.admin_level,
       location: route.query.location,
+      variable: route.query.variable,
       sort: route.query.sort
     }),
     // route level code-splitting
