@@ -1,6 +1,5 @@
 <template>
-<div>
-  <h1>variable: {{variable}}</h1>
+<div class="d-flex flex-wrap align-items-end">
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
@@ -14,9 +13,9 @@
 </template>
 
 <script>
-// import metros from "@/assets/geo/US_counties.json";
+import countries from "@/assets/geo/countries.json";
+import counties from "@/assets/geo/US_counties.json";
 import metros from "@/assets/geo/US_metro.json";
-// import metros from "@/assets/geo/US_states.json";
 import usstates from "@/assets/geo/US_states.json";
 import * as d3 from "d3";
 
@@ -31,6 +30,7 @@ export default {
     data: Array,
     variable: String,
     colorScale: Function,
+    adminLevel: String,
     width: {
       type: Number,
       default: 500
@@ -42,6 +42,7 @@ export default {
   },
   watch: {
     data: function() {
+      console.log("WATCH")
       this.drawMetro();
     }
   },
@@ -53,6 +54,8 @@ export default {
         bottom: 25,
         left: 25
       },
+      // data
+      regionData: null,
       // refs
       svg: null,
       states: null,
@@ -61,8 +64,6 @@ export default {
   },
   computed: {},
   mounted() {
-    console.log(metros)
-    console.log(this.data)
     this.setupChoro();
     this.drawMetro();
   },
@@ -75,15 +76,28 @@ export default {
     },
     drawMetro() {
       if (this.data) {
+        if (this.adminLevel == "0") {
+          this.regionData = countries;
+        } if (this.adminLevel == "1") {
+          this.regionData = usstates;
+        } else if (this.adminLevel == "1.5") {
+          this.regionData = metros;
+        } else if (this.adminLevel == "2") {
+          this.regionData = counties;
+        } else {
+          this.regionData = [];
+        }
+        console.log(this.regionData)
+
 
         this.data.forEach(d => {
           const id = d.location_id.split("_").slice(-1)[0].replace("US-", "");
-          const idx = metros.features.findIndex(polygon => polygon.properties.GEOID === id);
+          const idx = this.regionData.features.findIndex(polygon => polygon.properties.GEOID === id);
           if (idx > -1) {
-            metros.features[idx]["fill"] = d.fill;
-            metros.features[idx]["location_id"] = d.location_id;
-            metros.features[idx]["name"] = d.name;
-            metros.features[idx]["value"] = d3.format(",.0f")(d[this.variable]);
+            this.regionData.features[idx]["fill"] = d.fill;
+            this.regionData.features[idx]["location_id"] = d.location_id;
+            this.regionData.features[idx]["name"] = d.name;
+            this.regionData.features[idx]["value"] = d3.format(",.0f")(d[this.variable]);
             // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
         })
@@ -96,7 +110,7 @@ export default {
         // regional data
         this.regions
           .selectAll("path")
-          .data(metros.features)
+          .data(this.regionData.features)
           .join(
             enter => {
               enter
@@ -109,7 +123,14 @@ export default {
                 )
                 .attr("fill", d => d.fill ? d.fill : "none");
             },
-            update => update.attr("fill", d => d.fill ? d.fill : "none")
+            update => update.attr("fill", d => d.fill ? d.fill : "none"),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
           )
 
         // state outline
@@ -125,7 +146,15 @@ export default {
                 .attr("d", path
                   .projection(projection)
                 )
-            }
+            },
+            // update => update.attr("fill", d => d.fill ? d.fill : "none"),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
           );
 
         // tooltip
@@ -185,6 +214,6 @@ export default {
     z-index: 1000;
     background: #ffffff;
     opacity: 0;
-    pointer-events:none;
+    pointer-events: none;
 }
 </style>
