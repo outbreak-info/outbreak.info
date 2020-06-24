@@ -1,7 +1,7 @@
 <template>
 <div>
   <div>
-    {{variable}}
+    {{variableLabel}}
   </div>
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom*2" ref="legned_svg">
     <defs>
@@ -41,6 +41,7 @@ export default {
   props: {
     data: Array,
     variable: String,
+    variableLabel: String,
     colorScale: Function
   },
   watch: {

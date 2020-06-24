@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="sortVariable.value" />
+  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="sortVariable.value" :variableLabel="sortVariable.label" />
 
 
   <div class="row">
@@ -204,7 +204,7 @@ export default {
         const yMax = max(results, d => d[variable]);
         const yMin = min(results, d => d[variable]);
         // const maxVal = max(Math.abs(yMin), Math.abs(yMax));
-        const maxVal = 500;
+        const maxVal = 1000;
 
         const domain = [maxVal, -maxVal];
         // const domain = [0,Math.log10(yMax)];
