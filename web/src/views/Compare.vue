@@ -209,7 +209,12 @@ export default {
         // const maxVal = max([Math.abs(yMin), Math.abs(yMax)]);
         // const domain = [maxVal, -maxVal];
 
-        const colorRange = range(0,1, 1/this.numColors).map(d => interpolatePiYG(d)).reverse();
+        var colorRange;
+        if(["confirmed_change", "dead_change"].includes(this.selectedVariable.value)){
+          colorRange = range(0,1, 1/this.numColors).map(d => interpolatePiYG(d)).reverse();
+        }  else {
+          colorRange = range(0,0.5, 0.5/this.numColors).map(d => interpolatePiYG(d)).reverse();
+        }
         // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
         const domain = jenks(results.map(d => d[this.selectedVariable.value]), this.numColors);
 
