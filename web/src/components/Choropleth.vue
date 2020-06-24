@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex flex-wrap align-items-end">
+<div class="d-flex flex-wrap align-items-center">
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
@@ -8,7 +8,7 @@
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
   </div>
-  <HistogramLegend :data="data" :variable="variable" :colorScale="colorScale" />
+  <HistogramLegend class="ml-2" :data="data" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" />
 </div>
 </template>
 
@@ -29,6 +29,7 @@ export default {
   props: {
     data: Array,
     variable: String,
+    variableLabel: String,
     colorScale: Function,
     adminLevel: String,
     width: {
@@ -78,7 +79,7 @@ export default {
       if (this.data) {
         if (this.adminLevel == "0") {
           this.regionData = countries;
-        } if (this.adminLevel == "1") {
+        } else if (this.adminLevel == "1") {
           this.regionData = usstates;
         } else if (this.adminLevel == "1.5") {
           this.regionData = metros;
@@ -103,9 +104,17 @@ export default {
         })
 
         var path = d3.geoPath();
-        var projection = d3.geoAlbersUsa()
-          .scale(700)
-          .translate([this.width / 2 + 10, this.height / 2]);
+        var projection;
+        if (this.adminLevel === "0") {
+          projection = d3.geoEqualEarth()
+            .scale(125)
+            .translate([this.width / 2 + 10, this.height / 2]);
+
+        } else {
+          projection = d3.geoAlbersUsa()
+            .scale(700)
+            .translate([this.width / 2 + 10, this.height / 2]);
+        }
 
         // regional data
         this.regions
@@ -134,28 +143,30 @@ export default {
           )
 
         // state outline
-        this.states
-          .selectAll("path")
-          .data(usstates.features)
-          .join(
-            enter => {
-              enter
-                .append("path")
-                .attr("class", "state")
-                // draw each region
-                .attr("d", path
-                  .projection(projection)
-                )
-            },
-            // update => update.attr("fill", d => d.fill ? d.fill : "none"),
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition()
-              .style("opacity", 1e-5)
-              .remove()
-            )
-          );
+        if (this.adminLevel !== "0") {
+          this.states
+            .selectAll("path")
+            .data(usstates.features)
+            .join(
+              enter => {
+                enter
+                  .append("path")
+                  .attr("class", "state")
+                  // draw each region
+                  .attr("d", path
+                    .projection(projection)
+                  )
+              },
+              // update => update.attr("fill", d => d.fill ? d.fill : "none"),
+              exit =>
+              exit.call(exit =>
+                exit
+                .transition()
+                .style("opacity", 1e-5)
+                .remove()
+              )
+            );
+        }
 
         // tooltip
         this.regions.selectAll("path.region")
