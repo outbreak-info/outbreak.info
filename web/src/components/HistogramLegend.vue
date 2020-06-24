@@ -112,7 +112,6 @@ export default {
     updatePlot: function() {
       if (this.data) {
         this.updateAxes();
-        console.log(this.bins)
 
         this.chart
           .selectAll("rect")
