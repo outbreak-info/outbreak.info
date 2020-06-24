@@ -203,11 +203,8 @@ export default {
         const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
         const yMax = max(results, d => d[variable]);
         const yMin = min(results, d => d[variable]);
-        // const maxVal = max(Math.abs(yMin), Math.abs(yMax));
-        const maxVal = 1000;
-
+        const maxVal = max([Math.abs(yMin), Math.abs(yMax)]);
         const domain = [maxVal, -maxVal];
-        // const domain = [0,Math.log10(yMax)];
         // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
 
         this.colorScale = scaleSequential(interpolatePiYG)
