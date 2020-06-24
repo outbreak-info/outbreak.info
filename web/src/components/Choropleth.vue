@@ -57,6 +57,7 @@ export default {
       },
       // data
       regionData: null,
+      projection: null,
       // refs
       svg: null,
       states: null,
@@ -104,14 +105,13 @@ export default {
         })
 
         var path = d3.geoPath();
-        var projection;
         if (this.adminLevel === "0") {
-          projection = d3.geoEqualEarth()
+          this.projection = d3.geoEqualEarth()
             .scale(125)
             .translate([this.width / 2 + 10, this.height / 2]);
 
         } else {
-          projection = d3.geoAlbersUsa()
+          this.projection = d3.geoAlbersUsa()
             .scale(700)
             .translate([this.width / 2 + 10, this.height / 2]);
         }
@@ -128,11 +128,14 @@ export default {
                 .attr("id", d => d.location_id)
                 // draw each region
                 .attr("d", path
-                  .projection(projection)
+                  .projection(this.projection)
                 )
                 .attr("fill", d => d.fill ? d.fill : "none");
             },
-            update => update.attr("fill", d => d.fill ? d.fill : "none"),
+            update => update
+            .attr("d", path
+              .projection(this.projection)
+            ).attr("fill", d => d.fill ? d.fill : "none"),
             exit =>
             exit.call(exit =>
               exit
@@ -144,29 +147,33 @@ export default {
 
         // state outline
         if (this.adminLevel !== "0") {
-          this.states
-            .selectAll("path")
-            .data(usstates.features)
-            .join(
-              enter => {
-                enter
-                  .append("path")
-                  .attr("class", "state")
-                  // draw each region
-                  .attr("d", path
-                    .projection(projection)
-                  )
-              },
-              // update => update.attr("fill", d => d.fill ? d.fill : "none"),
-              exit =>
-              exit.call(exit =>
-                exit
-                .transition()
-                .style("opacity", 1e-5)
-                .remove()
-              )
-            );
+          this.outline = usstates.features;
+        } else {
+          this.outline = [];
         }
+        this.states
+          .selectAll("path")
+          .data(this.outline)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "state")
+                // draw each region
+                .attr("d", path
+                  .projection(this.projection)
+                )
+            },
+            update => update.attr("d", path
+              .projection(this.projection)),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          );
 
         // tooltip
         this.regions.selectAll("path.region")
