@@ -14,7 +14,9 @@
 </template>
 
 <script>
-import geodata from "@/assets/geo/US_metro.json";
+// import metros from "@/assets/geo/US_counties.json";
+import metros from "@/assets/geo/US_metro.json";
+// import metros from "@/assets/geo/US_states.json";
 import usstates from "@/assets/geo/US_states.json";
 import * as d3 from "d3";
 
@@ -59,7 +61,7 @@ export default {
   },
   computed: {},
   mounted() {
-    console.log(geodata)
+    console.log(metros)
     console.log(this.data)
     this.setupChoro();
     this.drawMetro();
@@ -75,14 +77,14 @@ export default {
       if (this.data) {
 
         this.data.forEach(d => {
-          const id = d.location_id.replace("METRO_", "");
-          const idx = geodata.features.findIndex(polygon => polygon.properties.GEOID === id);
+          const id = d.location_id.split("_").slice(-1)[0].replace("US-", "");
+          const idx = metros.features.findIndex(polygon => polygon.properties.GEOID === id);
           if (idx > -1) {
-            geodata.features[idx]["fill"] = d.fill;
-            geodata.features[idx]["location_id"] = d.location_id;
-            geodata.features[idx]["name"] = d.name;
-            geodata.features[idx]["value"] = d3.format(",.0f")(d[this.variable]);
-            // geodata.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
+            metros.features[idx]["fill"] = d.fill;
+            metros.features[idx]["location_id"] = d.location_id;
+            metros.features[idx]["name"] = d.name;
+            metros.features[idx]["value"] = d3.format(",.0f")(d[this.variable]);
+            // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
         })
 
@@ -94,7 +96,7 @@ export default {
         // regional data
         this.regions
           .selectAll("path")
-          .data(geodata.features)
+          .data(metros.features)
           .join(
             enter => {
               enter
@@ -140,6 +142,7 @@ export default {
         .style("opacity", 1);
 
       this.regions.selectAll("path.region").style("opacity", 0.5);
+      this.regions.selectAll("path.state").style("opacity", 0.75);
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
 
       this.ttips.select(".country-name").text(d.name);
@@ -149,6 +152,7 @@ export default {
       d3.selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
+      this.regions.selectAll("path.state").style("opacity", 1);
     }
 
   }
@@ -162,7 +166,7 @@ export default {
 
 .region {
     stroke: $grey-60;
-    stroke-width: 0.5;
+    stroke-width: 0.25;
 }
 
 .region:hover {
@@ -173,7 +177,7 @@ export default {
 .state {
     fill: none;
     stroke: $grey-90;
-    stroke-width: 0.5;
+    stroke-width: 1;
 }
 
 .choropleth-tooltip {

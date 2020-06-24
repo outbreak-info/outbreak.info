@@ -3,9 +3,28 @@
   <div>
     {{variable}}
   </div>
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="legned_svg">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom*2" ref="legned_svg">
+    <defs>
+      <linearGradient
+        id="gradient-legend"
+        x1="0%"
+        y1="0%"
+        x2="100%"
+        y2="0%"
+      >
+        <stop
+          v-for="(color, i) in legendColors"
+          :key="i"
+          :offset="(i / legendColors.length) * 100 + '%'"
+          :style="`stop-color:${color}; stop-opacity:1`"
+        />
+      </linearGradient>
+    </defs>
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
+    <rect x="0" y="0" :width="width" height="10" fill="url(#gradient-legend)"
+    stroke="black"
+    :stroke-width="0.5" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`"></rect>
   </svg>
 </div>
 </template>
@@ -35,7 +54,7 @@ export default {
   data() {
     return {
       width: 200,
-      height: 125,
+      height: 100,
       margin: {
         top: 5,
         bottom: 25,
@@ -46,6 +65,7 @@ export default {
       x: null,
       y: null,
       xAxis: null,
+      legendColors: null,
       // binned data
       bins: null,
       numBins: 40,
@@ -56,7 +76,6 @@ export default {
   },
   computed: {},
   mounted() {
-    console.log(this.data);
     this.setupPlot();
     this.updatePlot();
   },
@@ -69,11 +88,13 @@ export default {
       // x-axis
       this.x = d3.scaleLinear()
         .range([0, this.width])
-        .domain(d3.extent(this.data, d => d[this.variable]))
-        .nice();
+        .domain(d3.extent(this.data, d => d[this.variable]));
 
-      this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0);
+      this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5);
       this.xAxisRef.call(this.xAxis);
+
+      // legend gradient
+      this.legendColors = this.x.ticks().map(d => this.colorScale(d));
 
       d3.selectAll(".axis").call(this.xAxis);
 
@@ -85,12 +106,13 @@ export default {
       // y-axis
       this.y = d3.scaleLinear()
         .range([this.height, 0])
-        .domain([0, d3.max(this.bins, d => d.length)]).nice()
+        .domain([0, d3.max(this.bins, d => d.length)]);
 
     },
     updatePlot: function() {
       if (this.data) {
         this.updateAxes();
+        console.log(this.bins)
 
         this.chart
           .selectAll("rect")

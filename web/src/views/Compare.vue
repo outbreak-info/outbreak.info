@@ -7,8 +7,6 @@
   <Choropleth :data="data" :colorScale="colorScale" :variable="sortVariable.value" />
 
 
-  <h3 class="my-3">How much are regions improving?</h3>
-
   <div class="row">
     <!-- Region buttons -->
     <div class="col-sm-6 col-md-8 d-flex flex-wrap">
@@ -66,6 +64,9 @@
             <th>
               deaths / day
             </th>
+            <th>
+              2 week change in cases / day
+            </th>
           </tr>
           <tr v-for="(item, idx) in data" :key="idx">
             <td>
@@ -77,10 +78,13 @@
               </router-link>
             </td>
             <td>
-              {{item.confirmed_numIncrease.toLocaleString()}}
+              {{item.confirmed_numIncrease ? item.confirmed_numIncrease.toLocaleString() : ""}}
             </td>
             <td>
-              {{item.dead_numIncrease.toLocaleString()}}
+              {{item.dead_numIncrease ? item.dead_numIncrease.toLocaleString() : ""}}
+            </td>
+            <td>
+              {{item.confirmed_change ? item.confirmed_change.toLocaleString() : ""}}
             </td>
 
           </tr>
@@ -102,11 +106,11 @@ import {
 } from "vuex";
 import {
   format,
-  scaleSequential,
-  max
+  scaleSequential, scaleSequentialLog,scaleSymlog,
+  max, min
 } from "d3";
 import {
-  interpolateYlGnBu
+  interpolateYlGnBu, interpolatePiYG
 } from "d3-scale-chromatic";
 
 import Choropleth from "@/components/Choropleth.vue";
@@ -138,16 +142,20 @@ export default {
       data: [],
       dataSubscription: null,
       sortVariable: {
-        label: "highest cases/day",
-        value: "-confirmed_numIncrease"
+        label: "2 week change in cases/day",
+        value: "confirmed_change"
       },
       sortOptions: [{
           label: "highest cases/day",
-          value: "-confirmed_numIncrease"
+          value: "-confirmed_rolling"
         },
         {
           label: "lowest cases/day",
-          value: "confirmed_numIncrease"
+          value: "confirmed_rolling"
+        },
+        {
+          label: "2 week change in cases/day",
+          value: "confirmed_change"
         },
         {
           label: "highest number of deaths",
@@ -191,15 +199,21 @@ export default {
         const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead", "confirmed_numIncrease", "dead_numIncrease"];
         const variable = this.sortVariable.value.startsWith("-") ? this.sortVariable.value.slice(1) : this.sortVariable.value;
         const yMax = max(results, d => d[variable]);
-        const domain = [0,Math.log10(yMax)];
+        const yMin = min(results, d => d[variable]);
+        // const maxVal = max(Math.abs(yMin), Math.abs(yMax));
+        const maxVal = 500;
+
+        const domain = [maxVal, -maxVal];
+        // const domain = [0,Math.log10(yMax)];
         // const domain = ascVars.includes(variable) ? [0, yMax] : [yMax, 0];
 
-        this.colorScale = scaleSequential(interpolateYlGnBu)
+        this.colorScale = scaleSequential(interpolatePiYG)
+        // this.colorScale = scaleSequential(interpolateYlGnBu)
           .domain(domain).clamp(true);
 
         this.data.forEach(d => {
-          // d.fill = this.colorScale(d[variable]);
-          d.fill = this.colorScale(Math.log10(d[variable]));
+          d.fill = this.colorScale(d[variable]);
+          // d.fill = this.colorScale(Math.log10(d[variable]));
         })
       })
     },

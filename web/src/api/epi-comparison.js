@@ -25,19 +25,18 @@ import store from "@/store";
 export function getComparisonData(apiUrl, location, adminLevel, sort, page, size) {
   store.state.admin.loading = true;
 
-  const queryString = location ? `${location} AND admin_level:("${adminLevel}")` : `admin_level:${adminLevel}`;
+  const queryString = location ? `${location} AND admin_level:("${1.5}")` : `country_iso3:USA AND admin_level:${1.5}`;
 
-  console.log(queryString)
+  console.log(adminLevel)
 
   return getCurrentData(apiUrl, queryString, sort, page, size)
   // return getAll(apiUrl, queryString)
     .pipe(
       map(results => {
-        console.log(results)
         return(results)
       }),
     catchError(e => {
-      console.log("%c Error in getting top place names!", "color: red");
+      console.log("%c Error in getting comparison!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -46,19 +45,48 @@ export function getComparisonData(apiUrl, location, adminLevel, sort, page, size
 }
 
 export function getCurrentData(apiUrl, queryString, sort, page, size) {
-  const timestamp = Math.round(new Date().getTime() / 1e5);
-  const fields = "date,location_id,name,state_name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,confirmed_doublingRate,dead,dead_numIncrease,dead_pctIncrease,dead_doublingRate"
+  const parseDate = timeParse("%Y-%m-%d");
 
-  return from(axios.get(`${apiUrl}query?q=mostRecent:true AND ${queryString}&sort=${sort}&size=${size}&from=${page}&fields=${fields}&timestamp=${timestamp}`))
-  // return getAll(apiUrl, queryString)
+  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const fields = "date,location_id,name,state_name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,confirmed_rolling,dead,dead_numIncrease,dead_pctIncrease,dead_rolling"
+
+  const qString = `(date:"2020-06-21" OR date:"2020-06-07") AND (${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
+  return getAll(apiUrl, qString)
     .pipe(
-      pluck("data", "hits"),
       map(results => {
         console.log(results)
-        return(results)
+        results.forEach(result => {
+          result["datetime"] = parseDate(result.date);
+        })
+
+        results.sort((a,b) => b.datetime < a.datetime ? -1 : 1);
+
+        const nested = nest()
+        .key(d => d.location_id)
+        .rollup(values => {
+          return({
+          location_id: values[0].location_id,
+          all: values,
+          name: values[0].name,
+          date: values[0].date,
+          datetime: values[0].datetime,
+          dead: values[0].dead,
+          dead_numIncrease: values[0].dead_numIncrease,
+          dead_rolling: values[0].dead_rolling,
+          confirmed: values[0].confirmed,
+          confirmed_numIncrease: values[0].confirmed_numIncrease,
+          confirmed_rolling: values[0].confirmed_rolling,
+          confirmed_change: values.length == 2 ? values[0].confirmed_rolling - values[1].confirmed_rolling : null
+          })
+        })
+        .entries(results).map(d => d.value);
+
+        console.log(nested)
+
+        return(nested)
       }),
     catchError(e => {
-      console.log("%c Error in getting top place names!", "color: red");
+      console.log("%c Error in getting current data!", "color: red");
       console.log(e);
       return from([]);
     })
