@@ -8,7 +8,11 @@
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
   </div>
-  <HistogramLegend class="ml-2" :data="data" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" />
+  <div class="d-flex flex-column">
+    <HistogramLegend class="ml-2" :data="data" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" />
+    <DataUpdated />  
+  </div>
+
 </div>
 </template>
 
@@ -19,12 +23,14 @@ import metros from "@/assets/geo/US_metro.json";
 import usstates from "@/assets/geo/US_states.json";
 import * as d3 from "d3";
 
-import HistogramLegend from "@/components/HistogramLegend.vue"
+import HistogramLegend from "@/components/HistogramLegend.vue";
+import DataUpdated from "@/components/DataUpdated.vue";
 
 export default {
   name: "Choropleth",
   components: {
-    HistogramLegend
+    HistogramLegend,
+    DataUpdated
   },
   props: {
     data: Array,
