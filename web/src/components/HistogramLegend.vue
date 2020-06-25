@@ -7,7 +7,7 @@
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
     <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
-      <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill"
+      <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`"
       :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
       </rect>
       <rect x="0" y="0" :width="width" height="10"
@@ -85,7 +85,6 @@ export default {
       this.xAxisRef.call(this.xAxis);
 
       // legend gradient
-      console.log(this.colorScale)
       this.legendColors = this.colorScale.range()
       .map((color,i) => {
         return({
@@ -110,7 +109,7 @@ export default {
 
     },
     updatePlot: function() {
-      if (this.data) {
+      if (this.data && this.colorScale) {
         this.updateAxes();
 
         this.chart
