@@ -103,18 +103,27 @@ import {
   getComparisonData
 } from "@/api/epi-comparison.js";
 
-import { jenks } from "@/js/jenks.js";
+import {
+  jenks
+} from "@/js/jenks.js";
 
 import {
   mapState
 } from "vuex";
 import {
   format,
-  scaleQuantile, scaleThreshold,
-  max, min, range
+  scaleQuantile,
+  scaleThreshold,
+  max,
+  min,
+  range
 } from "d3";
 import {
-  interpolateYlGnBu, interpolatePiYG
+  interpolateYlGnBu,
+  interpolateBrBG,
+  interpolatePRGn,
+  interpolatePiYG,
+  interpolateRdYlBu
 } from "d3-scale-chromatic";
 
 import Choropleth from "@/components/Choropleth.vue";
@@ -154,8 +163,7 @@ export default {
         label: "2 week change in cases/day",
         value: "confirmed_change"
       },
-      sortOptions: [
-        {
+      sortOptions: [{
           label: "new cases/day",
           value: "confirmed_rolling"
         },
@@ -210,18 +218,20 @@ export default {
         // const domain = [maxVal, -maxVal];
 
         var colorRange;
-        if(["confirmed_change", "dead_change"].includes(this.selectedVariable.value)){
-          colorRange = range(0,1, 1/this.numColors).map(d => interpolatePiYG(d)).reverse();
-        }  else {
-          colorRange = range(0,0.5, 0.5/this.numColors).map(d => interpolatePiYG(d)).reverse();
+        if (["confirmed_change", "dead_change"].includes(this.selectedVariable.value)) {
+          colorRange = range(0, 1, 1 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
+        } else {
+          colorRange = range(0, 0.5, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
         }
         // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
-        const domain = jenks(results.map(d => d[this.selectedVariable.value]), this.numColors);
+        const domain = jenks(results.map(d => d[this.selectedVariable.value]), (this.numColors));
+        // const domain1 = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d < 0), (this.numColors-1)/2);
+        // const domain2 = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d > 0), (this.numColors-1)/2);
+        // const domain  = domain1.concat(domain2)
 
-        // this.colorScale = scaleSequential(interpolateYlGnBu)
         this.colorScale = scaleQuantile()
-        .range(colorRange)
-        .domain(domain);
+          .range(colorRange)
+          .domain(domain);
 
         this.data.forEach(d => {
           d.fill = this.colorScale(d[this.selectedVariable.value]);
