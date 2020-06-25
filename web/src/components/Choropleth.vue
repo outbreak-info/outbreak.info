@@ -4,7 +4,7 @@
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
   </svg>
-  <div class="tooltip choropleth-tooltip p-2" ref="choropleth_tooltip">
+  <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
   </div>
@@ -121,7 +121,7 @@ export default {
             enter => {
               enter
                 .append("path")
-                .attr("class", "region")
+                .attr("class", "region pointer")
                 .attr("id", d => d.location_id)
                 // draw each region
                 .attr("d", path
@@ -174,10 +174,19 @@ export default {
 
         // tooltip
         this.regions.selectAll("path.region")
+          .on("click", d => this.handleClick(d))
           .on("mouseenter", d => this.mouseOn(d))
           .on("mouseleave", this.mouseOff);
 
       }
+    },
+    handleClick(d){
+      this.$router.push({
+        path: "epidemiology",
+        query: {
+          location: d.location_id
+        }
+      });
     },
     mouseOn(d) {
       const ttip = this.ttips
