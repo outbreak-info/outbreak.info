@@ -23,22 +23,17 @@
 
     </div> -->
   </div>
-  <select v-model="selectedVariable" class="select-dropdown">
-    <option v-for="option in sortOptions" :value="option" :key="option.value" v-html="option.label">
-    </option>
-  </select>
+
+  <!-- variable options -->
+  <div class="row d-flex justify-content-end">
+    <select v-model="selectedVariable" class="select-dropdown">
+      <option v-for="option in sortOptions" :value="option" :key="option.value" v-html="option.label">
+      </option>
+    </select>
+  </div>
+
   <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.label" />
 
-
-  <div class="row">
-
-
-    <!-- variable options -->
-    <div class="col-sm-6 col-md-4">
-
-    </div>
-
-  </div>
 
   <!-- Results label -->
   <div class="row mt-4 mb-2">
@@ -223,6 +218,7 @@ export default {
         } else {
           colorRange = range(0, 0.5, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
         }
+        console.log(colorRange)
         // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
         const domain = jenks(results.map(d => d[this.selectedVariable.value]), (this.numColors));
         // const domain1 = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d < 0), (this.numColors-1)/2);
