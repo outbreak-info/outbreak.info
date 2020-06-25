@@ -171,6 +171,10 @@ export default {
           value: "confirmed_change"
         },
         {
+          label: "2 week change in deaths/day",
+          value: "dead_change"
+        },
+        {
           label: "total deaths",
           value: "dead"
         }

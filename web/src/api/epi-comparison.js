@@ -73,7 +73,8 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
           confirmed: values[0].confirmed,
           confirmed_numIncrease: values[0].confirmed_numIncrease,
           confirmed_rolling: values[0].confirmed_rolling,
-          confirmed_change: values.length == 2 ? values[0].confirmed_rolling - values[1].confirmed_rolling : null
+          confirmed_change: values.length == 2 ? values[0].confirmed_rolling - values[1].confirmed_rolling : null,
+          dead_change: values.length == 2 ? values[0].dead_rolling - values[1].dead_rolling : null
           })
         })
         .entries(results).map(d => d.value);
