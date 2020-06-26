@@ -48,7 +48,7 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
   const timestamp = Math.round(new Date().getTime() / 1e5);
   const fields = "date,location_id,name,state_name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,confirmed_rolling,dead,dead_numIncrease,dead_pctIncrease,dead_rolling"
 
-  const qString = `(date:"2020-06-22" OR date:"2020-06-08") AND (${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
+  const qString = `(date:"2020-06-24" OR date:"2020-06-10") AND (${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
   return getAll(apiUrl, qString)
     .pipe(
       map(results => {
