@@ -48,12 +48,12 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
   const parseDate = timeParse("%Y-%m-%d");
   const formatDate = timeFormat("%Y-%m-%d");
 
-  const timestamp = Math.round(new Date().getTime() / 36e5);
+  // const timestamp = Math.round(new Date().getTime() / 36e5);
   const fields = "date,location_id,name,state_name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,confirmed_rolling,dead,dead_numIncrease,dead_pctIncrease,dead_rolling";
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true&fields=date&size=1&sort=-date&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true&fields=date&size=1&sort=-date`
     )
   ).pipe(
     pluck("data", "hits"),
