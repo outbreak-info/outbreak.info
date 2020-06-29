@@ -27,7 +27,7 @@
   <!-- variable options -->
   <div class="row d-flex justify-content-end">
     <select v-model="selectedVariable" class="select-dropdown">
-      <option v-for="option in sortOptions" :value="option" :key="option.value" v-html="option.label">
+      <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
       </option>
     </select>
   </div>
@@ -55,14 +55,33 @@
             <th class="text-left">
               location
             </th>
-            <th class="px-3">
-              new cases today
-            </th>
-            <th class="px-3">
-                new deaths today
-            </th>
-            <th>
-              2 week change in cases / day
+            <th
+              v-for="(column, idx) in columns"
+              :key="idx"
+              :id="`th-${column.value}`"
+              :class="{
+                sortable: `${column.sorted} 'px-3 pointer'`,
+                'd-none d-md-table-cell px-3 pointer': !column.essential
+              }"
+              @click="sortColumn(column)"
+            >
+              <div class="sort-grp">
+                {{ column.label }}
+                <font-awesome-icon
+                  :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']"
+                  :icon="['fas', 'sort']"
+                />
+                <font-awesome-icon
+                  class="sort-btn"
+                  :icon="['fas', 'arrow-up']"
+                  v-if="column.sorted === 1"
+                />
+                <font-awesome-icon
+                  class="sort-btn"
+                  :icon="['fas', 'arrow-down']"
+                  v-if="column.sorted === -1"
+                />
+              </div>
             </th>
           </tr>
           <tr v-for="(item, idx) in data" :key="idx">
@@ -121,12 +140,31 @@ import {
   interpolateRdYlBu
 } from "d3-scale-chromatic";
 
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faArrowUp,
+  faArrowDown,
+  faSort
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faArrowUp);
+library.add(faArrowDown);
+library.add(faSort);
+
 import Choropleth from "@/components/Choropleth.vue";
 
 export default {
   name: "Compare",
   components: {
-    Choropleth
+    Choropleth,
+    FontAwesomeIcon
   },
   props: {
     admin_level: String,
@@ -158,7 +196,27 @@ export default {
         label: "2 week change in cases/day",
         value: "confirmed_change"
       },
-      sortOptions: [{
+      columns: [
+        {
+          label: "new cases today",
+          value: "confirmed_numIncrease",
+          sort_id: "confirmed_numIncrease",
+          sorted: 0
+        },
+        {
+          label: "new deaths today",
+          value: "dead_numIncrease",
+          sort_id: "dead_numIncrease",
+          sorted: 0
+        },
+        {
+          label: "2 week change in cases/day",
+          value: "confirmed_change",
+          sort_id: "confirmed_change",
+          sorted: -1
+        }
+      ],
+      variableOptions: [{
           label: "new cases/day",
           value: "confirmed_rolling"
         },
@@ -173,10 +231,6 @@ export default {
         {
           label: "2 week change in deaths/day",
           value: "dead_change"
-        },
-        {
-          label: "total deaths",
-          value: "dead"
         }
 
       ]
@@ -246,6 +300,26 @@ export default {
     },
     formatNumber(value, digits = 1) {
       return (format(`,.${digits}f`)(value))
+    },
+    sortColumn(selected) {
+      // reset other sorting funcs for arrow affordances
+      const idx = this.columns.findIndex(d => d.sort_id === selected.sort_id);
+      const sortVal = this.columns[idx].sorted;
+
+      this.columns.forEach(d => {
+        d.sorted = 0;
+      })
+
+      // previously unsorted or sorted asc; sort desc.
+      if(sortVal === 0 || sortVal === 1) {
+        this.columns[idx].sorted = -1;
+        this.data.sort((a, b) => b[selected.sort_id] - a[selected.sort_id]);
+      } else {
+        this.columns[idx].sorted = 1;
+        this.data.sort((a, b) => a[selected.sort_id] - b[selected.sort_id]);
+      }
+
+      this.sortVariable = selected;
     }
   }
 };
