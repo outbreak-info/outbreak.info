@@ -7,10 +7,16 @@
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
+    <template v-if="timeTrace">
+    <small class="m-0 mt-2">new cases per day</small>
+    <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50"/>
+    <small class="m-0">new deaths per day</small>
+    <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50"/>
+</template>
   </div>
   <div class="d-flex flex-column">
     <HistogramLegend class="ml-2" :data="data" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" />
-    <DataUpdated />  
+    <DataUpdated />
   </div>
 
 </div>
@@ -25,12 +31,15 @@ import * as d3 from "d3";
 
 import HistogramLegend from "@/components/HistogramLegend.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
+import Bargraph from "@/components/Bargraph.vue";
+import { getSparklineTraces } from "@/api/epi-traces.js";
 
 export default {
   name: "Choropleth",
   components: {
     HistogramLegend,
-    DataUpdated
+    DataUpdated,
+    Bargraph
   },
   props: {
     data: Array,
@@ -63,6 +72,7 @@ export default {
       // data
       regionData: null,
       projection: null,
+      timeTrace: null,
       // refs
       svg: null,
       states: null,
@@ -73,6 +83,11 @@ export default {
   mounted() {
     this.setupChoro();
     this.drawMetro();
+  },
+  beforeDestroy() {
+    if(this.dataSubscritpion){
+      this.dataSubscription.unsubscribe();
+    }
   },
   methods: {
     setupChoro() {
@@ -195,6 +210,8 @@ export default {
       });
     },
     mouseOn(d) {
+      this.timeTrace = null; // reset to avoid seeing old data
+      this.getTimetrace(d.location_id);
       const ttip = this.ttips
         .style("top", d3.event.y + "px")
         .style("left", d3.event.x + "px")
@@ -205,13 +222,18 @@ export default {
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
 
       this.ttips.select(".country-name").text(d.name);
-      this.ttips.select(".value").text(d.value);
+      this.ttips.select(".value").text(`${d.value} ${this.variableLabel}`);
     },
     mouseOff() {
       d3.selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
       this.regions.selectAll("path.state").style("opacity", 1);
+    },
+    getTimetrace(location_id){
+      this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling").subscribe(results => {
+        this.timeTrace = results[0].value;
+      })
     }
 
   }
