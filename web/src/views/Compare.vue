@@ -55,11 +55,11 @@
             <th class="text-left">
               location
             </th>
-            <th>
-              cases / day
+            <th class="px-3">
+              new cases today
             </th>
-            <th>
-              deaths / day
+            <th class="px-3">
+                new deaths today
             </th>
             <th>
               2 week change in cases / day
@@ -81,7 +81,7 @@
               {{item.dead_numIncrease ? item.dead_numIncrease.toLocaleString() : ""}}
             </td>
             <td>
-              {{item.confirmed_change ? item.confirmed_change.toLocaleString() : ""}}
+              {{item.confirmed_change ? formatNumber(item.confirmed_change) : ""}}
             </td>
 
           </tr>
@@ -207,15 +207,9 @@ export default {
       });
 
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 1000).subscribe(results => {
+        results.sort((a,b) => b[this.sortVariable.value] - a[this.sortVariable.value])
 
         this.data = results;
-
-        // const ascVars = ["-confirmed_doublingRate", "-dead_doublingRate", "confirmed", "dead", "confirmed_numIncrease", "dead_numIncrease"];
-        // const yMax = max(results, d => d[this.selectedVariable.value]);
-        // const yMin = min(results, d => d[this.selectedVariable.value]);
-        // const maxVal = max([Math.abs(yMin), Math.abs(yMax)]);
-        // const domain = [maxVal, -maxVal];
-
 
         // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
         // Forcing to be centered at 0 for the midpoint after the breaks are calculated
@@ -260,5 +254,42 @@ export default {
 <style lang="scss" scoped>
 #th-doubling-rates {
     font-weight: 400;
+}
+
+td {
+  padding: 5px;
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+}
+
+th {
+  font-size: 0.95em;
+  font-weight: 400;
+  color: $grey-70;
+}
+
+.sort-hover {
+  display: none;
+}
+
+.sort-grp.hover .sort-hover,
+.sort-grp:hover .sort-hover {
+  display: inline;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+tr {
+  border-bottom: 1px solid #cacaca;
+  // border-bottom: 1px solid $grey-40;
+}
+
+tr.table-header-merged {
+  border-bottom: none;
+  // border-bottom: 1px solid $grey-40;
 }
 </style>

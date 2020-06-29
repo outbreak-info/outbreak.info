@@ -225,6 +225,7 @@ export default {
       this.ttips.select(".value").text(`${d.value} ${this.variableLabel}`);
     },
     mouseOff() {
+      this.timeTrace = []; // reset to avoid seeing old data
       d3.selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
