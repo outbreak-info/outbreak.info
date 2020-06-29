@@ -33,6 +33,7 @@
   </div>
 
   <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.label" />
+  <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" />
 
 
   <!-- Results label -->
@@ -159,11 +160,13 @@ library.add(faArrowDown);
 library.add(faSort);
 
 import Choropleth from "@/components/Choropleth.vue";
+import DataSource from "@/components/DataSource.vue";
 
 export default {
   name: "Compare",
   components: {
     Choropleth,
+    DataSource,
     FontAwesomeIcon
   },
   props: {

@@ -1,6 +1,6 @@
 <template>
 <div class="d-flex flex-wrap align-items-center">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="epi-map-svg">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
   </svg>

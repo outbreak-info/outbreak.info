@@ -48,7 +48,7 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
   const parseDate = timeParse("%Y-%m-%d");
   const formatDate = timeFormat("%Y-%m-%d");
 
-  const fields = "date,location_id,name,state_name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,confirmed_rolling,dead,dead_numIncrease,dead_pctIncrease,dead_rolling";
+  const fields = "date,location_id,name,state_name,country_iso3,confirmed,confirmed_numIncrease,confirmed_pctIncrease,confirmed_rolling,dead,dead_numIncrease,dead_pctIncrease,dead_rolling";
 
   return from(
     axios.get(
@@ -76,7 +76,7 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
               .rollup(values => {
                 return ({
                   location_id: values[0].location_id,
-                  all: values,
+                  country_iso3: values[0].country_iso3,
                   name: values[0].name,
                   date: values[0].date,
                   datetime: values[0].datetime,
