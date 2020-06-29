@@ -12,7 +12,7 @@ export function getStackedRegions(apiUrl) {
   const parseDate = timeParse("%Y-%m-%d");
 
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     getAll(
@@ -87,7 +87,7 @@ export function getCountryData(apiUrl, region, variable) {
   const parseDate = timeParse("%Y-%m-%d");
 
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return forkJoin([
     from(

@@ -164,7 +164,7 @@ export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
 export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   var queryString = locations
     ? `location_id:("${locations.join('","')}")  AND mostRecent:true`
     : "mostRecent:true";

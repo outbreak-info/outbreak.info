@@ -23,7 +23,7 @@ export function getDoubling(
 ) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
@@ -138,7 +138,7 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
 
 export function getAllDoubling(apiUrl, variable, fitLength = 5) {
   store.state.admin.loading = true;
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   const parseDate = timeParse("%Y-%m-%d");
   const url = `${apiUrl}query?q=__all__&size=1000&fields=location_id,name,admin0,admin1,date,${variable}&timestamp=${timestamp}`;
 

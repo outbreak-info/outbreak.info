@@ -90,7 +90,7 @@ function getLabel(entry) {
 
 export function getMostCases(apiUrl, num2Return = 5) {
   store.state.admin.loading = true;
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
@@ -135,7 +135,7 @@ export function getSummary(apiUrl, caseThreshold) {
 }
 
 export function getTotals(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
@@ -159,7 +159,7 @@ export function getTotals(apiUrl) {
 }
 
 export function countCountries(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
@@ -179,7 +179,7 @@ export function countCountries(apiUrl) {
 }
 
 export function getFirstCases(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
@@ -205,7 +205,7 @@ export function getFirstCases(apiUrl) {
 }
 
 export function getCasesAboveThresh(apiUrl, threshold) {
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
@@ -234,7 +234,7 @@ export function getGlanceSummary(apiUrl, locations) {
   store.state.admin.loading = true;
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   const location_string =
     locations && locations.length
       ? ` AND location_id:("${locations.join('","')}")`
