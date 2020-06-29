@@ -216,18 +216,29 @@ export default {
         // const maxVal = max([Math.abs(yMin), Math.abs(yMax)]);
         // const domain = [maxVal, -maxVal];
 
+
+        // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
+        // Forcing to be centered at 0 for the midpoint after the breaks are calculated
+        var domain = jenks(results.map(d => d[this.selectedVariable.value]), (this.numColors));
+
+        // color range
         var colorRange;
         if (["confirmed_change", "dead_change"].includes(this.selectedVariable.value)) {
-          colorRange = range(0, 1, 1 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
+          // ensure that the diverging scale is centered at 0.
+          const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
+          var padLength = (domain.length / 2) - midpoint;
+          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that
+          if (padLength < 0) {
+            domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
+          } else if (padLength > 0) {
+            domain = Array(padLength).fill(domain[0]).concat(domain);
+          }
+          this.numColors = domain.length - 1;
+
+          colorRange = range(0, 1, 1 / (this.numColors)).map(d => interpolateRdYlBu(d)).reverse();
         } else {
           colorRange = range(0, 0.5, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
         }
-        console.log(colorRange)
-        // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
-        const domain = jenks(results.map(d => d[this.selectedVariable.value]), (this.numColors));
-        // const domain1 = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d < 0), (this.numColors-1)/2);
-        // const domain2 = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d > 0), (this.numColors-1)/2);
-        // const domain  = domain1.concat(domain2)
 
         this.colorScale = scaleQuantile()
           .range(colorRange)
