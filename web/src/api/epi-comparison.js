@@ -48,7 +48,7 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
   const parseDate = timeParse("%Y-%m-%d");
   const formatDate = timeFormat("%Y-%m-%d");
 
-  const timestamp = Math.round(new Date().getTime() / 1e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   const fields = "date,location_id,name,state_name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,confirmed_rolling,dead,dead_numIncrease,dead_pctIncrease,dead_rolling";
 
   return from(
