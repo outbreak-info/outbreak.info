@@ -42,6 +42,7 @@ export function getEpiTraces(apiUrl, locations) {
 
   return getAll(apiUrl, queryString).pipe(
     map(results => {
+
       // convert dates to javascript dates
       results.forEach(d => {
         d["date"] = parseDate(d.date);
@@ -49,9 +50,15 @@ export function getEpiTraces(apiUrl, locations) {
         d["testing_totalTestResults"] = d.testing_totalTestResults
           ? d.testing_totalTestResults
           : 0;
-        d["testing_positivity"] = d.testing_positive
-          ? d.testing_positive / d.testing_totalTestResults
-          : 0;
+          // truncate positivity data to be later than April 1 to avoid weirdness in data.
+          if(d.date >= new Date("2020-04-01")){
+            d["testing_positivity"] = d.testing_positive
+              ? d.testing_positive / d.testing_totalTestResults
+              : 0;
+          } else {
+            d["testing_positivity"] = null
+          }
+
       });
 
       const nested = nest()
