@@ -29,7 +29,7 @@
 
       <!-- Actual data download -->
       <h2 class="my-3">Download</h2>
-      <div v-if="type == 'epidemiology' || type == 'regions'" class="mb-4">
+      <div v-if="type == 'epidemiology' || type == 'regions' || type == 'maps'" class="mb-4">
         <h4 class="m-0">Figure</h4>
         <a class="text-uppercase pointer" @click="downloadSvg">
           <p class="focustext m-0">

@@ -33,7 +33,7 @@
   </div>
 
   <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.label" />
-  <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" />
+  <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 
   <!-- Results label -->

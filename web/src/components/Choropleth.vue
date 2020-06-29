@@ -1,6 +1,6 @@
 <template>
 <div class="d-flex flex-wrap align-items-center">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="epi-map-svg">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="epi-map-svg" :name="title">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
   </svg>
@@ -79,7 +79,11 @@ export default {
       regions: null
     };
   },
-  computed: {},
+  computed: {
+    title() {
+      return(this.variableLabel)
+    }
+  },
   mounted() {
     this.setupChoro();
     this.drawMetro();
