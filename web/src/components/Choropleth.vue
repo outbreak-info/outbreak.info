@@ -34,6 +34,8 @@ import DataUpdated from "@/components/DataUpdated.vue";
 import Bargraph from "@/components/Bargraph.vue";
 import { getSparklineTraces } from "@/api/epi-traces.js";
 
+import store from "@/store";
+
 export default {
   name: "Choropleth",
   components: {
@@ -76,13 +78,17 @@ export default {
       // refs
       svg: null,
       states: null,
-      regions: null
+      regions: null,
+      event: null
     };
   },
   computed: {
     title() {
       return(this.variableLabel)
     }
+  },
+  created: function() {
+    this.debounceMouseon = this.debounce(this.mouseOn, 250);
   },
   mounted() {
     this.setupChoro();
@@ -102,6 +108,7 @@ export default {
     },
     drawMetro() {
       if (this.data) {
+        store.state.admin.loading = true;
         if (this.adminLevel == "0") {
           this.regionData = countries;
         } else if (this.adminLevel == "1") {
@@ -200,8 +207,10 @@ export default {
         // tooltip
         this.regions.selectAll("path.region")
           .on("click", d => this.handleClick(d))
-          .on("mouseenter", d => this.mouseOn(d))
+          .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
+
+          store.state.admin.loading = false;
 
       }
     },
@@ -213,12 +222,29 @@ export default {
         }
       });
     },
+    // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
+    // modified to save the d3. event to vue::this
+    debounce(fn, delay) {
+        var timer = null;
+        return function() {
+            var context = this,
+                args = arguments,
+                evt = d3.event;
+                //we get the D3 event here
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+                context.event = evt;
+                //and use the reference here
+                fn.apply(context, args);
+            }, delay);
+        };
+    },
     mouseOn(d) {
       this.timeTrace = null; // reset to avoid seeing old data
       this.getTimetrace(d.location_id);
       const ttip = this.ttips
-        .style("top", d3.event.y + "px")
-        .style("left", d3.event.x + "px")
+        .style("top", this.event.y + "px")
+        .style("left", this.event.x + "px")
         .style("opacity", 1);
 
       this.regions.selectAll("path.region").style("opacity", 0.5);
