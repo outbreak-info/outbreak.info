@@ -8,10 +8,10 @@
     <h6 class="country-name m-0"></h6>
     <p class="value m-0 mb-3"></p>
     <template v-if="timeTrace">
-    <small class="m-0">new cases per day</small>
-    <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50"/>
-    <small class="m-0">new deaths per day</small>
-    <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50"/>
+      <small class="m-0">new cases per day</small>
+      <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
+      <small class="m-0">new deaths per day</small>
+      <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
 </template>
   </div>
   <div class="d-flex flex-column">
@@ -32,7 +32,9 @@ import * as d3 from "d3";
 import HistogramLegend from "@/components/HistogramLegend.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import Bargraph from "@/components/Bargraph.vue";
-import { getSparklineTraces } from "@/api/epi-traces.js";
+import {
+  getSparklineTraces
+} from "@/api/epi-traces.js";
 
 import store from "@/store";
 
@@ -84,7 +86,7 @@ export default {
   },
   computed: {
     title() {
-      return(this.variableLabel)
+      return (this.variableLabel)
     }
   },
   created: function() {
@@ -95,7 +97,7 @@ export default {
     this.drawMetro();
   },
   beforeDestroy() {
-    if(this.dataSubscritpion){
+    if (this.dataSubscritpion) {
       this.dataSubscription.unsubscribe();
     }
   },
@@ -129,8 +131,8 @@ export default {
             this.regionData.features[idx]["name"] = d.name;
             this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
             this.regionData.features[idx]["tooltip"] = this.variable.includes("_change") ?
-            (d[this.variable] < 0 ? `${-1* this.regionData.features[idx]["value"]} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`):
-            `${this.regionData.features[idx]["value"]} ${this.variableLabel}`;
+              (d[this.variable] < 0 ? `${-1* this.regionData.features[idx]["value"]} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
+              `${this.regionData.features[idx]["value"]} ${this.variableLabel}`;
             // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
         })
@@ -212,11 +214,13 @@ export default {
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
 
-          store.state.admin.loading = false;
+        this.svg.on("mouseleave", this.mouseOff);
+
+        store.state.admin.loading = false;
 
       }
     },
-    handleClick(d){
+    handleClick(d) {
       this.$router.push({
         path: "epidemiology",
         query: {
@@ -227,19 +231,19 @@ export default {
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
-        var timer = null;
-        return function() {
-            var context = this,
-                args = arguments,
-                evt = d3.event;
-                //we get the D3 event here
-            clearTimeout(timer);
-            timer = setTimeout(function() {
-                context.event = evt;
-                //and use the reference here
-                fn.apply(context, args);
-            }, delay);
-        };
+      var timer = null;
+      return function() {
+        var context = this,
+          args = arguments,
+          evt = d3.event;
+        //we get the D3 event here
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          context.event = evt;
+          //and use the reference here
+          fn.apply(context, args);
+        }, delay);
+      };
     },
     mouseOn(d) {
       this.timeTrace = null; // reset to avoid seeing old data
@@ -263,7 +267,7 @@ export default {
       this.regions.selectAll("path.region").style("opacity", 1);
       this.regions.selectAll("path.state").style("opacity", 1);
     },
-    getTimetrace(location_id){
+    getTimetrace(location_id) {
       this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling").subscribe(results => {
         this.timeTrace = results[0].value;
       })
