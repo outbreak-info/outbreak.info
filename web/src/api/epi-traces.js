@@ -38,7 +38,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_positiveIncrease,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling`;
 
   return getAll(apiUrl, queryString).pipe(
     map(results => {
@@ -47,13 +47,13 @@ export function getEpiTraces(apiUrl, locations) {
       results.forEach(d => {
         d["date"] = parseDate(d.date);
         d["testing_positive"] = d.testing_positive ? d.testing_positive : 0;
-        d["testing_totalTestResults"] = d.testing_totalTestResults
-          ? d.testing_totalTestResults
+        d["testing_totalTestResultsIncrease"] = d.testing_totalTestResultsIncrease
+          ? d.testing_totalTestResultsIncrease
           : 0;
           // truncate positivity data to be later than April 1 to avoid weirdness in data.
           if(d.date >= new Date("2020-04-01")){
-            d["testing_positivity"] = d.testing_positive
-              ? d.testing_positive / d.testing_totalTestResults
+            d["testing_positivity"] = d.testing_positiveIncrease
+              ? d.testing_positiveIncrease / d.testing_totalTestResultsIncrease
               : 0;
           } else {
             d["testing_positivity"] = null

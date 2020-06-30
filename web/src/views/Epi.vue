@@ -213,7 +213,7 @@ export default {
           sources: ["testing"]
         },
         {
-          label: "percent positive tests (U.S. States only)",
+          label: "daily % positive tests (U.S. States only)",
           ttip: "positive tests",
           value: "testing_positivity",
           sources: ["testing"]
