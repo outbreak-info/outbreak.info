@@ -93,6 +93,30 @@ export default {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
   },
   mounted() {
+    this.$nextTick(function() {
+      // event listener to hide tooltips
+      document.addEventListener(
+        "mousemove",
+        evt => {
+          if(!evt.target || !evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+            this.mouseOff();
+          }
+        }, {
+          passive: true
+        }
+      );
+      document.addEventListener(
+        "mouseleave",
+        evt => {
+          if(!evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+            this.mouseOff();
+          }
+        }, {
+          passive: true
+        }
+      );
+    });
+
     this.setupChoro();
     this.drawMetro();
   },
@@ -131,7 +155,7 @@ export default {
             this.regionData.features[idx]["name"] = d.name;
             this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
             this.regionData.features[idx]["tooltip"] = this.variable.includes("_change") ?
-              (d[this.variable] < 0 ? `${-1* this.regionData.features[idx]["value"]} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
+              (d[this.variable] < 0 ? `${d3.format(",.1f")(-1*d[this.variable])} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
               `${this.regionData.features[idx]["value"]} ${this.variableLabel}`;
             // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
@@ -215,9 +239,8 @@ export default {
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
 
-        this.svg
-        .on("mouseenter", this.mouseOff)
-        .on("mouseleave", this.mouseOff);
+        // this.svg
+        // .on("mouseleave", this.mouseOff);
 
         store.state.admin.loading = false;
 
@@ -249,8 +272,6 @@ export default {
       };
     },
     mouseOn(d) {
-      this.event.stopPropagation();
-
       this.timeTrace = null; // reset to avoid seeing old data
       this.getTimetrace(d.location_id);
       const ttip = this.ttips
@@ -271,6 +292,10 @@ export default {
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
       this.regions.selectAll("path.state").style("opacity", 1);
+      // cancel data subscription
+      if (this.dataSubscritpion) {
+        this.dataSubscription.unsubscribe();
+      }
     },
     getTimetrace(location_id) {
       this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling").subscribe(results => {
