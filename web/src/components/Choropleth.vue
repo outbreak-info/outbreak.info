@@ -6,9 +6,9 @@
   </svg>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
-    <p class="value m-0"></p>
+    <p class="value m-0 mb-3"></p>
     <template v-if="timeTrace">
-    <small class="m-0 mt-2">new cases per day</small>
+    <small class="m-0">new cases per day</small>
     <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50"/>
     <small class="m-0">new deaths per day</small>
     <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50"/>
@@ -108,7 +108,6 @@ export default {
     },
     drawMetro() {
       if (this.data) {
-        store.state.admin.loading = true;
         if (this.adminLevel == "0") {
           this.regionData = countries;
         } else if (this.adminLevel == "1") {
@@ -128,7 +127,10 @@ export default {
             this.regionData.features[idx]["fill"] = d.fill;
             this.regionData.features[idx]["location_id"] = d.location_id;
             this.regionData.features[idx]["name"] = d.name;
-            this.regionData.features[idx]["value"] = d3.format(",.0f")(d[this.variable]);
+            this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
+            this.regionData.features[idx]["tooltip"] = this.variable.includes("_change") ?
+            (d[this.variable] < 0 ? `${-1* this.regionData.features[idx]["value"]} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`):
+            `${this.regionData.features[idx]["value"]} ${this.variableLabel}`;
             // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
         })
@@ -252,7 +254,7 @@ export default {
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
 
       this.ttips.select(".country-name").text(d.name);
-      this.ttips.select(".value").text(`${d.value} ${this.variableLabel}`);
+      this.ttips.select(".value").html(d.tooltip);
     },
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data

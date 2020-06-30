@@ -32,7 +32,7 @@
     </select>
   </div>
 
-  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.label" />
+  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 
@@ -193,6 +193,7 @@ export default {
       dataSubscription: null,
       selectedVariable: {
         label: "2 week change in cases/day",
+        choro: "cases vs. 2 weeks ago",
         value: "confirmed_change"
       },
       sortVariable: {
@@ -221,18 +222,22 @@ export default {
       ],
       variableOptions: [{
           label: "new cases/day",
+          choro: "new cases today",
           value: "confirmed_rolling"
         },
         {
           label: "new deaths/day",
+          choro: "new deaths today",
           value: "dead_rolling"
         },
         {
           label: "2 week change in cases/day",
+          choro: "cases vs. 2 weeks ago",
           value: "confirmed_change"
         },
         {
           label: "2 week change in deaths/day",
+          choro: "deaths vs. 2 weeks ago",
           value: "dead_change"
         }
 
