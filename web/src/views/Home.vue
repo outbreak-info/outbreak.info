@@ -123,7 +123,7 @@
         </div>
       </div>
     </div>
-    <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" figureRef="epi-summary-svg"/>
+    <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" :ids="['NYT', 'JHU']" figureRef="epi-summary-svg"/>
   </section>
 
   <section class="case-data-table p-1">

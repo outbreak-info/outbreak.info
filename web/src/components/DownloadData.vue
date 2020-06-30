@@ -29,7 +29,7 @@
 
       <!-- Actual data download -->
       <h2 class="my-3">Download</h2>
-      <div v-if="type == 'epidemiology' || type == 'regions'" class="mb-4">
+      <div v-if="type == 'epidemiology' || type == 'regions' || type == 'maps'" class="mb-4">
         <h4 class="m-0">Figure</h4>
         <a class="text-uppercase pointer" @click="downloadSvg">
           <p class="focustext m-0">
@@ -409,6 +409,13 @@ ${resourcesString}
             d["date"] = this.formatDate(d.date);
             delete d._score;
             delete d.color;
+          })
+        } else if (this.type == "maps") {
+          this.downloadable.forEach(d => {
+            d["source"] = d.country_name == "United States of America" || d.country_iso3 === "USA" || d.location_id === "USA" ? "The New York Times" : "JHU COVID-19 Data Repository";
+            delete d._score;
+            delete d.datetime;
+            delete d.fill;
           })
         } else if (this.type == "regions") {
 
