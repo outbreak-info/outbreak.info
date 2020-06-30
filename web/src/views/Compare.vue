@@ -95,10 +95,10 @@
               </router-link>
             </td>
             <td>
-              {{item.confirmed_numIncrease ? item.confirmed_numIncrease.toLocaleString() : ""}}
+              {{item.confirmed_rolling ? formatNumber(item.confirmed_rolling) : ""}}
             </td>
             <td>
-              {{item.dead_numIncrease ? item.dead_numIncrease.toLocaleString() : ""}}
+              {{item.dead_rolling ? formatNumber(item.dead_rolling) : ""}}
             </td>
             <td>
               {{item.confirmed_change ? formatNumber(item.confirmed_change) : ""}}
@@ -202,15 +202,15 @@ export default {
       },
       columns: [
         {
-          label: "new cases today",
-          value: "confirmed_numIncrease",
-          sort_id: "confirmed_numIncrease",
+          label: "average new cases/day",
+          value: "confirmed_rolling",
+          sort_id: "confirmed_rolling",
           sorted: 0
         },
         {
-          label: "new deaths today",
-          value: "dead_numIncrease",
-          sort_id: "dead_numIncrease",
+          label: "average new deaths/day",
+          value: "dead_rolling",
+          sort_id: "dead_rolling",
           sorted: 0
         },
         {
@@ -222,12 +222,12 @@ export default {
       ],
       variableOptions: [{
           label: "new cases/day",
-          choro: "new cases today",
+          choro: "average new cases/day",
           value: "confirmed_rolling"
         },
         {
           label: "new deaths/day",
-          choro: "new deaths today",
+          choro: "average new deaths/day",
           value: "dead_rolling"
         },
         {
