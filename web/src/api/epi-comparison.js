@@ -75,7 +75,6 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
               .key(d => d.location_id)
               .rollup(values => {
                 return ({
-                  all:values,
                   location_id: values[0].location_id,
                   country_iso3: values[0].country_iso3,
                   name: values[0].name,
@@ -88,8 +87,6 @@ export function getCurrentData(apiUrl, queryString, sort, page, size) {
                 })
               })
               .entries(results).map(d => d.value);
-
-              console.log(nested)
 
             return (nested)
           }),
