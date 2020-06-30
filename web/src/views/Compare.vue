@@ -7,12 +7,12 @@
 
   <!-- Region buttons -->
   <div class="d-flex flex-wrap">
-    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All countries</router-link>
+    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All countries</router-link>
     <div class="d-flex flex-column">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
       <div class="d-flex">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas</router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
       </div>
     </div>
 
@@ -369,4 +369,10 @@ tr.table-header-merged {
   border-bottom: none;
   // border-bottom: 1px solid $grey-40;
 }
+
+.btn-main-outline.active {
+    background: $primary-color !important;
+    color: white;
+}
+
 </style>
