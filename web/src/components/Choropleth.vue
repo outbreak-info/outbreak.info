@@ -166,6 +166,7 @@ export default {
                 .attr("fill", d => d.fill ? d.fill : "none");
             },
             update => update
+            .attr("id", d => d.location_id)
             .attr("d", path
               .projection(this.projection)
             ).attr("fill", d => d.fill ? d.fill : "none"),
@@ -214,7 +215,9 @@ export default {
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
 
-        this.svg.on("mouseleave", this.mouseOff);
+        this.svg
+        .on("mouseenter", this.mouseOff)
+        .on("mouseleave", this.mouseOff);
 
         store.state.admin.loading = false;
 
@@ -246,6 +249,8 @@ export default {
       };
     },
     mouseOn(d) {
+      this.event.stopPropagation();
+
       this.timeTrace = null; // reset to avoid seeing old data
       this.getTimetrace(d.location_id);
       const ttip = this.ttips
