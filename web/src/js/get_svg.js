@@ -73,6 +73,10 @@ function getHeader(width, title) {
   </svg>`)
 }
 
+function getFooter2(width, height) {
+
+}
+
 function getFooter(width, height) {
   return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
   <g id="background">
@@ -214,8 +218,6 @@ export function getPng(selector, download = false, filename = "outbreakinfo_visu
         imageHeader = new Image,
         imageFooter = new Image;
 
-        console.log(canvas)
-
       // Can't append new SVG objects to the DOM, b/c then they would apper on the page
       const header = getHeader(rect.width, title);
       const footer = getFooter(rect.width, rect.height);
@@ -234,12 +236,14 @@ export function getPng(selector, download = false, filename = "outbreakinfo_visu
         type: "image/svg+xml"
       }));
 
+      console.log(footer)
+
       image.onload = function() {
         setTimeout(function() {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
           context.drawImage(image, 0, 35, width, height);
-          context.drawImage(imageHeader, 0, 0, width, 30);
-          context.drawImage(imageFooter, 0, 0);
+          context.drawImage(imageHeader, 0, 0, width, 18*ratio);
+          context.drawImage(imageFooter, 0, 0, width, 50*ratio);
 
           if (download) {
             canvas.toBlob(function(blob) {
@@ -278,7 +282,7 @@ export function getPng(selector, download = false, filename = "outbreakinfo_visu
       };
 
       canvas.width = width;
-      canvas.height = height;
+      canvas.height = height + 300;
       image.src = imageUrl;
       imageHeader.src = headerUrl;
       imageFooter.src = footerUrl;
