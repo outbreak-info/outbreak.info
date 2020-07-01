@@ -27,7 +27,7 @@ import {
 } from "vuex";
 import {
   getPng
-} from "@/js/get_png.js";
+} from "@/js/get_svg.js";
 import DownloadData from "@/components/DownloadData.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 
