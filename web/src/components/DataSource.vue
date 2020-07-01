@@ -30,6 +30,9 @@ import {
 } from "@/js/get_svg.js";
 import DownloadData from "@/components/DownloadData.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
+import {
+  timeFormat
+} from "d3";
 
 export default Vue.extend({
   name: "DataSource",
@@ -54,7 +57,10 @@ export default Vue.extend({
     },
     sourceString() {
       return (this.filteredSources.map(d => d.scope ? `${d.name} (${d.scope})` : `${d.name}`).join("; ") + ", updated daily")
-    }
+    },
+    todayFormatted() {
+      return (this.formatDate())
+    },
   },
   data() {
     return {
@@ -64,10 +70,15 @@ export default Vue.extend({
   },
   watch: {},
   methods: {
+    formatDate(formatString = "%d %b %Y") {
+      const dateString = new Date();
+      const formatDate = timeFormat(formatString);
+      return (formatDate(dateString))
+    },
     copyPng() {
       this.showSnackbar = true;
       this.snackbarText = "copying figure to the clipboard";
-      getPng(`svg.${this.figureRef}`).then(msg => {
+      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormatted).then(msg => {
         this.snackbarText = msg;
         setTimeout(() => {
           this.showSnackbar = false;

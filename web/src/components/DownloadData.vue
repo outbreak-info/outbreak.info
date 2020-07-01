@@ -125,6 +125,9 @@ export default {
     todayFormatted() {
       return (this.formatDate(this.today))
     },
+    todayFormattedLong() {
+      return (this.formatDate(this.today, "%d %b %Y"))
+    },
     filename() {
       if (this.data && this.data.length === 1 && this.type == "epidemiology") {
         return (`${this.data[0].key}_outbreakinfo_epidemiology_data_${this.todayFormatted}`)
@@ -214,8 +217,7 @@ ${resourcesString}
 `)
     },
     downloadSvg() {
-      const svgObject = getSvg(this.figureRef);
-      console.log(svgObject)
+      const svgObject = getSvg(this.figureRef, this.sourceString, this.todayFormattedLong,);
 
       const filenames = svgObject.map(svg => this.filename + "_" + svg.name + ".svg").join(", ");
 
@@ -225,7 +227,7 @@ ${resourcesString}
       )
     },
     downloadPng() {
-      getPng(`svg.${this.figureRef}`, true, `${this.filename}.png`);
+      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormattedLong, true, `${this.filename}.png`);
       this.downloadData([this.getMetadata(this.filename)], "text/plain", `${this.filename}_README.txt`, true);
     },
     prepData(fileType) {

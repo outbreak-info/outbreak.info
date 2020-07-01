@@ -5,18 +5,17 @@ const prefix = {
 }
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
-export function getSvg(figureRef) {
+export function getSvg(figureRef, sources, date) {
   const refs = document.getElementsByClassName(figureRef);
-  console.log(refs)
   var emptySvg = window.document.createElementNS(prefix.svg, 'svg');
   window.document.body.appendChild(emptySvg);
   var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
 
-  const svgObject = getSvgSources(refs, emptySvgDeclarationComputed);
+  const svgObject = getSvgSources(refs, emptySvgDeclarationComputed, sources, date);
   return (svgObject)
 }
 
-function getSvgSources(svgs, emptySvgDeclarationComputed) {
+function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
   var svgInfo = [];
   var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
@@ -46,7 +45,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed) {
     var rect = svg.getBoundingClientRect();
 
     const title = svg.getAttribute("name");
-    const footer = getFooter(rect.width, rect.height);
+    const footer = getFooter(rect.width, rect.height, sources, date);
     const header = getHeader(rect.width, title);
 
 
@@ -74,7 +73,7 @@ function getHeader(width, title) {
 }
 
 
-function getFooter(width, height) {
+function getFooter(width, height, sources, date) {
   return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
   <g id="background">
   <rect width="${width}" height="50" style="fill: #dee2e6"></rect>
@@ -125,11 +124,11 @@ function getFooter(width, height) {
       </g>
       <g id="outbreak-info" transform="translate(0, 22.3)">
         <text x="0" y="0" transform="translate(30,0)" style="font-size:17px; dominant-baseline: middle;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">outbreak.info</text>
-        <text x="0" y="0" transform="translate(${width - 30},0)" style="dominant-baseline: middle; font-size:13px; text-anchor: end;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">${'formatDate(this.today, "%d %B %Y")'}</text>
+        <text x="0" y="0" transform="translate(${width - 30},0)" style="dominant-baseline: middle; font-size:13px; text-anchor: end;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">${date}</text>
       </g>
 
       <g id="sources" transform="translate(0, 36)">
-        <text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 10px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: ${"this.sourceString"}</text>
+        <text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 10px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: ${sources}</text>
       </g>
       </g>
     </svg>`)
@@ -181,7 +180,7 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 // Thanks, Mike.
 
-export function getPng(selector, download = false, filename = "outbreakinfo_visualization.png") {
+export function getPng(selector, sources, date, download = false, filename = "outbreakinfo_visualization.png") {
   return new Promise((resolve, reject) => {
     // const refs = document.getElementsByClassName(classID);
     var document = global.document,
@@ -217,7 +216,7 @@ export function getPng(selector, download = false, filename = "outbreakinfo_visu
 
       // Can't append new SVG objects to the DOM, b/c then they would apper on the page
       const header = getHeader(rect.width, title);
-      const footer = getFooter(rect.width, -15);
+      const footer = getFooter(rect.width, -15, sources, date);
 
       var source = (new XMLSerializer()).serializeToString(svg);
 
