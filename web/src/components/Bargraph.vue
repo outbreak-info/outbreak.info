@@ -517,6 +517,7 @@ export default Vue.extend({
 .annotation--rolling-average {
     font-size: 0.75em;
     dominant-baseline: hanging;
+    font-family: $font-family;
 }
 
 .epi-bargraph-arrows {

@@ -66,7 +66,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed) {
 }
 
 function getHeader(width, title) {
-  return (`<svg id="title" width="${width}" height="20">
+  return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} 25" width="${width}" height="20" preserveAspectRatio="xMidYMid meet">
   <text x="0" y="0" transform="translate(10,10)" fill="currentColor"
     style="dominant-baseline: hanging; font-size:18px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
   ${title}</text>
@@ -74,7 +74,7 @@ function getHeader(width, title) {
 }
 
 function getFooter(width, height) {
-  return (`<svg width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
+  return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
   <g id="background">
   <rect width="${width}" height="50" style="fill: #dee2e6"></rect>
   </g>
@@ -85,7 +85,7 @@ function getFooter(width, height) {
 
   <g id="citation" transform="translate(10,5)">
     <g transform="translate(0, -8)" id="logo">
-      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="25px"
+      <svg version="1.1" id="Layer_1" x="0px" y="0px" width="25px"
          viewBox="0 0 396.4 396.4" style="enable-background:new 0 0 396.4 396.4;" xml:space="preserve">
       <g>
         <circle cx="198.2" cy="203" r="180"/>
@@ -201,20 +201,45 @@ export function getPng(selector, download = false, filename = "outbreakinfo_visu
         svg.appendChild(style.cloneNode(true));
       });
 
+
+
       var canvas = document.createElement("canvas"),
+        title = svg.getAttribute("name"),
         context = canvas.getContext("2d"),
-        image = new Image,
         ratio = global.devicePixelRatio || 1,
         rect = svg.getBoundingClientRect(),
         width = rect.width * ratio,
         height = rect.height * ratio,
-        imageUrl = URL.createObjectURL(new Blob([(new XMLSerializer).serializeToString(svg)], {
-          type: "image/svg+xml"
-        }));
+        image = new Image,
+        imageHeader = new Image,
+        imageFooter = new Image;
+
+        console.log(canvas)
+
+      // Can't append new SVG objects to the DOM, b/c then they would apper on the page
+      const header = getHeader(rect.width, title);
+      const footer = getFooter(rect.width, rect.height);
+
+      var source = (new XMLSerializer()).serializeToString(svg);
+
+      var imageUrl = URL.createObjectURL(new Blob([source], {
+        type: "image/svg+xml"
+      }));
+
+      var headerUrl = URL.createObjectURL(new Blob([header], {
+        type: "image/svg+xml"
+      }));
+
+      var footerUrl = URL.createObjectURL(new Blob([footer], {
+        type: "image/svg+xml"
+      }));
 
       image.onload = function() {
         setTimeout(function() {
-          context.drawImage(image, 0, 0, width, height);
+          // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
+          context.drawImage(image, 0, 35, width, height);
+          context.drawImage(imageHeader, 0, 0, width, 30);
+          context.drawImage(imageFooter, 0, 0);
 
           if (download) {
             canvas.toBlob(function(blob) {
@@ -255,6 +280,8 @@ export function getPng(selector, download = false, filename = "outbreakinfo_visu
       canvas.width = width;
       canvas.height = height;
       image.src = imageUrl;
+      imageHeader.src = headerUrl;
+      imageFooter.src = footerUrl;
     });
   })
 }
