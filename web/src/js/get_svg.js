@@ -1,7 +1,7 @@
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 //
 
-export function getPng(selector, download = false) {
+export function getPng(selector, download = false, filename="outbreakinfo_visualization.png") {
   return new Promise((resolve, reject) => {
     // const refs = document.getElementsByClassName(classID);
     var document = global.document,
@@ -41,7 +41,7 @@ export function getPng(selector, download = false) {
             canvas.toBlob(function(blob) {
               var a = document.createElement("a"),
                 aUrl = URL.createObjectURL(blob);
-              a.download = "untitled.png";
+              a.download = filename;
               a.href = aUrl;
               body.appendChild(a);
               setTimeout(function() {

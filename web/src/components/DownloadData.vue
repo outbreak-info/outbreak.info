@@ -36,6 +36,11 @@
             svg
           </p>
         </a>
+        <a class="text-uppercase pointer" @click="downloadPng">
+          <p class="focustext m-0">
+            png
+          </p>
+        </a>
       </div>
 
       <h4 class="m-0">Data</h4>
@@ -69,6 +74,8 @@ import {
   getAll,
   progressState$
 } from "@/api/biothings.js";
+
+import { getPng } from "@/js/get_svg.js";
 
 import {
   timeFormat,
@@ -221,10 +228,14 @@ ${resourcesString}
       const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
       const filenames = svgObject.map(svg => this.filename + "_" + svg.name + ".svg").join(", ");
 
-      this.downloadData([this.getMetadata(filenames)], "text/plain", `${this.filename}_README.txt`, true);
+      this.downloadData([this.getMetadata(t)], "text/plain", `${this.filename}_README.txt`, true);
       svgObject.forEach(svg =>
         this.downloadData(svg.source, "text/xml", this.filename + "_" + svg.name + ".svg")
       )
+    },
+    downloadPng() {
+      getPng(`svg.${this.figureRef}`, true, `${this.filename}.png`);
+      this.downloadData([this.getMetadata(this.filename)], "text/plain", `${this.filename}_README.txt`, true);
     },
     getSvgSources(svgs, emptySvgDeclarationComputed) {
       var svgInfo = [];
