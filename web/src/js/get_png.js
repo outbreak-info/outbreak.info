@@ -1,5 +1,6 @@
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 //
+
 export function getPng(classID, download = false) {
   console.log("getting your png")
   // const refs = document.getElementsByClassName(classID);
@@ -38,14 +39,36 @@ export function getPng(classID, download = false) {
       setTimeout(function() {
         context.drawImage(image, 0, 0, width, height);
 
-        var data = [new ClipboardItem({ "text/plain": new Blob(["Text data"], { type: "text/plain" }) })];
-navigator.clipboard.write(data).then(function() {
-  console.log("Copied to clipboard successfully!");
-}, function() {
-  console.error("Unable to write to clipboard. :-(");
-});
+        if (navigator.clipboard) {
+          console.log("clipping")
+          canvas.toBlob(blob => {
+            console.log(blob);
+            var data = [new ClipboardItem({"image/png": blob})];
+            console.log(data);
 
-   // canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
+            navigator.clipboard.write(data).then(function() {
+              console.log("Copied to clipboard successfully!");
+            }, function() {
+              console.error("Unable to write to clipboard. :-(");
+            });
+
+
+          })
+          // var data = [new ClipboardItem({
+          //   "text/plain": new Blob(["Text data"], {
+          //     type: "text/plain"
+          //   })
+          // })];
+
+          // console.log(data)
+          // navigator.clipboard.write(data).then(function() {
+          //   console.log("Copied to clipboard successfully!");
+          // }, function() {
+          //   console.error("Unable to write to clipboard. :-(");
+          // });
+        }
+
+        // canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
 
         if (download) {
           canvas.toBlob(function(blob) {

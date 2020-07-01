@@ -60,7 +60,6 @@ export default Vue.extend({
     copyPng(){
       console.log("png");
     const x =  getPng("epi-map-svg");
-    console.log(x)
     }
   }
 });
