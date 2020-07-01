@@ -16,6 +16,10 @@
     <i class="far fa-copy btn ml-3 btn-main-outline" @click="copyPng"></i>
     <DownloadData class="ml-3" id="download-btn" v-if="data" :type="dataType" :figureRef="figureRef" :data="data" :sourceString="sourceString" />
 
+    <p :class="{ snackbar: true, show: showSnackbar }">
+      {{ snackbarText }}
+    </p>
+
   </div>
 </template>
 
@@ -53,13 +57,16 @@ export default Vue.extend({
     }
   },
   data() {
-    return {};
+    return {
+      showSnackbar: true,
+      snackbarText: "copying figure to the clipboard"
+    };
   },
   watch: {},
   methods: {
     copyPng(){
-      console.log("png");
-    const x =  getPng("epi-map-svg");
+
+    getPng("svg.epi-bargraph");
     }
   }
 });

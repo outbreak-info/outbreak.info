@@ -1,8 +1,7 @@
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 //
 
-export function getPng(classID, download = false) {
-  console.log("getting your png")
+export function getPng(selector, download = false) {
   // const refs = document.getElementsByClassName(classID);
   var document = global.document,
     body = document.body,
@@ -15,8 +14,7 @@ export function getPng(classID, download = false) {
 
   // const svgObject = this.getSvgSources(refs, emptySvgDeclarationComputed);
   // const filenames = svgObject.map(svg => this.filename + "_" + svg.name + ".svg").join(", ");
-  forEach.call(document.querySelectorAll("svg.epi-bargraph"), function(svg) {
-    console.log(svg)
+  forEach.call(document.querySelectorAll(selector), function(svg) {
     if (svg.namespaceURI !== "http://www.w3.org/2000/svg") return; // Not really an SVG.
     if (svg.ownerSVGElement) return; // An SVG within another SVG.
 
@@ -39,37 +37,6 @@ export function getPng(classID, download = false) {
       setTimeout(function() {
         context.drawImage(image, 0, 0, width, height);
 
-        if (navigator.clipboard) {
-          console.log("clipping")
-          canvas.toBlob(blob => {
-            console.log(blob);
-            var data = [new ClipboardItem({"image/png": blob})];
-            console.log(data);
-
-            navigator.clipboard.write(data).then(function() {
-              console.log("Copied to clipboard successfully!");
-            }, function() {
-              console.error("Unable to write to clipboard. :-(");
-            });
-
-
-          })
-          // var data = [new ClipboardItem({
-          //   "text/plain": new Blob(["Text data"], {
-          //     type: "text/plain"
-          //   })
-          // })];
-
-          // console.log(data)
-          // navigator.clipboard.write(data).then(function() {
-          //   console.log("Copied to clipboard successfully!");
-          // }, function() {
-          //   console.error("Unable to write to clipboard. :-(");
-          // });
-        }
-
-        // canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
-
         if (download) {
           canvas.toBlob(function(blob) {
             var a = document.createElement("a"),
@@ -84,6 +51,24 @@ export function getPng(classID, download = false) {
               body.removeChild(a);
             }, 10);
           });
+        }
+        // copy
+        else {
+          if (navigator.clipboard) {
+            console.log("clipping")
+            canvas.toBlob(blob => {
+              var data = [new ClipboardItem({"image/png": blob})];
+
+              navigator.clipboard.write(data).then(function() {
+                console.log("Copied to clipboard successfully!");
+                return("copied to the clipboard")
+              }, function() {
+                console.error("Unable to write to clipboard. :-(");
+                return("sorry; copying this figure is unavailable")
+              });
+            })
+          }
+
         }
       }, 10);
     };
