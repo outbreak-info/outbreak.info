@@ -226,6 +226,15 @@ const state = {
       }
     },
     {
+      date: new Date("2020-07-02 0:0"),
+      category: "feature",
+      title: "Added world and U.S. choropleths",
+      description: "Added choropleths of daily new cases and deaths (7 day rolling average) and two-week change in average cases and deaths.",
+      route: {
+        name: "Compare"
+      }
+    },
+    {
       date: new Date("2020-06-12 0:0"),
       category: "feature",
       title: "Added 7-day rolling averages for case counts",
