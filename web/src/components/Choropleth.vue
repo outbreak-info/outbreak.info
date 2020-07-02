@@ -98,7 +98,7 @@ export default {
       document.addEventListener(
         "mousemove",
         evt => {
-          if(!evt.target || !evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+          if(!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
             this.mouseOff();
           }
         }, {
@@ -108,7 +108,7 @@ export default {
       document.addEventListener(
         "mouseleave",
         evt => {
-          if(!evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+          if(!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
             this.mouseOff();
           }
         }, {

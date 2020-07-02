@@ -7,12 +7,16 @@
 
   <!-- Region buttons -->
   <div class="d-flex flex-wrap">
-    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All countries</router-link>
+    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All
+      countries</router-link>
     <div class="d-flex flex-column">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
+        :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
       <div class="d-flex">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas</router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas
+        </router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
+          :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
       </div>
     </div>
 
@@ -56,32 +60,15 @@
             <th class="text-left">
               location
             </th>
-            <th
-              v-for="(column, idx) in columns"
-              :key="idx"
-              :id="`th-${column.value}`"
-              :class="{
+            <th v-for="(column, idx) in columns" :key="idx" :id="`th-${column.value}`" :class="{
                 sortable: `${column.sorted} 'px-3 pointer'`,
                 'd-none d-md-table-cell px-3 pointer': !column.essential
-              }"
-              @click="sortColumn(column)"
-            >
+              }" @click="sortColumn(column)">
               <div class="sort-grp">
                 {{ column.label }}
-                <font-awesome-icon
-                  :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']"
-                  :icon="['fas', 'sort']"
-                />
-                <font-awesome-icon
-                  class="sort-btn"
-                  :icon="['fas', 'arrow-up']"
-                  v-if="column.sorted === 1"
-                />
-                <font-awesome-icon
-                  class="sort-btn"
-                  :icon="['fas', 'arrow-down']"
-                  v-if="column.sorted === -1"
-                />
+                <font-awesome-icon :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']" :icon="['fas', 'sort']" />
+                <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === 1" />
+                <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === -1" />
               </div>
             </th>
           </tr>
@@ -134,10 +121,10 @@ import {
   range
 } from "d3";
 import {
-  interpolateYlGnBu,
-  interpolateBrBG,
-  interpolatePRGn,
-  interpolatePiYG,
+  // interpolateYlGnBu,
+  // interpolateBrBG,
+  // interpolatePRGn,
+  // interpolatePiYG,
   interpolateRdYlBu
 } from "d3-scale-chromatic";
 
@@ -170,18 +157,48 @@ export default {
     FontAwesomeIcon
   },
   props: {
-    admin_level: String,
+    admin_level: {
+      type: String,
+      default: "0"
+    },
+    variable: {
+      type: String,
+      default: "confirmed_change"
+    },
     location: String,
-    sort: String
+    sort: String,
   },
   watch: {
+    variable: {
+      immediate: true,
+      handler(newVar, oldVar) {
+        const filtered = this.variableOptions.filter(d => d.value === newVar);
+        this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
+      }
+    },
     selectedVariable() {
-      this.getData();
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: this.location,
+          admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
+          sort: this.sortVariable.value
+        }
+      });
     },
-    admin_level() {
-      this.getData();
+    sortVariable() {
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: this.location,
+          admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
+          sort: this.sortVariable.value
+        }
+      });
     },
-    location() {
+    '$route.params'() {
       this.getData();
     }
   },
@@ -191,17 +208,17 @@ export default {
       numColors: 11,
       data: [],
       dataSubscription: null,
-      selectedVariable: {
-        label: "2 week change in cases/day",
-        choro: "cases vs. 2 weeks ago",
-        value: "confirmed_change"
-      },
+      selectedVariable: null,
+      // selectedVariable: {
+      //   label: "2 week change in cases/day",
+      //   choro: "cases vs. 2 weeks ago",
+      //   value: "confirmed_change"
+      // },
       sortVariable: {
         label: "2 week change in cases/day",
         value: "confirmed_change"
       },
-      columns: [
-        {
+      columns: [{
           label: "average new cases/day",
           value: "confirmed_rolling",
           sort_id: "confirmed_rolling",
@@ -258,18 +275,8 @@ export default {
   },
   methods: {
     getData() {
-      this.$router.push({
-        path: "maps",
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          sort: this.sortVariable.value
-        }
-      });
-
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 1000).subscribe(results => {
-        results.sort((a,b) => b[this.sortVariable.value] - a[this.sortVariable.value])
+        results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
 
         this.data = results;
 
@@ -319,7 +326,7 @@ export default {
       })
 
       // previously unsorted or sorted asc; sort desc.
-      if(sortVal === 0 || sortVal === 1) {
+      if (sortVal === 0 || sortVal === 1) {
         this.columns[idx].sorted = -1;
         this.data.sort((a, b) => b[selected.sort_id] - a[selected.sort_id]);
       } else {
@@ -339,45 +346,44 @@ export default {
 }
 
 td {
-  padding: 5px;
-  text-align: center;
-  vertical-align: middle;
-  border: none;
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
 }
 
 th {
-  font-size: 0.95em;
-  font-weight: 400;
-  color: $grey-70;
+    font-size: 0.95em;
+    font-weight: 400;
+    color: $grey-70;
 }
 
 .sort-hover {
-  display: none;
+    display: none;
 }
 
 .sort-grp.hover .sort-hover,
 .sort-grp:hover .sort-hover {
-  display: inline;
+    display: inline;
 }
 
 table {
-  border-collapse: collapse;
-  font-size: 0.85em;
+    border-collapse: collapse;
+    font-size: 0.85em;
 }
 
 tr {
-  border-bottom: 1px solid #cacaca;
-  // border-bottom: 1px solid $grey-40;
+    border-bottom: 1px solid #cacaca;
+    // border-bottom: 1px solid $grey-40;
 }
 
 tr.table-header-merged {
-  border-bottom: none;
-  // border-bottom: 1px solid $grey-40;
+    border-bottom: none;
+    // border-bottom: 1px solid $grey-40;
 }
 
 .btn-main-outline.active {
     background: $primary-color !important;
     color: white;
 }
-
 </style>
