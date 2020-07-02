@@ -50,6 +50,20 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link"
+                :class="{ active: $route.name == 'Compare' }"
+                :key="$route.fullPath"
+                :to="{
+                  name: 'Compare'
+                }"
+                >Maps</router-link
+              >
+            </li>
+
+            <li class="nav-item">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link"
                 :class="{ active: $route.name == 'Doubling Rates' }"
                 :key="$route.fullPath"
                 :to="{
