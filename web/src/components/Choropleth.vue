@@ -131,7 +131,7 @@ export default {
       const whRatio = 10 / 7;
       const selector = this.$refs.map_container;
       const marginLegend = 25;
-      const selectorsProportion = 0.7;
+      const selectorsProportion = 0.9;
 
       if (selector) {
         const dims = selector.getBoundingClientRect();
