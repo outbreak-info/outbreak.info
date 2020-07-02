@@ -288,7 +288,8 @@ export default {
 
           colorRange = range(0, 1, 1 / (this.numColors)).map(d => interpolateRdYlBu(d)).reverse();
         } else {
-          colorRange = range(0, 0.5, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
+          // SEQUENTIAL
+          colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
         }
 
         this.colorScale = scaleQuantile()
