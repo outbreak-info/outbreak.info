@@ -219,9 +219,13 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         imageHeader = new Image,
         imageFooter = new Image;
 
-      // Can't append new SVG objects to the DOM, b/c then they would apper on the page
+        // update the width of the canvas
+        canvasWidth = canvasWidth + spacer + width;
+        console.log(canvasWidth)
+
+      // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       const header = getHeader(rect.width, title);
-      const footer = getFooter(rect.width, -15, sources, date);
+      const footer = getFooter(canvasWidth, -15, sources, date);
 
       var source = (new XMLSerializer()).serializeToString(svg);
 
@@ -245,7 +249,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           context.drawImage(imageHeader, i * (width + spacer), 0, width, 18 * ratio);
           // only draw the footer on the last image
           if (i === numSvgs-1) {
-            context.drawImage(imageFooter, 0, height, width, 50 * ratio);
+            context.drawImage(imageFooter, 0, height, canvasWidth*ratio, 50 * ratio);
           }
           if (download && i === numSvgs - 1) {
             canvas.toBlob(function(blob) {
