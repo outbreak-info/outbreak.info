@@ -32,7 +32,8 @@ export default {
     data: Array,
     variable: String,
     variableLabel: String,
-    colorScale: Function
+    colorScale: Function,
+    width: Number
   },
   watch: {
     data: function() {
@@ -44,7 +45,6 @@ export default {
   },
   data() {
     return {
-      width: 200,
       height: 100,
       margin: {
         top: 5,

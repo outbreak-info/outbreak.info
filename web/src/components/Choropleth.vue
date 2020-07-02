@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex flex-wrap align-items-center">
+<div class="d-flex flex-wrap align-items-center" ref="map_container">
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="epi-map-svg" :name="title">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
@@ -15,7 +15,7 @@
 </template>
   </div>
   <div class="d-flex flex-column">
-    <HistogramLegend class="ml-2" :data="data" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" />
+    <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" />
     <DataUpdated />
   </div>
 
@@ -50,29 +50,25 @@ export default {
     variable: String,
     variableLabel: String,
     colorScale: Function,
-    adminLevel: String,
-    width: {
-      type: Number,
-      default: 500
-    },
-    height: {
-      type: Number,
-      default: 350
-    }
+    adminLevel: String
   },
   watch: {
     data: function() {
-      this.drawMetro();
+      this.drawMap();
     }
   },
   data() {
     return {
+      width: 0,
+      height: 350,
+      widthLegend: 200,
       margin: {
         top: 25,
         right: 25,
         bottom: 25,
         left: 25
       },
+      scale: 1,
       // data
       regionData: null,
       projection: null,
@@ -81,7 +77,9 @@ export default {
       svg: null,
       states: null,
       regions: null,
-      event: null
+      event: null,
+      // methods
+      path: d3.geoPath()
     };
   },
   computed: {
@@ -94,11 +92,15 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
+      window.addEventListener("resize", this.setDims);
+      // set initial dimensions for the stacked area plots.
+      this.setDims();
+
       // event listener to hide tooltips
       document.addEventListener(
         "mousemove",
         evt => {
-          if(!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+          if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
             this.mouseOff();
           }
         }, {
@@ -108,7 +110,7 @@ export default {
       document.addEventListener(
         "mouseleave",
         evt => {
-          if(!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+          if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
             this.mouseOff();
           }
         }, {
@@ -118,7 +120,6 @@ export default {
     });
 
     this.setupChoro();
-    this.drawMetro();
   },
   beforeDestroy() {
     if (this.dataSubscritpion) {
@@ -126,14 +127,63 @@ export default {
     }
   },
   methods: {
+    setDims() {
+      const whRatio = 10 / 7;
+      const selector = this.$refs.map_container;
+      const marginLegend = 25;
+      const selectorsProportion = 0.7;
+
+      if (selector) {
+        const dims = selector.getBoundingClientRect();
+
+        this.width = dims.width - marginLegend - this.widthLegend;
+        const idealHeight = this.width / whRatio;
+        if (idealHeight < window.innerHeight * selectorsProportion) {
+          this.height = idealHeight * selectorsProportion;
+        } else {
+          this.height = window.innerHeight * selectorsProportion;
+          this.width = this.height * whRatio;
+        }
+
+        // Set scale and projection for the map
+        this.drawMap();
+      }
+    },
     setupChoro() {
       this.svg = d3.select(this.$refs.svg);
       this.states = d3.select(this.$refs.states);
       this.regions = d3.select(this.$refs.regions);
       this.ttips = d3.select(this.$refs.choropleth_tooltip);
     },
-    drawMetro() {
-      if (this.data) {
+    setupMap() {
+      if (this.adminLevel === "0") {
+        this.projection = d3.geoEqualEarth()
+        .scale(1)
+          .translate([this.width / 2 + 10, this.height / 2]);
+
+      } else {
+        this.projection = d3.geoAlbersUsa()
+                .scale(1)
+          .translate([this.width / 2 + 10, this.height / 2]);
+      }
+
+      this.path = this.path.projection(this.projection);
+      // calc and set scale
+      // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
+      const bounds = this.path.bounds(this.regionData),
+        dx = bounds[1][0] - bounds[0][0],
+        scale = this.width / dx * 0.95;
+
+      this.projection
+        .scale(scale)
+
+      console.log(bounds)
+      console.log(dx)
+      console.log(scale)
+    },
+    drawMap() {
+      this.setupMap();
+      if (this.data && this.width) {
         if (this.adminLevel == "0") {
           this.regionData = countries;
         } else if (this.adminLevel == "1") {
@@ -161,18 +211,6 @@ export default {
           }
         })
 
-        var path = d3.geoPath();
-        if (this.adminLevel === "0") {
-          this.projection = d3.geoEqualEarth()
-            .scale(125)
-            .translate([this.width / 2 + 10, this.height / 2]);
-
-        } else {
-          this.projection = d3.geoAlbersUsa()
-            .scale(700)
-            .translate([this.width / 2 + 10, this.height / 2]);
-        }
-
         // regional data
         this.regions
           .selectAll("path")
@@ -184,16 +222,13 @@ export default {
                 .attr("class", "region pointer")
                 .attr("id", d => d.location_id)
                 // draw each region
-                .attr("d", path
-                  .projection(this.projection)
-                )
+                .attr("d", this.path)
                 .attr("fill", d => d.fill ? d.fill : "none");
             },
             update => update
             .attr("id", d => d.location_id)
-            .attr("d", path
-              .projection(this.projection)
-            ).attr("fill", d => d.fill ? d.fill : "none"),
+            .attr("d", this.path)
+            .attr("fill", d => d.fill ? d.fill : "none"),
             exit =>
             exit.call(exit =>
               exit
@@ -218,12 +253,9 @@ export default {
                 .append("path")
                 .attr("class", "state")
                 // draw each region
-                .attr("d", path
-                  .projection(this.projection)
-                )
+                .attr("d", this.path)
             },
-            update => update.attr("d", path
-              .projection(this.projection)),
+            update => update.attr("d", this.path),
             exit =>
             exit.call(exit =>
               exit
