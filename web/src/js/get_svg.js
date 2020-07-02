@@ -9,10 +9,10 @@ import { selectAll } from "d3";
 export function getSvg(figureRef, sources, date) {
   // make sure no tooltips are active
   selectAll("path").style("opacity", 1);
-  selectAll("rect").style("opacity", 1);
+  // selectAll("rect").style("opacity", 1);
   selectAll("text").style("opacity", 1);
   selectAll("circle").style("opacity", 1);
-  
+
   const refs = document.getElementsByClassName(figureRef);
   var emptySvg = window.document.createElementNS(prefix.svg, 'svg');
   window.document.body.appendChild(emptySvg);
@@ -191,7 +191,7 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 export function getPng(selector, sources, date, download = false, filename = "outbreakinfo_visualization.png") {
 // make sure no tooltips are active
 selectAll("path").style("opacity", 1);
-selectAll("rect").style("opacity", 1);
+// selectAll("rect").style("opacity", 1);
 selectAll("text").style("opacity", 1);
 selectAll("circle").style("opacity", 1);
 
