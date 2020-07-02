@@ -193,7 +193,13 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       reject("Error: no svg found with that selector")
     }
 
-    forEach.call(svgs, function(svg) {
+    var canvi = [];
+
+    var canvas = document.createElement("canvas"),
+      context = canvas.getContext("2d"),
+      ratio = global.devicePixelRatio || 1;
+
+    const x = [].forEach.call(svgs, function(svg, i) {
       if (svg.namespaceURI !== "http://www.w3.org/2000/svg") return; // Not really an SVG.
       if (svg.ownerSVGElement) return; // An SVG within another SVG.
 
@@ -201,11 +207,8 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         svg.appendChild(style.cloneNode(true));
       });
 
-
-
-      var canvas = document.createElement("canvas"),
+      var
         title = svg.getAttribute("name"),
-        context = canvas.getContext("2d"),
         ratio = global.devicePixelRatio || 1,
         rect = svg.getBoundingClientRect(),
         width = rect.width * ratio,
@@ -236,10 +239,12 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       image.onload = function() {
         setTimeout(function() {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
-          context.drawImage(image, 0, 35, width, height);
-          context.drawImage(imageHeader, 0, 0, width, 18*ratio);
-          context.drawImage(imageFooter, 0, height, width, 50*ratio);
-
+          context.drawImage(image, i * (width + 25), 35, width, height);
+          context.drawImage(imageHeader, i * (width + 25), 0, width, 18 * ratio);
+          // only draw the footer on the first image
+          if (i === 0) {
+            context.drawImage(imageFooter, 0, height, width, 50 * ratio);
+          }
           if (download) {
             canvas.toBlob(function(blob) {
               var a = document.createElement("a"),
@@ -258,6 +263,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // copy
           else {
             if (navigator.clipboard) {
+
               canvas.toBlob(blob => {
                 var data = [new ClipboardItem({
                   "image/png": blob
@@ -276,11 +282,43 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         }, 10);
       };
 
-      canvas.width = width;
-      canvas.height = height + 50*ratio;
+      canvas.width = (width + 25) * svgs.length;
+      canvas.height = height + 50 * ratio;
       image.src = imageUrl;
       imageHeader.src = headerUrl;
       imageFooter.src = footerUrl;
     });
+
+    //     console.log(canvi)
+    //
+    //     var canvas2 = document.createElement("canvas"),
+    //       context2 = canvas2.getContext("2d"),
+    //       ratio = global.devicePixelRatio || 1;
+    //
+    //       canvi[0].onload = function() {
+    //         setTimeout(function() {
+    //     context2.drawImage(canvi[0], 750, 35, 750, 650); // germany
+    //     // context2.drawImage(canvi[1], 0, 50, 750, 650); // US
+    //     canvas2.width = 2000;
+    //     canvas2.height = 1000;
+    //
+    //     console.log(canvas2)
+    //     console.log(canvi[0])
+    //
+    //     canvas2.toBlob(blob => {
+    //       var data2 = [new ClipboardItem({
+    //         "image/png": blob
+    //       })];
+    //
+    //       navigator.clipboard.write(data2).then(function() {
+    //         console.log('yeehaw')
+    //         resolve("copied to the clipboard")
+    //       }, function() {
+    //         console.error("Unable to write to clipboard. :-(");
+    //         resolve("sorry; copying this figure is unavailable")
+    //       });
+    //     })
+    //   })
+    // }
   })
 }
