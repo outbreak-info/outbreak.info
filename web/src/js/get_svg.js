@@ -68,7 +68,7 @@ function getHeader(width, title) {
   return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} 25" width="${width}" height="20" preserveAspectRatio="xMidYMid meet">
   <text x="0" y="0" transform="translate(10,10)" fill="currentColor"
     style="dominant-baseline: hanging; font-size:18px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
-  ${title}</text>
+  ${title.replace("&", "and")}</text>
   </svg>`)
 }
 
@@ -250,9 +250,6 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
       image.onload = function() {
         setTimeout(function() {
-          console.log(`row: ${rowNum}; col: ${colNum}`)
-          console.log(i + ": " + title)
-          console.log(counter)
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
           context.drawImage(image, colNum * (width + spacer), rowNum * (height + spacer) + 35, width, height);
           context.drawImage(imageHeader, colNum * (width + spacer), rowNum * (height + spacer), width, 18 * ratio);
@@ -273,6 +270,8 @@ export function getPng(selector, sources, date, download = false, filename = "ou
                 a.click();
                 aUrl = URL.revokeObjectURL(aUrl);
                 imageUrl = URL.revokeObjectURL(imageUrl);
+                headerUrl = URL.revokeObjectURL(headerUrl);
+                footerUrl = URL.revokeObjectURL(footerUrl);
                 body.removeChild(a);
               }, 10);
             });
@@ -280,12 +279,11 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // copy
           else {
             if (navigator.clipboard) {
-// garbage collect
+              // garbage collect
               setTimeout(function() {
-                a.click();
-                aUrl = URL.revokeObjectURL(aUrl);
                 imageUrl = URL.revokeObjectURL(imageUrl);
-                body.removeChild(a);
+                headerUrl = URL.revokeObjectURL(headerUrl);
+                footerUrl = URL.revokeObjectURL(footerUrl);
               }, 10);
 
               canvas.toBlob(blob => {
@@ -294,9 +292,9 @@ export function getPng(selector, sources, date, download = false, filename = "ou
                 })];
 
                 navigator.clipboard.write(data).then(function() {
-                  if(i === numSvgs - 1) {
-                  resolve("copied to the clipboard")
-                }
+                  if (i === numSvgs - 1) {
+                    resolve("copied to the clipboard")
+                  }
                 }, function() {
                   console.error("Unable to write to clipboard. :-(");
                   resolve("sorry; copying this figure is unavailable")
@@ -309,7 +307,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       };
 
       canvas.width = canvasWidth;
-      canvas.height = canvasHeight + footerHeight*ratio;
+      canvas.height = canvasHeight + footerHeight * ratio;
       image.src = imageUrl;
       imageHeader.src = headerUrl;
       imageFooter.src = footerUrl;
