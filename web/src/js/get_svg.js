@@ -199,7 +199,6 @@ export function getPng(selector, sources, date, download = false, filename = "ou
     var canvasWidth = 0;
     var canvasHeight = 0;
     var counter = 0;
-    console.log(numAcross);
 
     var canvas = document.createElement("canvas"),
       context = canvas.getContext("2d"),
@@ -224,10 +223,9 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
       // update the width of the canvas
       const rowNum = Math.floor(i / numAcross);
-      const colNum = i % 3;
+      const colNum = i % numAcross;
       canvasWidth = rowNum === 0 ? canvasWidth + spacer + width : canvasWidth;
       canvasHeight = colNum === 0 ? canvasHeight + spacer + height : canvasHeight;
-      console.log(canvasHeight)
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       const header = getHeader(rect.width, title);
@@ -250,10 +248,15 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
       image.onload = function() {
         setTimeout(function() {
+          // console.log("\n")
+          // console.log(title)
+          // console.log(`${colNum}, ${rowNum}`)
+          // console.log(`${colNum * (width + spacer)}, ${rowNum * (height + spacer)}`)
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
           context.drawImage(image, colNum * (width + spacer), rowNum * (height + spacer) + 35, width, height);
           context.drawImage(imageHeader, colNum * (width + spacer), rowNum * (height + spacer), width, 18 * ratio);
           counter = counter + 1;
+          // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
             console.log("adding footer")
@@ -292,7 +295,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
                 })];
 
                 navigator.clipboard.write(data).then(function() {
-                  if (i === numSvgs - 1) {
+                  if (counter === numSvgs) {
                     resolve("copied to the clipboard")
                   }
                 }, function() {
