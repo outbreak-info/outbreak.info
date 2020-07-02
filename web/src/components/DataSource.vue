@@ -86,6 +86,11 @@ export default Vue.extend({
     copyPng() {
       this.showSnackbar = true;
       this.snackbarText = "copying figure to the clipboard";
+      this.$gtag.event("copy_vis", {
+        'event_category': `${this.dataType}_vis`,
+        'event_label': `copying {vis} from [${this.$route.fullPath}]`
+      })
+
       getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormatted).then(msg => {
         this.snackbarText = msg;
         setTimeout(() => {

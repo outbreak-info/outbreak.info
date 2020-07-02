@@ -227,6 +227,10 @@ ${resourcesString}
       )
     },
     downloadPng() {
+      this.$gtag.event("download", {
+        'event_category': `${this.type}_${this.downloadLabel}`,
+        'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`
+      });
       getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormattedLong, true, `${this.filename}.png`);
       this.downloadData([this.getMetadata(this.filename)], "text/plain", `${this.filename}_README.txt`, true);
     },
