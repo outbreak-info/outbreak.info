@@ -15,7 +15,7 @@
 </template>
   </div>
   <div class="d-flex flex-column">
-    <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" />
+    <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
     <DataUpdated />
   </div>
 
@@ -170,7 +170,7 @@ export default {
 
       if (this.adminLevel === "0") {
         this.projection = d3.geoEqualEarth()
-        .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
+          .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
@@ -197,12 +197,12 @@ export default {
         scale = d3.min([xscale, yscale]);
 
 
-        this.projection = this.projection
-          .scale(scale)
+      this.projection = this.projection
+        .scale(scale)
     },
     drawMap() {
       this.setupMap();
-      if (this.data && this.width) {
+      if (this.data && this.data.length && this.width) {
         this.data.forEach(d => {
           const id = d.location_id.split("_").slice(-1)[0].replace("US-", "");
           const idx = this.regionData.features.findIndex(polygon => polygon.properties.GEOID === id);
@@ -280,7 +280,6 @@ export default {
 
         // this.svg
         // .on("mouseleave", this.mouseOff);
-
         store.state.admin.dataloading = false;
       }
     },
