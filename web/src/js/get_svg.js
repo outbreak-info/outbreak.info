@@ -285,28 +285,30 @@ export function getPng(selector, sources, date, download = false, filename = "ou
             if (navigator.clipboard) {
               // garbage collect
               setTimeout(function() {
-                console.log("garbage collecting")
-                console.log(imageUrl)
                 imageUrl = URL.revokeObjectURL(imageUrl);
-                console.log(imageUrl)
                 headerUrl = URL.revokeObjectURL(headerUrl);
                 footerUrl = URL.revokeObjectURL(footerUrl);
               }, 10);
 
-              canvas.toBlob(blob => {
-                var data = [new ClipboardItem({
-                  "image/png": blob
-                })];
 
-                navigator.clipboard.write(data).then(function() {
-                  if (counter === numSvgs) {
+
+              if (counter === numSvgs) {
+                console.log("copied")
+                // resolve("DONE")
+                canvas.toBlob(blob => {
+                  var data = [new ClipboardItem({
+                    "image/png": blob
+                  })];
+
+                  navigator.clipboard.write(data).then(function() {
                     resolve("copied to the clipboard")
-                  }
-                }, function() {
-                  console.error("Unable to write to clipboard. :-(");
-                  resolve("sorry; copying this figure is unavailable")
-                });
-              })
+
+                  }, function() {
+                    console.error("Unable to write to clipboard. :-(");
+                    resolve("sorry; copying this figure is unavailable")
+                  });
+                })
+              }
             }
 
           }
