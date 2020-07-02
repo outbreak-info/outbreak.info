@@ -84,7 +84,7 @@ export default Vue.extend({
           this.showSnackbar = false;
         }, 3000);
       }).catch(error => {
-        this.snackbarText = "Erorr copying image";
+        this.snackbarText = "Error copying image";
         setTimeout(() => {
           this.showSnackbar = false;
         }, 3000);
