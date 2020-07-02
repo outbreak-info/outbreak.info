@@ -1,6 +1,6 @@
 <template>
-<div class="d-flex flex-wrap align-items-center" ref="map_container">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="epi-map-svg" :name="title">
+<div class="d-flex flex-wrap align-items-center" ref="map_container" id="map_container">
+  <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
   </svg>
@@ -63,10 +63,10 @@ export default {
       height: 350,
       widthLegend: 200,
       margin: {
-        top: 25,
-        right: 25,
-        bottom: 25,
-        left: 25
+        top: 2,
+        right: 2,
+        bottom: 2,
+        left: 2
       },
       scale: 1,
       // data
@@ -142,7 +142,7 @@ export default {
           this.height = idealHeight * selectorsProportion;
         } else {
           this.height = window.innerHeight * selectorsProportion;
-          this.width = this.height * whRatio;
+          this.width = this.height * whRatio - marginLegend - this.widthLegend;
         }
 
         // Set scale and projection for the map
@@ -156,46 +156,53 @@ export default {
       this.ttips = d3.select(this.$refs.choropleth_tooltip);
     },
     setupMap() {
+      if (this.adminLevel == "0") {
+        this.regionData = countries;
+      } else if (this.adminLevel == "1") {
+        this.regionData = usstates;
+      } else if (this.adminLevel == "1.5") {
+        this.regionData = metros;
+      } else if (this.adminLevel == "2") {
+        this.regionData = counties;
+      } else {
+        this.regionData = [];
+      }
+
       if (this.adminLevel === "0") {
         this.projection = d3.geoEqualEarth()
-        .scale(1)
-          .translate([this.width / 2 + 10, this.height / 2]);
+        .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
+          .scale(1)
+          .translate([this.width / 2, this.height / 2]);
 
       } else {
         this.projection = d3.geoAlbersUsa()
-                .scale(1)
-          .translate([this.width / 2 + 10, this.height / 2]);
+          .scale(1)
+          .translate([this.width / 2, this.height / 2]);
       }
 
       this.path = this.path.projection(this.projection);
       // calc and set scale
       // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
       const bounds = this.path.bounds(this.regionData),
+        // llbounds = d3.geoBounds(this.regionData),
+        // minLon = llbounds[0][0],
+        // minLat = llbounds[0][1],
+        // maxLon = llbounds[1][0],
+        // maxLat = llbounds[1][1],
+        // center = [d3.mean([minLon, maxLon]), d3.mean([minLat, maxLat])],
         dx = bounds[1][0] - bounds[0][0],
-        scale = this.width / dx * 0.95;
+        dy = bounds[1][1] - bounds[0][1],
+        xscale = this.width / dx * 0.95,
+        yscale = this.height / dy * 0.95,
+        scale = d3.min([xscale, yscale]);
 
-      this.projection
-        .scale(scale)
 
-      console.log(bounds)
-      console.log(dx)
-      console.log(scale)
+        this.projection = this.projection
+          .scale(scale)
     },
     drawMap() {
       this.setupMap();
       if (this.data && this.width) {
-        if (this.adminLevel == "0") {
-          this.regionData = countries;
-        } else if (this.adminLevel == "1") {
-          this.regionData = usstates;
-        } else if (this.adminLevel == "1.5") {
-          this.regionData = metros;
-        } else if (this.adminLevel == "2") {
-          this.regionData = counties;
-        } else {
-          this.regionData = [];
-        }
-
         this.data.forEach(d => {
           const id = d.location_id.split("_").slice(-1)[0].replace("US-", "");
           const idx = this.regionData.features.findIndex(polygon => polygon.properties.GEOID === id);

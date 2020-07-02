@@ -3,14 +3,14 @@
   <div>
     {{variableLabel}}
   </div>
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom*2" ref="legend_svg">
+  <svg :width="width" :height="height + margin.top + margin.bottom*2" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
     <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
       <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`"
       :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
       </rect>
-      <rect x="0" y="0" :width="width" height="10"
+      <rect x="0" y="0" :width="width - margin.left - margin.right" height="10"
       stroke="black" fill="none"
       :stroke-width="0.5"></rect>
     </g>
@@ -49,8 +49,8 @@ export default {
       margin: {
         top: 5,
         bottom: 25,
-        left: 15,
-        right: 15
+        left: 5,
+        right: 5
       },
       // axes
       x: null,
@@ -78,7 +78,7 @@ export default {
     updateAxes: function() {
       // x-axis
       this.x = d3.scaleLinear()
-        .range([0, this.width])
+        .range([0, this.width - this.margin.left - this.margin.right])
         .domain(d3.extent(this.data, d => d[this.variable]));
 
       this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5);
