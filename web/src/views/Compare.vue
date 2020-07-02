@@ -1,7 +1,7 @@
 <template>
 <div class="full-page p-5 bg-light">
   <!-- loading -->
-  <div v-if="loading" class="loader">
+  <div v-if="dataloading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
@@ -209,11 +209,6 @@ export default {
       data: [],
       dataSubscription: null,
       selectedVariable: null,
-      // selectedVariable: {
-      //   label: "2 week change in cases/day",
-      //   choro: "cases vs. 2 weeks ago",
-      //   value: "confirmed_change"
-      // },
       sortVariable: {
         label: "2 week change in cases/day",
         value: "confirmed_change"
@@ -262,7 +257,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("admin", ["loading"]),
+    ...mapState("admin", ["dataloading"]),
     numResults() {
       return (this.data.length)
     }

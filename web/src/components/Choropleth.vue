@@ -242,8 +242,7 @@ export default {
         // this.svg
         // .on("mouseleave", this.mouseOff);
 
-        store.state.admin.loading = false;
-
+        store.state.admin.dataloading = false;
       }
     },
     handleClick(d) {
