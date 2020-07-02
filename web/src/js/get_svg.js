@@ -3,9 +3,16 @@ const prefix = {
   xlink: "http://www.w3.org/1999/xlink",
   svg: "http://www.w3.org/2000/svg"
 }
+import { selectAll } from "d3";
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
 export function getSvg(figureRef, sources, date) {
+  // make sure no tooltips are active
+  selectAll("path").style("opacity", 1);
+  selectAll("rect").style("opacity", 1);
+  selectAll("text").style("opacity", 1);
+  selectAll("circle").style("opacity", 1);
+  
   const refs = document.getElementsByClassName(figureRef);
   var emptySvg = window.document.createElementNS(prefix.svg, 'svg');
   window.document.body.appendChild(emptySvg);
@@ -182,6 +189,12 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 // Thanks, Mike.
 
 export function getPng(selector, sources, date, download = false, filename = "outbreakinfo_visualization.png") {
+// make sure no tooltips are active
+selectAll("path").style("opacity", 1);
+selectAll("rect").style("opacity", 1);
+selectAll("text").style("opacity", 1);
+selectAll("circle").style("opacity", 1);
+
   return new Promise((resolve, reject) => {
     const spacer = 25;
     const footerHeight = 50;
@@ -249,10 +262,12 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
       image.onload = function() {
         setTimeout(function() {
-          // console.log("\n")
-          // console.log(title)
-          // console.log(`${colNum}, ${rowNum}`)
-          // console.log(`${colNum * (width + spacer)}, ${rowNum * (height + spacer)}`)
+          console.log("\n")
+          console.log(title)
+          console.log(width)
+          console.log(canvasWidth)
+          console.log(`${colNum}, ${rowNum}`)
+          console.log(`${colNum * (width + spacer)}, ${rowNum * (height + spacer)}`)
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
           context.drawImage(image, colNum * (width + spacer), rowNum * (height + spacer) + 35, width, height);
           context.drawImage(imageHeader, colNum * (width + spacer), rowNum * (height + spacer), width, 18 * ratio);
