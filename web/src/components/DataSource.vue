@@ -9,7 +9,7 @@
 
   <!-- date updated -->
   <DataUpdated />
-  <i class="far fa-copy btn ml-3 btn-main-outline" @click="copyPng"></i>
+  <i class="far fa-copy btn ml-3 btn-main-outline" @click="copyPng" v-if="copyable"></i>
   <DownloadData class="ml-3" id="download-btn" v-if="data" :type="dataType" :figureRef="figureRef" :data="data" :sourceString="sourceString" />
 
   <p :class="{ snackbar: true, show: showSnackbar }">
@@ -40,6 +40,10 @@ export default Vue.extend({
     ids: Array,
     data: Array,
     dataType: String,
+    numSvgs: {
+      type: Number,
+      default: 1
+    },
     figureRef: String
   },
   components: {
@@ -55,6 +59,9 @@ export default Vue.extend({
         return this.sources;
       }
     },
+    copyable() {
+      return( this.numSvgs <= this.copyThreshold);
+    },
     sourceString() {
       return (this.filteredSources.map(d => d.scope ? `${d.name} (${d.scope})` : `${d.name}`).join("; ") + ", updated daily")
     },
@@ -65,7 +72,8 @@ export default Vue.extend({
   data() {
     return {
       showSnackbar: false,
-      snackbarText: "copying figure to the clipboard"
+      snackbarText: "copying figure to the clipboard",
+      copyThreshold: 9
     };
   },
   watch: {},
