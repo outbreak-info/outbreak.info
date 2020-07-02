@@ -73,10 +73,10 @@ function getHeader(width, title) {
 }
 
 
-function getFooter(width, height, sources, date) {
-  return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="50" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
+function getFooter(width, height, sources, date, footerHeight = 50) {
+  return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
   <g id="background">
-  <rect width="${width}" height="50" style="fill: #dee2e6"></rect>
+  <rect width="${width}" height="${footerHeight}" style="fill: #dee2e6"></rect>
   </g>
 
       <g id="top_border">
@@ -182,7 +182,8 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 
 export function getPng(selector, sources, date, download = false, filename = "outbreakinfo_visualization.png") {
   return new Promise((resolve, reject) => {
-    const spacer = 25
+    const spacer = 25;
+    const footerHeight = 50;
     var document = global.document,
       body = document.body,
       forEach = Array.prototype.forEach,
@@ -194,9 +195,11 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       reject("Error: no svg found with that selector")
     }
 
-    const numAcross = numSvgs > 2 ? Math.ceil(Math.sqrt(numSvgs)) : numSvgs;
+    const numAcross = numSvgs > 3 ? Math.ceil(Math.sqrt(numSvgs)) : numSvgs;
     var canvasWidth = 0;
-
+    var canvasHeight = 0;
+    var counter = 0;
+    console.log(numAcross);
 
     var canvas = document.createElement("canvas"),
       context = canvas.getContext("2d"),
@@ -219,13 +222,16 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         imageHeader = new Image,
         imageFooter = new Image;
 
-        // update the width of the canvas
-        canvasWidth = canvasWidth + spacer + width;
-        console.log(canvasWidth)
+      // update the width of the canvas
+      const rowNum = Math.floor(i / numAcross);
+      const colNum = i % 3;
+      canvasWidth = rowNum === 0 ? canvasWidth + spacer + width : canvasWidth;
+      canvasHeight = colNum === 0 ? canvasHeight + spacer + height : canvasHeight;
+      console.log(canvasHeight)
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       const header = getHeader(rect.width, title);
-      const footer = getFooter(canvasWidth, -15, sources, date);
+      const footer = getFooter(canvasWidth / ratio, -15, sources, date, footerHeight);
 
       var source = (new XMLSerializer()).serializeToString(svg);
 
@@ -244,14 +250,19 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
       image.onload = function() {
         setTimeout(function() {
+          console.log(`row: ${rowNum}; col: ${colNum}`)
+          console.log(i + ": " + title)
+          console.log(counter)
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
-          context.drawImage(image, i * (width + spacer), 35, width, height);
-          context.drawImage(imageHeader, i * (width + spacer), 0, width, 18 * ratio);
+          context.drawImage(image, colNum * (width + spacer), rowNum * (height + spacer) + 35, width, height);
+          context.drawImage(imageHeader, colNum * (width + spacer), rowNum * (height + spacer), width, 18 * ratio);
+          counter = counter + 1;
           // only draw the footer on the last image
-          if (i === numSvgs-1) {
-            context.drawImage(imageFooter, 0, height, canvasWidth*ratio, 50 * ratio);
+          if (counter === numSvgs) {
+            console.log("adding footer")
+            context.drawImage(imageFooter, 0, height + rowNum * (height + spacer), canvasWidth, footerHeight * ratio);
           }
-          if (download && i === numSvgs - 1) {
+          if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
               var a = document.createElement("a"),
                 aUrl = URL.createObjectURL(blob);
@@ -269,6 +280,13 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // copy
           else {
             if (navigator.clipboard) {
+// garbage collect
+              setTimeout(function() {
+                a.click();
+                aUrl = URL.revokeObjectURL(aUrl);
+                imageUrl = URL.revokeObjectURL(imageUrl);
+                body.removeChild(a);
+              }, 10);
 
               canvas.toBlob(blob => {
                 var data = [new ClipboardItem({
@@ -276,7 +294,9 @@ export function getPng(selector, sources, date, download = false, filename = "ou
                 })];
 
                 navigator.clipboard.write(data).then(function() {
+                  if(i === numSvgs - 1) {
                   resolve("copied to the clipboard")
+                }
                 }, function() {
                   console.error("Unable to write to clipboard. :-(");
                   resolve("sorry; copying this figure is unavailable")
@@ -288,8 +308,8 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         }, 10);
       };
 
-      canvas.width = (width+spacer)*numSvgs;
-      canvas.height = height + 50 * ratio;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight + footerHeight*ratio;
       image.src = imageUrl;
       imageHeader.src = headerUrl;
       imageFooter.src = footerUrl;
