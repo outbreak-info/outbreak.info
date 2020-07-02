@@ -1,6 +1,7 @@
 // initial state
 const state = {
   loading: false,
+  dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   outbreak: {
     authors: "Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."
   },
@@ -222,6 +223,15 @@ const state = {
         query: {
           q: "remdesivir"
         }
+      }
+    },
+    {
+      date: new Date("2020-07-02 0:0"),
+      category: "feature",
+      title: "Added world and U.S. choropleths",
+      description: "Added choropleths of daily new cases and deaths (7 day rolling average) and two-week change in average cases and deaths.",
+      route: {
+        name: "Compare"
       }
     },
     {
