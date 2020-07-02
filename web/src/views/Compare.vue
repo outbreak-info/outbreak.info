@@ -205,7 +205,7 @@ export default {
   data() {
     return {
       colorScale: null,
-      numColors: 11,
+      numColors: null,
       data: [],
       dataSubscription: null,
       selectedVariable: null,
@@ -270,6 +270,8 @@ export default {
   },
   methods: {
     getData() {
+      // reset, if the scale was padded
+      this.numColors = 11;
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 1000).subscribe(results => {
         results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
 
@@ -281,11 +283,14 @@ export default {
 
         // color range
         var colorRange;
+        // DIVERGING
         if (["confirmed_change", "dead_change"].includes(this.selectedVariable.value)) {
           // ensure that the diverging scale is centered at 0.
           const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
-          var padLength = (domain.length / 2) - midpoint;
-          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that
+
+          var padLength = domain.length - 2 * midpoint - 2;
+          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
+
           if (padLength < 0) {
             domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
           } else if (padLength > 0) {
@@ -293,8 +298,10 @@ export default {
           }
           this.numColors = domain.length - 1;
 
-          colorRange = range(0, 1, 1 / (this.numColors)).map(d => interpolateRdYlBu(d)).reverse();
+          // calculate colors
+          colorRange = range(0, 1.01, 1 / (this.numColors-1)).map(d => interpolateRdYlBu(d)).reverse();
         } else {
+          // SEQUENTIAL
           colorRange = range(0, 0.5, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
         }
 
