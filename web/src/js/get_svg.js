@@ -65,7 +65,8 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
 }
 
 function getHeader(width, title) {
-  return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} 25" width="${width}" height="20" preserveAspectRatio="xMidYMid meet">
+  // view box needs to be a bit bigger to not get cut off
+  return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} 29" width="${width}" height="20" preserveAspectRatio="xMidYMid meet">
   <text x="0" y="0" transform="translate(10,10)" fill="currentColor"
     style="dominant-baseline: hanging; font-size:18px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
   ${title.replace("&", "and")}</text>
@@ -259,7 +260,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            console.log("adding footer")
+            // console.log("adding footer")
             context.drawImage(imageFooter, 0, height + rowNum * (height + spacer), canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
@@ -284,7 +285,10 @@ export function getPng(selector, sources, date, download = false, filename = "ou
             if (navigator.clipboard) {
               // garbage collect
               setTimeout(function() {
+                console.log("garbage collecting")
+                console.log(imageUrl)
                 imageUrl = URL.revokeObjectURL(imageUrl);
+                console.log(imageUrl)
                 headerUrl = URL.revokeObjectURL(headerUrl);
                 footerUrl = URL.revokeObjectURL(footerUrl);
               }, 10);
