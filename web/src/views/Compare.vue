@@ -1,18 +1,25 @@
 <template>
 <div class="full-page p-5 bg-light">
   <!-- loading -->
-  <div v-if="loading" class="loader">
+  <div v-if="dataloading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
+<div class="d-flex justify-content-between">
+
+
   <!-- Region buttons -->
   <div class="d-flex flex-wrap">
-    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All countries</router-link>
+    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All
+      countries</router-link>
     <div class="d-flex flex-column">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
+        :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
       <div class="d-flex">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas</router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas
+        </router-link>
+        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
+          :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
       </div>
     </div>
 
@@ -25,14 +32,15 @@
   </div>
 
   <!-- variable options -->
-  <div class="row d-flex justify-content-end">
+  <div class="row d-flex justify-content-end align-items-center">
     <select v-model="selectedVariable" class="select-dropdown">
       <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
       </option>
     </select>
   </div>
+  </div>
 
-  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.label" />
+  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 
@@ -56,32 +64,15 @@
             <th class="text-left">
               location
             </th>
-            <th
-              v-for="(column, idx) in columns"
-              :key="idx"
-              :id="`th-${column.value}`"
-              :class="{
+            <th v-for="(column, idx) in columns" :key="idx" :id="`th-${column.value}`" :class="{
                 sortable: `${column.sorted} 'px-3 pointer'`,
                 'd-none d-md-table-cell px-3 pointer': !column.essential
-              }"
-              @click="sortColumn(column)"
-            >
+              }" @click="sortColumn(column)">
               <div class="sort-grp">
                 {{ column.label }}
-                <font-awesome-icon
-                  :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']"
-                  :icon="['fas', 'sort']"
-                />
-                <font-awesome-icon
-                  class="sort-btn"
-                  :icon="['fas', 'arrow-up']"
-                  v-if="column.sorted === 1"
-                />
-                <font-awesome-icon
-                  class="sort-btn"
-                  :icon="['fas', 'arrow-down']"
-                  v-if="column.sorted === -1"
-                />
+                <font-awesome-icon :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']" :icon="['fas', 'sort']" />
+                <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === 1" />
+                <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === -1" />
               </div>
             </th>
           </tr>
@@ -95,10 +86,10 @@
               </router-link>
             </td>
             <td>
-              {{item.confirmed_numIncrease ? item.confirmed_numIncrease.toLocaleString() : ""}}
+              {{item.confirmed_rolling ? formatNumber(item.confirmed_rolling) : ""}}
             </td>
             <td>
-              {{item.dead_numIncrease ? item.dead_numIncrease.toLocaleString() : ""}}
+              {{item.dead_rolling ? formatNumber(item.dead_rolling) : ""}}
             </td>
             <td>
               {{item.confirmed_change ? formatNumber(item.confirmed_change) : ""}}
@@ -134,10 +125,10 @@ import {
   range
 } from "d3";
 import {
-  interpolateYlGnBu,
-  interpolateBrBG,
-  interpolatePRGn,
-  interpolatePiYG,
+  // interpolateYlGnBu,
+  // interpolateBrBG,
+  // interpolatePRGn,
+  // interpolatePiYG,
   interpolateRdYlBu
 } from "d3-scale-chromatic";
 
@@ -170,46 +161,72 @@ export default {
     FontAwesomeIcon
   },
   props: {
-    admin_level: String,
+    admin_level: {
+      type: String,
+      default: "0"
+    },
+    variable: {
+      type: String,
+      default: "confirmed_change"
+    },
     location: String,
-    sort: String
+    sort: String,
   },
   watch: {
+    variable: {
+      immediate: true,
+      handler(newVar, oldVar) {
+        const filtered = this.variableOptions.filter(d => d.value === newVar);
+        this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
+      }
+    },
     selectedVariable() {
-      this.getData();
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: this.location,
+          admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
+          sort: this.sortVariable.value
+        }
+      });
     },
-    admin_level() {
-      this.getData();
+    sortVariable() {
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: this.location,
+          admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
+          sort: this.sortVariable.value
+        }
+      });
     },
-    location() {
+    '$route.params'() {
       this.getData();
     }
   },
   data() {
     return {
       colorScale: null,
-      numColors: 11,
+      numColors: null,
       data: [],
       dataSubscription: null,
-      selectedVariable: {
-        label: "2 week change in cases/day",
-        value: "confirmed_change"
-      },
+      selectedVariable: null,
       sortVariable: {
         label: "2 week change in cases/day",
         value: "confirmed_change"
       },
-      columns: [
-        {
-          label: "new cases today",
-          value: "confirmed_numIncrease",
-          sort_id: "confirmed_numIncrease",
+      columns: [{
+          label: "average new cases/day",
+          value: "confirmed_rolling",
+          sort_id: "confirmed_rolling",
           sorted: 0
         },
         {
-          label: "new deaths today",
-          value: "dead_numIncrease",
-          sort_id: "dead_numIncrease",
+          label: "average new deaths/day",
+          value: "dead_rolling",
+          sort_id: "dead_rolling",
           sorted: 0
         },
         {
@@ -221,18 +238,22 @@ export default {
       ],
       variableOptions: [{
           label: "new cases/day",
+          choro: "average new cases/day",
           value: "confirmed_rolling"
         },
         {
           label: "new deaths/day",
+          choro: "average new deaths/day",
           value: "dead_rolling"
         },
         {
           label: "2 week change in cases/day",
+          choro: "cases vs. 2 weeks ago",
           value: "confirmed_change"
         },
         {
           label: "2 week change in deaths/day",
+          choro: "deaths vs. 2 weeks ago",
           value: "dead_change"
         }
 
@@ -240,7 +261,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("admin", ["loading"]),
+    ...mapState("admin", ["dataloading"]),
     numResults() {
       return (this.data.length)
     }
@@ -253,18 +274,10 @@ export default {
   },
   methods: {
     getData() {
-      this.$router.push({
-        path: "maps",
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          sort: this.sortVariable.value
-        }
-      });
-
+      // reset, if the scale was padded
+      this.numColors = 11;
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 1000).subscribe(results => {
-        results.sort((a,b) => b[this.sortVariable.value] - a[this.sortVariable.value])
+        results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
 
         this.data = results;
 
@@ -274,11 +287,14 @@ export default {
 
         // color range
         var colorRange;
+        // DIVERGING
         if (["confirmed_change", "dead_change"].includes(this.selectedVariable.value)) {
           // ensure that the diverging scale is centered at 0.
           const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
-          var padLength = (domain.length / 2) - midpoint;
-          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that
+
+          var padLength = domain.length - 2 * midpoint - 2;
+          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
+
           if (padLength < 0) {
             domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
           } else if (padLength > 0) {
@@ -286,9 +302,11 @@ export default {
           }
           this.numColors = domain.length - 1;
 
-          colorRange = range(0, 1, 1 / (this.numColors)).map(d => interpolateRdYlBu(d)).reverse();
+          // calculate colors
+          colorRange = range(0, 1.01, 1 / (this.numColors-1)).map(d => interpolateRdYlBu(d)).reverse();
         } else {
-          colorRange = range(0, 0.5, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
+          // SEQUENTIAL
+          colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
         }
 
         this.colorScale = scaleQuantile()
@@ -314,7 +332,7 @@ export default {
       })
 
       // previously unsorted or sorted asc; sort desc.
-      if(sortVal === 0 || sortVal === 1) {
+      if (sortVal === 0 || sortVal === 1) {
         this.columns[idx].sorted = -1;
         this.data.sort((a, b) => b[selected.sort_id] - a[selected.sort_id]);
       } else {
@@ -334,39 +352,44 @@ export default {
 }
 
 td {
-  padding: 5px;
-  text-align: center;
-  vertical-align: middle;
-  border: none;
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
 }
 
 th {
-  font-size: 0.95em;
-  font-weight: 400;
-  color: $grey-70;
+    font-size: 0.95em;
+    font-weight: 400;
+    color: $grey-70;
 }
 
 .sort-hover {
-  display: none;
+    display: none;
 }
 
 .sort-grp.hover .sort-hover,
 .sort-grp:hover .sort-hover {
-  display: inline;
+    display: inline;
 }
 
 table {
-  border-collapse: collapse;
-  font-size: 0.85em;
+    border-collapse: collapse;
+    font-size: 0.85em;
 }
 
 tr {
-  border-bottom: 1px solid #cacaca;
-  // border-bottom: 1px solid $grey-40;
+    border-bottom: 1px solid #cacaca;
+    // border-bottom: 1px solid $grey-40;
 }
 
 tr.table-header-merged {
-  border-bottom: none;
-  // border-bottom: 1px solid $grey-40;
+    border-bottom: none;
+    // border-bottom: 1px solid $grey-40;
+}
+
+.btn-main-outline.active {
+    background: $primary-color !important;
+    color: white;
 }
 </style>
