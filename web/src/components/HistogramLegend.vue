@@ -3,7 +3,7 @@
   <div>
     {{variableLabel}}
   </div>
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom*2" ref="legend_svg">
+  <svg class="epi-map-svg epi-map-legend" name="" :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom*2" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
     <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
