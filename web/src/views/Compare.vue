@@ -5,9 +5,7 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-<div class="d-flex justify-content-between">
-
-
+<div class="d-flex">
   <!-- Region buttons -->
   <div class="d-flex flex-wrap">
     <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All
@@ -32,7 +30,7 @@
   </div>
 
   <!-- variable options -->
-  <div class="row d-flex justify-content-end align-items-center">
+  <div class="row d-flex ml-5 align-items-center">
     <select v-model="selectedVariable" class="select-dropdown">
       <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
       </option>

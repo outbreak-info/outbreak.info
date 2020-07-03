@@ -6,9 +6,11 @@
   </svg>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
-    <p class="value m-0 mb-3"></p>
+    <p class="value m-0"></p>
+      <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last 4 days)</small>
+
     <template v-if="timeTrace">
-      <small class="m-0">new cases per day</small>
+      <small class="m-0 mt-3">new cases per day</small>
       <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
       <small class="m-0">new deaths per day</small>
       <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
@@ -215,7 +217,7 @@ export default {
             this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
             this.regionData.features[idx]["tooltip"] = this.variable.includes("_change") ?
               (d[this.variable] < 0 ? `${d3.format(",.1f")(-1*d[this.variable])} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
-              `${this.regionData.features[idx]["value"]} ${this.variableLabel}`;
+              `<b>${this.regionData.features[idx]["value"]}</b> ${this.variableLabel}`;
             // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
         })

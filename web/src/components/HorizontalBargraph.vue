@@ -120,8 +120,10 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-rect {
-    stroke: $grey-70;
+.horizontal-bargraph {
+    rect {
+        stroke: $grey-70;
+    }
 }
 
 .horizontal-bargraph-y path {
