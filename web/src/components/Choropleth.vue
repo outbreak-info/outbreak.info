@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex flex-wrap align-items-center" ref="map_container" id="map_container">
+<div class="d-flex flex-wrap justify-content-center align-items-center" ref="map_container" id="map_container">
   <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
@@ -128,15 +128,17 @@ export default {
   },
   methods: {
     setDims() {
-      const whRatio = 10 / 7;
+      const whRatio = 1.72; // based on the
       const selector = this.$refs.map_container;
       const marginLegend = 25;
-      const selectorsProportion = 0.9;
+      const selectorsProportion = 1;
 
       if (selector) {
         const dims = selector.getBoundingClientRect();
 
-        this.width = dims.width - marginLegend - this.widthLegend;
+        this.width = dims.width >= 600 ? dims.width - marginLegend - this.widthLegend : dims.width;
+        this.widthLegend = dims.width >= 225 ? this.widthLegend : dims.width; // make legend smaller on small screens
+
         const idealHeight = this.width / whRatio;
         if (idealHeight < window.innerHeight * selectorsProportion) {
           this.height = idealHeight * selectorsProportion;
