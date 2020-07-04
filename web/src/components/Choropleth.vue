@@ -1,14 +1,16 @@
 <template>
-<div class="d-flex flex-wrap align-items-center" ref="map_container" id="map_container">
+<div class="d-flex flex-wrap justify-content-center align-items-center" ref="map_container" id="map_container">
   <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
     <g ref="regions" class="region-group"></g>
     <g ref="states" class="state-group"></g>
   </svg>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
-    <p class="value m-0 mb-3"></p>
+    <p class="value m-0"></p>
+      <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last 4 days)</small>
+
     <template v-if="timeTrace">
-      <small class="m-0">new cases per day</small>
+      <small class="m-0 mt-3">new cases per day</small>
       <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
       <small class="m-0">new deaths per day</small>
       <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
@@ -128,15 +130,17 @@ export default {
   },
   methods: {
     setDims() {
-      const whRatio = 10 / 7;
+      const whRatio = 1.72; // based on the
       const selector = this.$refs.map_container;
       const marginLegend = 25;
-      const selectorsProportion = 0.9;
+      const selectorsProportion = 1;
 
       if (selector) {
         const dims = selector.getBoundingClientRect();
 
-        this.width = dims.width - marginLegend - this.widthLegend;
+        this.width = dims.width >= 600 ? dims.width - marginLegend - this.widthLegend : dims.width;
+        this.widthLegend = dims.width >= 225 ? this.widthLegend : dims.width; // make legend smaller on small screens
+
         const idealHeight = this.width / whRatio;
         if (idealHeight < window.innerHeight * selectorsProportion) {
           this.height = idealHeight * selectorsProportion;
@@ -213,7 +217,7 @@ export default {
             this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
             this.regionData.features[idx]["tooltip"] = this.variable.includes("_change") ?
               (d[this.variable] < 0 ? `${d3.format(",.1f")(-1*d[this.variable])} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
-              `${this.regionData.features[idx]["value"]} ${this.variableLabel}`;
+              `<b>${this.regionData.features[idx]["value"]}</b> ${this.variableLabel}`;
             // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
           }
         })
