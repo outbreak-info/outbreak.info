@@ -90,7 +90,7 @@
               {{item.dead_rolling ? formatNumber(item.dead_rolling) : ""}}
             </td>
             <td>
-              {{item.confirmed_change ? formatNumber(item.confirmed_change) : ""}}
+              {{item.confirmed_rolling_14days_ago_diff ? formatNumber(item.confirmed_rolling_14days_ago_diff) : ""}}
             </td>
 
           </tr>
@@ -165,7 +165,7 @@ export default {
     },
     variable: {
       type: String,
-      default: "confirmed_change"
+      default: "confirmed_rolling_14days_ago_diff"
     },
     location: String,
     sort: String,
@@ -213,7 +213,7 @@ export default {
       selectedVariable: null,
       sortVariable: {
         label: "2 week change in cases/day",
-        value: "confirmed_change"
+        value: "confirmed_rolling_14days_ago_diff"
       },
       columns: [{
           label: "average new cases/day",
@@ -229,8 +229,8 @@ export default {
         },
         {
           label: "2 week change in cases/day",
-          value: "confirmed_change",
-          sort_id: "confirmed_change",
+          value: "confirmed_rolling_14days_ago_diff",
+          sort_id: "confirmed_rolling_14days_ago_diff",
           sorted: -1
         }
       ],
@@ -247,12 +247,12 @@ export default {
         {
           label: "2 week change in cases/day",
           choro: "cases vs. 2 weeks ago",
-          value: "confirmed_change"
+          value: "confirmed_rolling_14days_ago_diff"
         },
         {
           label: "2 week change in deaths/day",
           choro: "deaths vs. 2 weeks ago",
-          value: "dead_change"
+          value: "dead_rolling_14days_ago_diff"
         }
 
       ]
@@ -274,19 +274,19 @@ export default {
     getData() {
       // reset, if the scale was padded
       this.numColors = 11;
-      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.sortVariable.value, 0, 1000).subscribe(results => {
-        results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
+      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value).subscribe(results => {
+        // results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
 
         this.data = results;
 
         // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
         // Forcing to be centered at 0 for the midpoint after the breaks are calculated
-        var domain = jenks(results.map(d => d[this.selectedVariable.value]), (this.numColors));
+        var domain = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d), (this.numColors));
 
         // color range
         var colorRange;
         // DIVERGING
-        if (["confirmed_change", "dead_change"].includes(this.selectedVariable.value)) {
+        if (["confirmed_rolling_14days_ago_diff", "dead_rolling_14days_ago_diff"].includes(this.selectedVariable.value)) {
           // ensure that the diverging scale is centered at 0.
           const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
 
