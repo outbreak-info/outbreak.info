@@ -44,57 +44,29 @@ export function getComparisonData(apiUrl, location, adminLevel, sort, page, size
     )
 }
 
-export function getCurrentData(apiUrl, queryString, sort, page, size) {
+export function getCurrentData(apiUrl, queryString, variable, sort) {
   const parseDate = timeParse("%Y-%m-%d");
-  const formatDate = timeFormat("%Y-%m-%d");
 
-  const fields = "date,location_id,name,state_name,country_iso3,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_pctIncrease,dead_rolling";
+  const fields = "date,location_id,name,state_name,country_iso3," + variable;
 
-  return from(
-    axios.get(
-      `${apiUrl}query?q=mostRecent:true&fields=date&size=1&sort=-date`
+  // const qString = `(${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
+  const qString = `mostRecent:true AND (${queryString})&sort=-date,${sort}&fields=${fields}`;
+
+  return getAll(apiUrl, qString)
+    .pipe(
+      map(results => {
+        results.forEach(result => {
+          result["datetime"] = parseDate(result.date);
+        })
+
+        results.sort((a, b) => b.datetime < a.datetime ? -1 : 1);
+
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting current data!", "color: red");
+        console.log(e);
+        return from([]);
+      })
     )
-  ).pipe(
-    pluck("data", "hits"),
-    mergeMap(maxDate => {
-      const currentDate = parseDate(maxDate[0].date);
-      const twoWeeks = timeDay.offset(currentDate, -14);
-
-      const qString = `(date:"${maxDate[0].date}" OR date:"${formatDate(twoWeeks)}") AND (${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
-
-      return getAll(apiUrl, qString)
-        .pipe(
-          map(results => {
-            results.forEach(result => {
-              result["datetime"] = parseDate(result.date);
-            })
-
-            results.sort((a, b) => b.datetime < a.datetime ? -1 : 1);
-
-            const nested = nest()
-              .key(d => d.location_id)
-              .rollup(values => {
-                return ({
-                  location_id: values[0].location_id,
-                  country_iso3: values[0].country_iso3,
-                  name: values[0].name,
-                  date: values[0].date,
-                  datetime: values[0].datetime,
-                  dead_rolling: values[0].dead_rolling,
-                  confirmed_rolling: values[0].confirmed_rolling,
-                  confirmed_change: values.length == 2 ? values[0].confirmed_rolling - values[1].confirmed_rolling : null,
-                  dead_change: values.length == 2 ? values[0].dead_rolling - values[1].dead_rolling : null
-                })
-              })
-              .entries(results).map(d => d.value);
-
-            return (nested)
-          }),
-          catchError(e => {
-            console.log("%c Error in getting current data!", "color: red");
-            console.log(e);
-            return from([]);
-          })
-        )
-    }))
 }

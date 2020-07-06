@@ -215,7 +215,7 @@ export default {
             this.regionData.features[idx]["location_id"] = d.location_id;
             this.regionData.features[idx]["name"] = d.name;
             this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
-            this.regionData.features[idx]["tooltip"] = this.variable.includes("_change") ?
+            this.regionData.features[idx]["tooltip"] = this.variable.includes("_14days_ago") ?
               (d[this.variable] < 0 ? `${d3.format(",.1f")(-1*d[this.variable])} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
               `<b>${this.regionData.features[idx]["value"]}</b> ${this.variableLabel}`;
             // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
