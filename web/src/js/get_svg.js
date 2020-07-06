@@ -3,7 +3,15 @@ const prefix = {
   xlink: "http://www.w3.org/1999/xlink",
   svg: "http://www.w3.org/2000/svg"
 }
-import { selectAll } from "d3";
+
+var canvas = document.createElement("canvas"),
+  context = canvas.getContext("2d"),
+  ratio = global.devicePixelRatio || 1;
+
+import {
+  selectAll,
+  select
+} from "d3";
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
 export function getSvg(figureRef, sources, date) {
@@ -188,10 +196,12 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 // Thanks, Mike.
 
 export function getPng(selector, sources, date, download = false, filename = "outbreakinfo_visualization.png") {
-// make sure no tooltips are active
-selectAll("path").style("opacity", 1);
-// selectAll("rect").style("opacity", 1);
-selectAll("text").style("opacity", 1);
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+  // make sure no tooltips are active
+  selectAll("path").style("opacity", 1);
+  // selectAll("rect").style("opacity", 1);
+  selectAll("text").style("opacity", 1);
 
   return new Promise((resolve, reject) => {
     const spacer = 25;
@@ -212,17 +222,17 @@ selectAll("text").style("opacity", 1);
     var canvasHeight = 0;
     var counter = 0;
 
-    var canvas = document.createElement("canvas"),
-      context = canvas.getContext("2d"),
-      ratio = global.devicePixelRatio || 1;
 
     forEach.call(svgs, function(svg, i) {
       if (svg.namespaceURI !== "http://www.w3.org/2000/svg") return; // Not really an SVG.
       if (svg.ownerSVGElement) return; // An SVG within another SVG.
 
-      forEach.call(styles, function(style) {
-        svg.appendChild(style.cloneNode(true));
-      });
+      // Only append the styles IF they don't exist
+      if (!select(svg).selectAll("style").nodes().length) {
+        forEach.call(styles, function(style) {
+          svg.appendChild(style.cloneNode(true));
+        });
+      }
 
       var
         title = svg.getAttribute("name"),
@@ -257,15 +267,14 @@ selectAll("text").style("opacity", 1);
         type: "image/svg+xml"
       }));
 
-
       image.onload = function() {
         setTimeout(function() {
-          console.log("\n")
-          console.log(title)
-          console.log(width)
-          console.log(canvasWidth)
-          console.log(`${colNum}, ${rowNum}`)
-          console.log(`${colNum * (width + spacer)}, ${rowNum * (height + spacer)}`)
+          // console.log("\n")
+          // console.log(title)
+          // console.log(width)
+          // console.log(canvasWidth)
+          // console.log(`${colNum}, ${rowNum}`)
+          // console.log(`${colNum * (width + spacer)}, ${rowNum * (height + spacer)}`)
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
           context.drawImage(image, colNum * (width + spacer), rowNum * (height + spacer) + 35, width, height);
           context.drawImage(imageHeader, colNum * (width + spacer), rowNum * (height + spacer), width, 18 * ratio);
@@ -295,28 +304,39 @@ selectAll("text").style("opacity", 1);
           }
           // copy
           else {
+            setTimeout(function() {
+              imageUrl = URL.revokeObjectURL(imageUrl);
+              headerUrl = URL.revokeObjectURL(headerUrl);
+              footerUrl = URL.revokeObjectURL(footerUrl);
+            }, 10);
+
             if (navigator.clipboard) {
-              // garbage collect
-              setTimeout(function() {
-                imageUrl = URL.revokeObjectURL(imageUrl);
-                headerUrl = URL.revokeObjectURL(headerUrl);
-                footerUrl = URL.revokeObjectURL(footerUrl);
-              }, 10);
-
-
 
               if (counter === numSvgs) {
-                console.log("copied")
-                // resolve("DONE")
+                // console.log("copied")
                 canvas.toBlob(blob => {
                   var data = [new ClipboardItem({
                     "image/png": blob
                   })];
 
                   navigator.clipboard.write(data).then(function() {
+                    // garbage collect
+                    setTimeout(function() {
+                      imageUrl = URL.revokeObjectURL(imageUrl);
+                      headerUrl = URL.revokeObjectURL(headerUrl);
+                      footerUrl = URL.revokeObjectURL(footerUrl);
+                    }, 10);
+
                     resolve("copied to the clipboard")
 
                   }, function() {
+                    // garbage collect
+                    setTimeout(function() {
+                      imageUrl = URL.revokeObjectURL(imageUrl);
+                      headerUrl = URL.revokeObjectURL(headerUrl);
+                      footerUrl = URL.revokeObjectURL(footerUrl);
+                    }, 10);
+
                     console.error("Unable to write to clipboard. :-(");
                     resolve("sorry; copying this figure is unavailable")
                   });
