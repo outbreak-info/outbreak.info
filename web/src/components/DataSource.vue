@@ -60,7 +60,8 @@ export default Vue.extend({
       }
     },
     copyable() {
-      return( this.numSvgs <= this.copyThreshold);
+      console.log()
+      return( this.numSvgs <= this.copyThreshold && typeof(ClipboardItem) == "function");
     },
     sourceString() {
       return (this.filteredSources.map(d => d.scope ? `${d.name} (${d.scope})` : `${d.name}`).join("; ") + ", updated daily")
