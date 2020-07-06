@@ -248,6 +248,19 @@ const state = {
       }
     },
     {
+      date: new Date("2020-07-06 0:0"),
+      category: "feature",
+      title: "Overlaid 7-day rolling averages for case counts",
+      description: 'Compare 7-day rolling averages between locations directly.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "USA_US-NY;USA_US-TX;USA_US-FL",
+          variable: 'confirmed_rolling'
+        }
+      }
+    },
+    {
       date: new Date("2020-06-12 0:0"),
       category: "data",
       title: "Added Harvard Dataverse",
