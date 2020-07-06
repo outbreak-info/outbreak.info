@@ -804,6 +804,7 @@ export default Vue.extend({
 .annotation--region-name {
     dominant-baseline: middle;
     stroke: none !important;
+    font-family: $font-family;
 }
 
 .tooltip--text {
