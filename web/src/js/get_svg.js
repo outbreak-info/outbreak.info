@@ -247,7 +247,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       const rowNum = Math.floor(i / numAcross);
       const colNum = i % numAcross;
       canvasWidth = rowNum === 0 ? canvasWidth + spacer + width : canvasWidth;
-      canvasHeight = colNum === 0 ? canvasHeight + spacer + height : canvasHeight;
+      canvasHeight = colNum === 0 ? canvasHeight + spacer*3 + height : canvasHeight;
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       const header = getHeader(rect.width, title);
@@ -283,7 +283,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // only draw the footer on the last image
           if (counter === numSvgs) {
             // console.log("adding footer")
-            context.drawImage(imageFooter, 0, height + rowNum * (height + spacer), canvasWidth, footerHeight * ratio);
+            context.drawImage(imageFooter, 0, height + rowNum * (height + spacer)+spacer*2, canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
