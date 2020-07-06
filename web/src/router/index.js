@@ -4,6 +4,8 @@ import Home from "../views/Home.vue";
 import Privacy from "../views/Privacy.vue";
 import Terms from "../views/Terms.vue";
 
+import store from "@/store";
+
 Vue.use(VueRouter);
 
 const routes = [{
@@ -212,5 +214,14 @@ const router = new VueRouter({
     }
   }
 });
+
+// add loading icon between routes
+router.beforeEach((to, from, next) => {
+  store.commit("admin/setLoading", true);
+  next();
+})
+router.afterEach((to, from) => {
+  store.commit("admin/setLoading", false);
+})
 
 export default router;
