@@ -211,6 +211,8 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       forEach = Array.prototype.forEach,
       styles = document.querySelectorAll("style");
 
+      console.log(styles)
+
     const svgs = document.querySelectorAll(selector);
     const numSvgs = svgs.length;
     if (numSvgs === 0) {
@@ -230,9 +232,11 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
       // Only append the styles IF they don't exist
       if (!select(svg).selectAll("style").nodes().length) {
+        console.log("appending")
         forEach.call(styles, function(style) {
           svg.appendChild(style.cloneNode(true));
         });
+        console.log(svg)
       }
 
       var

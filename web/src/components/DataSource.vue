@@ -60,7 +60,6 @@ export default Vue.extend({
       }
     },
     copyable() {
-      console.log()
       return( this.numSvgs <= this.copyThreshold && typeof(ClipboardItem) == "function");
     },
     sourceString() {
@@ -97,12 +96,13 @@ export default Vue.extend({
         setTimeout(() => {
           this.showSnackbar = false;
         }, 3000);
-      }).catch(error => {
+      }).catch((error) => {
+        console.log(error)
         this.snackbarText = "Error copying image";
         setTimeout(() => {
           this.showSnackbar = false;
         }, 3000);
-        console.log("Error: no svg found with that selector")
+        console.log("Error: in copying that image")
       });
     }
   }
