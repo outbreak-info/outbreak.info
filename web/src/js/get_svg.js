@@ -88,7 +88,7 @@ function getHeader(width, title) {
 }
 
 
-function getFooter(width, height, sources, date, footerHeight = 50) {
+function getFooter(width, height, sources, date, footerHeight = 55) {
   return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
   <g id="background">
   <rect width="${width}" height="${footerHeight}" style="fill: #dee2e6"></rect>
@@ -221,6 +221,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
     var canvasWidth = 0;
     var canvasHeight = 0;
     var counter = 0;
+    var widths = [];
 
 
     forEach.call(svgs, function(svg, i) {
@@ -247,7 +248,13 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       const rowNum = Math.floor(i / numAcross);
       const colNum = i % numAcross;
       canvasWidth = rowNum === 0 ? canvasWidth + spacer + width : canvasWidth;
+      if(i != 0) {
+        widths.push(widths[i-1])
+      } else {
+        widths.push(width);
+      }
       canvasHeight = colNum === 0 ? canvasHeight + spacer*3 + height : canvasHeight;
+
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       const header = getHeader(rect.width, title);
@@ -272,18 +279,18 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // console.log("\n")
           // console.log(title)
           // console.log(width)
+          // console.log(widths)
           // console.log(canvasWidth)
           // console.log(`${colNum}, ${rowNum}`)
-          // console.log(`${colNum * (width + spacer)}, ${rowNum * (height + spacer)}`)
+          // console.log(`${colNum * (widths[i] + spacer)}, ${rowNum * (height + spacer)}`)
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
-          context.drawImage(image, colNum * (width + spacer), rowNum * (height + spacer) + 35, width, height);
+          context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (height + spacer) + 35, width, height);
           context.drawImage(imageHeader, colNum * (width + spacer), rowNum * (height + spacer), width, 18 * ratio);
           counter = counter + 1;
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            // console.log("adding footer")
-            context.drawImage(imageFooter, 0, height + rowNum * (height + spacer)+spacer*2, canvasWidth, footerHeight * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight - spacer*2, canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
