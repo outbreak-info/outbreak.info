@@ -11,7 +11,6 @@ export function getSvg(figureRef, sources, date) {
   selectAll("path").style("opacity", 1);
   // selectAll("rect").style("opacity", 1);
   selectAll("text").style("opacity", 1);
-  selectAll("circle").style("opacity", 1);
 
   const refs = document.getElementsByClassName(figureRef);
   var emptySvg = window.document.createElementNS(prefix.svg, 'svg');
@@ -193,7 +192,6 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 selectAll("path").style("opacity", 1);
 // selectAll("rect").style("opacity", 1);
 selectAll("text").style("opacity", 1);
-selectAll("circle").style("opacity", 1);
 
   return new Promise((resolve, reject) => {
     const spacer = 25;
