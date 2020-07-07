@@ -89,7 +89,22 @@ function getHeader(width, title) {
 
 
 function getFooter(width, height, sources, date, footerHeight = 55) {
-  return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
+  // lazy way to wrap
+  var sourceString;
+  if(width > 700){
+    sourceString = `<text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 10px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: ${sources}</text>`;
+  } else {
+    const sourceArr = sources.split(" ");
+    const half = Math.floor(sourceArr.length / 2);
+    sourceString = `<text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 10px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">
+    <tspan x="0" dy="0">Source: ${sourceArr.slice(0, half).join(" ")}</tspan>
+    <tspan x="0" dy="1.1em" >${sourceArr.slice(half).join(" ")}</tspan>
+    </text>`
+    footerHeight = footerHeight + 16;
+  }
+
+
+  return ({height: footerHeight, svg:`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
   <g id="background">
   <rect width="${width}" height="${footerHeight}" style="fill: #dee2e6"></rect>
   </g>
@@ -143,10 +158,10 @@ function getFooter(width, height, sources, date, footerHeight = 55) {
       </g>
 
       <g id="sources" transform="translate(0, 36)">
-        <text x="0" y="0" transform="translate(30,0)" style="dominant-baseline: middle;font-size: 10px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: ${sources}</text>
+        ${sourceString}
       </g>
       </g>
-    </svg>`)
+    </svg>`})
 }
 
 function setInlineStyles(svg, emptySvgDeclarationComputed) {
@@ -211,7 +226,6 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       forEach = Array.prototype.forEach,
       styles = document.querySelectorAll("style");
 
-      console.log(styles)
 
     const svgs = document.querySelectorAll(selector);
     const numSvgs = svgs.length;
@@ -232,11 +246,9 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
       // Only append the styles IF they don't exist
       if (!select(svg).selectAll("style").nodes().length) {
-        console.log("appending")
         forEach.call(styles, function(style) {
           svg.appendChild(style.cloneNode(true));
         });
-        console.log(svg)
       }
 
       var
@@ -274,7 +286,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         type: "image/svg+xml"
       }));
 
-      var footerUrl = URL.createObjectURL(new Blob([footer], {
+      var footerUrl = URL.createObjectURL(new Blob([footer.svg], {
         type: "image/svg+xml"
       }));
 
@@ -294,7 +306,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            context.drawImage(imageFooter, 0, canvasHeight - spacer*2, canvasWidth, footerHeight * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight - spacer*2, canvasWidth, footer.height * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
