@@ -225,6 +225,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       body = document.body,
       forEach = Array.prototype.forEach,
       styles = document.querySelectorAll("style");
+      console.log(styles)
 
 
     const svgs = document.querySelectorAll(selector);
@@ -245,10 +246,14 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       if (svg.ownerSVGElement) return; // An SVG within another SVG.
 
       // Only append the styles IF they don't exist
+      console.log(svg)
       if (!select(svg).selectAll("style").nodes().length) {
+        console.log("appending style")
         forEach.call(styles, function(style) {
           svg.appendChild(style.cloneNode(true));
         });
+
+        console.log(svg)
       }
 
       var
