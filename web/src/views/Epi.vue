@@ -26,10 +26,15 @@
   </div>
 
   <!-- fixed y selector for small multiple bar graphs -->
-  <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;" v-if="variable.includes('Increase') && dataLength > 1">
+  <div class="text-center m-auto p-2 bg-grey__lightest d-flex" style="max-width:700px;" v-if="variable.includes('Increase') && dataLength > 1">
     <label class="b-contain m-auto">
       <span>constant y-axis limits</span>
       <input type="checkbox" v-model="isFixedY" />
+      <div class="b-input"></div>
+    </label>
+    <label class="b-contain m-auto">
+      <span>overlay graphs</span>
+      <input type="checkbox" v-model="isOverlay" />
       <div class="b-input"></div>
     </label>
   </div>
@@ -60,7 +65,7 @@
       </div>
 
       <!-- source / download data -->
-      <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :data="data$[0]" v-if="data$" />
+      <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="data$[0].length" :data="data$[0]" v-if="data$" />
     </div>
 
     <!-- curve -->
@@ -74,7 +79,7 @@
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
-</div>
+  </div>
 </div>
 </template>
 
@@ -140,6 +145,7 @@ export default {
       lengthThreshold: 8,
       showAll: false,
       isFixedY: false,
+      isOverlay: false,
       bargraphWidth: 550,
       bargraphHeight: 400,
       yMax: null,
@@ -182,6 +188,12 @@ export default {
           sources: ["NYT", "JHU"]
         },
         {
+          label: "daily new cases (7-day rolling average)",
+          ttip: "new cases (7 day average)",
+          value: "confirmed_rolling",
+          sources: ["NYT", "JHU"]
+        },
+        {
           label: "daily new hospitalizations (U.S. States only)",
           ttip: "new hospitalizations",
           value: "testing_hospitalizedIncrease",
@@ -192,13 +204,12 @@ export default {
           ttip: "new deaths",
           value: "dead_numIncrease",
           sources: ["NYT", "JHU"]
-          // {
-          //   label: "5 day case doubling rate",
-          //   value: "confirmed_doublingRate"
-          // }, {
-          //   label: "5 day death doubling rate",
-          //   value: "dead_doublingRate"
-          // }
+        },
+        {
+          label: "daily new deaths (7 day rolling average)",
+          ttip: "new deaths (7 day average)",
+          value: "dead_rolling",
+          sources: ["NYT", "JHU"]
         },
         {
           label: "cumulative COVID-19 tests (U.S. States only)",
@@ -307,6 +318,23 @@ export default {
     },
     isFixedY: function(newValue, oldValue) {
       this.changeVariable();
+    },
+    isOverlay: function(newValue, oldValue) {
+      if (newValue) {
+        this.isOverlay = false;
+
+        this.variable = this.variable.replace("_numIncrease", "_rolling");
+        this.$router.replace({
+          path: "epidemiology",
+          query: {
+            location: this.location,
+            log: String(this.isLogY),
+            variable: this.variable,
+            xVariable: this.xVariable,
+            fixedY: String(this.isFixedY)
+          }
+        });
+      }
     },
     showAll: function(newValue, oldValue) {
       if (newValue) {

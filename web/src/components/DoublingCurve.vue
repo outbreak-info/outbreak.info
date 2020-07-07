@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <svg :width="width" :height="height" class="doubling-curve">
+    <svg :width="width" :height="height" class="doubling-curve" :name="title">
       <defs>
         <marker
           id="arrow"
@@ -47,7 +47,7 @@
         id="transition-mask"
       ></g>
     </svg>
-    <DataSource />
+    <DataSource :ids="['NYT','JHU']" v-if="data" dataType="maps" figureRef="doubling-curve" :data="plottedData" />
   </div>
 </template>
 
@@ -68,7 +68,7 @@ const margin = {
   top: 15,
   right: 25,
   bottom: 75,
-  left: 70
+  left: 95
 };
 const transitionDuration = 500;
 
@@ -126,6 +126,9 @@ export default Vue.extend({
     }
   },
   computed: {
+    title() {
+      return(`Cumulative number of COVID-19 ${this.variable} in ${this.data.data[0].name}`)
+    },
     fitIdx1() {
       return d3.range(this.fit1.minIdx, this.fit1.maxIdx);
     },

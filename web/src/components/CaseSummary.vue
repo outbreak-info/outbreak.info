@@ -43,7 +43,7 @@
           >{{ currentSummary$.aboveThreshold.count }} countries
         </router-link>
         have reported more than
-        <span class="text-highlight">{{ caseThreshold }} new cases</span>.
+        <span class="text-highlight">{{ caseThreshold.toLocaleString() }} new cases</span>.
       </p>
 
       <p class="text-center">
@@ -120,7 +120,7 @@ export default Vue.extend({
   data() {
     return {
       currentDate: null,
-      caseThreshold: 50,
+      caseThreshold: 1000,
       glanceLocations: [],
       glanceSummaries: [],
       summaryDeletable: false,

@@ -1,6 +1,7 @@
 // initial state
 const state = {
   loading: false,
+  dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   outbreak: {
     authors: "Hughes, Laura D.; Gangavarapu, Karthik; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."
   },
@@ -225,6 +226,15 @@ const state = {
       }
     },
     {
+      date: new Date("2020-07-02 0:0"),
+      category: "feature",
+      title: "Added world and U.S. choropleths",
+      description: "Added choropleths of daily new cases and deaths (7 day rolling average) and two-week change in average cases and deaths.",
+      route: {
+        name: "Compare"
+      }
+    },
+    {
       date: new Date("2020-06-12 0:0"),
       category: "feature",
       title: "Added 7-day rolling averages for case counts",
@@ -234,6 +244,19 @@ const state = {
         query: {
           location: "BRA;RUS;IND",
           variable: 'confirmed_numIncrease'
+        }
+      }
+    },
+    {
+      date: new Date("2020-07-06 0:0"),
+      category: "feature",
+      title: "Overlaid 7-day rolling averages for case counts",
+      description: 'Compare 7-day rolling averages between locations directly.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "USA_US-NY;USA_US-TX;USA_US-FL",
+          variable: 'confirmed_rolling'
         }
       }
     },
@@ -258,6 +281,14 @@ const state = {
         query: {
           filter: 'curatedBy.name:"Figshare,protocols.io"'
         }
+      }
+    }, {
+      date: new Date("2020-07-06 0:1"),
+      category: "feature",
+      title: "Copyable visualizations",
+      description: 'All visualizations can now be copied to the clipboard (Chrome/Edge/Opera/Android/Samsung) and downloaded as .pngs',
+      route: {
+        name: "Compare",
       }
     }, {
       date: new Date("2020-05-19 0:0"),
