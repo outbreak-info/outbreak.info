@@ -385,6 +385,8 @@ export default Vue.extend({
               .append("path")
               .attr("class", "rolling-average")
               .style("stroke", this.colorAverage)
+              .style("fill", "none")
+              .style("stroke-width", "2.5")
               .datum(d => d)
               .join("path")
               .attr("d", this.line)
@@ -509,10 +511,6 @@ export default Vue.extend({
     pointer-events: none;
 }
 
-.rolling-average {
-    fill: none;
-    stroke-width: 2.5;
-}
 
 .annotation--rolling-average {
     font-size: 0.75em;

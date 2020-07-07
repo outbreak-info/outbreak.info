@@ -582,6 +582,8 @@ export default Vue.extend({
 
       pathSelector
       .attr("stroke", d => this.colorScale(d.key))
+      .style("fill", "none")
+      .style("stroke-width", "2.5")
         .merge(pathEnter)
         .datum(d => d.value)
         .attr("id", d => d[0] ? `epi-line ${d[0].location_id}` : "epi-line-blank")
@@ -790,11 +792,6 @@ export default Vue.extend({
 <style lang="scss">
 .epi-axis text {
     font-size: 12pt;
-}
-
-.epi-line {
-    fill: none;
-    stroke-width: 2;
 }
 
 .epi-point {
