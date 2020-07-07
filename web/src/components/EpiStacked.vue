@@ -276,6 +276,7 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .legend-name {
+  font-family: $font-family;
   font-size: 10px;
   dominant-baseline: middle;
   &:hover {
