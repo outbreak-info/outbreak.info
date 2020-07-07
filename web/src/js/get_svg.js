@@ -72,7 +72,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
       id: svg.getAttribute("id"),
       name: title,
       childElementCount: svg.childElementCount,
-      source: [doctype + `<svg width="${rect.width}" height="${rect.height + 100}">` + header + '<g transform="translate(0,35)">' + source + footer + "</g></svg>"]
+      source: [doctype + `<svg width="${rect.width}" height="${rect.height + 100}">` + header + '<g transform="translate(0,35)">' + source + footer.svg + "</g></svg>"]
     });
   });
   return svgInfo;
