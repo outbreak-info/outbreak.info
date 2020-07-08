@@ -225,7 +225,6 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       body = document.body,
       forEach = Array.prototype.forEach,
       styles = document.querySelectorAll("style");
-      console.log(styles)
 
 
     const svgs = document.querySelectorAll(selector);
@@ -246,15 +245,12 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       if (svg.ownerSVGElement) return; // An SVG within another SVG.
 
       // Only append the styles IF they don't exist
-      console.log(svg)
       if (!select(svg).selectAll("style").nodes().length) {
-        console.log("appending style")
         forEach.call(styles, function(style) {
           svg.appendChild(style.cloneNode(true));
         });
-
-        console.log(svg)
       }
+      console.log(svg)
 
       var
         title = svg.getAttribute("name"),
@@ -311,7 +307,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            context.drawImage(imageFooter, 0, canvasHeight - spacer*2, canvasWidth, footer.height * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight - spacer*0.5, canvasWidth, footer.height * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {

@@ -254,6 +254,9 @@ export default Vue.extend({
         .attr("x", 10 + legendRectWidth)
         .attr("dx", 8)
         .attr("class", "legend-name")
+        .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+        .style("font-size", "10px")
+        .style("dominant-baseline", "middle")
         .text(({ key }) => key);
 
       // --- tooltips ---
@@ -276,9 +279,6 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .legend-name {
-  font-family: $font-family;
-  font-size: 10px;
-  dominant-baseline: middle;
   &:hover {
     text-decoration: underline;
   }
