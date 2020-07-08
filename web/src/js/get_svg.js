@@ -250,7 +250,6 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           svg.appendChild(style.cloneNode(true));
         });
       }
-      console.log(svg)
 
       var
         title = svg.getAttribute("name"),
