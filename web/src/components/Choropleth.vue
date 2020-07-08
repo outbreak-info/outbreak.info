@@ -204,8 +204,17 @@ export default {
       this.projection = this.projection
         .scale(scale)
     },
+    resetValues() {
+        this.regionData.features.forEach(d => {
+          d.fill = null;
+          d.tooltip = null;
+          d.value = null;
+        })
+    },
     drawMap() {
       this.setupMap();
+      this.resetValues();
+
       if (this.data && this.data.length && this.width) {
         this.data.forEach(d => {
           const id = d.location_id.split("_").slice(-1)[0].replace("US-", "");
@@ -225,7 +234,7 @@ export default {
         // regional data
         this.regions
           .selectAll("path")
-          .data(this.regionData.features)
+          .data(this.regionData.features, d => d.location_id)
           .join(
             enter => {
               enter
