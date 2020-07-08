@@ -11,7 +11,7 @@
       <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">
         All
         countries</router-link>
-      <div class="d-flex flex-column">
+      <div class="d-flex flex-column justify-content-around">
         <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
           :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
         <div class="d-flex">
@@ -30,9 +30,9 @@
     </div> -->
     </div>
 
-    <div class="d-flex flex-column align-items-center justify-content-between">
+    <div class="d-flex flex-column ml-5 align-items-center justify-content-between">
       <!-- variable options -->
-      <div class="row d-flex ml-5 align-items-center">
+      <div class="row d-flex align-items-center">
         <select v-model="selectedVariable" class="select-dropdown">
           <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
           </option>
