@@ -307,7 +307,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            context.drawImage(imageFooter, 0, canvasHeight - spacer*0.5, canvasWidth, footer.height * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight - spacer, canvasWidth, footer.height * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
