@@ -5,37 +5,43 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-<div class="d-flex">
-  <!-- Region buttons -->
-  <div class="d-flex flex-wrap">
-    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All
-      countries</router-link>
-    <div class="d-flex flex-column">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
-        :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
-      <div class="d-flex">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas
-        </router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
-          :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+  <div class="d-flex">
+    <!-- Region buttons -->
+    <div class="d-flex flex-wrap">
+      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">
+        All
+        countries</router-link>
+      <div class="d-flex flex-column">
+        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
+          :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
+        <div class="d-flex">
+          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas
+          </router-link>
+          <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
+            :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+        </div>
       </div>
-    </div>
 
-    <!-- <div class="d-flex flex-wrap">
+      <!-- <div class="d-flex flex-wrap">
       <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', variable: this.selectedVariable.value} }">Australian States</router-link>
       <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', variable: this.selectedVariable.value} }">Canadian Provinces</router-link>
       <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', variable: this.selectedVariable.value} }">Chinese Provinces</router-link>
 
     </div> -->
-  </div>
+    </div>
 
-  <!-- variable options -->
-  <div class="row d-flex ml-5 align-items-center">
-    <select v-model="selectedVariable" class="select-dropdown">
-      <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
-      </option>
-    </select>
-  </div>
+    <div class="d-flex flex-column align-items-center justify-content-between">
+      <!-- variable options -->
+      <div class="row d-flex ml-5 align-items-center">
+        <select v-model="selectedVariable" class="select-dropdown">
+          <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
+          </option>
+        </select>
+      </div>
+      <div class="slidecontainer mt-2">
+        <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" />
+      </div>
+    </div>
   </div>
 
   <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" />
@@ -115,6 +121,8 @@ import {
   mapState
 } from "vuex";
 import {
+  timeParse,
+  timeFormat,
   format,
   scaleQuantile,
   scaleThreshold,
@@ -150,12 +158,14 @@ library.add(faSort);
 
 import Choropleth from "@/components/Choropleth.vue";
 import DataSource from "@/components/DataSource.vue";
+import DateSlider from "@/components/DateSlider.vue";
 
 export default {
   name: "Compare",
   components: {
     Choropleth,
     DataSource,
+    DateSlider,
     FontAwesomeIcon
   },
   props: {
@@ -168,6 +178,7 @@ export default {
       default: "confirmed_rolling_14days_ago_diff"
     },
     location: String,
+    date: String,
     sort: String,
   },
   watch: {
@@ -178,6 +189,26 @@ export default {
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
       }
     },
+    // date: {
+    //   immediate: true,
+    //   handler(newDate, oldDate) {
+    //     this.selectedDate = newDate;
+    //   }
+    // },
+    selectedDate() {
+      console.log("date changed!");
+      console.log(this.selectedDate)
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: this.location,
+          admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
+          sort: this.sortVariable.value,
+          date: this.selectedDate
+        }
+      });
+    },
     selectedVariable() {
       this.$router.push({
         path: "maps",
@@ -185,7 +216,8 @@ export default {
           location: this.location,
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
-          sort: this.sortVariable.value
+          sort: this.sortVariable.value,
+          date: this.selectedDate
         }
       });
     },
@@ -196,7 +228,8 @@ export default {
           location: this.location,
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
-          sort: this.sortVariable.value
+          sort: this.sortVariable.value,
+          date: this.selectedDate
         }
       });
     },
@@ -209,6 +242,10 @@ export default {
       colorScale: null,
       numColors: null,
       data: [],
+      selectedDate: "2020-03-06",
+      dateSlider: new Date(),
+      maxDate: new Date(),
+      minDate: new Date("2020-01-22"),
       dataSubscription: null,
       selectedVariable: null,
       sortVariable: {
@@ -271,10 +308,13 @@ export default {
     this.dataSubscription.unsubscribe();
   },
   methods: {
+    paseDate(dateStr) {
+      return (timeParse("%Y-%m-%d")(dateStr))
+    },
     getData() {
       // reset, if the scale was padded
       this.numColors = 11;
-      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value).subscribe(results => {
+      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value, this.selectedDate).subscribe(results => {
         // results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
 
         this.data = results;
@@ -301,7 +341,7 @@ export default {
           this.numColors = domain.length - 1;
 
           // calculate colors
-          colorRange = range(0, 1.01, 1 / (this.numColors-1)).map(d => interpolateRdYlBu(d)).reverse();
+          colorRange = range(0, 1.01, 1 / (this.numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
         } else {
           // SEQUENTIAL
           colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();

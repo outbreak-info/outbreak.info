@@ -24,12 +24,12 @@ import {
 } from "@/api/biothings.js";
 import store from "@/store";
 
-export function getComparisonData(apiUrl, location, adminLevel, sort, page, size) {
+export function getComparisonData(apiUrl, location, adminLevel, variable, sort, date) {
   store.state.admin.dataloading = true;
 
   const queryString = location ? `${location} AND admin_level:("${adminLevel}")` : `admin_level:${adminLevel}`;
 
-  return getCurrentData(apiUrl, queryString, sort, page, size)
+  return getCurrentData(apiUrl, queryString, variable, sort, date)
     // return getAll(apiUrl, queryString)
     .pipe(
       map(results => {
@@ -44,13 +44,13 @@ export function getComparisonData(apiUrl, location, adminLevel, sort, page, size
     )
 }
 
-export function getCurrentData(apiUrl, queryString, variable, sort) {
+export function getCurrentData(apiUrl, queryString, variable, sort, date) {
   const parseDate = timeParse("%Y-%m-%d");
 
   const fields = "date,location_id,name,state_name,country_iso3," + variable;
 
   // const qString = `(${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
-  const qString = `mostRecent:true AND (${queryString})&sort=-date,${sort}&fields=${fields}`;
+  const qString = `date:${date} AND (${queryString})&sort=-date,${sort}&fields=${fields}`;
 
   return getAll(apiUrl, qString)
     .pipe(
