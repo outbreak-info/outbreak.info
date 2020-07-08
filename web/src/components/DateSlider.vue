@@ -3,7 +3,7 @@
   {{this.formatDate(this.selectedDate, "%d %b %Y")}}
   <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top">
     <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
-    <circle :transform="`translate(${margin.left}, ${height/2 + radius})`" id="slider-date" :cx="xDate" :cy="0" :r="radius" ref="drag_circle"></circle>
+    <circle fill="#D13B62" :transform="`translate(${margin.left}, ${height/2 + radius})`" id="slider-date" :cx="xDate" :cy="0" :r="radius" ref="drag_circle"></circle>
     <g :transform="`translate(${margin.left}, ${height + margin.top})`" class="slider-axis axis--x" ref="xAxis"></g>
   </svg>
 
@@ -57,7 +57,6 @@ export default Vue.extend({
     },
     setupDrag() {
       select("#slider-date")
-      .style("fill", "red")
       .call(drag()
       .on("start", this.dragstarted)
               .on("drag", this.dragged)
