@@ -232,6 +232,8 @@ export default {
                 .append("path")
                 .attr("class", "region pointer")
                 .attr("id", d => d.location_id)
+                .style("stroke", "#8aa4be")
+                .style("stroke-width", 0.25)
                 // draw each region
                 .attr("d", this.path)
                 .attr("fill", d => d.fill ? d.fill : "none");
@@ -263,6 +265,9 @@ export default {
               enter
                 .append("path")
                 .attr("class", "state")
+                .style("fill", "none")
+                .style("stroke", "#3e5871")
+                .style("stroke-width", "1")
                 // draw each region
                 .attr("d", this.path)
             },
@@ -353,20 +358,9 @@ export default {
 //     background: aliceblue;
 // }
 
-.region {
-    stroke: $grey-60;
-    stroke-width: 0.25;
-}
-
 .region:hover {
     stroke: $base-grey;
     stroke-width: 1.5;
-}
-
-.state {
-    fill: none;
-    stroke: $grey-90;
-    stroke-width: 1;
 }
 
 .choropleth-tooltip {
