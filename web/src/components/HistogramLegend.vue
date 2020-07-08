@@ -79,7 +79,7 @@ export default {
       // x-axis
       this.x = d3.scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(d3.extent(this.data, d => d[this.variable]));
+        .domain(d3.extent(this.colorScale.domain()));
 
       this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5);
       this.xAxisRef.call(this.xAxis);
