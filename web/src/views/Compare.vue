@@ -39,7 +39,7 @@
         </select>
       </div>
       <div class="slidecontainer mt-2">
-        <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" />
+        <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate"/>
       </div>
     </div>
   </div>
@@ -240,11 +240,10 @@ export default {
   data() {
     return {
       colorScale: null,
-      numColors: null,
       data: [],
-      selectedDate: "2020-03-06",
+      selectedDate: "2020-07-06",
       dateSlider: new Date(),
-      maxDate: new Date(),
+      maxDate: null,
       minDate: new Date("2020-01-22"),
       dataSubscription: null,
       selectedVariable: null,
@@ -312,49 +311,10 @@ export default {
       return (timeParse("%Y-%m-%d")(dateStr))
     },
     getData() {
-      // reset, if the scale was padded
-      this.numColors = 11;
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value, this.selectedDate).subscribe(results => {
-        // results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
-
-        this.data = results;
-
-        // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
-        // Forcing to be centered at 0 for the midpoint after the breaks are calculated
-        var domain = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d), (this.numColors));
-
-        // color range
-        var colorRange;
-        // DIVERGING
-        if (["confirmed_rolling_14days_ago_diff", "dead_rolling_14days_ago_diff"].includes(this.selectedVariable.value)) {
-          // ensure that the diverging scale is centered at 0.
-          const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
-
-          var padLength = domain.length - 2 * midpoint - 2;
-          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
-
-          if (padLength < 0) {
-            domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
-          } else if (padLength > 0) {
-            domain = Array(padLength).fill(domain[0]).concat(domain);
-          }
-          this.numColors = domain.length - 1;
-
-          // calculate colors
-          colorRange = range(0, 1.01, 1 / (this.numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
-        } else {
-          // SEQUENTIAL
-          colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
-        }
-
-        this.colorScale = scaleQuantile()
-          .range(colorRange)
-          .domain(domain);
-
-        this.data.forEach(d => {
-          d.fill = this.colorScale(d[this.selectedVariable.value]);
-          // d.fill = this.colorScale(Math.log10(d[this.selectedVariable.value]));
-        })
+        this.data = results.data;
+        this.maxDate = results.maxDate;
+        this.colorScale = results.colorScale;
       })
     },
     formatNumber(value, digits = 1) {

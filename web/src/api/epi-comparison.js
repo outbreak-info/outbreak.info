@@ -5,35 +5,49 @@ import {
 } from "rxjs";
 import axios from "axios";
 import {
-  finalize,
   catchError,
   pluck,
-  map,
-  mergeMap
+  map
 } from "rxjs/operators";
 import {
-  nest,
   timeParse,
   timeDay,
   offset,
-  timeFormat
+  timeFormat,
+  scaleQuantile,
+  range
 } from "d3";
+
+import {
+  // interpolateYlGnBu,
+  // interpolateBrBG,
+  // interpolatePRGn,
+  // interpolatePiYG,
+  interpolateRdYlBu
+} from "d3-scale-chromatic";
 
 import {
   getAll
 } from "@/api/biothings.js";
 import store from "@/store";
 
+import {
+  jenks
+} from "@/js/jenks.js";
+
 export function getComparisonData(apiUrl, location, adminLevel, variable, sort, date) {
   store.state.admin.dataloading = true;
 
   const queryString = location ? `${location} AND admin_level:("${adminLevel}")` : `admin_level:${adminLevel}`;
 
-  return getCurrentData(apiUrl, queryString, variable, sort, date)
+  return forkJoin([getCurrentDate(apiUrl), getJenksBreaks(apiUrl, queryString, variable), getCurrentData(apiUrl, queryString, variable, sort, date)])
     // return getAll(apiUrl, queryString)
     .pipe(
-      map(results => {
-        return (results)
+      map(([currDate, breaks, results]) => {
+        results.forEach(d => {
+          d.fill = breaks.scale(d[variable]);
+        })
+        return ({data: results, maxDate: currDate, colorScale: breaks.scale})
       }),
       catchError(e => {
         console.log("%c Error in getting comparison!", "color: red");
@@ -41,6 +55,72 @@ export function getComparisonData(apiUrl, location, adminLevel, variable, sort, 
         return from([]);
       })
       // finalize(() => (store.state.admin.loading = false))
+    )
+
+}
+
+function getCurrentDate(apiUrl) {
+  const parseDate = timeParse("%Y-%m-%d");
+  return from(
+    axios.get(
+      `${apiUrl}query?q=mostRecent:true&size=1&sort=-date&fields="date"`
+    )
+  ).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      const today = parseDate(results[0].date)
+      return(today)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting current date!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
+}
+
+export function getJenksBreaks(apiUrl, queryString, variable, numColors = 11){
+  const qString = `${queryString}&fields=${variable}`
+  return getAll(apiUrl, qString)
+    .pipe(
+      map(results => {
+        var domain = jenks(results.map(d => d[variable]).filter(d => d), numColors);
+
+        // color range
+        var colorRange;
+        // DIVERGING
+        if (["confirmed_rolling_14days_ago_diff", "dead_rolling_14days_ago_diff"].includes(variable)) {
+          // ensure that the diverging scale is centered at 0.
+          const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
+
+          var padLength = domain.length - 2 * midpoint - 2;
+          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
+
+          if (padLength < 0) {
+            domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
+          } else if (padLength > 0) {
+            domain = Array(padLength).fill(domain[0]).concat(domain);
+          }
+          numColors = domain.length - 1;
+
+          // calculate colors
+          colorRange = range(0, 1.01, 1 / (numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
+        } else {
+          // SEQUENTIAL
+          colorRange = range(0, 0.51, 0.5 / numColors).map(d => interpolateRdYlBu(d)).reverse();
+        }
+
+        const colorScale = scaleQuantile()
+          .range(colorRange)
+          .domain(domain);
+
+        return ({breaks: domain, scale: colorScale})
+      }),
+      catchError(e => {
+        console.log("%c Error in getting current data!", "color: red");
+        console.log(e);
+        return from([]);
+      })
     )
 }
 

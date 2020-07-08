@@ -74,8 +74,11 @@ export default Vue.extend({
       console.log(this.max)
     },
     dragged(d) {
+      // update position of circle
       const newX = event.x < 0 ? 0 : (event.x > this.width ? this.width : event.x);
       select(this.$refs.drag_circle).attr("cx", newX);
+      // update date displayed
+      this.selectedDate = this.x.invert(event.x);
     },
     dragended(d) {
       this.selectedDate = this.x.invert(event.x);
