@@ -283,6 +283,14 @@ const state = {
         }
       }
     }, {
+      date: new Date("2020-07-06 0:1"),
+      category: "feature",
+      title: "Copyable visualizations",
+      description: 'All visualizations can now be copied to the clipboard (Chrome/Edge/Opera/Android/Samsung) and downloaded as .pngs',
+      route: {
+        name: "Compare",
+      }
+    }, {
       date: new Date("2020-05-19 0:0"),
       category: "data",
       title: "Added searchable resources",

@@ -18,7 +18,7 @@
       <g :transform="`translate(${margin.left},${margin.top})`" id="rolling-average" class="bargraph" ref="rolling_average"></g>
       <g class="annotations" :class="{hidden: noRollingAvg}">
         <line :style="{'stroke': this.colorAverage, 'stroke-width': 2.5}" :x1="margin.left + 5" :x2="margin.left + 20" :y1="margin.top+6" :y2="margin.top+6"></line>
-        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage}">7 day rolling average</text>
+        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage, 'font-size': '0.75em', 'dominant-baseline': 'hanging', 'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif'}">7 day rolling average</text>
       </g>
     </svg>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
@@ -385,6 +385,8 @@ export default Vue.extend({
               .append("path")
               .attr("class", "rolling-average")
               .style("stroke", this.colorAverage)
+              .style("fill", "none")
+              .style("stroke-width", "2.5")
               .datum(d => d)
               .join("path")
               .attr("d", this.line)
@@ -507,16 +509,6 @@ export default Vue.extend({
     background: #ffffffcf;
     opacity: 0;
     pointer-events: none;
-}
-
-.rolling-average {
-    fill: none;
-    stroke-width: 2.5;
-}
-
-.annotation--rolling-average {
-    font-size: 0.75em;
-    dominant-baseline: hanging;
 }
 
 .epi-bargraph-arrows {

@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <svg :width="width" :height="height" class="doubling-curve">
+    <svg :width="width" :height="height" class="doubling-curve" :name="title">
       <defs>
         <marker
           id="arrow"
@@ -42,12 +42,8 @@
         :transform="`translate(${margin.left},${margin.top})`"
         id="epi-curve"
       ></g>
-      <g
-        :transform="`translate(${margin.left},${margin.top})`"
-        id="transition-mask"
-      ></g>
     </svg>
-    <DataSource />
+    <DataSource :ids="['NYT','JHU']" v-if="data" dataType="maps" figureRef="doubling-curve" :data="plottedData" />
   </div>
 </template>
 
@@ -68,7 +64,7 @@ const margin = {
   top: 15,
   right: 25,
   bottom: 75,
-  left: 70
+  left: 95
 };
 const transitionDuration = 500;
 
@@ -126,6 +122,9 @@ export default Vue.extend({
     }
   },
   computed: {
+    title() {
+      return(`Cumulative number of COVID-19 ${this.variable} in ${this.data.data[0].name}`)
+    },
     fitIdx1() {
       return d3.range(this.fit1.minIdx, this.fit1.maxIdx);
     },
@@ -390,6 +389,9 @@ export default Vue.extend({
           enter
             .append("line")
             .attr("class", "epi-line penultimate-fit")
+            .style("fill", "none")
+            .style("stroke-width", "2")
+            .style("stroke", "#59a14f")
             // .transition(t1)
             .attr("x1", d => this.x(d.x1))
             .attr("x2", d => this.x(d.x2))
@@ -447,6 +449,9 @@ export default Vue.extend({
           enter
             .append("line")
             .attr("class", "epi-line recent-fit")
+            .style("fill", "none")
+            .style("stroke-width", "2")
+            .style("stroke", "#f28e2c")
             // .transition(t1)
             .attr("x1", d => this.x(d.x1))
             .attr("x2", d => this.x(d.x2))
@@ -513,6 +518,8 @@ export default Vue.extend({
         .merge(dotsEnter)
         .attr("id", d => d.id)
         .attr("class", d => `circle-confirmed ${d.id}`)
+        .style("fill", d => this.fitIdx2.includes(d.idx) ? "#f28e2c" : (this.fitIdx1.includes(d.idx) ? "#59a14f" : "#bab0ab"))
+        .style("fill-opacity", 0.5)
         .attr("cx", d => this.x(d.date))
         .attr("cy", d => this.y(d[this.variable]))
         .classed("recent-data", d => this.fitIdx2.includes(d.idx))
@@ -632,10 +639,6 @@ $fit2-color: #f28e2c;
     user-select: none;
     /* Standard */
   }
-  & .circle-confirmed {
-    fill: #bab0ab;
-    fill-opacity: 0.75;
-  }
 
   & .recent-data {
     fill: $fit2-color;
@@ -649,18 +652,6 @@ $fit2-color: #f28e2c;
 
   & .epi-axis text {
     font-size: 12pt;
-  }
-
-  & .epi-line {
-    fill: none;
-    stroke-width: 2;
-  }
-
-  & .recent-fit {
-    stroke: $fit2-color;
-  }
-  & .penultimate-fit {
-    stroke: $fit1-color;
   }
 
   & .tooltip--text {

@@ -65,7 +65,7 @@
       </div>
 
       <!-- source / download data -->
-      <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :data="data$[0]" v-if="data$" />
+      <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="data$[0].length" :data="data$[0]" v-if="data$" />
     </div>
 
     <!-- curve -->

@@ -2,7 +2,7 @@
 const state = {
   allPlaces: [],
   mostCases: [],
-  caseThreshold: 50,
+  caseThreshold: 1000,
   barHeight: 15
 };
 
