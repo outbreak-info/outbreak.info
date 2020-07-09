@@ -254,7 +254,8 @@ export default {
             update => update
             .attr("id", d => d.location_id)
             .attr("d", this.path)
-            .attr("fill", d => d.fill ? d.fill : "none"),
+            .call(update => update.transition().duration(250)
+              .attr("fill", d => d.fill ? d.fill : "none")),
             exit =>
             exit.call(exit =>
               exit

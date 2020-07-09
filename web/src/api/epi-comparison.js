@@ -81,10 +81,17 @@ function getCurrentDate(apiUrl) {
 
 export function getJenksBreaks(apiUrl, queryString, variable, numColors = 11){
   const qString = `${queryString}&fields=${variable}`
-  return getAll(apiUrl, qString)
+  return from(
+    axios.get(
+      `${apiUrl}query?q=${qString}&aggs=${variable}&size=0&facet_size=1000`
+    ))
     .pipe(
+      pluck("data", "facets", variable, "terms"),
       map(results => {
-        var domain = jenks(results.map(d => d[variable]).filter(d => d), numColors);
+        // console.log(results)
+        var domain = jenks(results.map(d => d.term).filter(d => d), numColors);
+        // console.log(domain)
+        // USA 7/6: [-3924.7142857142862, -2373.714285714286, -836.714285714286, -213.85714285714283, 90, 356.57142857142867, 796.5714285714284, 1551.2857142857144, 2572.571428571429, 4119.571428571428, 5880.428571428572, 7526.428571428572]
 
         // color range
         var colorRange;

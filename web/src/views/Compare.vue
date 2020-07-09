@@ -38,8 +38,9 @@
           </option>
         </select>
       </div>
-      <div class="slidecontainer mt-2">
-        <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate"/>
+      <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
+        <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
+        <i class="fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i>
       </div>
     </div>
   </div>
@@ -123,11 +124,13 @@ import {
 import {
   timeParse,
   timeFormat,
+  offset,
   format,
   scaleQuantile,
   scaleThreshold,
   max,
   min,
+  timeDay,
   range
 } from "d3";
 import {
@@ -234,7 +237,7 @@ export default {
       });
     },
     '$route.params'() {
-      this.getData();
+      this.getData(this.selectedDate);
     }
   },
   data() {
@@ -301,17 +304,39 @@ export default {
     }
   },
   mounted() {
-    this.getData();
+    this.getData(this.selectedDate);
   },
   beforeDestroy() {
     this.dataSubscription.unsubscribe();
   },
   methods: {
-    paseDate(dateStr) {
+    playAnimation() {
+      console.log("playing animation")
+      var currDate = this.minDate;
+      var formattedDate;
+      var i = 0;
+      while (i < 2) {
+
+        i = i + 1;
+
+        setTimeout(() => {
+                console.log(i)
+        currDate = timeDay.offset(currDate, 100);
+          formattedDate = this.formatDate(currDate);
+          console.log(formattedDate)
+          this.getData(formattedDate);
+        }, 10)
+      }
+
+    },
+    parseDate(dateStr) {
       return (timeParse("%Y-%m-%d")(dateStr))
     },
-    getData() {
-      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value, this.selectedDate).subscribe(results => {
+    formatDate(dateStr) {
+      return (timeFormat("%Y-%m-%d")(dateStr))
+    },
+    getData(date) {
+      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value, date).subscribe(results => {
         this.data = results.data;
         this.maxDate = results.maxDate;
         this.colorScale = results.colorScale;
