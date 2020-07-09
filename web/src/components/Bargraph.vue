@@ -18,7 +18,8 @@
       <g :transform="`translate(${margin.left},${margin.top})`" id="rolling-average" class="bargraph" ref="rolling_average"></g>
       <g class="annotations" :class="{hidden: noRollingAvg}">
         <line :style="{'stroke': this.colorAverage, 'stroke-width': 2.5}" :x1="margin.left + 5" :x2="margin.left + 20" :y1="margin.top+6" :y2="margin.top+6"></line>
-        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage, 'font-size': '0.75em', 'dominant-baseline': 'hanging', 'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif'}">7 day rolling average</text>
+        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage, 'font-size': '0.75em', 'dominant-baseline': 'hanging', 'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif'}">7 day
+          rolling average</text>
       </g>
     </svg>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
@@ -78,6 +79,13 @@ export default Vue.extend({
     xVariableLim: {
       type: Array,
       default: null
+    },
+    date1: {
+      type: String
+    },
+    include2Week: {
+      type: Boolean,
+      default: false
     },
     animate: {
       type: Boolean,
@@ -297,6 +305,78 @@ export default Vue.extend({
     },
     drawPlot() {
       if (this.chart) {
+        const endDate = d3.timeParse("%Y-%m-%d")(this.date1);
+        // v-line to indicate dates
+        if (this.date1) {
+          const dateSelector = this.chart
+            .selectAll(`.date-annotation_${this.variable}`)
+            .data([endDate]);
+
+          dateSelector.join(
+            enter =>
+            enter
+            .append("line")
+            .attr("class", d => `.date-annotation_${this.variable} annotation-date1`)
+            .style("stroke", "#D13B62")
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d))
+            .attr("y1", d => 0)
+            .attr("y2", d => this.height),
+
+            update =>
+            update
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d))
+            .attr("y1", d => 0)
+            .attr("y2", d => this.height),
+
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          );
+
+          if (this.include2Week) {
+            const dateSelector = this.chart
+              .selectAll(`.date-annotation_${this.variable}`)
+              .data([endDate]);
+
+            dateSelector.join(
+              enter =>
+              enter
+              .append("rect")
+              .attr("class", d => `.date-annotation_${this.variable} annotation-date1`)
+              .style("fill", "#D13B62")
+              .style("fill-opacity", 0.1)
+              .attr("x", d => this.x(d3.timeDay.offset(endDate, -14)))
+              .attr("width", d => this.x(d) - this.x(d3.timeDay.offset(endDate, -14)))
+              .attr("y", d => 0)
+              .attr("height", d => this.height),
+
+              update =>
+              update
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
+              .attr("y1", d => 0)
+              .attr("y2", d => this.height),
+
+              exit =>
+              exit.call(exit =>
+                exit
+                .transition()
+                .duration(10)
+                .style("opacity", 1e-5)
+                .remove()
+              )
+            );
+          }
+        }
+
+
         const t1 = d3.transition().duration(500);
         const barSelector = this.chart
           .selectAll(".bargraph")
@@ -409,7 +489,7 @@ export default Vue.extend({
           },
           update => {
             update
-            .style("stroke", this.colorAverage)
+              .style("stroke", this.colorAverage)
               .attr("d", this.line)
               .attr("stroke-dasharray", function() {
                 var totalLength = this.getTotalLength();

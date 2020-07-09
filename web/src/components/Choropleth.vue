@@ -11,9 +11,9 @@
 
     <template v-if="timeTrace">
       <small class="m-0 mt-3">new cases per day</small>
-      <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
+      <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
       <small class="m-0">new deaths per day</small>
-      <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
+      <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
 </template>
   </div>
   <div class="d-flex flex-column">
@@ -50,6 +50,7 @@ export default {
   props: {
     data: Array,
     variable: String,
+    date1: String,
     variableLabel: String,
     colorScale: Function,
     adminLevel: String
@@ -85,6 +86,9 @@ export default {
     };
   },
   computed: {
+    isDiff() {
+      return(this.variable.includes("_14days_ago_diff"))
+    },
     title() {
       return (this.variableLabel)
     }

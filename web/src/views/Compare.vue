@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" />
+  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 
@@ -244,7 +244,7 @@ export default {
       selectedDate: "2020-07-06",
       dateSlider: new Date(),
       maxDate: null,
-      minDate: new Date("2020-01-22"),
+      minDate: new Date("2020-01-22 0:0"),
       dataSubscription: null,
       selectedVariable: null,
       sortVariable: {
