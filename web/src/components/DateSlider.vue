@@ -1,6 +1,6 @@
 <template>
 <div id="dateSlider" class="d-flex flex-column">
-  {{this.formatDate(this.selectedDate, "%d %b %Y")}}
+  {{this.formatDate(this.selectedDate, "%d %B %Y")}}
   <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top">
     <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
     <circle fill="#D13B62" :transform="`translate(${margin.left}, ${height/2 + radius})`" id="slider-date" :cx="xDate" :cy="0" :r="radius" ref="drag_circle"></circle>

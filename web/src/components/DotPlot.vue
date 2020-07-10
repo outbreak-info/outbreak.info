@@ -63,12 +63,12 @@ export default {
         right: locationWidth,
         bottom: 30,
         left: otherSideWidth
-      } :
-      {
+      } : {
         top: 0,
         right: otherSideWidth,
         bottom: 30,
-        left: locationWidth }
+        left: locationWidth
+      }
     }
   },
   mounted() {
@@ -113,6 +113,28 @@ export default {
       d3.select(this.$refs.yAxis).call(this.yAxis);
 
     },
+    mouseOn(d) {
+      d3.selectAll("path.region").style("fill-opacity", 0.25);
+      d3.selectAll(".circle-most-change").style("fill-opacity", 0.5);
+      d3.selectAll(".line-most-change").style("fill-opacity", 0.5);
+      d3.selectAll(".annotation-most-change").style("fill-opacity", 0.5);
+      d3.selectAll(".location-most-change").style("fill-opacity", 0.5);
+      d3.selectAll("path.state").style("stroke-opacity", 0.75);
+      d3.select(`path#${d.location_id}`).style("stroke", "black").style("stroke-width", 2);
+      d3.selectAll(`#${d.location_id}`).style("fill-opacity", 1);
+      d3.selectAll(`.${d.location_id}`).style("fill-opacity", 1);
+
+    },
+    mouseOut() {
+      d3.selectAll("path.region")
+        .style("fill-opacity", 1)
+        .style("stroke", "#8aa4be").style("stroke-width", 0.25);
+      d3.selectAll("path.state").style("stroke-opacity", 1);
+      d3.selectAll(".circle-most-change").style("fill-opacity", 1);
+      d3.selectAll(".line-most-change").style("fill-opacity", 1);
+      d3.selectAll(".annotation-most-change").style("fill-opacity", 1);
+      d3.selectAll(".location-most-change").style("fill-opacity", 1);
+    },
     drawPlot() {
       this.prepData();
       this.updateAxes();
@@ -124,7 +146,7 @@ export default {
 
       lolliSelector.join(
         enter => enter.append("line")
-        .attr("class", "lollipop line-most-change")
+        .attr("class", d => `lollipop line-most-change ${d.location_id}`)
         .attr("id", d => `lollipop-change-${d._id}`)
         .attr("x1", d => this.x(0))
         .attr("x2", d => this.x(d[this.variable]))
@@ -136,6 +158,7 @@ export default {
         update =>
         update
         .attr("id", d => `lollipop-change-${d._id}`)
+        .attr("class", d => `lollipop line-most-change ${d.location_id}`)
         .attr("x1", d => this.x(0))
         .attr("x2", d => this.x(0))
         .call(update => update.transition(t1)
@@ -159,18 +182,21 @@ export default {
 
       circleSelector.join(
         enter => enter.append("circle")
-        .attr("class", "circle-most-change")
+        .attr("class", d => `circle-most-change ${d.location_id}`)
         .attr("id", d => `circle-change-${d._id}`)
         .attr("cx", d => this.x(d[this.variable]))
         .attr("cy", d => this.y(d.location_id) + this.y.bandwidth() / 2)
         .attr("r", this.radius)
         .style("fill", d => this.colorScale(d[this.variable]))
         .style("stroke", "#2c3e50")
-        .style("stroke-width", 0.5),
+        .style("stroke-width", 0.5)
+        .on("mouseenter", d => this.mouseOn(d))
+        .on("mouseleave", this.mouseOut),
 
         update =>
         update
         .attr("id", d => `circle-change-${d._id}`)
+        .attr("class", d => `circle-most-change ${d.location_id}`)
         .attr("cx", d => this.x(0))
         .call(update => update.transition(t1)
           .style("fill", d => this.colorScale(d[this.variable]))
@@ -192,7 +218,7 @@ export default {
 
       yAxSelector.join(
         enter => enter.append("text")
-        .attr("class", "location-most-change y-axis")
+        .attr("class", d => `location-most-change ${d.location_id} y-axis`)
         .attr("id", d => `location-change-${d._id}`)
         .attr("x", d => this.x(0))
         .attr("dx", this.sortAsc ? this.radius * 1.5 : -1.5 * this.radius)
@@ -202,11 +228,14 @@ export default {
         .style("dominant-baseline", "middle")
         .style("font-size", "0.75em")
         .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-        .style("fill", "#2c3e50"),
+        .style("fill", "#2c3e50")
+        .on("mouseenter", d => this.mouseOn(d))
+        .on("mouseleave", this.mouseOut),
 
         update =>
         update
         .attr("id", d => `location-change-${d._id}`)
+        .attr("class", d => `location-most-change ${d.location_id} y-axis`)
         .text(d => d.name)
         .call(update => update.transition(t1)
           .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)),
@@ -226,7 +255,7 @@ export default {
 
       annotationSelector.join(
         enter => enter.append("text")
-        .attr("class", "annotation-most-change")
+        .attr("class", d => `annotation-most-change ${d.location_id}`)
         .attr("id", d => `annotation-change-${d._id}`)
         .attr("x", d => this.x(d[this.variable]))
         .attr("dx", this.sortAsc ? -10 : 10)
@@ -241,10 +270,11 @@ export default {
         update =>
         update
         .attr("id", d => `annotation-change-${d._id}`)
+        .attr("class", d => `annotation-most-change ${d.location_id}`)
         .text(d => d3.format(",.0f")(d[this.variable]))
         .call(update => update.transition(t1)
           .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-        .attr("x", d => this.x(d[this.variable]))),
+          .attr("x", d => this.x(d[this.variable]))),
 
         exit =>
         exit.call(exit =>

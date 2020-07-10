@@ -40,7 +40,7 @@
       </div>
       <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
         <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
-        <i class="fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i>
+        <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i>
       </div>
     </div>
   </div>
