@@ -19,9 +19,9 @@
   <div class="d-flex flex-column">
     <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
     <DataUpdated />
-    <div class="d-flex">
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel"/>
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel"/>
+    <div class="d-flex justify-content-between">
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-10" :varMax="5000"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-10" :varMax="5000"/>
     </div>
   </div>
 
@@ -70,7 +70,7 @@ export default {
     return {
       width: 0,
       height: 350,
-      widthLegend: 200,
+      widthLegend: 350,
       margin: {
         top: 2,
         right: 2,
