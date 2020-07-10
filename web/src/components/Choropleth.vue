@@ -19,6 +19,10 @@
   <div class="d-flex flex-column">
     <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
     <DataUpdated />
+    <div class="d-flex">
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"/>
+    </div>
   </div>
 
 </div>
@@ -34,6 +38,7 @@ import * as d3 from "d3";
 import HistogramLegend from "@/components/HistogramLegend.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import Bargraph from "@/components/Bargraph.vue";
+import DotPlot from "@/components/DotPlot.vue";
 import {
   getSparklineTraces
 } from "@/api/epi-traces.js";
@@ -45,7 +50,8 @@ export default {
   components: {
     HistogramLegend,
     DataUpdated,
-    Bargraph
+    Bargraph,
+    DotPlot
   },
   props: {
     data: Array,
