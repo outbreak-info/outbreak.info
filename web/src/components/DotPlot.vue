@@ -6,7 +6,7 @@
       <line :x1="x(0)" :x2="x(0)" :y1="0" :y2="height - margin.top - margin.bottom" v-if="x" stroke="black" stroke-width="0.5"></line>
     </g>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="epi-axis axis--x" ref="xAxis" id="xAxis"></g>
-    <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis" id="yAxis"></g>
+    <!-- <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis" id="yAxis"></g> -->
   </svg>
 </div>
 </template>
@@ -169,6 +169,38 @@ export default {
           .style("opacity", 1e-5)
           .remove()
         )
+      );
+
+      const yAxSelector = this.chart.selectAll(".y-axis")
+        .data(this.plottedData, d => d.location_id);
+
+      yAxSelector.join(
+        enter => enter.append("text")
+        .attr("class", "location-most-change y-axis")
+        .attr("id", d => `location-change-${d._id}`)
+        .attr("x", d => this.x(0))
+        .attr("dx", this.sortAsc ? 5 : -5)
+        .attr("y", d => this.y(d.name) + this.y.bandwidth() / 2)
+        .text(d => d.name)
+        .style("text-anchor", this.sortAsc ? "start" : "end")
+        .style("dominant-baseline", "middle")
+        .style("fill", "#2c3e50"),
+
+        update =>
+        update
+        .attr("id", d => `location-change-${d._id}`)
+        .text(d => d.name)
+        .call(update => update.transition(t1)
+          .attr("y", d => this.y(d.name) + this.y.bandwidth() / 2)),
+
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .duration(10)
+          .style("opacity", 1e-5)
+          .remove()
+        )
       )
     }
   }
@@ -176,8 +208,8 @@ export default {
 </script>
 
 <style lang="scss">
-.dotplot-svg .axis--y line,
-.dotplot-svg .axis--y path {
-    display: none;
-}
+// .dotplot-svg .axis--y line,
+// .dotplot-svg .axis--y path {
+//     display: none;
+// }
 </style>
