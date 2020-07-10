@@ -1,6 +1,6 @@
 <template>
 <div class="" ref="dotplot_container">
-  <h6 class="text-left">Worst change</h6>
+  <h6 class="text-left">{{title}}</h6>
   <svg :width="width" :height="height" ref="dotplot_svg" class="dotplot-svg" :name="title">
     <g ref="circles" class="circles-group" :transform="`translate(${margin.left}, ${margin.top})`">
       <line :x1="x(0)" :x2="x(0)" :y1="0" :y2="height - margin.top - margin.bottom" v-if="x" stroke="black" stroke-width="0.5"></line>
@@ -79,7 +79,7 @@ export default {
     updateAxes() {
       this.x = d3.scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([-200, 5000]);
+        .domain([-5000, 5000]);
       // .domain(d3.extent(this.plottedData.map(d => d[this.variable])));
 
       this.y = d3.scaleBand()
@@ -123,9 +123,10 @@ export default {
         .attr("id", d => `lollipop-change-${d._id}`)
         .attr("x1", d => this.x(0))
         .attr("x2", d => this.x(0))
-        .attr("y1", d => this.y(d.name) + this.y.bandwidth() / 2)
-        .attr("y2", d => this.y(d.name) + this.y.bandwidth() / 2)
-        .call(update => update.transition(t1).attr("x2", d => this.x(d[this.variable]))),
+        .call(update => update.transition(t1)
+          .attr("y1", d => this.y(d.name) + this.y.bandwidth() / 2)
+          .attr("y2", d => this.y(d.name) + this.y.bandwidth() / 2)
+          .attr("x2", d => this.x(d[this.variable]))),
 
         exit =>
         exit.call(exit =>
