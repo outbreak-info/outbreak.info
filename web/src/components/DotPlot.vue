@@ -223,7 +223,7 @@ export default {
         .attr("x", d => this.x(0))
         .attr("dx", this.sortAsc ? this.radius * 1.5 : -1.5 * this.radius)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-        .text(d => d.name)
+        .text(d => d.state_name ? `${d.name.replace(" County", "")}` : d.name)
         .style("text-anchor", this.sortAsc ? "start" : "end")
         .style("dominant-baseline", "middle")
         .style("font-size", "0.75em")
@@ -236,7 +236,7 @@ export default {
         update
         .attr("id", d => `location-change-${d._id}`)
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
-        .text(d => d.name)
+        .text(d => d.state_name ? `${d.name.replace(" County", "")}` : d.name)
         .call(update => update.transition(t1)
           .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)),
 
