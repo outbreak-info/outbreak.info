@@ -1,6 +1,7 @@
 <template>
 <div class="" ref="dotplot_container">
-  <h6 class="text-left">{{title}}</h6>
+  <h6 class="text-left m-0">{{sortAsc ? "Best" : "Worst"}}</h6>
+  <p class="text-left m-0 p-0 line-height-1 mb-2">{{title}}</p>
   <svg :width="width" :height="height" ref="dotplot_svg" class="dotplot-svg" :name="title">
     <g ref="circles" class="circles-group" :transform="`translate(${margin.left}, ${margin.top})`">
       <line :x1="x(0)" :x2="x(0)" :y1="0" :y2="height - margin.top - margin.bottom" v-if="x" stroke="black" stroke-width="0.5"></line>
@@ -39,9 +40,9 @@ export default {
       widthLegend: 200,
       margin: {
         top: 0,
-        right: 30,
+        right: 50,
         bottom: 30,
-        left: 130
+        left: 50
       },
       radius: 6,
       // axes
@@ -180,7 +181,7 @@ export default {
         .attr("class", "location-most-change y-axis")
         .attr("id", d => `location-change-${d._id}`)
         .attr("x", d => this.x(0))
-        .attr("dx", this.sortAsc ? 5 : -5)
+        .attr("dx", this.sortAsc ? this.radius * 1.5 : -1.5*this.radius)
         .attr("y", d => this.y(d.name) + this.y.bandwidth() / 2)
         .text(d => d.name)
         .style("text-anchor", this.sortAsc ? "start" : "end")
