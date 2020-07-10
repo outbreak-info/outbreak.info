@@ -57,15 +57,16 @@ export default {
     },
     margin() {
       const locationWidth = 90;
+      const otherSideWidth = 45;
       return this.sortAsc ? {
         top: 0,
         right: locationWidth,
         bottom: 30,
-        left: this.radius*2 
+        left: otherSideWidth
       } :
       {
         top: 0,
-        right: this.radius*2,
+        right: otherSideWidth,
         bottom: 30,
         left: locationWidth }
     }
@@ -218,7 +219,42 @@ export default {
           .style("opacity", 1e-5)
           .remove()
         )
-      )
+      );
+
+      const annotationSelector = this.chart.selectAll(".annotation-most-change")
+        .data(this.plottedData, d => d.location_id);
+
+      annotationSelector.join(
+        enter => enter.append("text")
+        .attr("class", "annotation-most-change")
+        .attr("id", d => `annotation-change-${d._id}`)
+        .attr("x", d => this.x(d[this.variable]))
+        .attr("dx", this.sortAsc ? -10 : 10)
+        .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+        .text(d => d3.format(",.0f")(d[this.variable]))
+        .style("dominant-baseline", "central")
+        .style("text-anchor", this.sortAsc ? "end" : "start")
+        .style("font-size", "0.65em")
+        .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+        .style("fill", "#2c3e50"),
+
+        update =>
+        update
+        .attr("id", d => `annotation-change-${d._id}`)
+        .text(d => d3.format(",.0f")(d[this.variable]))
+        .call(update => update.transition(t1)
+          .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+        .attr("x", d => this.x(d[this.variable]))),
+
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .duration(10)
+          .style("opacity", 1e-5)
+          .remove()
+        )
+      );
     }
   }
 }

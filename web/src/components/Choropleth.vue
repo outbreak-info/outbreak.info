@@ -20,8 +20,8 @@
     <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
     <DataUpdated />
     <div class="d-flex justify-content-between">
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-10" :varMax="5000"/>
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-10" :varMax="5000"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-10" :varMax="2200"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-10" :varMax="2200"/>
     </div>
   </div>
 
