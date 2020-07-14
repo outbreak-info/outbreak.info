@@ -20,7 +20,8 @@ import {
   scaleTime,
   select,
   axisBottom,
-  drag, event
+  drag,
+  event
 } from "d3";
 
 export default Vue.extend({
@@ -52,26 +53,21 @@ export default Vue.extend({
     this.setupDrag();
   },
   methods: {
-    formatDate(dateNum, format = "%Y-%m-%d"){
-      return(timeFormat(format)(dateNum))
+    formatDate(dateNum, format = "%Y-%m-%d") {
+      return (timeFormat(format)(dateNum))
     },
     setupDrag() {
       select("#slider-date")
-      .call(drag()
-      .on("start", this.dragstarted)
-              .on("drag", this.dragged)
-              .on("end", this.dragended))
+        .call(drag()
+          // .on("start", this.dragstarted)
+          .on("drag", this.dragged)
+          .on("end", this.dragended))
     },
     dragCallback() {
       return drag()
-        .on("start", this.dragstarted)
+        // .on("start", this.dragstarted)
         .on("drag", this.dragged)
         .on("end", this.dragended);
-    },
-    dragstarted(d) {
-      console.log("DRAG")
-      console.log(this.min)
-      console.log(this.max)
     },
     dragged(d) {
       // update position of circle
@@ -86,7 +82,7 @@ export default Vue.extend({
     },
     updateAxis() {
       this.x = scaleTime()
-      .clamp(true)
+        .clamp(true)
         .range([0, this.width])
         .domain([this.min, this.max]);
 
@@ -110,7 +106,7 @@ export default Vue.extend({
 }
 
 #slider-date {
-  cursor: ew-resize;
+    cursor: ew-resize;
 }
 
 .slider-axis path {
