@@ -192,12 +192,12 @@ export default {
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
       }
     },
-    // date: {
-    //   immediate: true,
-    //   handler(newDate, oldDate) {
-    //     this.selectedDate = newDate;
-    //   }
-    // },
+    date: {
+      immediate: true,
+      handler(newDate, oldDate) {
+        this.selectedDate = newDate;
+      }
+    },
     selectedDate() {
       console.log("date changed!");
       console.log(this.selectedDate)
