@@ -81,12 +81,13 @@ export default {
       this.chart = d3.select(this.$refs.circles);
     },
     prepData() {
-      this.plottedData = cloneDeep(this.data);
+      // If there are undefined values, the sorting happens as strings, which is WRONG
+      this.plottedData = cloneDeep(this.data.filter(d => d[this.variable]));
       if (this.sortAsc) {
-        this.plottedData.sort((a, b) => a[this.variable] - b[this.variable]);
-        this.plottedData = this.plottedData.slice(0, this.num2Plot);
+        this.plottedData.sort((a, b) => +a[this.variable] - +b[this.variable]);
+        this.plottedData = this.plottedData.slice(0, this.num2Plot); 
       } else {
-        this.plottedData.sort((a, b) => b[this.variable] - a[this.variable]);
+        this.plottedData.sort((a, b) => (+b[this.variable]) - (+a[this.variable]));
         this.plottedData = this.plottedData.slice(0, this.num2Plot);
       }
 
