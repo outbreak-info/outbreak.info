@@ -20,8 +20,8 @@
     <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
     <DataUpdated />
     <div class="d-flex justify-content-between">
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :varMax="2200"/>
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :varMax="2200"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :varMax="7150"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :varMax="7150"/>
     </div>
   </div>
 
@@ -96,7 +96,8 @@ export default {
       return(this.variable.includes("_14days_ago_diff"))
     },
     title() {
-      return (this.variableLabel)
+      const date = d3.timeParse("%Y-%m-%d")(this.date1)
+      return (this.date1 ? `${this.variableLabel} as of ${d3.timeFormat("%d %B %Y")(date)}` : this.variableLabel)
     }
   },
   created: function() {
