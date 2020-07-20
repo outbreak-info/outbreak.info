@@ -208,8 +208,7 @@ export default {
       this.setupMap();
       if (this.data && this.data.length && this.width) {
         this.data.forEach(d => {
-          const id = d.location_id.split("_").slice(-1)[0].replace("US-", "");
-          const idx = this.regionData.features.findIndex(polygon => polygon.properties.GEOID === id);
+          const idx = this.regionData.features.findIndex(polygon => polygon.properties.location_id === d.location_id);
           if (idx > -1) {
             this.regionData.features[idx]["fill"] = d.fill;
             this.regionData.features[idx]["location_id"] = d.location_id;
