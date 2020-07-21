@@ -236,6 +236,16 @@ export default {
         }
       ],
       variableOptions: [{
+          label: "total cases per capita",
+          choro: "total cases per 100,000 people",
+          value: "confirmed_per_100k"
+        },
+        {
+          label: "total deaths per capita",
+          choro: "total deaths per 100,000 people",
+          value: "dead_per_100k"
+        },
+        {
           label: "new cases/day",
           choro: "average new cases/day",
           value: "confirmed_rolling"
