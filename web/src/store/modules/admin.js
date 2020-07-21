@@ -291,6 +291,14 @@ const state = {
         name: "Compare",
       }
     }, {
+      date: new Date("2020-07-14 0:0"),
+      category: "data",
+      title: "Access all data through our API",
+      description: 'All of our data, including epidemiology data and resource metadata, can be accessed at <a href="https://api.outbreak.info/">api.outbreak.info</a>',
+      route: {
+        name: "Sources",
+      }
+    }, {
       date: new Date("2020-05-19 0:0"),
       category: "data",
       title: "Added searchable resources",
