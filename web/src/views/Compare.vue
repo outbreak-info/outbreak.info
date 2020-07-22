@@ -250,20 +250,40 @@ export default {
           value: "confirmed_rolling"
         },
         {
-          label: "new deaths/day",
-          choro: "average new deaths/day",
-          value: "dead_rolling"
-        },
-        {
-          label: "2 week change in cases/day",
-          choro: "cases vs. 2 weeks ago",
-          value: "confirmed_rolling_14days_ago_diff"
-        },
-        {
-          label: "2 week change in deaths/day",
-          choro: "deaths vs. 2 weeks ago",
-          value: "dead_rolling_14days_ago_diff"
-        }
+                 label: "new cases/day per capita",
+                 choro: "average new cases/day per 100,000 people",
+                 value: "confirmed_rolling_per_100k"
+               },
+               {
+                 label: "new deaths/day",
+                 choro: "average new deaths/day",
+                 value: "dead_rolling"
+               },
+               {
+                 label: "new deaths/day per capita",
+                 choro: "average new deaths/day per 100,000 people",
+                 value: "dead_rolling_per_100k"
+               },
+               {
+                 label: "2 week change in cases/day",
+                 choro: "cases vs. 2 weeks ago",
+                 value: "confirmed_rolling_14days_ago_diff"
+               },
+               {
+                 label: "2 week change in cases/day per capita",
+                 choro: "cases vs. 2 weeks ago per 100,000 people",
+                 value: "confirmed_rolling_14days_ago_diff_per_100k"
+               },
+               {
+                 label: "2 week change in deaths/day",
+                 choro: "deaths vs. 2 weeks ago",
+                 value: "dead_rolling_14days_ago_diff"
+               },
+               {
+                 label: "2 week change in deaths/day per capita",
+                 choro: "deaths vs. 2 weeks ago per 100,000 people",
+                 value: "dead_rolling_14days_ago_diff_per_100k"
+               }
 
       ]
     };
