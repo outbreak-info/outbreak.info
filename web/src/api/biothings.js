@@ -29,7 +29,7 @@ export function getDateUpdated(apiUrl) {
   return from(axios.get(url)).pipe(
     pluck("data", "build_date"),
     map(result => {
-      const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
+      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f");
       const dateUpdated = strictIsoParse(result);
       let lastUpdated = null;
       if (dateUpdated) {
