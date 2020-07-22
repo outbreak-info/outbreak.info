@@ -5,7 +5,7 @@
     <p class="m-0">
       To increase the findability of <router-link :to="{ name: 'Resource Summary'}">COVID-19 resources</router-link>, we've grouped all the resources into the following categories.
     </p>
-    <small>Suggest changes by submitting a <a href="https://github.com/SuLab/outbreak.info-resources/issues/new/choose" target="_blank" rel="noreferrer">Github issue</a> or creating a pull request on the <a href="https://github.com/SuLab/outbreak.info-resources/blob/master/covid_topic_categories.tsv" target="_blank" rel="noreferrer">categories</a>.
+    <small>Suggest changes by submitting a <a href="https://github.com/outbreak-info/outbreak.info-resources/issues/new/choose" target="_blank" rel="noreferrer">Github issue</a> or creating a pull request on the <a href="https://github.com/outbreak-info/outbreak.info-resources/blob/master/covid_topic_categories.tsv" target="_blank" rel="noreferrer">categories</a>.
     </small>
   </div>
 
@@ -39,7 +39,7 @@ export default Vue.extend({
   name: "TopicDefinitions",
   data() {
     return ({
-      topicUrl: "https://raw.githubusercontent.com/SuLab/outbreak.info-resources/master/covid_topic_categories.tsv",
+      topicUrl: "https://raw.githubusercontent.com/outbreak-info/outbreak.info-resources/master/covid_topic_categories.tsv",
       topicArr: []
     })
   },
