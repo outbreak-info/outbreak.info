@@ -53,7 +53,7 @@
           </svg>
           <a
             class="btn btn-outline-light mt-5"
-            href="https://github.com/SuLab/outbreak.info/issues"
+            href="https://github.com/outbreak-info/outbreak.info/issues"
             rel="noreferrer"
             target="_blank"
             >Submit an issue on Github</a

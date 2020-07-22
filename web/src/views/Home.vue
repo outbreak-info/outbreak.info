@@ -150,7 +150,7 @@
       feature?
     </p>
     <p class="text-center">
-      <a class="btn btn-main m-5" href="https://github.com/SuLab/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
+      <a class="btn btn-main m-5" href="https://github.com/outbreak-info/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
     </p>
   </section>
   <Logos />
