@@ -29,8 +29,8 @@ export function getDateUpdated(apiUrl) {
   return from(axios.get(url)).pipe(
     pluck("data", "build_date"),
     map(result => {
-      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f");
-      const dateUpdated = strictIsoParse(result);
+      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f %Z");
+      const dateUpdated = strictIsoParse(result + " -07:00"); // ensure the time is parsed as PDT
       let lastUpdated = null;
       if (dateUpdated) {
         const updatedDiff = (today - dateUpdated) / (60 * 60 * 1000);
