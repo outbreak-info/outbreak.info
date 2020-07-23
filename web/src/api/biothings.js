@@ -102,7 +102,7 @@ export function getAll(apiUrl, queryString) {
 
 export function getOne(apiUrl, queryString, count, scrollID = null) {
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime()/36e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   let url = `${apiUrl}query?q=${queryString}&fetch_all=true&page=${count}&timestamp=${timestamp}`;
   if (scrollID) {
