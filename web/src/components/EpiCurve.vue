@@ -271,7 +271,7 @@ export default Vue.extend({
         this.plottedData = cloneDeep(this.data);
 
         this.plottedData.forEach(d => {
-          d["value"] = this.isLogY && this.loggable ? d.value.filter(x => x[this.variable] > 0 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
+          d["value"] = this.isLogY && this.loggable ? d.value.filter(x => x[this.variable] >= 1 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
 
           // ensure dates are sorted
           d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);

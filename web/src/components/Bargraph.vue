@@ -174,11 +174,11 @@ export default Vue.extend({
       }
 
       if (this.data && this.includeAxis) {
-        this.logData = cloneDeep(this.data).filter(d => d[this.variable]);
+        this.logData = cloneDeep(this.data).filter(d => d[this.variable] >= 1);
         this.logData.forEach(d => {
           d["confirmed_log"] = Math.log10(d.confirmed_numIncrease);
         });
-        this.plottedData = this.isLogY ? this.logData : this.data;
+        this.plottedData = this.isLogY ? this.logData : this.data.filter(d => d[this.variable] >= 0);
       } else {
         this.plottedData = this.data;
       }
@@ -386,9 +386,10 @@ export default Vue.extend({
 
         var lineSelector;
         if (["confirmed_numIncrease", "confirmed_numIncrease_per_100k", "dead_numIncrease", "dead_numIncrease_per_100k", "recovered_numIncrease", "recovered_numIncrease_per_100k"].includes(this.variable)) {
+          const averageData = this.isLogY ? this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")] >= 1) : this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")]);
           lineSelector = this.average
             .selectAll(".rolling-average")
-            .data([this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")])], d => d._id);
+            .data([averageData], d => d._id);
         } else {
           lineSelector = this.average
             .selectAll(".rolling-average")
@@ -493,8 +494,9 @@ export default Vue.extend({
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable,
-          fixedY: String(!!this.fixedYMax)
+          variable: this.variable.replace("_per_100k", ""),
+          fixedY: String(!!this.fixedYMax),
+          percapita: String(this.percapita)
         }
       });
 
