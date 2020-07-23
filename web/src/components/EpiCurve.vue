@@ -587,17 +587,18 @@ export default Vue.extend({
         .merge(pathEnter)
         .datum(d => d.value)
         .attr("id", d => d[0] ? `epi-line ${d[0].location_id}` : "epi-line-blank")
-        .attr("d", this.line)
-        .attr("stroke-dasharray", function() {
-          var totalLength = this.getTotalLength();
-          return totalLength + " " + totalLength;
-        })
-        .attr("stroke-dashoffset", function() {
-          var totalLength = this.getTotalLength();
-          return totalLength;
-        })
+        // .attr("d", this.line)
+        // .attr("stroke-dasharray", function() {
+        //   var totalLength = this.getTotalLength();
+        //   return totalLength + " " + totalLength;
+        // })
+        // .attr("stroke-dashoffset", function() {
+        //   var totalLength = this.getTotalLength();
+        //   return totalLength;
+        // })
         .transition()
         .duration(2000)
+        .attr("d", this.line)
         // .duration(1500 + 54)
         .ease(d3.easeLinear)
         .attr("stroke-dashoffset", 0)

@@ -62,6 +62,7 @@ export default Vue.extend({
     },
     title: String,
     log: Boolean,
+    percapita: Boolean,
     location: String,
     includeAxis: {
       type: Boolean,
@@ -108,7 +109,7 @@ export default Vue.extend({
   },
   computed: {
     plotTitle() {
-      return (`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
+      return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} in ${this.title} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
     }
   },
   watch: {
@@ -136,6 +137,14 @@ export default Vue.extend({
         this.updatePlot();
       }
     },
+    percapita: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if(newVal !== oldVal) {
+          this.updatePlot();
+        }
+      }
+    },
     width: function() {
       this.updatePlot();
     },
@@ -157,6 +166,12 @@ export default Vue.extend({
         .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
     },
     prepData: function() {
+      if(this.percapita){
+        this.variable = this.variable.includes("_per_100k") ? this.variable : this.variable + "_per_100k";
+      } else {
+      this.variable = this.variable.replace("_per_100k", "");
+      }
+
       if (this.data && this.includeAxis) {
         this.logData = cloneDeep(this.data).filter(d => d[this.variable]);
         this.logData.forEach(d => {
@@ -369,7 +384,7 @@ export default Vue.extend({
         );
 
         var lineSelector;
-        if (["confirmed_numIncrease", "dead_numIncrease", "recovered_numIncrease"].includes(this.variable)) {
+        if (["confirmed_numIncrease","confirmed_numIncrease_per_100k", "dead_numIncrease", "dead_numIncrease_per_100k", "recovered_numIncrease", "recovered_numIncrease_per_100k"].includes(this.variable)) {
           lineSelector = this.average
             .selectAll(".rolling-average")
             .data([this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")])], d => d._id);

@@ -5,37 +5,38 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-<div class="d-flex">
-  <!-- Region buttons -->
-  <div class="d-flex flex-wrap">
-    <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">All
-      countries</router-link>
-    <div class="d-flex flex-column">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
-        :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
-      <div class="d-flex">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas
-        </router-link>
-        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
-          :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+  <div class="d-flex">
+    <!-- Region buttons -->
+    <div class="d-flex flex-wrap">
+      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">
+        All
+        countries</router-link>
+      <div class="d-flex flex-column">
+        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
+          :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
+        <div class="d-flex">
+          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas
+          </router-link>
+          <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
+            :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+        </div>
       </div>
-    </div>
 
-    <!-- <div class="d-flex flex-wrap">
+      <!-- <div class="d-flex flex-wrap">
       <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', variable: this.selectedVariable.value} }">Australian States</router-link>
       <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', variable: this.selectedVariable.value} }">Canadian Provinces</router-link>
       <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', variable: this.selectedVariable.value} }">Chinese Provinces</router-link>
 
     </div> -->
-  </div>
+    </div>
 
-  <!-- variable options -->
-  <div class="row d-flex ml-5 align-items-center">
-    <select v-model="selectedVariable" class="select-dropdown">
-      <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
-      </option>
-    </select>
-  </div>
+    <!-- variable options -->
+    <div class="row d-flex ml-5 align-items-center">
+      <select v-model="selectedVariable" class="select-dropdown">
+        <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
+        </option>
+      </select>
+    </div>
   </div>
 
   <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" />
@@ -250,40 +251,40 @@ export default {
           value: "confirmed_rolling"
         },
         {
-                 label: "new cases/day per capita",
-                 choro: "average new cases/day per 100,000 people",
-                 value: "confirmed_rolling_per_100k"
-               },
-               {
-                 label: "new deaths/day",
-                 choro: "average new deaths/day",
-                 value: "dead_rolling"
-               },
-               {
-                 label: "new deaths/day per capita",
-                 choro: "average new deaths/day per 100,000 people",
-                 value: "dead_rolling_per_100k"
-               },
-               {
-                 label: "2 week change in cases/day",
-                 choro: "cases vs. 2 weeks ago",
-                 value: "confirmed_rolling_14days_ago_diff"
-               },
-               {
-                 label: "2 week change in cases/day per capita",
-                 choro: "cases vs. 2 weeks ago per 100,000 people",
-                 value: "confirmed_rolling_14days_ago_diff_per_100k"
-               },
-               {
-                 label: "2 week change in deaths/day",
-                 choro: "deaths vs. 2 weeks ago",
-                 value: "dead_rolling_14days_ago_diff"
-               },
-               {
-                 label: "2 week change in deaths/day per capita",
-                 choro: "deaths vs. 2 weeks ago per 100,000 people",
-                 value: "dead_rolling_14days_ago_diff_per_100k"
-               }
+          label: "new cases/day per capita",
+          choro: "average new cases/day per 100,000 people",
+          value: "confirmed_rolling_per_100k"
+        },
+        {
+          label: "new deaths/day",
+          choro: "average new deaths/day",
+          value: "dead_rolling"
+        },
+        {
+          label: "new deaths/day per capita",
+          choro: "average new deaths/day per 100,000 people",
+          value: "dead_rolling_per_100k"
+        },
+        {
+          label: "2 week change in cases/day",
+          choro: "cases vs. 2 weeks ago",
+          value: "confirmed_rolling_14days_ago_diff"
+        },
+        {
+          label: "2 week change in cases/day per capita",
+          choro: "cases vs. 2 weeks ago per 100,000 people",
+          value: "confirmed_rolling_14days_ago_diff_per_100k"
+        },
+        {
+          label: "2 week change in deaths/day",
+          choro: "deaths vs. 2 weeks ago",
+          value: "dead_rolling_14days_ago_diff"
+        },
+        {
+          label: "2 week change in deaths/day per capita",
+          choro: "deaths vs. 2 weeks ago per 100,000 people",
+          value: "dead_rolling_14days_ago_diff_per_100k"
+        }
 
       ]
     };
@@ -331,7 +332,7 @@ export default {
           this.numColors = domain.length - 1;
 
           // calculate colors
-          colorRange = range(0, 1.01, 1 / (this.numColors-1)).map(d => interpolateRdYlBu(d)).reverse();
+          colorRange = range(0, 1.01, 1 / (this.numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
         } else {
           // SEQUENTIAL
           colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
