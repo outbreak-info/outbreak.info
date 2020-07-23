@@ -18,7 +18,8 @@
       <g :transform="`translate(${margin.left},${margin.top})`" id="rolling-average" class="bargraph" ref="rolling_average"></g>
       <g class="annotations" :class="{hidden: noRollingAvg}">
         <line :style="{'stroke': this.colorAverage, 'stroke-width': 2.5}" :x1="margin.left + 5" :x2="margin.left + 20" :y1="margin.top+6" :y2="margin.top+6"></line>
-        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage, 'font-size': '0.75em', 'dominant-baseline': 'hanging', 'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif'}">7 day rolling average</text>
+        <text class="annotation--rolling-average" :x="margin.left + 25" :y="margin.top" :style="{'fill': this.colorAverage, 'font-size': '0.75em', 'dominant-baseline': 'hanging', 'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif'}">7 day
+          rolling average</text>
       </g>
     </svg>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
@@ -62,6 +63,7 @@ export default Vue.extend({
     },
     title: String,
     log: Boolean,
+    percapita: Boolean,
     location: String,
     includeAxis: {
       type: Boolean,
@@ -108,7 +110,7 @@ export default Vue.extend({
   },
   computed: {
     plotTitle() {
-      return (`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
+      return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} in ${this.title} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
     }
   },
   watch: {
@@ -136,6 +138,14 @@ export default Vue.extend({
         this.updatePlot();
       }
     },
+    percapita: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.updatePlot();
+        }
+      }
+    },
     width: function() {
       this.updatePlot();
     },
@@ -157,12 +167,18 @@ export default Vue.extend({
         .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
     },
     prepData: function() {
+      if (this.percapita) {
+        this.variable = this.variable.includes("_per_100k") || this.variableObj.percapita === false ? this.variable : this.variable + "_per_100k";
+      } else {
+        this.variable = this.variable.replace("_per_100k", "");
+      }
+
       if (this.data && this.includeAxis) {
-        this.logData = cloneDeep(this.data).filter(d => d[this.variable]);
+        this.logData = cloneDeep(this.data).filter(d => d[this.variable] >= 1);
         this.logData.forEach(d => {
           d["confirmed_log"] = Math.log10(d.confirmed_numIncrease);
         });
-        this.plottedData = this.isLogY ? this.logData : this.data;
+        this.plottedData = this.isLogY ? this.logData : this.data.filter(d => d[this.variable] >= 0);
       } else {
         this.plottedData = this.data;
       }
@@ -369,10 +385,11 @@ export default Vue.extend({
         );
 
         var lineSelector;
-        if (["confirmed_numIncrease", "dead_numIncrease", "recovered_numIncrease"].includes(this.variable)) {
+        if (["confirmed_numIncrease", "confirmed_numIncrease_per_100k", "dead_numIncrease", "dead_numIncrease_per_100k", "recovered_numIncrease", "recovered_numIncrease_per_100k"].includes(this.variable)) {
+          const averageData = this.isLogY ? this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")] >= 1) : this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")]);
           lineSelector = this.average
             .selectAll(".rolling-average")
-            .data([this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")])], d => d._id);
+            .data([averageData], d => d._id);
         } else {
           lineSelector = this.average
             .selectAll(".rolling-average")
@@ -409,7 +426,7 @@ export default Vue.extend({
           },
           update => {
             update
-            .style("stroke", this.colorAverage)
+              .style("stroke", this.colorAverage)
               .attr("d", this.line)
               .attr("stroke-dasharray", function() {
                 var totalLength = this.getTotalLength();
@@ -477,8 +494,9 @@ export default Vue.extend({
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable,
-          fixedY: String(!!this.fixedYMax)
+          variable: this.variable.replace("_per_100k", ""),
+          fixedY: String(!!this.fixedYMax),
+          percapita: String(this.percapita)
         }
       });
 
