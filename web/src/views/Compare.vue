@@ -317,7 +317,7 @@ export default {
         // color range
         var colorRange;
         // DIVERGING
-        if (["confirmed_rolling_14days_ago_diff", "dead_rolling_14days_ago_diff"].includes(this.selectedVariable.value)) {
+        if (this.selectedVariable.value.includes("diff")) {
           // ensure that the diverging scale is centered at 0.
           const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
 
