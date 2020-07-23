@@ -441,9 +441,9 @@ export default Vue.extend({
         .style("top", this.height - 28 + "px");
     },
     drawDots: function() {
-      if (this.plottedData) {
+      if (this.plottedData && this.plottedData.length) {
         const t1 = d3.transition().duration(this.transitionDuration);
-        const t2 = d3.transition().duration(1500);
+        const t2 = d3.transition().duration(2000);
         const formatDate = d3.timeFormat("%d %b %Y");
 
         // --- annotation: change in case definition ---
@@ -619,9 +619,11 @@ export default Vue.extend({
                 return totalLength;
               })
               .call(update => {
-                update.transition(t2)
+                console.log(this.plottedData)
+                console.log("NETR")
+                update.transition()
+                  .duration(10000)
                   .attr("d", this.line)
-                  // .duration(1500 + 54)
                   .ease(d3.easeLinear)
                   .attr("stroke-dashoffset", 0)
               })
@@ -806,30 +808,6 @@ export default Vue.extend({
         d3.selectAll(".annotation--region-name")
           .on("mouseover", d => this.tooltipOn(d, "key"))
           .on("mouseout", d => this.tooltipOff(d));
-
-        // --- transition: trace the curves ---
-        const curtainSelector = this.svg
-          .select("#transition-mask")
-          .selectAll(".transition-curtain")
-          .data([0]);
-
-        curtainSelector.exit().remove();
-
-        // const curtainEnter = curtainSelector
-        //   .enter()
-        //   .append("rect")
-        //   .attr("class", "transition-curtain")
-        //   .style("fill", this.backgroundColor)
-        //   .attr("y", -this.margin.top)
-        //   .attr("width", this.width + this.radius - this.margin.left)
-        //   .attr("height", this.height + this.radius * 2);
-        //
-        // curtainSelector
-        //   .merge(curtainEnter)
-        //   .attr("x", -this.radius)
-        //   .transition(t1)
-        //   .ease(d3.easeLinear)
-        //   .attr("x", this.width - this.margin.left);
       }
     }
   }
