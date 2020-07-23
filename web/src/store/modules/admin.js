@@ -291,6 +291,19 @@ const state = {
         name: "Compare",
       }
     }, {
+      date: new Date("2020-07-23 0:1"),
+      category: "feature",
+      title: "Added per capita normalization",
+      description: 'Added normalization of case and death counts by population for countries and U.S. states, metropolitan areas, and counties.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "KOR;USA_US-CA;AUS",
+          variable: "confirmed_rolling",
+          percapita: "true"
+        }
+      }
+    }, {
       date: new Date("2020-07-14 0:0"),
       category: "data",
       title: "Access all data through our API",
