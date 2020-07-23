@@ -168,7 +168,7 @@ export default Vue.extend({
     },
     prepData: function() {
       if (this.percapita) {
-        this.variable = this.variable.includes("_per_100k") ? this.variable : this.variable + "_per_100k";
+        this.variable = this.variable.includes("_per_100k") || this.variableObj.percapita === false ? this.variable : this.variable + "_per_100k";
       } else {
         this.variable = this.variable.replace("_per_100k", "");
       }

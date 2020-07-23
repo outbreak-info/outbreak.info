@@ -27,7 +27,7 @@
 
   <!-- fixed y selector for small multiple bar graphs -->
   <div class="text-center m-auto p-2 bg-grey__lightest d-flex" style="max-width:700px;">
-    <label class="b-contain m-auto">
+    <label class="b-contain m-auto" v-if="variableObj.percapita !== false">
       <span>normalize to population</span>
       <input type="checkbox" v-model="isPerCapita" />
       <div class="b-input"></div>
@@ -181,6 +181,7 @@ export default {
           label: "cumulative hospitalizations",
           ttip: "hospitalizations",
           value: "testing_hospitalized",
+          percapita: false,
           sources: ["testing"]
         },
         {
@@ -208,6 +209,7 @@ export default {
           label: "daily new hospitalizations (U.S. States only)",
           ttip: "new hospitalizations",
           value: "testing_hospitalizedIncrease",
+          percapita: false,
           sources: ["testing"]
         },
         {
@@ -226,18 +228,21 @@ export default {
           label: "cumulative COVID-19 tests (U.S. States only)",
           ttip: "tests (positive & negative)",
           value: "testing_totalTestResults",
+          percapita: false,
           sources: ["testing"]
         },
         {
           label: "daily new tests (U.S. States only)",
           ttip: "new tests (positive & negative)",
           value: "testing_totalTestResultsIncrease",
+          percapita: false,
           sources: ["testing"]
         },
         {
           label: "percent positive tests (U.S. States only)",
           ttip: "positive tests",
           value: "testing_positivity",
+          percapita: false,
           sources: ["testing"]
         }
       ]
