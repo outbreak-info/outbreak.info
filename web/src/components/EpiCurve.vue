@@ -65,6 +65,7 @@ export default Vue.extend({
     variableObj: Object,
     xVariableInput: String,
     log: Boolean,
+    percapita: Boolean,
     loggable: Boolean,
     percent: Boolean
   },
@@ -115,10 +116,11 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      if(this.data.length == 1) {
-      return (`Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
-    } else {
-      return (`Number of COVID-19 ${this.variableObj.label}`)}
+      if (this.data.length == 1) {
+        return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+      } else {
+        return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
+      }
     }
   },
   watch: {
@@ -150,6 +152,14 @@ export default Vue.extend({
     //     this.variable = newVal;
     //   },
     // },
+    percapita: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.updatePlot();
+        }
+      }
+    },
     width() {
       this.updatePlot();
     }
@@ -209,8 +219,9 @@ export default Vue.extend({
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable,
-          xVariable: this.xVariable
+          variable: this.variable.replace("_per_100k", ""),
+          xVariable: this.xVariable,
+          percapita: String(this.percapita)
         }
       });
 
@@ -249,6 +260,12 @@ export default Vue.extend({
     },
     prepData: function() {
       this.loggable = this.variable != "testing_positivity";
+
+      if (this.percapita) {
+        this.variable = this.variable.includes("_per_100k") ? this.variable : this.variable + "_per_100k";
+      } else {
+        this.variable = this.variable.replace("_per_100k", "");
+      }
 
       if (this.data) {
         this.plottedData = cloneDeep(this.data);
@@ -581,9 +598,9 @@ export default Vue.extend({
         .select(".epi-line");
 
       pathSelector
-      .attr("stroke", d => this.colorScale(d.key))
-      .style("fill", "none")
-      .style("stroke-width", "2.5")
+        .attr("stroke", d => this.colorScale(d.key))
+        .style("fill", "none")
+        .style("stroke-width", "2.5")
         .merge(pathEnter)
         .datum(d => d.value)
         .attr("id", d => d[0] ? `epi-line ${d[0].location_id}` : "epi-line-blank")
@@ -596,7 +613,7 @@ export default Vue.extend({
         //   var totalLength = this.getTotalLength();
         //   return totalLength;
         // })
-        .transition()
+        .transition(t2)
         .duration(2000)
         .attr("d", this.line)
         // .duration(1500 + 54)
@@ -633,7 +650,7 @@ export default Vue.extend({
           .attr("id", d => `${d._id}`)
           .attr("opacity", 0)
           .call(update => update.transition(t2)
-          .attr("opacity", d => d.mostRecent ? 1 : 0)
+            .attr("opacity", d => d.mostRecent ? 1 : 0)
             .attr("cx", d => this.x(d[this.xVariable]))
             .attr("cy", d => this.y(d[this.variable]))),
           exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
@@ -870,9 +887,9 @@ export default Vue.extend({
 }
 
 .swoopy-arrow-group {
-  pointer-events: none;
-  & rect {
-    pointer-events: auto !important;
-  }
+    pointer-events: none;
+    & rect {
+        pointer-events: auto !important;
+    }
 }
 </style>

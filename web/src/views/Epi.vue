@@ -76,7 +76,7 @@
 
     <!-- curve -->
     <template v-if="plottedData && showCurves && !this.variable.includes('Increase')">
-      <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'"
+      <EpiCurve class="row" id="curveContainer" :data="plottedData" :percapita="isPerCapita" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'"
         :showAll="showAll" />
 
       <!-- source / download data -->
@@ -408,7 +408,6 @@ export default {
       epiTableSubject.next([]);
     },
     changeVariable() {
-      console.log("VAR CHANGED")
       this.variable = this.variableObj.value;
 
       // update y-max
