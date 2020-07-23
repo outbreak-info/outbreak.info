@@ -115,6 +115,11 @@ export default Vue.extend({
     };
   },
   computed: {
+    dataUpdated() {
+      // Combo property to check if the data has changed, or the normalization has.
+      // TODO: in Vue 3, this can be streamlined as a dual watcher
+      return JSON.stringify(this.data) + this.variable + String(this.percapita);
+    },
     title() {
       if (this.data.length == 1) {
         return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
@@ -124,7 +129,7 @@ export default Vue.extend({
     }
   },
   watch: {
-    data: function() {
+    dataUpdated: function() {
       this.updatePlot();
     },
     variableObj: {
@@ -145,20 +150,6 @@ export default Vue.extend({
       handler(newVal, oldVal) {
         this.xVariable = newVal;
       },
-    },
-    // routeVariable: {
-    //   immediate: true,
-    //   handler(newVal, oldVal) {
-    //     this.variable = newVal;
-    //   },
-    // },
-    percapita: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.updatePlot();
-        }
-      }
     },
     width() {
       this.updatePlot();
@@ -250,6 +241,7 @@ export default Vue.extend({
       d3.selectAll(`.epi-region`).style("opacity", 1);
     },
     updatePlot: function() {
+      console.log("upat")
       this.prepData();
 
       if (this.data && this.chart) {
@@ -443,7 +435,7 @@ export default Vue.extend({
     drawDots: function() {
       if (this.plottedData && this.plottedData.length) {
         const t1 = d3.transition().duration(this.transitionDuration);
-        const t2 = d3.transition().duration(2000);
+        const t2 = d3.transition().duration(1500);
         const formatDate = d3.timeFormat("%d %b %Y");
 
         // --- annotation: change in case definition ---
@@ -597,7 +589,7 @@ export default Vue.extend({
             // kind of a weird hack; on the first iteration of the data call, you get d is this.plottedData[i].value (e.g. array of timepoints)
             // and then it gets called again, where d is this.plottedData[i]
             // this is probably doubling the work that needs to be done, but it works, so...
-            return d.key ? d.key : d[0].location_id
+            return d.key ? d.key : d[0] ? d[0].location_id : null
           })
 
         pathSelector.join(
@@ -619,10 +611,7 @@ export default Vue.extend({
                 return totalLength;
               })
               .call(update => {
-                console.log(this.plottedData)
-                console.log("NETR")
-                update.transition()
-                  .duration(10000)
+                update.transition(t2)
                   .attr("d", this.line)
                   .ease(d3.easeLinear)
                   .attr("stroke-dashoffset", 0)
