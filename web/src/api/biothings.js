@@ -29,8 +29,8 @@ export function getDateUpdated(apiUrl) {
   return from(axios.get(url)).pipe(
     pluck("data", "build_date"),
     map(result => {
-      const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
-      const dateUpdated = strictIsoParse(result);
+      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f %Z");
+      const dateUpdated = strictIsoParse(result + " -07:00"); // ensure the time is parsed as PDT
       let lastUpdated = null;
       if (dateUpdated) {
         const updatedDiff = (today - dateUpdated) / (60 * 60 * 1000);
@@ -102,7 +102,7 @@ export function getAll(apiUrl, queryString) {
 
 export function getOne(apiUrl, queryString, count, scrollID = null) {
   // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime()/36e5);
+  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   let url = `${apiUrl}query?q=${queryString}&fetch_all=true&page=${count}&timestamp=${timestamp}`;
   if (scrollID) {
