@@ -241,7 +241,6 @@ export default Vue.extend({
       d3.selectAll(`.epi-region`).style("opacity", 1);
     },
     updatePlot: function() {
-      console.log("upat")
       this.prepData();
 
       if (this.data && this.chart) {
