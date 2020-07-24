@@ -578,6 +578,7 @@ export default Vue.extend({
           .attr("y", d => d.y)
           .text(d => d.value[0] ? d.value[0].name : "")
           .style("opacity", 1e-6)
+          .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
           .transition(t1)
           .delay(1000)
           .style("opacity", 1);
