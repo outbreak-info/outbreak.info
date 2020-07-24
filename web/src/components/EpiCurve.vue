@@ -228,7 +228,9 @@ export default Vue.extend({
         .style("font-weight", 700);
 
       d3.selectAll(`.epi-region`).style("opacity", 0.35);
+      d3.selectAll(`.epi-line`).style("opacity", 0.35);
 
+      d3.selectAll(`.${d[location_id]}`).style("opacity", 1);
       d3.selectAll(`#${d[location_id]}`).style("opacity", 1);
     },
     tooltipOff: function(d) {
@@ -239,6 +241,7 @@ export default Vue.extend({
       d3.selectAll(".annotation--region-name").style("font-weight", 400);
 
       d3.selectAll(`.epi-region`).style("opacity", 1);
+      d3.selectAll(`.epi-line`).style("opacity", 1);
     },
     updatePlot: function() {
       this.prepData();
@@ -584,7 +587,7 @@ export default Vue.extend({
           .style("opacity", 1);
 
         // --- path ---
-        const pathSelector = this.chart.selectAll(".epi-line2")
+        const pathSelector = this.chart.selectAll(".epi-line")
           .data(this.plottedData, d => {
             // kind of a weird hack; on the first iteration of the data call, you get d is this.plottedData[i].value (e.g. array of timepoints)
             // and then it gets called again, where d is this.plottedData[i]
@@ -595,7 +598,7 @@ export default Vue.extend({
         pathSelector.join(
           enter => {
             enter.append("path")
-              .attr("class", "epi-line2")
+              .attr("class", d => `epi-line ${d.key}`)
               .attr("stroke", d => this.colorScale(d.key))
               .style("fill", "none")
               .style("stroke-width", "2.5")
@@ -622,6 +625,7 @@ export default Vue.extend({
           update => update
           .attr("stroke", d => this.colorScale(d.key))
           .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
+          .attr("class", d => `epi-line ${d.key}`)
           .datum(d => d.value)
           .attr("stroke-dashoffset", 0)
           .attr("stroke-dasharray", "none")
@@ -657,7 +661,7 @@ export default Vue.extend({
             .attr("r", this.radius)
             .attr("class", "epi-point")
             // .attr("cy", this.y(0))
-            .attr("class", d => `epi-point ${d.location_id}`)
+            .attr("class", d => d.mostRecent ? `epi-point ${d.location_id}` : "epi-point")
             .attr("id", d => `${d._id}`)
             .attr("cx", d => this.x(d[this.xVariable]))
             .attr("cy", d => this.y(d[this.variable]))
@@ -666,7 +670,7 @@ export default Vue.extend({
             .call(update => update.transition(t2).delay(1500)
               .attr("opacity", d => d.mostRecent ? 1 : 0)),
             update => update
-            .attr("class", d => `epi-point ${d.location_id}`)
+            .attr("class", d => d.mostRecent ? `epi-point ${d.location_id}` : "epi-point")
             .attr("id", d => `${d._id}`)
             .attr("opacity", 0)
             .call(update => update.transition(t2)
