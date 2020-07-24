@@ -47,7 +47,7 @@ import store from "@/store";
 
 const width = 500;
 const height = 300;
-const radius = 2.5;
+const radius = 3.5;
 const margin = {
   top: 15,
   right: 225,
