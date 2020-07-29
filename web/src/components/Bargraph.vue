@@ -188,7 +188,6 @@ export default Vue.extend({
 
       if (
         this.plottedData &&
-        this.plottedData[0] &&
         this.width &&
         this.height
       ) {
