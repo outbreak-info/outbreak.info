@@ -20,8 +20,8 @@
     <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
     <DataUpdated />
     <div class="d-flex justify-content-between">
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :varMax="7150"/>
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :varMax="7150"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
+      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
     </div>
   </div>
 
@@ -92,6 +92,11 @@ export default {
     };
   },
   computed: {
+    varMax() {
+      const maxVal = d3.max(this.data, d => d[this.variable]);
+      const minVal = d3.min(this.data, d => d[this.variable]);
+      return(Math.max(Math.abs(minVal), maxVal))
+    },
     isDiff() {
       return(this.variable.includes("_14days_ago_diff"))
     },
@@ -149,7 +154,7 @@ export default {
       if (selector) {
         const dims = selector.getBoundingClientRect();
 
-        this.width = dims.width >= 600 ? dims.width - marginLegend - this.widthLegend : dims.width;
+        this.width = dims.width >= 800 ? dims.width - marginLegend - this.widthLegend : dims.width;
         this.widthLegend = dims.width >= 225 ? this.widthLegend : dims.width; // make legend smaller on small screens
 
         const idealHeight = this.width / whRatio;
@@ -207,8 +212,8 @@ export default {
         // center = [d3.mean([minLon, maxLon]), d3.mean([minLat, maxLat])],
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],
-        xscale = this.width / dx * 0.95,
-        yscale = this.height / dy * 0.95,
+        xscale = this.width / dx * 0.98,
+        yscale = this.height / dy * 0.98,
         scale = d3.min([xscale, yscale]);
 
 

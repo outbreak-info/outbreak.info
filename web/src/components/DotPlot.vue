@@ -1,7 +1,7 @@
 <template>
-<div class="" ref="dotplot_container">
+<div class="" :style="{width: width+ 'px'}" ref="dotplot_container">
   <h6 class="text-left m-0">{{sortAsc ? "Lowest" : "Highest"}}</h6>
-  <small class="text-left m-0 p-0 line-height-1 mb-2 d-block">{{title}}</small>
+  <small class="text-left m-0 p-0 line-height-1 d-block text-wrap mb-2 mr-2">{{title}}</small>
   <svg :width="width" :height="height" ref="dotplot_svg" class="dotplot-svg" :name="title">
     <g ref="circles" class="circles-group" :transform="`translate(${margin.left}, ${margin.top})`">
       <line :x1="x(0)" :x2="x(0)" :y1="0" :y2="height - margin.top - margin.bottom" v-if="x" stroke="black" stroke-width="0.5"></line>
@@ -96,6 +96,8 @@ export default {
       this.x = d3.scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(this.domain);
+
+        console.log(this.domain)
       // .domain(d3.extent(this.plottedData.map(d => d[this.variable])));
 
       this.y = d3.scaleBand()
