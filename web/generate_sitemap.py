@@ -7,7 +7,7 @@ print(f"Creating sitemap at {datetime.now()}")
 from requests import get
 
 
-SITEMAP_FILE = "/Users/laurahughes/GitHub/outbreak.info/web/public/sitemap.xml"
+SITEMAP_FILE = "/Users/laurahughes/GitHub/outbreak.info/web/public/sitemap"
 ROUTES = [
 "about",
  "citation",
@@ -61,22 +61,45 @@ def fetchAll(url):
             results.extend(result["hits"])
     return(results)
 
-
 def generate_sitemap(api_url= API_URL, site_url = SITE_URL, routes = ROUTES, filename = SITEMAP_FILE):
+    # base file for non-resource-based routes
     route_urls = [f"<url><loc>{site_url}/{route}</loc></url>" for route in routes]
-    route_list = "\n".join(route_urls)
+    counter = 0
+    print("\nCreating non-resources sitemap file")
+    create_sitemap(route_urls, f"{filename}{counter}.xml")
 
+    print("Fetching indices of resources")
     ids = fetchAll(api_url)
     resource_urls = [f"<url><loc>{site_url}/resources/{id['_id']}</loc></url>" for id in ids]
-    resource_list = "\n".join(resource_urls)
+    # Split sitemaps up into chunks of size 50,000:
+    # Fixing error "Your Sitemap contains too many URLs. Please create multiple Sitemaps with up to 50000 URLs each and submit all Sitemaps."
+    # As per https://support.google.com/webmasters/answer/75712?hl=en
+    n = 50000
+    for i in range(0, len(resource_urls), n):
+        counter += 1
+        print(f"Creating main sitemap chunk {counter}")
+        create_sitemap(resource_urls[i:i + n],  f"{filename}{counter}.xml")
 
-    sitemap = f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{route_list}\n{resource_list}\n</urlset>'
+    # Main file for the sitemap:
+    print("\nCreating main sitemap index file")
+    resource_chunks = [f"<sitemap>\n<loc>{site_url}/sitemap{idx}.xml</loc>\n</sitemap>" for idx in range(counter+1)]
+    resource_string = '\n'.join(resource_chunks)
+    sitemap = f'<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{resource_string}\n</sitemapindex>'
+    f = open(f"{filename}.xml", "w")
+    f.write(sitemap)
+    f.close()
+    print("\nDONE!")
+
+
+
+def create_sitemap(urls, filename):
+    url_list = "\n".join(urls)
+    sitemap = f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{url_list}\n</urlset>'
+
     # overwrite the file
     f = open(filename, "w")
     f.write(sitemap)
     f.close()
-
-    return(sitemap)
 
 if __name__ == "__main__":
     generate_sitemap()
