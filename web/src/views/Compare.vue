@@ -50,14 +50,14 @@
 
 
   <!-- Results label -->
-  <div class="row mt-4 mb-2">
+  <!-- <div class="row mt-4 mb-2">
     <div class="col-sm-12 text-left text-muted">
       <b>{{numResults}}</b> results, sorted by <b v-html="sortVariable.label"></b>
     </div>
-  </div>
+  </div> -->
 
   <!-- Loop over results -->
-  <div class="row">
+  <!-- <div class="row">
     <div class="col-sm-12 d-flex flex-wrap">
       <div class="d-flex flex-column m-1">
 
@@ -104,7 +104,7 @@
         </table>
       </div>
     </div>
-  </div>
+  </div> -->
 
 </div>
 </template>
@@ -169,7 +169,7 @@ export default {
     Choropleth,
     DataSource,
     DateSlider,
-    FontAwesomeIcon
+    // FontAwesomeIcon
   },
   props: {
     admin_level: {
