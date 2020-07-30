@@ -1,9 +1,11 @@
 # generate sitemap for outbreak.info, based on a static list of ROUTES
 # and a dynamically pullled list of /resources/id
 # USAGE: `python3 generate_sitemap.py`
-# outputs
+# outputs: an xml file saved in SITEMAP_FILE
+from datetime import datetime
+print(f"Creating sitemap at {datetime.now()}")
+from requests import get
 
-import requests
 
 SITEMAP_FILE = "/Users/laurahughes/GitHub/outbreak.info/web/public/sitemap.xml"
 ROUTES = [
@@ -36,7 +38,7 @@ def fetchOne(url, scroll_id = None):
         request_url = f"{url}&fetch_all=true&scroll_id={scroll_id}"
     else:
         request_url = f"{url}&fetch_all=true"
-    resp = requests.get(request_url)
+    resp = get(request_url)
     if(resp.status_code == 200):
         docs = resp.json()
         if("success" in docs.keys()):
