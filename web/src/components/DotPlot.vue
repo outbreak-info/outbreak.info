@@ -56,7 +56,7 @@ export default {
       return this.sortAsc ? [-1 * this.varMax, 0] : [0, this.varMax];
     },
     margin() {
-      const locationWidth = 90;
+      const locationWidth = 75;
       const otherSideWidth = 45;
       return this.sortAsc ? {
         top: 0,
@@ -223,7 +223,7 @@ export default {
         return text.substr(0, threshold).concat("...");
       }
 
-      const locationNameThresh = 11;
+      const locationNameThresh = 9;
 
       yAxSelector.join(
         enter => enter.append("text")
