@@ -1,6 +1,6 @@
 <template>
 <div class="" ref="dotplot_container">
-  <h6 class="text-left m-0">{{sortAsc ? "Best" : "Worst"}}</h6>
+  <h6 class="text-left m-0">{{sortAsc ? "Lowest" : "Highest"}}</h6>
   <small class="text-left m-0 p-0 line-height-1 mb-2 d-block">{{title}}</small>
   <svg :width="width" :height="height" ref="dotplot_svg" class="dotplot-svg" :name="title">
     <g ref="circles" class="circles-group" :transform="`translate(${margin.left}, ${margin.top})`">
@@ -85,7 +85,7 @@ export default {
       this.plottedData = cloneDeep(this.data.filter(d => d[this.variable]));
       if (this.sortAsc) {
         this.plottedData.sort((a, b) => +a[this.variable] - +b[this.variable]);
-        this.plottedData = this.plottedData.slice(0, this.num2Plot); 
+        this.plottedData = this.plottedData.slice(0, this.num2Plot);
       } else {
         this.plottedData.sort((a, b) => (+b[this.variable]) - (+a[this.variable]));
         this.plottedData = this.plottedData.slice(0, this.num2Plot);
@@ -217,6 +217,14 @@ export default {
       const yAxSelector = this.chart.selectAll(".y-axis")
         .data(this.plottedData, d => d.location_id);
 
+      // Lazy trunction of too long names
+      function trimText(text, threshold) {
+        if (text.length <= threshold) return text;
+        return text.substr(0, threshold).concat("...");
+      }
+
+      const locationNameThresh = 11;
+
       yAxSelector.join(
         enter => enter.append("text")
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
@@ -224,7 +232,7 @@ export default {
         .attr("x", d => this.x(0))
         .attr("dx", this.sortAsc ? this.radius * 1.5 : -1.5 * this.radius)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-        .text(d => d.state_name ? `${d.name.replace(" County", "")}` : d.name)
+        .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
         .style("text-anchor", this.sortAsc ? "start" : "end")
         .style("dominant-baseline", "middle")
         .style("font-size", "0.75em")
@@ -237,7 +245,7 @@ export default {
         update
         .attr("id", d => `location-change-${d._id}`)
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
-        .text(d => d.state_name ? `${d.name.replace(" County", "")}` : d.name)
+        .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
         .call(update => update.transition(t1)
           .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)),
 
