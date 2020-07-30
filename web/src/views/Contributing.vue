@@ -38,7 +38,7 @@
     </p>
     <p class="text-left">
       If you'd like to suggest a resource repository, you can create a
-      <a href="https://github.com/SuLab/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D" target="_blank" rel="noreferrer">
+      <a href="https://github.com/outbreak-info/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D" target="_blank" rel="noreferrer">
         Github Issue</a> to request adding a new source or send an email to <a href="mailto:help@outbreak.info?subject=Data Source">help@outbreak.info</a>.
     </p>
   </div>
@@ -95,7 +95,7 @@
           <router-link :to="{ name: 'Sources' }">sources</router-link>, we
           review the information and add additional
           <a
-            href="https://github.com/SuLab/outbreak.info-resources/blob/master/covid_topic_categories.tsv"
+            href="https://github.com/outbreak-info/outbreak.info-resources/blob/master/covid_topic_categories.tsv"
             target="_blank"
             rel="noreferrer"
             >tags</a

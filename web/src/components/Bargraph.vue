@@ -63,6 +63,7 @@ export default Vue.extend({
     },
     title: String,
     log: Boolean,
+    percapita: Boolean,
     location: String,
     includeAxis: {
       type: Boolean,
@@ -116,7 +117,7 @@ export default Vue.extend({
   },
   computed: {
     plotTitle() {
-      return (`Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
+      return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} in ${this.title} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
     }
   },
   watch: {
@@ -144,6 +145,14 @@ export default Vue.extend({
         this.updatePlot();
       }
     },
+    percapita: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.updatePlot();
+        }
+      }
+    },
     width: function() {
       this.updatePlot();
     },
@@ -165,12 +174,18 @@ export default Vue.extend({
         .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
     },
     prepData: function() {
+      if (this.percapita) {
+        this.variable = this.variable.includes("_per_100k") || this.variableObj.percapita === false ? this.variable : this.variable + "_per_100k";
+      } else {
+        this.variable = this.variable.replace("_per_100k", "");
+      }
+
       if (this.data && this.includeAxis) {
-        this.logData = cloneDeep(this.data).filter(d => d[this.variable]);
+        this.logData = cloneDeep(this.data).filter(d => d[this.variable] >= 1);
         this.logData.forEach(d => {
           d["confirmed_log"] = Math.log10(d.confirmed_numIncrease);
         });
-        this.plottedData = this.isLogY ? this.logData : this.data;
+        this.plottedData = this.isLogY ? this.logData : this.data.filter(d => d[this.variable] >= 0);
       } else {
         this.plottedData = this.data;
       }
@@ -180,7 +195,6 @@ export default Vue.extend({
 
       if (
         this.plottedData &&
-        this.plottedData[0] &&
         this.width &&
         this.height
       ) {
@@ -449,10 +463,11 @@ export default Vue.extend({
         );
 
         var lineSelector;
-        if (["confirmed_numIncrease", "dead_numIncrease", "recovered_numIncrease"].includes(this.variable)) {
+        if (["confirmed_numIncrease", "confirmed_numIncrease_per_100k", "dead_numIncrease", "dead_numIncrease_per_100k", "recovered_numIncrease", "recovered_numIncrease_per_100k"].includes(this.variable)) {
+          const averageData = this.isLogY ? this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")] >= 1) : this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")]);
           lineSelector = this.average
             .selectAll(".rolling-average")
-            .data([this.plottedData.filter(d => d[this.variable.replace("_numIncrease", "_rolling")])], d => d._id);
+            .data([averageData], d => d._id);
         } else {
           lineSelector = this.average
             .selectAll(".rolling-average")
@@ -557,8 +572,9 @@ export default Vue.extend({
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable,
-          fixedY: String(!!this.fixedYMax)
+          variable: this.variable.replace("_per_100k", ""),
+          fixedY: String(!!this.fixedYMax),
+          percapita: String(this.percapita)
         }
       });
 

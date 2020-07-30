@@ -274,9 +274,24 @@ export default {
         }
       ],
       variableOptions: [{
+          label: "total cases per capita",
+          choro: "total cases per 100,000 people",
+          value: "confirmed_per_100k"
+        },
+        {
+          label: "total deaths per capita",
+          choro: "total deaths per 100,000 people",
+          value: "dead_per_100k"
+        },
+        {
           label: "new cases/day",
           choro: "average new cases/day",
           value: "confirmed_rolling"
+        },
+        {
+          label: "new cases/day per capita",
+          choro: "average new cases/day per 100,000 people",
+          value: "confirmed_rolling_per_100k"
         },
         {
           label: "new deaths/day",
@@ -284,14 +299,29 @@ export default {
           value: "dead_rolling"
         },
         {
+          label: "new deaths/day per capita",
+          choro: "average new deaths/day per 100,000 people",
+          value: "dead_rolling_per_100k"
+        },
+        {
           label: "2 week change in cases/day",
           choro: "cases vs. 2 weeks ago",
           value: "confirmed_rolling_14days_ago_diff"
         },
         {
+          label: "2 week change in cases/day per capita",
+          choro: "cases vs. 2 weeks ago per 100,000 people",
+          value: "confirmed_rolling_14days_ago_diff_per_100k"
+        },
+        {
           label: "2 week change in deaths/day",
           choro: "deaths vs. 2 weeks ago",
           value: "dead_rolling_14days_ago_diff"
+        },
+        {
+          label: "2 week change in deaths/day per capita",
+          choro: "deaths vs. 2 weeks ago per 100,000 people",
+          value: "dead_rolling_14days_ago_diff_per_100k"
         }
 
       ]
@@ -327,8 +357,48 @@ export default {
           this.getData(formattedDate);
         }, 10)
       }
-
     },
+  //   getData() {
+  //     // reset, if the scale was padded
+  //     this.numColors = 11;
+  //     this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value).subscribe(results => {
+  //       // results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
+  //
+  //       this.data = results;
+  //
+  //       // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
+  //       // Forcing to be centered at 0 for the midpoint after the breaks are calculated
+  //       var domain = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d), (this.numColors));
+  //
+  //       // color range
+  //       var colorRange;
+  //       // DIVERGING
+  //       if (this.selectedVariable.value.includes("diff")) {
+  //         // ensure that the diverging scale is centered at 0.
+  //         const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
+  //
+  //         var padLength = domain.length - 2 * midpoint - 2;
+  //         padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
+  //
+  //         if (padLength < 0) {
+  //           domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
+  //         } else if (padLength > 0) {
+  //           domain = Array(padLength).fill(domain[0]).concat(domain);
+  //         }
+  //         this.numColors = domain.length - 1;
+  //
+  //         // calculate colors
+  //         colorRange = range(0, 1.01, 1 / (this.numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
+  //       } else {
+  //         // SEQUENTIAL
+  //         colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
+  //       }
+  //
+  //       this.colorScale = scaleQuantile()
+  //         .range(colorRange)
+  //         .domain(domain);
+  //   })
+  // },
     parseDate(dateStr) {
       return (timeParse("%Y-%m-%d")(dateStr))
     },

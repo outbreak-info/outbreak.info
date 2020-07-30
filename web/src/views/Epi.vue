@@ -26,13 +26,18 @@
   </div>
 
   <!-- fixed y selector for small multiple bar graphs -->
-  <div class="text-center m-auto p-2 bg-grey__lightest d-flex" style="max-width:700px;" v-if="variable.includes('Increase') && dataLength > 1">
-    <label class="b-contain m-auto">
+  <div class="text-center m-auto p-2 bg-grey__lightest d-flex" style="max-width:700px;">
+    <label class="b-contain m-auto" v-if="variableObj.percapita !== false">
+      <span>normalize to population</span>
+      <input type="checkbox" v-model="isPerCapita" />
+      <div class="b-input"></div>
+    </label>
+    <label class="b-contain m-auto" v-if="dataLength > 1 && variable.includes('Increase')">
       <span>constant y-axis limits</span>
       <input type="checkbox" v-model="isFixedY" />
       <div class="b-input"></div>
     </label>
-    <label class="b-contain m-auto">
+    <label class="b-contain m-auto" v-if="dataLength > 1 && variable.includes('Increase')">
       <span>overlay graphs</span>
       <input type="checkbox" v-model="isOverlay" />
       <div class="b-input"></div>
@@ -48,6 +53,7 @@
       </option>
     </select>
     <span v-if="locationName"> in {{ locationName }}</span>
+    <span v-if="isPerCapita"> per 100,000 residents</span>
   </h4>
 
 
@@ -61,7 +67,7 @@
     <div class="d-flex flex-column align-items-center" v-if="data$ && data$[0] && this.variable.includes('Increase')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
         <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
-          :includeTooltips="true" :location="location" :log="isLogY" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+          :includeTooltips="true" :location="location" :log="isLogY" :percapita="isPerCapita" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
 
       <!-- source / download data -->
@@ -70,8 +76,8 @@
 
     <!-- curve -->
     <template v-if="plottedData && showCurves && !this.variable.includes('Increase')">
-      <EpiCurve class="row" id="curveContainer" :data="plottedData" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'" :percent="variable == 'testing_positivity'"
-        :showAll="showAll" />
+      <EpiCurve class="row" id="curveContainer" :data="plottedData" :percapita="isPerCapita" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'"
+        :percent="variable == 'testing_positivity'" :showAll="showAll" />
 
       <!-- source / download data -->
       <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
@@ -133,6 +139,10 @@ export default {
       type: String,
       default: "false"
     },
+    percapita: {
+      type: String,
+      default: "false"
+    },
     location: String
   },
   data() {
@@ -145,6 +155,7 @@ export default {
       lengthThreshold: 8,
       showAll: false,
       isFixedY: false,
+      isPerCapita: false,
       isOverlay: false,
       bargraphWidth: 550,
       bargraphHeight: 400,
@@ -170,6 +181,7 @@ export default {
           label: "cumulative hospitalizations",
           ttip: "hospitalizations",
           value: "testing_hospitalized",
+          percapita: false,
           sources: ["testing"]
         },
         {
@@ -197,6 +209,7 @@ export default {
           label: "daily new hospitalizations (U.S. States only)",
           ttip: "new hospitalizations",
           value: "testing_hospitalizedIncrease",
+          percapita: false,
           sources: ["testing"]
         },
         {
@@ -215,18 +228,21 @@ export default {
           label: "cumulative COVID-19 tests (U.S. States only)",
           ttip: "tests (positive & negative)",
           value: "testing_totalTestResults",
+          percapita: false,
           sources: ["testing"]
         },
         {
           label: "daily new tests (U.S. States only)",
           ttip: "new tests (positive & negative)",
           value: "testing_totalTestResultsIncrease",
+          percapita: false,
           sources: ["testing"]
         },
         {
           label: "percent positive tests (U.S. States only)",
           ttip: "positive tests",
           value: "testing_positivity",
+          percapita: false,
           sources: ["testing"]
         }
       ]
@@ -287,7 +303,8 @@ export default {
             log: String(this.isLogY),
             variable: this.variable,
             xVariable: this.xVariable,
-            fixedY: String(this.isFixedY)
+            fixedY: String(this.isFixedY),
+            percapita: String(this.isPerCapita)
           }
         });
       }
@@ -306,9 +323,10 @@ export default {
     },
     fixedY: function(newValue, oldValue) {
       if (newValue === "true") {
+        const varUsed = this.isPerCapita ? this.variable + "_per_100k" : this.variable;
         this.yMax = max(
           this.plottedData.flatMap(d => d.value),
-          d => d[this.variable]
+          d => d[varUsed]
         );
         this.isFixedY = true;
       } else {
@@ -317,6 +335,16 @@ export default {
       }
     },
     isFixedY: function(newValue, oldValue) {
+      this.changeVariable();
+    },
+    percapita: function(newValue, oldValue) {
+      if (newValue === "true") {
+        this.isPerCapita = true;
+      } else {
+        this.isPerCapita = false;
+      }
+    },
+    isPerCapita: function(newValue, oldValue) {
       this.changeVariable();
     },
     isOverlay: function(newValue, oldValue) {
@@ -331,7 +359,8 @@ export default {
             log: String(this.isLogY),
             variable: this.variable,
             xVariable: this.xVariable,
-            fixedY: String(this.isFixedY)
+            fixedY: String(this.isFixedY),
+            percapita: String(this.isPerCapita)
           }
         });
       }
@@ -364,10 +393,12 @@ export default {
             this.hideExtra() :
             this.data$[0];
           this.isFixedY = this.fixedY == "true";
+          this.isPerCapita = this.percapita == "true";
+          const varUsed = this.isPerCapita ? this.variable + "_per_100k" : this.variable;
           this.yMax = this.isFixedY ?
             max(
               this.plottedData.flatMap(d => d.value),
-              d => d[this.variable]
+              d => d[varUsed]
             ) :
             null;
         });
@@ -383,12 +414,16 @@ export default {
     },
     changeVariable() {
       this.variable = this.variableObj.value;
+
+      // update y-max
+      const varUsed = this.isPerCapita ? this.variable + "_per_100k" : this.variable;
       this.yMax = this.isFixedY ?
         max(
           this.plottedData.flatMap(d => d.value),
-          d => d[this.variable]
+          d => d[varUsed]
         ) :
         null;
+
       this.$router.replace({
         path: "epidemiology",
         query: {
@@ -396,7 +431,8 @@ export default {
           log: String(this.isLogY),
           variable: this.variable,
           xVariable: this.xVariable,
-          fixedY: String(this.isFixedY)
+          fixedY: String(this.isFixedY),
+          percapita: String(this.isPerCapita)
         }
       });
     },

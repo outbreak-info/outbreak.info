@@ -17,8 +17,7 @@ import store from "@/store";
 
 import {
   timeParse,
-  timeFormat,
-  utcParse
+  timeFormat
 } from "d3";
 
 import {
@@ -437,7 +436,7 @@ export function getResourcesMetadata(apiUrl) {
   return from(axios.get(`${apiUrl}metadata`)).pipe(
     pluck("data", "build_date"),
     map(metadata => {
-      const strictIsoParse = utcParse("%Y-%m-%dT%H:%M:%S.%f");
+      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
       if (metadata) {
         const dateUpdated = metadata ? strictIsoParse(metadata) : null;
         return (formatDate(dateUpdated))

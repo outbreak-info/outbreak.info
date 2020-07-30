@@ -241,7 +241,7 @@ export default Vue.extend({
         delete metadata.studyDesign.phaseNumber;
       };
       // [null] will have problems embedding...
-      metadata.citedBy = metadata.citedBy.filter(d => d);
+      metadata.citedBy = metadata.citedBy ? metadata.citedBy.filter(d => d) : null;
 
       metadata["includedInDataCatalog"] = {
         "@type": "DataCatalog",

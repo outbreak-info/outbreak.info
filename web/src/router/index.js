@@ -168,7 +168,8 @@ const routes = [{
       xVariable: route.query.xVariable,
       variable: route.query.variable,
       log: route.query.log,
-      fixedY: route.query.fixedY
+      fixedY: route.query.fixedY,
+      percapita: route.query.percapita
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
