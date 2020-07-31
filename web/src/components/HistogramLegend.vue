@@ -3,18 +3,18 @@
   <div>
     {{variableLabel}}
   </div>
-  <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2" ref="legend_svg">
+  <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
     <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
-      <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`"
-      :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
+      <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`" :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
       </rect>
-      <rect x="0" y="0" :width="width - margin.left - margin.right" height="10"
-      stroke="black" fill="none"
-      :stroke-width="0.5"></rect>
+      <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
     </g>
-
+    <g class="slider-handle pointer" :transform="`translate(${margin.left/2},${height + margin.bottom + margin.top + 14})`">
+      <polygon ref="slider_left" stroke="#D13B62" fill="#D13B62" stroke-width="0.5" fill-opacity="0.4" points="6.5,12.1 0.1,12.1 0.1,2.9 3.3,-0.2 6.5,2.9 "/>
+      <polygon ref="slider_right" :transform="`translate(${width - margin.left - margin.right},0)`" stroke="#D13B62" fill="#D13B62" stroke-width="0.5" fill-opacity="0.3" points="6.5,12.1 0.1,12.1 0.1,2.9 3.3,-0.2 6.5,2.9 "/>
+    </g>
   </svg>
 </div>
 </template>
@@ -32,6 +32,8 @@ export default {
     data: Array,
     variable: String,
     variableLabel: String,
+    minVal: Number,
+    maxVal: Number,
     colorScale: Function,
     width: Number
   },
@@ -86,21 +88,35 @@ export default {
 
       // legend gradient
       this.legendColors = this.colorScale.range()
-      .map((color,i) => {
-        return({
-        fill: color,
-        width: this.x(this.colorScale.domain()[i+1]) - this.x(this.colorScale.domain()[i]),
-        x0: this.x(this.colorScale.domain()[i])
-        })
+        .map((color, i) => {
+          return ({
+            fill: color,
+            width: this.x(this.colorScale.domain()[i + 1]) - this.x(this.colorScale.domain()[i]),
+            x0: this.x(this.colorScale.domain()[i])
+          })
 
-      })
+        })
 
       d3.selectAll(".axis").call(this.xAxis);
 
-      // set bins
+      // calculate bins
       this.bins = d3.histogram()
         .domain(this.x.domain())
         .thresholds(this.x.ticks(this.numBins))(this.data.map(d => d[this.variable]));
+
+      // pre-calc if the data should be selected or not
+      this.bins.forEach(d => {
+        if ((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
+          d["selected"] = d.x0 >= this.minVal && d.x1 <= this.maxVal;
+        } else if (this.minVal || this.minVal === 0) {
+          d["selected"] = d.x0 >= this.minVal;
+        } else if (this.maxVal || this.maxVal === 0) {
+          d["selected"] = d.x1 <= this.maxVal;
+        } else {
+          d["selected"] = true;
+        }
+      })
+
 
       // y-axis
       this.y = d3.scaleLinear()
@@ -112,6 +128,7 @@ export default {
       if (this.data && this.colorScale) {
         this.updateAxes();
 
+
         this.chart
           .selectAll("rect")
           .data(this.bins)
@@ -120,6 +137,7 @@ export default {
               enter.append("rect")
                 .attr("class", "histogram-bar")
                 .attr("fill", d => this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : "none")
+                .attr("opacity", d => d.selected ? 1 : 0.25)
                 .attr("x", d => this.x(d.x0) + 1)
                 .attr("width", d => Math.max(0, this.x(d.x1) - this.x(d.x0) - 1))
                 .attr("y", d => this.y(d.length))
@@ -128,6 +146,7 @@ export default {
             update => {
               update
                 .attr("fill", d => this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : "none")
+                .attr("opacity", d => d.selected ? 1 : 0.25)
                 .attr("x", d => this.x(d.x0) + 1)
                 .attr("width", d => Math.max(0, this.x(d.x1) - this.x(d.x0) - 1))
                 .attr("y", d => this.y(d.length))

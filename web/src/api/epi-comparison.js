@@ -101,7 +101,7 @@ export function getJenksBreaks(data, variable, numColors = 9) {
   const vals = data.map(d => d[variable]).filter(d => d);
   var domain = jenks(vals, numColors);
   // var domain = [-3924.71429, -2438.28571,  -707.42857,  -187.51190,    91.57143,   336.75000,   753.57143,  1539.64286,  2658.14286,]
-console.log(domain)
+// console.log(domain)
   // color range
   var colorRange;
   // DIVERGING

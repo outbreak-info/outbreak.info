@@ -8,14 +8,16 @@
   <div class="d-flex">
     <!-- Region buttons -->
     <div class="d-flex flex-wrap">
-      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value, date: this.selectedDate} }">
+      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}"
+        :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value, date: this.selectedDate} }">
         All
         countries</router-link>
       <div class="d-flex flex-column justify-content-around">
         <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
           :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
         <div class="d-flex">
-          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
+          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}"
+            :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
           </router-link>
           <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2', date: this.selectedDate}" role="button"
             :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
@@ -45,7 +47,7 @@
     </div>
   </div>
 
-  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" />
+  <Choropleth :data="data" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 
@@ -181,6 +183,8 @@ export default {
       default: "confirmed_rolling_14days_ago_diff"
     },
     location: String,
+    min: String,
+    max: String,
     date: String,
     sort: String,
   },
@@ -198,9 +202,19 @@ export default {
         this.selectedDate = newDate;
       }
     },
+    min: {
+      immediate: true,
+      handler(newMin, oldMin) {
+        this.selectedMin = newMin ? +newMin : null;
+      }
+    },
+    max: {
+      immediate: true,
+      handler(newMax, oldMax) {
+        this.selectedMax = newMax ? +newMax : null;
+      }
+    },
     selectedDate() {
-      console.log("date changed!");
-      console.log(this.selectedDate)
       this.$router.push({
         path: "maps",
         query: {
@@ -208,7 +222,9 @@ export default {
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
           sort: this.sortVariable.value,
-          date: this.selectedDate
+          date: this.selectedDate,
+          min: this.selectedMin,
+          max: this.selectedMax
         }
       });
     },
@@ -220,7 +236,9 @@ export default {
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
           sort: this.sortVariable.value,
-          date: this.selectedDate
+          date: this.selectedDate,
+          min: this.selectedMin,
+          max: this.selectedMax
         }
       });
     },
@@ -232,7 +250,9 @@ export default {
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
           sort: this.sortVariable.value,
-          date: this.selectedDate
+          date: this.selectedDate,
+          min: this.selectedMin,
+          max: this.selectedMax
         }
       });
     },
@@ -245,6 +265,8 @@ export default {
       colorScale: null,
       data: [],
       selectedDate: null,
+      selectedMin: null,
+      selectedMax: null,
       dateSlider: new Date(),
       maxDate: null,
       minDate: new Date("2020-01-22 0:0"),
@@ -350,55 +372,14 @@ export default {
         i = i + 1;
 
         setTimeout(() => {
-                console.log(i)
-        currDate = timeDay.offset(currDate, 100);
+          console.log(i)
+          currDate = timeDay.offset(currDate, 100);
           formattedDate = this.formatDate(currDate);
           console.log(formattedDate)
           this.getData(formattedDate);
         }, 10)
       }
     },
-  //   getData() {
-  //     // reset, if the scale was padded
-  //     this.numColors = 11;
-  //     this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value).subscribe(results => {
-  //       // results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
-  //
-  //       this.data = results;
-  //
-  //       // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
-  //       // Forcing to be centered at 0 for the midpoint after the breaks are calculated
-  //       var domain = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d), (this.numColors));
-  //
-  //       // color range
-  //       var colorRange;
-  //       // DIVERGING
-  //       if (this.selectedVariable.value.includes("diff")) {
-  //         // ensure that the diverging scale is centered at 0.
-  //         const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
-  //
-  //         var padLength = domain.length - 2 * midpoint - 2;
-  //         padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
-  //
-  //         if (padLength < 0) {
-  //           domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
-  //         } else if (padLength > 0) {
-  //           domain = Array(padLength).fill(domain[0]).concat(domain);
-  //         }
-  //         this.numColors = domain.length - 1;
-  //
-  //         // calculate colors
-  //         colorRange = range(0, 1.01, 1 / (this.numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
-  //       } else {
-  //         // SEQUENTIAL
-  //         colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
-  //       }
-  //
-  //       this.colorScale = scaleQuantile()
-  //         .range(colorRange)
-  //         .domain(domain);
-  //   })
-  // },
     parseDate(dateStr) {
       return (timeParse("%Y-%m-%d")(dateStr))
     },
@@ -408,8 +389,9 @@ export default {
     getData(date) {
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value, date).subscribe(results => {
         this.data = results.data;
+
         this.maxDate = results.maxDate;
-        if(!this.selectedDate){
+        if (!this.selectedDate) {
           this.selectedDate = this.formatDate(results.maxDate);
         }
         this.colorScale = results.colorScale;

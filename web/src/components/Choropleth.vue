@@ -7,7 +7,7 @@
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
-      <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last 4 days)</small>
+    <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last 4 days)</small>
 
     <template v-if="timeTrace">
       <small class="m-0 mt-3">new cases per day</small>
@@ -17,12 +17,12 @@
 </template>
   </div>
   <div class="d-flex flex-column">
-    <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
-    <DataUpdated />
-    <div class="d-flex justify-content-between">
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
-      <DotPlot :data="data" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
+    <HistogramLegend class="ml-2" :data="data" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
+    <div class="d-flex justify-content-between mt-4">
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
     </div>
+    <DataUpdated />
   </div>
 
 </div>
@@ -33,6 +33,9 @@ import countries from "@/assets/geo/countries.json";
 import counties from "@/assets/geo/US_counties.json";
 import metros from "@/assets/geo/US_metro.json";
 import usstates from "@/assets/geo/US_states.json";
+import {
+  cloneDeep
+} from "lodash";
 import * as d3 from "d3";
 
 import HistogramLegend from "@/components/HistogramLegend.vue";
@@ -56,6 +59,8 @@ export default {
   props: {
     data: Array,
     variable: String,
+    selectedMin: Number,
+    selectedMax: Number,
     date1: String,
     variableLabel: String,
     colorScale: Function,
@@ -92,13 +97,24 @@ export default {
     };
   },
   computed: {
+    filteredData() {
+      var filtered = cloneDeep(this.data);
+
+      if (this.selectedMin || this.selectedMin === 0) {
+        filtered = filtered.filter(d => d[this.variable] >= this.selectedMin);
+      }
+      if (this.selectedMax || this.selectedMax === 0) {
+        filtered = filtered.filter(d => d[this.variable] <= this.selectedMax);
+      }
+      return (filtered);
+    },
     varMax() {
-      const maxVal = d3.max(this.data, d => d[this.variable]);
-      const minVal = d3.min(this.data, d => d[this.variable]);
-      return(Math.max(Math.abs(minVal), maxVal))
+      const maxVal = d3.max(this.filteredData, d => d[this.variable]);
+      const minVal = d3.min(this.filteredData, d => d[this.variable]);
+      return (Math.max(Math.abs(minVal), maxVal))
     },
     isDiff() {
-      return(this.variable.includes("_14days_ago_diff"))
+      return (this.variable.includes("_14days_ago_diff"))
     },
     title() {
       const date = d3.timeParse("%Y-%m-%d")(this.date1)
@@ -221,18 +237,18 @@ export default {
         .scale(scale)
     },
     resetValues() {
-        this.regionData.features.forEach(d => {
-          d.fill = null;
-          d.tooltip = null;
-          d.value = null;
-        })
+      this.regionData.features.forEach(d => {
+        d.fill = null;
+        d.tooltip = null;
+        d.value = null;
+      })
     },
     drawMap() {
       this.setupMap();
       this.resetValues();
 
-      if (this.data && this.data.length && this.width) {
-        this.data.forEach(d => {
+      if (this.filteredData && this.filteredData.length && this.width) {
+        this.filteredData.forEach(d => {
           const idx = this.regionData.features.findIndex(polygon => polygon.properties.location_id === d.location_id);
           if (idx > -1) {
             this.regionData.features[idx]["fill"] = d.fill;

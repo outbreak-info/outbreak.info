@@ -96,8 +96,6 @@ export default {
       this.x = d3.scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(this.domain);
-
-        console.log(this.domain)
       // .domain(d3.extent(this.plottedData.map(d => d[this.variable])));
 
       this.y = d3.scaleBand()
