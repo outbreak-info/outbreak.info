@@ -187,7 +187,7 @@ export default Vue.extend({
         });
         this.plottedData = this.isLogY ? this.logData : this.data.filter(d => d[this.variable] >= 0);
       } else {
-        this.plottedData = this.data;
+        this.plottedData = this.data.filter(d => d[this.variable] >= 0);
       }
     },
     updatePlot() {
@@ -354,7 +354,7 @@ export default Vue.extend({
             )
           );
 
-          if (this.include2Week) {
+          if (this.include2Week && this.x(endDate)) {
             const dateSelector = this.chart
               .selectAll(`.date-annotation_${this.variable}`)
               .data([endDate]);
@@ -367,9 +367,9 @@ export default Vue.extend({
               .style("fill", "#D13B62")
               .style("fill-opacity", 0.1)
               .attr("x", d => this.x(d3.timeDay.offset(endDate, -14)))
-              .attr("width", d => this.x(d) - this.x(d3.timeDay.offset(endDate, -14)))
-              .attr("y", d => 0)
-              .attr("height", d => this.height),
+              .attr("width", d => this.x(d) - this.x(d3.timeDay.offset(d, -14)))
+              .attr("y", 0)
+              .attr("height", this.height),
 
               update =>
               update
