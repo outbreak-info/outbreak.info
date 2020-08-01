@@ -1,8 +1,11 @@
 <template>
 <div>
-  <div>
+  <div class="text-left line-height-1">
     {{variableLabel}}
   </div>
+  <small class="d-block text-left text-muted mb-1" v-if="minVal || maxVal || minVal === 0 || maxVal === 0">
+    filtered <span v-html="filterString"></span> {{variableLabel}}
+  </small>
   <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
@@ -11,9 +14,16 @@
       </rect>
       <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
     </g>
-    <g class="slider-handle pointer" :transform="`translate(${margin.left/2},${height + margin.bottom + margin.top + 14})`">
-      <polygon ref="slider_left" stroke="#D13B62" fill="#D13B62" stroke-width="0.5" fill-opacity="0.4" points="6.5,12.1 0.1,12.1 0.1,2.9 3.3,-0.2 6.5,2.9 "/>
-      <polygon ref="slider_right" :transform="`translate(${width - margin.left - margin.right},0)`" stroke="#D13B62" fill="#D13B62" stroke-width="0.5" fill-opacity="0.3" points="6.5,12.1 0.1,12.1 0.1,2.9 3.3,-0.2 6.5,2.9 "/>
+    <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
+      <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
+        <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5"/>
+        <polygon id="slider_left" ref="slider_left" :transform="`translate(${x(selectedMin)},0)`" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 "/>
+        <polygon ref="slider_right" :transform="`translate(${x(selectedMax) - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 "/>
+      </g>
+      <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
+        <text :x="x(selectedMin)" :y="0">{{selectedMin}}</text>
+        <text :x="x(selectedMax)" :y="0">{{selectedMax}}</text>
+      </g>
     </g>
   </svg>
 </div>
@@ -42,6 +52,8 @@ export default {
       this.updatePlot();
     },
     variable: function() {
+      this.selectedMin = Math.floor(this.domain[0]);
+      this.selectedMax = Math.ceil(this.domain[1]);
       this.updatePlot();
     }
   },
@@ -51,9 +63,11 @@ export default {
       margin: {
         top: 5,
         bottom: 25,
-        left: 5,
-        right: 5
+        left: 25,
+        right: 25
       },
+      selectedMin: null,
+      selectedMax: null,
       // axes
       x: null,
       y: null,
@@ -67,10 +81,29 @@ export default {
       xAxisRef: null
     };
   },
-  computed: {},
+  computed: {
+    domain() {
+      return d3.extent(this.colorScale.domain());
+    },
+    filterString() {
+      if((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
+      return(`${this.minVal} &mdash; ${this.maxVal}`)
+    } else if((this.minVal || this.minVal === 0)) {
+      return(`&ge; ${this.minVal}`)
+    } else if((this.maxVal || this.maxVal === 0)) {
+      return(`&le; ${this.maxVal}`)
+    } else {
+      return(null)
+    }
+    }
+  },
   mounted() {
     this.setupPlot();
     this.updatePlot();
+    this.selectedMin = this.minVal ? this.minVal : Math.floor(this.domain[0]);
+    this.selectedMax = this.maxVal ? this.maxVal : Math.ceil(this.domain[1]);
+
+    this.$nextTick(() => this.setupDrag())
   },
   methods: {
     setupPlot: function() {
@@ -81,9 +114,10 @@ export default {
       // x-axis
       this.x = d3.scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(d3.extent(this.colorScale.domain()));
+        .domain(this.domain)
+        .clamp(true);
 
-      this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5);
+      this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5).tickPadding(100);
       this.xAxisRef.call(this.xAxis);
 
       // legend gradient
@@ -122,12 +156,48 @@ export default {
       this.y = d3.scaleLinear()
         .range([this.height, 0])
         .domain([0, d3.max(this.bins, d => d.length)]);
-
+    },
+    setupDrag() {
+      // draggable filters
+      d3.select(this.$refs.slider_left)
+        .call(d3.drag()
+          .on("drag", () => this.updateDrag("left"))
+          .on("end", () => this.updateFilters())
+        )
+      d3.select(this.$refs.slider_right)
+        .call(d3.drag()
+          .on("drag", () => this.updateDrag("right"))
+          .on("end", () => this.updateFilters())
+        )
+    },
+    updateDrag(side) {
+      const newVal = this.x.invert(d3.event.x);
+      if(side == "left") {
+        this.selectedMin = Math.floor(newVal);
+      } else {
+        // this.selectedMin = this.selectedMax;
+        this.selectedMax = Math.ceil(newVal);
+      }
+    },
+    updateFilters() {
+      const route = this.$route.query;
+      console.log(route)
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: route.location,
+          admin_level: route.admin_level,
+          variable: route.variable,
+          sort: route.sort,
+          date: route.date,
+          min: String(this.selectedMin),
+          max: String(this.selectedMax)
+        }
+      });
     },
     updatePlot: function() {
       if (this.data && this.colorScale) {
         this.updateAxes();
-
 
         this.chart
           .selectAll("rect")
