@@ -1,11 +1,13 @@
 <template>
 <div>
-  <div class="text-left line-height-1">
+  <div :style="{width: width+ 'px'}">
+  <div class="text-left line-height-1 mb-1">
     {{variableLabel}}
   </div>
-  <small class="d-block text-left text-muted mb-1" v-if="minVal || maxVal || minVal === 0 || maxVal === 0">
+  <small class="d-block text-left text-muted line-height-1 mb-1" v-if="minVal || maxVal || minVal === 0 || maxVal === 0">
     filtered <span v-html="filterString"></span> {{variableLabel}}
   </small>
+  </div>
   <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
