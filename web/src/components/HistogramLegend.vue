@@ -16,7 +16,7 @@
       </rect>
       <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
     </g>
-    <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
+    <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="showHandles">
       <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
         <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" />
         <polygon id="slider_left" ref="slider_left" :transform="`translate(${x(selectedMin)},0)`" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
@@ -24,7 +24,7 @@
       </g>
       <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
         <text :x="x(selectedMin)" :y="0">{{formatLimit(selectedMin)}}</text>
-        <text :x="x(selectedMax)" :y="0">{{formatLimit(selectedMax)}}</text>
+        <text :x="x(selectedMax)" :y="0" text-anchor="end">{{formatLimit(selectedMax)}}</text>
       </g>
     </g>
   </svg>
@@ -75,8 +75,8 @@ export default {
       margin: {
         top: 5,
         bottom: 25,
-        left: 25,
-        right: 25
+        left: 5,
+        right: 5
       },
       selectedMin: null,
       selectedMax: null,
@@ -94,6 +94,9 @@ export default {
     };
   },
   computed: {
+    showHandles() {
+      return(this.x && (this.selectedMin || this.selectedMin === 0) && (this.selectedMax || this.selectedMax === 0))
+    },
     domain() {
       return d3.extent(this.colorScale.domain());
     },
