@@ -125,7 +125,7 @@ export default {
         .domain(this.domain)
         .clamp(true);
 
-      this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5).tickPadding(100);
+      this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5);
       this.xAxisRef.call(this.xAxis);
 
       // legend gradient
