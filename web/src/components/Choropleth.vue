@@ -18,7 +18,7 @@
   </div>
   <div class="d-flex flex-column">
     <HistogramLegend class="ml-2" :data="data" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
-    <div class="d-flex justify-content-between mt-4">
+    <div class="d-flex justify-content-between mt-4" v-if="filteredData">
       <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignDesc" :varMax="varMax"/>
       <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignAsc" :varMax="varMax"/>
     </div>
@@ -84,6 +84,7 @@ export default {
       },
       scale: 1,
       // data
+      filteredData: null,
       regionData: null,
       projection: null,
       timeTrace: null,
@@ -97,29 +98,20 @@ export default {
     };
   },
   computed: {
-    filteredData() {
-      var filtered = cloneDeep(this.data);
-
-      if (this.selectedMin || this.selectedMin === 0) {
-        filtered = filtered.filter(d => d[this.variable] >= this.selectedMin);
-      }
-      if (this.selectedMax || this.selectedMax === 0) {
-        filtered = filtered.filter(d => d[this.variable] <= this.selectedMax);
-      }
-      return (filtered);
+    maxVal() {
+      return this.filteredData ? d3.max(this.filteredData, d => d[this.variable]) : null;
+    },
+    minVal() {
+      return this.filteredData ? d3.min(this.filteredData, d => d[this.variable]) : null;
     },
     varMax() {
-      const maxVal = d3.max(this.filteredData, d => d[this.variable]);
-      const minVal = d3.min(this.filteredData, d => d[this.variable]);
-      return (Math.max(Math.abs(minVal), maxVal))
+      return (Math.max(Math.abs(this.minVal), this.maxVal))
     },
     rightAlignAsc() {
-      const minVal = d3.min(this.filteredData, d => d[this.variable]);
-      return(minVal < -1)
+      return (this.minVal < -1)
     },
     rightAlignDesc() {
-      const maxVal = d3.max(this.filteredData, d => d[this.variable]);
-      return(maxVal < -1)
+      return (this.maxVal < -1)
     },
     isDiff() {
       return (this.variable.includes("_14days_ago_diff"))
@@ -254,6 +246,15 @@ export default {
     drawMap() {
       this.setupMap();
       this.resetValues();
+
+      this.filteredData = cloneDeep(this.data);
+
+      if (this.selectedMin || this.selectedMin === 0) {
+        this.filteredData = this.filteredData.filter(d => d[this.variable] >= this.selectedMin);
+      }
+      if (this.selectedMax || this.selectedMax === 0) {
+        this.filteredData = this.filteredData.filter(d => d[this.variable] <= this.selectedMax);
+      }
 
       if (this.filteredData && this.filteredData.length && this.width) {
         this.filteredData.forEach(d => {

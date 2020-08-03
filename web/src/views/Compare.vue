@@ -183,8 +183,8 @@ export default {
       default: "confirmed_rolling_14days_ago_diff"
     },
     location: String,
-    min: String,
-    max: String,
+    min: Number,
+    max: Number,
     date: String,
     sort: String,
   },
@@ -194,6 +194,10 @@ export default {
       handler(newVar, oldVar) {
         const filtered = this.variableOptions.filter(d => d.value === newVar);
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
+        // reset selected min/max
+        // If the data already exists, pull out the min/max. If not, set it to null so the getData function will calc it
+        this.selectedMin = this.min || this.min === 0 ? +this.min : (this.data ? min(this.data, d => d[this.selectedVariable.value]) : null);
+        this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? max(this.data, d => d[this.selectedVariable.value]) : null);
       }
     },
     date: {
@@ -205,13 +209,13 @@ export default {
     min: {
       immediate: true,
       handler(newMin, oldMin) {
-        this.selectedMin = newMin ? +newMin : null;
+        this.selectedMin = newMin || newMin === 0 ? +newMin : null;
       }
     },
     max: {
       immediate: true,
       handler(newMax, oldMax) {
-        this.selectedMax = newMax ? +newMax : null;
+        this.selectedMax = newMax || newMax === 0 ? +newMax : null;
       }
     },
     selectedDate() {
@@ -236,9 +240,7 @@ export default {
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
           sort: this.sortVariable.value,
-          date: this.selectedDate,
-          min: this.selectedMin,
-          max: this.selectedMax
+          date: this.selectedDate
         }
       });
     },
@@ -389,6 +391,10 @@ export default {
     getData(date) {
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value, date).subscribe(results => {
         this.data = results.data;
+
+        // reset selected min/max
+        this.selectedMin = this.min || this.min === 0 ? +this.min : min(this.data, d => d[this.selectedVariable.value]);
+        this.selectedMax = this.max || this.max === 0 ? +this.max : max(this.data, d => d[this.selectedVariable.value]);
 
         this.maxDate = results.maxDate;
         if (!this.selectedDate) {

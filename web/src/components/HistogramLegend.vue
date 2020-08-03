@@ -54,9 +54,19 @@ export default {
       this.updatePlot();
     },
     variable: function() {
-      this.selectedMin = Math.floor(this.domain[0]);
-      this.selectedMax = Math.ceil(this.domain[1]);
       this.updatePlot();
+    },
+    minVal: {
+      immediate: true,
+      handler(newMin, oldMin) {
+        this.selectedMin = newMin;
+      }
+    },
+    maxVal: {
+      immediate: true,
+      handler(newMax, oldMax) {
+        this.selectedMax = newMax;
+      }
     }
   },
   data() {
@@ -95,11 +105,11 @@ export default {
     },
     filterString() {
       if ((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
-        return (`${this.minVal} &mdash; ${this.maxVal}`)
+        return (`${this.minVal.toLocaleString()} &mdash; ${this.maxVal.toLocaleString()}`)
       } else if ((this.minVal || this.minVal === 0)) {
-        return (`&ge; ${this.minVal}`)
+        return (`&ge; ${this.minVal.toLocaleString()}`)
       } else if ((this.maxVal || this.maxVal === 0)) {
-        return (`&le; ${this.maxVal}`)
+        return (`&le; ${this.maxVal.toLocaleString()}`)
       } else {
         return (null)
       }
@@ -195,7 +205,7 @@ export default {
         this.selectedMax = Math.ceil((this.selectedMax + Number.EPSILON) * this.precision) / this.precision;
         this.selectedMin = Math.floor((this.selectedMin + Number.EPSILON) * this.precision) / this.precision;
       }
-      
+
       const route = this.$route.query;
       this.$router.push({
         path: "maps",
@@ -205,8 +215,8 @@ export default {
           variable: route.variable,
           sort: route.sort,
           date: route.date,
-          min: String(this.selectedMin),
-          max: String(this.selectedMax)
+          min: this.selectedMin,
+          max: this.selectedMax
         }
       });
     },
