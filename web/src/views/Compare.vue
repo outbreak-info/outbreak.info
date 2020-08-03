@@ -183,8 +183,8 @@ export default {
       default: "confirmed_rolling_14days_ago_diff"
     },
     location: String,
-    min: Number,
-    max: Number,
+    min: String,
+    max: String,
     date: String,
     sort: String,
   },
@@ -227,8 +227,8 @@ export default {
           variable: this.selectedVariable.value,
           sort: this.sortVariable.value,
           date: this.selectedDate,
-          min: this.selectedMin,
-          max: this.selectedMax
+          min: String(this.selectedMin),
+          max: String(this.selectedMax)
         }
       });
     },
@@ -253,8 +253,8 @@ export default {
           variable: this.selectedVariable.value,
           sort: this.sortVariable.value,
           date: this.selectedDate,
-          min: this.selectedMin,
-          max: this.selectedMax
+          min: String(this.selectedMin),
+          max: String(this.selectedMax)
         }
       });
     },

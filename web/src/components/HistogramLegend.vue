@@ -215,8 +215,8 @@ export default {
           variable: route.variable,
           sort: route.sort,
           date: route.date,
-          min: this.selectedMin,
-          max: this.selectedMax
+          min: String(this.selectedMin),
+          max: String(this.selectedMax)
         }
       });
     },
