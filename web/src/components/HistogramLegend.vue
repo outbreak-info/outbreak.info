@@ -88,7 +88,6 @@ export default {
       return d3.extent(this.colorScale.domain());
     },
     precision() {
-      console.log(this.domain[1] - this.domain[0])
       return(this.domain[1] - this.domain[0] <= 20 ? 10 : 1);
     },
     filterString() {
@@ -106,7 +105,6 @@ export default {
   mounted() {
     this.setupPlot();
     this.updatePlot();
-    console.log(this.precision)
     this.selectedMin = this.minVal ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
     this.selectedMax = this.maxVal ? this.maxVal : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) / this.precision;
 

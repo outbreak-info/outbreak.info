@@ -27,6 +27,7 @@ export default {
     variable: String,
     title: String,
     sortAsc: Boolean,
+    rightAlign: Boolean,
     colorScale: Function
   },
   watch: {
@@ -56,12 +57,12 @@ export default {
       return(this.varMax <= 10 ? d3.format(",.1f") : d3.format(",.0f"))
     },
     domain() {
-      return this.sortAsc ? [-1 * this.varMax, 0] : [0, this.varMax];
+      return this.rightAlign ? [-1 * this.varMax, 0] : [0, this.varMax];
     },
     margin() {
       const locationWidth = 75;
       const otherSideWidth = 45;
-      return this.sortAsc ? {
+      return this.rightAlign ? {
         top: 0,
         right: locationWidth,
         bottom: 30,
@@ -233,10 +234,10 @@ export default {
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
         .attr("id", d => `location-change-${d._id}`)
         .attr("x", d => this.x(0))
-        .attr("dx", this.sortAsc ? this.radius * 1.5 : -1.5 * this.radius)
+        .attr("dx", this.rightAlign ? this.radius * 1.5 : -1.5 * this.radius)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
         .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
-        .style("text-anchor", this.sortAsc ? "start" : "end")
+        .style("text-anchor", this.rightAlign ? "start" : "end")
         .style("dominant-baseline", "middle")
         .style("font-size", "0.75em")
         .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
@@ -270,11 +271,11 @@ export default {
         .attr("class", d => `annotation-most-change ${d.location_id}`)
         .attr("id", d => `annotation-change-${d._id}`)
         .attr("x", d => this.x(d[this.variable]))
-        .attr("dx", this.sortAsc ? -10 : 10)
+        .attr("dx", this.rightAlign ? -10 : 10)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
         .text(d => this.numberFormatter(d[this.variable]))
         .style("dominant-baseline", "central")
-        .style("text-anchor", this.sortAsc ? "end" : "start")
+        .style("text-anchor", this.rightAlign ? "end" : "start")
         .style("font-size", "0.65em")
         .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
         .style("fill", "#2c3e50"),

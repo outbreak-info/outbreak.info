@@ -19,8 +19,8 @@
   <div class="d-flex flex-column">
     <HistogramLegend class="ml-2" :data="data" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
     <div class="d-flex justify-content-between mt-4">
-      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
-      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :varMax="varMax"/>
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignDesc" :varMax="varMax"/>
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignAsc" :varMax="varMax"/>
     </div>
     <DataUpdated />
   </div>
@@ -112,6 +112,14 @@ export default {
       const maxVal = d3.max(this.filteredData, d => d[this.variable]);
       const minVal = d3.min(this.filteredData, d => d[this.variable]);
       return (Math.max(Math.abs(minVal), maxVal))
+    },
+    rightAlignAsc() {
+      const minVal = d3.min(this.filteredData, d => d[this.variable]);
+      return(minVal < -1)
+    },
+    rightAlignDesc() {
+      const maxVal = d3.max(this.filteredData, d => d[this.variable]);
+      return(maxVal < -1)
     },
     isDiff() {
       return (this.variable.includes("_14days_ago_diff"))
