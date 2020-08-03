@@ -11,7 +11,7 @@
   <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
-    <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
+    <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0">
       <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`" :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
       </rect>
       <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
@@ -84,7 +84,7 @@ export default {
       x: null,
       y: null,
       xAxis: null,
-      legendColors: null,
+      legendColors: [],
       // binned data
       bins: null,
       numBins: 50,
@@ -146,7 +146,6 @@ export default {
             width: this.x(this.colorScale.domain()[i + 1]) - this.x(this.colorScale.domain()[i]),
             x0: this.x(this.colorScale.domain()[i])
           })
-
         })
 
       d3.selectAll(".axis").call(this.xAxis);
