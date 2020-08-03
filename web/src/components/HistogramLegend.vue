@@ -23,8 +23,8 @@
         <polygon ref="slider_right" :transform="`translate(${x(selectedMax) - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 "/>
       </g>
       <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
-        <text :x="x(selectedMin)" :y="0">{{selectedMin}}</text>
-        <text :x="x(selectedMax)" :y="0">{{selectedMax}}</text>
+        <text :x="x(selectedMin)" :y="0">{{formatLimit(selectedMin)}}</text>
+        <text :x="x(selectedMax)" :y="0">{{formatLimit(selectedMax)}}</text>
       </g>
     </g>
   </svg>
@@ -89,6 +89,9 @@ export default {
     },
     precision() {
       return(this.domain[1] - this.domain[0] <= 20 ? 10 : 1);
+    },
+    formatLimit() {
+      return(this.domain[1] - this.domain[0] <= 20 ? d3.format(",.1f") : d3.format(",.0f"));
     },
     filterString() {
       if((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
