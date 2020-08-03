@@ -196,8 +196,8 @@ export default {
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
         // reset selected min/max
         // If the data already exists, pull out the min/max. If not, set it to null so the getData function will calc it
-        this.selectedMin = this.min || this.min === 0 ? +this.min : (this.data ? min(this.data, d => d[this.selectedVariable.value]) : null);
-        this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? max(this.data, d => d[this.selectedVariable.value]) : null);
+        this.selectedMin = this.min || this.min === 0 ? +this.min : (this.data ? Math.floor(min(this.data, d => d[this.selectedVariable.value])) : null);
+        this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? Math.ceil(max(this.data, d => d[this.selectedVariable.value])) : null);
       }
     },
     date: {
@@ -393,8 +393,8 @@ export default {
         this.data = results.data;
 
         // reset selected min/max
-        this.selectedMin = this.min || this.min === 0 ? +this.min : min(this.data, d => d[this.selectedVariable.value]);
-        this.selectedMax = this.max || this.max === 0 ? +this.max : max(this.data, d => d[this.selectedVariable.value]);
+        this.selectedMin = this.min || this.min === 0 ? +this.min : Math.floor(min(this.data, d => d[this.selectedVariable.value]));
+        this.selectedMax = this.max || this.max === 0 ? +this.max : Math.ceil(max(this.data, d => d[this.selectedVariable.value]));
 
         this.maxDate = results.maxDate;
         if (!this.selectedDate) {
