@@ -87,6 +87,10 @@ export default {
     domain() {
       return d3.extent(this.colorScale.domain());
     },
+    precision() {
+      console.log(this.domain[1] - this.domain[0])
+      return(this.domain[1] - this.domain[0] <= 20 ? 10 : 1);
+    },
     filterString() {
       if((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
       return(`${this.minVal} &mdash; ${this.maxVal}`)
@@ -102,8 +106,9 @@ export default {
   mounted() {
     this.setupPlot();
     this.updatePlot();
-    this.selectedMin = this.minVal ? this.minVal : Math.floor(this.domain[0]);
-    this.selectedMax = this.maxVal ? this.maxVal : Math.ceil(this.domain[1]);
+    console.log(this.precision)
+    this.selectedMin = this.minVal ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
+    this.selectedMax = this.maxVal ? this.maxVal : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) / this.precision;
 
     this.$nextTick(() => this.setupDrag())
   },
@@ -175,10 +180,10 @@ export default {
     updateDrag(side) {
       const newVal = this.x.invert(d3.event.x);
       if(side == "left") {
-        this.selectedMin = Math.floor(newVal);
+        this.selectedMin = Math.floor((newVal + Number.EPSILON) * this.precision) / this.precision;
       } else {
         // this.selectedMin = this.selectedMax;
-        this.selectedMax = Math.ceil(newVal);
+        this.selectedMax = Math.ceil((newVal + Number.EPSILON) * this.precision) / this.precision;
       }
     },
     updateFilters() {

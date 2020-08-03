@@ -52,6 +52,9 @@ export default {
     };
   },
   computed: {
+    numberFormatter() {
+      return(this.varMax <= 10 ? d3.format(",.1f") : d3.format(",.0f"))
+    },
     domain() {
       return this.sortAsc ? [-1 * this.varMax, 0] : [0, this.varMax];
     },
@@ -269,7 +272,7 @@ export default {
         .attr("x", d => this.x(d[this.variable]))
         .attr("dx", this.sortAsc ? -10 : 10)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-        .text(d => d3.format(",.0f")(d[this.variable]))
+        .text(d => this.numberFormatter(d[this.variable]))
         .style("dominant-baseline", "central")
         .style("text-anchor", this.sortAsc ? "end" : "start")
         .style("font-size", "0.65em")
@@ -280,7 +283,7 @@ export default {
         update
         .attr("id", d => `annotation-change-${d._id}`)
         .attr("class", d => `annotation-most-change ${d.location_id}`)
-        .text(d => d3.format(",.0f")(d[this.variable]))
+        .text(d => this.numberFormatter(d[this.variable]))
         .call(update => update.transition(t1)
           .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
           .attr("x", d => this.x(d[this.variable]))),
