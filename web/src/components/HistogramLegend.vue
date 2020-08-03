@@ -4,14 +4,15 @@
     <div class="text-left line-height-1 mb-1">
       {{variableLabel}}
     </div>
-    <small class="d-block text-left text-muted line-height-1 mb-1" v-if="minVal || maxVal || minVal === 0 || maxVal === 0">
+    <small class="d-block text-left text-muted line-height-1 mb-1" v-if="isFiltered">
       filtered <span v-html="filterString"></span> {{variableLabel}}
     </small>
   </div>
   <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
-    <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0">
+    <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
+    <!-- <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0"> -->
       <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`" :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
       </rect>
       <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
@@ -76,7 +77,7 @@ export default {
         top: 5,
         bottom: 25,
         left: 5,
-        right: 5
+        right: 15
       },
       selectedMin: null,
       selectedMax: null,
@@ -94,6 +95,10 @@ export default {
     };
   },
   computed: {
+    isFiltered() {
+      console.log(this.$route.query)
+      return(this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
+    },
     showHandles() {
       return(this.x && (this.selectedMin || this.selectedMin === 0) && (this.selectedMax || this.selectedMax === 0))
     },
