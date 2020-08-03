@@ -1,12 +1,12 @@
 <template>
 <div>
   <div :style="{width: width+ 'px'}">
-  <div class="text-left line-height-1 mb-1">
-    {{variableLabel}}
-  </div>
-  <small class="d-block text-left text-muted line-height-1 mb-1" v-if="minVal || maxVal || minVal === 0 || maxVal === 0">
-    filtered <span v-html="filterString"></span> {{variableLabel}}
-  </small>
+    <div class="text-left line-height-1 mb-1">
+      {{variableLabel}}
+    </div>
+    <small class="d-block text-left text-muted line-height-1 mb-1" v-if="minVal || maxVal || minVal === 0 || maxVal === 0">
+      filtered <span v-html="filterString"></span> {{variableLabel}}
+    </small>
   </div>
   <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
@@ -18,9 +18,9 @@
     </g>
     <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
       <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
-        <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5"/>
-        <polygon id="slider_left" ref="slider_left" :transform="`translate(${x(selectedMin)},0)`" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 "/>
-        <polygon ref="slider_right" :transform="`translate(${x(selectedMax) - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 "/>
+        <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" />
+        <polygon id="slider_left" ref="slider_left" :transform="`translate(${x(selectedMin)},0)`" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
+        <polygon ref="slider_right" :transform="`translate(${x(selectedMax) - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
       </g>
       <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
         <text :x="x(selectedMin)" :y="0">{{formatLimit(selectedMin)}}</text>
@@ -88,21 +88,21 @@ export default {
       return d3.extent(this.colorScale.domain());
     },
     precision() {
-      return(this.domain[1] - this.domain[0] <= 20 ? 10 : 1);
+      return (this.domain[1] - this.domain[0] <= 20 ? 10 : 1);
     },
     formatLimit() {
-      return(this.domain[1] - this.domain[0] <= 20 ? d3.format(",.1f") : d3.format(",.0f"));
+      return (this.domain[1] - this.domain[0] <= 20 ? d3.format(",.1f") : d3.format(",.0f"));
     },
     filterString() {
-      if((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
-      return(`${this.minVal} &mdash; ${this.maxVal}`)
-    } else if((this.minVal || this.minVal === 0)) {
-      return(`&ge; ${this.minVal}`)
-    } else if((this.maxVal || this.maxVal === 0)) {
-      return(`&le; ${this.maxVal}`)
-    } else {
-      return(null)
-    }
+      if ((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
+        return (`${this.minVal} &mdash; ${this.maxVal}`)
+      } else if ((this.minVal || this.minVal === 0)) {
+        return (`&ge; ${this.minVal}`)
+      } else if ((this.maxVal || this.maxVal === 0)) {
+        return (`&le; ${this.maxVal}`)
+      } else {
+        return (null)
+      }
     }
   },
   mounted() {
@@ -180,16 +180,23 @@ export default {
     },
     updateDrag(side) {
       const newVal = this.x.invert(d3.event.x);
-      if(side == "left") {
-        this.selectedMin = Math.floor((newVal + Number.EPSILON) * this.precision) / this.precision;
+      if (side == "left") {
+        this.selectedMin = newVal;
       } else {
-        // this.selectedMin = this.selectedMax;
-        this.selectedMax = Math.ceil((newVal + Number.EPSILON) * this.precision) / this.precision;
+        this.selectedMax = newVal;
       }
     },
     updateFilters() {
+      if (this.selectedMin > this.selectedMax) {
+        const minVal = this.selectedMax;
+        this.selectedMax = Math.ceil((this.selectedMin + Number.EPSILON) * this.precision) / this.precision;
+        this.selectedMin = Math.floor((minVal + Number.EPSILON) * this.precision) / this.precision;
+      } else {
+        this.selectedMax = Math.ceil((this.selectedMax + Number.EPSILON) * this.precision) / this.precision;
+        this.selectedMin = Math.floor((this.selectedMin + Number.EPSILON) * this.precision) / this.precision;
+      }
+      
       const route = this.$route.query;
-      console.log(route)
       this.$router.push({
         path: "maps",
         query: {
