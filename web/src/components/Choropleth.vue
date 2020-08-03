@@ -339,6 +339,8 @@ export default {
         // this.svg
         // .on("mouseleave", this.mouseOff);
         store.state.admin.dataloading = false;
+      } else {
+        store.state.admin.dataloading = false;
       }
     },
     handleClick(d) {

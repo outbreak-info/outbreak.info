@@ -61,7 +61,6 @@ export function getComparisonData(apiUrl, location, adminLevel, variable, sort, 
         console.log(e);
         return from([]);
       })
-      // finalize(() => (store.state.admin.loading = false))
     )
 
 }
