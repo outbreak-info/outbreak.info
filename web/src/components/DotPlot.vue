@@ -164,8 +164,6 @@ export default {
         update
         .attr("id", d => `lollipop-change-${d._id}`)
         .attr("class", d => `lollipop line-most-change ${d.location_id}`)
-        .attr("x1", d => this.x(0))
-        .attr("x2", d => this.x(0))
         .call(update => update.transition(t1)
           .attr("y1", d => this.y(d.location_id) + this.y.bandwidth() / 2)
           .attr("y2", d => this.y(d.location_id) + this.y.bandwidth() / 2)
@@ -202,7 +200,6 @@ export default {
         update
         .attr("id", d => `circle-change-${d._id}`)
         .attr("class", d => `circle-most-change ${d.location_id}`)
-        .attr("cx", d => this.x(0))
         .call(update => update.transition(t1)
           .style("fill", d => this.colorScale(d[this.variable]))
           .attr("cx", d => this.x(d[this.variable]))
