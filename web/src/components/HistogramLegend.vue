@@ -21,7 +21,7 @@
       </g>
       <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
     </g>
-    <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="showHandles">
+    <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
       <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
         <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" />
         <polygon id="slider_left" ref="slider_left" :transform="`translate(${x(selectedMin)},0)`" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
@@ -101,9 +101,6 @@ export default {
   computed: {
     isFiltered() {
       return (this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
-    },
-    showHandles() {
-      return (this.x && (this.selectedMin || this.selectedMin === 0) && (this.selectedMax || this.selectedMax === 0))
     },
     domain() {
       return d3.extent(this.colorScale.domain());
