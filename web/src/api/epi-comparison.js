@@ -40,13 +40,9 @@ export function getComparisonData(apiUrl, location, adminLevel, variable, sort, 
 
   const queryString = location ? `${location} AND admin_level:("${adminLevel}")` : `admin_level:${adminLevel}`;
 
-  return forkJoin([getCurrentDate(apiUrl), getCurrentData(apiUrl, queryString, variable, sort, date)])
-    // return forkJoin([getCurrentDate(apiUrl), getJenksBreaks(apiUrl, queryString, variable), getCurrentData(apiUrl, queryString, variable, sort, date)])
-    // return getAll(apiUrl, queryString)
+  return forkJoin([getCurrentDate(apiUrl), getJenksBreaks(apiUrl, queryString, variable), getCurrentData(apiUrl, queryString, variable, sort, date)])
     .pipe(
-      map(([currDate, results]) => {
-        const breaks = getJenksBreaks(results, variable);
-
+      map(([currDate, breaks, results]) => {
         results.forEach(d => {
           d.fill = breaks.scale(d[variable]);
         })
@@ -85,61 +81,44 @@ function getCurrentDate(apiUrl) {
   )
 }
 
-export function getJenksBreaks(data, variable, numColors = 9) {
-  // const qString = `${queryString}&fields=${variable}`
-  // return from(
-  //   axios.get(
-  //     `${apiUrl}query?q=${qString}&aggs=${variable}&size=0&facet_size=1000`
-  //   ))
-  //   .pipe(
-  //     pluck("data", "facets", variable, "terms"),
-  //     map(results => {
-  //       console.log(results)
-  //
-  //
-  const vals = data.map(d => d[variable]).filter(d => d);
-  var domain = jenks(vals, numColors);
-  // var domain = [-3924.71429, -2438.28571,  -707.42857,  -187.51190,    91.57143,   336.75000,   753.57143,  1539.64286,  2658.14286,]
-// console.log(domain)
-  // color range
-  var colorRange;
-  // DIVERGING
-  if (variable.includes("diff")) {
-    // ensure that the diverging scale is centered at 0.
-    const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
+export function getJenksBreaks(apiUrl, queryString, variable) {
+  const qString = `${queryString} AND mostRecent:true&fields=${variable}_breaks`;
+  return from(
+      axios.get(
+        `${apiUrl}query?q=${qString}&size=1`
+      ))
+    .pipe(
+      pluck("data", "hits"),
+      map(results => {
+        const domain = results[0][`${variable}_breaks`];
+        // Breaks calculated in R, and centered around 0.
+        const numColors = domain.length - 1;
+        // color range
+        var colorRange;
+        // DIVERGING
+        if (variable.includes("diff")) {
+          // calculate colors
+          colorRange = range(0, 1.01, 1 / (numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
+        } else {
+          // SEQUENTIAL
+          colorRange = range(0, 0.51, 0.5 / numColors).map(d => interpolateRdYlBu(d)).reverse();
+        }
 
-    var padLength = domain.length - 2 * midpoint - 2;
-    padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
+        const colorScale = scaleQuantile()
+          .range(colorRange)
+          .domain(domain);
 
-    if (padLength < 0) {
-      domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
-    } else if (padLength > 0) {
-      domain = Array(padLength).fill(domain[0]).concat(domain);
-    }
-    numColors = domain.length - 1;
-
-    // calculate colors
-    colorRange = range(0, 1.01, 1 / (numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
-  } else {
-    // SEQUENTIAL
-    colorRange = range(0, 0.51, 0.5 / numColors).map(d => interpolateRdYlBu(d)).reverse();
-  }
-
-  const colorScale = scaleQuantile()
-    .range(colorRange)
-    .domain(domain);
-
-  return ({
-    breaks: domain,
-    scale: colorScale
-  })
-  //   }),
-  //   catchError(e => {
-  //     console.log("%c Error in getting current data!", "color: red");
-  //     console.log(e);
-  //     return from([]);
-  //   })
-  // )
+        return ({
+          breaks: domain,
+          scale: colorScale
+        })
+      }),
+      catchError(e => {
+        console.log("%c Error in getting current breaks!", "color: red");
+        console.log(e);
+        return from([]);
+      })
+    )
 }
 
 export function getCurrentData(apiUrl, queryString, variable, sort, date) {
