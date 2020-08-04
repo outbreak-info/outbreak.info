@@ -70,16 +70,16 @@ export default Vue.extend({
   },
   computed: {
     hideBack7() {
-      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) <= 7)
+      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 7)
     },
     hideBack1() {
-      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) <= 1)
+      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 1)
     },
     hideForward7() {
-      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) <= 7)
+      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) < 7)
     },
     hideForward1() {
-      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) <= 1)
+      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) < 1)
     }
   },
   mounted() {
