@@ -12,9 +12,13 @@
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
     <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
-    <!-- <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0"> -->
+      <!-- <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0"> -->
       <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`" :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
       </rect>
+      <g v-if="isFiltered && x">
+        <rect :x="x(selectedMax)" y="0" :width="width - margin.left - margin.right" height="10" fill="white" fill-opacity="0.8"></rect>
+        <rect x="0" y="0" :width="x(selectedMin)" height="10" fill="white" fill-opacity="0.8"></rect>
+      </g>
       <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
     </g>
     <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="showHandles">
@@ -96,10 +100,10 @@ export default {
   },
   computed: {
     isFiltered() {
-      return(this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
+      return (this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
     },
     showHandles() {
-      return(this.x && (this.selectedMin || this.selectedMin === 0) && (this.selectedMax || this.selectedMax === 0))
+      return (this.x && (this.selectedMin || this.selectedMin === 0) && (this.selectedMax || this.selectedMax === 0))
     },
     domain() {
       return d3.extent(this.colorScale.domain());
