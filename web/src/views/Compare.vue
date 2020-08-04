@@ -1,7 +1,7 @@
 <template>
 <div class="full-page p-5 bg-light">
   <!-- loading -->
-  <div v-if="dataloading" class="loader">
+  <div v-if="dataloading" class="map-loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
@@ -462,5 +462,12 @@ tr.table-header-merged {
 .btn-main-outline.active {
     background: $primary-color !important;
     color: white;
+}
+
+.map-loader {
+  position: fixed;
+  z-index: 100;
+  top: 125px !important;
+  left: 100px !important;
 }
 </style>

@@ -15,6 +15,8 @@
       <i class="btn btn-main-outline fas fa-step-forward mr-1 px-2 py-1 d-flex align-items-center" :class="{disabled: hideForward1}" @click="changeDate(1)" style="font-size: 0.7em"></i>
       <i class="btn btn-main-outline fas fa-fast-forward px-2 py-1" style="font-size: 0.85em" :class="{disabled: hideForward7}" @click="changeDate(7)"></i>
     </div>
+
+    <i class="btn btn-main-outline fas px-2 py-1 ml-2" style="font-size: 0.85em" :class='[hideForward1 ? "disabled" : "", isPlaying ? "fa-pause" : "fa-play"]' @click="play()"></i>
   </div>
 
 </div>
@@ -36,7 +38,9 @@ import {
   event
 } from "d3";
 
-import { getCurrentDate } from "@/api/biothings.js";
+import {
+  getCurrentDate
+} from "@/api/biothings.js";
 
 export default Vue.extend({
   name: "DateSlider",
@@ -60,10 +64,11 @@ export default Vue.extend({
       minDate: new Date("2020-01-22 0:0"),
       xDate: null,
       x: null,
-      xAxis: null
+      xAxis: null,
+      isPlaying: false
     }
   },
-  subscriptions () {
+  subscriptions() {
     return {
       maxDate$: getCurrentDate(this.$apiurl, false)
     }
@@ -87,6 +92,24 @@ export default Vue.extend({
     this.setupDrag();
   },
   methods: {
+    play() {
+      this.isPlaying = !this.isPlaying;
+
+      if(this.isPlaying) {
+          this.start();
+      }
+    },
+    start() {
+      if ((this.selectedDate < this.maxDate$) && this.isPlaying) {
+        setTimeout(() => {
+          console.log(this.selectedDate);
+          this.changeDate(1);
+          this.start();
+        }, 1500);
+      } else {
+        this.isPlaying = false;
+      }
+    },
     changeDate(dayShift) {
       this.selectedDate = timeDay.offset(this.selectedDate, dayShift);
       // update dot position
