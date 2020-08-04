@@ -13,19 +13,21 @@
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
     <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
       <!-- <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0"> -->
-      <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`" :transform="`translate(${item.x0}, 0)`" v-for="(item, idx) in legendColors" :key="idx">
-      </rect>
+      <template v-for="(item, idx) in legendColors">
+        <rect x="0" y="0" :width="item.width" height="10" :fill="item.fill" :id="`legendrect${idx}`" :transform="`translate(${item.x0}, 0)`" :key="idx" v-if="item.width">
+        </rect>
+      </template>
       <g v-if="isFiltered && x">
-        <rect :x="x(selectedMax)" y="0" :width="width - margin.left - margin.right" height="10" fill="white" fill-opacity="0.8"></rect>
-        <rect x="0" y="0" :width="x(selectedMin)" height="10" fill="white" fill-opacity="0.8"></rect>
+        <rect ref="rect_mask_right" :x="x(selectedMax)" y="0" :width="width - margin.left - margin.right" height="10" fill="white" fill-opacity="0.8"></rect>
+        <rect ref="rect_mask_left" x="0" y="0" :width="x(selectedMin)" height="10" fill="white" fill-opacity="0.8"></rect>
       </g>
       <rect x="0" y="0" :width="width - margin.left - margin.right" height="10" stroke="black" fill="none" :stroke-width="0.5"></rect>
     </g>
     <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
       <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
-        <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" />
-        <polygon id="slider_left" ref="slider_left" :transform="`translate(${x(selectedMin)},0)`" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
-        <polygon ref="slider_right" :transform="`translate(${x(selectedMax) - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
+        <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" v-if="isFiltered"/>
+        <polygon id="slider_left" ref="slider_left" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
+        <polygon ref="slider_right" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
       </g>
       <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
         <text :x="x(selectedMin)" :y="0">{{formatLimit(selectedMin)}}</text>
@@ -158,6 +160,13 @@ export default {
 
       d3.selectAll(".axis").call(this.xAxis);
 
+      // update sliders
+      d3.select(this.$refs.slider_left)
+        .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
+
+      d3.select(this.$refs.slider_right)
+        .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
+
       // calculate bins
       this.bins = d3.histogram()
         .domain(this.x.domain())
@@ -199,8 +208,18 @@ export default {
       const newVal = this.x.invert(d3.event.x);
       if (side == "left") {
         this.selectedMin = newVal;
+        d3.select(this.$refs.slider_left)
+          .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
+
+        // d3.select(this.$refs.rect_mask_left).attr("width", this.x(this.selectedMin))
       } else {
         this.selectedMax = newVal;
+
+        d3.select(this.$refs.slider_right)
+          .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
+
+        // d3.select(this.$refs.rect_mask_right)
+        //   .attr("x", this.x(this.selectedMax))
       }
     },
     updateFilters() {
