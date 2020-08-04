@@ -192,8 +192,6 @@ export default {
     '$route.params': {
       immediate: true,
       handler(newRoute, oldRoute) {
-        console.log("new route")
-
         // update selections based on routes
         const filtered = this.variableOptions.filter(d => d.value === this.variable);
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
