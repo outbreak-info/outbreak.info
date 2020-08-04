@@ -3,8 +3,8 @@
   {{this.formatDate(this.selectedDate, "%d %B %Y")}}
   <div class="d-flex align-items-start">
     <div class="d-flex">
-      <i class="btn btn-main-outline fas fa-fast-backward px-2 py-1" style="font-size: 0.85em" @click="changeDate(-7)"></i>
-      <i class="btn btn-main-outline fas fa-step-backward ml-1 px-2 py-1 d-flex align-items-center" @click="changeDate(-1)" style="font-size: 0.7em"></i>
+      <i class="btn btn-main-outline fas fa-fast-backward px-2 py-1" style="font-size: 0.85em" @click="changeDate(-7)" :class="{disabled: hideBack7}"></i>
+      <i class="btn btn-main-outline fas fa-step-backward ml-1 px-2 py-1 d-flex align-items-center" @click="changeDate(-1)" style="font-size: 0.7em" :class="{disabled: hideBack1}"></i>
     </div>
     <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top" class="mr-3 ml-3">
       <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
@@ -12,8 +12,8 @@
       <g :transform="`translate(${margin.left}, ${height + margin.top})`" class="slider-axis axis--x" ref="xAxis"></g>
     </svg>
     <div class="d-flex">
-      <i class="btn btn-main-outline fas fa-step-forward mr-1 px-2 py-1 d-flex align-items-center" @click="changeDate(1)" style="font-size: 0.7em"></i>
-      <i class="btn btn-main-outline fas fa-fast-forward px-2 py-1" style="font-size: 0.85em" @click="changeDate(7)"></i>
+      <i class="btn btn-main-outline fas fa-step-forward mr-1 px-2 py-1 d-flex align-items-center" :class="{disabled: hideForward1}" @click="changeDate(1)" style="font-size: 0.7em"></i>
+      <i class="btn btn-main-outline fas fa-fast-forward px-2 py-1" style="font-size: 0.85em" :class="{disabled: hideForward7}" @click="changeDate(7)"></i>
     </div>
   </div>
 
@@ -36,6 +36,8 @@ import {
   event
 } from "d3";
 
+import { getCurrentDate } from "@/api/biothings.js";
+
 export default Vue.extend({
   name: "DateSlider",
   props: {
@@ -55,9 +57,29 @@ export default Vue.extend({
       height: 6,
       radius: 7,
       selectedDate: null,
+      minDate: new Date("2020-01-22 0:0"),
       xDate: null,
       x: null,
       xAxis: null
+    }
+  },
+  subscriptions () {
+    return {
+      maxDate$: getCurrentDate(this.$apiurl, false)
+    }
+  },
+  computed: {
+    hideBack7() {
+      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) <= 7)
+    },
+    hideBack1() {
+      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) <= 1)
+    },
+    hideForward7() {
+      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) <= 7)
+    },
+    hideForward1() {
+      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) <= 1)
     }
   },
   mounted() {
