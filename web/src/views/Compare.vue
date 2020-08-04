@@ -41,7 +41,7 @@
         </select>
       </div>
       <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
-        <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
+        <DateSlider v-model="changedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
         <!-- <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i> -->
       </div>
     </div>
@@ -200,10 +200,13 @@ export default {
         this.selectedMin = this.min || this.min === 0 ? +this.min : (this.data ? Math.floor(min(this.data, d => d[this.variable])) : null);
         this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? Math.ceil(max(this.data, d => d[this.variable])) : null);
 
+        this.selectedDate = this.date;
+        this.changedDate = this.selectedDate;
+
         this.getData(this.selectedDate);
       }
     },
-    selectedDate() {
+    changedDate() {
       this.$router.push({
         path: "maps",
         query: {
@@ -211,7 +214,7 @@ export default {
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
           sort: this.sortVariable.value,
-          date: this.selectedDate,
+          date: this.changedDate,
           min: String(this.selectedMin),
           max: String(this.selectedMax)
         }
@@ -249,6 +252,7 @@ export default {
       colorScale: null,
       data: [],
       selectedDate: null,
+      changedDate: null,
       selectedMin: null,
       selectedMax: null,
       dateSlider: new Date(),
@@ -381,6 +385,7 @@ export default {
         this.maxDate = results.maxDate;
         if (!this.selectedDate) {
           this.selectedDate = this.formatDate(results.maxDate);
+          this.changedDate = this.selectedDate;
         }
         this.colorScale = results.colorScale;
       })
