@@ -100,12 +100,12 @@ export default Vue.extend({
       }
     },
     start() {
-      if ((this.selectedDate < this.maxDate$) && this.isPlaying) {
+      const dayGap = 3;
+      if ((timeDay.offset(this.selectedDate, dayGap) <= this.maxDate$) && this.isPlaying) {
         setTimeout(() => {
-          console.log(this.selectedDate);
-          this.changeDate(1);
+          this.changeDate(dayGap);
           this.start();
-        }, 1500);
+        }, 500);
       } else {
         this.isPlaying = false;
       }

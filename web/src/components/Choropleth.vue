@@ -1,9 +1,12 @@
 <template>
 <div class="d-flex flex-wrap justify-content-center align-items-center" ref="map_container" id="map_container">
-  <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
-    <g ref="regions" class="region-group"></g>
-    <g ref="states" class="state-group"></g>
-  </svg>
+  <div class="d-flex flex-column align-items-center">
+    <h4>{{date}}</h4>
+    <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
+      <g ref="regions" class="region-group"></g>
+      <g ref="states" class="state-group"></g>
+    </svg>
+  </div>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
@@ -116,9 +119,16 @@ export default {
     isDiff() {
       return (this.variable.includes("_14days_ago_diff"))
     },
+    date() {
+      if (this.date1) {
+        const dateStr = d3.timeParse("%Y-%m-%d")(this.date1);
+        return (d3.timeFormat("%d %B %Y")(dateStr));
+      } else {
+        return (null)
+      }
+    },
     title() {
-      const date = d3.timeParse("%Y-%m-%d")(this.date1)
-      return (this.date1 ? `${this.variableLabel} as of ${d3.timeFormat("%d %B %Y")(date)}` : this.variableLabel)
+      return (this.date1 ? `${this.variableLabel} as of ${this.date}` : this.variableLabel)
     }
   },
   created: function() {
