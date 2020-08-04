@@ -1,19 +1,19 @@
 <template>
 <div id="dateSlider" class="d-flex flex-column">
   {{this.formatDate(this.selectedDate, "%d %B %Y")}}
-  <div class="d-flex align-items-center">
+  <div class="d-flex align-items-start">
     <div class="d-flex">
-      <i class="btn btn-main-outline fas fa-fast-backward" @click="changeDate(-7)"></i>
-      <i class="btn btn-main-outline fas fa-step-backward ml-1" @click="changeDate(-1)" style="font-size: 0.85em; line-height: 1.2em"></i>
+      <i class="btn btn-main-outline fas fa-fast-backward px-2 py-1" style="font-size: 0.85em" @click="changeDate(-7)"></i>
+      <i class="btn btn-main-outline fas fa-step-backward ml-1 px-2 py-1 d-flex align-items-center" @click="changeDate(-1)" style="font-size: 0.7em"></i>
     </div>
-    <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top" class="mx-2">
+    <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top" class="mr-3 ml-3">
       <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
       <circle fill="#D13B62" :transform="`translate(${margin.left}, ${height/2 + radius})`" id="slider-date" :cx="xDate" :cy="0" :r="radius" ref="drag_circle"></circle>
       <g :transform="`translate(${margin.left}, ${height + margin.top})`" class="slider-axis axis--x" ref="xAxis"></g>
     </svg>
     <div class="d-flex">
-      <i class="btn btn-main-outline fas fa-step-forward mr-1" @click="changeDate(1)" style="font-size: 0.85em; line-height: 1.2em"></i>
-      <i class="btn btn-main-outline fas fa-fast-forward" @click="changeDate(7)"></i>
+      <i class="btn btn-main-outline fas fa-step-forward mr-1 px-2 py-1 d-flex align-items-center" @click="changeDate(1)" style="font-size: 0.7em"></i>
+      <i class="btn btn-main-outline fas fa-fast-forward px-2 py-1" style="font-size: 0.85em" @click="changeDate(7)"></i>
     </div>
   </div>
 
