@@ -189,33 +189,20 @@ export default {
     sort: String,
   },
   watch: {
-    variable: {
+    '$route.params': {
       immediate: true,
-      handler(newVar, oldVar) {
-        const filtered = this.variableOptions.filter(d => d.value === newVar);
+      handler(newRoute, oldRoute) {
+        console.log("new route")
+
+        // update selections based on routes
+        const filtered = this.variableOptions.filter(d => d.value === this.variable);
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
         // reset selected min/max
         // If the data already exists, pull out the min/max. If not, set it to null so the getData function will calc it
-        this.selectedMin = this.min || this.min === 0 ? +this.min : (this.data ? Math.floor(min(this.data, d => d[this.selectedVariable.value])) : null);
-        this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? Math.ceil(max(this.data, d => d[this.selectedVariable.value])) : null);
-      }
-    },
-    date: {
-      immediate: true,
-      handler(newDate, oldDate) {
-        this.selectedDate = newDate;
-      }
-    },
-    min: {
-      immediate: true,
-      handler(newMin, oldMin) {
-        this.selectedMin = newMin || newMin === 0 ? +newMin : null;
-      }
-    },
-    max: {
-      immediate: true,
-      handler(newMax, oldMax) {
-        this.selectedMax = newMax || newMax === 0 ? +newMax : null;
+        this.selectedMin = this.min || this.min === 0 ? +this.min : (this.data ? Math.floor(min(this.data, d => d[this.variable])) : null);
+        this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? Math.ceil(max(this.data, d => d[this.variable])) : null);
+
+        this.getData(this.selectedDate);
       }
     },
     selectedDate() {
@@ -243,24 +230,21 @@ export default {
           date: this.selectedDate
         }
       });
-    },
-    sortVariable() {
-      this.$router.push({
-        path: "maps",
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          sort: this.sortVariable.value,
-          date: this.selectedDate,
-          min: String(this.selectedMin),
-          max: String(this.selectedMax)
-        }
-      });
-    },
-    '$route.params'() {
-      this.getData(this.selectedDate);
     }
+    // sortVariable() {
+    //   this.$router.push({
+    //     path: "maps",
+    //     query: {
+    //       location: this.location,
+    //       admin_level: this.admin_level,
+    //       variable: this.selectedVariable.value,
+    //       sort: this.sortVariable.value,
+    //       date: this.selectedDate,
+    //       min: String(this.selectedMin),
+    //       max: String(this.selectedMax)
+    //     }
+    //   });
+    // },
   },
   data() {
     return {

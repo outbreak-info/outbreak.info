@@ -96,7 +96,6 @@ export default {
   },
   computed: {
     isFiltered() {
-      console.log(this.$route.query)
       return(this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
     },
     showHandles() {
