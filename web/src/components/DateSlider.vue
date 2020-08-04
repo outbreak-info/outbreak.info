@@ -1,11 +1,21 @@
 <template>
 <div id="dateSlider" class="d-flex flex-column">
   {{this.formatDate(this.selectedDate, "%d %B %Y")}}
-  <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top">
-    <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
-    <circle fill="#D13B62" :transform="`translate(${margin.left}, ${height/2 + radius})`" id="slider-date" :cx="xDate" :cy="0" :r="radius" ref="drag_circle"></circle>
-    <g :transform="`translate(${margin.left}, ${height + margin.top})`" class="slider-axis axis--x" ref="xAxis"></g>
-  </svg>
+  <div class="d-flex align-items-center">
+    <div class="d-flex">
+      <i class="btn btn-main-outline fas fa-fast-backward" @click="changeDate(-7)"></i>
+      <i class="btn btn-main-outline fas fa-step-backward ml-1" @click="changeDate(-1)" style="font-size: 0.85em; line-height: 1.2em"></i>
+    </div>
+    <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top" class="mx-2">
+      <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
+      <circle fill="#D13B62" :transform="`translate(${margin.left}, ${height/2 + radius})`" id="slider-date" :cx="xDate" :cy="0" :r="radius" ref="drag_circle"></circle>
+      <g :transform="`translate(${margin.left}, ${height + margin.top})`" class="slider-axis axis--x" ref="xAxis"></g>
+    </svg>
+    <div class="d-flex">
+      <i class="btn btn-main-outline fas fa-step-forward mr-1" @click="changeDate(1)" style="font-size: 0.85em; line-height: 1.2em"></i>
+      <i class="btn btn-main-outline fas fa-fast-forward" @click="changeDate(7)"></i>
+    </div>
+  </div>
 
 </div>
 </template>
@@ -20,6 +30,8 @@ import {
   scaleTime,
   select,
   axisBottom,
+  timeDay,
+  offset,
   drag,
   event
 } from "d3";
@@ -53,6 +65,12 @@ export default Vue.extend({
     this.setupDrag();
   },
   methods: {
+    changeDate(dayShift) {
+      this.selectedDate = timeDay.offset(this.selectedDate, dayShift);
+      // update dot position
+      select(this.$refs.drag_circle).attr("cx", this.x(this.selectedDate));
+      this.$emit('input', this.formatDate(this.selectedDate));
+    },
     formatDate(dateNum, format = "%Y-%m-%d") {
       return (timeFormat(format)(dateNum))
     },

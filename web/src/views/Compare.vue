@@ -5,7 +5,7 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-  <div class="d-flex">
+  <div class="d-flex mb-3">
     <!-- Region buttons -->
     <div class="d-flex flex-wrap">
       <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}"
@@ -42,7 +42,7 @@
       </div>
       <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
         <DateSlider v-model="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
-        <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i>
+        <!-- <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i> -->
       </div>
     </div>
   </div>
