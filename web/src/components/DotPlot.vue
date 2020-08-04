@@ -227,7 +227,7 @@ export default {
         return text.substr(0, threshold).concat("...");
       }
 
-      const locationNameThresh = 9;
+      const locationNameThresh = 8;
 
       yAxSelector.join(
         enter => enter.append("text")
