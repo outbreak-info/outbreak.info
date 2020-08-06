@@ -1,6 +1,6 @@
 <template>
 <div id="dateSlider" class="d-flex flex-column">
-  {{this.formatDate(this.selectedDate, "%d %B %Y")}}
+  {{this.formattedDate}}
   <div class="d-flex align-items-start">
     <div class="d-flex">
       <i class="btn btn-main-outline fas fa-fast-backward px-2 py-1" style="font-size: 0.85em" @click="changeDate(-7)" :class="{disabled: hideBack7}"></i>
@@ -38,16 +38,12 @@ import {
   event
 } from "d3";
 
-import {
-  getCurrentDate
-} from "@/api/biothings.js";
-
 export default Vue.extend({
   name: "DateSlider",
   props: {
     min: Date,
     max: Date,
-    value: String
+    date: String,
   },
   data() {
     return {
@@ -68,11 +64,6 @@ export default Vue.extend({
       isPlaying: false
     }
   },
-  subscriptions() {
-    return {
-      maxDate$: getCurrentDate(this.$apiurl, false)
-    }
-  },
   computed: {
     hideBack7() {
       return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 7)
@@ -81,10 +72,18 @@ export default Vue.extend({
       return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 1)
     },
     hideForward7() {
-      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) < 7)
+      return ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 7)
     },
     hideForward1() {
-      return ((this.maxDate$ - this.selectedDate) / (1000 * 60 * 60 * 24) < 1)
+      return ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 1)
+    },
+    formattedDate() {
+      return (this.formatDate(this.selectedDate, "%d %B %Y"));
+    }
+  },
+  watch: {
+    date: function() {
+      this.updateAxis();
     }
   },
   mounted() {
@@ -97,16 +96,16 @@ export default Vue.extend({
 
       const dayGap = 3; // parameter for how many days between
 
-      if((this.maxDate$ - this.selectedDate)/ (1000 * 60 * 60 * 24) < dayGap) {
+      if ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < dayGap) {
         this.selectedDate = this.minDate;
       }
 
-      if(this.isPlaying) {
-          this.start(dayGap);
+      if (this.isPlaying) {
+        this.start(dayGap);
       }
     },
     start(dayGap) {
-      if ((timeDay.offset(this.selectedDate, dayGap) <= this.maxDate$) && this.isPlaying) {
+      if ((timeDay.offset(this.selectedDate, dayGap) <= this.max) && this.isPlaying) {
         setTimeout(() => {
           this.changeDate(dayGap);
           this.start(dayGap);
@@ -119,7 +118,22 @@ export default Vue.extend({
       this.selectedDate = timeDay.offset(this.selectedDate, dayShift);
       // update dot position
       select(this.$refs.drag_circle).attr("cx", this.x(this.selectedDate));
-      this.$emit('input', this.formatDate(this.selectedDate));
+
+      const route = this.$route.query;
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: route.location,
+          admin_level: route.admin_level,
+          variable: route.variable,
+          date: this.formatDate(this.selectedDate),
+          min: route.min,
+          max: route.max
+        }
+      });
+    },
+    parseDate(dateStr, format = "%Y-%m-%d") {
+      return (timeParse(format)(dateStr))
     },
     formatDate(dateNum, format = "%Y-%m-%d") {
       return (timeFormat(format)(dateNum))
@@ -146,7 +160,19 @@ export default Vue.extend({
     },
     dragended(d) {
       this.selectedDate = this.x.invert(event.x);
-      this.$emit('input', this.formatDate(this.selectedDate));
+
+      const route = this.$route.query;
+      this.$router.push({
+        path: "maps",
+        query: {
+          location: route.location,
+          admin_level: route.admin_level,
+          variable: route.variable,
+          date: this.formatDate(this.selectedDate),
+          min: route.min,
+          max: route.max
+        }
+      });
     },
     updateAxis() {
       this.x = scaleTime()
@@ -158,7 +184,11 @@ export default Vue.extend({
 
       select(this.$refs.xAxis).call(this.xAxis);
 
-      this.selectedDate = timeParse("%Y-%m-%d")(this.value);
+      this.selectedDate = this.parseDate(this.date);
+
+      // update dot position
+      select(this.$refs.drag_circle).attr("cx", this.x(this.selectedDate));
+
       this.xDate = this.x(this.selectedDate);
     }
   }

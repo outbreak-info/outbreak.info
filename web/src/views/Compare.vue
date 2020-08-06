@@ -14,13 +14,13 @@
         countries</router-link>
       <div class="d-flex flex-column justify-content-around">
         <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
-          :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
+          :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. States</router-link>
         <div class="d-flex">
           <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}"
             :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
           </router-link>
-          <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2', date: this.selectedDate}" role="button"
-            :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+          <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
+            :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Counties</router-link>
         </div>
       </div>
 
@@ -41,7 +41,7 @@
         </select>
       </div>
       <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
-        <DateSlider v-model="changedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
+        <DateSlider :date="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
         <!-- <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i> -->
       </div>
     </div>
@@ -106,23 +106,9 @@ export default {
         this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? Math.ceil(max(this.data, d => d[this.variable])) : null);
 
         this.selectedDate = this.date;
-        this.changedDate = this.selectedDate;
 
         this.getData(this.selectedDate);
       }
-    },
-    changedDate() {
-      this.$router.push({
-        path: "maps",
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          date: this.changedDate,
-          min: String(this.selectedMin),
-          max: String(this.selectedMax)
-        }
-      });
     },
     selectedVariable() {
       this.$router.push({
@@ -141,7 +127,6 @@ export default {
       colorScale: null,
       data: [],
       selectedDate: null,
-      changedDate: null,
       selectedMin: null,
       selectedMax: null,
       maxDate: null,
@@ -226,7 +211,6 @@ export default {
         this.maxDate = results.maxDate;
         if (!this.selectedDate) {
           this.selectedDate = this.formatDate(results.maxDate);
-          this.changedDate = this.selectedDate;
         }
         this.colorScale = results.colorScale;
       })
