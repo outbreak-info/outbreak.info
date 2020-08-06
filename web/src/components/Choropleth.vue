@@ -442,7 +442,9 @@ export default {
     mouseOn(d) {
       this.timeTrace = null; // reset to avoid seeing old data
       this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null; // reset to avoid seeing old data
+      if(d.value) {
       this.getTimetrace(d.location_id);
+
       const ttip = this.ttips
         .style("top", this.event.y + "px")
         .style("left", this.event.x + "px")
@@ -453,6 +455,7 @@ export default {
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
       this.ttips.select(".country-name").text(d.name);
       this.ttips.select(".value").html(d.tooltip);
+    }
     },
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data
