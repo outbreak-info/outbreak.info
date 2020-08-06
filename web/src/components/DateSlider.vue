@@ -16,7 +16,7 @@
       <i class="btn btn-main-outline fas fa-fast-forward px-2 py-1" style="font-size: 0.85em" :class="{disabled: hideForward7}" @click="changeDate(7)"></i>
     </div>
 
-    <i class="btn btn-main-outline fas px-2 py-1 ml-2" style="font-size: 0.85em" :class='[hideForward1 ? "disabled" : "", isPlaying ? "fa-pause" : "fa-play"]' @click="play()"></i>
+    <i class="btn btn-main-outline fas px-2 py-1 ml-2" style="font-size: 0.85em" :class='[isPlaying ? "fa-pause" : "fa-play"]' @click="play()"></i>
   </div>
 
 </div>
@@ -95,16 +95,21 @@ export default Vue.extend({
     play() {
       this.isPlaying = !this.isPlaying;
 
+      const dayGap = 3; // parameter for how many days between
+
+      if((this.maxDate$ - this.selectedDate)/ (1000 * 60 * 60 * 24) < dayGap) {
+        this.selectedDate = this.minDate;
+      }
+
       if(this.isPlaying) {
-          this.start();
+          this.start(dayGap);
       }
     },
-    start() {
-      const dayGap = 3;
+    start(dayGap) {
       if ((timeDay.offset(this.selectedDate, dayGap) <= this.maxDate$) && this.isPlaying) {
         setTimeout(() => {
           this.changeDate(dayGap);
-          this.start();
+          this.start(dayGap);
         }, 500);
       } else {
         this.isPlaying = false;
