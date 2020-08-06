@@ -256,6 +256,7 @@ export default {
     drawMap() {
       this.setupMap();
       this.resetValues();
+      console.log("drawing map")
 
       this.filteredData = cloneDeep(this.data);
 
@@ -266,7 +267,7 @@ export default {
         this.filteredData = this.filteredData.filter(d => d[this.variable] <= this.selectedMax);
       }
 
-      if (this.filteredData && this.filteredData.length && this.width) {
+      if (this.filteredData && this.width) {
         this.filteredData.forEach(d => {
           const idx = this.regionData.features.findIndex(polygon => polygon.properties.location_id === d.location_id);
           if (idx > -1) {

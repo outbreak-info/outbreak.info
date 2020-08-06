@@ -25,7 +25,7 @@
     </g>
     <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
       <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
-        <line :x1="x(selectedMin)" :x2="x(selectedMax)" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" v-if="isFiltered"/>
+        <line ref="slider_line" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5"/>
         <polygon id="slider_left" ref="slider_left" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
         <polygon ref="slider_right" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
       </g>
@@ -128,8 +128,6 @@ export default {
   mounted() {
     this.setupPlot();
     this.updatePlot();
-    this.selectedMin = this.minVal ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
-    this.selectedMax = this.maxVal ? this.maxVal : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) / this.precision;
 
     this.$nextTick(() => this.setupDrag())
   },
@@ -137,6 +135,21 @@ export default {
     setupPlot: function() {
       this.chart = d3.select(this.$refs.legend_bars);
       this.xAxisRef = d3.select(this.$refs.x_axis);
+    },
+    updateFilterLimits: function() {
+      this.selectedMin = this.minVal ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
+      this.selectedMax = this.maxVal ? this.maxVal : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) / this.precision;
+
+      // update sliders
+      d3.select(this.$refs.slider_left)
+        .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
+
+      d3.select(this.$refs.slider_right)
+        .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
+
+        d3.select(this.$refs.slider_line)
+        .attr("x1", this.x(this.selectedMin))
+        .attr("x2", this.x(this.selectedMax))
     },
     updateAxes: function() {
       // x-axis
@@ -159,13 +172,6 @@ export default {
         })
 
       d3.selectAll(".axis").call(this.xAxis);
-
-      // update sliders
-      d3.select(this.$refs.slider_left)
-        .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
-
-      d3.select(this.$refs.slider_right)
-        .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
 
       // calculate bins
       this.bins = d3.histogram()
@@ -196,12 +202,12 @@ export default {
       d3.select(this.$refs.slider_left)
         .call(d3.drag()
           .on("drag", () => this.updateDrag("left"))
-          .on("end", () => this.updateFilters())
+          .on("end", () => this.changeFilters())
         )
       d3.select(this.$refs.slider_right)
         .call(d3.drag()
           .on("drag", () => this.updateDrag("right"))
-          .on("end", () => this.updateFilters())
+          .on("end", () => this.changeFilters())
         )
     },
     updateDrag(side) {
@@ -222,7 +228,7 @@ export default {
         //   .attr("x", this.x(this.selectedMax))
       }
     },
-    updateFilters() {
+    changeFilters() {
       if (this.selectedMin > this.selectedMax) {
         const minVal = this.selectedMax;
         this.selectedMax = Math.ceil((this.selectedMin + Number.EPSILON) * this.precision) / this.precision;
@@ -231,7 +237,7 @@ export default {
         this.selectedMax = Math.ceil((this.selectedMax + Number.EPSILON) * this.precision) / this.precision;
         this.selectedMin = Math.floor((this.selectedMin + Number.EPSILON) * this.precision) / this.precision;
       }
-      
+
       const route = this.$route.query;
       this.$router.push({
         path: "maps",
@@ -248,6 +254,7 @@ export default {
     updatePlot: function() {
       if (this.data && this.colorScale) {
         this.updateAxes();
+        this.updateFilterLimits();
 
         this.chart
           .selectAll("rect")

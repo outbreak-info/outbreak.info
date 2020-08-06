@@ -101,9 +101,9 @@ export default {
         const filtered = this.variableOptions.filter(d => d.value === this.variable);
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
         // reset selected min/max
-        // If the data already exists, pull out the min/max. If not, set it to null so the getData function will calc it
-        this.selectedMin = this.min || this.min === 0 ? +this.min : (this.data ? Math.floor(min(this.data, d => d[this.variable])) : null);
-        this.selectedMax = this.max || this.max === 0 ? +this.max : (this.data ? Math.ceil(max(this.data, d => d[this.variable])) : null);
+        // If the data already exists, pull out the min/max.
+        this.selectedMin = this.min || this.min === 0 ? +this.min : null;
+        this.selectedMax = this.max || this.max === 0 ? +this.max : null;
 
         this.selectedDate = this.date;
 
@@ -203,10 +203,6 @@ export default {
     getData(date) {
       this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, null, date).subscribe(results => {
         this.data = results.data;
-
-        // reset selected min/max
-        this.selectedMin = this.min || this.min === 0 ? +this.min : Math.floor(min(this.data, d => d[this.selectedVariable.value]));
-        this.selectedMax = this.max || this.max === 0 ? +this.max : Math.ceil(max(this.data, d => d[this.selectedVariable.value]));
 
         this.maxDate = results.maxDate;
         if (!this.selectedDate) {
