@@ -149,7 +149,7 @@ export default {
       this.prepData();
       this.updateAxes();
 
-      const t1 = d3.transition().duration(750);
+      const t1 = d3.transition().duration(500);
 
       const lolliSelector = this.chart.selectAll(".lollipop")
         .data(this.plottedData, d => d.location_id);
