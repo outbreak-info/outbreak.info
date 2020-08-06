@@ -3,9 +3,12 @@
   <h6 class="text-left m-0">{{sortAsc ? "Lowest" : "Highest"}}</h6>
   <small class="text-left m-0 p-0 line-height-1 d-block text-wrap mb-2 mr-2">{{title}}</small>
   <svg :width="width" :height="height" ref="dotplot_svg" class="dotplot-svg" :name="title">
-    <g ref="circles" class="circles-group" :transform="`translate(${margin.left}, ${margin.top})`">
-      <line :x1="x(0)" :x2="x(0)" :y1="0" :y2="height - margin.top - margin.bottom" v-if="x" stroke="black" stroke-width="0.5"></line>
+    <g :transform="`translate(${margin.left}, ${margin.top})`">
+      <line :x1="x(0)" :x2="x(0)" :y1="0" :y2="height - margin.top - margin.bottom" v-if="x && x(0) >= 0" stroke="black" stroke-width="0.5"></line>
+      <g ref="circles" class="circles-group">
+      </g>
     </g>
+
     <!-- <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="epi-axis axis--x" ref="xAxis" id="xAxis"></g> -->
     <!-- <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis" id="yAxis"></g> -->
   </svg>
@@ -54,7 +57,7 @@ export default {
   },
   computed: {
     numberFormatter() {
-      return(this.varMax <= 10 ? d3.format(",.1f") : d3.format(",.0f"))
+      return (this.varMax <= 10 ? d3.format(",.1f") : d3.format(",.0f"))
     },
     domain() {
       return this.rightAlign ? [-1 * this.varMax, 0] : [0, this.varMax];
@@ -100,7 +103,6 @@ export default {
       this.x = d3.scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(this.domain);
-      // .domain(d3.extent(this.plottedData.map(d => d[this.variable])));
 
       this.y = d3.scaleBand()
         .range([0, this.height - this.margin.top - this.margin.bottom])
