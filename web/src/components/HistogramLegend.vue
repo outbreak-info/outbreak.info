@@ -25,9 +25,9 @@
     </g>
     <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
       <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
-        <line ref="slider_line" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5"/>
-        <polygon id="slider_left" ref="slider_left" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
-        <polygon ref="slider_right" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
+        <line ref="slider_line" :x1="sliderLeft" :x2="sliderRight" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5"/>
+        <polygon id="slider_left" :transform="`translate(${sliderLeft},0)`" ref="slider_left" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
+        <polygon ref="slider_right" :transform="`translate(${sliderRight - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
       </g>
       <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
         <text :x="x(selectedMin)" :y="0">{{formatLimit(selectedMin)}}</text>
@@ -66,13 +66,13 @@ export default {
     minVal: {
       immediate: true,
       handler(newMin, oldMin) {
-        this.selectedMin = newMin;
+        this.updateFilterLimits();
       }
     },
     maxVal: {
       immediate: true,
       handler(newMax, oldMax) {
-        this.selectedMax = newMax;
+        this.updateFilterLimits();
       }
     }
   },
@@ -101,6 +101,12 @@ export default {
     };
   },
   computed: {
+    sliderRight() {
+      return((this.x && this.selectedMax) ? this.x(this.selectedMax) : 8);
+    },
+    sliderLeft() {
+      return((this.x && this.selectedMin) ? this.x(this.selectedMin) : 0);
+    },
     isFiltered() {
       return (this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
     },
@@ -139,17 +145,6 @@ export default {
     updateFilterLimits: function() {
       this.selectedMin = this.minVal ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
       this.selectedMax = this.maxVal ? this.maxVal : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) / this.precision;
-
-      // update sliders
-      d3.select(this.$refs.slider_left)
-        .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
-
-      d3.select(this.$refs.slider_right)
-        .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
-
-        d3.select(this.$refs.slider_line)
-        .attr("x1", this.x(this.selectedMin))
-        .attr("x2", this.x(this.selectedMax))
     },
     updateAxes: function() {
       // x-axis
@@ -196,6 +191,9 @@ export default {
       this.y = d3.scaleLinear()
         .range([this.height, 0])
         .domain([0, d3.max(this.bins, d => d.length)]);
+        //   d3.select(this.$refs.slider_line)
+        //   .attr("x1", this.x(this.selectedMin))
+        //   .attr("x2", this.x(this.selectedMax))
     },
     setupDrag() {
       // draggable filters
