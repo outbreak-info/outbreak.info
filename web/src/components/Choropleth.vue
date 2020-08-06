@@ -138,7 +138,7 @@ export default {
     this.$nextTick(function() {
       window.addEventListener("resize", this.setDims);
       // set initial dimensions for the stacked area plots.
-      this.setDims();
+      this.setDims(false);
 
       // event listener to hide tooltips
       document.addEventListener(
@@ -171,7 +171,7 @@ export default {
     }
   },
   methods: {
-    setDims() {
+    setDims(redraw = true) {
       const whRatio = 1.72; // based on the
       const selector = this.$refs.map_container;
       const marginLegend = 25;
@@ -192,7 +192,10 @@ export default {
         }
 
         // Set scale and projection for the map
-        this.drawMap();
+        if (redraw) {
+          this.drawMap();
+        }
+
       }
     },
     setupChoro() {
@@ -256,7 +259,6 @@ export default {
     drawMap() {
       this.setupMap();
       this.resetValues();
-      console.log("drawing map")
 
       this.filteredData = cloneDeep(this.data);
 
@@ -417,10 +419,6 @@ export default {
 </script>
 
 <style lang="scss">
-// svg {
-//     background: aliceblue;
-// }
-
 .region:hover {
     stroke: $base-grey;
     stroke-width: 1.5;
