@@ -99,7 +99,7 @@ export default Vue.extend({
         top: 15,
         bottom: 60,
         left: 75,
-        right: 20
+        right: 25
       },
       // axes
       y: null,
