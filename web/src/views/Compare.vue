@@ -1,24 +1,26 @@
 <template>
 <div class="full-page p-5 bg-light">
   <!-- loading -->
-  <div v-if="dataloading" class="loader">
+  <div v-if="dataloading" class="map-loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-  <div class="d-flex">
+  <div class="d-flex mb-3">
     <!-- Region buttons -->
     <div class="d-flex flex-wrap">
-      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}" :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value} }">
+      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}"
+        :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value, date: this.selectedDate} }">
         All
         countries</router-link>
-      <div class="d-flex flex-column">
+      <div class="d-flex flex-column justify-content-around">
         <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
-          :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. States</router-link>
+          :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. States</router-link>
         <div class="d-flex">
-          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}" :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value} }">U.S. Metro Areas
+          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}"
+            :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
           </router-link>
           <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
-            :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value} }">U.S. Counties</router-link>
+            :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Counties</router-link>
         </div>
       </div>
 
@@ -30,75 +32,23 @@
     </div> -->
     </div>
 
-    <!-- variable options -->
-    <div class="row d-flex ml-5 align-items-center">
-      <select v-model="selectedVariable" class="select-dropdown">
-        <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
-        </option>
-      </select>
-    </div>
-  </div>
-
-  <Choropleth :data="data" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" />
-  <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
-
-
-  <!-- Results label -->
-  <div class="row mt-4 mb-2">
-    <div class="col-sm-12 text-left text-muted">
-      <b>{{numResults}}</b> results, sorted by <b v-html="sortVariable.label"></b>
-    </div>
-  </div>
-
-  <!-- Loop over results -->
-  <div class="row">
-    <div class="col-sm-12 d-flex flex-wrap">
-      <div class="d-flex flex-column m-1">
-
-        <table>
-          <tr>
-            <th>
-
-            </th>
-            <th class="text-left">
-              location
-            </th>
-            <th v-for="(column, idx) in columns" :key="idx" :id="`th-${column.value}`" :class="{
-                sortable: `${column.sorted} 'px-3 pointer'`,
-                'd-none d-md-table-cell px-3 pointer': !column.essential
-              }" @click="sortColumn(column)">
-              <div class="sort-grp">
-                {{ column.label }}
-                <font-awesome-icon :class="[column.sorted === 0 ? 'sort-hover' : 'hidden']" :icon="['fas', 'sort']" />
-                <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-up']" v-if="column.sorted === 1" />
-                <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === -1" />
-              </div>
-            </th>
-          </tr>
-          <tr v-for="(item, idx) in data" :key="idx">
-            <td>
-              {{idx}}
-            </td>
-            <td class="text-left">
-              <router-link :to="{ name: 'Epidemiology', query: {location: item.location_id} }">
-                <h5>{{item.name}}<span v-if="item.state_name">, {{item.state_name}}</span></h5>
-              </router-link>
-            </td>
-            <td>
-              {{item.confirmed_rolling ? formatNumber(item.confirmed_rolling) : ""}}
-            </td>
-            <td>
-              {{item.dead_rolling ? formatNumber(item.dead_rolling) : ""}}
-            </td>
-            <td>
-              {{item.confirmed_rolling_14days_ago_diff ? formatNumber(item.confirmed_rolling_14days_ago_diff) : ""}}
-            </td>
-
-          </tr>
-        </table>
+    <div class="d-flex flex-column ml-5 align-items-center justify-content-between">
+      <!-- variable options -->
+      <div class="row d-flex align-items-center">
+        <select v-model="selectedVariable" class="select-dropdown">
+          <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
+          </option>
+        </select>
+      </div>
+      <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
+        <DateSlider :date="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
+        <!-- <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i> -->
       </div>
     </div>
   </div>
+
+  <Choropleth :data="data" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
+  <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 </div>
 </template>
@@ -109,55 +59,25 @@ import {
 } from "@/api/epi-comparison.js";
 
 import {
-  jenks
-} from "@/js/jenks.js";
-
-import {
   mapState
 } from "vuex";
 import {
+  timeFormat,
   format,
-  scaleQuantile,
-  scaleThreshold,
   max,
-  min,
-  range
+  min
 } from "d3";
-import {
-  // interpolateYlGnBu,
-  // interpolateBrBG,
-  // interpolatePRGn,
-  // interpolatePiYG,
-  interpolateRdYlBu
-} from "d3-scale-chromatic";
-
-
-// --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faArrowUp,
-  faArrowDown,
-  faSort
-} from "@fortawesome/free-solid-svg-icons";
-
-library.add(faArrowUp);
-library.add(faArrowDown);
-library.add(faSort);
 
 import Choropleth from "@/components/Choropleth.vue";
 import DataSource from "@/components/DataSource.vue";
+import DateSlider from "@/components/DateSlider.vue";
 
 export default {
   name: "Compare",
   components: {
     Choropleth,
     DataSource,
-    FontAwesomeIcon
+    DateSlider
   },
   props: {
     admin_level: {
@@ -169,14 +89,25 @@ export default {
       default: "confirmed_rolling_14days_ago_diff"
     },
     location: String,
-    sort: String,
+    min: String,
+    max: String,
+    date: String
   },
   watch: {
-    variable: {
+    '$route.params': {
       immediate: true,
-      handler(newVar, oldVar) {
-        const filtered = this.variableOptions.filter(d => d.value === newVar);
+      handler(newRoute, oldRoute) {
+        // update selections based on routes
+        const filtered = this.variableOptions.filter(d => d.value === this.variable);
         this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
+        // reset selected min/max
+        // If the data already exists, pull out the min/max.
+        this.selectedMin = this.min || this.min === 0 ? +this.min : null;
+        this.selectedMax = this.max || this.max === 0 ? +this.max : null;
+
+        this.selectedDate = this.date;
+
+        this.getData(this.selectedDate);
       }
     },
     selectedVariable() {
@@ -186,55 +117,22 @@ export default {
           location: this.location,
           admin_level: this.admin_level,
           variable: this.selectedVariable.value,
-          sort: this.sortVariable.value
+          date: this.selectedDate
         }
       });
-    },
-    sortVariable() {
-      this.$router.push({
-        path: "maps",
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          sort: this.sortVariable.value
-        }
-      });
-    },
-    '$route.params'() {
-      this.getData();
     }
   },
   data() {
     return {
       colorScale: null,
-      numColors: null,
       data: [],
+      selectedDate: null,
+      selectedMin: null,
+      selectedMax: null,
+      maxDate: null,
+      minDate: new Date("2020-01-22 0:0"),
       dataSubscription: null,
       selectedVariable: null,
-      sortVariable: {
-        label: "2 week change in cases/day",
-        value: "confirmed_rolling_14days_ago_diff"
-      },
-      columns: [{
-          label: "average new cases/day",
-          value: "confirmed_rolling",
-          sort_id: "confirmed_rolling",
-          sorted: 0
-        },
-        {
-          label: "average new deaths/day",
-          value: "dead_rolling",
-          sort_id: "dead_rolling",
-          sorted: 0
-        },
-        {
-          label: "2 week change in cases/day",
-          value: "confirmed_rolling_14days_ago_diff",
-          sort_id: "confirmed_rolling_14days_ago_diff",
-          sorted: -1
-        }
-      ],
       variableOptions: [{
           label: "total cases per capita",
           choro: "total cases per 100,000 people",
@@ -290,86 +188,28 @@ export default {
     };
   },
   computed: {
-    ...mapState("admin", ["dataloading"]),
-    numResults() {
-      return (this.data.length)
-    }
-  },
-  mounted() {
-    this.getData();
+    ...mapState("admin", ["dataloading"])
   },
   beforeDestroy() {
     this.dataSubscription.unsubscribe();
   },
   methods: {
-    getData() {
-      // reset, if the scale was padded
-      this.numColors = 11;
-      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.sortVariable.value).subscribe(results => {
-        // results.sort((a, b) => b[this.sortVariable.value] - a[this.sortVariable.value])
+    formatDate(dateStr) {
+      return (timeFormat("%Y-%m-%d")(dateStr))
+    },
+    getData(date) {
+      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, null, date).subscribe(results => {
+        this.data = results.data;
 
-        this.data = results;
-
-        // Jenks natural breaks based off http://bl.ocks.org/micahstubbs/8fc2a6477f5d731dc97887a958f6826d
-        // Forcing to be centered at 0 for the midpoint after the breaks are calculated
-        var domain = jenks(results.map(d => d[this.selectedVariable.value]).filter(d => d), (this.numColors));
-
-        // color range
-        var colorRange;
-        // DIVERGING
-        if (this.selectedVariable.value.includes("diff")) {
-          // ensure that the diverging scale is centered at 0.
-          const midpoint = domain.findIndex((d, i) => (d < 0 && domain[i + 1] > 0) || d === 0);
-
-          var padLength = domain.length - 2 * midpoint - 2;
-          padLength = padLength % 2 ? padLength + 1 : padLength; // ensure that the padding is an even number, so the limits all apply
-
-          if (padLength < 0) {
-            domain = domain.concat(Array(-1 * padLength).fill(domain.slice(-1)[0]));
-          } else if (padLength > 0) {
-            domain = Array(padLength).fill(domain[0]).concat(domain);
-          }
-          this.numColors = domain.length - 1;
-
-          // calculate colors
-          colorRange = range(0, 1.01, 1 / (this.numColors - 1)).map(d => interpolateRdYlBu(d)).reverse();
-        } else {
-          // SEQUENTIAL
-          colorRange = range(0, 0.51, 0.5 / this.numColors).map(d => interpolateRdYlBu(d)).reverse();
+        this.maxDate = results.maxDate;
+        if (!this.selectedDate) {
+          this.selectedDate = this.formatDate(results.maxDate);
         }
-
-        this.colorScale = scaleQuantile()
-          .range(colorRange)
-          .domain(domain);
-
-        this.data.forEach(d => {
-          d.fill = this.colorScale(d[this.selectedVariable.value]);
-          // d.fill = this.colorScale(Math.log10(d[this.selectedVariable.value]));
-        })
+        this.colorScale = results.colorScale;
       })
     },
     formatNumber(value, digits = 1) {
       return (format(`,.${digits}f`)(value))
-    },
-    sortColumn(selected) {
-      // reset other sorting funcs for arrow affordances
-      const idx = this.columns.findIndex(d => d.sort_id === selected.sort_id);
-      const sortVal = this.columns[idx].sorted;
-
-      this.columns.forEach(d => {
-        d.sorted = 0;
-      })
-
-      // previously unsorted or sorted asc; sort desc.
-      if (sortVal === 0 || sortVal === 1) {
-        this.columns[idx].sorted = -1;
-        this.data.sort((a, b) => b[selected.sort_id] - a[selected.sort_id]);
-      } else {
-        this.columns[idx].sorted = 1;
-        this.data.sort((a, b) => a[selected.sort_id] - b[selected.sort_id]);
-      }
-
-      this.sortVariable = selected;
     }
   }
 };
@@ -420,5 +260,12 @@ tr.table-header-merged {
 .btn-main-outline.active {
     background: $primary-color !important;
     color: white;
+}
+
+.map-loader {
+  position: fixed;
+  z-index: 100;
+  top: 125px !important;
+  left: 100px !important;
 }
 </style>

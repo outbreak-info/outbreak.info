@@ -51,7 +51,10 @@ const routes = [{
       admin_level: route.query.admin_level,
       location: route.query.location,
       variable: route.query.variable,
-      sort: route.query.sort
+      sort: route.query.sort,
+      date: route.query.date,
+      min: route.query.min,
+      max: route.query.max
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

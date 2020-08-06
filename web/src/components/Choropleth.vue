@@ -1,23 +1,83 @@
 <template>
 <div class="d-flex flex-wrap justify-content-center align-items-center" ref="map_container" id="map_container">
-  <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
-    <g ref="regions" class="region-group"></g>
-    <g ref="states" class="state-group"></g>
-  </svg>
+  <div class="d-flex flex-column align-items-center">
+    <h4>{{date}}</h4>
+    <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
+      <g ref="regions" class="region-group"></g>
+      <g ref="states" class="state-group"></g>
+    </svg>
+  </div>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
-      <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last 4 days)</small>
+    <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last {{rollLength}} days)</small>
 
     <template v-if="timeTrace">
-      <small class="m-0 mt-3">new cases per day</small>
-      <Bargraph :data="timeTrace" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
-      <small class="m-0">new deaths per day</small>
-      <Bargraph :data="timeTrace" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
-</template>
+      <div class="d-flex m-0 mt-3">
+        <div class="d-flex flex-column">
+          <small class="">new cases per day</small>
+          <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
+        </div>
+        <div class="d-flex flex-column ml-3">
+          <small class="underline">on {{date}}</small>
+          <table>
+          <tr>
+            <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
+              <b>{{timeConfirmed}}</b>
+            </td>
+            <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+              new cases
+            </td>
+          </tr>
+          <tr>
+            <td class="line-height-1 text-right" style="vertical-align: top;">
+              <b>{{timeConfirmedPC}}</b>
+            </td>
+            <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+              new cases per 100,000
+            </td>
+          </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="d-flex m-0 mt-3">
+        <div class="d-flex flex-column">
+          <small class="">new deaths per day</small>
+          <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
+        </div>
+        <div class="d-flex flex-column ml-3">
+          <small class="underline">on {{date}}</small>
+          <table>
+            <tr>
+              <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
+                <b>{{timeDead}}</b>
+              </td>
+              <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+                new deaths
+              </td>
+            </tr>
+            <tr>
+              <td class="line-height-1 text-right" style="vertical-align: top;">
+                <b>{{timeDeadPC}}</b>
+              </td>
+              <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+                new deaths per 100,000
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+
+    </template>
   </div>
   <div class="d-flex flex-column">
-    <HistogramLegend class="ml-2" :data="data" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
+    <HistogramLegend class="ml-2" :data="data" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length" />
+    <div class="d-flex justify-content-between mt-4" v-if="filteredData">
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignDesc" :varMax="varMax" />
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignAsc" :varMax="varMax" />
+    </div>
     <DataUpdated />
   </div>
 
@@ -29,11 +89,15 @@ import countries from "@/assets/geo/countries.json";
 import counties from "@/assets/geo/US_counties.json";
 import metros from "@/assets/geo/US_metro.json";
 import usstates from "@/assets/geo/US_states.json";
+import {
+  cloneDeep
+} from "lodash";
 import * as d3 from "d3";
 
 import HistogramLegend from "@/components/HistogramLegend.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
 import Bargraph from "@/components/Bargraph.vue";
+import DotPlot from "@/components/DotPlot.vue";
 import {
   getSparklineTraces
 } from "@/api/epi-traces.js";
@@ -45,11 +109,16 @@ export default {
   components: {
     HistogramLegend,
     DataUpdated,
-    Bargraph
+    Bargraph,
+    DotPlot
   },
   props: {
     data: Array,
     variable: String,
+    selectedMin: Number,
+    selectedMax: Number,
+    date1: String,
+    maxDate: Date,
     variableLabel: String,
     colorScale: Function,
     adminLevel: String
@@ -63,7 +132,7 @@ export default {
     return {
       width: 0,
       height: 350,
-      widthLegend: 200,
+      widthLegend: 350,
       margin: {
         top: 2,
         right: 2,
@@ -72,9 +141,14 @@ export default {
       },
       scale: 1,
       // data
+      filteredData: null,
       regionData: null,
       projection: null,
       timeTrace: null,
+      timeConfirmed: null,
+      timeConfirmedPC: null,
+      timeDead: null,
+      timeDeadPC: null,
       // refs
       svg: null,
       states: null,
@@ -85,8 +159,40 @@ export default {
     };
   },
   computed: {
+    maxVal() {
+      return this.filteredData ? d3.max(this.filteredData, d => d[this.variable]) : null;
+    },
+    minVal() {
+      return this.filteredData ? d3.min(this.filteredData, d => d[this.variable]) : null;
+    },
+    varMax() {
+      return (Math.max(Math.abs(this.minVal), this.maxVal))
+    },
+    rightAlignAsc() {
+      return (this.minVal < -1)
+    },
+    rightAlignDesc() {
+      return (this.maxVal < -1)
+    },
+    isDiff() {
+      return (this.variable.includes("_14days_ago_diff"))
+    },
+    dateTime() {
+      return this.date1 ? d3.timeParse("%Y-%m-%d")(this.date1) : null;
+    },
+    date() {
+      if (this.dateTime) {
+        return (d3.timeFormat("%d %B %Y")(this.dateTime));
+      } else {
+        return (null)
+      }
+    },
+    rollLength() {
+      const dateDiff = (this.maxDate - this.dateTime)/(1000*3600*24);
+      return(dateDiff > 2 ? 7 : dateDiff + 4)
+    },
     title() {
-      return (this.variableLabel)
+      return (this.date1 ? `${this.variableLabel} as of ${this.date}` : this.variableLabel)
     }
   },
   created: function() {
@@ -96,7 +202,7 @@ export default {
     this.$nextTick(function() {
       window.addEventListener("resize", this.setDims);
       // set initial dimensions for the stacked area plots.
-      this.setDims();
+      this.setDims(false);
 
       // event listener to hide tooltips
       document.addEventListener(
@@ -129,7 +235,7 @@ export default {
     }
   },
   methods: {
-    setDims() {
+    setDims(redraw = true) {
       const whRatio = 1.72; // based on the
       const selector = this.$refs.map_container;
       const marginLegend = 25;
@@ -138,7 +244,7 @@ export default {
       if (selector) {
         const dims = selector.getBoundingClientRect();
 
-        this.width = dims.width >= 600 ? dims.width - marginLegend - this.widthLegend : dims.width;
+        this.width = dims.width >= 800 ? dims.width - marginLegend - this.widthLegend : dims.width;
         this.widthLegend = dims.width >= 225 ? this.widthLegend : dims.width; // make legend smaller on small screens
 
         const idealHeight = this.width / whRatio;
@@ -150,7 +256,10 @@ export default {
         }
 
         // Set scale and projection for the map
-        this.drawMap();
+        if (redraw) {
+          this.drawMap();
+        }
+
       }
     },
     setupChoro() {
@@ -196,18 +305,36 @@ export default {
         // center = [d3.mean([minLon, maxLon]), d3.mean([minLat, maxLat])],
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],
-        xscale = this.width / dx * 0.95,
-        yscale = this.height / dy * 0.95,
+        xscale = this.width / dx * 0.98,
+        yscale = this.height / dy * 0.98,
         scale = d3.min([xscale, yscale]);
 
 
       this.projection = this.projection
         .scale(scale)
     },
+    resetValues() {
+      this.regionData.features.forEach(d => {
+        d.fill = null;
+        d.tooltip = null;
+        d.value = null;
+      })
+    },
     drawMap() {
       this.setupMap();
-      if (this.data && this.data.length && this.width) {
-        this.data.forEach(d => {
+      this.resetValues();
+
+      this.filteredData = cloneDeep(this.data);
+
+      if (this.selectedMin || this.selectedMin === 0) {
+        this.filteredData = this.filteredData.filter(d => d[this.variable] >= this.selectedMin);
+      }
+      if (this.selectedMax || this.selectedMax === 0) {
+        this.filteredData = this.filteredData.filter(d => d[this.variable] <= this.selectedMax);
+      }
+
+      if (this.filteredData && this.width) {
+        this.filteredData.forEach(d => {
           const idx = this.regionData.features.findIndex(polygon => polygon.properties.location_id === d.location_id);
           if (idx > -1) {
             this.regionData.features[idx]["fill"] = d.fill;
@@ -224,7 +351,7 @@ export default {
         // regional data
         this.regions
           .selectAll("path")
-          .data(this.regionData.features)
+          .data(this.regionData.features, d => d.location_id)
           .join(
             enter => {
               enter
@@ -240,7 +367,8 @@ export default {
             update => update
             .attr("id", d => d.location_id)
             .attr("d", this.path)
-            .attr("fill", d => d.fill ? d.fill : "none"),
+            .call(update => update.transition().duration(250)
+              .attr("fill", d => d.fill ? d.fill : "none")),
             exit =>
             exit.call(exit =>
               exit
@@ -289,6 +417,8 @@ export default {
         // this.svg
         // .on("mouseleave", this.mouseOff);
         store.state.admin.dataloading = false;
+      } else {
+        store.state.admin.dataloading = false;
       }
     },
     handleClick(d) {
@@ -318,7 +448,10 @@ export default {
     },
     mouseOn(d) {
       this.timeTrace = null; // reset to avoid seeing old data
+      this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null; // reset to avoid seeing old data
+      if(d.value) {
       this.getTimetrace(d.location_id);
+
       const ttip = this.ttips
         .style("top", this.event.y + "px")
         .style("left", this.event.x + "px")
@@ -327,12 +460,13 @@ export default {
       this.regions.selectAll("path.region").style("opacity", 0.5);
       this.regions.selectAll("path.state").style("opacity", 0.75);
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
-
       this.ttips.select(".country-name").text(d.name);
       this.ttips.select(".value").html(d.tooltip);
+    }
     },
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data
+      this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null;
       d3.selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
@@ -343,8 +477,17 @@ export default {
       }
     },
     getTimetrace(location_id) {
-      this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling").subscribe(results => {
+      this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling, dead_rolling_per_100k, confirmed_rolling_per_100k").subscribe(results => {
         this.timeTrace = results[0].value;
+        const currentData = this.timeTrace.filter(d => d.date - this.dateTime === 0);
+
+        if(currentData.length === 1) {
+          this.timeConfirmed = d3.format(",.1f")(currentData[0].confirmed_rolling);
+          this.timeConfirmedPC = d3.format(",.1f")(currentData[0].confirmed_rolling_per_100k);
+          this.timeDead = d3.format(",.1f")(currentData[0].dead_rolling);
+          this.timeDeadPC = d3.format(",.1f")(currentData[0].dead_rolling_per_100k);
+        }
+
       })
     }
 
@@ -353,10 +496,6 @@ export default {
 </script>
 
 <style lang="scss">
-// svg {
-//     background: aliceblue;
-// }
-
 .region:hover {
     stroke: $base-grey;
     stroke-width: 1.5;
@@ -368,5 +507,8 @@ export default {
     background: #ffffff;
     opacity: 0;
     pointer-events: none;
+}
+.underline {
+  text-decoration: underline;
 }
 </style>

@@ -53,7 +53,7 @@ export function getDateUpdated(apiUrl) {
   );
 }
 
-export function getCurrentDate(apiUrl) {
+export function getCurrentDate(apiUrl, returnFormatted = true) {
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
   const timestamp = Math.round(new Date().getTime() / 36e5);
@@ -62,7 +62,7 @@ export function getCurrentDate(apiUrl) {
     pluck("data", "hits"),
     map(result => {
       const dateUpdated = parseDate(result[0].date);
-      return formatDate(dateUpdated);
+      return returnFormatted ? formatDate(dateUpdated) : dateUpdated;
     }),
     catchError(e => {
       console.log("%c Error in getting case counts!", "color: red");

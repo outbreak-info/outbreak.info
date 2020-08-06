@@ -2,7 +2,7 @@
 <div class="bargraph-group d-flex flex-column" :id="`bargraph-${id}-${variable}`">
   <h4 v-if="title">{{ title }}</h4>
   <div class="position-relative">
-    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" ref="svg">
+    <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" :subtitle="title" ref="svg">
       <defs>
         <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
           <path d="M7,0 L0,5 L7,10" class="swoopy-arrowhead" />
@@ -81,6 +81,13 @@ export default Vue.extend({
       type: Array,
       default: null
     },
+    date1: {
+      type: String
+    },
+    include2Week: {
+      type: Boolean,
+      default: false
+    },
     animate: {
       type: Boolean,
       default: false
@@ -92,7 +99,7 @@ export default Vue.extend({
         top: 15,
         bottom: 60,
         left: 75,
-        right: 20
+        right: 25
       },
       // axes
       y: null,
@@ -110,7 +117,7 @@ export default Vue.extend({
   },
   computed: {
     plotTitle() {
-      return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} in ${this.title} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.title}`)
+      return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
     }
   },
   watch: {
@@ -180,7 +187,7 @@ export default Vue.extend({
         });
         this.plottedData = this.isLogY ? this.logData : this.data.filter(d => d[this.variable] >= 0);
       } else {
-        this.plottedData = this.data;
+        this.plottedData = this.data.filter(d => d[this.variable] >= 0);
       }
     },
     updatePlot() {
@@ -312,6 +319,78 @@ export default Vue.extend({
     },
     drawPlot() {
       if (this.chart) {
+        const endDate = d3.timeParse("%Y-%m-%d")(this.date1);
+        // v-line to indicate dates
+        if (this.date1) {
+          const dateSelector = this.chart
+            .selectAll(`.date-annotation_${this.variable}`)
+            .data([endDate]);
+
+          dateSelector.join(
+            enter =>
+            enter
+            .append("line")
+            .attr("class", d => `.date-annotation_${this.variable} annotation-date1`)
+            .style("stroke", "#D13B62")
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d))
+            .attr("y1", d => 0)
+            .attr("y2", d => this.height),
+
+            update =>
+            update
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d))
+            .attr("y1", d => 0)
+            .attr("y2", d => this.height),
+
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          );
+
+          if (this.include2Week && this.x(endDate)) {
+            const dateSelector = this.chart
+              .selectAll(`.date-annotation_${this.variable}`)
+              .data([endDate]);
+
+            dateSelector.join(
+              enter =>
+              enter
+              .append("rect")
+              .attr("class", d => `.date-annotation_${this.variable} annotation-date1`)
+              .style("fill", "#D13B62")
+              .style("fill-opacity", 0.1)
+              .attr("x", d => this.x(d3.timeDay.offset(endDate, -14)))
+              .attr("width", d => this.x(d) - this.x(d3.timeDay.offset(d, -14)))
+              .attr("y", 0)
+              .attr("height", this.height),
+
+              update =>
+              update
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
+              .attr("y1", d => 0)
+              .attr("y2", d => this.height),
+
+              exit =>
+              exit.call(exit =>
+                exit
+                .transition()
+                .duration(10)
+                .style("opacity", 1e-5)
+                .remove()
+              )
+            );
+          }
+        }
+
+
         const t1 = d3.transition().duration(500);
         const barSelector = this.chart
           .selectAll(".bargraph")
