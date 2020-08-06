@@ -10,7 +10,7 @@
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
     <h6 class="country-name m-0"></h6>
     <p class="value m-0"></p>
-    <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last 4 days)</small>
+    <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last {{rollLength}} days)</small>
 
     <template v-if="timeTrace">
       <div class="d-flex m-0 mt-3">
@@ -118,6 +118,7 @@ export default {
     selectedMin: Number,
     selectedMax: Number,
     date1: String,
+    maxDate: Date,
     variableLabel: String,
     colorScale: Function,
     adminLevel: String
@@ -176,13 +177,19 @@ export default {
     isDiff() {
       return (this.variable.includes("_14days_ago_diff"))
     },
+    dateTime() {
+      return this.date1 ? d3.timeParse("%Y-%m-%d")(this.date1) : null;
+    },
     date() {
-      if (this.date1) {
-        const dateTime = d3.timeParse("%Y-%m-%d")(this.date1);
-        return (d3.timeFormat("%d %B %Y")(dateTime));
+      if (this.dateTime) {
+        return (d3.timeFormat("%d %B %Y")(this.dateTime));
       } else {
         return (null)
       }
+    },
+    rollLength() {
+      const dateDiff = (this.maxDate - this.dateTime)/(1000*3600*24);
+      return(dateDiff > 2 ? 7 : dateDiff + 4)
     },
     title() {
       return (this.date1 ? `${this.variableLabel} as of ${this.date}` : this.variableLabel)
@@ -472,8 +479,7 @@ export default {
     getTimetrace(location_id) {
       this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling, dead_rolling_per_100k, confirmed_rolling_per_100k").subscribe(results => {
         this.timeTrace = results[0].value;
-        const dateTime = d3.timeParse("%Y-%m-%d")(this.date1);
-        const currentData = this.timeTrace.filter(d => d.date - dateTime === 0);
+        const currentData = this.timeTrace.filter(d => d.date - this.dateTime === 0);
 
         if(currentData.length === 1) {
           this.timeConfirmed = d3.format(",.1f")(currentData[0].confirmed_rolling);

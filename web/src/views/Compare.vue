@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <Choropleth :data="data" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" />
+  <Choropleth :data="data" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 </div>
