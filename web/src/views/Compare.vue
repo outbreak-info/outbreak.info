@@ -190,9 +190,6 @@ export default {
   computed: {
     ...mapState("admin", ["dataloading"])
   },
-  mounted() {
-    this.getData(this.selectedDate);
-  },
   beforeDestroy() {
     this.dataSubscription.unsubscribe();
   },
