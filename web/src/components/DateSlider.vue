@@ -120,8 +120,12 @@ export default Vue.extend({
       select(this.$refs.drag_circle).attr("cx", this.x(this.selectedDate));
 
       const route = this.$route.query;
-      this.$router.push({
+      this.$router.replace({
         path: "maps",
+        name: "Compare",
+        params: {
+          disableScroll: true
+        },
         query: {
           location: route.location,
           admin_level: route.admin_level,
