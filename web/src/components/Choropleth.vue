@@ -13,17 +13,70 @@
     <small class="m-0 text-right d-block mb-2" v-if='variable.includes("_rolling")'>(average over last 4 days)</small>
 
     <template v-if="timeTrace">
-      <small class="m-0 mt-3">new cases per day</small>
-      <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
-      <small class="m-0">new deaths per day</small>
-      <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
-</template>
+      <div class="d-flex m-0 mt-3">
+        <div class="d-flex flex-column">
+          <small class="">new cases per day</small>
+          <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
+        </div>
+        <div class="d-flex flex-column ml-3">
+          <small class="underline">on {{date}}</small>
+          <table>
+          <tr>
+            <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
+              <b>{{timeConfirmed}}</b>
+            </td>
+            <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+              new cases
+            </td>
+          </tr>
+          <tr>
+            <td class="line-height-1 text-right" style="vertical-align: top;">
+              <b>{{timeConfirmedPC}}</b>
+            </td>
+            <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+              new cases per 100,000
+            </td>
+          </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="d-flex m-0 mt-3">
+        <div class="d-flex flex-column">
+          <small class="">new deaths per day</small>
+          <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
+        </div>
+        <div class="d-flex flex-column ml-3">
+          <small class="underline">on {{date}}</small>
+          <table>
+            <tr>
+              <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
+                <b>{{timeDead}}</b>
+              </td>
+              <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+                new deaths
+              </td>
+            </tr>
+            <tr>
+              <td class="line-height-1 text-right" style="vertical-align: top;">
+                <b>{{timeDeadPC}}</b>
+              </td>
+              <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+                new deaths per 100,000
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+
+    </template>
   </div>
   <div class="d-flex flex-column">
-    <HistogramLegend class="ml-2" :data="data" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length"/>
+    <HistogramLegend class="ml-2" :data="data" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length" />
     <div class="d-flex justify-content-between mt-4" v-if="filteredData">
-      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignDesc" :varMax="varMax"/>
-      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true"  :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignAsc" :varMax="varMax"/>
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignDesc" :varMax="varMax" />
+      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignAsc" :varMax="varMax" />
     </div>
     <DataUpdated />
   </div>
@@ -91,6 +144,10 @@ export default {
       regionData: null,
       projection: null,
       timeTrace: null,
+      timeConfirmed: null,
+      timeConfirmedPC: null,
+      timeDead: null,
+      timeDeadPC: null,
       // refs
       svg: null,
       states: null,
@@ -121,8 +178,8 @@ export default {
     },
     date() {
       if (this.date1) {
-        const dateStr = d3.timeParse("%Y-%m-%d")(this.date1);
-        return (d3.timeFormat("%d %B %Y")(dateStr));
+        const dateTime = d3.timeParse("%Y-%m-%d")(this.date1);
+        return (d3.timeFormat("%d %B %Y")(dateTime));
       } else {
         return (null)
       }
@@ -384,6 +441,7 @@ export default {
     },
     mouseOn(d) {
       this.timeTrace = null; // reset to avoid seeing old data
+      this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null; // reset to avoid seeing old data
       this.getTimetrace(d.location_id);
       const ttip = this.ttips
         .style("top", this.event.y + "px")
@@ -393,12 +451,12 @@ export default {
       this.regions.selectAll("path.region").style("opacity", 0.5);
       this.regions.selectAll("path.state").style("opacity", 0.75);
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
-
       this.ttips.select(".country-name").text(d.name);
       this.ttips.select(".value").html(d.tooltip);
     },
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data
+      this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null;
       d3.selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
@@ -409,8 +467,18 @@ export default {
       }
     },
     getTimetrace(location_id) {
-      this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling").subscribe(results => {
+      this.dataSubscription = getSparklineTraces(this.$apiurl, [location_id], "confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling, dead_rolling_per_100k, confirmed_rolling_per_100k").subscribe(results => {
         this.timeTrace = results[0].value;
+        const dateTime = d3.timeParse("%Y-%m-%d")(this.date1);
+        const currentData = this.timeTrace.filter(d => d.date - dateTime === 0);
+
+        if(currentData.length === 1) {
+          this.timeConfirmed = d3.format(",.1f")(currentData[0].confirmed_rolling);
+          this.timeConfirmedPC = d3.format(",.1f")(currentData[0].confirmed_rolling_per_100k);
+          this.timeDead = d3.format(",.1f")(currentData[0].dead_rolling);
+          this.timeDeadPC = d3.format(",.1f")(currentData[0].dead_rolling_per_100k);
+        }
+
       })
     }
 
@@ -430,5 +498,8 @@ export default {
     background: #ffffff;
     opacity: 0;
     pointer-events: none;
+}
+.underline {
+  text-decoration: underline;
 }
 </style>
