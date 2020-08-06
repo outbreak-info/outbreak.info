@@ -92,6 +92,11 @@ export default Vue.extend({
   },
   methods: {
     play() {
+      this.$gtag.event("map_play", {
+        'event_category': `map_play`,
+        'event_label': `playing map starting from [${this.$route.fullPath}])`
+      })
+
       this.isPlaying = !this.isPlaying;
 
       const dayGap = 3; // parameter for how many days between
