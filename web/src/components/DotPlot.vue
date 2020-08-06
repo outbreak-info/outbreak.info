@@ -1,8 +1,8 @@
 <template>
-<div class="" :style="{width: width+ 'px'}" ref="dotplot_container">
+<div  :style="{width: width+ 'px'}" ref="dotplot_container">
   <h6 class="text-left m-0">{{sortAsc ? "Lowest" : "Highest"}}</h6>
   <small class="text-left m-0 p-0 line-height-1 d-block text-wrap mb-2 mr-2">{{title}}</small>
-  <svg :width="width" :height="height" ref="dotplot_svg" class="dotplot-svg" :name="title">
+  <svg :width="width" :height="height" ref="dotplot_svg" class="epi-map-svg epi-map-dotplot dotplot-svg" :name="fullTitle">
     <g :transform="`translate(${margin.left}, ${margin.top})`">
       <line :x1="x(0)" :x2="x(0)" :y1="0" :y2="height - margin.top - margin.bottom" v-if="x && x(0) >= 0" stroke="black" stroke-width="0.5"></line>
       <g ref="circles" class="circles-group">
@@ -56,6 +56,9 @@ export default {
     };
   },
   computed: {
+    fullTitle: function() {
+      return(this.sortAsc ? "Lowest" : "Highest")
+    },
     numberFormatter() {
       return (this.varMax <= 10 ? d3.format(",.1f") : d3.format(",.0f"))
     },

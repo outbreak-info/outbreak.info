@@ -5,10 +5,10 @@
       {{variableLabel}}
     </div>
     <small class="d-block text-left text-muted line-height-1 mb-1" v-if="isFiltered">
-      filtered <span v-html="filterString"></span> {{variableLabel}}
+      <span v-html="filterString"></span>
     </small>
   </div>
-  <svg class="epi-map-svg epi-map-legend" name="" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
+  <svg class="epi-map-svg epi-map-legend" :name="filterString" :width="width" :height="height + margin.top + margin.bottom*2 + 15" ref="legend_svg">
     <g class="legend-bars" ref="legend_bars" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
     <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`">
@@ -120,15 +120,16 @@ export default {
       return (this.domain[1] - this.domain[0] <= 20 ? d3.format(",.1f") : d3.format(",.0f"));
     },
     filterString() {
+      var filter = null
       if ((this.minVal || this.minVal === 0) && (this.maxVal || this.maxVal === 0)) {
-        return (`${this.minVal.toLocaleString()} &mdash; ${this.maxVal.toLocaleString()}`)
+        filter = (`${this.minVal.toLocaleString()} &mdash; ${this.maxVal.toLocaleString()}`)
       } else if ((this.minVal || this.minVal === 0)) {
-        return (`&ge; ${this.minVal.toLocaleString()}`)
+        filter = (`&ge; ${this.minVal.toLocaleString()}`)
       } else if ((this.maxVal || this.maxVal === 0)) {
-        return (`&le; ${this.maxVal.toLocaleString()}`)
-      } else {
-        return (null)
+        filter = (`&le; ${this.maxVal.toLocaleString()}`)
       }
+
+      return filter ? `filtered ${filter} ${this.variableLabel}` : "";
     }
   },
   mounted() {
