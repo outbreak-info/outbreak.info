@@ -41,13 +41,13 @@
         </select>
       </div>
       <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
-        <DateSlider :date="selectedDate" :min="minDate" :max="maxDate" v-if="maxDate" />
+        <DateSlider :date="selectedDate" :min="minDate" :max="maxDate" :adminLevel = "admin_level" v-if="maxDate" />
         <!-- <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i> -->
       </div>
     </div>
   </div>
 
-  <Choropleth :data="data" :blankMap="blankMap" :outline="outline" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
+  <Choropleth :data="data" :animate="animate" :blankMap="blankMap" :outline="outline" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 </div>
@@ -91,7 +91,8 @@ export default {
     location: String,
     min: String,
     max: String,
-    date: String
+    date: String,
+    animate: { type: Boolean, default: true }
   },
   watch: {
     '$route.params': {

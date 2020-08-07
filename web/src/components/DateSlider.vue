@@ -44,6 +44,7 @@ export default Vue.extend({
     min: Date,
     max: Date,
     date: String,
+    adminLevel: String
   },
   data() {
     return {
@@ -94,7 +95,7 @@ export default Vue.extend({
     play() {
       this.isPlaying = !this.isPlaying;
 
-      const dayGap = 3; // parameter for how many days between
+      const dayGap = this.adminLevel === "0"  || this.adminLevel === "1" ? 3 : 7; // parameter for how many days between
 
       if ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < dayGap) {
         this.selectedDate = this.minDate;
@@ -105,21 +106,21 @@ export default Vue.extend({
           'event_category': `map_play`,
           'event_label': `playing map starting from [${this.$route.fullPath}])`
         });
-        
+
         this.start(dayGap);
       }
     },
     start(dayGap) {
       if ((timeDay.offset(this.selectedDate, dayGap) <= this.max) && this.isPlaying) {
         setTimeout(() => {
-          this.changeDate(dayGap);
+          this.changeDate(dayGap, false);
           this.start(dayGap);
         }, 500);
       } else {
         this.isPlaying = false;
       }
     },
-    changeDate(dayShift) {
+    changeDate(dayShift, animate = true) {
       this.selectedDate = timeDay.offset(this.selectedDate, dayShift);
       // update dot position
       select(this.$refs.drag_circle).attr("cx", this.x(this.selectedDate));
@@ -137,7 +138,8 @@ export default Vue.extend({
           variable: route.variable,
           date: this.formatDate(this.selectedDate),
           min: route.min,
-          max: route.max
+          max: route.max,
+          animate: animate
         }
       });
     },

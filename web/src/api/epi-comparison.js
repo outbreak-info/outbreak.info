@@ -36,6 +36,7 @@ export function getComparisonData(apiUrl, location, adminLevel, variable, variab
         results.forEach(d => {
           d.fill = breaks.scale(d[variable]);
           d.value = format(",.1f")(d[variable]);
+          d.rightAlign = d[variable] < 0;
           d.tooltip = variable.includes("_14days_ago") ?
             (d[variable] < 0 ? `${format(",.1f")(-1*d[variable])} <b>fewer</b> ${variableLabel}` : `${d["value"]} <b>more</b> ${variableLabel}`) :
             `<b>${d["value"]}</b> ${variableLabel}`

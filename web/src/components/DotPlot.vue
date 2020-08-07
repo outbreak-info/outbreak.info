@@ -1,5 +1,5 @@
 <template>
-<div  :style="{width: width+ 'px'}" ref="dotplot_container">
+<div :style="{width: width+ 'px'}" ref="dotplot_container">
   <h6 class="text-left m-0">{{sortAsc ? "Lowest" : "Highest"}}</h6>
   <small class="text-left m-0 p-0 line-height-1 d-block text-wrap mb-2 mr-2">{{title}}</small>
   <svg :width="width" :height="height" ref="dotplot_svg" class="epi-map-svg epi-map-dotplot dotplot-svg" :name="fullTitle">
@@ -8,15 +8,19 @@
       <g ref="circles" class="circles-group">
       </g>
     </g>
-
-    <!-- <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="epi-axis axis--x" ref="xAxis" id="xAxis"></g> -->
-    <!-- <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis" id="yAxis"></g> -->
   </svg>
 </div>
 </template>
 
 <script>
-import * as d3 from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleBand,
+  format,
+  transition,
+} from "d3";
 import {
   cloneDeep
 } from "lodash";
@@ -31,7 +35,9 @@ export default {
     title: String,
     sortAsc: Boolean,
     rightAlign: Boolean,
-    colorScale: Function
+    colorScale: Function,
+    transition1: Number,
+    animate: Boolean
   },
   watch: {
     data: function() {
@@ -46,8 +52,6 @@ export default {
       // axes
       x: null,
       y: null,
-      xAxis: null,
-      yAxis: null,
       // refs
       svg: null,
       chart: null,
@@ -57,10 +61,10 @@ export default {
   },
   computed: {
     fullTitle: function() {
-      return(this.sortAsc ? "Lowest" : "Highest")
+      return (this.sortAsc ? "Lowest" : "Highest")
     },
     numberFormatter() {
-      return (this.varMax <= 10 ? d3.format(",.1f") : d3.format(",.0f"))
+      return (this.varMax <= 10 ? format(",.1f") : format(",.0f"))
     },
     domain() {
       return this.rightAlign ? [-1 * this.varMax, 0] : [0, this.varMax];
@@ -87,8 +91,8 @@ export default {
   },
   methods: {
     setupPlot() {
-      this.svg = d3.select(this.$refs.dotplot_svg);
-      this.chart = d3.select(this.$refs.circles);
+      this.svg = select(this.$refs.dotplot_svg);
+      this.chart = select(this.$refs.circles);
     },
     prepData() {
       // If there are undefined values, the sorting happens as strings, which is WRONG
@@ -103,53 +107,39 @@ export default {
 
     },
     updateAxes() {
-      this.x = d3.scaleLinear()
+      this.x = scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(this.domain);
 
-      this.y = d3.scaleBand()
+      this.y = scaleBand()
         .range([0, this.height - this.margin.top - this.margin.bottom])
         .domain(this.plottedData.map(d => d.location_id));
-
-      this.xAxis = d3
-        .axisBottom(this.x)
-        .ticks(2)
-        .tickSizeOuter(0)
-
-      d3.select(this.$refs.xAxis).call(this.xAxis);
-
-      this.yAxis = d3.axisLeft(this.y).tickSizeOuter(0);
-
-      d3.select(this.$refs.yAxis).call(this.yAxis);
-
     },
     mouseOn(d) {
-      d3.selectAll("path.region").style("fill-opacity", 0.25);
-      d3.selectAll(".circle-most-change").style("fill-opacity", 0.5);
-      d3.selectAll(".line-most-change").style("fill-opacity", 0.5);
-      d3.selectAll(".annotation-most-change").style("fill-opacity", 0.5);
-      d3.selectAll(".location-most-change").style("fill-opacity", 0.5);
-      d3.selectAll("path.state").style("stroke-opacity", 0.75);
-      d3.select(`path#${d.location_id}`).style("stroke", "black").style("stroke-width", 2);
-      d3.selectAll(`#${d.location_id}`).style("fill-opacity", 1);
-      d3.selectAll(`.${d.location_id}`).style("fill-opacity", 1);
+      selectAll("path.region").style("fill-opacity", 0.25);
+      selectAll(".circle-most-change").style("fill-opacity", 0.5);
+      selectAll(".line-most-change").style("fill-opacity", 0.5);
+      selectAll(".annotation-most-change").style("fill-opacity", 0.5);
+      selectAll(".location-most-change").style("fill-opacity", 0.5);
+      selectAll("path.state").style("stroke-opacity", 0.75);
+      select(`path#${d.location_id}`).style("stroke", "black").style("stroke-width", 2);
+      selectAll(`#${d.location_id}`).style("fill-opacity", 1);
+      selectAll(`.${d.location_id}`).style("fill-opacity", 1);
 
     },
     mouseOut() {
-      d3.selectAll("path.region")
+      selectAll("path.region")
         .style("fill-opacity", 1)
         .style("stroke", "#8aa4be").style("stroke-width", 0.25);
-      d3.selectAll("path.state").style("stroke-opacity", 1);
-      d3.selectAll(".circle-most-change").style("fill-opacity", 1);
-      d3.selectAll(".line-most-change").style("fill-opacity", 1);
-      d3.selectAll(".annotation-most-change").style("fill-opacity", 1);
-      d3.selectAll(".location-most-change").style("fill-opacity", 1);
+      selectAll("path.state").style("stroke-opacity", 1);
+      selectAll(".circle-most-change").style("fill-opacity", 1);
+      selectAll(".line-most-change").style("fill-opacity", 1);
+      selectAll(".annotation-most-change").style("fill-opacity", 1);
+      selectAll(".location-most-change").style("fill-opacity", 1);
     },
     drawPlot() {
       this.prepData();
       this.updateAxes();
-
-      const t1 = d3.transition().duration(500);
 
       const lolliSelector = this.chart.selectAll(".lollipop")
         .data(this.plottedData, d => d.location_id);
@@ -169,11 +159,20 @@ export default {
         update
         .attr("id", d => `lollipop-change-${d._id}`)
         .attr("class", d => `lollipop line-most-change ${d.location_id}`)
-        .call(update => update.transition(t1)
-          .attr("y1", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-          .attr("y2", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-          .attr("x2", d => this.x(d[this.variable]))),
+        .call(update => {
+          if (this.animate) {
+            update.transition().duration(this.transition1)
+              .attr("y1", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("y2", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("x2", d => this.x(d[this.variable]))
+          } else {
+            update
+              .attr("y1", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("y2", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("x2", d => this.x(d[this.variable]))
+          }
 
+        }),
         exit =>
         exit.call(exit =>
           exit
@@ -205,10 +204,19 @@ export default {
         update
         .attr("id", d => `circle-change-${d._id}`)
         .attr("class", d => `circle-most-change ${d.location_id}`)
-        .call(update => update.transition(t1)
-          .style("fill", d => this.colorScale(d[this.variable]))
-          .attr("cx", d => this.x(d[this.variable]))
-          .attr("cy", d => this.y(d.location_id) + this.y.bandwidth() / 2)),
+        .call(update => {
+          if (this.animate) {
+            update.transition().duration(this.transition1)
+              .style("fill", d => this.colorScale(d[this.variable]))
+              .attr("cx", d => this.x(d[this.variable]))
+              .attr("cy", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          } else {
+            update
+              .style("fill", d => this.colorScale(d[this.variable]))
+              .attr("cx", d => this.x(d[this.variable]))
+              .attr("cy", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          }
+        }),
 
         exit =>
         exit.call(exit =>
@@ -236,10 +244,10 @@ export default {
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
         .attr("id", d => `location-change-${d._id}`)
         .attr("x", d => this.x(0))
-        .attr("dx", this.rightAlign ? this.radius * 1.5 : -1.5 * this.radius)
+        .attr("dx", d => d.rightAlign ? this.radius * 1.5 : -1.5 * this.radius)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
         .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
-        .style("text-anchor", this.rightAlign ? "start" : "end")
+        .style("text-anchor", d => d.rightAlign ? "start" : "end")
         .style("dominant-baseline", "middle")
         .style("font-size", "0.75em")
         .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
@@ -252,8 +260,15 @@ export default {
         .attr("id", d => `location-change-${d._id}`)
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
         .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
-        .call(update => update.transition(t1)
-          .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)),
+        .call(update => {
+          if(this.animate) {
+            update.transition().duration(this.transition1)
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          } else {
+            update
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          }
+          }),
 
         exit =>
         exit.call(exit =>
@@ -273,11 +288,11 @@ export default {
         .attr("class", d => `annotation-most-change ${d.location_id}`)
         .attr("id", d => `annotation-change-${d._id}`)
         .attr("x", d => this.x(d[this.variable]))
-        .attr("dx", this.rightAlign ? -10 : 10)
+        .attr("dx", d => d.rightAlign ? -10 : 10)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
         .text(d => this.numberFormatter(d[this.variable]))
         .style("dominant-baseline", "central")
-        .style("text-anchor", this.rightAlign ? "end" : "start")
+        .style("text-anchor", d => d.rightAlign ? "end" : "start")
         .style("font-size", "0.65em")
         .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
         .style("fill", "#2c3e50"),
@@ -287,9 +302,17 @@ export default {
         .attr("id", d => `annotation-change-${d._id}`)
         .attr("class", d => `annotation-most-change ${d.location_id}`)
         .text(d => this.numberFormatter(d[this.variable]))
-        .call(update => update.transition(t1)
-          .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-          .attr("x", d => this.x(d[this.variable]))),
+        .call(update => {
+          if(this.animate) {
+            update.transition().duration(this.transition1)
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+            .attr("x", d => this.x(d[this.variable]))
+          } else {
+            update
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+            .attr("x", d => this.x(d[this.variable]))
+          }
+        }),
 
         exit =>
         exit.call(exit =>
@@ -304,10 +327,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-// .dotplot-svg .axis--y line,
-// .dotplot-svg .axis--y path {
-//     display: none;
-// }
-</style>
