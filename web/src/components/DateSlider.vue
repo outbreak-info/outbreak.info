@@ -44,6 +44,7 @@ export default Vue.extend({
     min: Date,
     max: Date,
     date: String,
+    adminLevel: String
   },
   data() {
     return {
@@ -94,7 +95,7 @@ export default Vue.extend({
     play() {
       this.isPlaying = !this.isPlaying;
 
-      const dayGap = 3; // parameter for how many days between
+      const dayGap = this.adminLevel === "0"  || this.adminLevel === "1" ? 3 : 7; // parameter for how many days between
 
       if ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < dayGap) {
         this.selectedDate = this.minDate;
