@@ -12,7 +12,8 @@ import {
 import {
   timeParse,
   scaleQuantile,
-  range, format
+  range,
+  format
 } from "d3";
 
 import {
@@ -29,19 +30,23 @@ export function getComparisonData(apiUrl, location, adminLevel, variable, variab
 
   const queryString = location ? `${location} AND admin_level:("${adminLevel}")` : `admin_level:${adminLevel}`;
 
-  return forkJoin([getCurrentDate(apiUrl), getJenksBreaks(apiUrl, queryString, variable), getBlankMap(apiUrl, location, adminLevel), getCurrentData(apiUrl, queryString, variable, date)])
+  return forkJoin([getCurrentDate(apiUrl), getJenksBreaks(apiUrl, queryString, variable), getContextMaps(apiUrl, location, adminLevel), getCurrentData(apiUrl, queryString, variable, date)])
     .pipe(
-      map(([currDate, breaks, blankMap, results]) => {
+      map(([currDate, breaks, contextMaps, results]) => {
         results.forEach(d => {
           d.fill = breaks.scale(d[variable]);
           d.value = format(",.1f")(d[variable]);
           d.tooltip = variable.includes("_14days_ago") ?
             (d[variable] < 0 ? `${format(",.1f")(-1*d[variable])} <b>fewer</b> ${variableLabel}` : `${d["value"]} <b>more</b> ${variableLabel}`) :
             `<b>${d["value"]}</b> ${variableLabel}`
-        })
+        });
+
+        const blankMap = contextMaps[0];
+        const overlay = contextMaps[1] ? contextMaps[1].features : [];
         return ({
           data: results,
           blankMap: blankMap,
+          overlay: overlay,
           maxDate: currDate,
           colorScale: breaks.scale
         })
@@ -55,13 +60,17 @@ export function getComparisonData(apiUrl, location, adminLevel, variable, variab
 
 }
 
-function getBlankMap(apiUrl, location, adminLevel) {
-  var qString = "mostRecent:true";
-  if(adminLevel === "0"){
-    qString = `${qString} AND admin_level:0`;
-  } else {
-    qString = location ? `${qString} AND admin_level:1 AND ${location}` : `${qString} AND admin_level:1`;
+function getContextMaps(apiUrl, location, adminLevel) {
+  var queries = [];
+  queries.push(getBlankMap(apiUrl, location, adminLevel));
+  if (adminLevel !== "0" && adminLevel !== "1") {
+    queries.push(getBlankMap(apiUrl, location, "1"));
   }
+  return forkJoin(queries)
+}
+
+function getBlankMap(apiUrl, location, adminLevel) {
+  const qString = location ? `mostRecent:true AND admin_level:"${adminLevel}" AND ${location}` : `mostRecent:true AND admin_level:"${adminLevel}"`;
   return from(
     axios.get(
       `${apiUrl}query?q=${qString}&size=1000&fields=geometry&_sorted=false`
@@ -75,7 +84,10 @@ function getBlankMap(apiUrl, location, adminLevel) {
         delete result["_id"]
       })
 
-      return ({features: results, type: "FeatureCollection"})
+      return ({
+        features: results,
+        type: "FeatureCollection"
+      })
     }),
     catchError(e => {
       console.log("%c Error in getting current date!", "color: red");

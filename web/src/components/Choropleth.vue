@@ -3,8 +3,9 @@
   <div class="d-flex flex-column align-items-center">
     <h4>{{date}}</h4>
     <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
+      <g ref="blank_map" class="blank-map-group"></g>
       <g ref="regions" class="region-group"></g>
-      <g ref="blankMap" class="blank-map-group"></g>
+      <g ref="overlay" class="overlay-map-group"></g>
     </svg>
   </div>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
@@ -110,7 +111,8 @@ export default {
   },
   props: {
     data: Array,
-    outline: Object,
+    outline: Array,
+    blankMap: Object,
     variable: String,
     selectedMin: Number,
     selectedMax: Number,
@@ -146,7 +148,8 @@ export default {
       timeDeadPC: null,
       // refs
       svg: null,
-      blankMap: null,
+      blank: null,
+      overlay: null,
       regions: null,
       event: null,
       // methods
@@ -259,7 +262,8 @@ export default {
     },
     setupChoro() {
       this.svg = d3.select(this.$refs.svg);
-      this.blankMap = d3.select(this.$refs.blankMap);
+      this.blank = d3.select(this.$refs.blank_map);
+      this.overlay = d3.select(this.$refs.overlay);
       this.regions = d3.select(this.$refs.regions);
       this.ttips = d3.select(this.$refs.choropleth_tooltip);
     },
@@ -279,14 +283,12 @@ export default {
       this.path = this.path.projection(this.projection);
       // calc and set scale
       // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
-      const bounds = this.path.bounds(this.outline),
+      const bounds = this.path.bounds(this.blankMap),
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],
         xscale = this.width / dx * 0.98,
         yscale = this.height / dy * 0.98,
         scale = d3.min([xscale, yscale]);
-
-        console.log(scale)
 
       this.projection = this.projection
         .scale(scale)
@@ -304,6 +306,32 @@ export default {
       }
 
       if (this.filteredData && this.width) {
+
+        // blank map outline
+        this.blank
+          .selectAll("path")
+          .data(this.blankMap.features)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "blank-outline")
+                .style("fill", "none")
+                .style("stroke", "#8aa4be")
+                .style("stroke-width", 0.25)
+                // draw each region
+                .attr("d", this.path)
+            },
+            update => update.attr("d", this.path),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          );
+
         // regional data
         this.regions
           .selectAll("path")
@@ -334,10 +362,10 @@ export default {
             )
           )
 
-        // blank map outline
-        this.blankMap
+        // state map overlay
+        this.overlay
           .selectAll("path")
-          .data(this.outline.features)
+          .data(this.outline)
           .join(
             enter => {
               enter
