@@ -4,7 +4,7 @@
     <h4>{{date}}</h4>
     <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
       <g ref="regions" class="region-group"></g>
-      <g ref="states" class="state-group"></g>
+      <g ref="blankMap" class="blank-map-group"></g>
     </svg>
   </div>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
@@ -85,10 +85,6 @@
 </template>
 
 <script>
-import countries from "@/assets/geo/countries.json";
-import counties from "@/assets/geo/US_counties.json";
-import metros from "@/assets/geo/US_metro.json";
-import usstates from "@/assets/geo/US_states.json";
 import {
   cloneDeep
 } from "lodash";
@@ -114,6 +110,7 @@ export default {
   },
   props: {
     data: Array,
+    outline: Object,
     variable: String,
     selectedMin: Number,
     selectedMax: Number,
@@ -139,10 +136,8 @@ export default {
         bottom: 2,
         left: 2
       },
-      scale: 1,
       // data
       filteredData: null,
-      regionData: null,
       projection: null,
       timeTrace: null,
       timeConfirmed: null,
@@ -151,7 +146,7 @@ export default {
       timeDeadPC: null,
       // refs
       svg: null,
-      states: null,
+      blankMap: null,
       regions: null,
       event: null,
       // methods
@@ -264,23 +259,11 @@ export default {
     },
     setupChoro() {
       this.svg = d3.select(this.$refs.svg);
-      this.states = d3.select(this.$refs.states);
+      this.blankMap = d3.select(this.$refs.blankMap);
       this.regions = d3.select(this.$refs.regions);
       this.ttips = d3.select(this.$refs.choropleth_tooltip);
     },
     setupMap() {
-      if (this.adminLevel == "0") {
-        this.regionData = countries;
-      } else if (this.adminLevel == "1") {
-        this.regionData = usstates;
-      } else if (this.adminLevel == "1.5") {
-        this.regionData = metros;
-      } else if (this.adminLevel == "2") {
-        this.regionData = counties;
-      } else {
-        this.regionData = [];
-      }
-
       if (this.adminLevel === "0") {
         this.projection = d3.geoEqualEarth()
           .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
@@ -296,33 +279,20 @@ export default {
       this.path = this.path.projection(this.projection);
       // calc and set scale
       // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
-      const bounds = this.path.bounds(this.regionData),
-        // llbounds = d3.geoBounds(this.regionData),
-        // minLon = llbounds[0][0],
-        // minLat = llbounds[0][1],
-        // maxLon = llbounds[1][0],
-        // maxLat = llbounds[1][1],
-        // center = [d3.mean([minLon, maxLon]), d3.mean([minLat, maxLat])],
+      const bounds = this.path.bounds(this.outline),
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],
         xscale = this.width / dx * 0.98,
         yscale = this.height / dy * 0.98,
         scale = d3.min([xscale, yscale]);
 
+        console.log(scale)
 
       this.projection = this.projection
         .scale(scale)
     },
-    resetValues() {
-      this.regionData.features.forEach(d => {
-        d.fill = null;
-        d.tooltip = null;
-        d.value = null;
-      })
-    },
     drawMap() {
       this.setupMap();
-      this.resetValues();
 
       this.filteredData = cloneDeep(this.data);
 
@@ -334,24 +304,10 @@ export default {
       }
 
       if (this.filteredData && this.width) {
-        this.filteredData.forEach(d => {
-          const idx = this.regionData.features.findIndex(polygon => polygon.properties.location_id === d.location_id);
-          if (idx > -1) {
-            this.regionData.features[idx]["fill"] = d.fill;
-            this.regionData.features[idx]["location_id"] = d.location_id;
-            this.regionData.features[idx]["name"] = d.name;
-            this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
-            this.regionData.features[idx]["tooltip"] = this.variable.includes("_14days_ago") ?
-              (d[this.variable] < 0 ? `${d3.format(",.1f")(-1*d[this.variable])} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
-              `<b>${this.regionData.features[idx]["value"]}</b> ${this.variableLabel}`;
-            // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
-          }
-        })
-
         // regional data
         this.regions
           .selectAll("path")
-          .data(this.regionData.features, d => d.location_id)
+          .data(this.filteredData, d => d.location_id)
           .join(
             enter => {
               enter
@@ -378,20 +334,15 @@ export default {
             )
           )
 
-        // state outline
-        if (this.adminLevel !== "0") {
-          this.outline = usstates.features;
-        } else {
-          this.outline = [];
-        }
-        this.states
+        // blank map outline
+        this.blankMap
           .selectAll("path")
-          .data(this.outline)
+          .data(this.outline.features)
           .join(
             enter => {
               enter
                 .append("path")
-                .attr("class", "state")
+                .attr("class", "outline")
                 .style("fill", "none")
                 .style("stroke", "#3e5871")
                 .style("stroke-width", "1")
@@ -414,8 +365,6 @@ export default {
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
 
-        // this.svg
-        // .on("mouseleave", this.mouseOff);
         store.state.admin.dataloading = false;
       } else {
         store.state.admin.dataloading = false;
@@ -458,7 +407,7 @@ export default {
         .style("opacity", 1);
 
       this.regions.selectAll("path.region").style("opacity", 0.5);
-      this.regions.selectAll("path.state").style("opacity", 0.75);
+      this.regions.selectAll("path.outline").style("opacity", 0.75);
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
       this.ttips.select(".country-name").text(d.name);
       this.ttips.select(".value").html(d.tooltip);
@@ -470,7 +419,7 @@ export default {
       d3.selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
-      this.regions.selectAll("path.state").style("opacity", 1);
+      this.regions.selectAll("path.outline").style("opacity", 1);
       // cancel data subscription
       if (this.dataSubscritpion) {
         this.dataSubscription.unsubscribe();
