@@ -89,7 +89,7 @@
 import {
   cloneDeep
 } from "lodash";
-import * as d3 from "d3";
+import {geoEqualEarth, geoAlbersUsa, geoPath, max, min, timeParse, timeFormat, format, event, select, selectAll} from "d3";
 
 import HistogramLegend from "@/components/HistogramLegend.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
@@ -153,15 +153,15 @@ export default {
       regions: null,
       event: null,
       // methods
-      path: d3.geoPath()
+      path: geoPath()
     };
   },
   computed: {
     maxVal() {
-      return this.filteredData ? d3.max(this.filteredData, d => d[this.variable]) : null;
+      return this.filteredData ? max(this.filteredData, d => d[this.variable]) : null;
     },
     minVal() {
-      return this.filteredData ? d3.min(this.filteredData, d => d[this.variable]) : null;
+      return this.filteredData ? min(this.filteredData, d => d[this.variable]) : null;
     },
     varMax() {
       return (Math.max(Math.abs(this.minVal), this.maxVal))
@@ -176,11 +176,11 @@ export default {
       return (this.variable.includes("_14days_ago_diff"))
     },
     dateTime() {
-      return this.date1 ? d3.timeParse("%Y-%m-%d")(this.date1) : null;
+      return this.date1 ? timeParse("%Y-%m-%d")(this.date1) : null;
     },
     date() {
       if (this.dateTime) {
-        return (d3.timeFormat("%d %B %Y")(this.dateTime));
+        return (timeFormat("%d %B %Y")(this.dateTime));
       } else {
         return (null)
       }
@@ -261,21 +261,21 @@ export default {
       }
     },
     setupChoro() {
-      this.svg = d3.select(this.$refs.svg);
-      this.blank = d3.select(this.$refs.blank_map);
-      this.overlay = d3.select(this.$refs.overlay);
-      this.regions = d3.select(this.$refs.regions);
-      this.ttips = d3.select(this.$refs.choropleth_tooltip);
+      this.svg = select(this.$refs.svg);
+      this.blank = select(this.$refs.blank_map);
+      this.overlay = select(this.$refs.overlay);
+      this.regions = select(this.$refs.regions);
+      this.ttips = select(this.$refs.choropleth_tooltip);
     },
     setupMap() {
       if (this.adminLevel === "0") {
-        this.projection = d3.geoEqualEarth()
+        this.projection = geoEqualEarth()
           .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
       } else {
-        this.projection = d3.geoAlbersUsa()
+        this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
       }
@@ -288,7 +288,7 @@ export default {
         dy = bounds[1][1] - bounds[0][1],
         xscale = this.width / dx * 0.98,
         yscale = this.height / dy * 0.98,
-        scale = d3.min([xscale, yscale]);
+        scale = min([xscale, yscale]);
 
       this.projection = this.projection
         .scale(scale)
@@ -413,7 +413,7 @@ export default {
       return function() {
         var context = this,
           args = arguments,
-          evt = d3.event;
+          evt = event;
         //we get the D3 event here
         clearTimeout(timer);
         timer = setTimeout(function() {
@@ -444,7 +444,7 @@ export default {
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data
       this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null;
-      d3.selectAll(".tooltip")
+      selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
       this.regions.selectAll("path.outline").style("opacity", 1);
@@ -459,10 +459,10 @@ export default {
         const currentData = this.timeTrace.filter(d => d.date - this.dateTime === 0);
 
         if(currentData.length === 1) {
-          this.timeConfirmed = d3.format(",.1f")(currentData[0].confirmed_rolling);
-          this.timeConfirmedPC = d3.format(",.1f")(currentData[0].confirmed_rolling_per_100k);
-          this.timeDead = d3.format(",.1f")(currentData[0].dead_rolling);
-          this.timeDeadPC = d3.format(",.1f")(currentData[0].dead_rolling_per_100k);
+          this.timeConfirmed = format(",.1f")(currentData[0].confirmed_rolling);
+          this.timeConfirmedPC = format(",.1f")(currentData[0].confirmed_rolling_per_100k);
+          this.timeDead = format(",.1f")(currentData[0].dead_rolling);
+          this.timeDeadPC = format(",.1f")(currentData[0].dead_rolling_per_100k);
         }
 
       })
