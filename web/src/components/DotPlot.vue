@@ -8,15 +8,12 @@
       <g ref="circles" class="circles-group">
       </g>
     </g>
-
-    <!-- <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="epi-axis axis--x" ref="xAxis" id="xAxis"></g> -->
-    <!-- <g :transform="`translate(${margin.left - 5}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis" id="yAxis"></g> -->
   </svg>
 </div>
 </template>
 
 <script>
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, scaleBand, format, transition, } from "d3";
 import {
   cloneDeep
 } from "lodash";
@@ -31,7 +28,11 @@ export default {
     title: String,
     sortAsc: Boolean,
     rightAlign: Boolean,
-    colorScale: Function
+    colorScale: Function,
+    animate: {
+      type: Boolean,
+      default: false
+    }
   },
   watch: {
     data: function() {
@@ -46,8 +47,6 @@ export default {
       // axes
       x: null,
       y: null,
-      xAxis: null,
-      yAxis: null,
       // refs
       svg: null,
       chart: null,
@@ -60,7 +59,7 @@ export default {
       return(this.sortAsc ? "Lowest" : "Highest")
     },
     numberFormatter() {
-      return (this.varMax <= 10 ? d3.format(",.1f") : d3.format(",.0f"))
+      return (this.varMax <= 10 ? format(",.1f") : format(",.0f"))
     },
     domain() {
       return this.rightAlign ? [-1 * this.varMax, 0] : [0, this.varMax];
@@ -87,8 +86,8 @@ export default {
   },
   methods: {
     setupPlot() {
-      this.svg = d3.select(this.$refs.dotplot_svg);
-      this.chart = d3.select(this.$refs.circles);
+      this.svg = select(this.$refs.dotplot_svg);
+      this.chart = select(this.$refs.circles);
     },
     prepData() {
       // If there are undefined values, the sorting happens as strings, which is WRONG
@@ -103,53 +102,41 @@ export default {
 
     },
     updateAxes() {
-      this.x = d3.scaleLinear()
+      this.x = scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(this.domain);
 
-      this.y = d3.scaleBand()
+      this.y = scaleBand()
         .range([0, this.height - this.margin.top - this.margin.bottom])
         .domain(this.plottedData.map(d => d.location_id));
-
-      this.xAxis = d3
-        .axisBottom(this.x)
-        .ticks(2)
-        .tickSizeOuter(0)
-
-      d3.select(this.$refs.xAxis).call(this.xAxis);
-
-      this.yAxis = d3.axisLeft(this.y).tickSizeOuter(0);
-
-      d3.select(this.$refs.yAxis).call(this.yAxis);
-
     },
     mouseOn(d) {
-      d3.selectAll("path.region").style("fill-opacity", 0.25);
-      d3.selectAll(".circle-most-change").style("fill-opacity", 0.5);
-      d3.selectAll(".line-most-change").style("fill-opacity", 0.5);
-      d3.selectAll(".annotation-most-change").style("fill-opacity", 0.5);
-      d3.selectAll(".location-most-change").style("fill-opacity", 0.5);
-      d3.selectAll("path.state").style("stroke-opacity", 0.75);
-      d3.select(`path#${d.location_id}`).style("stroke", "black").style("stroke-width", 2);
-      d3.selectAll(`#${d.location_id}`).style("fill-opacity", 1);
-      d3.selectAll(`.${d.location_id}`).style("fill-opacity", 1);
+      selectAll("path.region").style("fill-opacity", 0.25);
+      selectAll(".circle-most-change").style("fill-opacity", 0.5);
+      selectAll(".line-most-change").style("fill-opacity", 0.5);
+      selectAll(".annotation-most-change").style("fill-opacity", 0.5);
+      selectAll(".location-most-change").style("fill-opacity", 0.5);
+      selectAll("path.state").style("stroke-opacity", 0.75);
+      select(`path#${d.location_id}`).style("stroke", "black").style("stroke-width", 2);
+      selectAll(`#${d.location_id}`).style("fill-opacity", 1);
+      selectAll(`.${d.location_id}`).style("fill-opacity", 1);
 
     },
     mouseOut() {
-      d3.selectAll("path.region")
+      selectAll("path.region")
         .style("fill-opacity", 1)
         .style("stroke", "#8aa4be").style("stroke-width", 0.25);
-      d3.selectAll("path.state").style("stroke-opacity", 1);
-      d3.selectAll(".circle-most-change").style("fill-opacity", 1);
-      d3.selectAll(".line-most-change").style("fill-opacity", 1);
-      d3.selectAll(".annotation-most-change").style("fill-opacity", 1);
-      d3.selectAll(".location-most-change").style("fill-opacity", 1);
+      selectAll("path.state").style("stroke-opacity", 1);
+      selectAll(".circle-most-change").style("fill-opacity", 1);
+      selectAll(".line-most-change").style("fill-opacity", 1);
+      selectAll(".annotation-most-change").style("fill-opacity", 1);
+      selectAll(".location-most-change").style("fill-opacity", 1);
     },
     drawPlot() {
       this.prepData();
       this.updateAxes();
 
-      const t1 = d3.transition().duration(500);
+      const t1 = transition().duration(500);
 
       const lolliSelector = this.chart.selectAll(".lollipop")
         .data(this.plottedData, d => d.location_id);
