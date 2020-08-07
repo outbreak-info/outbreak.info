@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <Choropleth :data="data" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
+  <Choropleth :data="data" :blankMap="blankMap" :outline="outline" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 </div>
@@ -126,6 +126,8 @@ export default {
     return {
       colorScale: null,
       data: [],
+      blankMap: null,
+      outline: null,
       selectedDate: null,
       selectedMin: null,
       selectedMax: null,
@@ -198,8 +200,10 @@ export default {
       return (timeFormat("%Y-%m-%d")(dateStr))
     },
     getData(date) {
-      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, null, date).subscribe(results => {
+      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.selectedVariable.choro, date).subscribe(results => {
         this.data = results.data;
+        this.outline = results.overlay;
+        this.blankMap = results.blankMap;
 
         this.maxDate = results.maxDate;
         if (!this.selectedDate) {

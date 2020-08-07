@@ -3,8 +3,9 @@
   <div class="d-flex flex-column align-items-center">
     <h4>{{date}}</h4>
     <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
+      <g ref="blank_map" class="blank-map-group"></g>
       <g ref="regions" class="region-group"></g>
-      <g ref="states" class="state-group"></g>
+      <g ref="overlay" class="overlay-map-group"></g>
     </svg>
   </div>
   <div class="tooltip choropleth-tooltip box-shadow p-2" ref="choropleth_tooltip">
@@ -85,14 +86,10 @@
 </template>
 
 <script>
-import countries from "@/assets/geo/countries.json";
-import counties from "@/assets/geo/US_counties.json";
-import metros from "@/assets/geo/US_metro.json";
-import usstates from "@/assets/geo/US_states.json";
 import {
   cloneDeep
 } from "lodash";
-import * as d3 from "d3";
+import {geoEqualEarth, geoAlbersUsa, geoPath, max, min, timeParse, timeFormat, format, event, select, selectAll} from "d3";
 
 import HistogramLegend from "@/components/HistogramLegend.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
@@ -114,6 +111,8 @@ export default {
   },
   props: {
     data: Array,
+    outline: Array,
+    blankMap: Object,
     variable: String,
     selectedMin: Number,
     selectedMax: Number,
@@ -139,10 +138,8 @@ export default {
         bottom: 2,
         left: 2
       },
-      scale: 1,
       // data
       filteredData: null,
-      regionData: null,
       projection: null,
       timeTrace: null,
       timeConfirmed: null,
@@ -151,19 +148,20 @@ export default {
       timeDeadPC: null,
       // refs
       svg: null,
-      states: null,
+      blank: null,
+      overlay: null,
       regions: null,
       event: null,
       // methods
-      path: d3.geoPath()
+      path: geoPath()
     };
   },
   computed: {
     maxVal() {
-      return this.filteredData ? d3.max(this.filteredData, d => d[this.variable]) : null;
+      return this.filteredData ? max(this.filteredData, d => d[this.variable]) : null;
     },
     minVal() {
-      return this.filteredData ? d3.min(this.filteredData, d => d[this.variable]) : null;
+      return this.filteredData ? min(this.filteredData, d => d[this.variable]) : null;
     },
     varMax() {
       return (Math.max(Math.abs(this.minVal), this.maxVal))
@@ -178,11 +176,11 @@ export default {
       return (this.variable.includes("_14days_ago_diff"))
     },
     dateTime() {
-      return this.date1 ? d3.timeParse("%Y-%m-%d")(this.date1) : null;
+      return this.date1 ? timeParse("%Y-%m-%d")(this.date1) : null;
     },
     date() {
       if (this.dateTime) {
-        return (d3.timeFormat("%d %B %Y")(this.dateTime));
+        return (timeFormat("%d %B %Y")(this.dateTime));
       } else {
         return (null)
       }
@@ -263,32 +261,21 @@ export default {
       }
     },
     setupChoro() {
-      this.svg = d3.select(this.$refs.svg);
-      this.states = d3.select(this.$refs.states);
-      this.regions = d3.select(this.$refs.regions);
-      this.ttips = d3.select(this.$refs.choropleth_tooltip);
+      this.svg = select(this.$refs.svg);
+      this.blank = select(this.$refs.blank_map);
+      this.overlay = select(this.$refs.overlay);
+      this.regions = select(this.$refs.regions);
+      this.ttips = select(this.$refs.choropleth_tooltip);
     },
     setupMap() {
-      if (this.adminLevel == "0") {
-        this.regionData = countries;
-      } else if (this.adminLevel == "1") {
-        this.regionData = usstates;
-      } else if (this.adminLevel == "1.5") {
-        this.regionData = metros;
-      } else if (this.adminLevel == "2") {
-        this.regionData = counties;
-      } else {
-        this.regionData = [];
-      }
-
       if (this.adminLevel === "0") {
-        this.projection = d3.geoEqualEarth()
+        this.projection = geoEqualEarth()
           .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
       } else {
-        this.projection = d3.geoAlbersUsa()
+        this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
       }
@@ -296,33 +283,18 @@ export default {
       this.path = this.path.projection(this.projection);
       // calc and set scale
       // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
-      const bounds = this.path.bounds(this.regionData),
-        // llbounds = d3.geoBounds(this.regionData),
-        // minLon = llbounds[0][0],
-        // minLat = llbounds[0][1],
-        // maxLon = llbounds[1][0],
-        // maxLat = llbounds[1][1],
-        // center = [d3.mean([minLon, maxLon]), d3.mean([minLat, maxLat])],
+      const bounds = this.path.bounds(this.blankMap),
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],
         xscale = this.width / dx * 0.98,
         yscale = this.height / dy * 0.98,
-        scale = d3.min([xscale, yscale]);
-
+        scale = min([xscale, yscale]);
 
       this.projection = this.projection
         .scale(scale)
     },
-    resetValues() {
-      this.regionData.features.forEach(d => {
-        d.fill = null;
-        d.tooltip = null;
-        d.value = null;
-      })
-    },
     drawMap() {
       this.setupMap();
-      this.resetValues();
 
       this.filteredData = cloneDeep(this.data);
 
@@ -334,24 +306,36 @@ export default {
       }
 
       if (this.filteredData && this.width) {
-        this.filteredData.forEach(d => {
-          const idx = this.regionData.features.findIndex(polygon => polygon.properties.location_id === d.location_id);
-          if (idx > -1) {
-            this.regionData.features[idx]["fill"] = d.fill;
-            this.regionData.features[idx]["location_id"] = d.location_id;
-            this.regionData.features[idx]["name"] = d.name;
-            this.regionData.features[idx]["value"] = d3.format(",.1f")(d[this.variable]);
-            this.regionData.features[idx]["tooltip"] = this.variable.includes("_14days_ago") ?
-              (d[this.variable] < 0 ? `${d3.format(",.1f")(-1*d[this.variable])} <b>fewer</b> ${this.variableLabel}` : `${this.regionData.features[idx]["value"]} <b>more</b> ${this.variableLabel}`) :
-              `<b>${this.regionData.features[idx]["value"]}</b> ${this.variableLabel}`;
-            // metros.features[idx]["value"] = d3.format(".1f")(d[this.variable]);
-          }
-        })
+
+        // blank map outline
+        this.blank
+          .selectAll("path")
+          .data(this.blankMap.features)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "blank-outline")
+                .style("fill", "none")
+                .style("stroke", "#8aa4be")
+                .style("stroke-width", 0.25)
+                // draw each region
+                .attr("d", this.path)
+            },
+            update => update.attr("d", this.path),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          );
 
         // regional data
         this.regions
           .selectAll("path")
-          .data(this.regionData.features, d => d.location_id)
+          .data(this.filteredData, d => d.location_id)
           .join(
             enter => {
               enter
@@ -378,20 +362,15 @@ export default {
             )
           )
 
-        // state outline
-        if (this.adminLevel !== "0") {
-          this.outline = usstates.features;
-        } else {
-          this.outline = [];
-        }
-        this.states
+        // state map overlay
+        this.overlay
           .selectAll("path")
           .data(this.outline)
           .join(
             enter => {
               enter
                 .append("path")
-                .attr("class", "state")
+                .attr("class", "outline")
                 .style("fill", "none")
                 .style("stroke", "#3e5871")
                 .style("stroke-width", "1")
@@ -414,8 +393,6 @@ export default {
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
 
-        // this.svg
-        // .on("mouseleave", this.mouseOff);
         store.state.admin.dataloading = false;
       } else {
         store.state.admin.dataloading = false;
@@ -436,7 +413,7 @@ export default {
       return function() {
         var context = this,
           args = arguments,
-          evt = d3.event;
+          evt = event;
         //we get the D3 event here
         clearTimeout(timer);
         timer = setTimeout(function() {
@@ -458,7 +435,7 @@ export default {
         .style("opacity", 1);
 
       this.regions.selectAll("path.region").style("opacity", 0.5);
-      this.regions.selectAll("path.state").style("opacity", 0.75);
+      this.regions.selectAll("path.outline").style("opacity", 0.75);
       this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
       this.ttips.select(".country-name").text(d.name);
       this.ttips.select(".value").html(d.tooltip);
@@ -467,10 +444,10 @@ export default {
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data
       this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null;
-      d3.selectAll(".tooltip")
+      selectAll(".tooltip")
         .style("opacity", 0);
       this.regions.selectAll("path.region").style("opacity", 1);
-      this.regions.selectAll("path.state").style("opacity", 1);
+      this.regions.selectAll("path.outline").style("opacity", 1);
       // cancel data subscription
       if (this.dataSubscritpion) {
         this.dataSubscription.unsubscribe();
@@ -482,10 +459,10 @@ export default {
         const currentData = this.timeTrace.filter(d => d.date - this.dateTime === 0);
 
         if(currentData.length === 1) {
-          this.timeConfirmed = d3.format(",.1f")(currentData[0].confirmed_rolling);
-          this.timeConfirmedPC = d3.format(",.1f")(currentData[0].confirmed_rolling_per_100k);
-          this.timeDead = d3.format(",.1f")(currentData[0].dead_rolling);
-          this.timeDeadPC = d3.format(",.1f")(currentData[0].dead_rolling_per_100k);
+          this.timeConfirmed = format(",.1f")(currentData[0].confirmed_rolling);
+          this.timeConfirmedPC = format(",.1f")(currentData[0].confirmed_rolling_per_100k);
+          this.timeDead = format(",.1f")(currentData[0].dead_rolling);
+          this.timeDeadPC = format(",.1f")(currentData[0].dead_rolling_per_100k);
         }
 
       })

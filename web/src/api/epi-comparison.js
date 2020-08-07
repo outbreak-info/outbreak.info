@@ -1,8 +1,8 @@
 import {
   from,
-  forkJoin,
-  BehaviorSubject
+  forkJoin
 } from "rxjs";
+
 import axios from "axios";
 import {
   catchError,
@@ -11,18 +11,12 @@ import {
 } from "rxjs/operators";
 import {
   timeParse,
-  timeDay,
-  offset,
-  timeFormat,
   scaleQuantile,
-  range
+  range,
+  format
 } from "d3";
 
 import {
-  // interpolateYlGnBu,
-  // interpolateBrBG,
-  // interpolatePRGn,
-  // interpolatePiYG,
   interpolateRdYlBu
 } from "d3-scale-chromatic";
 
@@ -31,23 +25,28 @@ import {
 } from "@/api/biothings.js";
 import store from "@/store";
 
-import {
-  jenks
-} from "@/js/jenks.js";
-
-export function getComparisonData(apiUrl, location, adminLevel, variable, sort, date) {
+export function getComparisonData(apiUrl, location, adminLevel, variable, variableLabel, date) {
   store.state.admin.dataloading = true;
 
   const queryString = location ? `${location} AND admin_level:("${adminLevel}")` : `admin_level:${adminLevel}`;
 
-  return forkJoin([getCurrentDate(apiUrl), getJenksBreaks(apiUrl, queryString, variable), getCurrentData(apiUrl, queryString, variable, sort, date)])
+  return forkJoin([getCurrentDate(apiUrl), getJenksBreaks(apiUrl, queryString, variable), getContextMaps(apiUrl, location, adminLevel), getCurrentData(apiUrl, queryString, variable, date)])
     .pipe(
-      map(([currDate, breaks, results]) => {
+      map(([currDate, breaks, contextMaps, results]) => {
         results.forEach(d => {
           d.fill = breaks.scale(d[variable]);
-        })
+          d.value = format(",.1f")(d[variable]);
+          d.tooltip = variable.includes("_14days_ago") ?
+            (d[variable] < 0 ? `${format(",.1f")(-1*d[variable])} <b>fewer</b> ${variableLabel}` : `${d["value"]} <b>more</b> ${variableLabel}`) :
+            `<b>${d["value"]}</b> ${variableLabel}`
+        });
+
+        const blankMap = contextMaps[0];
+        const overlay = contextMaps[1] ? contextMaps[1].features : [];
         return ({
           data: results,
+          blankMap: blankMap,
+          overlay: overlay,
           maxDate: currDate,
           colorScale: breaks.scale
         })
@@ -58,6 +57,44 @@ export function getComparisonData(apiUrl, location, adminLevel, variable, sort, 
         return from([]);
       })
     )
+
+}
+
+function getContextMaps(apiUrl, location, adminLevel) {
+  var queries = [];
+  queries.push(getBlankMap(apiUrl, location, adminLevel));
+  if (adminLevel !== "0" && adminLevel !== "1") {
+    queries.push(getBlankMap(apiUrl, location, "1"));
+  }
+  return forkJoin(queries)
+}
+
+function getBlankMap(apiUrl, location, adminLevel) {
+  const qString = location ? `mostRecent:true AND admin_level:"${adminLevel}" AND ${location}` : `mostRecent:true AND admin_level:"${adminLevel}"`;
+  return from(
+    axios.get(
+      `${apiUrl}query?q=${qString}&size=1000&fields=geometry&_sorted=false`
+    )
+  ).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      results.forEach(result => {
+        result["type"] = "Feature"; // needed to make sure D3 knows it's a geojson
+        delete result["_score"]
+        delete result["_id"]
+      })
+
+      return ({
+        features: results,
+        type: "FeatureCollection"
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting current date!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
 
 }
 
@@ -121,19 +158,20 @@ export function getJenksBreaks(apiUrl, queryString, variable) {
     )
 }
 
-export function getCurrentData(apiUrl, queryString, variable, sort, date) {
+export function getCurrentData(apiUrl, queryString, variable, date) {
   const parseDate = timeParse("%Y-%m-%d");
 
-  const fields = "date,location_id,name,state_name,country_iso3," + variable;
+  const fields = "date,location_id,name,state_name,country_iso3,geometry," + variable;
 
   // const qString = `(${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
-  const qString = date ? `date:${date} AND (${queryString})&sort=-date,${sort}&fields=${fields}` : `mostRecent:true AND (${queryString})&sort=-date,${sort}&fields=${fields}`;
+  const qString = date ? `date:${date} AND (${queryString})&sort=-date&fields=${fields}&_sorted=false` : `mostRecent:true AND (${queryString})&sort=-date&fields=${fields}&_sorted=0`;
 
   return getAll(apiUrl, qString)
     .pipe(
       map(results => {
         results.forEach(result => {
           result["datetime"] = parseDate(result.date);
+          result["type"] = "Feature";
         })
 
         results.sort((a, b) => b.datetime < a.datetime ? -1 : 1);
