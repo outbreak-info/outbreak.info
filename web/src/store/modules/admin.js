@@ -261,6 +261,15 @@ const state = {
       }
     },
     {
+      date: new Date("2020-08-06 0:0"),
+      category: "feature",
+      title: "Added time slider to geographic data",
+      description: 'Scroll through timepoints to compare countries, U.S. states, U.S. metropolitan areas, and U.S. counties case and death counts over time',
+      route: {
+        name: "Compare"
+      }
+    },
+    {
       date: new Date("2020-06-12 0:0"),
       category: "data",
       title: "Added Harvard Dataverse",
