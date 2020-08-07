@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <Choropleth :data="data" :blankMap="blankMap" :outline="outline" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
+  <Choropleth :data="data" :animate="animate" :blankMap="blankMap" :outline="outline" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
   <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
 
 </div>
@@ -91,7 +91,8 @@ export default {
     location: String,
     min: String,
     max: String,
-    date: String
+    date: String,
+    animate: { type: Boolean, default: true }
   },
   watch: {
     '$route.params': {

@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex flex-wrap justify-content-center align-items-center" ref="map_container" id="map_container">
   <div class="d-flex flex-column align-items-center">
-    <h4>{{date}}</h4>
+    <h4 ref="date"></h4>
     <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
       <g ref="blank_map" class="blank-map-group"></g>
       <g ref="regions" class="region-group"></g>
@@ -22,22 +22,22 @@
         <div class="d-flex flex-column ml-3">
           <small class="underline">on {{date}}</small>
           <table>
-          <tr>
-            <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
-              <b>{{timeConfirmed}}</b>
-            </td>
-            <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
-              new cases
-            </td>
-          </tr>
-          <tr>
-            <td class="line-height-1 text-right" style="vertical-align: top;">
-              <b>{{timeConfirmedPC}}</b>
-            </td>
-            <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
-              new cases per 100,000
-            </td>
-          </tr>
+            <tr>
+              <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
+                <b>{{timeConfirmed}}</b>
+              </td>
+              <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+                new cases
+              </td>
+            </tr>
+            <tr>
+              <td class="line-height-1 text-right" style="vertical-align: top;">
+                <b>{{timeConfirmedPC}}</b>
+              </td>
+              <td class="line-height-1 pl-2" style="width: 125px; vertical-align: top;">
+                new cases per 100,000
+              </td>
+            </tr>
           </table>
         </div>
       </div>
@@ -74,10 +74,11 @@
     </template>
   </div>
   <div class="d-flex flex-column">
-    <HistogramLegend class="ml-2" :data="data" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale" v-if="this.data && this.data.length" />
+    <HistogramLegend class="ml-2" :data="data" :animate="animate" :transition1="transition1" :minVal="selectedMin" :maxVal="selectedMax" :width="widthLegend" :variable="variable" :variableLabel="variableLabel" :colorScale="colorScale"
+      v-if="this.data && this.data.length" />
     <div class="d-flex justify-content-between mt-4" v-if="filteredData">
-      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignDesc" :varMax="varMax" />
-      <DotPlot :data="filteredData" :variable="variable" :colorScale="colorScale" :sortAsc="true" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignAsc" :varMax="varMax" />
+      <DotPlot :data="filteredData" :variable="variable" :animate="animate" :transition1="transition1" :colorScale="colorScale" :sortAsc="false" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignDesc" :varMax="varMax" />
+      <DotPlot :data="filteredData" :variable="variable" :animate="animate" :transition1="transition1" :colorScale="colorScale" :sortAsc="true" :title="variableLabel" :width="widthLegend/2-5" :rightAlign="rightAlignAsc" :varMax="varMax" />
     </div>
     <DataUpdated />
   </div>
@@ -89,7 +90,20 @@
 import {
   cloneDeep
 } from "lodash";
-import {geoEqualEarth, geoAlbersUsa, geoPath, max, min, timeParse, timeFormat, format, event, select, selectAll} from "d3";
+import {
+  geoEqualEarth,
+  geoAlbersUsa,
+  geoPath,
+  max,
+  min,
+  timeParse,
+  timeFormat,
+  format,
+  event,
+  transition,
+  select,
+  selectAll
+} from "d3";
 
 import HistogramLegend from "@/components/HistogramLegend.vue";
 import DataUpdated from "@/components/DataUpdated.vue";
@@ -120,7 +134,8 @@ export default {
     maxDate: Date,
     variableLabel: String,
     colorScale: Function,
-    adminLevel: String
+    adminLevel: String,
+    animate: Boolean
   },
   watch: {
     data: function() {
@@ -153,7 +168,8 @@ export default {
       regions: null,
       event: null,
       // methods
-      path: geoPath()
+      path: geoPath(),
+      transition1: 500
     };
   },
   computed: {
@@ -186,8 +202,8 @@ export default {
       }
     },
     rollLength() {
-      const dateDiff = (this.maxDate - this.dateTime)/(1000*3600*24);
-      return(dateDiff > 2 ? 7 : dateDiff + 4)
+      const dateDiff = (this.maxDate - this.dateTime) / (1000 * 3600 * 24);
+      return (dateDiff > 2 ? 7 : dateDiff + 4)
     },
     title() {
       return (this.date1 ? `${this.variableLabel} as of ${this.date}` : this.variableLabel)
@@ -306,7 +322,6 @@ export default {
       }
 
       if (this.filteredData && this.width) {
-
         // blank map outline
         this.blank
           .selectAll("path")
@@ -338,6 +353,10 @@ export default {
           .data(this.filteredData, d => d.location_id)
           .join(
             enter => {
+              // update date
+              select(this.$refs.date)
+                .html(this.date);
+
               enter
                 .append("path")
                 .attr("class", "region pointer")
@@ -348,11 +367,24 @@ export default {
                 .attr("d", this.path)
                 .attr("fill", d => d.fill ? d.fill : "none");
             },
-            update => update
-            .attr("id", d => d.location_id)
-            .attr("d", this.path)
-            .call(update => update.transition().duration(250)
-              .attr("fill", d => d.fill ? d.fill : "none")),
+            update => {
+              // update date
+              select(this.$refs.date)
+                .html(this.date);
+
+              update
+                .attr("id", d => d.location_id)
+                .attr("d", this.path)
+                .call(update => {
+                  if (this.animate) {
+                    update.transition().duration(this.transition1)
+                      .attr("fill", d => d.fill ? d.fill : "none")
+                  } else {
+                    update
+                      .attr("fill", d => d.fill ? d.fill : "none")
+                  }
+                })
+            },
             exit =>
             exit.call(exit =>
               exit
@@ -426,20 +458,20 @@ export default {
     mouseOn(d) {
       this.timeTrace = null; // reset to avoid seeing old data
       this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null; // reset to avoid seeing old data
-      if(d.value) {
-      this.getTimetrace(d.location_id);
+      if (d.value) {
+        this.getTimetrace(d.location_id);
 
-      const ttip = this.ttips
-        .style("top", this.event.y + "px")
-        .style("left", this.event.x + "px")
-        .style("opacity", 1);
+        const ttip = this.ttips
+          .style("top", this.event.y + "px")
+          .style("left", this.event.x + "px")
+          .style("opacity", 1);
 
-      this.regions.selectAll("path.region").style("opacity", 0.5);
-      this.regions.selectAll("path.outline").style("opacity", 0.75);
-      this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
-      this.ttips.select(".country-name").text(d.name);
-      this.ttips.select(".value").html(d.tooltip);
-    }
+        this.regions.selectAll("path.region").style("opacity", 0.5);
+        this.regions.selectAll("path.outline").style("opacity", 0.75);
+        this.regions.selectAll(`#${d.location_id}`).style("opacity", 1);
+        this.ttips.select(".country-name").text(d.name);
+        this.ttips.select(".value").html(d.tooltip);
+      }
     },
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data
@@ -458,7 +490,7 @@ export default {
         this.timeTrace = results[0].value;
         const currentData = this.timeTrace.filter(d => d.date - this.dateTime === 0);
 
-        if(currentData.length === 1) {
+        if (currentData.length === 1) {
           this.timeConfirmed = format(",.1f")(currentData[0].confirmed_rolling);
           this.timeConfirmedPC = format(",.1f")(currentData[0].confirmed_rolling_per_100k);
           this.timeDead = format(",.1f")(currentData[0].dead_rolling);
@@ -486,6 +518,6 @@ export default {
     pointer-events: none;
 }
 .underline {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 </style>

@@ -105,21 +105,21 @@ export default Vue.extend({
           'event_category': `map_play`,
           'event_label': `playing map starting from [${this.$route.fullPath}])`
         });
-        
+
         this.start(dayGap);
       }
     },
     start(dayGap) {
       if ((timeDay.offset(this.selectedDate, dayGap) <= this.max) && this.isPlaying) {
         setTimeout(() => {
-          this.changeDate(dayGap);
+          this.changeDate(dayGap, false);
           this.start(dayGap);
         }, 500);
       } else {
         this.isPlaying = false;
       }
     },
-    changeDate(dayShift) {
+    changeDate(dayShift, animate = true) {
       this.selectedDate = timeDay.offset(this.selectedDate, dayShift);
       // update dot position
       select(this.$refs.drag_circle).attr("cx", this.x(this.selectedDate));
@@ -137,7 +137,8 @@ export default Vue.extend({
           variable: route.variable,
           date: this.formatDate(this.selectedDate),
           min: route.min,
-          max: route.max
+          max: route.max,
+          animate: animate
         }
       });
     },

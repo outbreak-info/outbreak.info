@@ -25,7 +25,7 @@
     </g>
     <g class="slider-handle pointer" :transform="`translate(${margin.left},${height + margin.bottom + margin.top + 17})`" v-if="x">
       <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
-        <line ref="slider_line" :x1="sliderLeft" :x2="sliderRight" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5"/>
+        <line ref="slider_line" :x1="sliderLeft" :x2="sliderRight" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" />
         <polygon id="slider_left" :transform="`translate(${sliderLeft},0)`" ref="slider_left" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
         <polygon ref="slider_right" :transform="`translate(${sliderRight - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
       </g>
@@ -54,7 +54,9 @@ export default {
     minVal: Number,
     maxVal: Number,
     colorScale: Function,
-    width: Number
+    width: Number,
+    transition1: Number,
+    animate: Boolean
   },
   watch: {
     data: function() {
@@ -102,10 +104,10 @@ export default {
   },
   computed: {
     sliderRight() {
-      return((this.x && this.selectedMax) ? this.x(this.selectedMax) : 8);
+      return ((this.x && this.selectedMax) ? this.x(this.selectedMax) : 8);
     },
     sliderLeft() {
-      return((this.x && this.selectedMin) ? this.x(this.selectedMin) : 0);
+      return ((this.x && this.selectedMin) ? this.x(this.selectedMin) : 0);
     },
     isFiltered() {
       return (this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
@@ -192,9 +194,9 @@ export default {
       this.y = d3.scaleLinear()
         .range([this.height, 0])
         .domain([0, d3.max(this.bins, d => d.length)]);
-        //   d3.select(this.$refs.slider_line)
-        //   .attr("x1", this.x(this.selectedMin))
-        //   .attr("x2", this.x(this.selectedMax))
+      //   d3.select(this.$refs.slider_line)
+      //   .attr("x1", this.x(this.selectedMin))
+      //   .attr("x2", this.x(this.selectedMax))
     },
     setupDrag() {
       // draggable filters
@@ -270,13 +272,24 @@ export default {
                 .attr("height", d => this.y(0) - this.y(d.length))
             },
             update => {
-              update
-                .attr("fill", d => this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : "none")
-                .attr("opacity", d => d.selected ? 1 : 0.25)
-                .attr("x", d => this.x(d.x0) + 1)
-                .attr("width", d => Math.max(0, this.x(d.x1) - this.x(d.x0) - 1))
-                .attr("y", d => this.y(d.length))
-                .attr("height", d => this.y(0) - this.y(d.length))
+              if (this.animate) {
+                update
+                  .attr("fill", d => this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : "none")
+                  .attr("opacity", d => d.selected ? 1 : 0.25)
+                  .attr("x", d => this.x(d.x0) + 1)
+                  .attr("width", d => Math.max(0, this.x(d.x1) - this.x(d.x0) - 1))
+                  .transition().duration(this.transition1)
+                  .attr("height", d => this.y(0) - this.y(d.length))
+                  .attr("y", d => this.y(d.length))
+              } else {
+                update
+                  .attr("fill", d => this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : "none")
+                  .attr("opacity", d => d.selected ? 1 : 0.25)
+                  .attr("x", d => this.x(d.x0) + 1)
+                  .attr("width", d => Math.max(0, this.x(d.x1) - this.x(d.x0) - 1))
+                  .attr("y", d => this.y(d.length))
+                  .attr("height", d => this.y(0) - this.y(d.length))
+              }
             }
           )
       }

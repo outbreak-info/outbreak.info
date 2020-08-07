@@ -1,5 +1,5 @@
 <template>
-<div  :style="{width: width+ 'px'}" ref="dotplot_container">
+<div :style="{width: width+ 'px'}" ref="dotplot_container">
   <h6 class="text-left m-0">{{sortAsc ? "Lowest" : "Highest"}}</h6>
   <small class="text-left m-0 p-0 line-height-1 d-block text-wrap mb-2 mr-2">{{title}}</small>
   <svg :width="width" :height="height" ref="dotplot_svg" class="epi-map-svg epi-map-dotplot dotplot-svg" :name="fullTitle">
@@ -13,7 +13,14 @@
 </template>
 
 <script>
-import { select, selectAll, scaleLinear, scaleBand, format, transition, } from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleBand,
+  format,
+  transition,
+} from "d3";
 import {
   cloneDeep
 } from "lodash";
@@ -29,10 +36,8 @@ export default {
     sortAsc: Boolean,
     rightAlign: Boolean,
     colorScale: Function,
-    animate: {
-      type: Boolean,
-      default: false
-    }
+    transition1: Number,
+    animate: Boolean
   },
   watch: {
     data: function() {
@@ -56,7 +61,7 @@ export default {
   },
   computed: {
     fullTitle: function() {
-      return(this.sortAsc ? "Lowest" : "Highest")
+      return (this.sortAsc ? "Lowest" : "Highest")
     },
     numberFormatter() {
       return (this.varMax <= 10 ? format(",.1f") : format(",.0f"))
@@ -136,8 +141,6 @@ export default {
       this.prepData();
       this.updateAxes();
 
-      const t1 = transition().duration(500);
-
       const lolliSelector = this.chart.selectAll(".lollipop")
         .data(this.plottedData, d => d.location_id);
 
@@ -156,11 +159,20 @@ export default {
         update
         .attr("id", d => `lollipop-change-${d._id}`)
         .attr("class", d => `lollipop line-most-change ${d.location_id}`)
-        .call(update => update.transition(t1)
-          .attr("y1", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-          .attr("y2", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-          .attr("x2", d => this.x(d[this.variable]))),
+        .call(update => {
+          if (this.animate) {
+            update.transition().duration(this.transition1)
+              .attr("y1", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("y2", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("x2", d => this.x(d[this.variable]))
+          } else {
+            update
+              .attr("y1", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("y2", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+              .attr("x2", d => this.x(d[this.variable]))
+          }
 
+        }),
         exit =>
         exit.call(exit =>
           exit
@@ -192,10 +204,19 @@ export default {
         update
         .attr("id", d => `circle-change-${d._id}`)
         .attr("class", d => `circle-most-change ${d.location_id}`)
-        .call(update => update.transition(t1)
-          .style("fill", d => this.colorScale(d[this.variable]))
-          .attr("cx", d => this.x(d[this.variable]))
-          .attr("cy", d => this.y(d.location_id) + this.y.bandwidth() / 2)),
+        .call(update => {
+          if (this.animate) {
+            update.transition().duration(this.transition1)
+              .style("fill", d => this.colorScale(d[this.variable]))
+              .attr("cx", d => this.x(d[this.variable]))
+              .attr("cy", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          } else {
+            update
+              .style("fill", d => this.colorScale(d[this.variable]))
+              .attr("cx", d => this.x(d[this.variable]))
+              .attr("cy", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          }
+        }),
 
         exit =>
         exit.call(exit =>
@@ -239,8 +260,15 @@ export default {
         .attr("id", d => `location-change-${d._id}`)
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
         .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
-        .call(update => update.transition(t1)
-          .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)),
+        .call(update => {
+          if(this.animate) {
+            update.transition().duration(this.transition1)
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          } else {
+            update
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+          }
+          }),
 
         exit =>
         exit.call(exit =>
@@ -274,9 +302,17 @@ export default {
         .attr("id", d => `annotation-change-${d._id}`)
         .attr("class", d => `annotation-most-change ${d.location_id}`)
         .text(d => this.numberFormatter(d[this.variable]))
-        .call(update => update.transition(t1)
-          .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-          .attr("x", d => this.x(d[this.variable]))),
+        .call(update => {
+          if(this.animate) {
+            update.transition().duration(this.transition1)
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+            .attr("x", d => this.x(d[this.variable]))
+          } else {
+            update
+            .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
+            .attr("x", d => this.x(d[this.variable]))
+          }
+        }),
 
         exit =>
         exit.call(exit =>
@@ -291,10 +327,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-// .dotplot-svg .axis--y line,
-// .dotplot-svg .axis--y path {
-//     display: none;
-// }
-</style>
