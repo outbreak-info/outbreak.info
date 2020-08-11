@@ -61,7 +61,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
     const title = svg.getAttribute("name");
     const subtitle = svg.getAttribute("subtitle");
     const footer = getFooter(rect.width, rect.height, sources, date);
-    const header = getHeader(rect.width, rect.height * 0.1, title, subtitle);
+    const header = getHeader(rect.width, rect.height * 0.1, title);
 
 
     svgInfo.push({
@@ -79,17 +79,17 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
   return svgInfo;
 }
 
-function getHeader(width, height, title, subtitle = "") {
+function getHeader(width, height, title) {
+  if(!title) {
+    title = "";
+  }
+
   const fontSize = height * 0.5;
   // view box needs to be a bit bigger to not get cut off
   return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet">
   <text x="0" y="0" transform="translate(5,5)" fill="currentColor"
     style="dominant-baseline: hanging; font-size:${fontSize}px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
   ${title.replace("&mdash;", "\u2014").replace("&le;", "\u2264").replace("&ge;", "\u2265").replace("&", "and")}</text>
-  <text x="0" y="0" transform="translate(5,${fontSize + 10})" fill="currentColor"
-    style="dominant-baseline: hanging; font-size:${fontSize}px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
-  ${subtitle}</text>
-
   </svg>`)
 }
 
@@ -112,7 +112,7 @@ function getFooter(width, height, sources, date, footerHeight = 55) {
 
   return ({
     height: footerHeight,
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} 55" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} ${footerHeight}" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, ${height + 15})">
   <g id="background">
   <rect width="${width}" height="${footerHeight}" style="fill: #dee2e6"></rect>
   </g>
@@ -228,8 +228,8 @@ export function getPng(selector, sources, date, download = false, filename = "ou
   selectAll("text").style("opacity", 1);
 
   return new Promise((resolve, reject) => {
-    const spacer = 25;
-    const footerHeight = 50;
+    const spacer = 30;
+    const footerHeight = 55;
     var document = global.document,
       body = document.body,
       forEach = Array.prototype.forEach,
@@ -249,6 +249,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
     var counter = 0;
     var widths = [];
     var heights = [];
+    var headerHeights = [];
 
 
     forEach.call(svgs, function(svg, i) {
@@ -270,6 +271,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         height = rect.height * ratio,
         image = new Image,
         imageHeader = new Image,
+        imageSubheader = new Image,
         imageFooter = new Image;
 
       // update the width of the canvas
@@ -284,15 +286,17 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         heights.push(height)
       }
       canvasHeight = colNum === 0 ? canvasHeight + spacer * 3 + height : canvasHeight;
-      headerHeight = height * 0.1;
+      headerHeights.push(height * 0.08);
 
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       var header;
+      var subheader;
       if (i === 0) {
-        header = getHeader(canvasWidth, headerHeight, title, subtitle);
+        header = getHeader(canvasWidth, headerHeights[i], title);
+        subheader = getHeader(rect.width, headerHeights[i], subtitle);
       } else {
-        header = subtitle ? getHeader(rect.width, headerHeight*0.5, subtitle) : getHeader(canvasWidth, headerHeight, "");
+        header = subtitle ? getHeader(rect.width, headerHeights[i], subtitle) : getHeader(canvasWidth, headerHeights[i], "");
       }
 
       const footer = getFooter(canvasWidth / ratio, -15, sources, date, footerHeight);
@@ -307,6 +311,10 @@ export function getPng(selector, sources, date, download = false, filename = "ou
         type: "image/svg+xml"
       }));
 
+      var subheaderUrl = URL.createObjectURL(new Blob([subheader], {
+        type: "image/svg+xml"
+      }));
+
       var footerUrl = URL.createObjectURL(new Blob([footer.svg], {
         type: "image/svg+xml"
       }));
@@ -314,18 +322,19 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       image.onload = function() {
         setTimeout(function() {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
-          context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer) + headerHeight + 25, width, height);
+          context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2) + headerHeights[i] + headerHeights[0]*ratio + spacer, width, height);
           if (i === 0) {
-            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer), canvasWidth, headerHeight * ratio);
+            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2), canvasWidth, headerHeights[i] * ratio);
+            context.drawImage(imageSubheader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2) + headerHeights[0]*ratio, width, headerHeights[i] * ratio);
           } else {
-            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer), width, headerHeight * ratio);
+            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2) + headerHeights[0]*ratio, width, headerHeights[i] * ratio);
           }
 
           counter = counter + 1;
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            context.drawImage(imageFooter, 0, canvasHeight - spacer, canvasWidth, footer.height * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight + headerHeights[0]*ratio - spacer*2, canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
@@ -349,6 +358,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
             setTimeout(function() {
               imageUrl = URL.revokeObjectURL(imageUrl);
               headerUrl = URL.revokeObjectURL(headerUrl);
+              subheaderUrl = URL.revokeObjectURL(subheaderUrl);
               footerUrl = URL.revokeObjectURL(footerUrl);
             }, 10);
 
@@ -366,6 +376,8 @@ export function getPng(selector, sources, date, download = false, filename = "ou
                     setTimeout(function() {
                       imageUrl = URL.revokeObjectURL(imageUrl);
                       headerUrl = URL.revokeObjectURL(headerUrl);
+                      subheaderUrl = URL.revokeObjectURL(subheaderUrl);
+                      subheaderUrl = URL.revokeObjectURL(subheaderUrl);
                       footerUrl = URL.revokeObjectURL(footerUrl);
                     }, 10);
 
@@ -376,6 +388,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
                     setTimeout(function() {
                       imageUrl = URL.revokeObjectURL(imageUrl);
                       headerUrl = URL.revokeObjectURL(headerUrl);
+                      subheaderUrl = URL.revokeObjectURL(subheaderUrl);
                       footerUrl = URL.revokeObjectURL(footerUrl);
                     }, 10);
 
@@ -391,9 +404,10 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       };
 
       canvas.width = canvasWidth;
-      canvas.height = canvasHeight + footerHeight + headerHeight;
+      canvas.height = canvasHeight + footerHeight + headerHeights[0]*ratio;
       image.src = imageUrl;
       imageHeader.src = headerUrl;
+      imageSubheader.src = subheaderUrl;
       imageFooter.src = footerUrl;
     });
   })
