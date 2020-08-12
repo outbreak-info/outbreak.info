@@ -27,7 +27,18 @@
               <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
             </div>
           </form>
+
+          <div class="text-left text-muted ml-5" v-if="showSearchHelper">
+            <small><i class="fas fa-info-circle mr-2"></i>Wrap terms in quotes if you want to search for an exact phrase, like
+              <router-link class=" inline-block" :to="{
+                    name: 'Resources',
+                    query: { q: quotedSearch}
+                  }">"{{searchInput}}"</router-link>
+            </small>
+          </div>
         </div>
+
+
       </div>
 
       <!-- sidebar: links -->
@@ -599,6 +610,12 @@ export default {
       return this.numResults ?
         Math.floor(this.numResults / this.numPerPage) :
         null;
+    },
+    quotedSearch: function () {
+      return(`"${this.searchInput}"`)
+    },
+    showSearchHelper: function() {
+      return(this.searchInput.includes(" ") && !this.searchInput.includes('"'))
     }
   },
   watch: {
