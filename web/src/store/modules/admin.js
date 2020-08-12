@@ -3,7 +3,7 @@ const state = {
   loading: false,
   dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   outbreak: {
-    authors: "Hughes, Laura D.; Gangavarapu, Karthik; Alkuzwen, Manar; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."
+    authors: "Hughes, Laura D.; Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."
   },
   sources: [{
       id: "JHU",
