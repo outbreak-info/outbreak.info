@@ -104,7 +104,6 @@ export default {
   },
   computed: {
     sliderRight() {
-      console.log(this.selectedMax)
       return ((this.x && (this.selectedMax || this.selectedMax === 0)) ? this.x(this.selectedMax) : 8);
     },
     sliderLeft() {
