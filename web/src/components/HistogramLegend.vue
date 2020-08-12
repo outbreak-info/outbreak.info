@@ -104,10 +104,11 @@ export default {
   },
   computed: {
     sliderRight() {
-      return ((this.x && this.selectedMax) ? this.x(this.selectedMax) : 8);
+      console.log(this.selectedMax)
+      return ((this.x && (this.selectedMax || this.selectedMax === 0)) ? this.x(this.selectedMax) : 8);
     },
     sliderLeft() {
-      return ((this.x && this.selectedMin) ? this.x(this.selectedMin) : 0);
+      return ((this.x && (this.selectedMin || this.selectedMin === 0)) ? this.x(this.selectedMin) : 0);
     },
     isFiltered() {
       return (this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
@@ -146,8 +147,8 @@ export default {
       this.xAxisRef = d3.select(this.$refs.x_axis);
     },
     updateFilterLimits: function() {
-      this.selectedMin = this.minVal ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
-      this.selectedMax = this.maxVal ? this.maxVal : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) / this.precision;
+      this.selectedMin = this.minVal || this.minVal === 0 ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
+      this.selectedMax = this.maxVal || this.maxVal === 0 ? this.maxVal : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) / this.precision;
     },
     updateAxes: function() {
       // x-axis
