@@ -62,6 +62,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
     const subtitle = svg.getAttribute("subtitle");
     const footer = getFooter(rect.width, rect.height, sources, date);
     const header = getHeader(rect.width, rect.height * 0.1, title);
+    const subheader = getHeader(rect.width, rect.height * 0.07, subtitle);
 
 
     svgInfo.push({
@@ -73,14 +74,14 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
       id: svg.getAttribute("id"),
       name: title,
       childElementCount: svg.childElementCount,
-      source: [doctype + `<svg width="${rect.width}" height="${rect.height + 100}">` + header + '<g transform="translate(0,35)">' + source + footer.svg + "</g></svg>"]
+      source: [doctype + `<svg width="${rect.width}" height="${rect.height + 100}">` + header + `<g transform="translate(0,${rect.height*0.05})">` + subheader + '</g><g transform="translate(0,35)">' + source + footer.svg + "</g></svg>"]
     });
   });
   return svgInfo;
 }
 
 function getHeader(width, height, title) {
-  if(!title) {
+  if (!title) {
     title = "";
   }
 
@@ -245,7 +246,6 @@ export function getPng(selector, sources, date, download = false, filename = "ou
     const numAcross = numSvgs > 3 ? Math.ceil(Math.sqrt(numSvgs)) : numSvgs;
     var canvasWidth = 0;
     var canvasHeight = 0;
-    var headerHeight = 0;
     var counter = 0;
     var widths = [];
     var heights = [];
@@ -322,19 +322,24 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       image.onload = function() {
         setTimeout(function() {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
-          context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2) + headerHeights[i] + headerHeights[0]*ratio + spacer, width, height);
-          if (i === 0) {
-            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2), canvasWidth, headerHeights[i] * ratio);
-            context.drawImage(imageSubheader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2) + headerHeights[0]*ratio, width, headerHeights[i] * ratio);
+          if (selector === "svg.epi-curve") {
+            context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[i] + spacer, width, height); // epi
           } else {
-            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer*2) + headerHeights[0]*ratio, width, headerHeights[i] * ratio);
+            context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[i] + headerHeights[0] * ratio + spacer, width, height); // bar, map
+          }
+
+          if (i === 0) {
+            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2), canvasWidth, headerHeights[i] * ratio);
+            context.drawImage(imageSubheader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[0] * ratio, width, headerHeights[i] * ratio);
+          } else {
+            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[0] * ratio, width, headerHeights[i] * ratio);
           }
 
           counter = counter + 1;
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            context.drawImage(imageFooter, 0, canvasHeight + headerHeights[0]*ratio - spacer*2, canvasWidth, footerHeight * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight + headerHeights[0] * ratio - spacer * 2, canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
@@ -404,7 +409,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
       };
 
       canvas.width = canvasWidth;
-      canvas.height = canvasHeight + footerHeight + headerHeights[0]*ratio;
+      canvas.height = canvasHeight + footerHeight + headerHeights[0] * ratio;
       image.src = imageUrl;
       imageHeader.src = headerUrl;
       imageSubheader.src = subheaderUrl;
