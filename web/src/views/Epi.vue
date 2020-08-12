@@ -53,7 +53,7 @@
       </option>
     </select>
     <span v-if="locationName"> in {{ locationName }}</span>
-    <span v-if="isPerCapita"> per 100,000 residents</span>
+    <span v-if="isPerCapita && variableObj.percapita !== false"> per 100,000 residents</span>
   </h4>
 
 

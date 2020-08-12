@@ -121,10 +121,11 @@ export default Vue.extend({
       return JSON.stringify(this.data) + this.variable + String(this.percapita);
     },
     title() {
+      console.log( this.variableObj.percapita !== false)
       if (this.data.length == 1) {
-        return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
       } else {
-        return (this.percapita ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
+        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
       }
     }
   },
