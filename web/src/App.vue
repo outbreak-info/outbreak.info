@@ -18,8 +18,8 @@
                 }">Epidemiology</router-link>
           </li>
           <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
-                  name: 'Compare'
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
+                  name: 'Maps'
                 }">Maps</router-link>
           </li>
 

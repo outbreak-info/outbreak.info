@@ -128,7 +128,7 @@ export default Vue.extend({
       const route = this.$route.query;
       this.$router.replace({
         path: "maps",
-        name: "Compare",
+        name: "Maps",
         params: {
           disableScroll: true
         },
