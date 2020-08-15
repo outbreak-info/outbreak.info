@@ -9,7 +9,7 @@ import {
 } from "rxjs/operators";
 import {
   timeParse,
-  nest
+  nest, extent, max
 } from "d3";
 
 import store from "@/store";
@@ -52,10 +52,14 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, num2
 
             nested.sort((a, b) => a.valueDiff - b.valueDiff);
 
+            const xDomain = extent(results.map(d => d.date));
+            const yMax = max(results.map(d => d[variable]));
 
             return ({
               similar: nested.filter(d => d.key != locationID),
-              location: location
+              location: location,
+              xDomain: xDomain,
+              yMax: yMax
             })
           })
         )
@@ -77,7 +81,7 @@ export function getLocation(apiUrl, locationID, variable, similarityMetric, most
 
   return getAll(
     apiUrl,
-    `${query}&fields=${variable},${similarityMetric},name,lat,long,date,location_id`
+    `${query}&fields=${variable},${similarityMetric},name,lat,long,date,location_id,dead_rolling_per_100k`
   ).pipe(
     map(results => {
       results.forEach(d => {

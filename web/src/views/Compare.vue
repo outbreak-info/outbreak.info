@@ -7,9 +7,9 @@
 
   <h1 v-if="locationData">Places similar in {{similarity}} to {{locationData.name}}</h1>
   <template v-if="similar">
-    <div v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-4">
+    <div v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-5">
       <MiniLocation :lat="place.lat" :lon="place.lon" />
-      <div class="d-flex flex-column">
+      <div class="d-flex flex-column ml-3 mr-5">
         <h3 class="m-0">{{place.name}}</h3>
         <div>
           {{similarity}}: <b>{{place.similarValue.toLocaleString()}}</b>
@@ -18,6 +18,9 @@
           {{locationData.name}}: <b>{{locationData.similarValue.toLocaleString()}}</b>
         </small>
       </div>
+
+      <LineComparison :data="place.values" :control="locationData.values" :variable="variable" :xDomain="xDomain" :yMax="yMax" label = "cases" v-if="place.values"/>
+      <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMax/10" label = "deaths" v-if="place.values"/>
     </div>
   </template>
 
@@ -30,6 +33,7 @@ import {
   mapState
 } from "vuex";
 import MiniLocation from "@/components/MiniLocation.vue";
+import LineComparison from "@/components/LineComparison.vue";
 
 import {
   findSimilar
@@ -38,7 +42,8 @@ import {
 export default Vue.extend({
   name: "Compare",
   components: {
-    MiniLocation
+    MiniLocation,
+    LineComparison
   },
   props: {
     location: String,
@@ -51,7 +56,9 @@ export default Vue.extend({
       lat: 10,
       lon: 0,
       locationData: null,
-      similar: null
+      similar: null,
+      xDomain: null,
+      yMax: null
     }
   },
   computed: {
@@ -61,7 +68,10 @@ export default Vue.extend({
     findSimilar(this.$apiurl, this.location, this.variable, this.similarity).subscribe(results => {
       this.similar = results.similar;
       this.locationData = results.location;
-      console.log(this.similar)
+      this.xDomain = results.xDomain;
+      this.yMax = results.yMax;
+
+      console.log(results)
     });
   }
 })
