@@ -7,8 +7,8 @@
 
   <h2 v-if="locationData">Places similar in
     <select v-model="selectedSimilarity" class="select-dropdown" @change="changeSimilarity">
-      <option v-for="option in similarOptions" :value="option" :key="option">
-        {{ option }}
+      <option v-for="option in similarOptions" :value="option.value" :key="option.value">
+        {{ option.label }}
       </option>
     </select>
     to {{locationData.name}}</h2>
@@ -93,7 +93,34 @@ export default Vue.extend({
       yMax: null,
       colorScale: null,
       selectedSimilarity: null,
-      similarOptions: ["population", "confirmed", "confirmed_per_100k","confirmed_rolling", "confirmed_rolling_per_100k", "dead", "dead_per_100k","dead_rolling", "dead_rolling_per_100k"],
+      similarOptions: [{
+        value: "population",
+        label: "population"
+      }, {
+        value: "confirmed",
+        label: "total cases"
+      }, {
+        value: "confirmed_per_100k",
+        label: "total cases per capita"
+      }, {
+        value: "confirmed_rolling",
+        label: "new cases today"
+      }, {
+        value: "confirmed_rolling_per_100k",
+        label: "new cases today per capita"
+      }, {
+        value: "dead",
+        label: "deaths"
+      }, {
+        value: "dead_per_100k",
+        label: "deaths per capita"
+      }, {
+        value: "dead_rolling",
+        label: "new deaths today"
+      }, {
+        value: "dead_rolling_per_100k",
+        label: "new deaths today per capita"
+      }],
       selectedAdminLevels: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
       adminOptions: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
       dataSubscription: null
