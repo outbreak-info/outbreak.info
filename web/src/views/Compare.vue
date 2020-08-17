@@ -31,7 +31,9 @@
 
       <td class="location-name">
         <div class="d-flex flex-column ml-3 mr-5">
+          <router-link :to="{name: 'Epidemiology', query: {location: place.key}} ">
           <h4 class="m-0 border-bottom">{{place.nameFormatted}}</h4>
+          </router-link>
           <div>
             {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
           </div>
