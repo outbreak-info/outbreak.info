@@ -13,6 +13,13 @@
     </select>
     to {{locationData.name}}</h2>
 
+    <SearchBar
+      class="w-100 mb-3"
+      @location="changeLocation"
+      :selected="selectedLocation"
+      placeholder="Change location"
+    ></SearchBar>
+
   <div id="admin-selector" class="d-flex align-items-center">
     <small class="mr-1">include</small>
     <label class="b-contain m-0 mr-2" v-for="option in adminOptions" :key="option">
@@ -80,8 +87,10 @@ import Vue from "vue";
 import {
   mapState
 } from "vuex";
+
 import MiniLocation from "@/components/MiniLocation.vue";
 import LineComparison from "@/components/LineComparison.vue";
+import SearchBar from "@/components/SearchBar.vue";
 
 import {
   findSimilar
@@ -96,7 +105,8 @@ export default Vue.extend({
   name: "Compare",
   components: {
     MiniLocation,
-    LineComparison
+    LineComparison,
+    SearchBar
   },
   props: {
     location: String,
@@ -114,6 +124,7 @@ export default Vue.extend({
       yMaxC: null,
       yMaxD: null,
       colorScale: null,
+      selectedLocation: null,
       selectedSimilarity: null,
       similarOptions: [{
         value: "population",
@@ -195,6 +206,17 @@ export default Vue.extend({
         query: {
           location: this.location,
           admin_levels: this.selectedAdminLevels.join(";"),
+          variable: this.variable,
+          similarity: this.similarity
+        }
+      })
+    },
+    changeLocation(location_id) {
+      this.$router.push({
+        name: "Compare",
+        query: {
+          location: location_id,
+          admin_levels: this.admin_levels,
           variable: this.variable,
           similarity: this.similarity
         }
