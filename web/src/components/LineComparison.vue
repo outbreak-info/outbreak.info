@@ -3,7 +3,7 @@
   <small class="d-block">Average daily {{label}}</small>
   <small class="d-block text-muted annotation">per 100,000 residents</small>
   <svg :width="width" :height="height" class="comparison-svg">
-    <g  ref="svg" :transform="`translate(${margin.left}, ${margin.top})`">
+    <g ref="svg" :transform="`translate(${margin.left}, ${margin.top})`">
     </g>
   </svg>
 </div>
@@ -121,8 +121,8 @@ export default {
             .attr("class", "max-value");
 
           grp.append("line")
-          .style("stroke", "#2c3e50")
-          .style("stroke-dasharray", d => this.width - this.margin.left - this.margin.right - this.x(d.date) > 30 ? "3,3" : "0")
+            .style("stroke", "#2c3e50")
+            .style("stroke-dasharray", d => this.width - this.margin.left - this.margin.right - this.x(d.date) > 30 ? "3,3" : "0")
             .attr("x1", d => this.x(d.date))
             .attr("x2", this.width - this.margin.left - this.margin.right + 3.5)
             .attr("y1", d => this.y(d[this.variable]))
@@ -140,16 +140,17 @@ export default {
           update.attr("fill", d => this.colorScale(d.location_id))
             .attr("id", d => `${d.location_id}-${this.variable}-mostRecent`)
 
-            update.select("line")
-              .attr("x1", d => this.x(d.date))
-              .attr("x2", this.width - this.margin.left - this.margin.right + 3.5)
-              .attr("y1", d => this.y(d[this.variable]))
-              .attr("y2", d => this.y(d[this.variable]));
+          update.select("line")
+            .style("stroke-dasharray", d => this.width - this.margin.left - this.margin.right - this.x(d.date) > 30 ? "3,3" : "0")
+            .attr("x1", d => this.x(d.date))
+            .attr("x2", this.width - this.margin.left - this.margin.right + 3.5)
+            .attr("y1", d => this.y(d[this.variable]))
+            .attr("y2", d => this.y(d[this.variable]));
 
-            update.select("text")
-              .attr("x", d => this.width - this.margin.left - this.margin.right)
-              .attr("y", d => this.y(d[this.variable]))
-              .text(d => format(",.1f")(d[this.variable]))
+          update.select("text")
+            .attr("x", d => this.width - this.margin.left - this.margin.right)
+            .attr("y", d => this.y(d[this.variable]))
+            .text(d => format(",.1f")(d[this.variable]))
         },
         exit =>
         exit.call(exit =>
@@ -200,8 +201,8 @@ export default {
       endSelector.join(
         enter => {
           const grp = enter.append("g")
-          .attr("class", d => `mostRecent`)
-          .attr("id", d => `${d.location_id}-${this.variable}-mostRecent`)
+            .attr("class", d => `mostRecent`)
+            .attr("id", d => `${d.location_id}-${this.variable}-mostRecent`)
             .attr("fill", d => this.colorScale(d.location_id));
 
           grp.append("circle")
@@ -224,7 +225,7 @@ export default {
             .attr("cx", d => this.x(d.date))
             .attr("cy", d => this.y(d[this.variable]))
 
-            update.select("text")
+          update.select("text")
             .attr("x", d => this.x(d.date))
             .attr("y", d => this.y(d[this.variable]))
             .text(d => format(",.1f")(d[this.variable]))

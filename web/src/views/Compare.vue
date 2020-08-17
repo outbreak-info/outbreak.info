@@ -93,7 +93,7 @@ export default Vue.extend({
       yMax: null,
       colorScale: null,
       selectedSimilarity: null,
-      similarOptions: ["population", "confirmed", "confirmed_per_100k", "dead", "dead_per_100k"],
+      similarOptions: ["population", "confirmed", "confirmed_per_100k","confirmed_rolling", "confirmed_rolling_per_100k", "dead", "dead_per_100k","dead_rolling", "dead_rolling_per_100k"],
       selectedAdminLevels: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
       adminOptions: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
       dataSubscription: null
@@ -151,7 +151,7 @@ export default Vue.extend({
       })
     },
     formatValue(val) {
-      return (this.similarity.includes("_per_100k") ? format(",.1f")(val) : format(",.0f")(val))
+      return (this.similarity.includes("_per_100k") || this.similarity.includes("rolling") ? format(",.1f")(val) : format(",.0f")(val))
     }
   }
 })
