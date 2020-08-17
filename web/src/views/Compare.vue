@@ -44,10 +44,10 @@
       </td>
 
       <td>
-        <LineComparison :data="place.values" :control="locationData.values" :variable="variable" :xDomain="xDomain" :yMax="yMax" :colorScale="colorScale" label="cases" v-if="place.values" />
+        <LineComparison :data="place.values" :control="locationData.values" variable="confirmed_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxC" :colorScale="colorScale" label="cases" v-if="place.values" />
       </td>
       <td>
-        <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMax/10" :colorScale="colorScale" label="deaths" v-if="place.values" />
+        <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxD" :colorScale="colorScale" label="deaths" v-if="place.values" />
 
       </td>
     </tr>
@@ -95,7 +95,8 @@ export default Vue.extend({
       locationData: null,
       similar: null,
       xDomain: null,
-      yMax: null,
+      yMaxC: null,
+      yMaxD: null,
       colorScale: null,
       selectedSimilarity: null,
       similarOptions: [{
@@ -166,7 +167,8 @@ export default Vue.extend({
         this.similar = results.similar;
         this.locationData = results.location;
         this.xDomain = results.xDomain;
-        this.yMax = results.yMax;
+        this.yMaxC = results.yMaxC;
+        this.yMaxD = results.yMaxD;
         this.colorScale = scaleOrdinal().range(this.colors).domain(this.similar.map(d => d.key));
         console.log(results)
       });

@@ -53,13 +53,15 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, admi
             nested.sort((a, b) => a.valueDiff - b.valueDiff);
 
             const xDomain = extent(results.map(d => d.date));
-            const yMax = max(results.map(d => d[variable]));
+            const yMaxC = max(results.map(d => d.confirmed_rolling_per_100k));
+            const yMaxD = max(results.map(d => d.dead_rolling_per_100k));
 
             return ({
               similar: nested.filter(d => d.key != locationID),
               location: location,
               xDomain: xDomain,
-              yMax: yMax
+              yMaxC: yMaxC,
+              yMaxD: yMaxD
             })
           })
         )
