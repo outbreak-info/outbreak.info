@@ -14,19 +14,19 @@
       to {{locationData.name}}</h2>
   <template v-if="similar">
     <div v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-5">
-      <MiniLocation :lat="place.lat" :lon="place.lon" />
+      <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" />
       <div class="d-flex flex-column ml-3 mr-5">
         <h3 class="m-0">{{place.nameFormatted}}</h3>
         <div>
-          {{similarity}}: <b>{{place.similarValue.toLocaleString()}}</b>
+          {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
         </div>
         <small class="text-muted">
-          {{locationData.name}}: <b>{{locationData.similarValue.toLocaleString()}}</b>
+          {{locationData.name}}: <b>{{formatValue(place.similarValue)}}</b>
         </small>
       </div>
 
-      <LineComparison :data="place.values" :control="locationData.values" :variable="variable" :xDomain="xDomain" :yMax="yMax" label="cases" v-if="place.values" />
-      <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMax/10" label="deaths" v-if="place.values" />
+      <LineComparison :data="place.values" :control="locationData.values" :variable="variable" :xDomain="xDomain" :yMax="yMax" :colorScale="colorScale" label="cases" v-if="place.values" />
+      <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMax/10"  :colorScale="colorScale" label="deaths" v-if="place.values" />
     </div>
   </template>
 
@@ -44,6 +44,10 @@ import LineComparison from "@/components/LineComparison.vue";
 import {
   findSimilar
 } from "@/api/find-similar.js";
+
+import {
+  format, scaleOrdinal
+} from "d3";
 
 export default Vue.extend({
   name: "Compare",
@@ -65,13 +69,15 @@ export default Vue.extend({
       similar: null,
       xDomain: null,
       yMax: null,
+      colorScale: null,
       selectedSimilarity: null,
       similarOptions: ["population", "confirmed", "confirmed_per_100k", "dead", "dead_per_100k"],
       dataSubscription: null
     }
   },
   computed: {
-    ...mapState("admin", ["loading"])
+    ...mapState("admin", ["loading"]),
+    ...mapState("colors", ["colors"])
   },
   watch: {
     $route: {
@@ -93,6 +99,7 @@ export default Vue.extend({
         this.locationData = results.location;
         this.xDomain = results.xDomain;
         this.yMax = results.yMax;
+        this.colorScale = scaleOrdinal().range(this.colors).domain(this.similar.map(d => d.key));
         console.log(results)
       });
     },
@@ -106,6 +113,9 @@ export default Vue.extend({
           similarity: this.selectedSimilarity
         }
       })
+    },
+    formatValue(val) {
+      return(format(",.1f")(val))
     }
   }
 })

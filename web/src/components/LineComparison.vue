@@ -25,7 +25,8 @@ export default {
     xDomain: Array,
     yMax: Number,
     variable: String,
-    label: String
+    label: String,
+    colorScale: Function
   },
   data: function() {
     return {
@@ -87,21 +88,21 @@ export default {
             .style("opacity", 0.6)
             .datum(d => d)
             .attr("d", this.line)
-          },
-          update => {
-            update
-              .datum(d => d)
-              .attr("d", this.line)
-            },
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition()
-              .duration(10)
-              .style("opacity", 1e-5)
-              .remove()
-            )
+        },
+        update => {
+          update
+            .datum(d => d)
+            .attr("d", this.line)
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .duration(10)
+          .style("opacity", 1e-5)
+          .remove()
         )
+      )
 
 
       const lineSelector = this.svg.selectAll(".epi-line")
@@ -111,28 +112,29 @@ export default {
         enter => {
           enter.append("path")
             .attr("class", d => `epi-line`)
-            .attr("id", d => `${d.location_id}-${this.variable}`)
-            .attr("stroke", "#D13B62")
+            .attr("id", d => `${d[0].location_id}-${this.variable}`)
+            .attr("stroke", d => this.colorScale(d[0].location_id))
             .style("fill", "none")
             .style("stroke-width", "2")
             .datum(d => d)
             .attr("d", this.line)
-          },
+        },
         update => {
           update
-            .attr("id", d => `${d.location_id}-${this.variable}`)
+            .attr("id", d => `${d[0].location_id}-${this.variable}`)
+            .attr("stroke", d => this.colorScale(d[0].location_id))
             .datum(d => d)
             .attr("d", this.line)
-          },
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .duration(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .duration(10)
+          .style("opacity", 1e-5)
+          .remove()
         )
+      )
     }
   }
 }
@@ -140,7 +142,7 @@ export default {
 
 <style lang="scss" scoped="true">
 .annotation {
-  font-size: 0.7em;
-  line-height: 1.1em;
+    font-size: 0.7em;
+    line-height: 1.1em;
 }
 </style>

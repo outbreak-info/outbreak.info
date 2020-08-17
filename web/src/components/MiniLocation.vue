@@ -2,7 +2,7 @@
 <div>
   <svg :width="width" :height="height" ref="svg" class="locator-map-svg">
     <g ref="blank_map" class="blank-map-group"></g>
-    <circle :cx="coords[0]" :cy="coords[1]" :r="radius" fill="#D13B62" v-if="coords"></circle>
+    <circle :cx="coords[0]" :cy="coords[1]" :r="radius" :fill="fillColor" stroke="#2c3e50" stroke-width="0.5" v-if="coords"></circle>
   </svg>
 </div>
 </template>
@@ -24,7 +24,9 @@ export default {
   name: "MiniLocation",
   props: {
     lat: Number,
-    lon: Number
+    lon: Number,
+    colorScale: Function,
+    id: String
   },
   data: function() {
     return {
@@ -41,6 +43,9 @@ export default {
     }
   },
   computed: {
+    fillColor() {
+      return (this.colorScale(this.id))
+    },
     coords() {
       return(this.projection ? this.projection([this.lon, this.lat]) : null)
     }
