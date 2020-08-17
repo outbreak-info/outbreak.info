@@ -24,8 +24,8 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, num2
   // First get the location's data for the most recent date.
   // Use that value to get the most recent value of `similarityMetric` and find locations with similar values
   // Then get ALL the data for all those locations.
-  return getLocation(apiUrl, locationID, variable, similarityMetric).pipe(
-    mergeMap(locationData => getSimilarData(apiUrl, locationData, similarityMetric, num2Return, true).pipe(
+  return getLocation(apiUrl, locationID, variable, similarityMetric, true).pipe(
+    mergeMap(locationData => getSimilarData(apiUrl, locationData, similarityMetric, num2Return).pipe(
       mergeMap(similar => {
         const locationString = `(${similar.map(d => d.location_id).join(" OR ")})`;
         return (getLocation(apiUrl, locationString, variable, similarityMetric)).pipe(
@@ -35,9 +35,9 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, num2
               .entries(results);
 
             nested.forEach(d => {
-              d.values.sort((a, b) => a.date - b.date);
               const mostRecent = d.values.slice(-1)[0];
               d["name"] = mostRecent.name;
+              d["nameFormatted"] = mostRecent.state_name ? `${mostRecent.name}, ${mostRecent.state_name}` : mostRecent.country_name ? `${mostRecent.name}, ${mostRecent.country_name}` : mostRecent.name;
               d["lat"] = mostRecent.lat;
               d["lon"] = mostRecent.long;
               d["similarValue"] = mostRecent[similarityMetric];
@@ -66,7 +66,7 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, num2
       })
     )),
     catchError(e => {
-      console.log("%c Error in getting map data!", "color: red");
+      console.log("%c Error in getting similarity data!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -77,20 +77,23 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, num2
 export function getLocation(apiUrl, locationID, variable, similarityMetric, mostRecent = false) {
   const parseDate = timeParse("%Y-%m-%d");
 
-  const query = mostRecent ? `location_id:${locationID} AND mostRecent:true` : `location_id:${locationID}`
+  const query = mostRecent ? `location_id:${locationID} AND mostRecent:true` : `location_id:${locationID}`;
 
   return getAll(
     apiUrl,
-    `${query}&fields=${variable},${similarityMetric},name,lat,long,date,location_id,dead_rolling_per_100k`
+    `${query}&fields=${similarityMetric},name,lat,long,date,location_id,confirmed_rolling_per_100k,dead_rolling_per_100k,state_name,country_name`
   ).pipe(
     map(results => {
       results.forEach(d => {
         d["date"] = parseDate(d["date"]);
       });
+
+      results.sort((a, b) => a.date - b.date);
+
       return results;
     }),
     catchError(e => {
-      console.log("%c Error in getting map data!", "color: red");
+      console.log("%c Error in getting data for a particular location!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -107,6 +110,7 @@ export function getSimilarData(apiUrl, locationData, similarityMetric, num2Retur
 
   // threshold for numbers 2147483647
 
+
   return getAll(
     apiUrl,
     `mostRecent:true AND ${similarityMetric}:[${thresholdString}]&fields=location_id,${similarityMetric}`
@@ -118,7 +122,9 @@ export function getSimilarData(apiUrl, locationData, similarityMetric, num2Retur
 
       similar.sort((a, b) => a.valueDiff - b.valueDiff);
 
-      const filtered = similar.slice(0, num2Return + 1);
+      const filteredValue = similar.slice(0, num2Return + 1).slice(-1)[0];
+
+      const filtered = similar.filter(d => d.valueDiff <= filteredValue.valueDiff);
       return (filtered)
     }),
     catchError(e => {
