@@ -101,7 +101,7 @@ export function getLocation(apiUrl, locationID, variable, similarityMetric, most
 }
 
 export function getSimilarData(apiUrl, locationData, similarityMetric, adminLevels, num2Return, logged = true) {
-  const threshold = 0.02;
+  const threshold = 0.05;
   const mostRecent = locationData[0];
   const locationValue = mostRecent[similarityMetric];
   const value = logged ? Math.log10(locationValue) : locationValue;
