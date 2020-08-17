@@ -12,6 +12,17 @@
       </option>
     </select>
     to {{locationData.name}}</h2>
+
+  <div id="admin-selector" class="d-flex align-items-center">
+    <small class="mr-1">include</small>
+    <label class="b-contain m-0 mr-2" v-for="option in adminOptions" :key="option">
+      <small>{{option}}</small>
+      <input type="checkbox" :value="option" v-model.lazy="selectedAdminLevels" />
+      <div class="b-input"></div>
+    </label>
+
+  </div>
+
   <table v-if="similar">
     <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-5">
       <td>
@@ -25,7 +36,7 @@
             {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
           </div>
           <small class="text-muted">
-            {{locationData.name}}: <b>{{formatValue(place.similarValue)}}</b>
+            {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
           </small>
         </div>
       </td>
@@ -68,7 +79,7 @@ export default Vue.extend({
   },
   props: {
     location: String,
-    admin_levels: Array,
+    admin_levels: String,
     variable: String,
     similarity: String
   },
@@ -83,6 +94,8 @@ export default Vue.extend({
       colorScale: null,
       selectedSimilarity: null,
       similarOptions: ["population", "confirmed", "confirmed_per_100k", "dead", "dead_per_100k"],
+      selectedAdminLevels: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
+      adminOptions: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
       dataSubscription: null
     }
   },
@@ -95,9 +108,21 @@ export default Vue.extend({
       immediate: true,
       handler(to, from) {
         this.selectedSimilarity = this.similarity;
+        this.selectedAdminLevels = this.admin_levels ? this.admin_levels.split(";") : [];
 
         this.getSimilar();
       }
+    },
+    selectedAdminLevels: function() {
+      this.$router.push({
+        name: "Compare",
+        query: {
+          location: this.location,
+          admin_levels: this.selectedAdminLevels.join(";"),
+          variable: this.variable,
+          similarity: this.similarity
+        }
+      })
     }
   },
   beforeDestroy() {
@@ -105,7 +130,7 @@ export default Vue.extend({
   },
   methods: {
     getSimilar() {
-      this.dataSubscription = findSimilar(this.$apiurl, this.location, this.variable, this.similarity).subscribe(results => {
+      this.dataSubscription = findSimilar(this.$apiurl, this.location, this.variable, this.similarity, this.selectedAdminLevels).subscribe(results => {
         this.similar = results.similar;
         this.locationData = results.location;
         this.xDomain = results.xDomain;
@@ -126,14 +151,29 @@ export default Vue.extend({
       })
     },
     formatValue(val) {
-      return (format(",.1f")(val))
+      return (this.similarity.includes("_per_100k") ? format(",.1f")(val) : format(",.0f")(val))
     }
   }
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+$check-scale: 0.85;
 .location-name {
     width: 350px;
+}
+
+.b-contain,
+.b-input {
+    /* Double-sized Checkboxes */
+    -ms-transform: scale($check-scale);
+    /* IE */
+    -moz-transform: scale($check-scale);
+    /* FF */
+    -webkit-transform: scale($check-scale);
+    /* Safari and Chrome */
+    -o-transform: scale($check-scale);
+    /* Opera */
+    margin: auto;
 }
 </style>

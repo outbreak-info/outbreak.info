@@ -67,7 +67,7 @@ const routes = [{
     path: "/compare",
     name: "Compare",
     props: route => ({
-      admin_levels: route.query.admin_level,
+      admin_levels: route.query.admin_levels,
       location: route.query.location,
       variable: route.query.variable,
       similarity: route.query.similarity

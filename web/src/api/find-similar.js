@@ -18,14 +18,14 @@ import {
 } from "@/api/biothings.js";
 
 
-export function findSimilar(apiUrl, locationID, variable, similarityMetric, num2Return = 5) {
+export function findSimilar(apiUrl, locationID, variable, similarityMetric, adminLevels, num2Return = 5) {
   store.state.admin.loading = true;
   // Choosing one specific date, since all dates contain the current info.
   // First get the location's data for the most recent date.
   // Use that value to get the most recent value of `similarityMetric` and find locations with similar values
   // Then get ALL the data for all those locations.
   return getLocation(apiUrl, locationID, variable, similarityMetric, true).pipe(
-    mergeMap(locationData => getSimilarData(apiUrl, locationData, similarityMetric, num2Return).pipe(
+    mergeMap(locationData => getSimilarData(apiUrl, locationData, similarityMetric, adminLevels, num2Return).pipe(
       mergeMap(similar => {
         const locationString = `(${similar.map(d => d.location_id).join(" OR ")})`;
         return (getLocation(apiUrl, locationString, variable, similarityMetric)).pipe(
@@ -37,7 +37,7 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, num2
             nested.forEach(d => {
               const mostRecent = d.values.slice(-1)[0];
               d["name"] = mostRecent.name;
-              d["nameFormatted"] = mostRecent.state_name ? `${mostRecent.name}, ${mostRecent.state_name}` : mostRecent.country_name ? `${mostRecent.name}, ${mostRecent.country_name}` : mostRecent.name;
+              d["nameFormatted"] = mostRecent.state_name ? `${mostRecent.name}, ${mostRecent.state_name}` : mostRecent.country_name && mostRecent.country_name != mostRecent.name ? `${mostRecent.name}, ${mostRecent.country_name}` : mostRecent.name;
               d["lat"] = mostRecent.lat;
               d["lon"] = mostRecent.long;
               d["similarValue"] = mostRecent[similarityMetric];
@@ -100,7 +100,7 @@ export function getLocation(apiUrl, locationID, variable, similarityMetric, most
   );
 }
 
-export function getSimilarData(apiUrl, locationData, similarityMetric, num2Return, logged = true) {
+export function getSimilarData(apiUrl, locationData, similarityMetric, adminLevels, num2Return, logged = true) {
   const threshold = 0.02;
   const mostRecent = locationData[0];
   const locationValue = mostRecent[similarityMetric];
@@ -108,12 +108,31 @@ export function getSimilarData(apiUrl, locationData, similarityMetric, num2Retur
 
   const thresholdString = logged ? `${Math.pow(10, (1-threshold) * value)} TO ${Math.pow(10, (1+threshold) * value)}` : `${(1-threshold) * value} TO ${(1+threshold) * value}`;
 
+var query = `mostRecent:true AND ${similarityMetric}:[${thresholdString}]&fields=location_id,${similarityMetric}`;
+if(adminLevels.length) {
+  var locationQuery = [];
+  if(adminLevels.includes("countries")) {
+    locationQuery.push("admin_level:0")
+  }
+  if(adminLevels.includes("non-U.S. States/Provinces")) {
+    locationQuery.push("(admin_level:1 AND -country_iso3:USA)")
+  }
+  if(adminLevels.includes("U.S. States")) {
+    locationQuery.push("(admin_level:1 AND country_iso3:USA)")
+  }
+  if(adminLevels.includes("U.S. Metro Areas")) {
+    locationQuery.push('(admin_level:"1.5" AND country_iso3:USA)')
+  }
+  if(adminLevels.includes("U.S. Counties")) {
+    locationQuery.push("(admin_level:2 AND country_iso3:USA)")
+  }
+  query = `(${locationQuery.join(" OR ")}) AND ${query}`;
+}
   // threshold for numbers 2147483647
-
 
   return getAll(
     apiUrl,
-    `mostRecent:true AND ${similarityMetric}:[${thresholdString}]&fields=location_id,${similarityMetric}`
+    query
   ).pipe(
     map(similar => {
       similar.forEach(d => {
@@ -125,7 +144,8 @@ export function getSimilarData(apiUrl, locationData, similarityMetric, num2Retur
       const filteredValue = similar.slice(0, num2Return + 1).slice(-1)[0];
 
       const filtered = similar.filter(d => d.valueDiff <= filteredValue.valueDiff);
-      return (filtered)
+      filtered.push(mostRecent);
+      return(filtered)
     }),
     catchError(e => {
       console.log("%c Error in getting similar locations!", "color: red");
