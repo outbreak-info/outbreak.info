@@ -23,7 +23,7 @@
 
   </div>
 
-  <table v-if="similar">
+  <table v-if="similar  && similar.length">
     <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-5">
       <td>
         <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" />
@@ -50,6 +50,9 @@
       </td>
     </tr>
   </table>
+  <div class="mt-5" v-else>
+    No similar locations found
+  </div>
 
 </div>
 </template>
