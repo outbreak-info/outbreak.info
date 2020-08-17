@@ -7,28 +7,38 @@
 
   <h2 v-if="locationData">Places similar in
     <select v-model="selectedSimilarity" class="select-dropdown" @change="changeSimilarity">
-        <option v-for="option in similarOptions" :value="option" :key="option">
-          {{ option }}
-        </option>
-      </select>
-      to {{locationData.name}}</h2>
-  <template v-if="similar">
-    <div v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-5">
-      <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" />
-      <div class="d-flex flex-column ml-3 mr-5">
-        <h3 class="m-0">{{place.nameFormatted}}</h3>
-        <div>
-          {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
-        </div>
-        <small class="text-muted">
-          {{locationData.name}}: <b>{{formatValue(place.similarValue)}}</b>
-        </small>
-      </div>
+      <option v-for="option in similarOptions" :value="option" :key="option">
+        {{ option }}
+      </option>
+    </select>
+    to {{locationData.name}}</h2>
+  <table v-if="similar">
+    <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-5">
+      <td>
+        <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" />
+      </td>
 
-      <LineComparison :data="place.values" :control="locationData.values" :variable="variable" :xDomain="xDomain" :yMax="yMax" :colorScale="colorScale" label="cases" v-if="place.values" />
-      <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMax/10"  :colorScale="colorScale" label="deaths" v-if="place.values" />
-    </div>
-  </template>
+      <td class="location-name">
+        <div class="d-flex flex-column ml-3 mr-5">
+          <h4 class="m-0 border-bottom">{{place.nameFormatted}}</h4>
+          <div>
+            {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
+          </div>
+          <small class="text-muted">
+            {{locationData.name}}: <b>{{formatValue(place.similarValue)}}</b>
+          </small>
+        </div>
+      </td>
+
+      <td>
+        <LineComparison :data="place.values" :control="locationData.values" :variable="variable" :xDomain="xDomain" :yMax="yMax" :colorScale="colorScale" label="cases" v-if="place.values" />
+      </td>
+      <td>
+        <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMax/10" :colorScale="colorScale" label="deaths" v-if="place.values" />
+
+      </td>
+    </tr>
+  </table>
 
 </div>
 </template>
@@ -46,7 +56,8 @@ import {
 } from "@/api/find-similar.js";
 
 import {
-  format, scaleOrdinal
+  format,
+  scaleOrdinal
 } from "d3";
 
 export default Vue.extend({
@@ -115,8 +126,14 @@ export default Vue.extend({
       })
     },
     formatValue(val) {
-      return(format(",.1f")(val))
+      return (format(",.1f")(val))
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.location-name {
+    width: 350px;
+}
+</style>
