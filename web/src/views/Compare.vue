@@ -11,7 +11,9 @@
         {{ option.label }}
       </option>
     </select>
-    to {{locationData.name}}</h2>
+    to <router-link :to="{name: 'Epidemiology', query: {location: locationData.key}} ">
+      {{locationData.name}}
+    </router-link></h2>
 
     <SearchBar
       class="w-100 mb-3"
