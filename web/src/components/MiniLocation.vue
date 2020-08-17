@@ -1,8 +1,14 @@
 <template>
 <div>
   <svg :width="width" :height="height" ref="svg" class="locator-map-svg">
+    <defs>
+      <filter id="shadow">
+        <feDropShadow dx="0.6" dy="0.5" flood-color="#2c3e50" stdDeviation="0.2" />
+      </filter>
+    </defs>
+
     <g ref="blank_map" class="blank-map-group"></g>
-    <circle :cx="coords[0]" :cy="coords[1]" :r="radius" :fill="fillColor" stroke="#2c3e50" stroke-width="0.5" v-if="coords"></circle>
+    <circle :cx="coords[0]" :cy="coords[1]" :r="radius" :fill="fillColor" stroke="#2c3e50" stroke-width="0.5" filter="url(#shadow)" v-if="coords"></circle>
   </svg>
 </div>
 </template>
@@ -47,7 +53,7 @@ export default {
       return (this.colorScale(this.id))
     },
     coords() {
-      return(this.projection ? this.projection([this.lon, this.lat]) : null)
+      return (this.projection ? this.projection([this.lon, this.lat]) : null)
     }
   },
   mounted() {
@@ -82,7 +88,7 @@ export default {
             enter
               .append("path")
               .attr("class", "blank-outline")
-              .style("fill", "#bababa")
+              .style("fill", "#d6d6d6")
               // draw each region
               .attr("d", this.path)
           })
