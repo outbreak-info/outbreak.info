@@ -87,7 +87,21 @@ export default {
             .style("opacity", 0.6)
             .datum(d => d)
             .attr("d", this.line)
-          })
+          },
+          update => {
+            update
+              .datum(d => d)
+              .attr("d", this.line)
+            },
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
+        )
 
 
       const lineSelector = this.svg.selectAll(".epi-line")
@@ -102,7 +116,22 @@ export default {
             .style("stroke-width", "2")
             .datum(d => d)
             .attr("d", this.line)
-          })
+          },
+        update => {
+          update
+            .attr("id", d => `${d.location_id}-${this.variable}`)
+            .datum(d => d)
+            .attr("d", this.line)
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
     }
   }
 }
