@@ -17,7 +17,7 @@
     <small class="mr-1">include</small>
     <label class="b-contain m-0 mr-2" v-for="option in adminOptions" :key="option">
       <small>{{option}}</small>
-      <input type="checkbox" :value="option" v-model.lazy="selectedAdminLevels" />
+      <input type="checkbox" :value="option" v-model.lazy="selectedAdminLevels"  @change="changeAdmin" />
       <div class="b-input"></div>
     </label>
 
@@ -145,17 +145,6 @@ export default Vue.extend({
 
         this.getSimilar();
       }
-    },
-    selectedAdminLevels: function() {
-      this.$router.push({
-        name: "Compare",
-        query: {
-          location: this.location,
-          admin_levels: this.selectedAdminLevels.join(";"),
-          variable: this.variable,
-          similarity: this.similarity
-        }
-      })
     }
   },
   beforeDestroy() {
@@ -181,6 +170,17 @@ export default Vue.extend({
           admin_levels: this.admin_levels,
           variable: this.variable,
           similarity: this.selectedSimilarity
+        }
+      })
+    },
+    changeAdmin() {
+      this.$router.push({
+        name: "Compare",
+        query: {
+          location: this.location,
+          admin_levels: this.selectedAdminLevels.join(";"),
+          variable: this.variable,
+          similarity: this.similarity
         }
       })
     },
