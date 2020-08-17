@@ -111,6 +111,7 @@ export default {
         enter => {
           enter.append("path")
             .attr("class", d => `epi-line`)
+            .attr("id", d => `${d.location_id}-${this.variable}`)
             .attr("stroke", "#D13B62")
             .style("fill", "none")
             .style("stroke-width", "2")
