@@ -17,41 +17,57 @@
     <small class="mr-1">include</small>
     <label class="b-contain m-0 mr-2" v-for="option in adminOptions" :key="option">
       <small>{{option}}</small>
-      <input type="checkbox" :value="option" v-model.lazy="selectedAdminLevels"  @change="changeAdmin" />
+      <input type="checkbox" :value="option" v-model.lazy="selectedAdminLevels" @change="changeAdmin" />
       <div class="b-input"></div>
     </label>
 
   </div>
 
-  <table v-if="similar  && similar.length">
-    <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left my-5">
-      <td>
-        <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" />
-      </td>
-
-      <td class="location-name">
-        <div class="d-flex flex-column ml-3 mr-5">
-          <router-link :to="{name: 'Epidemiology', query: {location: place.key}} ">
-          <h4 class="m-0 border-bottom">{{place.nameFormatted}}</h4>
-          </router-link>
-          <div>
-            {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
-          </div>
-          <small class="text-muted">
-            {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
-          </small>
+  <div class="mt-5" v-if="similar  && similar.length">
+    <div class="legend d-flex justify-content-end my-3">
+      <div class="mr-3 d-flex align-items-center">
+        <div :style="{background: '#d6d6d6'}" class="legend-rect mr-1">
         </div>
-      </td>
+        <small>{{locationData.name}}</small>
+      </div>
 
-      <td>
-        <LineComparison :data="place.values" :control="locationData.values" variable="confirmed_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxC" :colorScale="colorScale" label="cases" v-if="place.values" />
-      </td>
-      <td>
-        <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxD" :colorScale="colorScale" label="deaths" v-if="place.values" />
+      <div v-for="(place, idx) in similar" :key="idx" class="mr-3 d-flex align-items-center">
+        <div :style="{background: colorScale(place.key)}" class="legend-rect mr-1">
+        </div>
+        <small>{{place.name}}</small>
+      </div>
+    </div>
+    <table>
+      <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left mb-5">
+        <td>
+          <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" />
+        </td>
 
-      </td>
-    </tr>
-  </table>
+        <td class="location-name">
+          <div class="d-flex flex-column ml-3 mr-5">
+            <router-link :to="{name: 'Epidemiology', query: {location: place.key}} ">
+              <h4 class="m-0 border-bottom">{{place.nameFormatted}}</h4>
+            </router-link>
+            <div>
+              {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
+            </div>
+            <small class="text-muted">
+              {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
+            </small>
+          </div>
+        </td>
+
+        <td>
+          <LineComparison :data="place.values" :control="locationData.values" variable="confirmed_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxC" :colorScale="colorScale" label="cases" v-if="place.values" />
+        </td>
+        <td>
+          <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxD" :colorScale="colorScale" label="deaths" v-if="place.values" />
+
+        </td>
+      </tr>
+    </table>
+  </div>
+
   <div class="mt-5" v-else>
     No similar locations found
   </div>
@@ -193,6 +209,7 @@ export default Vue.extend({
 
 <style lang="scss">
 $check-scale: 0.85;
+$legend-size: 15px;
 .location-name {
     width: 350px;
 }
@@ -209,5 +226,11 @@ $check-scale: 0.85;
     -o-transform: scale($check-scale);
     /* Opera */
     margin: auto;
+}
+
+.legend-rect {
+    width: $legend-size;
+    height: $legend-size;
+    border: 1px solid $base-grey;
 }
 </style>
