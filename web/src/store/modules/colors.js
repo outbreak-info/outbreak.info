@@ -5,13 +5,6 @@ const blankFunc = function(location) {
   return null;
 };
 
-// initial state
-const state = {
-  scale: blankFunc,
-  locationScale: blankFunc,
-  epiLocations: []
-};
-
 // based off Tableau 10, sync'd with out color palette and with a slight increase in saturation for many.
 const categoricalPalette = [
   "#507ea3", // blue (Dataset)
@@ -33,6 +26,14 @@ const categoricalPalette = [
   "#834874",
   "#828282"
 ];
+
+// initial state
+const state = {
+  scale: blankFunc,
+  locationScale: blankFunc,
+  colors: categoricalPalette,
+  epiLocations: []
+};
 
 // getters --> computed props
 const getters = {

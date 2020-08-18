@@ -1,276 +1,276 @@
 <template>
 <div class="full-page p-5 bg-light">
   <!-- loading -->
-  <div v-if="dataloading" class="map-loader">
+  <div v-if="loading" class="map-loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-  <div class="d-flex mb-3">
-    <!-- Region buttons -->
-    <div class="d-flex flex-wrap">
-      <router-link class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center" role="button" :class="{active: admin_level === '0'}"
-        :to="{ name: 'Compare', query: {admin_level: '0', variable: this.selectedVariable.value, date: this.selectedDate} }">
-        All
-        countries</router-link>
-      <div class="d-flex flex-column justify-content-around">
-        <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
-          :to="{ name: 'Compare', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. States</router-link>
-        <div class="d-flex">
-          <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}"
-            :to="{ name: 'Compare', query: {admin_level: '1.5', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
-          </router-link>
-          <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
-            :to="{ name: 'Compare', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Counties</router-link>
-        </div>
-      </div>
+  <h2>Places similar in
+    <select v-model="selectedSimilarity" class="select-dropdown" @change="changeSimilarity">
+      <option v-for="option in similarOptions" :value="option.value" :key="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+    <template v-if="locationData">to
+      <router-link :to="{name: 'Epidemiology', query: {location: locationData.key}} ">
+        {{locationData.name}}
+      </router-link>
+    </template>
+  </h2>
 
-      <!-- <div class="d-flex flex-wrap">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:AUS', variable: this.selectedVariable.value} }">Australian States</router-link>
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CAN', variable: this.selectedVariable.value} }">Canadian Provinces</router-link>
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Compare', query: {admin_level: '1', location:'country_iso3:CHN', variable: this.selectedVariable.value} }">Chinese Provinces</router-link>
+  <SearchBar class="w-100 mb-3" @location="changeLocation" :selected="selectedLocation" placeholder="Select location"></SearchBar>
 
-    </div> -->
-    </div>
+  <div id="admin-selector" class="d-flex align-items-center">
+    <small class="mr-1">include</small>
+    <label class="b-contain m-0 mr-2" v-for="option in adminOptions" :key="option">
+      <small>{{option}}</small>
+      <input type="checkbox" :value="option" v-model.lazy="selectedAdminLevels" @change="changeAdmin" />
+      <div class="b-input"></div>
+    </label>
 
-    <div class="d-flex flex-column ml-5 align-items-center justify-content-between">
-      <!-- variable options -->
-      <div class="row d-flex align-items-center">
-        <select v-model="selectedVariable" class="select-dropdown">
-          <option v-for="option in variableOptions" :value="option" :key="option.value" v-html="option.label">
-          </option>
-        </select>
-      </div>
-      <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
-        <DateSlider :date="selectedDate" :min="minDate" :max="maxDate" :adminLevel = "admin_level" v-if="maxDate" />
-        <!-- <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i> -->
-      </div>
-    </div>
   </div>
 
-  <Choropleth :data="data" :animate="animate" :blankMap="blankMap" :outline="outline" :selectedMin="selectedMin" :selectedMax="selectedMax" :colorScale="colorScale" :adminLevel="admin_level" :variable="selectedVariable.value" :variableLabel="selectedVariable.choro" :date1="selectedDate" :maxDate="maxDate" />
-  <DataSource :data="data" dataType="maps" figureRef="epi-map-svg" :ids="['NYT', 'JHU']" />
+  <div class="mt-5" v-if="similar  && similar.length">
+    <div class="legend d-flex justify-content-end my-3">
+      <div class="mr-3 d-flex align-items-center">
+        <div :style="{background: '#d6d6d6'}" class="legend-rect mr-1">
+        </div>
+        <small>{{locationData.name}}</small>
+      </div>
+
+      <div v-for="(place, idx) in similar" :key="idx" class="mr-3 d-flex align-items-center">
+        <div :style="{background: colorScale(place.key)}" class="legend-rect mr-1">
+        </div>
+        <small>{{place.name}}</small>
+      </div>
+    </div>
+    <table>
+      <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left mb-5">
+        <td>
+          <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" :partOfUSA = "place.partOfUSA" />
+        </td>
+
+        <td class="location-name">
+          <div class="d-flex flex-column ml-3 mr-5">
+            <router-link :to="{name: 'Epidemiology', query: {location: place.key}} ">
+              <h4 class="m-0 border-bottom">{{place.nameFormatted}}</h4>
+            </router-link>
+            <div class="d-flex justify-content-between">
+              <div>
+              {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
+              </div>
+              <div v-if="similarity != 'population'">
+                population: <b>{{formatValue(place.values[0].population)}}</b>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between text-muted">
+              <small>
+                {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
+              </small>
+              <small v-if="similarity != 'population'">
+                population: <b>{{formatValue(locationData.values[0].population)}}</b>
+              </small>
+            </div>
+
+          </div>
+        </td>
+
+        <td>
+          <LineComparison :data="place.values" :control="locationData.values" variable="confirmed_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxC" :colorScale="colorScale" label="cases" v-if="place.values" />
+        </td>
+        <td>
+          <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxD" :colorScale="colorScale" label="deaths" v-if="place.values" />
+
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="mt-5" v-else>
+    No similar locations found
+  </div>
 
 </div>
 </template>
 
-<script>
-import {
-  getComparisonData
-} from "@/api/epi-comparison.js";
-
+<script lang="js">
+import Vue from "vue";
 import {
   mapState
 } from "vuex";
+
+import MiniLocation from "@/components/MiniLocation.vue";
+import LineComparison from "@/components/LineComparison.vue";
+import SearchBar from "@/components/SearchBar.vue";
+
 import {
-  timeFormat,
+  findSimilar
+} from "@/api/find-similar.js";
+
+import {
   format,
-  max,
-  min
+  scaleOrdinal
 } from "d3";
 
-import Choropleth from "@/components/Choropleth.vue";
-import DataSource from "@/components/DataSource.vue";
-import DateSlider from "@/components/DateSlider.vue";
-
-export default {
+export default Vue.extend({
   name: "Compare",
   components: {
-    Choropleth,
-    DataSource,
-    DateSlider
+    MiniLocation,
+    LineComparison,
+    SearchBar
   },
   props: {
-    admin_level: {
-      type: String,
-      default: "0"
-    },
-    variable: {
-      type: String,
-      default: "confirmed_rolling_14days_ago_diff"
-    },
     location: String,
-    min: String,
-    max: String,
-    date: String,
-    animate: { type: Boolean, default: true }
-  },
-  watch: {
-    '$route.params': {
-      immediate: true,
-      handler(newRoute, oldRoute) {
-        // update selections based on routes
-        const filtered = this.variableOptions.filter(d => d.value === this.variable);
-        this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
-        // reset selected min/max
-        // If the data already exists, pull out the min/max.
-        this.selectedMin = this.min || this.min === 0 ? +this.min : null;
-        this.selectedMax = this.max || this.max === 0 ? +this.max : null;
-
-        this.selectedDate = this.date;
-
-        this.getData(this.selectedDate);
-      }
-    },
-    selectedVariable() {
-      this.$router.push({
-        path: "maps",
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          date: this.selectedDate
-        }
-      });
-    }
+    admin_levels: String,
+    variable: String,
+    similarity: String
   },
   data() {
     return {
+      lat: 10,
+      lon: 0,
+      locationData: null,
+      similar: null,
+      xDomain: null,
+      yMaxC: null,
+      yMaxD: null,
       colorScale: null,
-      data: [],
-      blankMap: null,
-      outline: null,
-      selectedDate: null,
-      selectedMin: null,
-      selectedMax: null,
-      maxDate: null,
-      minDate: new Date("2020-01-22 0:0"),
-      dataSubscription: null,
-      selectedVariable: null,
-      variableOptions: [{
-          label: "total cases per capita",
-          choro: "total cases per 100,000 people",
-          value: "confirmed_per_100k"
-        },
-        {
-          label: "total deaths per capita",
-          choro: "total deaths per 100,000 people",
-          value: "dead_per_100k"
-        },
-        {
-          label: "new cases/day",
-          choro: "average new cases/day",
-          value: "confirmed_rolling"
-        },
-        {
-          label: "new cases/day per capita",
-          choro: "average new cases/day per 100,000 people",
-          value: "confirmed_rolling_per_100k"
-        },
-        {
-          label: "new deaths/day",
-          choro: "average new deaths/day",
-          value: "dead_rolling"
-        },
-        {
-          label: "new deaths/day per capita",
-          choro: "average new deaths/day per 100,000 people",
-          value: "dead_rolling_per_100k"
-        },
-        {
-          label: "2 week change in cases/day",
-          choro: "cases vs. 2 weeks ago",
-          value: "confirmed_rolling_14days_ago_diff"
-        },
-        {
-          label: "2 week change in cases/day per capita",
-          choro: "cases vs. 2 weeks ago per 100,000 people",
-          value: "confirmed_rolling_14days_ago_diff_per_100k"
-        },
-        {
-          label: "2 week change in deaths/day",
-          choro: "deaths vs. 2 weeks ago",
-          value: "dead_rolling_14days_ago_diff"
-        },
-        {
-          label: "2 week change in deaths/day per capita",
-          choro: "deaths vs. 2 weeks ago per 100,000 people",
-          value: "dead_rolling_14days_ago_diff_per_100k"
-        }
-
-      ]
-    };
+      selectedLocation: null,
+      selectedSimilarity: null,
+      similarOptions: [{
+        value: "population",
+        label: "population"
+      }, {
+        value: "confirmed",
+        label: "total cases"
+      }, {
+        value: "confirmed_per_100k",
+        label: "total cases per capita"
+      }, {
+        value: "confirmed_rolling",
+        label: "new cases today"
+      }, {
+        value: "confirmed_rolling_per_100k",
+        label: "new cases today per capita"
+      }, {
+        value: "dead",
+        label: "deaths"
+      }, {
+        value: "dead_per_100k",
+        label: "deaths per capita"
+      }, {
+        value: "dead_rolling",
+        label: "new deaths today"
+      }, {
+        value: "dead_rolling_per_100k",
+        label: "new deaths today per capita"
+      }],
+      selectedAdminLevels: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
+      adminOptions: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
+      dataSubscription: null
+    }
   },
   computed: {
-    ...mapState("admin", ["dataloading"])
+    ...mapState("admin", ["loading"]),
+    ...mapState("colors", ["colors"])
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler(to, from) {
+        this.selectedSimilarity = this.similarity;
+        this.selectedAdminLevels = this.admin_levels ? this.admin_levels.split(";") : [];
+
+        this.getSimilar();
+      }
+    }
   },
   beforeDestroy() {
-    this.dataSubscription.unsubscribe();
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
   },
   methods: {
-    formatDate(dateStr) {
-      return (timeFormat("%Y-%m-%d")(dateStr))
+    getSimilar() {
+      if (this.location && this.similarity) {
+        this.dataSubscription = findSimilar(this.$apiurl, this.location, this.variable, this.similarity, this.selectedAdminLevels).subscribe(results => {
+          this.similar = results.similar;
+          this.locationData = results.location;
+          this.xDomain = results.xDomain;
+          this.yMaxC = results.yMaxC;
+          this.yMaxD = results.yMaxD;
+          this.colorScale = scaleOrdinal().range(this.colors).domain(this.similar.map(d => d.key));
+          console.log(results)
+        });
+      }
     },
-    getData(date) {
-      this.dataSubscription = getComparisonData(this.$apiurl, this.location, this.admin_level, this.variable, this.selectedVariable.choro, date).subscribe(results => {
-        this.data = results.data;
-        this.outline = results.overlay;
-        this.blankMap = results.blankMap;
-
-        this.maxDate = results.maxDate;
-        if (!this.selectedDate) {
-          this.selectedDate = this.formatDate(results.maxDate);
+    changeSimilarity() {
+      this.$router.push({
+        name: "Compare",
+        query: {
+          location: this.location,
+          admin_levels: this.admin_levels,
+          variable: this.variable,
+          similarity: this.selectedSimilarity
         }
-        this.colorScale = results.colorScale;
       })
     },
-    formatNumber(value, digits = 1) {
-      return (format(`,.${digits}f`)(value))
+    changeAdmin() {
+      this.$router.push({
+        name: "Compare",
+        query: {
+          location: this.location,
+          admin_levels: this.selectedAdminLevels.join(";"),
+          variable: this.variable,
+          similarity: this.similarity
+        }
+      })
+    },
+    changeLocation(location_id) {
+      console.log(this.selectedLocation)
+      this.selectedLocation = location_id;
+      this.$router.push({
+        name: "Compare",
+        query: {
+          location: location_id,
+          admin_levels: this.admin_levels,
+          variable: this.variable,
+          similarity: this.similarity
+        }
+      })
+    },
+    formatValue(val) {
+      return (this.similarity.includes("_per_100k") || this.similarity.includes("rolling") ? format(",.1f")(val) : format(",.0f")(val))
     }
   }
-};
+})
 </script>
 
-<style lang="scss" scoped>
-#th-doubling-rates {
-    font-weight: 400;
+<style lang="scss">
+$check-scale: 0.85;
+$legend-size: 15px;
+.location-name {
+    width: 350px;
 }
 
-td {
-    padding: 5px;
-    text-align: center;
-    vertical-align: middle;
-    border: none;
+.b-contain,
+.b-input {
+    /* Double-sized Checkboxes */
+    -ms-transform: scale($check-scale);
+    /* IE */
+    -moz-transform: scale($check-scale);
+    /* FF */
+    -webkit-transform: scale($check-scale);
+    /* Safari and Chrome */
+    -o-transform: scale($check-scale);
+    /* Opera */
+    margin: auto;
 }
 
-th {
-    font-size: 0.95em;
-    font-weight: 400;
-    color: $grey-70;
-}
-
-.sort-hover {
-    display: none;
-}
-
-.sort-grp.hover .sort-hover,
-.sort-grp:hover .sort-hover {
-    display: inline;
-}
-
-table {
-    border-collapse: collapse;
-    font-size: 0.85em;
-}
-
-tr {
-    border-bottom: 1px solid #cacaca;
-    // border-bottom: 1px solid $grey-40;
-}
-
-tr.table-header-merged {
-    border-bottom: none;
-    // border-bottom: 1px solid $grey-40;
-}
-
-.btn-main-outline.active {
-    background: $primary-color !important;
-    color: white;
-}
-
-.map-loader {
-  position: fixed;
-  z-index: 100;
-  top: 125px !important;
-  left: 100px !important;
+.legend-rect {
+    width: $legend-size;
+    height: $legend-size;
+    border: 1px solid $base-grey;
 }
 </style>

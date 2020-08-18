@@ -231,7 +231,7 @@ const state = {
       title: "Added world and U.S. choropleths",
       description: "Added choropleths of daily new cases and deaths (7 day rolling average) and two-week change in average cases and deaths.",
       route: {
-        name: "Compare"
+        name: "Maps"
       }
     },
     {
@@ -251,7 +251,7 @@ const state = {
       date: new Date("2020-07-06 0:0"),
       category: "feature",
       title: "Overlaid 7-day rolling averages for case counts",
-      description: 'Compare 7-day rolling averages between locations directly.',
+      description: 'Maps 7-day rolling averages between locations directly.',
       route: {
         name: "Epidemiology",
         query: {
@@ -266,7 +266,7 @@ const state = {
       title: "Added time slider to geographic data",
       description: 'Scroll through timepoints to compare countries, U.S. states, U.S. metropolitan areas, and U.S. counties case and death counts over time',
       route: {
-        name: "Compare"
+        name: "Maps"
       }
     },
     {
@@ -297,7 +297,7 @@ const state = {
       title: "Copyable visualizations",
       description: 'All visualizations can now be copied to the clipboard (Chrome/Edge/Opera/Android/Samsung) and downloaded as .pngs',
       route: {
-        name: "Compare",
+        name: "Maps",
       }
     }, {
       date: new Date("2020-07-23 0:1"),
