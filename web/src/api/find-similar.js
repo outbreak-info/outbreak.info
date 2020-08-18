@@ -38,6 +38,7 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, admi
               const mostRecent = d.values.slice(-1)[0];
               d["name"] = mostRecent.name;
               d["nameFormatted"] = mostRecent.state_name ? `${mostRecent.name}, ${mostRecent.state_name}` : mostRecent.country_name && mostRecent.country_name != mostRecent.name ? `${mostRecent.name}, ${mostRecent.country_name}` : mostRecent.name;
+              d["partOfUSA"] = mostRecent.country_name == "United States of America";
               d["lat"] = mostRecent.lat;
               d["lon"] = mostRecent.long;
               d["similarValue"] = mostRecent[similarityMetric];
@@ -83,7 +84,7 @@ export function getLocation(apiUrl, locationID, variable, similarityMetric, most
 
   return getAll(
     apiUrl,
-    `${query}&fields=${similarityMetric},name,lat,long,date,location_id,confirmed_rolling_per_100k,dead_rolling_per_100k,state_name,country_name`
+    `${query}&fields=${similarityMetric},name,lat,long,date,location_id,confirmed_rolling_per_100k,dead_rolling_per_100k,state_name,country_name,population`
   ).pipe(
     map(results => {
       results.forEach(d => {

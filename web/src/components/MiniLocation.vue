@@ -17,14 +17,15 @@
 <script>
 import {
   geoEqualEarth,
+  geoAlbersUsa,
   geoPath,
   select,
   selectAll,
   min
 } from "d3";
 
-import blankMap from "@/assets/geo/countries_fused_simplified.json";
-
+import worldMap from "@/assets/geo/countries_fused_simplified.json";
+import usMap from "@/assets/geo/US_states.json";
 
 export default {
   name: "MiniLocation",
@@ -32,6 +33,7 @@ export default {
     lat: Number,
     lon: Number,
     colorScale: Function,
+    partOfUSA: Boolean,
     id: String
   },
   data: function() {
@@ -45,7 +47,7 @@ export default {
       // methods
       path: geoPath(),
       // map data
-      // blankMap: null
+      blankMap: null
     }
   },
   computed: {
@@ -56,6 +58,11 @@ export default {
       return (this.projection ? this.projection([this.lon, this.lat]) : null)
     }
   },
+  watch: {
+    lat() {
+      this.setupMap();
+    }
+  },
   mounted() {
     this.setupMap();
   },
@@ -63,14 +70,24 @@ export default {
     setupMap() {
       this.map = select(this.$refs.blank_map);
 
-      this.projection = geoEqualEarth()
-        .center([18, 7]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
-        .scale(1)
-        .translate([this.width / 2, this.height / 2]);
+      if (this.partOfUSA) {
+        this.blankMap = usMap;
+
+        this.projection = geoAlbersUsa()
+          .scale(1)
+          .translate([this.width / 2, this.height / 2]);
+      } else {
+        this.blankMap = worldMap;
+
+        this.projection = geoEqualEarth()
+          .center([18, 7]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
+          .scale(1)
+          .translate([this.width / 2, this.height / 2]);
+      }
 
       this.path = this.path.projection(this.projection);
 
-      const bounds = this.path.bounds(blankMap),
+      const bounds = this.path.bounds(this.blankMap),
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],
         xscale = this.width / dx,
@@ -82,16 +99,27 @@ export default {
 
       this.map
         .selectAll("path")
-        .data(blankMap.features)
+        .data(this.blankMap.features)
         .join(
           enter => {
             enter
               .append("path")
               .attr("class", "blank-outline")
               .style("fill", "#d6d6d6")
+              .style("stroke", this.partOfUSA ? "#2c3e50" : "none")
+              .style("stroke-width", 0.2)
               // draw each region
               .attr("d", this.path)
-          })
+          },
+          update => update.attr("d", this.path),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
     }
   }
 }

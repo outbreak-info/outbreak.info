@@ -47,7 +47,7 @@
     <table>
       <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left mb-5">
         <td>
-          <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" />
+          <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" :partOfUSA = "place.partOfUSA" />
         </td>
 
         <td class="location-name">
@@ -55,12 +55,24 @@
             <router-link :to="{name: 'Epidemiology', query: {location: place.key}} ">
               <h4 class="m-0 border-bottom">{{place.nameFormatted}}</h4>
             </router-link>
-            <div>
+            <div class="d-flex justify-content-between">
+              <div>
               {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
+              </div>
+              <div v-if="similarity != 'population'">
+                population: <b>{{formatValue(place.values[0].population)}}</b>
+              </div>
             </div>
-            <small class="text-muted">
-              {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
-            </small>
+
+            <div class="d-flex justify-content-between text-muted">
+              <small>
+                {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
+              </small>
+              <small v-if="similarity != 'population'">
+                population: <b>{{formatValue(locationData.values[0].population)}}</b>
+              </small>
+            </div>
+
           </div>
         </td>
 
