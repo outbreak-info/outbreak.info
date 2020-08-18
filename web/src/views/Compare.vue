@@ -46,8 +46,13 @@
     </div>
     <table>
       <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left mb-5">
+
         <td>
           <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" :partOfUSA = "place.partOfUSA" />
+        </td>
+
+        <td class="rank">
+          {{idx + 1}}
         </td>
 
         <td class="location-name">
@@ -60,7 +65,7 @@
               {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
               </div>
               <div v-if="similarity != 'population'">
-                population: <b>{{formatValue(place.values[0].population)}}</b>
+                population: <b>{{formatValue(place.values[0].population, true)}}</b>
               </div>
             </div>
 
@@ -69,7 +74,7 @@
                 {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
               </small>
               <small v-if="similarity != 'population'">
-                population: <b>{{formatValue(locationData.values[0].population)}}</b>
+                population: <b>{{formatValue(locationData.values[0].population, true)}}</b>
               </small>
             </div>
 
@@ -241,8 +246,11 @@ export default Vue.extend({
         }
       })
     },
-    formatValue(val) {
-      return (this.similarity.includes("_per_100k") || this.similarity.includes("rolling") ? format(",.1f")(val) : format(",.0f")(val))
+    formatValue(val, dontRound = false) {
+      if(dontRound) {
+        return(format(",.0f")(val))
+      }
+      return (this.similarity.includes("_per_100k") || this.similarity.includes("rolling")  ? format(",.1f")(val) : format(",.0f")(val))
     }
   }
 })
@@ -274,4 +282,12 @@ $legend-size: 15px;
     height: $legend-size;
     border: 1px solid $base-grey;
 }
+
+.rank {
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  background: #fbefc5;
+}
+
 </style>
