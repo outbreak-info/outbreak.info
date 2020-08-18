@@ -615,7 +615,7 @@ export default {
       return(`"${this.searchInput}"`)
     },
     showSearchHelper: function() {
-      return(this.searchInput.includes(" ") && !this.searchInput.includes('"'))
+      return(this.searchInput ? this.searchInput.includes(" ") && !this.searchInput.includes('"') : false)
     }
   },
   watch: {
