@@ -4,6 +4,7 @@
   <small class="d-block text-muted annotation">per 100,000 residents</small>
   <svg :width="width" :height="height" class="comparison-svg">
     <g ref="svg" :transform="`translate(${margin.left}, ${margin.top})`">
+      <line :x1="0" :x2="width - margin.left - margin.right" :y1="y(0)" :y2="y(0)" stroke = "#2c3e50" :stroke-width="0.5" v-if="y"></line>
     </g>
   </svg>
 </div>
