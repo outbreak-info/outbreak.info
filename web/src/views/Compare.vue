@@ -11,11 +11,11 @@
         {{ option.label }}
       </option>
     </select>
-    <template v-if="locationData">to
+    <span v-if="locationData" class="ml-2"> to
       <router-link :to="{name: 'Epidemiology', query: {location: locationData.key}} ">
         {{locationData.name}}
       </router-link>
-    </template>
+    </span>
   </h2>
 
   <SearchBar class="w-100 mb-3" @location="changeLocation" :selected="selectedLocation" placeholder="Select location"></SearchBar>
