@@ -5,22 +5,20 @@
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
 
-  <h2 v-if="locationData">Places similar in
+  <h2>Places similar in
     <select v-model="selectedSimilarity" class="select-dropdown" @change="changeSimilarity">
       <option v-for="option in similarOptions" :value="option.value" :key="option.value">
         {{ option.label }}
       </option>
     </select>
-    to <router-link :to="{name: 'Epidemiology', query: {location: locationData.key}} ">
-      {{locationData.name}}
-    </router-link></h2>
+    <template v-if="locationData">to
+      <router-link :to="{name: 'Epidemiology', query: {location: locationData.key}} ">
+        {{locationData.name}}
+      </router-link>
+    </template>
+  </h2>
 
-    <SearchBar
-      class="w-100 mb-3"
-      @location="changeLocation"
-      :selected="selectedLocation"
-      placeholder="Change location"
-    ></SearchBar>
+  <SearchBar class="w-100 mb-3" @location="changeLocation" :selected="selectedLocation" placeholder="Select location"></SearchBar>
 
   <div id="admin-selector" class="d-flex align-items-center">
     <small class="mr-1">include</small>
@@ -177,19 +175,23 @@ export default Vue.extend({
     }
   },
   beforeDestroy() {
-    this.dataSubscription.unsubscribe();
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
   },
   methods: {
     getSimilar() {
-      this.dataSubscription = findSimilar(this.$apiurl, this.location, this.variable, this.similarity, this.selectedAdminLevels).subscribe(results => {
-        this.similar = results.similar;
-        this.locationData = results.location;
-        this.xDomain = results.xDomain;
-        this.yMaxC = results.yMaxC;
-        this.yMaxD = results.yMaxD;
-        this.colorScale = scaleOrdinal().range(this.colors).domain(this.similar.map(d => d.key));
-        console.log(results)
-      });
+      if (this.location && this.similarity) {
+        this.dataSubscription = findSimilar(this.$apiurl, this.location, this.variable, this.similarity, this.selectedAdminLevels).subscribe(results => {
+          this.similar = results.similar;
+          this.locationData = results.location;
+          this.xDomain = results.xDomain;
+          this.yMaxC = results.yMaxC;
+          this.yMaxD = results.yMaxD;
+          this.colorScale = scaleOrdinal().range(this.colors).domain(this.similar.map(d => d.key));
+          console.log(results)
+        });
+      }
     },
     changeSimilarity() {
       this.$router.push({
@@ -214,6 +216,8 @@ export default Vue.extend({
       })
     },
     changeLocation(location_id) {
+      console.log(this.selectedLocation)
+      this.selectedLocation = location_id;
       this.$router.push({
         name: "Compare",
         query: {
