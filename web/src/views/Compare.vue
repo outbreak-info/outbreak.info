@@ -166,8 +166,9 @@ export default Vue.extend({
         value: "dead_rolling_per_100k",
         label: "new deaths today per capita"
       }],
-      selectedAdminLevels: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
-      adminOptions: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
+      //"non-U.S. States/Provinces",
+      selectedAdminLevels: ["countries", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
+      adminOptions: ["countries", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
       dataSubscription: null
     }
   },
