@@ -3,10 +3,7 @@
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
-  <!-- INTRO -->
-  <!-- <Warning :animate="false" :text="
-        'Due to changes to our data source, data after 22 March incorrectly shows as 0. We are fixing it as fast as we can!'
-      "></Warning> -->
+<!-- INTRO -->
   <section>
     <div class="row m-0">
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
@@ -30,16 +27,16 @@
       </div>
     </div>
   </section>
+
   <!-- SEARCH  -->
   <section class="d-flex justify-content-center align-items-center py-5 bg-grag-main text-light">
     <div class="row m-0 w-100">
-      <div class="col-sm-12">
-        <h5 class="text-uppercase mb-3 text-spacing-1">Search epidemiology data and resources</h5>
+
+      <div class="col-sm-12 col-md-6 px-5 my-3 d-flex flex-column justify-content-between">
+        <h5 class="text-uppercase mb-3 text-spacing-1">Find COVID-19 resources</h5>
         <svg viewBox="0 0 100 3">
           <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
         </svg>
-      </div>
-      <div class="col-sm-12 col-md-6 px-5 my-3 d-flex flex-column justify-content-between">
         <div id="sBar-text" class="form-text text-light d-block mb-3">View COVID-19 trends by region, country, state/province, U.S.
           metropolitan area, or U.S. county</div>
         <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100"></SearchBar>
@@ -56,6 +53,10 @@
 
       </div>
       <div class="col-sm-12 col-md-6 px-5 my-3 d-flex flex-column justify-content-between">
+        <h5 class="text-uppercase mb-3 text-spacing-1">Explore epidemiology data</h5>
+        <svg viewBox="0 0 100 3">
+          <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
+        </svg>
         <div id="resourceBar-text" class="form-text text-light d-block mb-3">Find COVID-19 and SARS-CoV-2 clinical trials, datasets, publications, and more</div>
 
         <form autocomplete="off" class="w-100">
@@ -81,6 +82,36 @@
       </div>
     </div>
   </section>
+
+<section id="resource-examples">
+  <div class="row">
+
+  <div class="col-md-4">
+    <h6 class="text-uppercase">Search by keyword</h6>
+  </div>
+
+  <div class="col-md-4">
+    <h6 class="text-uppercase">Search by resource type</h6>
+  </div>
+
+  <div class="col-md-4">
+    <h6 class="text-uppercase">Search by resource provider</h6>
+  </div>
+
+  <div class="col-md-4">
+    <h6 class="text-uppercase">Explore related resources</h6>
+  </div>
+
+  <div class="col-md-4">
+    <h6 class="text-uppercase">Download search results</h6>
+  </div>
+
+  <div class="col-md-4">
+    <h6 class="text-uppercase">Download all results</h6>
+  </div>
+
+</div>
+</section>
   <!-- EPI CURVE SUMMARIES -->
   <section class="mt-5" id="regional-epi-curves">
     <template v-if="nestedData && nestedData.length > 0">
@@ -103,8 +134,8 @@
             }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
       </div>
     </template>
+
     <template v-if="nestedData && nestedData.length > 0">
-      <CaseSummary />
       <h4>
         Cumulative Number of COVID-19
         <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
@@ -115,6 +146,7 @@
         by Region
       </h4>
     </template>
+
     <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
       <div class="row px-2" v-if="nestedData && nestedData.length > 0">
         <div class="col-sm-12 col-md-12">
@@ -126,23 +158,6 @@
     <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" :ids="['NYT', 'JHU']" figureRef="epi-summary-svg"/>
   </section>
 
-  <section class="case-data-table p-1">
-    <EpiTable :routable="true" :colorScale="regionColorScale" colorVar="wb_region" />
-  </section>
-
-  <section class="case-map">
-    <h4 class="pt-5">
-      Current
-      <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
-        <option v-for="option in variableOptions" :value="option.value" :key="option.value">
-          {{ option.label }}
-        </option>
-      </select>
-      as of {{ currentDate$ }}
-    </h4>
-    <LeafletMap :data="mapData$" :variable="selectedVariable" />
-     <DownloadData v-if="mapData$" type="regions" figureRef="leaflet-zoom-animated" :data="mapData$" class="mt-2 mb-5"/>
-  </section>
 
   <section>
     <p class="focustext">
@@ -160,13 +175,9 @@
 // @ is an alias to /src
 import EpiStacked from "@/components/EpiStacked.vue";
 import CountryBarGraph from "@/components/CountryBarGraph.vue";
-import CaseSummary from "@/components/CaseSummary.vue";
 import DataSource from "@/components/DataSource.vue";
-import EpiTable from "@/components/EpiTable.vue";
-import LeafletMap from "@/components/LeafletMap.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
-import DownloadData from "@/components/DownloadData.vue";
 // import Warning from "@/components/Warning.vue";
 import {
   getStackedRegions
@@ -195,14 +206,9 @@ export default {
   components: {
     EpiStacked,
     CountryBarGraph,
-    CaseSummary,
     DataSource,
-    EpiTable,
-    LeafletMap,
     SearchBar,
-    Logos,
-    DownloadData
-    // Warning
+    Logos
   },
   data() {
     return {
