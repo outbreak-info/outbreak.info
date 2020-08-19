@@ -15,10 +15,12 @@
 import Vue from "vue";
 
 import GEODATA from "@/assets/geo/countries.json";
-import * as d3 from "d3";
 import {
-  geoInterruptedBoggs
-} from "d3-geo-projection";
+  select,
+  geoPath,
+  geoEqualEarth,
+  min
+} from "d3";
 
 export default Vue.extend({
   name: "CountryMap",
@@ -34,9 +36,9 @@ export default Vue.extend({
     }
   },
   watch: {
-    countries: function () {
+    countries: function() {
       this.drawMetro();
-      }
+    }
   },
   data() {
     return {
@@ -58,16 +60,16 @@ export default Vue.extend({
   },
   methods: {
     setupChoro() {
-      this.svg = d3.select(this.$refs.svg);
-      this.regions = d3.select(this.$refs.countries);
+      this.svg = select(this.$refs.svg);
+      this.regions = select(this.$refs.countries);
       this.height = this.width * 0.5;
     },
     drawMetro() {
-      var path = d3.geoPath();
-      var projection = geoInterruptedBoggs()
-        .center([0, 0])
+      var path = geoPath();
+      var projection = geoEqualEarth()
+        .center([15, 12]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
         .translate([this.width / 2, this.height / 2])
-        .scale(this.width / 1.75 / Math.PI);
+        .scale(this.width / 1.45 / Math.PI);
 
       // regional data
       this.regions
@@ -89,13 +91,13 @@ export default Vue.extend({
           update => update
           .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec"),
           exit =>
-                    exit.call(exit =>
-                      exit
-                      .transition()
-                      .duration(10)
-                      .style("opacity", 1e-5)
-                      .remove()
-                    )
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
         )
     }
   }
