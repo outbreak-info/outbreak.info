@@ -139,7 +139,7 @@
     <small class="topic uppercase px-2 py-1 my-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
       <router-link :to="{
             name: 'Resources',
-            query: { search: `&quot;${topic}&quot;` }
+            query: { q: `&quot;${topic}&quot;` }
           }" class="no-underline">
         {{ topic }}
       </router-link>
@@ -147,7 +147,7 @@
     <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
       <router-link :to="{
             name: 'Resources',
-            query: { search: `&quot;${keyword}&quot;` }
+            query: { q: `&quot;${keyword}&quot;` }
           }" class="no-underline text-dark">
         {{ keyword }}
       </router-link>
