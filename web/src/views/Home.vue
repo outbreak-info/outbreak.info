@@ -301,6 +301,8 @@ import {
 import {
   getCurrentDate
 } from "@/api/biothings.js";
+import { getLocation } from "@/js/get-location.js";
+
 import {
   mapState
 } from "vuex";
@@ -406,6 +408,8 @@ export default {
     };
   },
   mounted() {
+    getLocation(this.$apiurl);
+
     this.dataSubscription = getStackedRegions(this.$apiurl).subscribe(d => {
       this.data = d;
       this.nestedData = d[this.selectedVariable];
