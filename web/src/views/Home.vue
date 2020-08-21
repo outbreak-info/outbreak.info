@@ -1,63 +1,58 @@
 <template>
-<div class="home flex-column align-left">
+<div class="home flex-column text-left d-flex">
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
-<!-- INTRO -->
+  <!-- INTRO -->
   <section>
     <div class="row m-0">
-      <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
-        <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-75" />
-      </div>
-      <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
-        <div class="container p-3">
-          <h6>
-            During outbreaks of emerging diseases such as COVID-19,
-            efficiently collecting, sharing, and integrating data is critical
-            to scientific research.
-          </h6>
-          <h6 class="text-dark font-weight-bold">
-            <b class="text-highlight">outbreak.info</b> is a resource to
-            aggregate all this information into a single location.
-          </h6>
-          <p class="mt-4">
-            <router-link :to="{ name: 'Latest' }">View latest changes</router-link>
-          </p>
-        </div>
+      <div class="col-sm-12 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
+        <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-25" />
       </div>
     </div>
   </section>
 
+  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
+    <div class="container p-3">
+      <p class="focustext">
+        During outbreaks of emerging diseases such as COVID-19,
+        efficiently collecting, sharing, and integrating data is critical
+        to scientific research.
+      </p>
+      <p class="text-dark focustext font-weight-bold">
+        <b class="text-highlight">outbreak.info</b> is a resource to
+        aggregate all this information into a single location.
+      </p>
+      <p class="mt-4">
+        <router-link :to="{ name: 'Latest' }">View latest changes</router-link>
+      </p>
+    </div>
+  </div>
+
   <!-- SEARCH  -->
-  <section class="d-flex justify-content-center align-items-center py-5 bg-grag-main text-light">
-    <div class="row m-0 w-100">
-
-      <div class="col-sm-12 col-md-6 px-5 my-3 d-flex flex-column justify-content-between">
-        <h5 class="text-uppercase mb-3 text-spacing-1">Find COVID-19 resources</h5>
-        <svg viewBox="0 0 100 3">
+  <section class="d-flex justify-content-center align-items-center my-4">
+    <div class="row m-0 w-100 d-flex justify-content-center">
+      <div class="col-sm-12 col-md-5 px-5 py-3 my-3 d-flex flex-column justify-content-between card mr-5" :style="{background: 'white'}">
+        <h3 class="my-2 p-2 text-light header-banner"><img src="@/assets/icon-01.svg" alt="Outbreak.info" :style="{height: '1.75rem'}" />
+          Resources</h3>
+        <!-- <svg viewBox="0 0 100 3">
           <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
-        </svg>
-        <div id="sBar-text" class="form-text text-light d-block mb-3">View COVID-19 trends by region, country, state/province, U.S.
-          metropolitan area, or U.S. county</div>
-        <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100"></SearchBar>
-        <small id="sBar-example" class="form-text text-light d-block text-left ml-5">
-          <span class="mr-2">Try:</span>
-          <span class="mr-3">
-            <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
-              <i class="fas fa-angle-double-right"></i>
-            </router-link>
-          </span>
-          <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area <i class="fas fa-angle-double-right"></i>
-          </router-link>
-        </small>
+        </svg> -->
 
-      </div>
-      <div class="col-sm-12 col-md-6 px-5 my-3 d-flex flex-column justify-content-between">
-        <h5 class="text-uppercase mb-3 text-spacing-1">Explore epidemiology data</h5>
+        <div id="resourceBar-text" class="form-text d-block mb-3 text-highlight line-height-1">Find COVID-19 and SARS-CoV-2 clinical trials, datasets, publications, and more</div>
+        <p class="text-muted">
+          Keeping track of all the data and publications on COVID-19 and SARS-CoV-2 is a job in itself, requiring searching many different repositories and websites. outbreak.info combines the metadata from heterogeneous sources, creating one unified
+          platform to find publications, clinical trials, datasets, protocols, and more.
+        </p>
+
+        <video class="w-100 mb-3" autoplay loop muted>
+          <source src="@/assets/home/test.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+
         <svg viewBox="0 0 100 3">
-          <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
-        </svg>
-        <div id="resourceBar-text" class="form-text text-light d-block mb-3">Find COVID-19 and SARS-CoV-2 clinical trials, datasets, publications, and more</div>
+ <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
+</svg>
 
         <form autocomplete="off" class="w-100">
           <div class="input-group">
@@ -67,96 +62,171 @@
             <input id="resourceBar" class="form-control border-0" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
           </div>
         </form>
-        <small id="sBar-example" class="form-text text-light d-block  text-left ml-5"> <span class="mr-2">Try:</span>
+        <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
           <span class="mr-3">
-            <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
+            <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} ">
               remdesivir
               <i class="fas fa-angle-double-right"></i>
             </router-link>
           </span>
-          <router-link class="text-light" :to="{name: 'NIAID'} ">
+          <router-link :to="{name: 'NIAID'} ">
             NIAID-related
             <i class="fas fa-angle-double-right"></i>
           </router-link>
         </small>
+        <button class="btn btn-main-outline px-2 py-1 mt-3">What can I do with resources?</button>
+      </div>
+
+      <div class="col-sm-12 col-md-5 px-5 py-3 my-3 d-flex flex-column card mr-5" :style="{background: 'white'}">
+        <h3 class="my-2 p-2 text-light header-banner"><img src="@/assets/icon-01.svg" alt="Outbreak.info" :style="{height: '1.75rem'}" />
+          Epidemiology</h3>
+
+
+        <div id="sBar-text" class="form-text d-block mb-3 text-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
+          metropolitan area, or U.S. county</div>
+
+          <p class="text-muted">
+            Keeping track of all the data and publications on COVID-19 and SARS-CoV-2 is a job in itself, requiring searching many different repositories and websites. outbreak.info combines the metadata from heterogeneous sources, creating one unified
+            platform to find publications, clinical trials, datasets, protocols, and more.
+          </p>
+
+            <img src="@/assets/home/epi_bars.gif" height="50%" width="100%"/>
+
+            <svg viewBox="0 0 100 3">
+     <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
+   </svg>
+
+        <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100"></SearchBar>
+        <small id="sBar-example" class="form-text d-block text-left ml-5">
+          <span class="mr-2">Try:</span>
+          <span class="mr-3">
+            <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} ">Brazil
+              <i class="fas fa-angle-double-right"></i>
+            </router-link>
+          </span>
+          <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} ">Kansas City metro area <i class="fas fa-angle-double-right"></i>
+          </router-link>
+        </small>
+
       </div>
     </div>
   </section>
 
-<section id="resource-examples">
-  <div class="row">
+  <section id="resource-examples" class="container my-5">
+    <h3>Search for COVID-19 resources</h3>
+    <div class="row">
 
-  <div class="col-md-4">
-    <h6 class="text-uppercase">Search by keyword</h6>
-  </div>
-
-  <div class="col-md-4">
-    <h6 class="text-uppercase">Search by resource type</h6>
-  </div>
-
-  <div class="col-md-4">
-    <h6 class="text-uppercase">Search by resource provider</h6>
-  </div>
-
-  <div class="col-md-4">
-    <h6 class="text-uppercase">Explore related resources</h6>
-  </div>
-
-  <div class="col-md-4">
-    <h6 class="text-uppercase">Download search results</h6>
-  </div>
-
-  <div class="col-md-4">
-    <h6 class="text-uppercase">Download all results</h6>
-  </div>
-
-</div>
-</section>
-  <!-- EPI CURVE SUMMARIES -->
-  <section class="mt-5" id="regional-epi-curves">
-    <template v-if="nestedData && nestedData.length > 0">
-      <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
-        <div class="tooltip-countries" :id="idx" :style="{
-              visibility: region.display ? 'visible' : 'hidden',
-              left: region.x + 'px',
-              top: region.y + 'px'
-            }">
-          <div>
-            {{ region.region }}
-          </div>
-          <div>{{ region.currentCases }} total {{ selectedVariable }}</div>
-          <div class="click-affordance py-1" :style="{ background: lightColor(region.region) }">
-            click for details
-          </div>
-        </div>
-        <CountryBarGraph :region="region.region" :variable="selectedVariable" :id="idx" :style="{
-              visibility: region.displayMore ? 'visible' : 'hidden'
-            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
+      <div class="col-md-4 mb-4 py-3  card">
+        <h5 class="text-uppercase">Search by keyword</h5>
       </div>
-    </template>
 
-    <template v-if="nestedData && nestedData.length > 0">
-      <h4>
-        Cumulative Number of COVID-19
-        <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
-          <option v-for="option in variableOptions" :value="option.value" :key="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-        by Region
-      </h4>
-    </template>
-
-    <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
-      <div class="row px-2" v-if="nestedData && nestedData.length > 0">
-        <div class="col-sm-12 col-md-12">
-          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
-
-        </div>
+      <div class="col-md-4 mb-4 py-3  card">
+        <h5 class="text-uppercase">Search by resource type</h5>
       </div>
+
+      <div class="col-md-4 mb-4 py-3  card">
+        <h5 class="text-uppercase">Search by resource provider</h5>
+      </div>
+
+      <div class="col-md-4 mb-4 py-3  card">
+        <h5 class="text-uppercase">Explore related resources</h5>
+      </div>
+
+      <div class="col-md-4 mb-4 py-3  card">
+        <h5 class="text-uppercase">Download search results</h5>
+      </div>
+
+      <div class="col-md-4 mb-4 py-3  card">
+        <h5 class="text-uppercase">Download all results</h5>
+      </div>
+      <div class="col-md-4 mb-4 py-3  card">
+        <h5 class="text-uppercase">Schema</h5>
+      </div>
+
     </div>
-    <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" :ids="['NYT', 'JHU']" figureRef="epi-summary-svg"/>
   </section>
+
+
+  <section id="epi-examples" class="container my-5">
+    <h3>Explore epidemiology data</h3>
+    <div class="row">
+      <div class="col-md-4 mb-4 py-3 card">
+        <h5 class="text-uppercase">Compare locations over time</h5>
+        <img src="@/assets/home/epi1.png" alt="Outbreak.info" class="w-100" />
+      </div>
+      <div class="col-md-4 mb-4 py-3 card">
+        <h5 class="text-uppercase">View by geography</h5>
+        <img src="@/assets/home/epi2.png" alt="Outbreak.info" class="w-100" />
+      </div>
+      <div class="col-md-4 mb-4 py-3 card">
+        <h5 class="text-uppercase">Find similar regions</h5>
+        <img src="@/assets/home/epi3.png" alt="Outbreak.info" class="w-100" />
+      </div>
+
+      <!-- EPI CURVE SUMMARIES -->
+      <section class="col-md-4 mb-4 card" id="regional-epi-curves">
+        <h5 class="text-uppercase">Explore regions</h5>
+        <template v-if="nestedData && nestedData.length > 0">
+          <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
+            <div class="tooltip-countries" :id="idx" :style="{
+                  visibility: region.display ? 'visible' : 'hidden',
+                  left: region.x + 'px',
+                  top: region.y + 'px'
+                }">
+              <div>
+                {{ region.region }}
+              </div>
+              <div>{{ region.currentCases }} total {{ selectedVariable }}</div>
+              <div class="click-affordance py-1" :style="{ background: lightColor(region.region) }">
+                click for details
+              </div>
+            </div>
+            <CountryBarGraph :region="region.region" :variable="selectedVariable" :id="idx" :style="{
+                  visibility: region.displayMore ? 'visible' : 'hidden'
+                }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
+          </div>
+        </template>
+
+        <template v-if="nestedData && nestedData.length > 0">
+          <h4>
+            Cumulative Number of COVID-19
+            <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
+              <option v-for="option in variableOptions" :value="option.value" :key="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            by Region
+          </h4>
+        </template>
+
+        <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
+          <div class="row px-2" v-if="nestedData && nestedData.length > 0">
+            <div class="col-sm-12 col-md-12">
+              <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
+
+            </div>
+          </div>
+        </div>
+        <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" :ids="['NYT', 'JHU']" figureRef="epi-summary-svg" />
+      </section>
+      <div class="col-md-4 mb-4 py-3 card">
+        <h5 class="text-uppercase">View doubling rates</h5>
+        <img src="@/assets/home/epi4.png" alt="Outbreak.info" class="w-100" />
+      </div>
+      <div class="col-md-4 mb-4 py-3 card">
+        <h5 class="text-uppercase">Access data</h5>
+        <h6>API</h6>
+        <img src="@/assets/home/epi5.png" alt="Outbreak.info" class="w-100" />
+        <h6>R package</h6>
+        <img src="@/assets/home/epi6.png" alt="Outbreak.info" class="w-100" />
+      </div>
+
+
+    </div>
+  </section>
+
+
+
 
 
   <section>
@@ -356,5 +426,11 @@ export default {
 .text-spacing-1 {
     letter-spacing: 1px;
     word-spacing: 3px;
+}
+
+.header-banner {
+    background-image: url("~@/assets/texture.png");
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 </style>
