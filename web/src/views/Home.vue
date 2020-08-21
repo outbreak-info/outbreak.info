@@ -42,7 +42,8 @@
           platform to find publications, clinical trials, datasets, protocols, and more.
         </p>
 
-        <video class="w-100 mb-3" autoplay loop muted>
+        <video class="w-100 mb-3" controls>
+          <!-- <video class="w-100 mb-3" autoplay loop muted> -->
           <source src="@/assets/home/test.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
@@ -56,7 +57,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
             </div>
-            <input id="resourceBar" class="form-control border-0" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
+            <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
           </div>
         </form>
         <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
@@ -73,7 +74,7 @@
         </small>
 
         <router-link :to='{ path: "/", hash: "#resource-examples" }'>
-          <button class="btn btn-main-outline px-2 py-1 mt-3">
+          <button class="btn btn-main-outline w-100 px-2 py-1 mt-3">
             What can I do with resources?
           </button>
         </router-link>
@@ -99,7 +100,7 @@
           <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
         </svg>
 
-        <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100"></SearchBar>
+        <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
         <small id="sBar-example" class="form-text d-block text-left ml-5">
           <span class="mr-2">Try:</span>
           <span class="mr-3">
@@ -173,22 +174,28 @@
     <div class="row">
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Compare locations over time</h5>
-          <img src="@/assets/home/epi1.png" alt="Outbreak.info" class="w-100" />
+          <router-link :to="{name: 'Epidemiology'}" class="text-dark">
+            <h5 class="text-uppercase">Compare locations over time</h5>
+            <img src="@/assets/home/epi1.png" alt="Outbreak.info" class="w-100" />
+          </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">View by geography</h5>
-          <img src="@/assets/home/epi2.png" alt="Outbreak.info" class="w-100" />
+          <router-link :to="{name: 'Maps'}" class="text-dark">
+            <h5 class="text-uppercase">View by geography</h5>
+            <img src="@/assets/home/epi2.png" alt="Outbreak.info" class="w-100" />
+          </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Find similar regions</h5>
-          <img src="@/assets/home/epi3.png" alt="Outbreak.info" class="w-100" />
+          <router-link :to="{name: 'Compare'}" class="text-dark">
+            <h5 class="text-uppercase">Find similar regions</h5>
+            <img src="@/assets/home/epi3.png" alt="Outbreak.info" class="w-100" />
+          </router-link>
         </div>
       </div>
 
@@ -196,48 +203,50 @@
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <section class="w-100 p-3 card" id="regional-epi-curves">
-          <h5 class="text-uppercase">Explore regions</h5>
-          <template v-if="nestedData && nestedData.length > 0">
-            <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
-              <div class="tooltip-countries" :id="idx" :style="{
+          <router-link :to="{name: 'Regions'}" class="text-dark">
+            <h5 class="text-uppercase">Explore regions</h5>
+            <template v-if="nestedData && nestedData.length > 0">
+              <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
+                <div class="tooltip-countries" :id="idx" :style="{
                   visibility: region.display ? 'visible' : 'hidden',
                   left: region.x + 'px',
                   top: region.y + 'px'
                 }">
-                <div>
-                  {{ region.region }}
+                  <div>
+                    {{ region.region }}
+                  </div>
+                  <div>{{ region.currentCases }} total {{ selectedVariable }}</div>
+                  <div class="click-affordance py-1" :style="{ background: lightColor(region.region) }">
+                    click for details
+                  </div>
                 </div>
-                <div>{{ region.currentCases }} total {{ selectedVariable }}</div>
-                <div class="click-affordance py-1" :style="{ background: lightColor(region.region) }">
-                  click for details
-                </div>
-              </div>
-              <CountryBarGraph :region="region.region" :variable="selectedVariable" :id="idx" :style="{
+                <CountryBarGraph :region="region.region" :variable="selectedVariable" :id="idx" :style="{
                   visibility: region.displayMore ? 'visible' : 'hidden'
                 }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
-            </div>
-          </template>
+              </div>
+            </template>
 
-          <template v-if="nestedData && nestedData.length > 0">
-            <h6>
-              Cumulative Number of COVID-19
-              <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
-                <option v-for="option in variableOptions" :value="option.value" :key="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
-              by Region
-            </h6>
-          </template>
+            <template v-if="nestedData && nestedData.length > 0">
+              <h6>
+                Cumulative Number of COVID-19
+                <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
+                  <option v-for="option in variableOptions" :value="option.value" :key="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+                by Region
+              </h6>
+            </template>
 
-          <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
-            <div class="row px-2" v-if="nestedData && nestedData.length > 0">
-              <div class="col-sm-12 col-md-12">
-                <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
+            <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
+              <div class="row px-2" v-if="nestedData && nestedData.length > 0">
+                <div class="col-sm-12 col-md-12">
+                  <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
 
+                </div>
               </div>
             </div>
-          </div>
+          </router-link>
           <!-- <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" :ids="['NYT', 'JHU']" figureRef="epi-summary-svg" /> -->
         </section>
       </div>
@@ -245,19 +254,28 @@
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">View doubling rates</h5>
-          <img src="@/assets/home/epi4.png" alt="Outbreak.info" class="w-100" />
+          <router-link :to="{name: 'Doubling Rates'}" class="text-dark">
+            <h5 class="text-uppercase">View doubling rates</h5>
+            <img src="@/assets/home/epi4.png" alt="Outbreak.info" class="w-100" />
+          </router-link>
         </div>
+
       </div>
 
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <h5 class="text-uppercase">Access data</h5>
-          <h6>API</h6>
-          <img src="@/assets/home/epi5.png" alt="Outbreak.info" class="w-100 mb-3" />
-          <h6>R package</h6>
-          <img src="@/assets/home/epi6.png" alt="Outbreak.info" class="w-100" />
+          <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
+            <h6>API</h6>
+            <img src="@/assets/home/epi5.png" alt="Outbreak.info" class="w-100 mb-3" />
+          </a>
+
+          <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
+            <h6>R package</h6>
+            <img src="@/assets/home/epi6.png" alt="Outbreak.info" class="w-100" />
+          </a>
+
         </div>
       </div>
 
@@ -285,10 +303,8 @@
 // @ is an alias to /src
 import EpiStacked from "@/components/EpiStacked.vue";
 import CountryBarGraph from "@/components/CountryBarGraph.vue";
-// import DataSource from "@/components/DataSource.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
-// import Warning from "@/components/Warning.vue";
 import {
   getStackedRegions
 } from "@/api/region-summary.js";
@@ -301,7 +317,9 @@ import {
 import {
   getCurrentDate
 } from "@/api/biothings.js";
-import { getLocation } from "@/js/get-location.js";
+import {
+  getLocation
+} from "@/js/get-location.js";
 
 import {
   mapState
@@ -318,7 +336,6 @@ export default {
   components: {
     EpiStacked,
     CountryBarGraph,
-    // DataSource,
     SearchBar,
     Logos
   },
