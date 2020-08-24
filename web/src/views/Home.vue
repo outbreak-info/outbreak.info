@@ -91,7 +91,7 @@
           metropolitan area, or U.S. county</div>
 
         <p class="text-muted">
-          Explore and download epidemiological data on confirmed cases, deaths, hospitalizations, and testing. Compare between locations to visualize how the pandemic has varied over time and geographies.
+          Explore and download epidemiological data on confirmed cases, deaths, hospitalizations, and testing. Compare between locations to visualize how the pandemic has varied over time and geography.
         </p>
 
         <img src="@/assets/home/epi_bars.gif" height="50%" width="100%" />
