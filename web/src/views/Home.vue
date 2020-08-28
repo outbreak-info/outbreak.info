@@ -23,58 +23,61 @@
         <b class="text-highlight">outbreak.info</b> is a resource to
         aggregate all this information into a single location.
       </p>
-      <p class="mt-4">
+      <p class="m-0">
         <router-link :to="{ name: 'Latest' }">View latest changes</router-link>
       </p>
     </div>
   </div>
 
   <!-- SEARCH  -->
-  <section class="d-flex justify-content-center align-items-center my-4">
+  <section class="d-flex justify-content-center align-items-center mb-4 text-light">
     <div class="row m-0 w-100 d-flex justify-content-center">
-      <div class="col-sm-12 col-md-5 px-5 py-3 my-3 d-flex flex-column justify-content-between card mr-5" :style="{background: 'white'}">
-        <h3 class="my-2 p-2 text-light header-banner"><img src="@/assets/icon-01.svg" alt="Outbreak.info" :style="{height: '1.75rem'}" />
+      <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
+        <h3 class="mt2">
           Resources</h3>
 
-        <div id="resourceBar-text" class="form-text d-block mb-3 text-highlight line-height-1">Find COVID-19 and SARS-CoV-2 clinical trials, datasets, publications, and more</div>
-        <p class="text-muted">
+        <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
+        <!-- <p class="text-muted">
           Keeping track of all the data and publications on COVID-19 and SARS-CoV-2 is a job in itself, requiring searching many different repositories and websites. outbreak.info combines the metadata from heterogeneous sources, creating one unified
           platform to find publications, clinical trials, datasets, protocols, and more.
-        </p>
+        </p> -->
 
-        <video class="w-100 mb-3" controls>
+        <video class="w-100 mb-3" controls style="background-color: #fff;" >
           <!-- <video class="w-100 mb-3" autoplay loop muted> -->
           <source src="@/assets/home/test.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
 
-        <svg viewBox="0 0 100 3">
+        <!-- <svg viewBox="0 0 100 3">
           <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
-        </svg>
+        </svg> -->
 
-        <form autocomplete="off" class="w-100">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+        <div>
+          <form autocomplete="off" class="w-100">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+              </div>
+              <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
             </div>
-            <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
-          </div>
-        </form>
-        <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
-          <span class="mr-3">
-            <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} ">
-              remdesivir
+          </form>
+          <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
+            <span class="mr-3">
+              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
+                remdesivir
+                <i class="fas fa-angle-double-right"></i>
+              </router-link>
+            </span>
+            <router-link :to="{name: 'NIAID'} " class="text-light">
+              NIAID-related
               <i class="fas fa-angle-double-right"></i>
             </router-link>
-          </span>
-          <router-link :to="{name: 'NIAID'} ">
-            NIAID-related
-            <i class="fas fa-angle-double-right"></i>
-          </router-link>
-        </small>
+          </small>
+        </div>
+
 
         <router-link :to='{ path: "/", hash: "#resource-examples" }'>
-          <button class="btn btn-main-outline w-100 px-2 py-1 mt-3">
+          <button class="btn btn-main-outline w-100 px-2 py-1 mt-3" :style="{background: 'white'}">
             What can I do with resources?
           </button>
         </router-link>
@@ -82,38 +85,35 @@
 
 
       <!-- EPI INTRO -->
-      <div class="col-sm-12 col-md-5 px-5 py-3 my-3 d-flex flex-column card mr-5" :style="{background: 'white'}">
-        <h3 class="my-2 p-2 text-light header-banner"><img src="@/assets/icon-01.svg" alt="Outbreak.info" :style="{height: '1.75rem'}" />
+      <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column  justify-content-between epi-intro">
+        <h3 class="mt-2">
           Epidemiology</h3>
 
 
-        <div id="sBar-text" class="form-text d-block mb-3 text-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
+        <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
           metropolitan area, or U.S. county</div>
 
-        <p class="text-muted">
+        <!-- <p class="text-muted">
           Explore and download epidemiological data on confirmed cases, deaths, hospitalizations, and testing. Compare between locations to visualize how the pandemic has varied over time and geography.
-        </p>
+        </p> -->
 
         <img src="@/assets/home/epi_bars.gif" height="50%" width="100%" />
-
-        <svg viewBox="0 0 100 3">
-          <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
-        </svg>
-
-        <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
-        <small id="sBar-example" class="form-text d-block text-left ml-5">
-          <span class="mr-2">Try:</span>
-          <span class="mr-3">
-            <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} ">Brazil
-              <i class="fas fa-angle-double-right"></i>
+        <div>
+          <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
+          <small id="sBar-example" class="form-text d-block text-left ml-5">
+            <span class="mr-2">Try:</span>
+            <span class="mr-3">
+              <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
+                <i class="fas fa-angle-double-right"></i>
+              </router-link>
+            </span>
+            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area <i class="fas fa-angle-double-right"></i>
             </router-link>
-          </span>
-          <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} ">Kansas City metro area <i class="fas fa-angle-double-right"></i>
-          </router-link>
-        </small>
+          </small>
+        </div>
 
-        <router-link :to='{ path: "/", hash: "#epi-examples" }'>
-          <button class="btn btn-main-outline px-2 py-1 mt-3 w-100">What can I do with epi data?</button>
+        <router-link :to='{ path: "/", hash: "#epi-examples" }' class="text-light">
+          <button class="btn btn-main-outline px-2 py-1 mt-3 w-100" :style="{background: 'white'}">What can I do with epi data?</button>
         </router-link>
 
       </div>
@@ -490,8 +490,27 @@ export default {
 }
 
 .header-banner {
-    background-image: url("~@/assets/texture.png");
-    background-repeat: no-repeat;
-    background-size: cover;
+    // background-image: url("~@/assets/texture.png");
+    // background-repeat: no-repeat;
+    // background-size: cover;
+}
+
+.resources-intro {
+    background: $primary-color;
+}
+
+.epi-intro {
+    background: $secondary-color;
+    border-left: 3px solid white;
+}
+
+@media (max-width:767px) {
+    .epi-intro {
+        border: none !important;
+    }
+}
+
+.text-light-highlight {
+    color: #d5d5d5 !important;
 }
 </style>
