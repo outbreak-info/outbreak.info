@@ -70,7 +70,8 @@ const routes = [{
       admin_levels: route.query.admin_levels,
       location: route.query.location,
       variable: route.query.variable,
-      similarity: route.query.similarity
+      similarity: route.query.similarity,
+      percapita: route.query.percapita
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
