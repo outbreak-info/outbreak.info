@@ -155,10 +155,10 @@ export default Vue.extend({
         label: "new cases today per capita"
       }, {
         value: "dead",
-        label: "deaths"
+        label: "total deaths"
       }, {
         value: "dead_per_100k",
-        label: "deaths per capita"
+        label: "total deaths per capita"
       }, {
         value: "dead_rolling",
         label: "new deaths today"
