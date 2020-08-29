@@ -106,7 +106,7 @@ export default {
               .append("path")
               .attr("class", "blank-outline")
               .style("fill", "#d6d6d6")
-              .style("stroke", this.partOfUSA ? "#2c3e50" : "none")
+              .style("stroke", "#2c3e50")
               .style("stroke-width", 0.2)
               // draw each region
               .attr("d", this.path)

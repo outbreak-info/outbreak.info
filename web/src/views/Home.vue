@@ -200,7 +200,7 @@
         <div class="w-100 p-3 card">
           <router-link :to="{name: 'Compare'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">Find similar regions</h5>
-            <img src="@/assets/home/comparison_example.svg" alt="Outbreak.info compare regions" class="w-100" />
+            <img src="@/assets/home/compare_example.png" alt="Outbreak.info compare regions" class="w-100" />
           </router-link>
         </div>
       </div>
