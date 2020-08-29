@@ -19,7 +19,7 @@
         efficiently collecting, sharing, and integrating data is critical
         to scientific research.
       </p>
-      <p class="text-dark focustext font-weight-bold">
+      <p class="text-dark h-100 d-flex flex-column justify-content-between focustext font-weight-bold">
         <b class="text-highlight">outbreak.info</b> is a resource to
         aggregate all this information into a single location.
       </p>
@@ -33,7 +33,7 @@
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
     <div class="row m-0 w-100 d-flex justify-content-center">
       <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
-        <h3 class="mt2">
+        <h3 class="mt-2">
           Resources</h3>
 
         <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
@@ -43,8 +43,8 @@
         </p> -->
 
         <video class="w-100 mb-3" controls style="background-color: #fff;" >
-          <!-- <video class="w-100 mb-3" autoplay loop muted> -->
-          <source src="@/assets/home/test.mp4" type="video/mp4">
+          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
+          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
           Your browser does not support the video tag.
         </video>
 
@@ -97,7 +97,13 @@
           Explore and download epidemiological data on confirmed cases, deaths, hospitalizations, and testing. Compare between locations to visualize how the pandemic has varied over time and geography.
         </p> -->
 
-        <img src="@/assets/home/epi_bars.gif" height="50%" width="100%" />
+        <video class="w-100 mb-3" controls style="background-color: #fff;" >
+          <!-- <video class="w-100 mb-3" autoplay loop muted> -->
+          <source src="@/assets/home/epi_demo.mp4" type="video/mp4">
+          <!-- <source src="@/assets/home/epi_demo.ogv" type="video/ogg"> -->
+          Your browser does not support the video tag.
+        </video>
+
         <div>
           <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
           <small id="sBar-example" class="form-text d-block text-left ml-5">
@@ -174,27 +180,27 @@
     <div class="row">
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Epidemiology'}" class="text-dark">
+          <router-link :to="{name: 'Epidemiology'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">Compare locations over time</h5>
-            <img src="@/assets/home/epi1.png" alt="Outbreak.info" class="w-100" />
+            <img src="@/assets/home/epi_example.svg" alt="Outbreak.info epidemiology data over time" class="w-100" />
           </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Maps'}" class="text-dark">
+          <router-link :to="{name: 'Maps'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">View by geography</h5>
-            <img src="@/assets/home/epi2.png" alt="Outbreak.info" class="w-100" />
+            <img src="@/assets/home/map_example.svg" alt="Outbreak.info U.S. epidemiology data by metro area" class="w-100" />
           </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Compare'}" class="text-dark">
+          <router-link :to="{name: 'Compare'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">Find similar regions</h5>
-            <img src="@/assets/home/epi3.png" alt="Outbreak.info" class="w-100" />
+            <img src="@/assets/home/comparison_example.svg" alt="Outbreak.info compare regions" class="w-100" />
           </router-link>
         </div>
       </div>
@@ -203,7 +209,7 @@
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <section class="w-100 p-3 card" id="regional-epi-curves">
-          <router-link :to="{name: 'Regions'}" class="text-dark">
+          <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">Explore regions</h5>
             <template v-if="nestedData && nestedData.length > 0">
               <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
@@ -254,9 +260,12 @@
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Doubling Rates'}" class="text-dark">
+          <router-link :to="{name: 'Doubling Rates'}" class="text-dark h-100 d-flex flex-column">
             <h5 class="text-uppercase">View doubling rates</h5>
-            <img src="@/assets/home/epi4.png" alt="Outbreak.info" class="w-100" />
+            <div class="h-100 d-flex flex-column justify-content-center">
+            <img src="@/assets/home/doubling_example.svg" alt="Outbreak.info doubling rates" class="w-100" />
+            </div>
+
           </router-link>
         </div>
 
@@ -268,12 +277,12 @@
           <h5 class="text-uppercase">Access data</h5>
           <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
             <h6>API</h6>
-            <img src="@/assets/home/epi5.png" alt="Outbreak.info" class="w-100 mb-3" />
+            <img src="@/assets/home/api.png" alt="Outbreak.info" class="w-100 mb-3" />
           </a>
 
           <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
             <h6>R package</h6>
-            <img src="@/assets/home/epi6.png" alt="Outbreak.info" class="w-100" />
+            <img src="@/assets/home/r.png" alt="Outbreak.info" class="w-100" />
           </a>
 
         </div>
