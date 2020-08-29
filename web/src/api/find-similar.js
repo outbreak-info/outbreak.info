@@ -27,7 +27,7 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, admi
   return getLocation(apiUrl, locationID, variable, similarityMetric, true).pipe(
     mergeMap(locationData => getSimilarData(apiUrl, locationData, similarityMetric, adminLevels, num2Return).pipe(
       mergeMap(similar => {
-        const locationString = `(${similar.map(d => d.location_id).join(" OR ")})`;
+        const locationString = `("${similar.map(d => d.location_id).join('" OR "')}")`;
         return (getLocation(apiUrl, locationString, variable, similarityMetric)).pipe(
           map(results => {
             const nested = nest()
