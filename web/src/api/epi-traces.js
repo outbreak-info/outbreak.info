@@ -38,7 +38,7 @@ export function getEpiTraces(apiUrl, locations) {
   const locationString = `("${locations.join('","')}")`;
 
   // sort by date so the numbers appear in the right order.
-  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k`;
+  const queryString = `location_id:${locationString}&sort=date&size=1000&fields=location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k,sub_parts`;
 
   return getAll(apiUrl, queryString).pipe(
     map(results => {

@@ -56,6 +56,9 @@
     <span v-if="isPerCapita && variableObj.percapita !== false"> per 100,000 residents</span>
   </h4>
 
+  <div v-if="subParts" class="mb-4">
+    <router-link :to="{ hash: '#sub_parts' }">View counties in metro area(s)</router-link>
+  </div>
 
   <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
     text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
@@ -82,6 +85,22 @@
       <!-- source / download data -->
       <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
     </template>
+
+    <div class="container my-4" v-if="subParts" id="sub_parts">
+      <div class="row">
+
+      <small class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3" v-for="(metro, mIdx) in subParts" :key="mIdx">
+        <template v-if="metro.hasSubparts">
+          {{metro.key}} metro area includes:
+          <span v-for="(loc, idx) in metro.parts" :key="idx" class="line-height-1">
+            <router-link :to="{name: 'Epidemiology', query: {location: loc.fips, log: log, variable: variable, xVariable: xVariable, percapita: percapita}}" v-if="variable">
+              {{loc.county_name}}, {{loc.state_name}}</router-link>
+            <span v-if="idx < metro.parts.length - 1">; </span>
+          </span>
+        </template>
+      </small>
+      </div>
+    </div>
 
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
@@ -278,6 +297,22 @@ export default {
         this.data$[0][0].value[0].name
       ) {
         return this.data$[0][0].value[0].name;
+      }
+      return null;
+    },
+    subParts() {
+      if (
+        this.data$
+      ) {
+        const parts = this.data$[0].map(d => {
+          return ({
+            key: d.value[0].name,
+            parts: d.value[0].sub_parts,
+            hasSubparts: d.value[0].sub_parts ? d.value[0].sub_parts.length > 0 : false
+          })
+        });
+        console.log(parts)
+        return(parts.some(d => d.hasSubparts) ? parts : null)
       }
       return null;
     },
