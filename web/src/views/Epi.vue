@@ -86,12 +86,12 @@
       <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
     </template>
 
-    <div class="container my-4" v-if="subParts" id="sub_parts">
+    <div class="container my-4 border-top pt-3" v-if="subParts" id="sub_parts">
       <div class="row">
 
       <small class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3" v-for="(metro, mIdx) in subParts" :key="mIdx">
         <template v-if="metro.hasSubparts">
-          {{metro.key}} metro area includes:
+          <b>{{metro.key}}</b> metro area includes:
           <span v-for="(loc, idx) in metro.parts" :key="idx" class="line-height-1">
             <router-link :to="{name: 'Epidemiology', query: {location: loc.fips, log: log, variable: variable, xVariable: xVariable, percapita: percapita}}" v-if="variable">
               {{loc.county_name}}, {{loc.state_name}}</router-link>
@@ -311,7 +311,6 @@ export default {
             hasSubparts: d.value[0].sub_parts ? d.value[0].sub_parts.length > 0 : false
           })
         });
-        console.log(parts)
         return(parts.some(d => d.hasSubparts) ? parts : null)
       }
       return null;
