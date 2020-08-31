@@ -51,6 +51,12 @@ const routes = [{
       import( /* webpackChunkName: "regions" */ "../views/Regions.vue")
   },
   {
+    path: "/schema",
+    name: "Schema",
+    component: () =>
+      import( /* webpackChunkName: "schema" */ "../views/Schema.vue")
+  },
+  {
     path: "/maps",
     name: "Maps",
     props: route => ({
