@@ -211,6 +211,9 @@
         <section class="w-100 p-3 card" id="regional-epi-curves">
           <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">Explore regions</h5>
+            <div class="h-100 d-flex flex-column justify-content-center">
+              <img src="@/assets/home/regions_example.svg" alt="Outbreak.info regional data" class="w-100" />
+            </div>
           </router-link>
         </section>
       </div>
