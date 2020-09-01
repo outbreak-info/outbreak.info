@@ -181,7 +181,7 @@
 
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
-          <div class="row w-100 d-flex flex-column text-left p-2 search-result" v-for="(item, idx) in data" :key="idx">
+          <div class="row w-100 d-flex flex-column text-left px-3 py-4 search-result" v-for="(item, idx) in data" :key="idx">
             <div class="d-flex w-100 align-items-center">
               <StripeAccent :className="item['@type']" />
               <small :class="[item['@type'], 'resource-type', 'mr-3']">{{
@@ -329,7 +329,7 @@
               </div>
 
               <!-- Bottom -->
-              <div class="col-sm-12 d-flex flex-wrap keyword-container mt-2">
+              <!-- <div class="col-sm-12 d-flex flex-wrap keyword-container mt-2">
                 <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
                   <router-link :to="{
                         name: 'Resources',
@@ -338,7 +338,7 @@
                     {{ keyword }}
                   </router-link>
                 </small>
-              </div>
+              </div> -->
             </div>
 
           </div>
