@@ -83,11 +83,11 @@
 
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
-            <div class="row m-0">
+            <div class="row m-0 pointer" @click="facet.expanded = !facet.expanded">
               <div class="col-sm-10 p-1">
                 <h6 class="p-0 m-0">{{ facet.variable }}</h6>
               </div>
-              <div class="col-sm-2 text-center p-1 pointer" v-if="facet.filtered.length" @click="facet.expanded = !facet.expanded">
+              <div class="col-sm-2 text-center p-1" v-if="facet.filtered.length">
                 <!-- toggle fa class up->down -->
                 <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
                 <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
