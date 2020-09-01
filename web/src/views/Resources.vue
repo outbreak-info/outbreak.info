@@ -57,16 +57,9 @@
 
   <!-- mini-nav for resource types -->
   <section class="d-flex justify-content-end py-2 bg-sec">
-    <div class="row d-flex justify-content-center w-100">
+    <!-- <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
-          <!-- <li class="navbar-nav">
-            <router-link class="nav-link no-underline p-0" :to="{
-                  name: 'Topics'
-                }">
-              Topics
-            </router-link>
-          </li> -->
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Resources',
@@ -77,7 +70,7 @@
           </li>
         </ul>
       </nav>
-    </div>
+    </div> -->
   </section>
 
   <!-- RESULTS -->
@@ -86,20 +79,9 @@
 
       <!-- FILTERS -->
       <div class="col-sm-3 col-md-3 col-lg-2">
-        <div class="bg-white ml-1 mt-2">
+        <div class="bg-white ml-1 mt-2 border-right">
 
-          <div class="w-100 d-flex flex-wrap border-bottom border-secondary py-2 px-1" v-if="selectedFilters && selectedFilters.length" id="selectedFilters">
-            <div v-for="(varType, tIdx) in selectedFilters" :key="tIdx">
-              <div v-for="(variable, vIdx) in varType.vars" :key="vIdx">
-                <button role="button" class="btn btn-outline-secondary d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
-                  <small><b>{{variable}}</b></small>
-                  <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="border-bottom p-1 mx-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
+          <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
             <div class="row m-0">
               <div class="col-sm-10 p-1">
@@ -146,24 +128,25 @@
 
       <div class="col-sm-9 col-md-9 col-lg-10 \" id="results">
         <!-- results header + sort options -->
-        <div class="row w-100 d-flex justify-content-between align-items-center mt-3" id="selectors">
-          <div class="d-flex flex-column">
-            <div class="d-flex align-items-center">
-              <h4 class="m-0 mr-4" v-if="q">
-                You searched for {{ q }}
-              </h4>
-              <div class="m-0 text-highlight">
-                {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
+        <div class="border-bottom py-2">
+          <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
+            <div class="d-flex flex-column">
+              <div class="d-flex align-items-center">
+                <h4 class="m-0 mr-4" v-if="q">
+                  You searched for {{ q }}
+                </h4>
+                <div class="m-0 text-highlight">
+                  {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
+                </div>
               </div>
-            </div>
-            <!-- <small class="text-muted text-left" v-if="filterString">
+              <!-- <small class="text-muted text-left" v-if="filterString">
               filtered by {{ filterString }}
             </small>
             <button @click="clearFilters" v-if="filterString">
               <small>clear filters</small>
             </button> -->
 
-            <!-- <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
+              <!-- <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
               <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === 0 }" @click="changePage(-1)">
                 <font-awesome-icon :icon="['fas', 'arrow-left']" />
               </button>
@@ -173,22 +156,38 @@
                 <font-awesome-icon :icon="['fas', 'arrow-right']" />
               </button>
             </div> -->
+            </div>
+
+
+            <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" />
+
+            <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
+              <option v-for="option in pageOpts" :value="option" :key="option">
+                {{ option }} results
+              </option>
+            </select>
+
+            <select v-model="sortValue" @change="changeSort">
+              <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
+                {{option.label}}
+              </option>
+            </select>
           </div>
 
-          <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" />
-
-          <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
-            <option v-for="option in pageOpts" :value="option" :key="option">
-              {{ option }} results
-            </option>
-          </select>
-
-          <select v-model="sortValue" @change="changeSort">
-            <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
-              {{option.label}}
-            </option>
-          </select>
+          <!-- Selected filters -->
+          <div class="row d-flex flex-wrap px-1 mt-2" v-if="selectedFilters && selectedFilters.length" id="selectedFilters">
+            <span v-for="(varType, tIdx) in selectedFilters" :key="tIdx" class="d-flex">
+              <span v-for="(variable, vIdx) in varType.vars" :key="vIdx">
+                <button role="button" class="btn btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
+                  <small><b>{{variable}}</b></small>
+                  <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+                </button>
+              </span>
+            </span>
+            <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
+          </div>
         </div>
+
 
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
@@ -561,9 +560,9 @@ export default {
     removeFilter(variable, id) {
       console.log(this.facetKSummary)
       const typeIdx = this.facetSummary.findIndex(d => d.id == id);
-      if(typeIdx >= 0) {
+      if (typeIdx >= 0) {
         const varIdx = this.facetSummary[typeIdx].filtered.findIndex(d => d.term == variable);
-        if(varIdx >= 0) {
+        if (varIdx >= 0) {
           this.facetSummary[typeIdx].filtered[varIdx]["checked"] = false;
         }
       }
