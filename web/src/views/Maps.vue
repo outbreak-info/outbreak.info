@@ -267,6 +267,11 @@ tr.table-header-merged {
     color: white;
 }
 
+.btn-outline-secondary.active {
+    background: $grey-40 !important;
+    color: white;
+}
+
 .map-loader {
   position: fixed;
   z-index: 100;

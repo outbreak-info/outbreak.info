@@ -192,15 +192,15 @@ export function getResourceFacets(
   }
 
   const sortOrder = [
-    "type",
+    "Type",
     // "topicCategory",
-    "source",
-    "funding",
-    "trial sponsor",
-    "trial intervention",
-    "measurement technique",
-    "variable measured",
-    "keywords"
+    "Source",
+    "Funding",
+    "Trial Sponsor",
+    "Trial Intervention",
+    "Measurement Technique",
+    "Variable Measured",
+    "Keywords"
   ];
 
   const facetString = facets.join(",");
@@ -227,20 +227,21 @@ export function getResourceFacets(
         return {
           variable: key
             .replace(".keyword", "")
-            .replace("@", "")
-            .replace("interventions.name", "trial intervention")
-            .replace("sponsor.name", "trial sponsor")
-            .replace("curatedBy.name", "source")
-            .replace("funding.funder.name", "funding")
-            .replace("measurementTechnique", "measurement technique")
-            .replace("topicCategory", "topic")
-            .replace("variableMeasured", "variable measured"),
+            .replace("@type", "Type")
+            .replace("interventions.name", "Trial Intervention")
+            .replace("sponsor.name", "Trial Sponsor")
+            .replace("curatedBy.name", "Source")
+            .replace("funding.funder.name", "Funding")
+            .replace("measurementTechnique", "Measurement Technique")
+            .replace("topicCategory", "Topic")
+            .replace("variableMeasured", "Variable Measured")
+            .replace("keywords", "Keywords"),
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
           // filtered: cloneDeep(results[key]["terms"]),
           total: results[key]["terms"].length,
           num2Display: 5,
-          expanded: true
+          expanded: results[key]["terms"].some(d => d.checked)
         };
       });
 

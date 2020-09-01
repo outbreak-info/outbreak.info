@@ -83,59 +83,70 @@
   <!-- RESULTS -->
   <section class="d-flex justify-content-end py-2">
     <div class="row m-0">
+
       <!-- FILTERS -->
-      <div class="col-sm-2 p-0">
-        <button @click="clearFilters" class="w-100 m-0 mb-1" v-if="filterString">
-          <small>clear filters</small>
-        </button>
-        <div class="border-bottom border-secondary alert-secondary p-1 mb-4" v-for="(facet, idx) in facetSummary" :key="idx">
-          <!-- Toggle Header -->
-          <div class="row m-0">
-            <div class="col-sm-10 p-1 uppercase">
-              <h6>{{ facet.variable }}</h6>
-            </div>
-            <div class="col-sm-2 text-center p-1 pointer" v-if="facet.filtered.length" @click="facet.expanded = !facet.expanded">
-              <!-- toggle fa class up->down -->
-              <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
-              <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
+      <div class="col-sm-3 col-md-3 col-lg-2">
+        <div class="bg-white ml-1 mt-2">
+
+          <div class="w-100 d-flex flex-wrap border-bottom border-secondary py-2 px-1" v-if="selectedFilters && selectedFilters.length" id="selectedFilters">
+            <div v-for="(varType, tIdx) in selectedFilters" :key="tIdx">
+              <div v-for="(variable, vIdx) in varType.vars" :key="vIdx">
+                <button role="button" class="btn btn-outline-secondary d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
+                  <small><b>{{variable}}</b></small>
+                  <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+                </button>
+              </div>
             </div>
           </div>
-          <!-- Toggle content -->
-          <form v-if="facet.filtered.length && facet.expanded">
-            <div>
-              <!-- Filter search -->
-              <form class="p-1 bg-light" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
-                <input type="text" autocomplete="off" class="border border-secondary p-1 w-100 font-awesome" :placeholder="`Search ${facet.variable}`" v-model="facetFilters[idx]" />
-              </form>
-              <!-- Filters -->
-              <ul class="list-group rounded-0">
-                <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
-                  <li class="rounded-0 text-left list-group-item-action p-1" :class="[
-                        option.checked
-                          ? 'list-group-item-info'
-                          : 'list-group-item'
-                      ]" v-if="optIdx < facet.num2Display">
-                    <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
-                    <label :for="facet.id + optIdx" class="m-0">
-                      <small>{{ option.term }}
-                        <!-- ({{ option.count.toLocaleString() }}) -->
-                      </small>
-                    </label>
-                  </li>
-                </div>
-              </ul>
-              <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
+
+          <div class="border-bottom p-1 mx-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
+            <!-- Toggle Header -->
+            <div class="row m-0">
+              <div class="col-sm-10 p-1">
+                <h6 class="p-0 m-0">{{ facet.variable }}</h6>
+              </div>
+              <div class="col-sm-2 text-center p-1 pointer" v-if="facet.filtered.length" @click="facet.expanded = !facet.expanded">
+                <!-- toggle fa class up->down -->
+                <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
+                <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
+              </div>
             </div>
-          </form>
-          <div class="bg-light" v-else>
-            <small>none</small>
+            <!-- Toggle content -->
+            <form v-if="facet.filtered.length && facet.expanded">
+              <div>
+                <!-- Filter search -->
+                <form class="p-1" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
+                  <small>
+                    <input type="text" autocomplete="off" class="border p-1 w-100 font-awesome" :style="{ 'border-color': '#bababa !important;'}" :placeholder="`Search ${facet.variable}`" v-model="facetFilters[idx]" />
+                  </small>
+                </form>
+                <!-- Filters -->
+                <ul class="list-group list-unstyled rounded-0">
+                  <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
+                    <li class="rounded-0 text-left list-group-item-action p-1 border-0 line-height-sm my-1 text-break" v-if="optIdx < facet.num2Display">
+                      <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
+                      <label :for="facet.id + optIdx" class="m-0 d-inline">
+                        <small>{{ option.term }}
+                          <!-- ({{ option.count.toLocaleString() }}) -->
+                        </small>
+                      </label>
+                    </li>
+                  </div>
+                </ul>
+                <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
+              </div>
+            </form>
+            <div class="" v-else-if="facet.expanded">
+              <small>none</small>
+            </div>
           </div>
+
         </div>
       </div>
 
-      <div class="col-sm-10 pl-5" id="results">
+      <div class="col-sm-9 col-md-9 col-lg-10 \" id="results">
         <!-- results header + sort options -->
-        <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
+        <div class="row w-100 d-flex justify-content-between align-items-center mt-3" id="selectors">
           <div class="d-flex flex-column">
             <div class="d-flex align-items-center">
               <h4 class="m-0 mr-4" v-if="q">
@@ -145,14 +156,14 @@
                 {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
               </div>
             </div>
-            <small class="text-muted text-left" v-if="filterString">
+            <!-- <small class="text-muted text-left" v-if="filterString">
               filtered by {{ filterString }}
             </small>
             <button @click="clearFilters" v-if="filterString">
               <small>clear filters</small>
-            </button>
+            </button> -->
 
-            <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
+            <!-- <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
               <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === 0 }" @click="changePage(-1)">
                 <font-awesome-icon :icon="['fas', 'arrow-left']" />
               </button>
@@ -161,10 +172,10 @@
               <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
                 <font-awesome-icon :icon="['fas', 'arrow-right']" />
               </button>
-            </div>
+            </div> -->
           </div>
 
-          <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl"/>
+          <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" />
 
           <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
             <option v-for="option in pageOpts" :value="option" :key="option">
@@ -441,6 +452,14 @@ export default {
         this.data = results.results;
         this.newData = results.recent;
         this.facetSummary = results.facets;
+        console.log(this.facetSummary)
+        this.selectedFilters = results.facets.map(d => {
+            return {
+              id: d.id,
+              vars: d.filtered.filter(d => d.checked).map(d => d.term)
+            };
+          })
+          .filter(d => d.vars.length);
         this.numResults = results.total;
         this.esQuery = results.query;
 
@@ -539,6 +558,27 @@ export default {
         }
       });
     },
+    removeFilter(variable, id) {
+      console.log(this.facetKSummary)
+      const typeIdx = this.facetSummary.findIndex(d => d.id == id);
+      if(typeIdx >= 0) {
+        const varIdx = this.facetSummary[typeIdx].filtered.findIndex(d => d.term == variable);
+        if(varIdx >= 0) {
+          this.facetSummary[typeIdx].filtered[varIdx]["checked"] = false;
+        }
+      }
+      this.filterString = this.filters2String();
+      this.$router.push({
+        name: "Resources",
+        query: {
+          q: this.searchInput,
+          filter: this.filterString,
+          page: "0",
+          size: String(this.numPerPage),
+          sort: this.sortValue
+        }
+      });
+    },
     onEnter() {
       this.$router.push({
         name: "Resources",
@@ -611,11 +651,11 @@ export default {
         Math.floor(this.numResults / this.numPerPage) :
         null;
     },
-    quotedSearch: function () {
-      return(`"${this.searchInput}"`)
+    quotedSearch: function() {
+      return (`"${this.searchInput}"`)
     },
     showSearchHelper: function() {
-      return(this.searchInput ? this.searchInput.includes(" ") && !this.searchInput.includes('"') : false)
+      return (this.searchInput ? this.searchInput.includes(" ") && !this.searchInput.includes('"') : false)
     }
   },
   watch: {
@@ -642,6 +682,7 @@ export default {
       filterString: null,
       esQuery: null,
       facetFilters: [],
+      selectedFilters: [],
       sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
