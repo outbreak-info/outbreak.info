@@ -105,11 +105,11 @@
                 <!-- Filters -->
                 <ul class="list-group list-unstyled rounded-0">
                   <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
-                    <li class="rounded-0 text-left list-group-item-action p-1 border-0 line-height-sm my-1 text-break" v-if="optIdx < facet.num2Display">
+                    <li class="rounded-0 text-left list-group-item-action p-1 border-0 line-height-sm my-1 text-break" :class="[option.count ? 'text-dark' : 'text-muted']" v-if="optIdx < facet.num2Display">
                       <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
                       <label :for="facet.id + optIdx" class="m-0 d-inline">
                         <small>{{ option.term }}
-                          <!-- ({{ option.count.toLocaleString() }}) -->
+                          <span v-if="option.count">({{ option.count.toLocaleString() }})</span>
                         </small>
                       </label>
                     </li>
@@ -126,7 +126,7 @@
         </div>
       </div>
 
-      <div class="col-sm-9 col-md-9 col-lg-10 \" id="results">
+      <div class="col-sm-9 col-md-9 col-lg-10" id="results">
         <!-- results header + sort options -->
         <div class="border-bottom py-2">
           <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
