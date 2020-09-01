@@ -144,12 +144,12 @@ export default Vue.extend({
         {
           label: "Clinical Trials",
           description: "Publicly and privately funded human clinical studies",
-          id: "clinicaltrial"
+          id: "ClinicalTrial"
         },
         {
           label: "Datasets",
           description: "A collection of primary or secondary data",
-          id: "dataset"
+          id: "Dataset"
         },
         // {
         //   label: "Analyses",
@@ -160,13 +160,13 @@ export default Vue.extend({
         {
           label: "Protocols",
           description: "A detailed series of instructions to perform an experimental technique and/or analysis",
-          id: "protocol"
+          id: "Protocol"
         },
 
         {
           label: "Publications",
           description: "A published report, set of results, or commentary, including preprints and blog posts",
-          id: "publication"
+          id: "Publication"
         }
       ]
     };

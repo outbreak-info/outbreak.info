@@ -95,7 +95,7 @@ export default Vue.extend({
           name: "Resources",
           query: {
             q: this.query,
-            filter: `@type:${d.data.name.toLowerCase()}`,
+            filter: `@type:${d.data.name}`,
             page: "0",
             size: "10",
             sort: "-date"
@@ -106,7 +106,7 @@ export default Vue.extend({
           name: "Resources",
           query: {
             q: this.query ? `curatedBy.name:"${d.data.term}" AND (${this.query})` : `curatedBy.name:"${d.data.term}"`,
-            filter: `@type:${d.parent.data.name.toLowerCase()}`,
+            filter: `@type:${d.parent.data.name}`,
             page: "0",
             size: "10",
             sort: "-date"
@@ -217,7 +217,7 @@ export default Vue.extend({
           // .attr("textLength", 200)
           .attr("startOffset", "50%")
           .attr("class", d => `annotation--type pointer ${d.data.name}`)
-          .text(d => d.data.name.replace("clinicaltrial", "clinical trial"))
+          .text(d => d.data.name.replace("ClinicalTrial", "Clinical Trial"))
           .on("mouseover", d => this.tooltipOn(d))
           .on("mouseout", d => this.tooltipOff())
           .on("click", d => this.searchResource(d));
@@ -250,75 +250,75 @@ export default Vue.extend({
     stroke-width: 1 !important;
 }
 
-.publication.depth1 {
+.Publication.depth1 {
     stroke: $publication-color;
 }
 
-.publication.depth2 {
+.Publication.depth2 {
     fill: $publication-color;
 }
 
-.clinicaltrial.depth1 {
+.ClinicalTrial.depth1 {
     stroke: $clinical-trial-color;
 }
 
-.clinicaltrial.depth2 {
+.ClinicalTrial.depth2 {
     fill: $clinical-trial-color;
 }
 
-.dataset.depth1 {
+.Dataset.depth1 {
     stroke: $dataset-color;
 }
 
-.dataset.depth2 {
+.Dataset.depth2 {
     fill: $dataset-color;
 }
 
-.protocol.depth1 {
+.Protocol.depth1 {
     stroke: $protocol-color;
 }
 
-.protocol.depth2 {
+.Protocol.depth2 {
     fill: $protocol-color;
 }
 
-.book.depth1 {
+.Book.depth1 {
     stroke: $book-color;
 }
 
-.book.depth2 {
+.Book.depth2 {
     fill: $book-color;
 }
 
-.website.depth1 {
+.Website.depth1 {
     stroke: $website-color;
 }
 
-.website.depth2 {
+.Website.depth2 {
     fill: $website-color;
 }
 
-.softwaresourcecode.depth1 {
+.SoftwareSourceCode.depth1 {
     stroke: $software-color;
 }
 
-.softwaresourcecode.depth2 {
+.SoftwareSourceCode.depth2 {
     fill: $software-color;
 }
 
-.analysis.depth1 {
+.Analysis.depth1 {
     stroke: $analysis-color;
 }
 
-.analysis.depth2 {
+.Analysis.depth2 {
     fill: $analysis-color;
 }
 
-.imageobject.depth1 {
+.ImageObject.depth1 {
     stroke: $image-color;
 }
 
-.imageobject.depth2 {
+.ImageObject.depth2 {
     fill: $image-color;
 }
 
@@ -343,7 +343,7 @@ export default Vue.extend({
     fill: darken($publication-color, 25%);
 }
 
-.annotation--type.clinicaltrial {
+.annotation--type.ClinicalTrial {
     font-size: 1em;
     fill: darken($clinical-trial-color, 25%);
 }
