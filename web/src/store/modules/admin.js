@@ -169,6 +169,19 @@ const state = {
           citation: '<a href="https://www.rcsb.org/pages/policies#References target="_blank"">PDB Citation Policies</a>'
         },
         {
+          id: "dde",
+          name: "Data Discovery Engine",
+          img: "dde.svg",
+          img_lg: "dde_full.svg",
+          url: "https://discovery.biothings.io/dataset",
+          description: "The CTSA Data Discovery Engine is a website that provides guidance for reserachers on how to make their data discoverable and reusable, and bring the practical benefits of data sharing to researcher’s own research projects, as well as the research community as a whole.",
+          license: {
+            url: 'https://discovery.biothings.io/about',
+            name: 'CC-BY'
+          },
+          citation: 'Data Discovery Engine. <i>Data Discovery Engine Data Registry</i>. Available online: <a href="https://discovery.biothings.io/dataset" target="_blank">https://discovery.biothings.io/dataset</a> (2020)'
+        },
+        {
           id: "zenodo",
           name: "Zenodo",
           img: "zenodo.svg",
