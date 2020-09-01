@@ -78,7 +78,7 @@
     <div class="row m-0">
 
       <!-- FILTERS -->
-      <div class="col-sm-3 col-md-3 col-lg-2">
+      <div class="col-sm-4 col-md-3 col-xl-2">
         <div class="bg-white ml-1 mt-2 border-right">
 
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
@@ -126,7 +126,7 @@
         </div>
       </div>
 
-      <div class="col-sm-9 col-md-9 col-lg-10" id="results">
+      <div class="col-sm-8 col-md-9 col-xl-10" id="results">
         <!-- results header + sort options -->
         <div class="border-bottom py-2">
           <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
@@ -192,11 +192,14 @@
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
           <div class="row w-100 d-flex flex-column text-left px-3 py-4 search-result" v-for="(item, idx) in data" :key="idx">
-            <div class="d-flex w-100 align-items-center">
-              <StripeAccent :className="item['@type']" />
-              <small :class="[item['@type'], 'resource-type', 'mr-3']">{{
+            <div class="d-flex w-100 resource-title">
+              <div class="d-flex align-items-center">
+                <StripeAccent :className="item['@type']" />
+                <small :class="[item['@type'], 'resource-type', 'mr-3']">{{
                   item["@type"]
                 }}</small>
+              </div>
+
               <!-- name -->
               <router-link :to="{ name: 'Resource Page', params: { id: item._id } }">
                 <h5 class="m-0">{{ item.name }}</h5>
@@ -206,7 +209,7 @@
             <div class="row">
               <!-- LEFT -->
 
-              <div class="col-sm-5 text-muted d-flex flex-column justify-content-between">
+              <div class="col-sm-12 col-md-6 col-lg-5 text-muted d-flex flex-column justify-content-between">
                 <div class="">
                   <!-- authors -->
                   <div class="attribution text-body">
@@ -300,7 +303,7 @@
                   </router-link> -->
                 </div>
 
-                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5" v-if="item.curatedBy">
+                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5 line-height-1 d-flex align-items-center" v-if="item.curatedBy">
                   <div class="col-sm-12" :class="item['@type']">
                     <small>provided by {{ item.curatedBy.name }}</small>
                     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
@@ -311,7 +314,7 @@
               </div>
 
               <!-- RIGHT     -->
-              <div class="col-sm-7 text-muted">
+              <div class="col-sm-12 col-md-6 col-lg-7 text-muted">
                 <!-- CLINCIAL-TRIAL-SPECIFIC  -->
                 <div v-if="item.studyDesign || item.armGroup">
                   <TrialType :design="item.studyDesign" :arms="item.interventions" />
@@ -451,7 +454,6 @@ export default {
         this.data = results.results;
         this.newData = results.recent;
         this.facetSummary = results.facets;
-        console.log(this.facetSummary)
         this.selectedFilters = results.facets.map(d => {
             return {
               id: d.id,
@@ -765,5 +767,12 @@ export default {
     background-color: $secondary-color !important;
     border-color: $secondary-color !important;
     color: white !important;
+}
+
+@media (max-width: 576px) {
+    .resource-title {
+        align-items: start;
+        flex-direction: column;
+    }
 }
 </style>
