@@ -202,18 +202,16 @@
             <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
           </div>
 
-          <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2">
-            <div class="d-flex flex-column mr-4 mb-3">
+          <div class="d-flex flex-wrap align-items-start justify-content-between border-top py-2 mt-2">
+            <div class="d-flex flex-column pr-2 mr-2  mb-3">
               <small class="text-left">Date</small>
             <DateHistogram :data="dates" :filterable="false"/>
             </div>
 
-            <div class="d-flex flex-column mr-4 mb-3" v-for="(facet, idx) in facetSummary" :key="idx">
+            <div v-for="(facet, idx) in facetSummary" :key="idx" :class="[facet.filtered.length && pieVariables.includes(facet.variable) ? 'd-flex flex-column mx-2 mb-3' : 'hidden']">
               <!-- Toggle content -->
-              <template v-if="facet.filtered.length && pieVariables.includes(facet.variable)" class="d-flex flex-column">
                 <small class="text-left">{{facet.variable}}</small>
                 <Donut :data="facet.filtered" :id="facet.variable" />
-              </template>
             </div>
           </div>
 
