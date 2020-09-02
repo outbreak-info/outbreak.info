@@ -203,6 +203,11 @@
           </div>
 
           <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2">
+            <div class="d-flex flex-column mr-4 mb-3">
+              <small class="text-left">Date</small>
+            <DateHistogram :data="dates" :filterable="false"/>
+            </div>
+
             <div class="d-flex flex-column mr-4 mb-3" v-for="(facet, idx) in facetSummary" :key="idx">
               <!-- Toggle content -->
               <template v-if="facet.filtered.length && pieVariables.includes(facet.variable)" class="d-flex flex-column">

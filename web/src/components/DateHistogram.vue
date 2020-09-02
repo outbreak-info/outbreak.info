@@ -1,14 +1,9 @@
 <template>
 <div class="donut-group d-flex" :id="`donut-${id}`">
-  <svg :width="width" :height="width" class="donut">
-    <g :transform="`translate(${this.width/2},${this.width/2})`" ref="pie"></g>
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="date-histogram">
+    <g :transform="`translate(${this.margin.left},${this.margin.top})`" ref="hist"></g>
+    <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
   </svg>
-  <div class="ml-2" style="max-width: 150px;">
-    <div v-for="(d, idx) in nonZero" :key="idx" class="line-height-sm text-left text-break">
-      <small :style="{color: colorScale(d.term)}" v-if="colorScale && idx < 5">{{d.term}}</small>
-    </div>
-    <small v-if="nonZero.length > 5" style="color: #bababa"  class="line-height-sm text-left d-block">other</small>
-  </div>
 </div>
 </template>
 
@@ -18,34 +13,53 @@ import Vue from "vue";
 import {
   select,
   selectAll,
-  pie,
-  arc,
-  scaleOrdinal,
-  scaleBand,
-  schemeSet2
+  scaleLinear,
+  scaleTime,
+  axisBottom,
+  nest,
+  max,
+  sum,
+  extent,
+  timeWeek,
+  isoParse
 } from "d3";
 
 export default Vue.extend({
-  name: "Donut",
+  name: "DateHistogram",
   props: {
     data: Array,
     id: String,
+    filterable: {
+      type: Boolean,
+      default: true
+    },
     width: {
+      type: Number,
+      default: 150
+    },
+    height: {
       type: Number,
       default: 60
     }
   },
   data() {
     return {
-      holeFrac: 0.4,
-      //data
-      nonZero: [],
+      margin: {
+        top: 5,
+        bottom: 25,
+        left: 10,
+        right: 10
+      },
+      // data
+      bins: null,
+      // axes,
+      x: null,
+      y: null,
+      xAxis: null,
       // refs
       svg: null,
+      xAxisRef: null
       // methods
-      pie: null,
-      arc: null,
-      colorScale: null
     };
   },
   watch: {
@@ -55,56 +69,68 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
-      this.svg = select(this.$refs.pie);
-
-      this.pie = pie()
-        .sort((a, b) => a.value > b.value ? -1 : 1)
-        .value(d => d.count);
-
-      this.arc = arc()
-        .innerRadius(this.width / 2 * this.holeFrac)
-        .outerRadius(this.width / 2 - 1);
+      this.svg = select(this.$refs.hist);
+      this.xAxisRef = select(this.$refs.x_axis);
     },
     updatePlot() {
       if (this.data && this.data[0] && this.width) {
-        // this.updateScales();
+        this.updateAxes();
         this.drawPlot();
       }
     },
-    updateScales() {},
+    updateAxes: function() {
+      const dateRange = extent(this.data, d => d.date);
+
+      // x-axis
+      // Add 1 week pad on either side of the histogram to pad the ends
+      this.x = scaleTime()
+        .range([0, this.width])
+        .domain([timeWeek.offset(dateRange[0], -1), timeWeek.offset(dateRange[1], 1)]);
+
+
+      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(4);
+      this.xAxisRef.call(this.xAxis);
+
+      selectAll(".axis").call(this.xAxis);
+
+      // calculate bins
+      // rolled up to every week
+      this.bins = nest()
+        .key(d => timeWeek(d.date))
+        .rollup(values => sum(values, d => d.count))
+        .entries(this.data)
+
+      // gotta reconvert dates from strings
+      this.bins.forEach(d => {
+        d["date"] = isoParse(d.key)
+      })
+
+      // // y-axis
+      this.y = scaleLinear()
+        .range([this.height, 0])
+        .domain([0, max(this.bins, d => d.value)]);
+
+    },
     drawPlot() {
-      this.nonZero = this.data.filter(d => d.count);
-      const arcs = this.pie(this.nonZero);
-      if (this.id == "Type") {
-        this.colorScale = scaleOrdinal()
-          .range(["#507ea3", // blue (Dataset)
-            "#f28e2c", // orange (WebSite)
-            "#e15759", // coral (Publication)
-            "#76b7b2", // teal (Analysis)
-            "#59a14f", // green (Protocol)
-            "#edc949", // yellow (ImageObject)
-            "#b475a3", // purple (ClinicalTrial)
-            "#ff98a8", // pink (Book)
-            "#9c755f"
-          ])
-          .domain(["Dataset", "WebSite", "publication", "Analysis", "Protocol", "ImageObject", "clinicaltrial", "Book"])
-          .unknown("#bababa");
-      } else {
-        this.colorScale = scaleOrdinal(schemeSet2)
-          .domain(this.nonZero.map(d => d.term).slice(0, 5))
-          .unknown("#bababa");
-      }
+      const barSelector = this.svg
+        .selectAll("rect")
+        .data(this.bins);
 
-      const donutSelector = this.svg.selectAll("path").data(arcs);
-
-      donutSelector.join(enter => {
-          enter.append("path")
-            .attr("d", this.arc)
-            .style("fill", d => this.colorScale(d.data.term))
+      barSelector.join(enter => {
+          enter.append("rect")
+            .attr("class", "histogram-bar")
+            .attr("fill", d => "#66c2a5")
+            // .attr("opacity", d => d.selected ? 1 : 0.25)
+            .attr("x", d => this.x(d.date))
+            .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
+            .attr("y", d => this.y(d.value))
+            .attr("height", d => this.y(0) - this.y(d.value))
         },
         update => update
-        .attr("d", this.arc)
-        .style("fill", d => this.colorScale(d.data.term)))
+        .attr("x", d => this.x(d.date))
+        .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
+        .attr("y", d => this.y(d.value))
+        .attr("height", d => this.y(0) - this.y(d.value)))
     }
   },
   mounted() {

@@ -221,7 +221,7 @@ export function getResourceFacets(
   const timestamp = Math.round(new Date().getTime() / 36e5);
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&size=0&facet_size=500&facets=${facetString}&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }
