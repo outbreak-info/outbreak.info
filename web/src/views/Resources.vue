@@ -81,6 +81,20 @@
       <div class="col-sm-4 col-md-3 col-xl-2">
         <div class="bg-white ml-1 mt-2 border-right">
 
+          <div class="border-bottom p-1 px-2 my-2">
+            <!-- Toggle Header -->
+            <div class="row m-0 pointer" @click="dateFacet.expanded = !dateFacet.expanded">
+              <div class="col-sm-10 p-1">
+                <h6 class="p-0 m-0">Date</h6>
+              </div>
+              <div class="col-sm-2 text-center p-1">
+                <!-- toggle fa class up->down -->
+                <i class="fas fa-chevron-up" v-if="dateFacet.expanded"></i>
+                <i class="fas fa-chevron-down" v-if="!dateFacet.expanded"></i>
+              </div>
+            </div>
+            <DateHistogram :data="dates" />
+          </div>
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
             <div class="row m-0 pointer" @click="facet.expanded = !facet.expanded">
@@ -399,6 +413,7 @@ import TrialType from "@/components/TrialType.vue";
 import NewResources from "@/components/NewResources.vue";
 import DownloadData from "@/components/DownloadData.vue";
 import Donut from "@/components/Donut.vue";
+import DateHistogram from "@/components/DateHistogram.vue";
 
 import {
   mapState
@@ -447,7 +462,8 @@ export default {
     FontAwesomeIcon,
     NewResources,
     DownloadData,
-    Donut
+    Donut,
+    DateHistogram
   },
   created: function() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
@@ -465,7 +481,9 @@ export default {
         this.numPerPage,
         this.selectedPage * this.numPerPage
       ).subscribe(results => {
+        console.log(results.dates)
         this.data = results.results;
+        this.dates = results.dates;
         this.newData = results.recent;
         this.facetSummary = results.facets;
         this.selectedFilters = results.facets.map(d => {
@@ -574,7 +592,6 @@ export default {
       });
     },
     removeFilter(variable, id) {
-      console.log(this.facetKSummary)
       const typeIdx = this.facetSummary.findIndex(d => d.id == id);
       if (typeIdx >= 0) {
         const varIdx = this.facetSummary[typeIdx].filtered.findIndex(d => d.term == variable);
@@ -691,6 +708,8 @@ export default {
     return {
       resultsSubscription: null,
       data: null,
+      dates: null,
+      dateFacet: {expanded: true},
       numResults: 0,
       selectedPage: null,
       searchInput: null,
