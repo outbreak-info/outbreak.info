@@ -95,6 +95,7 @@
             </div>
             <!-- Toggle content -->
             <form v-if="facet.filtered.length && facet.expanded">
+              <!-- <Donut :data="facet.filtered" /> -->
               <div>
                 <!-- Filter search -->
                 <form class="p-1" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
@@ -186,6 +187,17 @@
             </span>
             <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
           </div>
+
+          <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2">
+            <div class="d-flex flex-column mr-4 mb-3" v-for="(facet, idx) in facetSummary" :key="idx">
+              <!-- Toggle content -->
+              <template v-if="facet.filtered.length && pieVariables.includes(facet.variable)" class="d-flex flex-column">
+                <small class="text-left">{{facet.variable}}</small>
+                <Donut :data="facet.filtered" :id="facet.variable" />
+              </template>
+            </div>
+          </div>
+
         </div>
 
 
@@ -386,6 +398,7 @@ import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
 import NewResources from "@/components/NewResources.vue";
 import DownloadData from "@/components/DownloadData.vue";
+import Donut from "@/components/Donut.vue";
 
 import {
   mapState
@@ -433,7 +446,8 @@ export default {
     TrialType,
     FontAwesomeIcon,
     NewResources,
-    DownloadData
+    DownloadData,
+    Donut
   },
   created: function() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
@@ -687,6 +701,7 @@ export default {
       sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
+      pieVariables: ["Type", "Source", "Funding", "Measurement Technique"],
       sortOpts: [{
           value: "",
           label: "best match"
