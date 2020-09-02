@@ -260,7 +260,8 @@ export function getResourceFacets(
           // filtered: cloneDeep(results[key]["terms"]),
           total: results[key]["terms"].length,
           num2Display: 5,
-          expanded: results[key]["terms"].some(d => d.checked)
+          expanded: true
+          // expanded: results[key]["terms"].some(d => d.checked)
         };
       });
 
