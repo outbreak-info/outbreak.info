@@ -93,7 +93,7 @@
                 <i class="fas fa-chevron-down" v-if="!dateFacet.expanded"></i>
               </div>
             </div>
-            <DateHistogram :data="dates" v-if="dates && dates.length"/>
+            <DateHistogram :data="dates" v-if="dates && dates.length" />
           </div>
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
@@ -496,7 +496,6 @@ export default {
         this.dateMin,
         this.dateMax
       ).subscribe(results => {
-        console.log(results)
         this.data = results.results;
         this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;
