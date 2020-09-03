@@ -122,7 +122,7 @@ export default Vue.extend({
       this.xAxisRef = select(this.$refs.x_axis);
     },
     updatePlot() {
-      if (this.data && this.data[0] && this.width) {
+      if (this.data && this.width) {
         this.updateAxes();
         this.drawPlot();
       }
