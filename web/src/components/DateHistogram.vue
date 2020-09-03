@@ -30,12 +30,14 @@ import {
   scaleTime,
   axisBottom,
   nest,
+  min,
   max,
   sum,
   extent,
   timeWeek,
   isoParse,
   timeFormat,
+  timeParse,
   drag,
   event
 } from "d3";
@@ -85,18 +87,13 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      this.updatePlot();
-    },
-    minVal: {
-      immediate: true,
-      handler(newMin, oldMin) {
-        this.updateFilterLimits();
-      }
-    },
-    maxVal: {
-      immediate: true,
-      handler(newMax, oldMax) {
-        this.updateFilterLimits();
+      // console.log(this.data)
+      if (this.data) {
+        this.selectedMin = this.$route.query.dateMin ? this.parseDate(this.$route.query.dateMin) : min(this.data.filter(d => d.count), x => x.date);
+        this.selectedMax = this.$route.query.dateMax ? this.parseDate(this.$route.query.dateMax) : max(this.data.filter(d => d.count), x => x.date);
+        this.setupDrag();
+
+        this.updatePlot();
       }
     }
   },
@@ -114,6 +111,9 @@ export default Vue.extend({
     },
     formatDate(val) {
       return (timeFormat("%Y-%m-%d")(val));
+    },
+    parseDate(val) {
+      return (timeParse("%Y-%m-%d")(val));
     },
     updateFilterLimits: function() {
       this.selectedMin = new Date(2020, 3, 1);
@@ -142,7 +142,7 @@ export default Vue.extend({
         .clamp(true);
 
 
-      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(4);
+      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(2);
       this.xAxisRef.call(this.xAxis);
 
       selectAll(".axis").call(this.xAxis);
@@ -182,6 +182,8 @@ export default Vue.extend({
       });
     },
     setupDrag() {
+      // console.log("setup")
+      // console.log(select(this.$refs.slider_left))
       // draggable filters
       select(this.$refs.slider_left)
         .call(drag()
@@ -208,12 +210,11 @@ export default Vue.extend({
           .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
       }
 
-          // selectAll(".date-histogram")
-          // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
+      // selectAll(".date-histogram")
+      // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
     },
     drawPlot() {
-      this.setupDrag();
-
+      // console.log('draw')
       const barSelector = this.svg
         .selectAll("rect")
         .data(this.bins);

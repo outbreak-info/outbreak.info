@@ -93,7 +93,7 @@
                 <i class="fas fa-chevron-down" v-if="!dateFacet.expanded"></i>
               </div>
             </div>
-            <DateHistogram :data="dates" />
+            <DateHistogram :data="dates" v-if="dates.length"/>
           </div>
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
@@ -193,25 +193,33 @@
           <div class="row d-flex flex-wrap px-1 mt-2" v-if="selectedFilters && selectedFilters.length" id="selectedFilters">
             <span v-for="(varType, tIdx) in selectedFilters" :key="tIdx" class="d-flex">
               <span v-for="(variable, vIdx) in varType.vars" :key="vIdx">
-                <button role="button" class="btn btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
+                <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
                   <small><b>{{variable}}</b></small>
                   <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
                 </button>
               </span>
             </span>
+            <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('min')" v-if="dateMin">
+              <small><b>date &ge; {{dateMin}}</b></small>
+              <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+            </button>
+            <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('max')" v-if="dateMax">
+              <small><b>date &le; {{dateMax}}</b></small>
+              <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+            </button>
             <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
           </div>
 
-          <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2">
+          <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2" v-if="dates.length">
             <div class="d-flex flex-column pr-2 mr-2  mb-3">
               <small class="text-left">Date</small>
-            <DateHistogram :data="dates" :filterable="false"/>
+              <DateHistogram :data="dates" :filterable="false" />
             </div>
 
             <div v-for="(facet, idx) in facetSummary" :key="idx" :class="[facet.total && pieVariables.includes(facet.variable) ? 'd-flex flex-column mx-3 mb-3' : 'hidden']">
               <!-- Toggle content -->
-                <small class="text-left">{{facet.variable}}</small>
-                <Donut :data="facet.filtered" :id="facet.variable" />
+              <small class="text-left">{{facet.variable}}</small>
+              <Donut :data="facet.filtered" :id="facet.variable" />
             </div>
           </div>
 
@@ -490,7 +498,7 @@ export default {
       ).subscribe(results => {
         console.log(results)
         this.data = results.results;
-        this.dates = results.dates;
+        this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;
         this.facetSummary = results.facets;
         this.selectedFilters = results.facets.map(d => {
@@ -546,7 +554,9 @@ export default {
           },
           page: "0",
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -564,7 +574,9 @@ export default {
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -614,9 +626,38 @@ export default {
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
+    },
+    removeDateFilter(type) {
+      if (type == "min") {
+        this.$router.push({
+          name: "Resources",
+          query: {
+            q: this.searchInput,
+            filter: this.filterString,
+            page: "0",
+            size: String(this.numPerPage),
+            sort: this.sortValue,
+            dateMax: this.dateMax
+          }
+        });
+      } else {
+        this.$router.push({
+          name: "Resources",
+          query: {
+            q: this.searchInput,
+            filter: this.filterString,
+            page: "0",
+            size: String(this.numPerPage),
+            sort: this.sortValue,
+            dateMin: this.dateMin
+          }
+        });
+      }
     },
     onEnter() {
       this.$router.push({
@@ -638,7 +679,9 @@ export default {
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -652,7 +695,9 @@ export default {
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -666,7 +711,9 @@ export default {
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     }
@@ -716,7 +763,9 @@ export default {
       resultsSubscription: null,
       data: null,
       dates: null,
-      dateFacet: {expanded: true},
+      dateFacet: {
+        expanded: true
+      },
       numResults: 0,
       selectedPage: null,
       searchInput: null,
