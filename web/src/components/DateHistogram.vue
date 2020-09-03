@@ -87,12 +87,10 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      // console.log(this.data)
       if (this.data) {
-        this.selectedMin = this.$route.query.dateMin ? this.parseDate(this.$route.query.dateMin) : min(this.data.filter(d => d.count), x => x.date);
-        this.selectedMax = this.$route.query.dateMax ? this.parseDate(this.$route.query.dateMax) : max(this.data.filter(d => d.count), x => x.date);
-        this.setupDrag();
-
+        if (this.filterable) {
+          this.setSliders();
+        }
         this.updatePlot();
       }
     }
@@ -180,9 +178,11 @@ export default Vue.extend({
         }
       });
     },
+    setSliders() {
+      this.selectedMin = this.$route.query.dateMin ? this.parseDate(this.$route.query.dateMin) : min(this.data.filter(d => d.count), x => x.date);
+      this.selectedMax = this.$route.query.dateMax ? this.parseDate(this.$route.query.dateMax) : max(this.data.filter(d => d.count), x => x.date);
+    },
     setupDrag() {
-      // console.log("setup")
-      // console.log(select(this.$refs.slider_left))
       // draggable filters
       select(this.$refs.slider_left)
         .call(drag()
@@ -213,7 +213,6 @@ export default Vue.extend({
       // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
     },
     drawPlot() {
-      // console.log('draw')
       const barSelector = this.svg
         .selectAll("rect")
         .data(this.bins);
@@ -239,8 +238,11 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.updatePlot();
+    if (this.filterable) {
+      this.setSliders();
+      this.$nextTick(() => this.setupDrag())
+    }
 
-    this.$nextTick(() => this.setupDrag())
   }
 });
 </script>
