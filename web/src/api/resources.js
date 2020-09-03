@@ -65,10 +65,13 @@ export function getResources(
 
   if (!queryString && !filterString && !dateString) {
     comboString = "__all__";
-  } else if (!queryString) {
+  } else if (!queryString && filterString) {
     // filters, but no query
     filterArr = filterString2Arr(filterString);
     comboString = dateString ? `${filterArr2String(filterArr)} AND ${dateString}` : filterArr2String(filterArr);
+  } else if (!queryString && dateString) {
+    // date filter, but no query or filter
+    comboString = dateString;
   } else if (!filterString) {
     // query, but no filter
     comboString = dateString ? `${queryString} AND ${dateString}` : queryString;
