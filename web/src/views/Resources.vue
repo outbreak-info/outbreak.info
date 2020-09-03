@@ -642,6 +642,7 @@ export default {
             page: "0",
             size: String(this.numPerPage),
             sort: this.sortValue,
+            dateMin: null,
             dateMax: this.dateMax
           }
         });
@@ -654,7 +655,8 @@ export default {
             page: "0",
             size: String(this.numPerPage),
             sort: this.sortValue,
-            dateMin: this.dateMin
+            dateMin: this.dateMin,
+            dateMax: null
           }
         });
       }
