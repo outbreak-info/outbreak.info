@@ -219,7 +219,7 @@ export default Vue.extend({
 
       barSelector.join(enter => {
           enter.append("rect")
-            .attr("class", "histogram-bar")
+            .attr("class", "date-bar")
             .style("fill", "#66c2a5")
             // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
             .attr("x", d => this.x(d.date))
