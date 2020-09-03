@@ -93,7 +93,7 @@
                 <i class="fas fa-chevron-down" v-if="!dateFacet.expanded"></i>
               </div>
             </div>
-            <DateHistogram :data="dates" v-if="dates.length"/>
+            <DateHistogram :data="dates" v-if="dates && dates.length"/>
           </div>
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
@@ -210,7 +210,7 @@
             <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
           </div>
 
-          <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2" v-if="dates.length">
+          <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2" v-if="dates && dates.length">
             <div class="d-flex flex-column pr-2 mr-2  mb-3">
               <small class="text-left">Date</small>
               <DateHistogram :data="dates" :filterable="false" />
