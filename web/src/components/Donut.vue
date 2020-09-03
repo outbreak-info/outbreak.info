@@ -87,7 +87,7 @@ export default Vue.extend({
             "#ff98a8", // pink (Book)
             "#9c755f"
           ])
-          .domain(["Dataset", "WebSite", "Publication", "Analysis", "Protocol", "ImageObject", "clinicaltrial", "Book"])
+          .domain(["Dataset", "WebSite", "Publication", "Analysis", "Protocol", "ImageObject", "ClinicalTrial", "Book"])
           .unknown("#bababa");
       } else {
         this.colorScale = scaleOrdinal(schemeSet2)

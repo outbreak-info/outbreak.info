@@ -53,7 +53,7 @@ export default Vue.extend({
     },
     width: {
       type: Number,
-      default: 150
+      default: 125
     },
     height: {
       type: Number,
@@ -65,8 +65,8 @@ export default Vue.extend({
       margin: {
         top: 5,
         bottom: 25,
-        left: 10,
-        right: 10
+        left: 15,
+        right: 15
       },
       // data
       bins: null,
