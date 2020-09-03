@@ -84,6 +84,8 @@ export function getResources(
           Object.assign(obj, newval)
         })
 
+        all["total"] = all.filtered.filter(d => d.count).length;
+
         all.filtered.sort((a, b) => b.count - a.count);
         return (all)
       })
@@ -258,7 +260,6 @@ export function getResourceFacets(
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
           // filtered: cloneDeep(results[key]["terms"]),
-          total: results[key]["terms"].length,
           num2Display: 5,
           expanded: true
           // expanded: results[key]["terms"].some(d => d.checked)
