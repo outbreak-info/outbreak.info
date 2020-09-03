@@ -1,29 +1,54 @@
 import {
-  from,
-  EMPTY,
-  BehaviorSubject
+  from, Observable, of
 } from "rxjs";
 import axios from "axios";
 import {
-  finalize,
   catchError,
   pluck,
-  map,
-  expand,
-  reduce
+  map, mergeMap
 } from "rxjs/operators";
-
-import store from "@/store";
 
 
 export function getLocation(apiUrl) {
-  if (!navigator.geolocation) {
-    console.log("Geolocation not supported")
-  }
-  else {
-    navigator.geolocation.getCurrentPosition(loc => processLocation(apiUrl, loc).subscribe(x => console.log(x)), failedLocation)
-  }
+  return lookupLocation().pipe(
+    mergeMap(loc => processLocation(apiUrl, loc)),
+        catchError(e => {
+          console.log("%c User doesn't allow geolocation", "color: blue");
+          console.log(e);
+          return from(["none"]);
+        })
+  )
 }
+
+  function lookupLocation() {
+    return Observable.create(observer => {
+        if(window.navigator && window.navigator.geolocation) {
+            window.navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    observer.next(position);
+                    observer.complete();
+                },
+                (error) => observer.error(error)
+            );
+        } else {
+            observer.error('Unsupported Browser');
+        }
+    });
+}
+
+// export function getLocation(apiUrl) {
+//   // if (!navigator.geolocation) {
+//   //   console.log("Geolocation not supported")
+//   // }
+//   // else {
+//   //
+//   return new Promise((resolve, reject) => {
+//     navigator.geolocation.getCurrentPosition(resolve, reject)
+//     // navigator.geolocation.getCurrentPosition(loc => processLocation(apiUrl, loc), failedLocation)
+//   })
+//
+//   // }
+// }
 
 function processLocation(apiUrl, location) {
   const scalar = 0.05;
@@ -40,7 +65,7 @@ function processLocation(apiUrl, location) {
 
       const nearest = results[0];
 
-      return(nearest)
+      return(nearest ? nearest.location_id : "none")
     }),
     catchError(e => {
       console.log("%c Error in getting nearest location!", "color: red");
@@ -52,6 +77,6 @@ function processLocation(apiUrl, location) {
 
 
 function failedLocation(location) {
-  console.log("success")
-  console.log(location)
+  console.log(`failed location: ${location}`)
+  return(of(null))
 }

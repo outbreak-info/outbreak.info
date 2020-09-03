@@ -13,9 +13,9 @@
         <ul class="navbar-nav">
           <li class="nav-item">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :key="$route.fullPath" :to="{
-                  name: 'Epidemiology',
-                  query: { location: mostCasesNames }
-                }">Epidemiology</router-link>
+                  name: 'Epidemiology'}">
+              Epidemiology
+            </router-link>
           </li>
           <li class="nav-item">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
@@ -100,8 +100,7 @@ import {
   mapState
 } from "vuex";
 import {
-  getLocations,
-  getMostCases
+  getLocations
 } from "@/api/epi-basics.js";
 
 export default {
@@ -111,13 +110,6 @@ export default {
       year: ""
     };
   },
-  computed: {
-    ...mapState("epidata", ["mostCases"]),
-    mostCasesNames: function() {
-      return this.mostCases.map(d => d.location_id).join(";");
-    }
-  },
-  methods: {},
   mounted() {
     var self = this;
     var currentTime = new Date();
@@ -125,8 +117,7 @@ export default {
   },
   subscriptions() {
     return {
-      placeNames$: getLocations(this.$apiurl),
-      mostCases$: getMostCases(this.$apiurl)
+      placeNames$: getLocations(this.$apiurl)
     };
   }
 };
