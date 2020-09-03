@@ -134,7 +134,8 @@ export default Vue.extend({
       // Add 1 week pad on either side of the histogram to pad the ends
       this.x = scaleTime()
         .range([0, this.width])
-        .domain([timeWeek.offset(dateRange[0], -1), timeWeek.offset(dateRange[1], 1)]);
+        .domain([timeWeek.offset(dateRange[0], -1), timeWeek.offset(dateRange[1], 1)])
+        .clamp(true);
 
 
       this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(4);
@@ -194,6 +195,8 @@ export default Vue.extend({
           // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
     },
     drawPlot() {
+      this.setupDrag();
+
       const barSelector = this.svg
         .selectAll("rect")
         .data(this.bins);
