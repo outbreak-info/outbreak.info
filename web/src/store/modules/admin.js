@@ -102,6 +102,17 @@ const state = {
             url: "https://www.medrxiv.org/about/FAQ"
           },
           citation: '<a href="https://www.medrxiv.org/about/FAQ" target="_blank">How to cite a medRxiv preprint</a>'
+        },
+        {
+          id: "imperial",
+          name: "MRC Centre for Global Infectious Disease Analysis",
+          img: "imperial.png",
+          url: "https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/",
+          description: 'Since the emergence of the new coronavirus (COVID-19) in December 2019, we have adopted a policy of immediately sharing research findings on the developing pandemic. These pages provide all output from the Imperial College COVID-19 Response Team, including publicly published online reports, planning tools, scientific resources, publications and video updates.',
+          license: {
+            url: "https://www.imperial.ac.uk/research-and-innovation/support-for-staff/scholarly-communication/open-access/oa-policy/"
+          },
+          citation: 'Imperial College London. <i>MRC Centre for Global Infectious Disease Analysis COVID-19</i>. Available online: <a href="https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/" target="_blank">https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/</a> (2020)'
         }
       ]
     },

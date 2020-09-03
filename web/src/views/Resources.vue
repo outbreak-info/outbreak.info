@@ -523,7 +523,7 @@ export default {
       const selectedText = this.facetFilters[idx];
       if (selectedText != "") {
         facet.filtered = facet.counts.filter(d =>
-          d.term.toLowerCase().includes(selectedText)
+          d.term.includes(selectedText)
         );
         facet.filtered.forEach(d => (d.checked = true));
       } else {
@@ -753,7 +753,7 @@ export default {
           //   id: "topics"
           // }, {
           label: "Publications",
-          id: "publication"
+          id: "Publication"
         },
         // {
         //   label: "Analyses",
@@ -761,15 +761,15 @@ export default {
         // },
         {
           label: "Clinical Trials",
-          id: "clinicaltrial"
+          id: "ClinicalTrial"
         },
         {
           label: "Datasets",
-          id: "dataset"
+          id: "Dataset"
         },
         {
           label: "Protocols",
-          id: "protocol"
+          id: "Protocol"
         }
       ],
       new2Display: 3,
