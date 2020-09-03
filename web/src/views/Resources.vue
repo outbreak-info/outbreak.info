@@ -455,6 +455,7 @@ export default {
     sort: String,
     page: String,
     size: String,
+    filter: String,
     dateMin: String,
     dateMax: String
   },
