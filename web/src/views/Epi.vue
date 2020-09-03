@@ -542,13 +542,14 @@ export default {
   mounted() {
     if (!this.location && !this.$route.query.nolocation) {
       getLocation(this.$apiurl).subscribe(nearestPlace => {
-        if(nearestPlace != "none"){
-        this.$router.push({
-          name: "Epidemiology",
-          query: {
-            location: nearestPlace
-          }
-        });} else {
+        if (nearestPlace != "none") {
+          this.$router.push({
+            name: "Epidemiology",
+            query: {
+              location: nearestPlace
+            }
+          });
+        } else {
           this.$router.push({
             name: "Epidemiology",
             query: {
@@ -558,7 +559,7 @@ export default {
         }
       })
     } else {
-        this.setLocation(this.location);
+      this.setLocation(this.location);
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
         // set initial dimensions for the stacked area plots.
