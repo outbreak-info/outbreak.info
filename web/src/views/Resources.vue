@@ -500,6 +500,7 @@ export default {
         this.dateMin,
         this.dateMax
       ).subscribe(results => {
+        console.log(results)
         this.data = results.results;
         this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;
@@ -549,6 +550,9 @@ export default {
       this.filterString = this.filters2String();
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
@@ -604,6 +608,9 @@ export default {
       this.filterString = null;
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
@@ -639,6 +646,9 @@ export default {
       if (type == "min") {
         this.$router.push({
           name: "Resources",
+          params: {
+            disableScroll: true
+          },
           query: {
             q: this.searchInput,
             filter: this.filterString,
@@ -652,6 +662,9 @@ export default {
       } else {
         this.$router.push({
           name: "Resources",
+          params: {
+            disableScroll: true
+          },
           query: {
             q: this.searchInput,
             filter: this.filterString,
@@ -679,6 +692,9 @@ export default {
     changeSort() {
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
@@ -695,6 +711,9 @@ export default {
 
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
@@ -711,6 +730,9 @@ export default {
 
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,

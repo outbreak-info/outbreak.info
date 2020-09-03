@@ -167,6 +167,9 @@ export default Vue.extend({
 
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: route.q,
           page: route.page,
