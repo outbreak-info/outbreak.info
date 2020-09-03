@@ -131,8 +131,7 @@ export default Vue.extend({
       }
     },
     updateAxes: function() {
-      const filtered = this.data.filter(d => d.count);
-      const dateRange = extent(filtered, d => d.date);
+      const dateRange = extent(this.data, d => d.date);
 
       // x-axis
       // Add 1 week pad on either side of the histogram to pad the ends
