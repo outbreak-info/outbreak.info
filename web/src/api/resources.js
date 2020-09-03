@@ -330,10 +330,10 @@ export function getMostRecentGroup(apiUrl, queryString, sortVar, num2Return) {
   ]).pipe(
     map(([pubs, datasets, trials, protocols]) => {
       return ({
-        publication: pubs,
-        dataset: datasets,
-        clinicaltrial: trials,
-        protocol: protocols
+        Publication: pubs,
+        Dataset: datasets,
+        ClinicalTrial: trials,
+        Protocol: protocols
       })
     })
   )
