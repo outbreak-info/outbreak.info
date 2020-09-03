@@ -190,7 +190,8 @@
           </div>
 
           <!-- Selected filters -->
-          <div class="row d-flex flex-wrap px-1 mt-2" v-if="selectedFilters && selectedFilters.length" id="selectedFilters">
+          <div class="row d-flex flex-wrap px-1 mt-2" v-if="(selectedFilters && selectedFilters.length) || dateMin || dateMax" id="selectedFilters">
+            <!-- checkbox filters -->
             <span v-for="(varType, tIdx) in selectedFilters" :key="tIdx" class="d-flex">
               <span v-for="(variable, vIdx) in varType.vars" :key="vIdx">
                 <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
@@ -199,14 +200,17 @@
                 </button>
               </span>
             </span>
+            <!-- Date filters -->
             <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('min')" v-if="dateMin">
               <small><b>date &ge; {{dateMin}}</b></small>
               <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
             </button>
+
             <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('max')" v-if="dateMax">
               <small><b>date &le; {{dateMax}}</b></small>
               <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
             </button>
+            <!-- clear all -->
             <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
           </div>
 
