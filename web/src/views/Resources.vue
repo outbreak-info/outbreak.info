@@ -455,7 +455,8 @@ export default {
     sort: String,
     page: String,
     size: String,
-    filter: String
+    dateMin: String,
+    dateMax: String
   },
   components: {
     StripeAccent,
@@ -482,7 +483,9 @@ export default {
         this.filterString,
         this.sortValue,
         this.numPerPage,
-        this.selectedPage * this.numPerPage
+        this.selectedPage * this.numPerPage,
+        this.dateMin,
+        this.dateMax
       ).subscribe(results => {
         console.log(results)
         this.data = results.results;

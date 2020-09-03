@@ -46,20 +46,35 @@ export function getResources(
   filterString,
   sort,
   size,
-  page
+  page,
+  dateMin,
+  dateMax
 ) {
   var comboString;
   var filterArr = [];
-  if (!queryString && !filterString) {
+
+  // create date range query
+  var dateString;
+  if(dateMin && dateMax) {
+    dateString = `date:[${dateMin} TO ${dateMax}]`;
+  } else if(dateMin) {
+    dateString = `date:[${dateMin} TO *]`;
+  } else if(dateMax) {
+    dateString = `date:[* TO ${dateMax}]`;
+  }
+
+  if (!queryString && !filterString && !dateString) {
     comboString = "__all__";
   } else if (!queryString) {
+    // filters, but no query
     filterArr = filterString2Arr(filterString);
-    comboString = filterArr2String(filterArr);
+    comboString = dateString ? `${filterArr2String(filterArr)} AND ${dateString}` : filterArr2String(filterArr);
   } else if (!filterString) {
-    comboString = queryString;
+    // query, but no filter
+    comboString = dateString ? `${queryString} AND ${dateString}` : queryString;
   } else {
     filterArr = filterString2Arr(filterString);
-    comboString = `(${queryString}) AND ${filterArr2String(filterArr)}`;
+    comboString = dateString ? `(${queryString}) AND ${filterArr2String(filterArr)} AND ${dateString}` : `(${queryString}) AND ${filterArr2String(filterArr)}`;
   }
 
 
@@ -233,6 +248,7 @@ export function getResourceFacets(
     pluck("data", "facets"),
     map(results => {
       const facets = Object.keys(results).map(key => {
+        // turn on check boxes for filters that have been selected.
         const filters = filterArr.filter(
           d => d.key == key.replace(".keyword", "")
         );
@@ -245,6 +261,7 @@ export function getResourceFacets(
             d["date"] = timeParse("%Y-%m-%dT00:00:00.000Z")(d["term"]);
           }
         });
+
         return {
           variable: key
             .replace(".keyword", "")
@@ -259,10 +276,9 @@ export function getResourceFacets(
             .replace("keywords", "Keywords"),
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
-          // filtered: cloneDeep(results[key]["terms"]),
           num2Display: 5,
           expanded: true
-          // expanded: results[key]["terms"].some(d => d.checked)
+          // expanded: results[key]["terms"].some(d => d.checked) // expand if anything is checked
         };
       });
 

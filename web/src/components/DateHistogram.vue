@@ -112,6 +112,9 @@ export default Vue.extend({
     formatLimit(val) {
       return (timeFormat("%d %b %Y")(val));
     },
+    formatDate(val) {
+      return (timeFormat("%Y-%m-%d")(val));
+    },
     updateFilterLimits: function() {
       this.selectedMin = new Date(2020, 3, 1);
       // selectedMax: new Date(2020,8,1),this.minVal ;
@@ -162,7 +165,20 @@ export default Vue.extend({
 
     },
     changeFilters() {
-      console.log("fitlers")
+      const route = this.$route.query;
+
+      this.$router.push({
+        name: "Resources",
+        query: {
+          q: route.q,
+          page: route.page,
+          size: route.size,
+          filter: route.filter,
+          sort: route.sort,
+          dateMin: this.formatDate(this.selectedMin),
+          dateMax: this.formatDate(this.selectedMax)
+        }
+      });
     },
     setupDrag() {
       // draggable filters
@@ -204,15 +220,15 @@ export default Vue.extend({
       barSelector.join(enter => {
           enter.append("rect")
             .attr("class", "histogram-bar")
-            .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
-            // .attr("opacity", d => d.selected ? 1 : 0.25)
+            .style("fill", "#66c2a5")
+            // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
             .attr("x", d => this.x(d.date))
             .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
             .attr("y", d => this.y(d.value))
             .attr("height", d => this.y(0) - this.y(d.value))
         },
         update => update
-        .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
+        .style("fill", "#66c2a5")
         .attr("x", d => this.x(d.date))
         .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
         .attr("y", d => this.y(d.value))
