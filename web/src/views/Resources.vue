@@ -44,7 +44,7 @@
       <!-- sidebar: links -->
       <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
         <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
-        <router-link :to="{path: '/sources', hash: 'resources'}">Where do we get our data?</router-link>
+        <router-link :to="{path: '/sources', hash: '#resources'}">Where do we get our data?</router-link>
         <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
       </div>
 
@@ -57,16 +57,9 @@
 
   <!-- mini-nav for resource types -->
   <section class="d-flex justify-content-end py-2 bg-sec">
-    <div class="row d-flex justify-content-center w-100">
+    <!-- <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
-          <!-- <li class="navbar-nav">
-            <router-link class="nav-link no-underline p-0" :to="{
-                  name: 'Topics'
-                }">
-              Topics
-            </router-link>
-          </li> -->
           <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
             <router-link class="nav-link no-underline p-0" :to="{
                   name: 'Resources',
@@ -77,82 +70,101 @@
           </li>
         </ul>
       </nav>
-    </div>
+    </div> -->
   </section>
 
   <!-- RESULTS -->
   <section class="d-flex justify-content-end py-2">
     <div class="row m-0">
+
       <!-- FILTERS -->
-      <div class="col-sm-2 p-0">
-        <button @click="clearFilters" class="w-100 m-0 mb-1" v-if="filterString">
-          <small>clear filters</small>
-        </button>
-        <div class="border-bottom border-secondary alert-secondary p-1 mb-4" v-for="(facet, idx) in facetSummary" :key="idx">
-          <!-- Toggle Header -->
-          <div class="row m-0">
-            <div class="col-sm-10 p-1 uppercase">
-              <h6>{{ facet.variable }}</h6>
+      <div class="col-sm-4 col-md-3 col-xl-2">
+        <div class="bg-white ml-1 mt-2 border-right">
+
+          <div class="border-bottom p-1 px-2 my-2">
+            <!-- Toggle Header -->
+            <div class="row m-0 pointer" @click="dateFacet.expanded = !dateFacet.expanded">
+              <div class="col-sm-10 p-1">
+                <h6 class="p-0 m-0">Date</h6>
+              </div>
+              <div class="col-sm-2 text-center p-1">
+                <!-- toggle fa class up->down -->
+                <i class="fas fa-chevron-up" v-if="!dateFacet.expanded"></i>
+                <i class="fas fa-chevron-down" v-if="dateFacet.expanded"></i>
+              </div>
             </div>
-            <div class="col-sm-2 text-center p-1 pointer" v-if="facet.filtered.length" @click="facet.expanded = !facet.expanded">
-              <!-- toggle fa class up->down -->
-              <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
-              <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
-            </div>
+            <DateHistogram :data="dates" v-if="dates && dates.length && !dateFacet.expanded"/>
           </div>
-          <!-- Toggle content -->
-          <form v-if="facet.filtered.length && facet.expanded">
-            <div>
-              <!-- Filter search -->
-              <form class="p-1 bg-light" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
-                <input type="text" autocomplete="off" class="border border-secondary p-1 w-100 font-awesome" :placeholder="`Search ${facet.variable}`" v-model="facetFilters[idx]" />
-              </form>
-              <!-- Filters -->
-              <ul class="list-group rounded-0">
-                <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
-                  <li class="rounded-0 text-left list-group-item-action p-1" :class="[
-                        option.checked
-                          ? 'list-group-item-info'
-                          : 'list-group-item'
-                      ]" v-if="optIdx < facet.num2Display">
-                    <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
-                    <label :for="facet.id + optIdx" class="m-0">
-                      <small>{{ option.term }}
-                        <!-- ({{ option.count.toLocaleString() }}) -->
-                      </small>
-                    </label>
-                  </li>
+          <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
+            <!-- Toggle Header -->
+            <div class="row m-0 pointer" @click="facet.expanded = !facet.expanded">
+              <div class="col-sm-10 p-1">
+                <h6 class="p-0 m-0">{{ facet.variable }}</h6>
+              </div>
+              <div class="col-sm-2 text-center p-1" v-if="facet.filtered.length">
+                <!-- toggle fa class up->down -->
+                <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
+                <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
+              </div>
+            </div>
+            <!-- Toggle content -->
+            <form v-if="facet.expanded">
+              <!-- <Donut :data="facet.filtered" /> -->
+              <div>
+                <!-- Filter search -->
+                <form class="p-1" @submit.prevent="selectFilterText(facet, idx)" @input.prevent="debounceFilterText(facet, idx)">
+                  <small>
+                    <input type="text" autocomplete="off" class="border p-1 w-100 font-awesome" :style="{ 'border-color': '#bababa !important;'}" :placeholder="`Search ${facet.variable}`" v-model="facetFilters[idx]" />
+                  </small>
+                </form>
+                <!-- Filters -->
+                <template v-if="facet.filtered.length">
+                <ul class="list-group list-unstyled rounded-0">
+                  <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
+                    <li class="rounded-0 text-left list-group-item-action p-1 border-0 line-height-sm my-1 text-break" :class="[option.count ? 'text-dark' : 'text-muted']" v-if="optIdx < facet.num2Display">
+                      <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
+                      <label :for="facet.id + optIdx" class="m-0 d-inline">
+                        <small>{{ option.term }}
+                          <span v-if="option.count">({{ option.count.toLocaleString() }})</span>
+                        </small>
+                      </label>
+                    </li>
+                  </div>
+                </ul>
+                <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
+                </template>
+                <div class="" v-else>
+                  <small>none</small>
                 </div>
-              </ul>
-              <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
-            </div>
-          </form>
-          <div class="bg-light" v-else>
-            <small>none</small>
+              </div>
+            </form>
+
           </div>
+
         </div>
       </div>
 
-      <div class="col-sm-10 pl-5" id="results">
+      <div class="col-sm-8 col-md-9 col-xl-10" id="results">
         <!-- results header + sort options -->
-        <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
-          <div class="d-flex flex-column">
-            <div class="d-flex align-items-center">
-              <h4 class="m-0 mr-4" v-if="q">
-                You searched for {{ q }}
-              </h4>
-              <div class="m-0 text-highlight">
-                {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
+        <div class="border-bottom py-2">
+          <div class="row w-100 d-flex justify-content-between align-items-center" id="selectors">
+            <div class="d-flex flex-column">
+              <div class="d-flex align-items-center">
+                <h4 class="m-0 mr-4" v-if="q">
+                  You searched for {{ q }}
+                </h4>
+                <div class="m-0 text-highlight">
+                  {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
+                </div>
               </div>
-            </div>
-            <small class="text-muted text-left" v-if="filterString">
+              <!-- <small class="text-muted text-left" v-if="filterString">
               filtered by {{ filterString }}
             </small>
             <button @click="clearFilters" v-if="filterString">
               <small>clear filters</small>
-            </button>
+            </button> -->
 
-            <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
+              <!-- <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
               <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === 0 }" @click="changePage(-1)">
                 <font-awesome-icon :icon="['fas', 'arrow-left']" />
               </button>
@@ -161,32 +173,77 @@
               <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
                 <font-awesome-icon :icon="['fas', 'arrow-right']" />
               </button>
+            </div> -->
+            </div>
+
+
+            <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" />
+
+            <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
+              <option v-for="option in pageOpts" :value="option" :key="option">
+                {{ option }} results
+              </option>
+            </select>
+
+            <select v-model="sortValue" @change="changeSort">
+              <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
+                {{option.label}}
+              </option>
+            </select>
+          </div>
+
+          <!-- Selected filters -->
+          <div class="row d-flex flex-wrap px-1 mt-2" v-if="(selectedFilters && selectedFilters.length) || dateMin || dateMax" id="selectedFilters">
+            <!-- checkbox filters -->
+            <span v-for="(varType, tIdx) in selectedFilters" :key="tIdx" class="d-flex flex-wrap">
+              <span v-for="(variable, vIdx) in varType.vars" :key="vIdx">
+                <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
+                  <small><b>{{variable}}</b></small>
+                  <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+                </button>
+              </span>
+            </span>
+            <!-- Date filters -->
+            <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('min')" v-if="dateMin">
+              <small><b>date &ge; {{dateMin}}</b></small>
+              <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+            </button>
+
+            <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('max')" v-if="dateMax">
+              <small><b>date &le; {{dateMax}}</b></small>
+              <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+            </button>
+            <!-- clear all -->
+            <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
+          </div>
+
+          <div class="d-flex flex-wrap align-items-start border-top py-2 mt-2" v-if="dates && dates.length">
+            <div class="d-flex flex-column pr-2 mr-2  mb-3">
+              <small class="text-left">Date</small>
+              <DateHistogram :data="dates" :filterable="false" />
+            </div>
+
+            <div v-for="(facet, idx) in facetSummary" :key="idx" :class="[facet.total && pieVariables.includes(facet.variable) ? 'd-flex flex-column mx-2 mb-3' : 'hidden']">
+              <!-- Toggle content -->
+              <small class="text-left">{{facet.variable}}</small>
+              <Donut :data="facet.filtered" :id="facet.variable" />
             </div>
           </div>
 
-          <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl"/>
-
-          <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
-            <option v-for="option in pageOpts" :value="option" :key="option">
-              {{ option }} results
-            </option>
-          </select>
-
-          <select v-model="sortValue" @change="changeSort">
-            <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
-              {{option.label}}
-            </option>
-          </select>
         </div>
+
 
         <!-- Results: loop -->
         <div id="results-container" class="my-3">
-          <div class="row w-100 d-flex flex-column text-left p-2 search-result" v-for="(item, idx) in data" :key="idx">
-            <div class="d-flex w-100 align-items-center">
-              <StripeAccent :className="item['@type']" />
-              <small :class="[item['@type'], 'resource-type', 'mr-3']">{{
+          <div class="row w-100 d-flex flex-column text-left px-3 py-4 search-result" v-for="(item, idx) in data" :key="idx">
+            <div class="d-flex w-100 resource-title">
+              <div class="d-flex align-items-center">
+                <StripeAccent :className="item['@type']" />
+                <small :class="[item['@type'], 'resource-type', 'mr-3']">{{
                   item["@type"]
                 }}</small>
+              </div>
+
               <!-- name -->
               <router-link :to="{ name: 'Resource Page', params: { id: item._id } }">
                 <h5 class="m-0">{{ item.name }}</h5>
@@ -196,7 +253,7 @@
             <div class="row">
               <!-- LEFT -->
 
-              <div class="col-sm-5 text-muted d-flex flex-column justify-content-between">
+              <div class="col-sm-12 col-md-6 col-lg-5 text-muted d-flex flex-column justify-content-between">
                 <div class="">
                   <!-- authors -->
                   <div class="attribution text-body">
@@ -290,7 +347,7 @@
                   </router-link> -->
                 </div>
 
-                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5" v-if="item.curatedBy">
+                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5 line-height-1 d-flex align-items-center" v-if="item.curatedBy">
                   <div class="col-sm-12" :class="item['@type']">
                     <small>provided by {{ item.curatedBy.name }}</small>
                     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
@@ -301,7 +358,7 @@
               </div>
 
               <!-- RIGHT     -->
-              <div class="col-sm-7 text-muted">
+              <div class="col-sm-12 col-md-6 col-lg-7 text-muted">
                 <!-- CLINCIAL-TRIAL-SPECIFIC  -->
                 <div v-if="item.studyDesign || item.armGroup">
                   <TrialType :design="item.studyDesign" :arms="item.interventions" />
@@ -329,7 +386,7 @@
               </div>
 
               <!-- Bottom -->
-              <div class="col-sm-12 d-flex flex-wrap keyword-container mt-2">
+              <!-- <div class="col-sm-12 d-flex flex-wrap keyword-container mt-2">
                 <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in item.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
                   <router-link :to="{
                         name: 'Resources',
@@ -338,7 +395,7 @@
                     {{ keyword }}
                   </router-link>
                 </small>
-              </div>
+              </div> -->
             </div>
 
           </div>
@@ -373,6 +430,8 @@ import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
 import NewResources from "@/components/NewResources.vue";
 import DownloadData from "@/components/DownloadData.vue";
+import Donut from "@/components/Donut.vue";
+import DateHistogram from "@/components/DateHistogram.vue";
 
 import {
   mapState
@@ -411,7 +470,9 @@ export default {
     sort: String,
     page: String,
     size: String,
-    filter: String
+    filter: String,
+    dateMin: String,
+    dateMax: String
   },
   components: {
     StripeAccent,
@@ -420,7 +481,9 @@ export default {
     TrialType,
     FontAwesomeIcon,
     NewResources,
-    DownloadData
+    DownloadData,
+    Donut,
+    DateHistogram
   },
   created: function() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
@@ -436,11 +499,22 @@ export default {
         this.filterString,
         this.sortValue,
         this.numPerPage,
-        this.selectedPage * this.numPerPage
+        this.selectedPage * this.numPerPage,
+        this.dateMin,
+        this.dateMax
       ).subscribe(results => {
+        console.log(results)
         this.data = results.results;
+        this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;
         this.facetSummary = results.facets;
+        this.selectedFilters = results.facets.map(d => {
+            return {
+              id: d.id,
+              vars: d.filtered.filter(d => d.checked).map(d => d.term)
+            };
+          })
+          .filter(d => d.vars.length);
         this.numResults = results.total;
         this.esQuery = results.query;
 
@@ -479,6 +553,9 @@ export default {
       this.filterString = this.filters2String();
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
@@ -487,7 +564,9 @@ export default {
           },
           page: "0",
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -505,7 +584,9 @@ export default {
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -530,6 +611,9 @@ export default {
       this.filterString = null;
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
@@ -538,6 +622,63 @@ export default {
           sort: this.sortValue
         }
       });
+    },
+    removeFilter(variable, id) {
+      const typeIdx = this.facetSummary.findIndex(d => d.id == id);
+      if (typeIdx >= 0) {
+        const varIdx = this.facetSummary[typeIdx].filtered.findIndex(d => d.term == variable);
+        if (varIdx >= 0) {
+          this.facetSummary[typeIdx].filtered[varIdx]["checked"] = false;
+        }
+      }
+      this.filterString = this.filters2String();
+      this.$router.push({
+        name: "Resources",
+        query: {
+          q: this.searchInput,
+          filter: this.filterString,
+          page: "0",
+          size: String(this.numPerPage),
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
+        }
+      });
+    },
+    removeDateFilter(type) {
+      if (type == "min") {
+        this.$router.push({
+          name: "Resources",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            q: this.searchInput,
+            filter: this.filterString,
+            page: "0",
+            size: String(this.numPerPage),
+            sort: this.sortValue,
+            dateMin: null,
+            dateMax: this.dateMax
+          }
+        });
+      } else {
+        this.$router.push({
+          name: "Resources",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            q: this.searchInput,
+            filter: this.filterString,
+            page: "0",
+            size: String(this.numPerPage),
+            sort: this.sortValue,
+            dateMin: this.dateMin,
+            dateMax: null
+          }
+        });
+      }
     },
     onEnter() {
       this.$router.push({
@@ -554,12 +695,17 @@ export default {
     changeSort() {
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
           page: "0",
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -568,12 +714,17 @@ export default {
 
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     },
@@ -582,12 +733,17 @@ export default {
 
       this.$router.push({
         name: "Resources",
+        params: {
+          disableScroll: true
+        },
         query: {
           q: this.searchInput,
           filter: this.filterString,
           page: String(this.selectedPage),
           size: String(this.numPerPage),
-          sort: this.sortValue
+          sort: this.sortValue,
+          dateMin: this.dateMin,
+          dateMax: this.dateMax
         }
       });
     }
@@ -611,11 +767,11 @@ export default {
         Math.floor(this.numResults / this.numPerPage) :
         null;
     },
-    quotedSearch: function () {
-      return(`"${this.searchInput}"`)
+    quotedSearch: function() {
+      return (`"${this.searchInput}"`)
     },
     showSearchHelper: function() {
-      return(this.searchInput ? this.searchInput.includes(" ") && !this.searchInput.includes('"') : false)
+      return (this.searchInput ? this.searchInput.includes(" ") && !this.searchInput.includes('"') : false)
     }
   },
   watch: {
@@ -636,15 +792,21 @@ export default {
     return {
       resultsSubscription: null,
       data: null,
+      dates: null,
+      dateFacet: {
+        expanded: false
+      },
       numResults: 0,
       selectedPage: null,
       searchInput: null,
       filterString: null,
       esQuery: null,
       facetFilters: [],
+      selectedFilters: [],
       sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
+      pieVariables: ["Type", "Source", "Funding", "Measurement Technique"],
       sortOpts: [{
           value: "",
           label: "best match"
@@ -725,5 +887,12 @@ export default {
     background-color: $secondary-color !important;
     border-color: $secondary-color !important;
     color: white !important;
+}
+
+@media (max-width: 576px) {
+    .resource-title {
+        align-items: start;
+        flex-direction: column;
+    }
 }
 </style>

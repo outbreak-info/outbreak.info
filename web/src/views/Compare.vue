@@ -6,7 +6,7 @@
   </div>
 
   <h2>Places similar in
-    <select v-model="selectedSimilarity" class="select-dropdown" @change="changeSimilarity">
+    <select v-model="selectedSimilarity" class="select-dropdown mr-2" @change="changeSimilarity">
       <option v-for="option in similarOptions" :value="option.value" :key="option.value">
         {{ option.label }}
       </option>

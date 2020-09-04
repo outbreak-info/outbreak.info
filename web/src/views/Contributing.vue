@@ -34,7 +34,7 @@
       The easiest way to contribute data is to deposit your analysis, clinical trial, dataset, protocol, or publication in one of the <router-link :to="{ name: 'Sources'}">sources from which we already harvest metadata</router-link>.  When you add your resources to any of these repositories, they will automatically be added to our resource database.
     </p>
     <p class="text-left">
-      Check back later for more information on other information how to contribute data.
+      To register metadata for a particular dataset, you can fill out a form in the <a href="https://discovery.biothings.io/guide/outbreak/dataset" target="_blank">Data Discovery Engine</a>.
     </p>
     <p class="text-left">
       If you'd like to suggest a resource repository, you can create a

@@ -35,6 +35,7 @@
     <h6 class="country-name m-0"></h6>
     <p class="date m-0"></p>
     <p class="count m-0"></p>
+    <b class="count-avg m-0"></b>
   </div>
 </div>
 </template>
@@ -555,7 +556,17 @@ export default Vue.extend({
       ttip.select(".date").text(d3.timeFormat("%d %b %Y")(d.date));
       ttip
         .select(".count")
-        .text(`${d[this.variable].toLocaleString()} ${this.variableObj.ttip}`);
+        .text(`${d3.format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
+
+      if (this.noRollingAvg) {
+        ttip
+          .select(".count-avg")
+          .text("");
+      } else {
+        ttip
+          .select(".count-avg")
+          .text(`7 day average: ${d3.format(",.1f")(d[this.variable.replace("_numIncrease", "_rolling")])}`);
+      }
     },
     mouseOff() {
       d3.selectAll(".tooltip").style("opacity", 0);
