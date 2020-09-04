@@ -42,7 +42,7 @@
           platform to find publications, clinical trials, datasets, protocols, and more.
         </p> -->
 
-        <video class="w-100 mb-3" controls style="background-color: #fff;">
+        <video class="w-100 mb-3" controls>
           <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
           <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
           Your browser does not support the video tag.
@@ -97,7 +97,7 @@
           Explore and download epidemiological data on confirmed cases, deaths, hospitalizations, and testing. Compare between locations to visualize how the pandemic has varied over time and geography.
         </p> -->
 
-        <video class="w-100 mb-3" controls style="background-color: #fff;">
+        <video class="w-100 mb-3" controls>
           <!-- <video class="w-100 mb-3" autoplay loop muted> -->
           <source src="@/assets/home/epi_demo.mp4" type="video/mp4">
           <!-- <source src="@/assets/home/epi_demo.ogv" type="video/ogg"> -->
@@ -133,25 +133,51 @@
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Search by keyword</h5>
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Search by Keyword</h5>
+            <video class="w-100" controls>
+              <source src="@/assets/home/query_example.mp4" type="video/mp4">
+              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+              Your browser does not support the video tag.
+            </video>
+          </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Search by resource type</h5>
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Search by resource type</h5>
+            <video class="w-100" controls>
+              <source src="@/assets/home/type_example.mp4" type="video/mp4">
+              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+              Your browser does not support the video tag.
+            </video>
+          </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <h5 class="text-uppercase">Search by resource provider</h5>
+          <video class="w-100" controls>
+            <source src="@/assets/home/source_example.mp4" type="video/mp4">
+            <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Explore related resources</h5>
+          <h5 class="text-uppercase">Download search results</h5>
+          <div class="h-100 d-flex align-items-center">
+            <video class="w-100" controls>
+              <source src="@/assets/home/download_example.mp4" type="video/mp4">
+              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </div>
       </div>
 
@@ -159,9 +185,14 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <h5 class="text-uppercase">Download resource metadata</h5>
-          <p>
-            Metadata
-          </p>
+          <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
+            <h6>API</h6>
+            <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
+          </a>
+          <router-link :to="{name: 'Sources', hash: 'resources'}">
+            <h6>.tsv files</h6>
+            <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
+          </router-link>
         </div>
       </div>
 
@@ -169,7 +200,9 @@
         <div class="w-100 p-3 card">
           <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">View & adapt schema</h5>
+            <div class="h-100 d-flex align-items-center">
             <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
+          </div>
           </router-link>
         </div>
       </div>
@@ -265,7 +298,7 @@
       <a class="btn btn-main m-5" href="https://github.com/outbreak-info/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
     </p>
   </section>
-  <Logos />
+  <Logos class="bg-grey" />
 </div>
 </template>
 <script>

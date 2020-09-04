@@ -89,11 +89,11 @@
               </div>
               <div class="col-sm-2 text-center p-1">
                 <!-- toggle fa class up->down -->
-                <i class="fas fa-chevron-up" v-if="dateFacet.expanded"></i>
-                <i class="fas fa-chevron-down" v-if="!dateFacet.expanded"></i>
+                <i class="fas fa-chevron-up" v-if="!dateFacet.expanded"></i>
+                <i class="fas fa-chevron-down" v-if="dateFacet.expanded"></i>
               </div>
             </div>
-            <DateHistogram :data="dates" v-if="dates && dates.length" />
+            <DateHistogram :data="dates" v-if="dates && dates.length && !dateFacet.expanded"/>
           </div>
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
@@ -220,7 +220,7 @@
               <DateHistogram :data="dates" :filterable="false" />
             </div>
 
-            <div v-for="(facet, idx) in facetSummary" :key="idx" :class="[facet.total && pieVariables.includes(facet.variable) ? 'd-flex flex-column mx-3 mb-3' : 'hidden']">
+            <div v-for="(facet, idx) in facetSummary" :key="idx" :class="[facet.total && pieVariables.includes(facet.variable) ? 'd-flex flex-column mx-2 mb-3' : 'hidden']">
               <!-- Toggle content -->
               <small class="text-left">{{facet.variable}}</small>
               <Donut :data="facet.filtered" :id="facet.variable" />
