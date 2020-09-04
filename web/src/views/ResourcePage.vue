@@ -15,7 +15,10 @@
         <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
         {{ type }}
         <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
-          {{ data.publicationType[0] }}
+          <template v-if="Array.isArray(data.publicationType)">
+            <span v-for="(pub, idx) in data.publicationType" :key="idx">{{ pub }} </span>
+          </template>
+          <template v-else>{{ data.publicationType }}</template>
         </span>
       </div>
       <!-- title -->
