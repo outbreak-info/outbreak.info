@@ -214,7 +214,7 @@ export function getResourceFacets(
     "date",
     // "topicCategory",
     "interventions.name",
-    "sponsor.name",
+    // "sponsor.name",
     "funding.funder.name",
     "measurementTechnique",
     "variableMeasured"
@@ -230,7 +230,7 @@ export function getResourceFacets(
     "date",
     "Source",
     "Funding",
-    "Trial Sponsor",
+    // "Trial Sponsor",
     "Trial Intervention",
     "Measurement Technique",
     "Variable Measured",
@@ -270,7 +270,7 @@ export function getResourceFacets(
             .replace(".keyword", "")
             .replace("@type", "Type")
             .replace("interventions.name", "Trial Intervention")
-            .replace("sponsor.name", "Trial Sponsor")
+            // .replace("sponsor.name", "Trial Sponsor")
             .replace("curatedBy.name", "Source")
             .replace("funding.funder.name", "Funding")
             .replace("measurementTechnique", "Measurement Technique")
