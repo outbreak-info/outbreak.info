@@ -778,7 +778,7 @@ export default Vue.extend({
           .attr("y", d => this.y(d[this.variable]))
           // .attr("dy", "1.1em")
           .attr("dy", "2.2em")
-          .text(d => this.percent ? `${d3.format(".1%")(d[this.variable])} ${this.variableObj.ttip}` : `${d[this.variable].toLocaleString()} ${this.variableObj.ttip}`);
+          .text(d => this.percent ? `${d3.format(".1%")(d[this.variable])} ${this.variableObj.ttip}` : `${d3.format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
 
         // dynamically adjust the width of the rect
         if (tooltipSelector.selectAll("rect")["_groups"].length) {

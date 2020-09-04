@@ -46,20 +46,38 @@ export function getResources(
   filterString,
   sort,
   size,
-  page
+  page,
+  dateMin,
+  dateMax
 ) {
   var comboString;
   var filterArr = [];
-  if (!queryString && !filterString) {
+
+  // create date range query
+  var dateString;
+  if(dateMin && dateMax) {
+    dateString = `date:[${dateMin} TO ${dateMax}]`;
+  } else if(dateMin) {
+    dateString = `date:[${dateMin} TO *]`;
+  } else if(dateMax) {
+    dateString = `date:[* TO ${dateMax}]`;
+  }
+
+  if (!queryString && !filterString && !dateString) {
     comboString = "__all__";
-  } else if (!queryString) {
+  } else if (!queryString && filterString) {
+    // filters, but no query
     filterArr = filterString2Arr(filterString);
-    comboString = filterArr2String(filterArr);
+    comboString = dateString ? `${filterArr2String(filterArr)} AND ${dateString}` : filterArr2String(filterArr);
+  } else if (!queryString && dateString) {
+    // date filter, but no query or filter
+    comboString = dateString;
   } else if (!filterString) {
-    comboString = queryString;
+    // query, but no filter
+    comboString = dateString ? `${queryString} AND ${dateString}` : queryString;
   } else {
     filterArr = filterString2Arr(filterString);
-    comboString = `(${queryString}) AND ${filterArr2String(filterArr)}`;
+    comboString = dateString ? `(${queryString}) AND ${filterArr2String(filterArr)} AND ${dateString}` : `(${queryString}) AND ${filterArr2String(filterArr)}`;
   }
 
 
@@ -67,24 +85,38 @@ export function getResources(
   return forkJoin([
     getMostRecent(apiUrl, comboString, null),
     getMetadataArray(apiUrl, comboString, sort, size, page),
-    getResourceFacets(apiUrl, queryString, filterArr) // call to get the counts for the supplied query
-    // getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
+    getResourceFacets(apiUrl, queryString, filterArr), // call to get the counts for the supplied query
+    getResourceFacets(apiUrl, comboString, filterArr) // call to get the counts for the supplies query + applied filters
   ]).pipe(
-    map(([recent, results, allFacets]) => {
-      // map(([recent, results, allFacets, currentFacets]) => {
+    // map(([recent, results, allFacets]) => {
+    map(([recent, results, allFacets, currentFacets]) => {
       const facets = allFacets.map(all => {
-        // all.counts.map(obj => {
-        //   const current = currentFacets.find(curr => curr.id === all.id);
-        //   var newval = current["counts"].find(item => obj.term === item.term);
-        //   newval = newval ? newval : {term: obj.term, count: 0}
-        //   Object.assign(obj, newval)
-        // })
         all["filtered"] = cloneDeep(all.counts);
+        all.filtered.map(obj => {
+          const current = currentFacets.find(curr => curr.id === all.id);
+          var newval = current["counts"].find(item => obj.term === item.term);
+          newval = newval ? newval : {
+            term: obj.term,
+            count: 0
+          }
+          Object.assign(obj, newval)
+        })
+
+        all["total"] = all.filtered.filter(d => d.count).length;
+
+        all.filtered.sort((a, b) => b.count - a.count);
         return (all)
       })
 
+      const dateIdx = facets.findIndex(d => d.variable == "date");
+      var dates = [];
+      if(dateIdx >= 0) {
+        dates = facets.splice(dateIdx, dateIdx)
+      }
+
       results["recent"] = recent;
       results["facets"] = facets;
+      results["dates"] = dates[0]["filtered"];
       results["query"] = comboString;
       return results;
     }),
@@ -179,9 +211,10 @@ export function getResourceFacets(
     "@type",
     "curatedBy.name",
     "keywords",
+    "date",
     // "topicCategory",
     "interventions.name",
-    "sponsor.name",
+    // "sponsor.name",
     "funding.funder.name",
     "measurementTechnique",
     "variableMeasured"
@@ -192,22 +225,23 @@ export function getResourceFacets(
   }
 
   const sortOrder = [
-    "type",
+    "Type",
     // "topicCategory",
-    "source",
-    "funding",
-    "trial sponsor",
-    "trial intervention",
-    "measurement technique",
-    "variable measured",
-    "keywords"
+    "date",
+    "Source",
+    "Funding",
+    // "Trial Sponsor",
+    "Trial Intervention",
+    "Measurement Technique",
+    "Variable Measured",
+    "Keywords"
   ];
 
   const facetString = facets.join(",");
   const timestamp = Math.round(new Date().getTime() / 36e5);
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&size=0&facet_size=100&facets=${facetString}&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&size=0&facet_size=500&facets=${facetString}&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -217,30 +251,37 @@ export function getResourceFacets(
     pluck("data", "facets"),
     map(results => {
       const facets = Object.keys(results).map(key => {
+        // turn on check boxes for filters that have been selected.
         const filters = filterArr.filter(
           d => d.key == key.replace(".keyword", "")
         );
         results[key]["terms"].forEach(d => {
           d["checked"] =
             filters.length == 1 ? filters[0].values.includes(d.term) : false;
+
+          // convert dates from strings to dates
+          if (key == "date") {
+            d["date"] = timeParse("%Y-%m-%dT00:00:00.000Z")(d["term"]);
+          }
         });
+
         return {
           variable: key
             .replace(".keyword", "")
-            .replace("@", "")
-            .replace("interventions.name", "trial intervention")
-            .replace("sponsor.name", "trial sponsor")
-            .replace("curatedBy.name", "source")
-            .replace("funding.funder.name", "funding")
-            .replace("measurementTechnique", "measurement technique")
-            .replace("topicCategory", "topic")
-            .replace("variableMeasured", "variable measured"),
+            .replace("@type", "Type")
+            .replace("interventions.name", "Trial Intervention")
+            // .replace("sponsor.name", "Trial Sponsor")
+            .replace("curatedBy.name", "Source")
+            .replace("funding.funder.name", "Funding")
+            .replace("measurementTechnique", "Measurement Technique")
+            .replace("topicCategory", "Topic")
+            .replace("variableMeasured", "Variable Measured")
+            .replace("keywords", "Keywords"),
           id: key.replace(".keyword", ""),
           counts: results[key]["terms"],
-          // filtered: cloneDeep(results[key]["terms"]),
-          total: results[key]["terms"].length,
           num2Display: 5,
           expanded: true
+          // expanded: results[key]["terms"].some(d => d.checked) // expand if anything is checked
         };
       });
 
@@ -274,11 +315,11 @@ export function getMostRecent(
   const timestamp = Math.round(today.getTime() / 36e5);
   const fieldString = fields.join(",");
 
-if(queryString != "__all__") {
-  queryString = queryString ? (filterString ? `(${queryString}) AND ${filterString}` : `(${queryString})`): filterString;
-} else {
-  queryString = filterString ? filterString : `__all__`;
-}
+  if (queryString != "__all__") {
+    queryString = queryString ? (filterString ? `(${queryString}) AND ${filterString}` : `(${queryString})`) : filterString;
+  } else {
+    queryString = filterString ? filterString : `__all__`;
+  }
 
   return from(
     axios.get(
@@ -303,10 +344,10 @@ if(queryString != "__all__") {
 
 export function getMostRecentGroup(apiUrl, queryString, sortVar, num2Return) {
   return forkJoin([getMostRecent(apiUrl, queryString, "@type:Publication", sortVar, num2Return),
-  getMostRecent(apiUrl,  queryString, "@type:Dataset", sortVar, num2Return),
-  getMostRecent(apiUrl,  queryString, "@type:ClinicalTrial", sortVar, num2Return),
-  getMostRecent(apiUrl,  queryString, "@type:Protocol", sortVar, num2Return)]
-).pipe(
+    getMostRecent(apiUrl, queryString, "@type:Dataset", sortVar, num2Return),
+    getMostRecent(apiUrl, queryString, "@type:ClinicalTrial", sortVar, num2Return),
+    getMostRecent(apiUrl, queryString, "@type:Protocol", sortVar, num2Return)
+  ]).pipe(
     map(([pubs, datasets, trials, protocols]) => {
       return ({
         Publication: pubs,

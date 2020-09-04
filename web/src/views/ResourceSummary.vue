@@ -13,7 +13,7 @@
       </p>
       <p>
         We're developing a searchable index of datasets, publications, and clinical trials that tries to make sense of all this information. By standardizing the information that describes these resources, outbreak.info makes COVID-19 information
-        more discoverable. <router-link :to="{path: 'sources', hash: 'resources'}"> Learn about our data sources</router-link>
+        more discoverable. <router-link :to="{path: 'sources', hash: '#resources'}"> Learn about our data sources</router-link>
       </p>
     </div>
 

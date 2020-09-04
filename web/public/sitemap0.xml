@@ -1,6 +1,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://outbreak.info/about</loc></url>
 <url><loc>https://outbreak.info/citation</loc></url>
+<url><loc>https://outbreak.info/compare</loc></url>
 <url><loc>https://outbreak.info/contributing-data</loc></url>
 <url><loc>https://outbreak.info/data</loc></url>
 <url><loc>https://outbreak.info/doubling-rates</loc></url>
@@ -11,8 +12,10 @@
 <url><loc>https://outbreak.info/maps</loc></url>
 <url><loc>https://outbreak.info/niaid</loc></url>
 <url><loc>https://outbreak.info/privacy</loc></url>
+<url><loc>https://outbreak.info/regions</loc></url>
 <url><loc>https://outbreak.info/resources</loc></url>
 <url><loc>https://outbreak.info/resources/search</loc></url>
+<url><loc>https://outbreak.info/schema</loc></url>
 <url><loc>https://outbreak.info/sources</loc></url>
 <url><loc>https://outbreak.info/summary</loc></url>
 <url><loc>https://outbreak.info/terms</loc></url>

@@ -15,7 +15,10 @@
         <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
         {{ type }}
         <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
-          {{ data.publicationType[0] }}
+          <template v-if="Array.isArray(data.publicationType)">
+            <span v-for="(pub, idx) in data.publicationType" :key="idx">{{ pub }} </span>
+          </template>
+          <template v-else>{{ data.publicationType }}</template>
         </span>
       </div>
       <!-- title -->
@@ -62,18 +65,6 @@
           </div>
         </div>
 
-        <!-- license -->
-        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3">
-          <h6 class="m-0">License</h6>
-          <div v-if="data.license">
-            <a v-if="data.license.startsWith('http')" :href="data.license" target="_blank">{{ data.license }}
-            </a>
-            <span v-else v-html="data.license"></span>
-          </div>
-          <div v-else>
-            <small>not specified</small>
-          </div>
-        </div>
 
         <!-- funding info -->
         <div id="funder" class="text-left border-bottom text-muted pb-3 mb-3">
@@ -87,6 +78,7 @@
                       <b v-if="funder.name">{{funder.name}}</b>
                       <span v-if="funder.name && funding.identifier">:&nbsp;</span>
                       <span v-if="funding.identifier">{{funding.identifier}}</span>
+                      <span v-if="funder.role"> ({{sponsor.role}})</span>
                     </div>
                   </template>
 
@@ -95,6 +87,7 @@
                       <b v-if="funding.funder && funding.funder.name">{{funding.funder.name}}</b>
                       <span v-if="funding.funder && funding.funder.name && funding.identifier">:&nbsp;</span>
                       <span v-if="funding.identifier">{{funding.identifier}}</span>
+                      <span v-if="funding.funder.role"> ({{sponsor.role}})</span>
                     </div>
                   </template>
                   <div v-if="funding.description" class="line-height-1">
@@ -104,6 +97,20 @@
               </ul>
             </div>
             <span v-if="data.funder">{{ data.funder }}</span>
+          </div>
+          <div v-else>
+            <small>not specified</small>
+          </div>
+        </div>
+
+
+        <!-- license -->
+        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3">
+          <h6 class="m-0">License</h6>
+          <div v-if="data.license">
+            <a v-if="data.license.startsWith('http')" :href="data.license" target="_blank">{{ data.license }}
+            </a>
+            <span v-else v-html="data.license"></span>
           </div>
           <div v-else>
             <small>not specified</small>
@@ -199,7 +206,7 @@ export default Vue.extend({
       id: null,
       anchors: {
         default: ["authors", "description", "downloads", "license", "funder", "based on", "cited by", "related"],
-        ClinicalTrial: ["authors", "sponsor", "description", "design", "interventions", "eligibility", "outcome", "status", "publications", "based on", "related"]
+        ClinicalTrial: ["authors", "description", "design", "interventions", "eligibility", "outcome", "status", "funder", "publications", "based on", "related"]
       }
     })
   },

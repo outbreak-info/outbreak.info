@@ -1,150 +1,321 @@
 <template>
-<div class="home flex-column align-left">
+<div class="home flex-column text-left d-flex">
   <div v-if="loading" class="loader">
     <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
   </div>
   <!-- INTRO -->
-  <!-- <Warning :animate="false" :text="
-        'Due to changes to our data source, data after 22 March incorrectly shows as 0. We are fixing it as fast as we can!'
-      "></Warning> -->
   <section>
     <div class="row m-0">
-      <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
-        <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-75" />
-      </div>
-      <div class="col-sm-12 col-md-8 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
-        <div class="container p-3">
-          <h6>
-            During outbreaks of emerging diseases such as COVID-19,
-            efficiently collecting, sharing, and integrating data is critical
-            to scientific research.
-          </h6>
-          <h6 class="text-dark font-weight-bold">
-            <b class="text-highlight">outbreak.info</b> is a resource to
-            aggregate all this information into a single location.
-          </h6>
-          <p class="mt-4">
-            <router-link :to="{ name: 'Latest' }">View latest changes</router-link>
-          </p>
-        </div>
+      <div class="col-sm-12 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
+        <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-25" />
       </div>
     </div>
   </section>
+
+  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
+    <div class="container p-3">
+      <p class="focustext">
+        During outbreaks of emerging diseases such as COVID-19,
+        efficiently collecting, sharing, and integrating data is critical
+        to scientific research.
+      </p>
+      <p class="text-dark h-100 focustext font-weight-bold">
+        <b class="text-highlight">outbreak.info</b> is a resource to
+        aggregate all this information into a single location.
+      </p>
+      <p class="m-0">
+        <router-link :to="{ name: 'Latest' }">View latest changes</router-link>
+      </p>
+    </div>
+  </div>
+
   <!-- SEARCH  -->
-  <section class="d-flex justify-content-center align-items-center py-5 bg-grag-main text-light">
-    <div class="row m-0 w-100">
-      <div class="col-sm-12">
-        <h5 class="text-uppercase mb-3 text-spacing-1">Search epidemiology data and resources</h5>
-        <svg viewBox="0 0 100 3">
+  <section class="d-flex justify-content-center align-items-center mb-4 text-light">
+    <div class="row m-0 w-100 d-flex justify-content-center">
+      <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
+        <h3 class="mt-2">
+          Resources</h3>
+
+        <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
+        <!-- <p class="text-muted">
+          Keeping track of all the data and publications on COVID-19 and SARS-CoV-2 is a job in itself, requiring searching many different repositories and websites. outbreak.info combines the metadata from heterogeneous sources, creating one unified
+          platform to find publications, clinical trials, datasets, protocols, and more.
+        </p> -->
+
+        <video class="w-100 mb-3" controls>
+          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
+          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+          Your browser does not support the video tag.
+        </video>
+
+        <!-- <svg viewBox="0 0 100 3">
           <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
-        </svg>
-      </div>
-      <div class="col-sm-12 col-md-6 px-5 my-3 d-flex flex-column justify-content-between">
-        <div id="sBar-text" class="form-text text-light d-block mb-3">View COVID-19 trends by region, country, state/province, U.S.
-          metropolitan area, or U.S. county</div>
-        <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100"></SearchBar>
-        <small id="sBar-example" class="form-text text-light d-block text-left ml-5">
-          <span class="mr-2">Try:</span>
-          <span class="mr-3">
-            <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
-              <i class="fas fa-angle-double-right"></i>
-            </router-link>
-          </span>
-          <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area <i class="fas fa-angle-double-right"></i>
-          </router-link>
-        </small>
+        </svg> -->
 
-      </div>
-      <div class="col-sm-12 col-md-6 px-5 my-3 d-flex flex-column justify-content-between">
-        <div id="resourceBar-text" class="form-text text-light d-block mb-3">Find COVID-19 and SARS-CoV-2 clinical trials, datasets, publications, and more</div>
-
-        <form autocomplete="off" class="w-100">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+        <div>
+          <form autocomplete="off" class="w-100">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+              </div>
+              <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
             </div>
-            <input id="resourceBar" class="form-control border-0" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
-          </div>
-        </form>
-        <small id="sBar-example" class="form-text text-light d-block  text-left ml-5"> <span class="mr-2">Try:</span>
-          <span class="mr-3">
-            <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
-              remdesivir
+          </form>
+          <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
+            <span class="mr-3">
+              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
+                remdesivir
+                <i class="fas fa-angle-double-right"></i>
+              </router-link>
+            </span>
+            <router-link :to="{name: 'NIAID'} " class="text-light">
+              NIAID-related
               <i class="fas fa-angle-double-right"></i>
             </router-link>
-          </span>
-          <router-link class="text-light" :to="{name: 'NIAID'} ">
-            NIAID-related
-            <i class="fas fa-angle-double-right"></i>
+          </small>
+        </div>
+
+
+        <router-link :to='{ path: "/", hash: "#resource-examples" }'>
+          <button class="btn btn-main-outline w-100 px-2 py-1 mt-3" :style="{background: 'white'}">
+            What can I do with resources?
+          </button>
+        </router-link>
+      </div>
+
+
+      <!-- EPI INTRO -->
+      <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column  justify-content-between epi-intro">
+        <h3 class="mt-2">
+          Epidemiology</h3>
+
+
+        <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
+          metropolitan area, or U.S. county</div>
+
+        <!-- <p class="text-muted">
+          Explore and download epidemiological data on confirmed cases, deaths, hospitalizations, and testing. Compare between locations to visualize how the pandemic has varied over time and geography.
+        </p> -->
+
+        <video class="w-100 mb-3" controls>
+          <!-- <video class="w-100 mb-3" autoplay loop muted> -->
+          <source src="@/assets/home/epi_demo.mp4" type="video/mp4">
+          <!-- <source src="@/assets/home/epi_demo.ogv" type="video/ogg"> -->
+          Your browser does not support the video tag.
+        </video>
+
+        <div>
+          <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
+          <small id="sBar-example" class="form-text d-block text-left ml-5">
+            <span class="mr-2">Try:</span>
+            <span class="mr-3">
+              <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
+                <i class="fas fa-angle-double-right"></i>
+              </router-link>
+            </span>
+            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area <i class="fas fa-angle-double-right"></i>
+            </router-link>
+          </small>
+        </div>
+
+        <router-link :to='{ path: "/", hash: "#epi-examples" }' class="text-light">
+          <button class="btn btn-main-outline px-2 py-1 mt-3 w-100" :style="{background: 'white'}">What can I do with epi data?</button>
+        </router-link>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- RESOURCE EXAMPLES -->
+  <section id="resource-examples" class="container my-5">
+    <h3>Search for COVID-19 resources</h3>
+    <div class="row d-flex flex-wrap">
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Search by Keyword</h5>
+            <video class="w-100" controls>
+              <source src="@/assets/home/query_example.mp4" type="video/mp4">
+              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+              Your browser does not support the video tag.
+            </video>
           </router-link>
-        </small>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Search by resource type</h5>
+            <video class="w-100" controls>
+              <source src="@/assets/home/type_example.mp4" type="video/mp4">
+              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+              Your browser does not support the video tag.
+            </video>
+          </router-link>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Search by resource provider</h5>
+            <video class="w-100" controls>
+              <source src="@/assets/home/source_example.mp4" type="video/mp4">
+              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+              Your browser does not support the video tag.
+            </video>
+          </router-link>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Download search results</h5>
+            <div class="h-100 d-flex align-items-center">
+              <video class="w-100" controls>
+                <source src="@/assets/home/download_example.mp4" type="video/mp4">
+                <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </router-link>
+        </div>
+      </div>
+
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <h5 class="text-uppercase">Download resource metadata</h5>
+          <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
+            <h6>API</h6>
+            <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
+          </a>
+          <router-link :to="{name: 'Sources', hash: '#resources'}">
+            <h6>.tsv files</h6>
+            <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
+          </router-link>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">View & adapt schema</h5>
+            <div class="h-100 d-flex align-items-center">
+              <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
+            </div>
+          </router-link>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EPI EXAMPLES -->
+  <section id="epi-examples" class="container my-5">
+    <h3>Explore epidemiology data</h3>
+    <div class="row">
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Epidemiology'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Compare locations over time</h5>
+            <img src="@/assets/home/epi_example.svg" alt="Outbreak.info epidemiology data over time" class="w-100" />
+          </router-link>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Maps'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">View by geography</h5>
+            <img src="@/assets/home/map_example.svg" alt="Outbreak.info U.S. epidemiology data by metro area" class="w-100" />
+          </router-link>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Compare'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Find similar regions</h5>
+            <img src="@/assets/home/compare_example.png" alt="Outbreak.info compare regions" class="w-100" />
+          </router-link>
+        </div>
+      </div>
+
+      <!-- EPI CURVE SUMMARIES -->
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <section class="w-100 p-3 card" id="regional-epi-curves">
+          <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Explore regions</h5>
+            <div class="h-100 d-flex flex-column justify-content-center">
+              <img src="@/assets/home/regions_example.svg" alt="Outbreak.info regional data" class="w-100" />
+            </div>
+          </router-link>
+        </section>
+      </div>
+
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Doubling Rates'}" class="text-dark h-100 d-flex flex-column">
+            <h5 class="text-uppercase">View doubling rates</h5>
+            <div class="h-100 d-flex flex-column justify-content-center">
+              <img src="@/assets/home/doubling_example.svg" alt="Outbreak.info doubling rates" class="w-100" />
+            </div>
+
+          </router-link>
+        </div>
+
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <h5 class="text-uppercase">Access data</h5>
+          <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
+            <h6>API</h6>
+            <img src="@/assets/home/api.png" alt="Outbreak.info" class="w-100 mb-3" />
+          </a>
+
+          <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
+            <h6>R package</h6>
+            <img src="@/assets/home/r.png" alt="Outbreak.info" class="w-100" />
+          </a>
+
+        </div>
+      </div>
+
+
+    </div>
+  </section>
+
+
+  <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
+    <div class="d-flex justify-content-center align-items-center mb-2">
+      <div>
+        <h5 class="at-a-glance-header m-0">At a glance</h5>
+        <p class="ml-3 mb-0">
+          View the three locations with the largest increase in cases in the
+          past day, or select your own locations
+        </p>
+        <button class="btn btn-main-outline router-link no-underline bg-white" @click="summaryDeletable = !summaryDeletable">
+          {{ summaryDeletable ? "done" : "change locations" }}
+        </button>
+      </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key="idx" class="d-flex mx-2 mb-3" :data="location" :idx="location.location_id" :deletable="summaryDeletable" @removed="removeSummary" />
+
+      <div class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main" v-if="summaryDeletable">
+        <h6>Add locations</h6>
+        <SearchBar @location="addSummary" class="search-bar"></SearchBar>
       </div>
     </div>
   </section>
-  <!-- EPI CURVE SUMMARIES -->
-  <section class="mt-5" id="regional-epi-curves">
-    <template v-if="nestedData && nestedData.length > 0">
-      <div class="region-tooltip-plots" v-for="(region, idx) in regionDict" :key="idx">
-        <div class="tooltip-countries" :id="idx" :style="{
-              visibility: region.display ? 'visible' : 'hidden',
-              left: region.x + 'px',
-              top: region.y + 'px'
-            }">
-          <div>
-            {{ region.region }}
-          </div>
-          <div>{{ region.currentCases }} total {{ selectedVariable }}</div>
-          <div class="click-affordance py-1" :style="{ background: lightColor(region.region) }">
-            click for details
-          </div>
-        </div>
-        <CountryBarGraph :region="region.region" :variable="selectedVariable" :id="idx" :style="{
-              visibility: region.displayMore ? 'visible' : 'hidden'
-            }" @regionSelected="handleTooltip" class="tooltip-countries-detailed" />
-      </div>
-    </template>
-    <template v-if="nestedData && nestedData.length > 0">
-      <CaseSummary />
-      <h4>
-        Cumulative Number of COVID-19
-        <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
-          <option v-for="option in variableOptions" :value="option.value" :key="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-        by Region
-      </h4>
-    </template>
-    <div id="regional-stacked-area-plots d-flex" ref="regional_stacked_area_plots">
-      <div class="row px-2" v-if="nestedData && nestedData.length > 0">
-        <div class="col-sm-12 col-md-12">
-          <EpiStacked :width="stackedWidth" :height="stackedHeight" :data="nestedData" :includeChinaAnnot="true" id="all-data" :title="`${selectedVariableLabel} Worldwide`" @regionSelected="handleTooltip" />
 
-        </div>
-      </div>
-    </div>
-    <DataSource v-if="nestedData && nestedData.length > 0" class="mx-4" :data="nestedData" dataType="regions" :ids="['NYT', 'JHU']" figureRef="epi-summary-svg"/>
-  </section>
-
-  <section class="case-data-table p-1">
-    <EpiTable :routable="true" :colorScale="regionColorScale" colorVar="wb_region" />
-  </section>
-
-  <section class="case-map">
-    <h4 class="pt-5">
-      Current
-      <select v-model="selectedVariable" class="select-dropdown" @change="changeVariable">
-        <option v-for="option in variableOptions" :value="option.value" :key="option.value">
-          {{ option.label }}
-        </option>
-      </select>
-      as of {{ currentDate$ }}
-    </h4>
-    <LeafletMap :data="mapData$" :variable="selectedVariable" />
-     <DownloadData v-if="mapData$" type="regions" figureRef="leaflet-zoom-animated" :data="mapData$" class="mt-2 mb-5"/>
-  </section>
-
-  <section>
+  <section class="container">
     <p class="focustext">
       Notice a bug, know of a COVID-19 data source, or want to suggest a
       feature?
@@ -153,91 +324,43 @@
       <a class="btn btn-main m-5" href="https://github.com/outbreak-info/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
     </p>
   </section>
-  <Logos />
+  <Logos class="bg-grey" />
 </div>
 </template>
 <script>
 // @ is an alias to /src
-import EpiStacked from "@/components/EpiStacked.vue";
-import CountryBarGraph from "@/components/CountryBarGraph.vue";
-import CaseSummary from "@/components/CaseSummary.vue";
-import DataSource from "@/components/DataSource.vue";
-import EpiTable from "@/components/EpiTable.vue";
-import LeafletMap from "@/components/LeafletMap.vue";
+// import Vue from "vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
-import DownloadData from "@/components/DownloadData.vue";
-// import Warning from "@/components/Warning.vue";
+import GlanceSummary from "@/components/GlanceSummary";
 import {
-  getStackedRegions
-} from "@/api/region-summary.js";
-import {
-  getEpiTable
-} from "@/api/epi-traces.js";
-import {
-  getMapData
-} from "@/api/epi-geo.js";
-import {
-  getCurrentDate
-} from "@/api/biothings.js";
+  getGlanceSummary
+} from "@/api/epi-basics.js";
+import Vue from "vue";
 import {
   mapState
 } from "vuex";
-
-import {
-  cloneDeep
-} from "lodash";
 
 import store from "@/store";
 
 export default {
   name: "Home",
   components: {
-    EpiStacked,
-    CountryBarGraph,
-    CaseSummary,
-    DataSource,
-    EpiTable,
-    LeafletMap,
     SearchBar,
     Logos,
-    DownloadData
-    // Warning
+    GlanceSummary
   },
   data() {
     return {
-      stackedWidth: 500,
-      stackedHeight: 250,
-      data: null,
-      dataSubscription: null,
-      tableSubscription: null,
-      nestedData: null,
-      selectedVariable: "confirmed",
-      variableOptions: [{
-          label: "Cases",
-          value: "confirmed"
-        },
-        {
-          label: "Recoveries",
-          value: "recovered"
-        },
-        {
-          label: "Deaths",
-          value: "dead"
-        }
-      ],
-      searchQuery: ""
+      searchQuery: "",
+      glanceLocations: [],
+      glanceSummaries: [],
+      summaryDeletable: false,
+      dataSubscription: null
     };
   },
-  watch: {},
   computed: {
-    ...mapState("admin", ["loading"]),
-    ...mapState("geo", ["regionDict"]),
-    selectedVariableLabel() {
-      return this.variableOptions.filter(
-        d => d.value == this.selectedVariable
-      )[0]["label"];
-    }
+    ...mapState("admin", ["loading"])
   },
   methods: {
     submitSearch() {
@@ -248,107 +371,91 @@ export default {
         }
       });
     },
-    changeVariable() {
-      this.nestedData = this.data[this.selectedVariable];
-    },
-    handleTooltip(selected) {
-      store.commit("geo/setRegionTooltip", selected);
-    },
-    regionColorScale: function(location) {
-      const scale = store.getters["colors/getRegionColorFromLocation"];
-      return scale(location);
-    },
-    lightColor: function(region) {
-      const scale = store.getters["colors/getRegionColor"];
-      return scale(region, 0.85);
-    },
-    setDims() {
-      const selector = this.$refs.regional_stacked_area_plots;
-
-      if (selector) {
-        const dims = selector.getBoundingClientRect();
-        // const dims = {window.innerWidth, height: window.innerHeight}
-        const whRatio = 5 / 3;
-        const widthThresh = 700;
-        const selectorsProportion = 0.8;
-
-        this.stackedWidth = dims.width;
-        const idealHeight = this.stackedWidth / whRatio;
-        if (idealHeight < window.innerHeight * selectorsProportion) {
-          this.stackedHeight = idealHeight * selectorsProportion;
-        } else {
-          this.stackedHeight = window.innerHeight * selectorsProportion;
-          this.stackedWidth = this.stackedHeight * whRatio;
-        }
+    removeSummary: function(idx) {
+      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
+      Vue.$cookies.set("custom_locations", this.glanceLocations);
+      if (this.glanceLocations.length > 0) {
+        this.updatedSubscription = getGlanceSummary(
+          this.$apiurl,
+          this.glanceLocations
+        ).subscribe(d => {
+          this.glanceSummaries = this.sortSummaries(d);
+        });
+      } else {
+        this.glanceSummaries = [];
       }
+    },
+    addSummary: function(location_id) {
+      this.glanceLocations = this.glanceLocations.concat(location_id);
+      Vue.$cookies.set("custom_locations", this.glanceLocations);
+      this.updatedSubscription = getGlanceSummary(
+        this.$apiurl,
+        this.glanceLocations
+      ).subscribe(d => {
+        this.glanceSummaries = this.sortSummaries(d);
+      });
+    },
+    sortSummaries(data) {
+      if (this.glanceLocations && this.glanceLocations.length > 0) {
+        data.sort(
+          (a, b) =>
+          this.glanceLocations.indexOf(a.location_id) -
+          this.glanceLocations.indexOf(b.location_id)
+        );
+      }
+      return data;
     }
-  },
-  subscriptions() {
-    return {
-      mapData$: getMapData(this.$apiurl),
-      currentDate$: getCurrentDate(this.$apiurl)
-    };
-  },
-  mounted() {
-    this.dataSubscription = getStackedRegions(this.$apiurl).subscribe(d => {
-      this.data = d;
-      this.nestedData = d[this.selectedVariable];
-    });
-
-    this.tableSubscription = getEpiTable(
-      this.$apiurl,
-      null,
-      [0, 1, 2],
-      "-confirmed",
-      10,
-      0
-    ).subscribe(_ => null);
-
-    // Event listener for mobile responsiveness
-    // $nextTick waits till DOM rendered
-    this.$nextTick(function() {
-      window.addEventListener("resize", this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims();
-    });
   },
   destroyed() {
     this.dataSubscription.unsubscribe();
-    this.tableSubscription.unsubscribe();
-    window.removeEventListener("resize", this.setDims);
+    if (this.updatedSubscription) {
+      this.updatedSubscription.unsubscribe();
+    }
+  },
+  mounted() {
+    const locations = Vue.$cookies.get("custom_locations");
+    this.glanceLocations = locations ? locations.split(",") : [];
+
+    this.dataSubscription = getGlanceSummary(
+      this.$apiurl,
+      this.glanceLocations
+    ).subscribe(d => {
+      this.glanceSummaries = this.sortSummaries(d);
+      this.glanceLocations = d.map(d => d.location_id);
+      Vue.$cookies.set("custom_locations", this.glanceLocations);
+    });
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
-.tooltip-countries {
-    background: white;
-    position: fixed;
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    z-index: 1000;
-    pointer-events: none;
+.resources-intro {
+    background: $primary-color;
 }
 
-.tooltip-countries-detailed {
-    background: white;
-    position: fixed;
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    z-index: 1001;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+.epi-intro {
+    background: $secondary-color;
+    border-left: 3px solid white;
 }
 
-.click-affordance {
-    width: 100%;
-    text-align: center;
-    font-size: 0.85em;
+@media (max-width:767px) {
+    .epi-intro {
+        border: none !important;
+    }
 }
 
-.text-spacing-1 {
-    letter-spacing: 1px;
-    word-spacing: 3px;
+.text-light-highlight {
+    color: #d5d5d5 !important;
+}
+
+.at-a-glance-header {
+    text-transform: uppercase;
+}
+.search-bar {
+    width: 250px;
+}
+
+.add-items {
+    height: 120px;
 }
 </style>

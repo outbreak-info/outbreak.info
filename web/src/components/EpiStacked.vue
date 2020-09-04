@@ -1,34 +1,20 @@
 <template>
-  <div class="epidemiology-area">
-    <svg :width="width" :height="height" class="epi-summary-svg" :id="id" :name="title">
-      <defs>
-        <marker
-          id="arrow"
-          markerWidth="13"
-          markerHeight="10"
-          refX="9"
-          refY="5"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-        </marker>
-      </defs>
-      <g
-        :transform="`translate(${margin.left},${margin.top})`"
-        class="epi-summary"
-      >
-        <g class="annotation-group case-def-changed"></g>
-      </g>
-      <g class="epi-axis axis--x"></g>
-      <g class="epi-axis axis--y"></g>
+<div class="epidemiology-area">
+  <svg :width="width" :height="height" class="epi-summary-svg" :id="id" :name="title">
+    <defs>
+      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+      </marker>
+    </defs>
+    <g :transform="`translate(${margin.left},${margin.top})`" class="epi-summary">
+      <g class="annotation-group case-def-changed"></g>
+    </g>
+    <g class="epi-axis axis--x"></g>
+    <g class="epi-axis axis--y"></g>
 
-      <g
-        :transform="`translate(${margin.left},${-margin.top})`"
-        class="legend"
-      ></g>
-    </svg>
-  </div>
+    <g :transform="`translate(${margin.left},${-margin.top})`" class="legend"></g>
+  </svg>
+</div>
 </template>
 
 <script lang="js">
@@ -41,7 +27,7 @@ const margin = {
   top: 10,
   right: 50,
   bottom: 25,
-  left: 100
+  left: 90
 };
 
 export default Vue.extend({
@@ -154,9 +140,9 @@ export default Vue.extend({
         // .order(d3.stackOrderAppearance)
         // .order(d3.stackOrderNone)
         .order(d3.stackOrderReverse)(
-        // .order(d3.stackOrderInsideOut)
-        this.data
-      );
+          // .order(d3.stackOrderInsideOut)
+          this.data
+        );
 
       this.x = this.x
         .domain(d3.extent(this.data.map(d => d.date)))
@@ -180,8 +166,12 @@ export default Vue.extend({
         )
         .call(this.xAxis);
 
-      const numYTicks = this.height < 375 ? 5 : 10;
-      this.yAxis = d3.axisLeft(this.y).ticks(numYTicks);
+      const numYTicks = this.height < 375 ? 5 : 8;
+      this.yAxis = d3.axisLeft(this.y)
+        .ticks(numYTicks);
+        this.yAxis = this.yAxis
+        .tickFormat((d, i) => i === this.yAxis.scale().ticks().length - 1 ? d / 1e6 + " million" : d / 1e6)
+        .tickSizeOuter(0);
 
       this.svg
         .select(".axis--y")
@@ -203,11 +193,13 @@ export default Vue.extend({
 
       areaSelector
         .join("path")
-        .style("fill", ({ key }) => this.colorScale(key))
+        .style("fill", ({
+          key
+        }) => this.colorScale(key))
         .attr(
           "class",
           d =>
-            `stacked-area-chart ${d.key
+          `stacked-area-chart ${d.key
               .replace(/\s/g, "_")
               .replace(/&/g, "_")
               .replace(/:/g, "_")
@@ -217,7 +209,9 @@ export default Vue.extend({
         )
         .attr("d", this.area)
         .append("title")
-        .text(({ key }) => key);
+        .text(({
+          key
+        }) => key);
 
       const legendRectWidth = 15;
 
@@ -231,7 +225,7 @@ export default Vue.extend({
         .attr(
           "class",
           d =>
-            `legend-group ${d.key
+          `legend-group ${d.key
               .replace(/\s/g, "_")
               .replace(/&/g, "_")
               .replace(/:/g, "_")
@@ -246,7 +240,9 @@ export default Vue.extend({
         .attr("x", 10)
         .attr("width", legendRectWidth)
         .attr("height", legendRectWidth)
-        .style("fill", ({ key }) => this.colorScale(key));
+        .style("fill", ({
+          key
+        }) => this.colorScale(key));
 
       legendEnter
         .append("text")
@@ -257,7 +253,9 @@ export default Vue.extend({
         .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
         .style("font-size", "10px")
         .style("dominant-baseline", "middle")
-        .text(({ key }) => key);
+        .text(({
+          key
+        }) => key);
 
       // --- tooltips ---
       this.chart
@@ -279,41 +277,41 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .legend-name {
-  &:hover {
-    text-decoration: underline;
-  }
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .epi-axis text {
-  font-size: 12pt;
+    font-size: 12pt;
 }
 
 .annotation--region-name {
-  dominant-baseline: middle;
+    dominant-baseline: middle;
 }
 
 .legend-group,
 path.stacked-area-chart {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .stacked-area-title {
-  margin: 0.5em 0 0;
+    margin: 0.5em 0 0;
 }
 
 .case-def-changed {
-  font-size: 0.85em;
-  text-anchor: middle;
-  fill: $grey-60;
+    font-size: 0.85em;
+    text-anchor: middle;
+    fill: $grey-60;
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-  stroke: $grey-60;
-  fill: none;
-  stroke-width: 0.8;
+    stroke: $grey-60;
+    fill: none;
+    stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-  stroke-width: 1;
+    stroke-width: 1;
 }
 </style>

@@ -11,6 +11,7 @@ SITEMAP_FILE = "/Users/laurahughes/GitHub/outbreak.info/web/public/sitemap"
 ROUTES = [
 "about",
  "citation",
+ "compare",
  "contributing-data",
  "data",
  "doubling-rates",
@@ -21,8 +22,10 @@ ROUTES = [
  "maps",
  "niaid",
  "privacy",
+ "regions",
  "resources",
  "resources/search",
+ "schema",
  "sources",
  "summary",
  "terms",

@@ -45,7 +45,7 @@
   </div>
 
   <!-- title / drop down variable selector -->
-  <h4 class="plot-title pt-5 pb-3">
+  <h4 class="plot-title pt-5 pb-3" v-if="location">
     Number of COVID-19
     <select v-model="variableObj" class="select-dropdown" @change="changeVariable">
       <option v-for="option in variableOptions" :value="option" :key="option.value">
@@ -56,7 +56,14 @@
     <span v-if="isPerCapita && variableObj.percapita !== false"> per 100,000 residents</span>
   </h4>
 
+  <h4 class="plot-title pt-5 pb-3 text-highlight" v-else>Please select a location</h4>
 
+  <!-- metro subparts -->
+  <div v-if="subParts" class="mb-4">
+    <router-link :to="{ hash: '#sub_parts' }">View counties in metro area(s)</router-link>
+  </div>
+
+  <!-- warnings -->
   <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
     text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
   </Warning>
@@ -83,6 +90,22 @@
       <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
     </template>
 
+    <div class="container my-4 border-top pt-3" v-if="subParts" id="sub_parts">
+      <div class="row">
+
+        <small class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3" v-for="(metro, mIdx) in subParts" :key="mIdx">
+          <template v-if="metro.hasSubparts">
+            <b>{{metro.key}}</b> metro area includes:
+            <span v-for="(loc, idx) in metro.parts" :key="idx" class="line-height-1">
+              <router-link :to="{name: 'Epidemiology', query: {location: loc.location_id, log: log, variable: variable, xVariable: xVariable, percapita: percapita}}" v-if="variable">
+                {{loc.county_name}}, {{loc.state_name}}</router-link>
+              <span v-if="idx < metro.parts.length - 1">; </span>
+            </span>
+          </template>
+        </small>
+      </div>
+    </div>
+
     <!-- table -->
     <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
   </div>
@@ -103,6 +126,10 @@ import {
   epiDataSubject,
   epiTableSubject
 } from "@/api/epi-traces.js";
+import {
+  getLocation,
+  processLocation
+} from "@/js/get-location.js";
 import store from "@/store";
 import {
   mapState
@@ -281,6 +308,21 @@ export default {
       }
       return null;
     },
+    subParts() {
+      if (
+        this.data$
+      ) {
+        const parts = this.data$[0].map(d => {
+          return ({
+            key: d.value[0].name,
+            parts: d.value[0].sub_parts,
+            hasSubparts: d.value[0].sub_parts ? d.value[0].sub_parts.length > 0 : false
+          })
+        });
+        return (parts.some(d => d.hasSubparts) ? parts : null)
+      }
+      return null;
+    },
     xLim() {
       if (this.data$ && this.data$[0]) {
         return extent(
@@ -296,7 +338,7 @@ export default {
     selectedPlaces: function(newValue, oldValue) {
       const newLocation = newValue ? newValue.join(";") : "";
       if (this.$route.query.location !== newLocation) {
-        this.$router.replace({
+        this.$router.push({
           name: "Epidemiology",
           params: {
             disableScroll: true
@@ -355,7 +397,7 @@ export default {
         this.isOverlay = false;
 
         this.variable = this.variable.replace("_numIncrease", "_rolling");
-        this.$router.replace({
+        this.$router.push({
           name: "Epidemiology",
           params: {
             disableScroll: true
@@ -430,7 +472,7 @@ export default {
         ) :
         null;
 
-      this.$router.replace({
+      this.$router.push({
         name: "Epidemiology",
         params: {
           disableScroll: true
@@ -498,12 +540,32 @@ export default {
     window.removeEventListener("resize", this.setDims);
   },
   mounted() {
-    this.setLocation(this.location);
-    this.$nextTick(function() {
-      window.addEventListener("resize", this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims();
-    });
+    if (!this.location && !this.$route.query.nolocation) {
+      getLocation(this.$apiurl).subscribe(nearestPlace => {
+        if (nearestPlace != "none") {
+          this.$router.push({
+            name: "Epidemiology",
+            query: {
+              location: nearestPlace
+            }
+          });
+        } else {
+          this.$router.push({
+            name: "Epidemiology",
+            query: {
+              nolocation: true
+            }
+          });
+        }
+      })
+    } else {
+      this.setLocation(this.location);
+      this.$nextTick(function() {
+        window.addEventListener("resize", this.setDims);
+        // set initial dimensions for the stacked area plots.
+        this.setDims();
+      });
+    }
   }
 };
 </script>

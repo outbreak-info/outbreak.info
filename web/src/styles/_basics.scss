@@ -305,6 +305,10 @@ p.focustext {
   line-height: 1.1em;
 }
 
+.line-height-sm {
+  line-height: 0.85em;
+}
+
 .leaflet-container .leaflet-control-attribution,
 .leaflet-container .leaflet-control-scale {
   opacity: 0.2;
@@ -336,6 +340,10 @@ p.focustext {
 
 .text-highlight {
   color: $warning-color;
+}
+
+.bg-white {
+  background-color: white;
 }
 
 .bg-light {

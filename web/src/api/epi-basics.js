@@ -20,7 +20,7 @@ export function getLocations(apiUrl) {
 
   return getAll(
     apiUrl,
-    `mostRecent:true&fields=location_id,name,country_name,country_iso3,state_name,wb_region,admin_level`
+    `mostRecent:true&fields=location_id,name,country_name,state_name,wb_region,admin_level`
   ).pipe(
     tap(results => {
       let places = results.map(d => {
@@ -75,8 +75,8 @@ function getLabel(entry) {
   if (entry.admin_level === 0) {
     return entry.name;
   } else if (entry.admin_level === 1) {
-    return entry.country_iso3 == "USA"
-      ? `${entry.name} State, ${entry.country_name}`
+    return entry.country_name == "United States of America"
+      ? `${entry.name} State, USA`
       : `${entry.name} Province, ${entry.country_name}`;
   } else if (String(entry.admin_level) == "1.7") {
     return `${entry.name}`;
