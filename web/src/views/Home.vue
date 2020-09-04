@@ -159,17 +159,20 @@
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
           <h5 class="text-uppercase">Search by resource provider</h5>
           <video class="w-100" controls>
             <source src="@/assets/home/source_example.mp4" type="video/mp4">
             <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
             Your browser does not support the video tag.
           </video>
+        </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
+          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
           <h5 class="text-uppercase">Download search results</h5>
           <div class="h-100 d-flex align-items-center">
             <video class="w-100" controls>
@@ -178,6 +181,7 @@
               Your browser does not support the video tag.
             </video>
           </div>
+        </router-link>
         </div>
       </div>
 
@@ -189,7 +193,7 @@
             <h6>API</h6>
             <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
           </a>
-          <router-link :to="{name: 'Sources', hash: 'resources'}">
+          <router-link :to="{name: 'Sources', hash: '#resources'}">
             <h6>.tsv files</h6>
             <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
           </router-link>
