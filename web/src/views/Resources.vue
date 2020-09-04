@@ -108,7 +108,7 @@
               </div>
             </div>
             <!-- Toggle content -->
-            <form v-if="facet.filtered.length && facet.expanded">
+            <form v-if="facet.expanded">
               <!-- <Donut :data="facet.filtered" /> -->
               <div>
                 <!-- Filter search -->
@@ -118,6 +118,7 @@
                   </small>
                 </form>
                 <!-- Filters -->
+                <template v-if="facet.filtered.length">
                 <ul class="list-group list-unstyled rounded-0">
                   <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
                     <li class="rounded-0 text-left list-group-item-action p-1 border-0 line-height-sm my-1 text-break" :class="[option.count ? 'text-dark' : 'text-muted']" v-if="optIdx < facet.num2Display">
@@ -131,11 +132,13 @@
                   </div>
                 </ul>
                 <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
+                </template>
+                <div class="" v-else>
+                  <small>none</small>
+                </div>
               </div>
             </form>
-            <div class="" v-else-if="facet.expanded">
-              <small>none</small>
-            </div>
+
           </div>
 
         </div>
@@ -192,7 +195,7 @@
           <!-- Selected filters -->
           <div class="row d-flex flex-wrap px-1 mt-2" v-if="(selectedFilters && selectedFilters.length) || dateMin || dateMax" id="selectedFilters">
             <!-- checkbox filters -->
-            <span v-for="(varType, tIdx) in selectedFilters" :key="tIdx" class="d-flex">
+            <span v-for="(varType, tIdx) in selectedFilters" :key="tIdx" class="d-flex flex-wrap">
               <span v-for="(variable, vIdx) in varType.vars" :key="vIdx">
                 <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
                   <small><b>{{variable}}</b></small>
