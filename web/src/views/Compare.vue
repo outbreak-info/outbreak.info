@@ -96,6 +96,9 @@
     No similar locations found
   </div>
 
+  <!-- source / download data -->
+  <DataSource class="mx-3" :ids="['NYT','JHU']" dataType="epidemiology" figureRef="" :numSvgs="10" :data="similar" v-if="similar  && similar.length" />
+
 </div>
 </template>
 
@@ -108,6 +111,7 @@ import {
 import MiniLocation from "@/components/MiniLocation.vue";
 import LineComparison from "@/components/LineComparison.vue";
 import SearchBar from "@/components/SearchBar.vue";
+import DataSource from "@/components/DataSource.vue";
 
 import {
   findSimilar
@@ -123,7 +127,8 @@ export default Vue.extend({
   components: {
     MiniLocation,
     LineComparison,
-    SearchBar
+    SearchBar,
+    DataSource
   },
   props: {
     location: String,
