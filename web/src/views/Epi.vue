@@ -296,8 +296,11 @@ export default {
     selectedPlaces: function(newValue, oldValue) {
       const newLocation = newValue ? newValue.join(";") : "";
       if (this.$route.query.location !== newLocation) {
-        this.$router.push({
-          path: "epidemiology",
+        this.$router.replace({
+          name: "Epidemiology",
+          params: {
+            disableScroll: true
+          },
           query: {
             location: newLocation,
             log: String(this.isLogY),
@@ -353,7 +356,10 @@ export default {
 
         this.variable = this.variable.replace("_numIncrease", "_rolling");
         this.$router.replace({
-          path: "epidemiology",
+          name: "Epidemiology",
+          params: {
+            disableScroll: true
+          },
           query: {
             location: this.location,
             log: String(this.isLogY),
@@ -425,7 +431,10 @@ export default {
         null;
 
       this.$router.replace({
-        path: "epidemiology",
+        name: "Epidemiology",
+        params: {
+          disableScroll: true
+        },
         query: {
           location: this.location,
           log: String(this.isLogY),
