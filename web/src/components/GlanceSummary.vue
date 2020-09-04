@@ -30,10 +30,10 @@
           <svg class="mx-1" height="3em" width="20px">
             <defs>
               <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-                <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+                <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" fill="#939ba2" />
               </marker>
             </defs>
-            <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
+            <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow" fill="none" stroke="#6c757d" stroke-width="0.8"></path>
           </svg>
           <div class="d-flex flex-column number-changes">
             <div class="changes">+ {{ casesIncrease }}</div>
@@ -63,10 +63,10 @@
           <svg class="mx-1" height="3em" width="20px">
             <defs>
               <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-                <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+                <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" fill="#939ba2" />
               </marker>
             </defs>
-            <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow"></path>
+            <path marker-end="url(#arrow)" d="M 5, 40 C 20, 35 20, 10 5, 10" class="swoopy-arrow" fill="none" stroke="#6c757d" stroke-width="0.8"></path>
           </svg>
           <div class="d-flex flex-column number-changes">
             <div class="changes">+ {{ deadIncrease }}</div>

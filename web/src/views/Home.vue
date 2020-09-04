@@ -160,28 +160,28 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-          <h5 class="text-uppercase">Search by resource provider</h5>
-          <video class="w-100" controls>
-            <source src="@/assets/home/source_example.mp4" type="video/mp4">
-            <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-            Your browser does not support the video tag.
-          </video>
-        </router-link>
+            <h5 class="text-uppercase">Search by resource provider</h5>
+            <video class="w-100" controls>
+              <source src="@/assets/home/source_example.mp4" type="video/mp4">
+              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+              Your browser does not support the video tag.
+            </video>
+          </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-          <h5 class="text-uppercase">Download search results</h5>
-          <div class="h-100 d-flex align-items-center">
-            <video class="w-100" controls>
-              <source src="@/assets/home/download_example.mp4" type="video/mp4">
-              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        </router-link>
+            <h5 class="text-uppercase">Download search results</h5>
+            <div class="h-100 d-flex align-items-center">
+              <video class="w-100" controls>
+                <source src="@/assets/home/download_example.mp4" type="video/mp4">
+                <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </router-link>
         </div>
       </div>
 
@@ -205,8 +205,8 @@
           <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
             <h5 class="text-uppercase">View & adapt schema</h5>
             <div class="h-100 d-flex align-items-center">
-            <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
-          </div>
+              <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
+            </div>
           </router-link>
         </div>
       </div>
@@ -246,7 +246,6 @@
       </div>
 
       <!-- EPI CURVE SUMMARIES -->
-
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <section class="w-100 p-3 card" id="regional-epi-curves">
           <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
@@ -271,8 +270,6 @@
         </div>
 
       </div>
-
-
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <h5 class="text-uppercase">Access data</h5>
@@ -293,6 +290,31 @@
     </div>
   </section>
 
+
+  <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
+    <div class="d-flex justify-content-center align-items-center mb-2">
+      <div>
+        <h5 class="at-a-glance-header m-0">At a glance</h5>
+        <p class="ml-3 mb-0">
+          View the three locations with the largest increase in cases in the
+          past day, or select your own locations
+        </p>
+        <button class="btn btn-main-outline router-link no-underline bg-white" @click="summaryDeletable = !summaryDeletable">
+          {{ summaryDeletable ? "done" : "change locations" }}
+        </button>
+      </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key="idx" class="d-flex mx-2 mb-3" :data="location" :idx="location.location_id" :deletable="summaryDeletable" @removed="removeSummary" />
+
+      <div class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main" v-if="summaryDeletable">
+        <h6>Add locations</h6>
+        <SearchBar @location="addSummary" class="search-bar"></SearchBar>
+      </div>
+    </div>
+  </section>
+
   <section class="container">
     <p class="focustext">
       Notice a bug, know of a COVID-19 data source, or want to suggest a
@@ -307,9 +329,14 @@
 </template>
 <script>
 // @ is an alias to /src
+// import Vue from "vue";
 import SearchBar from "@/components/SearchBar.vue";
 import Logos from "@/components/Logos.vue";
-
+import GlanceSummary from "@/components/GlanceSummary";
+import {
+  getGlanceSummary
+} from "@/api/epi-basics.js";
+import Vue from "vue";
 import {
   mapState
 } from "vuex";
@@ -320,11 +347,16 @@ export default {
   name: "Home",
   components: {
     SearchBar,
-    Logos
+    Logos,
+    GlanceSummary
   },
   data() {
     return {
-      searchQuery: ""
+      searchQuery: "",
+      glanceLocations: [],
+      glanceSummaries: [],
+      summaryDeletable: false,
+      dataSubscription: null
     };
   },
   computed: {
@@ -338,9 +370,62 @@ export default {
           q: this.searchQuery
         }
       });
+    },
+    removeSummary: function(idx) {
+      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
+      Vue.$cookies.set("custom_locations", this.glanceLocations);
+      if (this.glanceLocations.length > 0) {
+        this.updatedSubscription = getGlanceSummary(
+          this.$apiurl,
+          this.glanceLocations
+        ).subscribe(d => {
+          this.glanceSummaries = this.sortSummaries(d);
+        });
+      } else {
+        this.glanceSummaries = [];
+      }
+    },
+    addSummary: function(location_id) {
+      this.glanceLocations = this.glanceLocations.concat(location_id);
+      Vue.$cookies.set("custom_locations", this.glanceLocations);
+      this.updatedSubscription = getGlanceSummary(
+        this.$apiurl,
+        this.glanceLocations
+      ).subscribe(d => {
+        this.glanceSummaries = this.sortSummaries(d);
+      });
+    },
+    sortSummaries(data) {
+      if (this.glanceLocations && this.glanceLocations.length > 0) {
+        data.sort(
+          (a, b) =>
+          this.glanceLocations.indexOf(a.location_id) -
+          this.glanceLocations.indexOf(b.location_id)
+        );
+      }
+      return data;
     }
+  },
+  destroyed() {
+    this.dataSubscription.unsubscribe();
+    if (this.updatedSubscription) {
+      this.updatedSubscription.unsubscribe();
+    }
+  },
+  mounted() {
+    const locations = Vue.$cookies.get("custom_locations");
+    this.glanceLocations = locations ? locations.split(",") : [];
+
+    this.dataSubscription = getGlanceSummary(
+      this.$apiurl,
+      this.glanceLocations
+    ).subscribe(d => {
+      this.glanceSummaries = this.sortSummaries(d);
+      this.glanceLocations = d.map(d => d.location_id);
+      Vue.$cookies.set("custom_locations", this.glanceLocations);
+    });
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -361,5 +446,16 @@ export default {
 
 .text-light-highlight {
     color: #d5d5d5 !important;
+}
+
+.at-a-glance-header {
+    text-transform: uppercase;
+}
+.search-bar {
+    width: 250px;
+}
+
+.add-items {
+    height: 120px;
 }
 </style>
