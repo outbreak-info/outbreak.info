@@ -78,7 +78,7 @@
                       <b v-if="funder.name">{{funder.name}}</b>
                       <span v-if="funder.name && funding.identifier">:&nbsp;</span>
                       <span v-if="funding.identifier">{{funding.identifier}}</span>
-                      <span v-if="funder.role"> ({{sponsor.role}})</span>
+                      <span v-if="funder.role"> ({{funder.role}})</span>
                     </div>
                   </template>
 
