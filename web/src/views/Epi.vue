@@ -56,8 +56,15 @@
     <span v-if="isPerCapita && variableObj.percapita !== false"> per 100,000 residents</span>
   </h4>
 
-  <h4 class="plot-title pt-5 pb-3 text-highlight" v-else>Please select a location</h4>
+  <template v-else>
+    <template v-if="!nolocation">
+      <h4 class="plot-title pt-5 pb-3 text-highlight">Please select a location</h4>
+      <button class="btn btn-main-outline" @click="lookupLocation">Find nearest location</button>
+</template>
 
+  <h4 class="plot-title pt-5 pb-3 text-highlight" v-else>Cannot find a nearby location. Please select a location.</h4>
+
+</template>
   <!-- metro subparts -->
   <div v-if="subParts" class="mb-4">
     <router-link :to="{ hash: '#sub_parts' }">View counties in metro area(s)</router-link>
@@ -181,6 +188,7 @@ export default {
       showCurves: true,
       lengthThreshold: 8,
       showAll: false,
+      nolocation: false,
       isFixedY: false,
       isPerCapita: false,
       isOverlay: false,
@@ -534,14 +542,11 @@ export default {
         .map(d => d.key);
       this.addable = toAdd;
       return selectedData;
-    }
-  },
-  destroyed() {
-    window.removeEventListener("resize", this.setDims);
-  },
-  mounted() {
-    if (!this.location && !this.$route.query.nolocation) {
+    },
+    lookupLocation() {
+      store.state.admin.loading = true;
       getLocation(this.$apiurl).subscribe(nearestPlace => {
+        store.state.admin.loading = false;
         if (nearestPlace != "none") {
           this.$router.push({
             name: "Epidemiology",
@@ -550,22 +555,21 @@ export default {
             }
           });
         } else {
-          this.$router.push({
-            name: "Epidemiology",
-            query: {
-              nolocation: true
-            }
-          });
+          this.nolocation = true;
         }
       })
-    } else {
-      this.setLocation(this.location);
-      this.$nextTick(function() {
-        window.addEventListener("resize", this.setDims);
-        // set initial dimensions for the stacked area plots.
-        this.setDims();
-      });
     }
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.setDims);
+  },
+  mounted() {
+    this.setLocation(this.location);
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.setDims);
+      // set initial dimensions for the stacked area plots.
+      this.setDims();
+    });
   }
 };
 </script>
