@@ -539,10 +539,10 @@ export default {
       return source.length == 1 ? source[0].img : null;
     },
     selectFilterText(facet, idx) {
-      const selectedText = this.facetFilters[idx];
+      const selectedText = this.facetFilters[idx].toLowerCase();
       if (selectedText != "") {
         facet.filtered = facet.counts.filter(d =>
-          d.term.includes(selectedText)
+          d.term.toLowerCase().includes(selectedText)
         );
         facet.filtered.forEach(d => (d.checked = true));
       } else {
