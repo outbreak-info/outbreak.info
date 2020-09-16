@@ -50,6 +50,10 @@
           </li>
 
           <li class="nav-item">
+            <a class="nav-link" href="https://outbreak.info/blog">News</a>
+          </li>
+
+          <li class="nav-item">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About</router-link>
           </li>
         </ul>
