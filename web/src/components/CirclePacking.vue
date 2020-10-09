@@ -338,7 +338,7 @@ export default Vue.extend({
     text-transform: uppercase;
 }
 
-.annotation--type.publication {
+.annotation--type.Publication {
     font-size: 1.15em;
     fill: darken($publication-color, 25%);
 }
@@ -348,7 +348,7 @@ export default Vue.extend({
     fill: darken($clinical-trial-color, 25%);
 }
 
-.annotation--type.dataset {
+.annotation--type.Dataset {
     fill: darken($dataset-color, 15%);
 }
 
