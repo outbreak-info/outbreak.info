@@ -353,7 +353,7 @@ A subset of general fields we think are useful. Note that there are other fields
 }
 ```
 
-2. In `src/store/modules/admin.js`: add an object to the `resources` variable.  For instance, for Harvard Dataverse, this is the object:
+2. In `src/store/modules/admin.js`: add an object to the `resources` variable, under the correct resource type (most prevalent resource type for that repository).  For instance, for Harvard Dataverse, this is the object, located under `dataset`:
 ```
 {
     id: "dataverse",
