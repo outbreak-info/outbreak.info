@@ -187,7 +187,7 @@ const state = {
           name: "ImmPort",
           img: "immport.png",
           url: "https://www.immport.org/shared/search?filters=study_2_condition_or_disease.condition_preferred:COVID-19%20-%20DOID:0080600&utm_source=COVID-19&utm_medium=banner&utm_campaign=COVID-19",
-          // license: {url: ""},
+          license: {url: "https://www.immport.org/agreement"},
           citation: '<a href="https://www.immport.org/cite target="_blank"">Citing ImmPort</a>',
           description: "The Immunology Database and Analysis Portal (ImmPort) provides an open access platform for research data sharing, ontaining experimental data and metadata describing the purpose of the study and the methods of data generation.  To better understand the COVID-19 pandemic, ImmPort presents an opportunity to leverage legacy studies on infectious diseases, including Influenza (over 100 studies) and other respiratory-like illnesses from diverse cohorts (e.g., age, race, gender) sourced from NIAID-sponsored programs and beyond."
         },
