@@ -1,10 +1,13 @@
-# Writing outbreak.info parsers
+# Adding a resource to outbreak.info
 [outbreak.info](https://outbreak.info/resources) is a central searchable index of resources related to COVID-19 and SARS-Cov-2, including analyses, clinical trials, datasets, protocols, publications, and software. In response to the COVID-19 outbreak, there's been an explosion of information in a multitude of locations and formats.
 
 Our goal with outbreak.info is to accumulate metadata about these resources in a central location, and to standardize them to a [consistent schema](https://discovery.biothings.io/view/outbreak/) based off of [schema.org](http://schema.org/) to promote interoperability and reuse. While the outbreak.info team has built a number of [parsers](#examples) to crawl, query, and standardize resource metadata, we'd love to have help incorporating other source of information.
 
 We also welcome [suggestions for new sources](https://github.com/SuLab/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D) in addition to helping write code to add new sources to the API.
 
+There are two key steps: writing a parser to add the resource metadata to [api.outbreak.info](api.outbreak.info), and some minor adjustments on the front-end to display the resource on the front-end.
+
+# Writing an outbreak.info parser
 ## Before you start
 * Make sure the resource that you're adding allows redistribution of its metadata (check the Terms and Conditions page and/or User Agreements).
 
@@ -338,7 +341,38 @@ A subset of general fields we think are useful. Note that there are other fields
 * The parser, uploader, and dumper Python files for a given resource should be stored in their own repository.
 * Code should be submitted as an issue on [Github](https://github.com/SuLab/outbreak.info-resources/issues)
 
-### <a name="examples"></a>Examples
+# Exposing a resource to the front-end website
+1. Add a `curatedBy` object to the data parser (see above).  For Harvard Dataverse, this is the object:
+
+```
+"curatedBy": {
+"@type": "Organization",
+"curationDate": "2020-10-15", # Date that the data was accessed, in YYYY-MM-DD format
+"name": "Harvard Dataverse", # Name used for display
+"url": "https://doi.org/10.7910/DVN/0D1XX6" # URL of the particular resource where it can be found in the parent resource. This value will differ for every record.
+}
+```
+
+2. In `src/store/modules/admin.js`: add an object to the `resources` variable.  For instance, for Harvard Dataverse, this is the object:
+```
+{
+    id: "dataverse",
+    name: "Harvard Dataverse",
+    img: "dataverse_icon.png",
+    img_lg: "dataverse.png",
+    url: "https://dataverse.harvard.edu/dataverse/covid19",
+    license: {url: "https://dataverse.org/best-practices/harvard-dataverse-general-terms-use"},
+    citation: '<a href="https://dataverse.org/best-practices/data-citation target="_blank"">Dataverse Citation Policies</a>',
+    description: "This is a general collection of COVID-19 data deposited in the Harvard Dataverse repository. The list in this collection is maintained by the Harvard Dataverse data curation team (IQSS and Harvard Library). Researchers who deposit their related data into Harvard Dataverse will have their data linked to this collection, to increase discoverability of their data."
+  }
+```
+
+`name` should match the `curatedBy.name` you added in step 1.  `img` is the file name for the resource logo and should be as small in width as possible; if you'd like a wider, more elaborate logo which is displayed at [outbreak.info Sources](https://outbreak.info/sources), that can be specified in `img_lg`.  `id` should be unique to other resources.
+
+3. Add the image logo to `src/assets/resources` (and `img_lg` if you'd like)
+4. Pull the changes onto the outbreak.info server and rebuild the app.
+
+### <a name="examples"></a>Parse Examples
 - [Litcovid](https://github.com/marcodarko/litcovid)
 - [Biorxiv](https://github.com/marcodarko/biorxiv)
 - [Figshare](https://github.com/SuLab/covid_figshare)
