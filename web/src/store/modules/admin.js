@@ -146,39 +146,7 @@ const state = {
     {
       category: "Datasets",
       id: "Dataset",
-      sources: [{
-          id: "dataverse",
-          name: "Harvard Dataverse",
-          img: "dataverse_icon.png",
-          img_lg: "dataverse.png",
-          url: "https://dataverse.harvard.edu/dataverse/covid19",
-          license: {url: "https://dataverse.org/best-practices/harvard-dataverse-general-terms-use"},
-          citation: '<a href="https://dataverse.org/best-practices/data-citation target="_blank"">Dataverse Citation Policies</a>',
-          description: "This is a general collection of COVID-19 data deposited in the Harvard Dataverse repository. The list in this collection is maintained by the Harvard Dataverse data curation team (IQSS and Harvard Library). Researchers who deposit their related data into Harvard Dataverse will have their data linked to this collection, to increase discoverability of their data."
-        }, {
-          id: "figshare",
-          name: "Figshare",
-          img: "figshare_icon.svg",
-          img_lg: "figshare.svg",
-          url: "https://covid19.figshare.com/",
-          description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner.",
-          license: {
-            url: "https://knowledge.figshare.com/articles/item/data-access-policy"
-          },
-          citation: 'Figshare. <i>COVID-19 Open Research Data</i>. Available online: <a href="https://covid19.figshare.com/" target="_blank">https://covid19.figshare.com/</a> (2020)'
-        },
-        {
-          id: "pdb",
-          name: "The Protein Data Bank",
-          img: "pdb.png",
-          url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
-          description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
-          license: {
-            url: 'https://www.rcsb.org/pages/usage-policy',
-            name: 'CC0'
-          },
-          citation: '<a href="https://www.rcsb.org/pages/policies#References target="_blank"">PDB Citation Policies</a>'
-        },
+      sources: [
         {
           id: "dde",
           name: "Data Discovery Engine",
@@ -191,6 +159,49 @@ const state = {
             name: 'CC-BY'
           },
           citation: 'Data Discovery Engine. <i>Data Discovery Engine Data Registry</i>. Available online: <a href="https://discovery.biothings.io/dataset" target="_blank">https://discovery.biothings.io/dataset</a> (2020)'
+        },
+        {
+          id: "figshare",
+          name: "Figshare",
+          img: "figshare_icon.svg",
+          img_lg: "figshare.svg",
+          url: "https://covid19.figshare.com/",
+          description: "figshare is a repository where users can make all of their research outputs available in a citable, shareable and discoverable manner.",
+          license: {
+            url: "https://knowledge.figshare.com/articles/item/data-access-policy"
+          },
+          citation: 'Figshare. <i>COVID-19 Open Research Data</i>. Available online: <a href="https://covid19.figshare.com/" target="_blank">https://covid19.figshare.com/</a> (2020)'
+        },
+        {
+          id: "dataverse",
+          name: "Harvard Dataverse",
+          img: "dataverse_icon.png",
+          img_lg: "dataverse.png",
+          url: "https://dataverse.harvard.edu/dataverse/covid19",
+          license: {url: "https://dataverse.org/best-practices/harvard-dataverse-general-terms-use"},
+          citation: '<a href="https://dataverse.org/best-practices/data-citation target="_blank"">Dataverse Citation Policies</a>',
+          description: "This is a general collection of COVID-19 data deposited in the Harvard Dataverse repository. The list in this collection is maintained by the Harvard Dataverse data curation team (IQSS and Harvard Library). Researchers who deposit their related data into Harvard Dataverse will have their data linked to this collection, to increase discoverability of their data."
+        },
+        {
+          id: "immport",
+          name: "ImmPort",
+          img: "immport.png",
+          url: "https://www.immport.org/shared/search?filters=study_2_condition_or_disease.condition_preferred:COVID-19%20-%20DOID:0080600&utm_source=COVID-19&utm_medium=banner&utm_campaign=COVID-19",
+          // license: {url: ""},
+          citation: '<a href="https://www.immport.org/cite target="_blank"">Citing ImmPort</a>',
+          description: "The Immunology Database and Analysis Portal (ImmPort) provides an open access platform for research data sharing, ontaining experimental data and metadata describing the purpose of the study and the methods of data generation.  To better understand the COVID-19 pandemic, ImmPort presents an opportunity to leverage legacy studies on infectious diseases, including Influenza (over 100 studies) and other respiratory-like illnesses from diverse cohorts (e.g., age, race, gender) sourced from NIAID-sponsored programs and beyond."
+        },
+        {
+          id: "pdb",
+          name: "The Protein Data Bank",
+          img: "pdb.png",
+          url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
+          description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
+          license: {
+            url: 'https://www.rcsb.org/pages/usage-policy',
+            name: 'CC0'
+          },
+          citation: '<a href="https://www.rcsb.org/pages/policies#References target="_blank"">PDB Citation Policies</a>'
         },
         {
           id: "zenodo",
@@ -291,6 +302,18 @@ const state = {
       description: 'Scroll through timepoints to compare countries, U.S. states, U.S. metropolitan areas, and U.S. counties case and death counts over time',
       route: {
         name: "Maps"
+      }
+    },
+    {
+      date: new Date("2020-10-15 0:0"),
+      category: "data",
+      title: "Added ImmPort datasets",
+      description: 'Added resource metadata from <a href="https://www.immport.org/shared/search?filters=study_2_condition_or_disease.condition_preferred:COVID-19%20-%20DOID:0080600&utm_source=COVID-19&utm_medium=banner&utm_campaign=COVID-19" target="_blank" rel="noreferrer">ImmPort</a>. <a href="/sources#resources">View more about sources</a>',
+      route: {
+        name: "Resources",
+        query: {
+          filter: 'curatedBy.name:"ImmPort"'
+        }
       }
     },
     {
