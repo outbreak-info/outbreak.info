@@ -370,7 +370,21 @@ A subset of general fields we think are useful. Note that there are other fields
 `name` should match the `curatedBy.name` you added in step 1.  `img` is the file name for the resource logo and should be as small in width as possible; if you'd like a wider, more elaborate logo which is displayed at [outbreak.info Sources](https://outbreak.info/sources), that can be specified in `img_lg`.  `id` should be unique to other resources.
 
 3. Add the image logo to `src/assets/resources` (and `img_lg` if you'd like)
-4. Pull the changes onto the outbreak.info server and rebuild the app.
+4. Update the release notes in the `updates` variable in `src/store/modules/admin.js`, including an example to a link in `route`:
+```
+{
+  date: new Date("2020-06-12 0:0"),
+  category: "data",
+  title: "Added Harvard Dataverse",
+  description: 'Added resource metadata from <a href="https://dataverse.harvard.edu/dataverse/covid19" target="_blank" rel="noreferrer">Harvard Dataverse</a>. <a href="/sources#resources">View more about sources</a>',
+  route: {
+    name: "Resources",
+    query: {
+      filter: 'curatedBy.name:"Dataverse"'
+    }
+  }
+```
+5. Pull the changes onto the outbreak.info server and rebuild the app.
 
 ### <a name="examples"></a>Parse Examples
 - [Litcovid](https://github.com/marcodarko/litcovid)
