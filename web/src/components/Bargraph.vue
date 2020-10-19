@@ -287,12 +287,14 @@ export default Vue.extend({
       }
 
       if (this.includeAxis) {
+        // ~ 6 tick marks, rounded to the nearest week interval (6*7)
+        const plotInterval = Math.round(this.x.domain().length/42)*7;
         this.xAxis = d3
           .axisBottom(this.x)
           .tickSizeOuter(0)
           .tickValues(
             this.x.domain().filter(function(d, i) {
-              return !(i % 28);
+              return !(i % plotInterval);
             })
           )
           .tickFormat(d3.timeFormat("%d %b"));
