@@ -96,7 +96,31 @@
                 </li>
               </ul>
             </div>
-            <span v-if="data.funder">{{ data.funder }}</span>
+            <template v-if="data.funder">
+
+              <template v-if="Array.isArray(data.funder)">
+                <ul>
+                  <li v-for="(funder, idx) in data.funder" :key="idx" class="mb-3">
+                    <b v-if="funder.name">{{funder.name}}</b>
+                    <span v-if="funder.name && funder.identifier">:&nbsp;</span>
+                    <span v-if="funder.identifier">{{funder.identifier}}</span>
+                    <span v-if="funder.role"> ({{funder.role}})</span>
+                  </li>
+                </ul>
+              </template>
+
+              <template v-else>
+                <ul>
+                  <li>
+                    <b v-if="funder.name">{{funder.name}}</b>
+                    <span v-if="funder.name && funder.identifier">:&nbsp;</span>
+                    <span v-if="funder.identifier">{{funder.identifier}}</span>
+                    <span v-if="funder.role"> ({{funder.role}})</span>
+                  </li>
+                </ul>
+              </template>
+
+            </template>
           </div>
           <div v-else>
             <small>not specified</small>
