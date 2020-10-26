@@ -7,7 +7,6 @@ import VueRx from "vue-rx";
 import VueCookies from "vue-cookies";
 import VueMeta from "vue-meta";
 
-import "leaflet/dist/leaflet.css";
 import "tippy.js/dist/tippy.css";
 
 Vue.config.productionTip = false;
