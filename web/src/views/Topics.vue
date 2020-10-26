@@ -27,8 +27,6 @@ import Marimekko from "@/components/Marimekko.vue";
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
-import * as d3 from "d3";
-
 export default {
   name: "Topics",
   components: {

@@ -36,7 +36,7 @@
 <script lang="ts">
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, axisBottom } from "d3";
 
 const width = 125;
 const height = 75;
@@ -61,8 +61,8 @@ export default Vue.extend({
       margin,
 
       // scales
-      x: d3.scaleLinear(),
-      y: d3.scaleLinear(),
+      x: scaleLinear(),
+      y: scaleLinear(),
       xAxis: null,
       yMax: 0.5,
       // yAxis: null,
@@ -91,7 +91,7 @@ export default Vue.extend({
       this.drawSlopes();
     },
     setupPlot: function() {
-      this.svg = d3.select("svg.slope-comparison");
+      this.svg = select("svg.slope-comparison");
       this.chart = this.svg.select(".slopes");
     },
     updateScales: function() {
@@ -99,21 +99,19 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, 1]);
 
-      this.y = d3
-        .scaleLinear()
+      this.y = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, this.yMax]);
 
-      this.xAxis = d3
-        .axisBottom(this.x)
+      this.xAxis = axisBottom(this.x)
         .ticks(0)
         .tickSizeOuter(0);
 
-      d3.select(this.$refs.xAxis).call(this.xAxis);
+      select(this.$refs.xAxis).call(this.xAxis);
 
-      // this.yAxis = d3.axisLeft(this.y).ticks(this.numYTicks);
+      // this.yAxis = axisLeft(this.y).ticks(this.numYTicks);
 
-      // d3.select(this.$refs.yAxis).call(this.yAxis);
+      // select(this.$refs.yAxis).call(this.yAxis);
     },
     drawSlopes: function() {
       // --- poly fill and swoopy arrow ---

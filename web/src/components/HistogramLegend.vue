@@ -40,7 +40,7 @@
 
 
 <script>
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, axisBottom, extent, max, format, histogram, drag, event } from "d3";
 import {
   interpolateYlGnBu
 } from "d3-scale-chromatic";
@@ -113,13 +113,13 @@ export default {
       return (this.$route.query.min || this.$route.query.max || this.$route.query.min === 0 || this.$route.query.max === 0)
     },
     domain() {
-      return d3.extent(this.colorScale.domain());
+      return extent(this.colorScale.domain());
     },
     precision() {
       return (this.domain[1] - this.domain[0] <= 20 ? 10 : 1);
     },
     formatLimit() {
-      return (this.domain[1] - this.domain[0] <= 20 ? d3.format(",.1f") : d3.format(",.0f"));
+      return (this.domain[1] - this.domain[0] <= 20 ? format(",.1f") : format(",.0f"));
     },
     filterString() {
       var filter = null
@@ -142,8 +142,8 @@ export default {
   },
   methods: {
     setupPlot: function() {
-      this.chart = d3.select(this.$refs.legend_bars);
-      this.xAxisRef = d3.select(this.$refs.x_axis);
+      this.chart = select(this.$refs.legend_bars);
+      this.xAxisRef = select(this.$refs.x_axis);
     },
     updateFilterLimits: function() {
       this.selectedMin = this.minVal || this.minVal === 0 ? this.minVal : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) / this.precision;
@@ -151,12 +151,12 @@ export default {
     },
     updateAxes: function() {
       // x-axis
-      this.x = d3.scaleLinear()
+      this.x = scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(this.domain)
         .clamp(true);
 
-      this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0).ticks(5);
+      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(5);
       this.xAxisRef.call(this.xAxis);
 
       // legend gradient
@@ -169,10 +169,10 @@ export default {
           })
         })
 
-      d3.selectAll(".axis").call(this.xAxis);
+      selectAll(".axis").call(this.xAxis);
 
       // calculate bins
-      this.bins = d3.histogram()
+      this.bins = histogram()
         .domain(this.x.domain())
         .thresholds(this.x.ticks(this.numBins))(this.data.map(d => d[this.variable]));
 
@@ -191,41 +191,41 @@ export default {
 
 
       // y-axis
-      this.y = d3.scaleLinear()
+      this.y = scaleLinear()
         .range([this.height, 0])
-        .domain([0, d3.max(this.bins, d => d.length)]);
-      //   d3.select(this.$refs.slider_line)
+        .domain([0, max(this.bins, d => d.length)]);
+      //   select(this.$refs.slider_line)
       //   .attr("x1", this.x(this.selectedMin))
       //   .attr("x2", this.x(this.selectedMax))
     },
     setupDrag() {
       // draggable filters
-      d3.select(this.$refs.slider_left)
-        .call(d3.drag()
+      select(this.$refs.slider_left)
+        .call(drag()
           .on("drag", () => this.updateDrag("left"))
           .on("end", () => this.changeFilters())
         )
-      d3.select(this.$refs.slider_right)
-        .call(d3.drag()
+      select(this.$refs.slider_right)
+        .call(drag()
           .on("drag", () => this.updateDrag("right"))
           .on("end", () => this.changeFilters())
         )
     },
     updateDrag(side) {
-      const newVal = this.x.invert(d3.event.x);
+      const newVal = this.x.invert(event.x);
       if (side == "left") {
         this.selectedMin = newVal;
-        d3.select(this.$refs.slider_left)
+        select(this.$refs.slider_left)
           .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
 
-        // d3.select(this.$refs.rect_mask_left).attr("width", this.x(this.selectedMin))
+        // select(this.$refs.rect_mask_left).attr("width", this.x(this.selectedMin))
       } else {
         this.selectedMax = newVal;
 
-        d3.select(this.$refs.slider_right)
+        select(this.$refs.slider_right)
           .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
 
-        // d3.select(this.$refs.rect_mask_right)
+        // select(this.$refs.rect_mask_right)
         //   .attr("x", this.x(this.selectedMax))
       }
     },

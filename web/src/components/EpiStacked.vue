@@ -20,7 +20,7 @@
 <script lang="js">
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleTime, scaleLinear, axisLeft, axisBottom, area, stack, stackOrderReverse, event, extent, max} from "d3";
 import store from "@/store";
 
 const margin = {
@@ -46,8 +46,8 @@ export default Vue.extend({
       margin,
       series: null,
       // axes
-      x: d3.scaleTime(),
-      y: d3.scaleLinear(),
+      x: scaleTime(),
+      y: scaleLinear(),
       xAxis: null,
       yAxis: null,
       // refs
@@ -81,11 +81,11 @@ export default Vue.extend({
       });
     },
     handleMouseover: function(d) {
-      d3.selectAll(".legend-group").style("opacity", 0.4);
+      selectAll(".legend-group").style("opacity", 0.4);
 
-      d3.selectAll(".stacked-area-chart").style("opacity", 0.4);
+      selectAll(".stacked-area-chart").style("opacity", 0.4);
 
-      d3.selectAll(
+      selectAll(
         `.${d.key
           .replace(/\s/g, "_")
           .replace(/\//g, "_")
@@ -99,14 +99,14 @@ export default Vue.extend({
         region: d.key,
         display: true,
         currentCases: d.slice(-1)[0].data[d.key],
-        x: d3.event.x + 10,
-        y: d3.event.y + 10
+        x: event.x + 10,
+        y: event.y + 10
       });
     },
     handleMouseout: function(key) {
-      d3.selectAll(".legend-group").style("opacity", 1);
+      selectAll(".legend-group").style("opacity", 1);
 
-      d3.selectAll(".stacked-area-chart").style("opacity", 1);
+      selectAll(".stacked-area-chart").style("opacity", 1);
 
       this.$emit("regionSelected", {
         region: key,
@@ -125,36 +125,35 @@ export default Vue.extend({
       }
     },
     setupPlot: function() {
-      this.svg = d3.select(`#${this.id}`);
+      this.svg = select(`#${this.id}`);
       this.chart = this.svg.select(".epi-summary");
       this.legend = this.svg.select(".legend");
     },
     updateScales: function() {
       const keys = Object.keys(this.data[0]).filter(d => d !== "date");
 
-      this.series = d3
-        .stack()
+      this.series = stack()
         .keys(keys)
-        // .order(d3.stackOrderDescending)
-        // .order(d3.stackOrderAscending)
-        // .order(d3.stackOrderAppearance)
-        // .order(d3.stackOrderNone)
-        .order(d3.stackOrderReverse)(
-          // .order(d3.stackOrderInsideOut)
+        // .order(stackOrderDescending)
+        // .order(stackOrderAscending)
+        // .order(stackOrderAppearance)
+        // .order(stackOrderNone)
+        .order(stackOrderReverse)(
+          // .order(stackOrderInsideOut)
           this.data
         );
 
       this.x = this.x
-        .domain(d3.extent(this.data.map(d => d.date)))
+        .domain(extent(this.data.map(d => d.date)))
         .range([0, this.width - this.margin.left - this.margin.right]);
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, d3.max(this.series, d => d3.max(d, d => d[1]))])
+        .domain([0, max(this.series, d => max(d, d => d[1]))])
         .nice();
 
-      const numXTicks = this.width < 575 ? 3 : 6;
-      this.xAxis = d3.axisBottom(this.x).ticks(numXTicks);
+      const numXTicks = this.width < 575 ? 2 : 4;
+      this.xAxis = axisBottom(this.x).ticks(numXTicks);
 
       this.svg
         .select(".axis--x")
@@ -167,7 +166,7 @@ export default Vue.extend({
         .call(this.xAxis);
 
       const numYTicks = this.height < 375 ? 5 : 8;
-      this.yAxis = d3.axisLeft(this.y)
+      this.yAxis = axisLeft(this.y)
         .ticks(numYTicks);
         this.yAxis = this.yAxis
         .tickFormat((d, i) => i === this.yAxis.scale().ticks().length - 1 ? d / 1e6 + " million" : d / 1e6)
@@ -181,8 +180,7 @@ export default Vue.extend({
     drawPlot: function() {
 
       // --- annotations ---
-      this.area = d3
-        .area()
+      this.area = area()
         .x(d => this.x(d.data.date))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]));

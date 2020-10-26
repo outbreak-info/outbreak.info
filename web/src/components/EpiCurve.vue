@@ -38,7 +38,8 @@ import {
   epiDataState$
 } from "@/api/epi-traces.js";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, scaleLog, scaleTime, extent, max, axisBottom, axisLeft, format, timeFormat, forceCollide, forceY, forceSimulation, transition, easeLinear, line } from "d3";
+
 import {
   cloneDeep
 } from "lodash";
@@ -102,8 +103,8 @@ export default Vue.extend({
       // axes
       numXTicks: 6,
       numYTicks: 6,
-      x: d3.scaleTime(),
-      y: d3.scaleLinear(),
+      x: scaleTime(),
+      y: scaleLinear(),
       xAxis: null,
       yAxis: null,
       // refs
@@ -219,29 +220,29 @@ export default Vue.extend({
       this.updatePlot();
     },
     tooltipOn: function(d, location_id) {
-      d3.select(`#tooltip-${d._id}`).attr("display", "block");
+      select(`#tooltip-${d._id}`).attr("display", "block");
 
-      d3.select(`#${d._id}`).attr("r", this.radius * 2);
+      select(`#${d._id}`).attr("r", this.radius * 2);
 
-      d3.selectAll(`#${d[location_id]}`)
+      selectAll(`#${d[location_id]}`)
         .select("text")
         .style("font-weight", 700);
 
-      d3.selectAll(`.epi-region`).style("opacity", 0.35);
-      d3.selectAll(`.epi-line`).style("opacity", 0.35);
+      selectAll(`.epi-region`).style("opacity", 0.35);
+      selectAll(`.epi-line`).style("opacity", 0.35);
 
-      d3.selectAll(`.${d[location_id]}`).style("opacity", 1);
-      d3.selectAll(`#${d[location_id]}`).style("opacity", 1);
+      selectAll(`.${d[location_id]}`).style("opacity", 1);
+      selectAll(`#${d[location_id]}`).style("opacity", 1);
     },
     tooltipOff: function(d) {
-      d3.selectAll(".tooltip--epi-curve").attr("display", "none");
+      selectAll(".tooltip--epi-curve").attr("display", "none");
 
-      d3.selectAll("circle").attr("r", this.radius);
+      selectAll("circle").attr("r", this.radius);
 
-      d3.selectAll(".annotation--region-name").style("font-weight", 400);
+      selectAll(".annotation--region-name").style("font-weight", 400);
 
-      d3.selectAll(`.epi-region`).style("opacity", 1);
-      d3.selectAll(`.epi-line`).style("opacity", 1);
+      selectAll(`.epi-region`).style("opacity", 1);
+      selectAll(`.epi-line`).style("opacity", 1);
     },
     updatePlot: function() {
       this.prepData();
@@ -285,67 +286,64 @@ export default Vue.extend({
 
       this.setPlotDims();
 
-      this.svg = d3.select(this.$refs.svg);
-      this.chart = d3.select(this.$refs.epi_curve);
+      this.svg = select(this.$refs.svg);
+      this.chart = select(this.$refs.epi_curve);
 
-      this.line = d3
-        .line()
+      this.line = line()
         .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
       if (this.xVariable == "date") {
-        this.x = d3.scaleTime()
+        this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain(
-            d3.extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
+            extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
           );
       } else {
-        this.x = d3.scaleLinear()
+        this.x = scaleLinear()
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain(
-            [0, d3.max(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))]
+            [0, max(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))]
           );
       }
 
       if (this.isLogY && this.loggable) {
-        this.y = d3
-          .scaleLog()
+        this.y = scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .nice()
           .domain([
             1,
-            d3.max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
+            max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
           ]);
       } else {
-        this.y = d3
-          .scaleLinear()
+        this.y = scaleLinear()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .domain([
             0,
-            d3.max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
+            max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
           ]);
       }
 
-      this.xAxis = d3.axisBottom(this.x).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
 
-      d3.select(this.$refs.xAxis).call(this.xAxis);
+      select(this.$refs.xAxis).call(this.xAxis);
 
       if (this.isLogY && this.loggable) {
-        this.yAxis = d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
+        this.yAxis = axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
           const log = Math.log10(d);
-          return Math.abs(Math.round(log) - log) < 1e-6 ? d3.format(",")(d) : ""
+          return Math.abs(Math.round(log) - log) < 1e-6 ? format(",")(d) : ""
         })
       } else {
-        this.yAxis = d3.axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
+        this.yAxis = axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
       }
 
       if (this.percent) {
-        this.yAxis.tickFormat(d3.format(".0%"))
+        this.yAxis.tickFormat(format(".0%"))
       }
 
 
-      d3.select(this.$refs.yAxis).call(this.yAxis);
+      select(this.$refs.yAxis).call(this.yAxis);
 
       // --- update x-scale switch button --
       const dySwitch = -10;
@@ -353,7 +351,7 @@ export default Vue.extend({
       const ySwoop = -35;
       const swoopOffset = 10;
 
-      d3.select(this.$refs.switchX).select("path")
+      select(this.$refs.switchX).select("path")
         .attr("marker-end", "url(#arrow)")
         .attr(
           "d",
@@ -373,9 +371,9 @@ export default Vue.extend({
       // const ySwoop = -35;
       // const swoopOffset = 10;
       if (this.loggable) {
-        this.switchBtn = d3.select(this.$refs.switchY);
+        this.switchBtn = select(this.$refs.switchY);
 
-        d3.select(this.$refs.switchY).select("rect")
+        select(this.$refs.switchY).select("rect")
           .attr("x", 0)
           .attr("width", 0)
           .attr("height", 26.5)
@@ -388,7 +386,7 @@ export default Vue.extend({
           )
           .on("click", () => this.changeYScale());;
 
-        d3.select(this.$refs.switchY).select("path")
+        select(this.$refs.switchY).select("path")
           .attr("marker-end", "url(#arrow)")
           // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
           .attr(
@@ -430,15 +428,15 @@ export default Vue.extend({
         }
       }
 
-      d3.select(this.$refs.xSelector)
+      select(this.$refs.xSelector)
         .style("right", this.margin.right + "px")
         .style("top", this.height - 28 + "px");
     },
     drawDots: function() {
       if (this.plottedData && this.plottedData.length) {
-        const t1 = d3.transition().duration(this.transitionDuration);
-        const t2 = d3.transition().duration(1500);
-        const formatDate = d3.timeFormat("%d %b %Y");
+        const t1 = transition().duration(this.transitionDuration);
+        const t2 = transition().duration(1500);
+        const formatDate = timeFormat("%d %b %Y");
 
         // --- annotation: change in case definition ---
         const includesChina = this.plottedData
@@ -545,11 +543,10 @@ export default Vue.extend({
         };
 
         // Set up the force simulation
-        const force = d3
-          .forceSimulation()
+        const force = forceSimulation()
           .nodes(this.plottedData)
-          .force("collide", d3.forceCollide(labelHeight / 2).strength(0.1))
-          .force("y", d3.forceY(d => d.targetY).strength(1))
+          .force("collide", forceCollide(labelHeight / 2).strength(0.1))
+          .force("y", forceY(d => d.targetY).strength(1))
           .force(
             "clamp",
             forceClamp(0, this.height - this.margin.top - this.margin.bottom)
@@ -616,7 +613,7 @@ export default Vue.extend({
               .call(update => {
                 update.transition(t2)
                   .attr("d", this.line)
-                  .ease(d3.easeLinear)
+                  .ease(easeLinear)
                   .attr("stroke-dashoffset", 0)
               })
           },
@@ -778,27 +775,27 @@ export default Vue.extend({
           .attr("y", d => this.y(d[this.variable]))
           // .attr("dy", "1.1em")
           .attr("dy", "2.2em")
-          .text(d => this.percent ? `${d3.format(".1%")(d[this.variable])} ${this.variableObj.ttip}` : `${d3.format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
+          .text(d => this.percent ? `${format(".1%")(d[this.variable])} ${this.variableObj.ttip}` : `${format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
 
         // dynamically adjust the width of the rect
         if (tooltipSelector.selectAll("rect")["_groups"].length) {
           tooltipSelector.each(function(d) {
-            const bounds = d3.select(this).select("text")
+            const bounds = select(this).select("text")
               .node()
               .getBBox();
 
-            d3.select(this).select("rect").attr("width", bounds.width + 10)
+            select(this).select("rect").attr("width", bounds.width + 10)
               .attr("height", bounds.height + 5)
               .attr("stroke-dasharray", `${bounds.width + 10}, ${(bounds.height + 5)*2 + bounds.width + 10}`)
           })
         }
 
         // --- event listeners ---
-        d3.selectAll("circle")
+        selectAll("circle")
           .on("mouseover", d => this.tooltipOn(d, "location_id"))
           .on("mouseout", d => this.tooltipOff(d));
 
-        d3.selectAll(".annotation--region-name")
+        selectAll(".annotation--region-name")
           .on("mouseover", d => this.tooltipOn(d, "key"))
           .on("mouseout", d => this.tooltipOff(d));
       }

@@ -47,7 +47,7 @@
 <script lang="ts">
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, scaleBand, scaleTime, max, extent, axisRight, transition, area } from "d3";
 import { cloneDeep } from "lodash";
 
 import store from "@/store";
@@ -98,9 +98,9 @@ export default Vue.extend({
       isOverflow: false,
 
       // axes
-      x: d3.scaleLinear().range([width, 0]),
-      y: d3.scaleBand().paddingInner(innerPadding),
-      xSpark: d3.scaleTime().range([0, sparkWidth]),
+      x: scaleLinear().range([width, 0]),
+      y: scaleBand().paddingInner(innerPadding),
+      xSpark: scaleTime().range([0, sparkWidth]),
       xAxis: null,
       yAxis: null,
       // refs
@@ -245,8 +245,7 @@ export default Vue.extend({
       }
     },
     setupPlot: function() {
-      this.svg = d3
-        .select(`#region-graphs-${this.id}`)
+      this.svg = select(`#region-graphs-${this.id}`)
         .select("svg.region-country-counts");
       this.chart = this.svg.select("#case-counts");
 
@@ -261,18 +260,16 @@ export default Vue.extend({
             10}, ${this.margin.top})`
         );
 
-      this.line = d3
-        .area()
+      this.line = area()
         .x(d => this.xSpark(d.date))
         .y0(d => d.y0)
         .y1(d => d.y);
     },
     prepData: function() {
       this.data.forEach(d => {
-        const y = d3
-          .scaleLinear()
+        const y = scaleLinear()
           .range([this.y.bandwidth() * 0.8, 0])
-          .domain([0, d3.max(d.data.map(d => d[this.variable]))]);
+          .domain([0, max(d.data.map(d => d[this.variable]))]);
 
         d.data.forEach(datum => {
           datum["y"] = y(datum[this.variable]);
@@ -281,17 +278,17 @@ export default Vue.extend({
       });
     },
     updateScales: function() {
-      this.x = this.x.domain([0, d3.max(this.data, d => d[this.variable])]);
+      this.x = this.x.domain([0, max(this.data, d => d[this.variable])]);
 
       this.y = this.y
         .range([this.height, 0])
         .domain(this.data.map(d => d.name));
 
       this.xSpark = this.xSpark.domain(
-        d3.extent(this.data.flatMap(d => d.data).map(d => d.date))
+        extent(this.data.flatMap(d => d.data).map(d => d.date))
       );
 
-      this.yAxis = d3.axisRight(this.y);
+      this.yAxis = axisRight(this.y);
 
       this.svg.select(".axis--y").call(this.yAxis);
       this.svg
@@ -300,7 +297,7 @@ export default Vue.extend({
         .on("click", d => this.routeToLoc(d));
     },
     drawPlot: function() {
-      const t1 = d3.transition().duration(1000);
+      const t1 = transition().duration(1000);
 
       // --- group ---
       const grpSelector = this.chart

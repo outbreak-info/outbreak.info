@@ -12,7 +12,7 @@
 <script lang="js">
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, scaleTime, event, pack, hierarchy, max } from "d3";
 // from https://observablehq.com/@d3/marimekko-chart
 export default Vue.extend({
   name: "CirclePacking",
@@ -32,9 +32,9 @@ export default Vue.extend({
         left: 10
       },
       // axes
-      y: d3.scaleLinear(),
-      x: d3.scaleTime(),
-      opacity: d3.scaleLinear().range([1, 0.3]),
+      y: scaleLinear(),
+      x: scaleTime(),
+      opacity: scaleLinear().range([1, 0.3]),
       // refs
       svg: null,
       svgDefs: null,
@@ -51,11 +51,10 @@ export default Vue.extend({
   },
   methods: {
     tooltipOn(d) {
-      const event = d3.event;
-      d3.select(this.$refs.circle_tooltip)
+      select(this.$refs.circle_tooltip)
         .classed("hidden", false)
-        .style("top", d3.event.layerY + "px")
-        .style("left", d3.event.layerX + "px")
+        .style("top", event.layerY + "px")
+        .style("left", event.layerX + "px")
         .html(d.depth === 1 ? `Search ${d.data.name}s` : `Search ${d.data.name} ${d.parent.data.name}s`);
 
       this.svg
@@ -78,7 +77,7 @@ export default Vue.extend({
 
     },
     tooltipOff(d) {
-      d3.select(this.$refs.circle_tooltip)
+      select(this.$refs.circle_tooltip)
         .classed("hidden", true);
 
       this.svg
@@ -115,13 +114,12 @@ export default Vue.extend({
       }
     },
     setupPlot() {
-      this.svg = d3
-        .select(this.$refs.circle_packing);
+      this.svg = select(this.$refs.circle_packing);
 
       this.svgDefs = this.svg
         .select("defs");
 
-      this.pack = d3.pack()
+      this.pack = pack()
         .size([this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom])
         .padding(3);
     },
@@ -133,7 +131,7 @@ export default Vue.extend({
           d['idx'] = i / (source.children.length - 1);
         })
       })
-      let root = d3.hierarchy(this.data)
+      let root = hierarchy(this.data)
         .sum(d => d.count)
         .sort(function(a, b) {
           return b.value - a.value;
@@ -152,7 +150,7 @@ export default Vue.extend({
       return (r > 0 ? `M${cx-r},${cy}a${r},${r} 0 1,1 ${2*r},0a${r},${r} 0 1,1 -${2*r},0` : null)
     },
     drawPlot() {
-      const dataMax = d3.max(this.data.children.flatMap(d => d.children).flatMap(d => d.count));
+      const dataMax = max(this.data.children.flatMap(d => d.children).flatMap(d => d.count));
       const textThresh = dataMax / 30;
       const typeThresh = dataMax / 40;
 

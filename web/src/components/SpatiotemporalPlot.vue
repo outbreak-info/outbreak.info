@@ -16,7 +16,7 @@
 <script lang="ts">
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, extent, transition, scale} from "d3";
 import { interpolateYlGnBu } from "d3-scale-chromatic";
 import {
   geoWinkel3,
@@ -58,8 +58,8 @@ export default Vue.extend({
         .center([0, 0])
         .translate([width / 2, height / 2])
         .scale(width / 1.3 / Math.PI),
-      x: d3.scaleLinear().range([0, width]),
-      y: d3.scaleLinear().range([height, 0]),
+      x: scaleLinear().range([0, width]),
+      y: scaleLinear().range([height, 0]),
       colorScale: null,
       xAxis: null,
       yAxis: null,
@@ -100,8 +100,8 @@ export default Vue.extend({
       }
     },
     setupPlot: function() {
-      this.svg = d3.select("svg.timelapse");
-      this.chart = d3.select("#timelapse");
+      this.svg = select("svg.timelapse");
+      this.chart = select("#timelapse");
 
       this.svg
         .append("g")
@@ -120,19 +120,18 @@ export default Vue.extend({
         );
     },
     updateScales: function() {
-      this.x = this.x.domain(d3.extent(this.plottedData.map(d => d.lon)));
-      this.y = this.y.domain(d3.extent(this.plottedData.map(d => d.lat)));
+      this.x = this.x.domain(extent(this.plottedData.map(d => d.lon)));
+      this.y = this.y.domain(extent(this.plottedData.map(d => d.lat)));
 
       this.colorScale = function(value) {
-        const scale = d3
-          .scaleSequential(interpolateYlGnBu)
+        const scale = scaleSequential(interpolateYlGnBu)
 
-          .domain([1, Math.log10(d3.max(this.flatData, d => d.cases))]);
+          .domain([1, Math.log10(max(this.flatData, d => d.cases))]);
         return value ? scale(Math.log10(value)) : "white";
       };
     },
     drawDots: function() {
-      const t1 = d3.transition().duration(this.transitionDuration);
+      const t1 = transition().duration(this.transitionDuration);
       // --- create groups for each region ---
       const regionGroups = this.chart
         .selectAll(".centroid")

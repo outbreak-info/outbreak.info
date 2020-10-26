@@ -57,7 +57,7 @@ import ResourceTimeline from "@/components/ResourceTimeline.vue";
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
-import * as d3 from "d3";
+import { nest } from "d3";
 
 export default {
   name: "NIAID",
@@ -74,7 +74,7 @@ export default {
       this.dates = results[0].facets.date.terms;
 
       // const keys = results[0]["hits"].flatMap(d => d.keywords)
-      // const keywords = d3.nest()
+      // const keywords = nest()
       //   .key(d => d ? d.toLowerCase() : "unknown")
       //   .rollup(values => values.length)
       //   .entries(keys)
@@ -82,13 +82,13 @@ export default {
       //
       // console.log(keywords);
 
-      this.authors = d3.nest()
+      this.authors = nest()
         .key(d => d ? d : "unknown")
         .rollup(values => values.length)
         .entries(results[0]["hits"].flatMap(d => d.author).flatMap(d => d.name ? d.name : (d.givenName ? `${d.givenName} ${d.familyName}` : "unknown")))
         .sort((a, b) => b.value - a.value);
 
-      this.affiliations = d3.nest()
+      this.affiliations = nest()
         .key(d => d ? d : "unknown")
         .rollup(values => values.length)
         .entries(results[0]["hits"].flatMap(d => d.author).flatMap(d => d.affiliation ? d.affiliation : "unknown").flatMap(d => d.name))

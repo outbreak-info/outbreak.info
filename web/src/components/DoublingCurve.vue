@@ -52,7 +52,7 @@ import Vue from "vue";
 import DataSource from "@/components/DataSource.vue";
 import Warning from "@/components/Warning.vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleTime, scaleLog, axisBottom, axisLeft, range, mouse, event, extent, max, format, timeFormat, transition, easeLinear } from "d3";
 import { cloneDeep } from "lodash";
 
 import store from "@/store";
@@ -99,8 +99,8 @@ export default Vue.extend({
       // axes
       numXTicks: 8,
       numYTicks: 6,
-      x: d3.scaleTime(),
-      y: d3.scaleLinear(),
+      x: scaleTime(),
+      y: scaleLog(),
       xAxis: null,
       yAxis: null,
       // refs
@@ -126,10 +126,10 @@ export default Vue.extend({
       return(`Cumulative number of COVID-19 ${this.variable} in ${this.data.data[0].name}`)
     },
     fitIdx1() {
-      return d3.range(this.fit1.minIdx, this.fit1.maxIdx);
+      return range(this.fit1.minIdx, this.fit1.maxIdx);
     },
     fitIdx2() {
-      return d3.range(this.fit2.minIdx, this.fit2.maxIdx);
+      return range(this.fit2.minIdx, this.fit2.maxIdx);
     },
     drawable() {
       if (this.toFit) {
@@ -181,26 +181,26 @@ export default Vue.extend({
       this.numYTicks = this.height < 250 ? 4 : 6;
     },
     // tooltipOn: function(d) {
-    //   d3.select(`#tooltip-${d.id}-${d.date_string}`).attr("display", "block");
+    //   select(`#tooltip-${d.id}-${d.date_string}`).attr("display", "block");
     //
-    //   d3.select(`#${d.id}-${d.date_string}`).attr("r", this.radius * 2);
+    //   select(`#${d.id}-${d.date_string}`).attr("r", this.radius * 2);
     //
-    //   d3.select(`#${d.id}`)
+    //   select(`#${d.id}`)
     //     .select("text")
     //     .style("font-weight", 700);
     //
-    //   d3.selectAll(`.epi-region`).style("opacity", 0.35);
+    //   selectAll(`.epi-region`).style("opacity", 0.35);
     //
-    //   d3.selectAll(`#${d.id}`).style("opacity", 1);
+    //   selectAll(`#${d.id}`).style("opacity", 1);
     // },
     // tooltipOff: function(d) {
-    //   d3.selectAll(".tooltip--epi-curve").attr("display", "none");
+    //   selectAll(".tooltip--epi-curve").attr("display", "none");
     //
-    //   d3.selectAll("circle").attr("r", this.radius);
+    //   selectAll("circle").attr("r", this.radius);
     //
-    //   d3.selectAll(".annotation--region-name").style("font-weight", 400);
+    //   selectAll(".annotation--region-name").style("font-weight", 400);
     //
-    //   d3.selectAll(`.epi-region`).style("opacity", 1);
+    //   selectAll(`.epi-region`).style("opacity", 1);
     // },
     updatePlot: function() {
       if (this.data) {
@@ -224,8 +224,8 @@ export default Vue.extend({
       // allow drawing of rects
       // based off https://bl.ocks.org/romsson/568e166d702b4a464347
       const mousedown = function(x, y, variable) {
-        const mouseLoc = d3.mouse(d3.event.target);
-        d3.select(".doubling-curve")
+        const mouseLoc = mouse(event.target);
+        select(".doubling-curve")
           .append("rect")
           .attr("class", "selection-box")
           .attr("x", mouseLoc[0])
@@ -233,22 +233,19 @@ export default Vue.extend({
           .attr("width", 0)
           .attr("height", 0);
 
-        d3.select(".doubling-curve").on("mousemove", () =>
+        select(".doubling-curve").on("mousemove", () =>
           mousemove(x, y, variable)
         );
       };
 
       const mouseup = function() {
-        d3.select(".doubling-curve").on("mousemove", null);
+        select(".doubling-curve").on("mousemove", null);
       };
 
       const mousemove = function(x, y, variable) {
-        console.log(y);
-        const mouseLoc = d3.mouse(d3.event.target);
-        console.log(mouseLoc);
-        console.log(d3.event);
+        const mouseLoc = mouse(event.target);
 
-        const rect = d3.select(".doubling-curve").select(".selection-box");
+        const rect = select(".doubling-curve").select(".selection-box");
 
         const x1 = mouseLoc[0];
         const x2 = +rect.attr("x");
@@ -259,15 +256,14 @@ export default Vue.extend({
           .attr("width", Math.max(0, x1 - x2))
           .attr("height", Math.max(0, y1 - y2));
 
-        const circles = d3.selectAll("circle").classed("highlight", d => {
+        const circles = selectAll("circle").classed("highlight", d => {
           return (
             d && d[variable] && y(d[variable]) <= y2 && y(d[variable]) >= y1
           );
         });
       };
 
-      this.svg = d3
-        .select("svg.doubling-curve")
+      this.svg = select("svg.doubling-curve")
         .on("mousedown", () => mousedown(this.x, this.y, this.variable))
         .on("mouseup", mouseup);
     },
@@ -300,44 +296,41 @@ export default Vue.extend({
 
       this.prepData();
 
-      this.svg = d3.select("svg.doubling-curve");
-      this.chart = d3.select("#epi-curve");
+      this.svg = select("svg.doubling-curve");
+      this.chart = select("#epi-curve");
       this.dots = this.chart.append("g").attr("id", "confirmed-timepoints");
 
-      this.line = d3
-        .line()
+      this.line = line()
         .x((d, i) => this.x(d.date))
         .y(d => this.y());
     },
     updateScales: function() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(d3.extent(this.plottedData.map(d => d.date)));
+        .domain(extent(this.plottedData.map(d => d.date)));
 
-      this.y = d3
-        .scaleLog()
+      this.y = scaleLog()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([1, d3.max(this.plottedData.map(d => d[this.variable]))]);
+        .domain([1, max(this.plottedData.map(d => d[this.variable]))]);
 
-      this.xAxis = d3.axisBottom(this.x).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
 
-      d3.select(this.$refs.xAxis).call(this.xAxis);
+      select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = d3
-        .axisLeft(this.y)
+      this.yAxis = axisLeft(this.y)
         .ticks(this.numYTicks)
         .tickFormat((d, i) => {
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6
-            ? d3.format(",")(d)
+            ? format(",")(d)
             : "";
         });
 
-      d3.select(this.$refs.yAxis).call(this.yAxis);
+      select(this.$refs.yAxis).call(this.yAxis);
     },
     drawDots: function() {
-      const t1 = d3.transition().duration(this.transitionDuration);
-      const formatDate = d3.timeFormat("%d %b %Y");
+      const t1 = transition().duration(this.transitionDuration);
+      const formatDate = timeFormat("%d %b %Y");
 
       // --- best-fit lines ---
       //       // y = -1222.7800       0.0672
@@ -407,7 +400,7 @@ export default Vue.extend({
             .call(update =>
               update
                 .transition(t1)
-                .ease(d3.easeLinear)
+                .ease(easeLinear)
                 .attr("stroke-dashoffset", 0)
             ),
         update =>
@@ -426,7 +419,7 @@ export default Vue.extend({
             .call(update =>
               update
                 .transition(t1)
-                .ease(d3.easeLinear)
+                .ease(easeLinear)
                 .attr("stroke-dashoffset", 0)
             ),
         exit =>
@@ -468,7 +461,7 @@ export default Vue.extend({
               update
                 .transition(t1)
                 .delay(this.transitionDuration + 50)
-                .ease(d3.easeLinear)
+                .ease(easeLinear)
                 .attr("stroke-dashoffset", 0)
             ),
         update =>
@@ -488,7 +481,7 @@ export default Vue.extend({
               update
                 .transition(t1)
                 .delay(this.transitionDuration + 50)
-                .ease(d3.easeLinear)
+                .ease(easeLinear)
                 .attr("stroke-dashoffset", 0)
             ),
         exit =>
@@ -615,7 +608,7 @@ export default Vue.extend({
       //
       //
       // // --- event listeners ---
-      // d3.selectAll("circle")
+      // selectAll("circle")
       //   .on("mouseover", d => this.tooltipOn(d))
       //   .on("mouseout", d => this.tooltipOff(d));
     }

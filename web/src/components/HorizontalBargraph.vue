@@ -13,7 +13,7 @@
 <script>
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, scaleBand, axisRight, max } from "d3";
 import {
   cloneDeep
 } from "lodash";
@@ -53,7 +53,7 @@ export default Vue.extend({
       },
       // axes
       x: null,
-      y: d3.scaleBand(),
+      y: scaleBand(),
       yAxis: null,
       // refs
       svg: null
@@ -70,7 +70,7 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
-      this.svg = d3.select(this.$refs.horizontal_bargraph);
+      this.svg = select(this.$refs.horizontal_bargraph);
     },
     updatePlot: function() {
       if (this.filtered) {
@@ -79,20 +79,19 @@ export default Vue.extend({
       }
     },
     updateAxes() {
-      this.x = d3.scaleLinear()
+      this.x = scaleLinear()
         .range([this.width - this.margin.left - this.margin.right, 0])
-        .domain([0, d3.max(this.filtered, d => d.value)]);
+        .domain([0, max(this.filtered, d => d.value)]);
 
-      this.y = d3.scaleBand()
+      this.y = scaleBand()
         .paddingInner(0.2)
         .range([0, this.height - this.margin.top - this.margin.bottom])
         .domain(this.filtered.map(d => d.key));
 
-      this.yAxis = d3
-        .axisRight(this.y)
+      this.yAxis = axisRight(this.y)
         .tickSizeOuter(0);
 
-      d3.select(this.$refs.yAxis).call(this.yAxis);
+      select(this.$refs.yAxis).call(this.yAxis);
     },
     drawBars() {
       const rectSelector =

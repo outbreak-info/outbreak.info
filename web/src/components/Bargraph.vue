@@ -43,7 +43,7 @@
 <script lang="ts">
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { scaleBand, scaleLinear, scaleLog, axisBottom, axisLeft, line, extent, timeDay, max, select, selectAll, format, timeFormat, timeParse, transition, easeLinear, event } from "d3";
 import {
   cloneDeep
 } from "lodash";
@@ -104,7 +104,7 @@ export default Vue.extend({
       },
       // axes
       y: null,
-      x: d3.scaleBand().paddingInner(0),
+      x: scaleBand().paddingInner(0),
       numYTicks: 6,
       isLogY: false,
       yMin: 0,
@@ -163,14 +163,12 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
-      this.svg = d3
-        .select(`#bargraph-${this.id}-${this.variable}`)
+      this.svg = select(`#bargraph-${this.id}-${this.variable}`)
         .select("svg.epi-bargraph");
       this.chart = this.svg.select("#case-counts");
       this.average = this.svg.select("#rolling-average");
 
-      this.line = d3
-        .line()
+      this.line = line()
         .x(d => this.x(d.date))
         .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
     },
@@ -206,28 +204,26 @@ export default Vue.extend({
     updateScales() {
       const range = this.xVariableLim ?
         this.xVariableLim :
-        d3.extent(this.plottedData, d => d.date);
+        extent(this.plottedData, d => d.date);
 
       this.x = this.x
         .range([0, this.width])
-        .domain(d3.timeDay.range(range[0], d3.timeDay.offset(range[1], 1)));
+        .domain(timeDay.range(range[0], timeDay.offset(range[1], 1)));
 
       const yMax = this.fixedYMax ?
         this.fixedYMax :
-        d3.max(this.plottedData, d => d[this.variable]);
+        max(this.plottedData, d => d[this.variable]);
 
       if (this.isLogY) {
         this.yMin = 0.5;
 
-        this.y = d3
-          .scaleLog()
+        this.y = scaleLog()
           .range([this.height, 0])
           .domain([this.yMin, yMax]);
       } else {
         this.yMin = 0;
 
-        this.y = d3
-          .scaleLinear()
+        this.y = scaleLinear()
           .range([this.height, 0])
           .domain([this.yMin, yMax]);
       }
@@ -238,7 +234,7 @@ export default Vue.extend({
       const ySwoop = -35;
       const swoopOffset = 5;
 
-      this.switchBtn = d3.select(this.$refs.switch_btn);
+      this.switchBtn = select(this.$refs.switch_btn);
 
       this.switchBtn
         .select(".switch-button-rect")
@@ -289,40 +285,37 @@ export default Vue.extend({
       if (this.includeAxis) {
         // ~ 6 tick marks, rounded to the nearest week interval (6*7)
         const plotInterval = Math.round(this.x.domain().length/42)*7;
-        this.xAxis = d3
-          .axisBottom(this.x)
+        this.xAxis = axisBottom(this.x)
           .tickSizeOuter(0)
           .tickValues(
             this.x.domain().filter(function(d, i) {
               return !(i % plotInterval);
             })
           )
-          .tickFormat(d3.timeFormat("%d %b"));
+          .tickFormat(timeFormat("%d %b"));
 
-        d3.select(this.$refs.xAxis).call(this.xAxis);
+        select(this.$refs.xAxis).call(this.xAxis);
 
         this.yAxis = this.isLogY ?
-          d3
-          .axisLeft(this.y)
+        axisLeft(this.y)
           .tickSizeOuter(0)
           .ticks(this.numYTicks)
           .tickFormat((d, i) => {
             const log = Math.log10(d);
             return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0 ?
-              d3.format(",")(d) :
+              format(",")(d) :
               "";
           }) :
-          d3
-          .axisLeft(this.y)
+          axisLeft(this.y)
           .tickSizeOuter(0)
           .ticks(this.numYTicks);
 
-        d3.select(this.$refs.yAxis).call(this.yAxis);
+        select(this.$refs.yAxis).call(this.yAxis);
       }
     },
     drawPlot() {
       if (this.chart) {
-        const endDate = d3.timeParse("%Y-%m-%d")(this.date1);
+        const endDate = timeParse("%Y-%m-%d")(this.date1);
         // v-line to indicate dates
         if (this.date1) {
           const dateSelector = this.chart
@@ -369,8 +362,8 @@ export default Vue.extend({
               .attr("class", d => `.date-annotation_${this.variable} annotation-date1`)
               .style("fill", "#D13B62")
               .style("fill-opacity", 0.1)
-              .attr("x", d => this.x(d3.timeDay.offset(endDate, -14)))
-              .attr("width", d => this.x(d) - this.x(d3.timeDay.offset(d, -14)))
+              .attr("x", d => this.x(timeDay.offset(endDate, -14)))
+              .attr("width", d => this.x(d) - this.x(timeDay.offset(d, -14)))
               .attr("y", 0)
               .attr("height", this.height),
 
@@ -394,7 +387,7 @@ export default Vue.extend({
         }
 
 
-        const t1 = d3.transition().duration(500);
+        const t1 = transition().duration(500);
         const barSelector = this.chart
           .selectAll(".bargraph")
           .data(this.plottedData.filter(d => d[this.variable]), d => d._id);
@@ -500,7 +493,7 @@ export default Vue.extend({
                 .transition(t1)
                 .delay(0)
                 .duration((this.plottedData.length + 1) * 10 + 500)
-                .ease(d3.easeLinear)
+                .ease(easeLinear)
                 .attr("stroke-dashoffset", 0) :
                 update.attr("stroke-dashoffset", 0)
               )
@@ -521,7 +514,7 @@ export default Vue.extend({
                 .transition(t1)
                 .delay(0)
                 .duration((this.plottedData.length + 1) * 10 + 500)
-                .ease(d3.easeLinear)
+                .ease(easeLinear)
                 .attr("stroke-dashoffset", 0) :
                 update.attr("stroke-dashoffset", 0)
               )
@@ -545,20 +538,19 @@ export default Vue.extend({
       }
     },
     mouseOn(d) {
-      const ttip = d3
-        .selectAll(".tooltip")
-        .style("top", d3.event.y + "px")
-        .style("left", d3.event.x + "px")
+      const ttip = selectAll(".tooltip")
+        .style("top", event.y + "px")
+        .style("left", event.x + "px")
         .style("opacity", 1);
 
       this.chart.selectAll(".bargraph").style("opacity", 0.5);
       this.chart.selectAll(`#${d._id}`).style("opacity", 1);
 
       ttip.select(".country-name").text(d.name);
-      ttip.select(".date").text(d3.timeFormat("%d %b %Y")(d.date));
+      ttip.select(".date").text(timeFormat("%d %b %Y")(d.date));
       ttip
         .select(".count")
-        .text(`${d3.format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
+        .text(`${format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
 
       if (this.noRollingAvg) {
         ttip
@@ -567,11 +559,11 @@ export default Vue.extend({
       } else {
         ttip
           .select(".count-avg")
-          .text(`7 day average: ${d3.format(",.1f")(d[this.variable.replace("_numIncrease", "_rolling")])}`);
+          .text(`7 day average: ${format(",.1f")(d[this.variable.replace("_numIncrease", "_rolling")])}`);
       }
     },
     mouseOff() {
-      d3.selectAll(".tooltip").style("opacity", 0);
+      selectAll(".tooltip").style("opacity", 0);
       this.chart.selectAll("rect.bargraph").style("opacity", 0.5);
     },
     changeScale: function() {

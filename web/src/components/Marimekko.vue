@@ -42,7 +42,7 @@
 <script lang="js">
 import Vue from "vue";
 
-import * as d3 from "d3";
+import { select, selectAll, scaleLinear, scaleTime, scaleOrdinal, hierarchy, treemap, treemapSliceDice, nest } from "d3";
 // from https://observablehq.com/@d3/marimekko-chart
 export default Vue.extend({
   name: "Marimekko",
@@ -67,8 +67,8 @@ export default Vue.extend({
         left: 10
       },
       // axes
-      y: d3.scaleLinear(),
-      x: d3.scaleTime(),
+      y: scaleLinear(),
+      x: scaleTime(),
       // refs
       svg: null,
       // methods
@@ -82,17 +82,16 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
-      this.svg = d3
-        .select(this.$refs.marimekko);
+      this.svg = select(this.$refs.marimekko);
 
-      this.colorScale = d3.scaleOrdinal()
+      this.colorScale = scaleOrdinal()
         .range(["#a53888", "#e15759"])
         .domain(["Clinical Trial", "Publication"]);
     },
     prepData() {
 
-      const hierarchy = (d3.hierarchy({
-            values: d3.nest()
+      const hierarchyValues = (hierarchy({
+            values: nest()
               .key(d => d.x)
               .key(d => d.y)
               .entries(this.data)
@@ -106,16 +105,16 @@ export default Vue.extend({
           d.y1 += this.margin.top;
         });
 
-      console.log(hierarchy)
-      hierarchy.children.sort((a, b) => a.key > b.key ? -1 : 1);
+      console.log(hierarchyValues)
+      hierarchyValues.children.sort((a, b) => a.key > b.key ? -1 : 1);
 
-      this.root = d3.treemap()
+      this.root = treemap()
         .round(true)
-        .tile(d3.treemapSliceDice)
+        .tile(treemapSliceDice)
         .size([
           this.width - this.margin.left - this.margin.right,
           this.height - this.margin.top - this.margin.bottom
-        ])(hierarchy.sum(d => d.count)
+        ])(hierarchyValues.sum(d => d.count)
           .sort((a, b) => b.value - a.value));
     },
     updatePlot() {
