@@ -11,7 +11,7 @@
         {{location.key}}
         <ul>
           <li v-for="(subnational, idx2) in location.values" :key="idx2">
-            <span class="text-dark font-weight-500">{{subnational.name}}</span>
+            <span class="text-dark font-weight-700">{{subnational.name}}</span>
             <span v-if="subnational.studyLocationCity || subnational.studyLocationState">&nbsp;(</span>
             <span v-if="subnational.studyLocationCity">{{subnational.studyLocationCity}}</span>
             <span v-if="subnational.studyLocationCity && subnational.studyLocationState">,&nbsp;</span>

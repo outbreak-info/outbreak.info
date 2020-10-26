@@ -829,11 +829,11 @@ export default Vue.extend({
 }
 
 .tooltip--date {
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .tooltip--case-count {
-    font-weight: 500;
+    font-weight: 700;
 }
 
 .switch-button {

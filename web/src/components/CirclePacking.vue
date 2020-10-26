@@ -326,7 +326,7 @@ export default Vue.extend({
 .annotation--type {
     text-anchor: middle;
     dominant-baseline: central;
-    font-weight: 500;
+    font-weight: 700;
 }
 
 .annotation--source {

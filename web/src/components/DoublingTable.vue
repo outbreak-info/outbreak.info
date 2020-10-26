@@ -308,7 +308,7 @@ th {
 }
 
 .change {
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .better-worse {

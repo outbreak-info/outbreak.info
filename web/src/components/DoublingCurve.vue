@@ -664,7 +664,7 @@ $fit2-color: #f28e2c;
   }
 
   & .tooltip--case-count {
-    font-weight: 500;
+    font-weight: 700;
   }
   & .selection-box {
     opacity: 0.2;

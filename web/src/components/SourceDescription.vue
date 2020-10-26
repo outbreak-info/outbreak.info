@@ -15,10 +15,10 @@
 
 
     <small v-if="source.license" class="d-block">
-      <span class="font-weight-500">data license</span>: <a :href="source.license.url" v-if="source.license.name" target="_blank">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url" target="_blank">{{source.license.url}}</a>
+      <span class="font-weight-700">data license</span>: <a :href="source.license.url" v-if="source.license.name" target="_blank">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url" target="_blank">{{source.license.url}}</a>
     </small>
     <small v-if="source.citation" class="d-block">
-      <span class="font-weight-500">how to cite</span>: <span v-html="source.citation"></span>
+      <span class="font-weight-700">how to cite</span>: <span v-html="source.citation"></span>
     </small>
     </div>
   </div>

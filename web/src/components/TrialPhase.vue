@@ -90,7 +90,7 @@ export default Vue.extend({
   text-anchor: middle;
   fill: $grey-70;
   font-size: 10pt;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .current-phase text {

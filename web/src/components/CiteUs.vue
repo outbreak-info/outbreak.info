@@ -8,7 +8,7 @@
       {{outbreak.authors}} <i>outbreak.info</i>. Available online: <a href="https://outbreak.info/" target="_blank">https://outbreak.info/</a> (2020)
     </p>
     <small class="d-block mt-2">
-      <span class="font-weight-500">data license</span>:
+      <span class="font-weight-700">data license</span>:
       All data and content that our team creates is covered by the
       <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noreferrer">Creative Commons CC0 Waiver</a>, which states that you can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission. However, consistent with scientific norms, we ask that you cite <router-link to="/">outbreak.info</router-link> in any tools or publications that use <router-link to="/">outbreak.info</router-link>.
     </small>
@@ -20,7 +20,7 @@
     <div v-for="(source, eIdx) in sources" :key="eIdx" class="mb-4 line-height-1">
       <span class="text-highlight">{{source.scope}}:</span> <span v-html="source.citation"></span>
       <small v-if="source.license" class="d-block  mt-1">
-        <span class="font-weight-500">data license</span>: <a :href="source.license.url" v-if="source.license.name" target="_blank">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url">{{source.license.url}}</a>
+        <span class="font-weight-700">data license</span>: <a :href="source.license.url" v-if="source.license.name" target="_blank">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url">{{source.license.url}}</a>
       </small>
     </div>
   </div>
@@ -31,7 +31,7 @@
       <div v-for="(source, sIdx) in sourceGroup.sources" :key="sIdx"  class="mb-4  line-height-1">
       <span class="text-highlight">{{source.name}}:</span> <span v-html="source.citation"></span>
       <small v-if="source.license" class="d-block mt-1">
-        <span class="font-weight-500">data license</span>: <a :href="source.license.url" v-if="source.license.name" target="_blank">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url">{{source.license.url}}</a>
+        <span class="font-weight-700">data license</span>: <a :href="source.license.url" v-if="source.license.name" target="_blank">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url">{{source.license.url}}</a>
       </small>
       </div>
     </div>

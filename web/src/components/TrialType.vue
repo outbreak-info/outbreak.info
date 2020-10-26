@@ -51,7 +51,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .accent {
-    font-weight: 500;
+    font-weight: 700;
     color: darken($clinical-trial-color, 15%);
 }
 
