@@ -208,12 +208,6 @@ const routes = [{
     // which is lazy-loaded when the route is visited.
     component: () => import( /* webpackChunkName: "epi" */ "../views/Epi.vue")
   },
-  // {
-  //   path: "/timelapse",
-  //   name: "Timelapse",
-  //   component: () =>
-  //     import(/* webpackChunkName: "timelapse" */ "../views/Timelapse.vue")
-  // },
   {
     path: "/doubling-rates",
     name: "Doubling Rates",
