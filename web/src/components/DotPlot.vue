@@ -21,9 +21,7 @@ import {
   format,
   transition,
 } from "d3";
-import {
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 export default {
   name: "DotPlot",

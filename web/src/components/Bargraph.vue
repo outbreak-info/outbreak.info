@@ -44,9 +44,7 @@
 import Vue from "vue";
 
 import { scaleBand, scaleLinear, scaleLog, axisBottom, axisLeft, line, extent, timeDay, max, select, selectAll, format, timeFormat, timeParse, transition, easeLinear, event } from "d3";
-import {
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 export default Vue.extend({
   name: "Bargraph",

@@ -204,9 +204,7 @@ import {
   getResourceMetadata
 } from "@/api/resources.js";
 
-import {
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";

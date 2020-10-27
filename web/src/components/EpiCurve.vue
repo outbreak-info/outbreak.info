@@ -40,9 +40,7 @@ import {
 
 import { select, selectAll, scaleLinear, scaleLog, scaleTime, extent, max, axisBottom, axisLeft, format, timeFormat, forceCollide, forceY, forceSimulation, transition, easeLinear, line } from "d3";
 
-import {
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import store from "@/store";
 

@@ -81,10 +81,9 @@ import {
   timeFormat,
   format
 } from "d3";
-import {
-  cloneDeep,
-  uniq
-} from "lodash";
+
+import cloneDeep from "lodash/cloneDeep";
+import uniq from "lodash/uniq";
 
 export default {
   name: "DownloadData",

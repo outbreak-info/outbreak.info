@@ -456,10 +456,8 @@ import {
   faArrowRight
 } from "@fortawesome/free-solid-svg-icons";
 
-import {
-  debounce,
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 
 library.add(faArrowLeft, faArrowRight);
 

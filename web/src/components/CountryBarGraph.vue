@@ -48,7 +48,7 @@
 import Vue from "vue";
 
 import { select, selectAll, scaleLinear, scaleBand, scaleTime, max, extent, axisRight, transition, area } from "d3";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import store from "@/store";
 

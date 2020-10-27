@@ -32,9 +32,7 @@
 <script lang="js">
 import Vue from "vue";
 import CountryMap from "@/components/CountryMap.vue";
-import {
-  uniq
-} from "lodash";
+import uniq from "lodash/uniq";
 
 export default Vue.extend({
   name: "TrialStatus",

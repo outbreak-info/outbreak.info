@@ -53,7 +53,7 @@ import DataSource from "@/components/DataSource.vue";
 import Warning from "@/components/Warning.vue";
 
 import { select, selectAll, scaleTime, scaleLog, axisBottom, axisLeft, range, mouse, event, extent, max, format, timeFormat, transition, easeLinear } from "d3";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import store from "@/store";
 
