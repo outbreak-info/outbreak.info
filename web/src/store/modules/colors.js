@@ -1,5 +1,5 @@
 import { scaleOrdinal } from "d3";
-import * as chroma from "chroma-js";
+import chroma from 'chroma-js';
 
 const blankFunc = function(location) {
   return null;
