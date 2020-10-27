@@ -1,7 +1,6 @@
 import { from } from "rxjs";
-import axios from "axios";
-import { tap, finalize, catchError, pluck, map } from "rxjs/operators";
-import { nest, timeParse, sum } from "d3";
+import { finalize, catchError, map } from "rxjs/operators";
+import { timeParse } from "d3";
 
 import store from "@/store";
 import { getAll } from "@/api/biothings.js";

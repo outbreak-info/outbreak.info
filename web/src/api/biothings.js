@@ -14,8 +14,7 @@ import {
 } from "rxjs/operators";
 import {
   timeParse,
-  timeFormat,
-  utcParse
+  timeFormat
 } from "d3";
 import store from "@/store";
 

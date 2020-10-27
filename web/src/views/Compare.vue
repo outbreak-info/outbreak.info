@@ -201,7 +201,6 @@ export default Vue.extend({
           this.yMaxC = results.yMaxC;
           this.yMaxD = results.yMaxD;
           this.colorScale = scaleOrdinal().range(this.colors).domain(this.similar.map(d => d.key));
-          console.log(results)
         });
       }
     },
@@ -228,7 +227,6 @@ export default Vue.extend({
       })
     },
     changeLocation(location_id) {
-      console.log(this.selectedLocation)
       this.selectedLocation = location_id;
       this.$router.push({
         name: "Compare",

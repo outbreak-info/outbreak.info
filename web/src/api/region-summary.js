@@ -1,6 +1,6 @@
 import { from, forkJoin } from "rxjs";
 import axios from "axios";
-import { tap, finalize, catchError, pluck, map } from "rxjs/operators";
+import { finalize, catchError, map } from "rxjs/operators";
 import { nest, timeParse, sum } from "d3";
 
 import { getAll } from "@/api/biothings.js";

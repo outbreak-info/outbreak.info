@@ -24,10 +24,6 @@
 </template>
 
 <script>
-// import {
-//   timeFormat,
-//   timeParse
-// } from "d3";
 
 import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";

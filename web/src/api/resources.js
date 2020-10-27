@@ -1,7 +1,6 @@
 import {
   from,
-  forkJoin,
-  EMPTY
+  forkJoin
 } from "rxjs";
 import axios from "axios";
 import {
@@ -9,7 +8,6 @@ import {
   catchError,
   pluck,
   map,
-  tap,
   finalize
 } from "rxjs/operators";
 
@@ -20,9 +18,7 @@ import {
   timeFormat
 } from "d3";
 
-import {
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 function filterString2Arr(filterString) {
   return filterString.split(";").map(d => {
@@ -55,11 +51,11 @@ export function getResources(
 
   // create date range query
   var dateString;
-  if(dateMin && dateMax) {
+  if (dateMin && dateMax) {
     dateString = `date:[${dateMin} TO ${dateMax}]`;
-  } else if(dateMin) {
+  } else if (dateMin) {
     dateString = `date:[${dateMin} TO *]`;
-  } else if(dateMax) {
+  } else if (dateMax) {
     dateString = `date:[* TO ${dateMax}]`;
   }
 
@@ -110,7 +106,7 @@ export function getResources(
 
       const dateIdx = facets.findIndex(d => d.variable == "date");
       var dates = [];
-      if(dateIdx >= 0) {
+      if (dateIdx >= 0) {
         dates = facets.splice(dateIdx, dateIdx)
       }
 

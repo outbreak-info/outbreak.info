@@ -1,15 +1,12 @@
-import { from, EMPTY } from "rxjs";
+import { from } from "rxjs";
 import axios from "axios";
 import {
-  tap,
   finalize,
   catchError,
   pluck,
-  map,
-  expand,
-  reduce
+  map
 } from "rxjs/operators";
-import { nest, timeParse, max, sum } from "d3";
+import { nest, timeParse } from "d3";
 import { linearRegression } from "datalib";
 import store from "@/store";
 
