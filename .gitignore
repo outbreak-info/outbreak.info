@@ -20,3 +20,5 @@ web/src/assets/geo/countries_fused.json
 web/src/assets/home/api_full_url.png
 web/src/assets/home/api_resources_full.png
 performance/*
+web/src/assets/geo/US_counties_archive.json
+web/src/assets/geo/US_metro_archive.json
