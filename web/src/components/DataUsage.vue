@@ -2,7 +2,7 @@
 <div>
   <h5 class="m-0">Data usage policy</h5>
   <span class="badge bg-grey__lightest my-2 text-dark">
-    <i class="far fa-clock mr-1"></i>
+    <font-awesome-icon class="mr-1" :icon="['far', 'clock']"/>
     updated June 2020
   </span>
   <p>
@@ -23,3 +23,29 @@
   </small>
 </div>
 </template>
+
+
+<script lang="js">
+import Vue from "vue";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faClock);
+
+export default Vue.extend({
+  name: "DataUsage",
+  components: {
+    FontAwesomeIcon
+  }
+})
+
+</script>

@@ -2,7 +2,7 @@
 <div class="full-page py-5 bg-light">
   <!-- loading -->
   <div v-if="loading" class="loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
   <!-- autocomplete region selector -->
   <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
@@ -128,6 +128,19 @@ import Autocomplete from "@/components/Autocomplete.vue";
 import Bargraph from "@/components/Bargraph.vue";
 import Warning from "@/components/Warning.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 import {
   getEpiData,
   epiDataSubject,
@@ -154,7 +167,8 @@ export default {
     EpiCurve,
     EpiTable,
     Bargraph,
-    Autocomplete
+    Autocomplete,
+    FontAwesomeIcon
   },
   props: {
     variable: {

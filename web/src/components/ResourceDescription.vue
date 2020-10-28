@@ -18,8 +18,8 @@
           <span>{{
               showAffiliation ? "hide affiliations" : "view affiliations"
             }}</span>
-          <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
-          <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
+            <font-awesome-icon :icon="['fas', 'angle-double-down']" class="mx-1" v-if="!showAffiliation" />
+            <font-awesome-icon :icon="['fas', 'angle-double-up']" class="mx-1" v-if="showAffiliation" />
         </small>
       </a>
 
@@ -56,8 +56,8 @@
           <span>{{
               showAffiliation ? "hide affiliations" : "view affiliations"
             }}</span>
-          <i class="fas fa-angle-double-down mx-1" v-if="!showAffiliation"></i>
-          <i class="fas fa-angle-double-up mx-1" v-if="showAffiliation"></i>
+            <font-awesome-icon :icon="['fas', 'angle-double-down']" class="mx-1" v-if="!showAffiliation" />
+            <font-awesome-icon :icon="['fas', 'angle-double-up']" class="mx-1" v-if="showAffiliation" />
         </small>
       </a>
 
@@ -104,21 +104,21 @@
           data.curatedBy.versionDate" class="text-muted">
 
       <span class="badge bg-grey__lightest" v-if="data.dateModified">
-        <i class="far fa-clock mr-1"></i>
+        <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
         updated {{ this.formatDate(data.dateModified) }}
       </span>
 
       <span v-if="data.datePublished && data.dateModified
         " class="mx-1">&bull;</span>
       <span class="badge bg-grey__lightest" v-if="data.datePublished">
-        <i class="far fa-clock mr-1" v-if="!data.dateModified"></i>
+        <font-awesome-icon class="mr-1" :icon="['far', 'clock']" v-if="!data.dateModified" />
         published {{ this.formatDate(data.datePublished) }}
       </span>
 
       <span v-if="data.dateCreated && (data.datePublished || data.dateModified)" class="mx-1">&bull;</span>
 
       <span class="badge bg-grey__lightest" v-if="data.dateCreated">
-        <i class="far fa-clock mr-1" v-if="!data.datePublished && !data.dateModified"></i>
+        <font-awesome-icon class="mr-1" :icon="['far', 'clock']" v-if="!data.datePublished && !data.dateModified" />
         created {{ this.formatDate(data.dateCreated) }}
       </span>
 
@@ -156,9 +156,10 @@
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
     <small>Record provided by
-      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}<img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25" class="ml-1 mr-4" />
+      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}<img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" height="25"
+          class="ml-1 mr-4" />
       </a>
-<router-link :to="{ name: 'Sources' }">Learn more</router-link>
+      <router-link :to="{ name: 'Sources' }">Learn more</router-link>
     </small>
   </div>
 
@@ -198,6 +199,22 @@ import {
 
 import ClinicalTrialSummary from "@/components/ClinicalTrialSummary.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+import {
+  faAngleDoubleDown, faAngleDoubleUp
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faClock, faAngleDoubleDown, faAngleDoubleUp);
+
 export default Vue.extend({
   name: "ResourceDescription",
   props: {
@@ -205,7 +222,8 @@ export default Vue.extend({
     type: String
   },
   components: {
-    ClinicalTrialSummary
+    ClinicalTrialSummary,
+    FontAwesomeIcon
   },
   data() {
     return ({

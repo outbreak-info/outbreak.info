@@ -1,7 +1,7 @@
 <template>
 <div class="home flex-column text-left d-flex">
   <div v-if="loading" class="loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
   <!-- INTRO -->
   <section>
@@ -56,7 +56,7 @@
           <form autocomplete="off" class="w-100">
             <div class="input-group">
               <div class="input-group-prepend">
-                <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+                <span class="input-group-text bg-grey text-muted border-0" id="sb"><font-awesome-icon :icon="['fas', 'search']"/></span>
               </div>
               <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
             </div>
@@ -65,12 +65,12 @@
             <span class="mr-3">
               <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
                 remdesivir
-                <i class="fas fa-angle-double-right"></i>
+                <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
               </router-link>
             </span>
             <router-link :to="{name: 'NIAID'} " class="text-light">
               NIAID-related
-              <i class="fas fa-angle-double-right"></i>
+              <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
             </router-link>
           </small>
         </div>
@@ -110,10 +110,10 @@
             <span class="mr-2">Try:</span>
             <span class="mr-3">
               <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
-                <i class="fas fa-angle-double-right"></i>
+                <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
               </router-link>
             </span>
-            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area <i class="fas fa-angle-double-right"></i>
+            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
             </router-link>
           </small>
         </div>
@@ -343,12 +343,26 @@ import {
 
 import store from "@/store";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner, faAngleDoubleRight, faSearch
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner, faAngleDoubleRight, faSearch);
+
 export default {
   name: "Home",
   components: {
     SearchBar,
     Logos,
-    GlanceSummary
+    GlanceSummary,
+    FontAwesomeIcon
   },
   data() {
     return {

@@ -9,7 +9,9 @@
 
   <!-- date updated -->
   <DataUpdated />
-  <i class="far fa-copy btn ml-3 btn-main-outline" @click="copyPng" v-if="copyable"></i>
+  <div class="btn ml-3 py-0 px-2 btn-main-outline">
+    <font-awesome-icon :icon="['far', 'copy']" @click="copyPng" v-if="copyable" />
+  </div>
   <DownloadData class="ml-3" id="download-btn" v-if="data" :type="dataType" :figureRef="figureRef" :data="data" :sourceString="sourceString" />
 
   <p :class="{ snackbar: true, show: showSnackbar }">
@@ -34,6 +36,20 @@ import {
   timeFormat
 } from "d3";
 
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faCopy
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faCopy);
+
 export default Vue.extend({
   name: "DataSource",
   props: {
@@ -48,7 +64,8 @@ export default Vue.extend({
   },
   components: {
     DownloadData,
-    DataUpdated
+    DataUpdated,
+    FontAwesomeIcon
   },
   computed: {
     ...mapState("admin", ["sources"]),
@@ -60,7 +77,7 @@ export default Vue.extend({
       }
     },
     copyable() {
-      return( this.numSvgs <= this.copyThreshold && typeof(ClipboardItem) == "function");
+      return (this.numSvgs <= this.copyThreshold && typeof(ClipboardItem) == "function");
     },
     sourceString() {
       return (this.filteredSources.map(d => d.scope ? `${d.name} (${d.scope})` : `${d.name}`).join("; ") + ", updated daily")

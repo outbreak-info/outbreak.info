@@ -1,7 +1,7 @@
 <template>
   <div class="home flex-column align-left">
     <div v-if="loading" class="loader">
-      <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+      <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
     </div>
 
     <!-- EPI CURVE SUMMARIES -->
@@ -30,6 +30,19 @@ import Logos from "@/components/Logos.vue";
 import DataSource from "@/components/DataSource.vue";
 import { getGlanceSummary } from "@/api/epi-basics.js";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 import { mapState } from "vuex";
 
 export default {
@@ -37,7 +50,8 @@ export default {
   components: {
     GlanceSummary,
     Logos,
-    DataSource
+    DataSource,
+    FontAwesomeIcon
   },
   props: {
     location: String

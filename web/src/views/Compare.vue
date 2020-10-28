@@ -2,7 +2,7 @@
 <div class="full-page p-5 bg-light">
   <!-- loading -->
   <div v-if="loading" class="map-loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
 
   <h2>Places similar in
@@ -104,6 +104,19 @@ import MiniLocation from "@/components/MiniLocation.vue";
 import LineComparison from "@/components/LineComparison.vue";
 import SearchBar from "@/components/SearchBar.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 import {
   findSimilar
 } from "@/api/find-similar.js";
@@ -118,7 +131,8 @@ export default Vue.extend({
   components: {
     MiniLocation,
     LineComparison,
-    SearchBar
+    SearchBar,
+    FontAwesomeIcon
   },
   props: {
     location: String,

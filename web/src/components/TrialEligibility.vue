@@ -5,14 +5,13 @@
     Gender:
     <span class="ml-2">
 
-      <i class="far fa-check-square bright" v-if="inclFemale"></i>
-      <i class="far fa-square" v-else></i>
-      <i class="fas fa-venus ml-2 mr-4 icon-2x" :class="{'bright': inclFemale}"></i>
+      <font-awesome-icon class="bright" :icon="['far', 'check-square']" v-if="inclFemale" />
+      <font-awesome-icon :icon="['far', 'square']" v-else />
+      <font-awesome-icon :icon="['fas', 'venus']" class="ml-2 mr-4 icon-2x" :class="{'bright': inclFemale}" />
 
-
-      <i class="far fa-check-square bright" v-if="inclMale"></i>
-      <i class="far fa-square" v-else></i>
-      <i class="fas fa-mars ml-2 icon-2x" :class="{'bright': inclMale}"></i>
+      <font-awesome-icon class="bright" :icon="['far', 'check-square']" v-if="inclMale" />
+      <font-awesome-icon :icon="['far', 'square']" v-else />
+      <font-awesome-icon :icon="['fas', 'mars']" class="ml-2 mr-4 icon-2x" :class="{'bright': inclMale}" />
     </span>
   </div>
 
@@ -70,8 +69,8 @@
       <a @click.prevent="showCriteria = !showCriteria" href="">{{
             showCriteria ? "Hide criteria" : "Show original criteria"
           }} before parsing </a>
-      <i class="fas fa-angle-double-down mx-1" v-if="!showCriteria"></i>
-      <i class="fas fa-angle-double-up mx-1" v-if="showCriteria"></i>
+      <font-awesome-icon :icon="['fas', 'angle-double-down']" class="mx-1" v-if="!showCriteria" />
+      <font-awesome-icon :icon="['fas', 'angle-double-up']" class="mx-1" v-if="showCriteria" />
     </small>
 
     <div v-if="showCriteria">
@@ -83,6 +82,26 @@
 
 <script>
 // import SearchLink from "@/components/SearchLink";
+//
+// // --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faVenus,
+  faMars,
+  faAngleDoubleDown,
+  faAngleDoubleUp
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckSquare,
+  faSquare
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faCheckSquare, faSquare, faVenus, faMars, faAngleDoubleDown, faAngleDoubleUp);
 
 export default {
   name: "TrialEligibility",
@@ -90,6 +109,7 @@ export default {
     data: Object
   },
   components: {
+    FontAwesomeIcon
     // SearchLink
   },
   data() {

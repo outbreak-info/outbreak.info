@@ -2,10 +2,10 @@
 <form autocomplete="off">
   <div class="input-group">
     <div class="input-group-prepend">
-      <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+      <span class="input-group-text bg-grey text-muted border-0" id="sb"><font-awesome-icon :icon="['fas', 'search']"/></span>
     </div>
-    <input id="sBar" class="form-control" :class="[darkMode ? 'border-0' : 'border']" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp"
-      @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
+    <input id="sBar" class="form-control" :class="[darkMode ? 'border-0' : 'border']" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown"
+      @keydown.up="onArrowUp" @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
       <li class="loading" v-if="isLoading">
         Loading results...
@@ -24,6 +24,19 @@ import Vue from "vue";
 import {
   mapState
 } from "vuex";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSearch
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSearch);
 
 // --- store / Vuex ---
 import store from "@/store";
@@ -57,7 +70,9 @@ export default Vue.extend({
       default: true
     }
   },
-  components: {},
+  components: {
+    FontAwesomeIcon
+  },
   data() {
     return {
       isOpen: false,

@@ -2,7 +2,7 @@
 <div class="my-5 mx-4">
   <!-- loading -->
   <div v-if="loading" class="loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
 
 
@@ -22,7 +22,8 @@
   <div class="d-flex justify-content-between align-items-center flex-wrap">
     <div class="d-flex flex-column align-items-center">
       <h3 v-if="counts" class="text-highlight m-0">{{counts.total}} resources</h3>
-      <small class="text-muted badge bg-grey__lightest" v-if="counts && counts.dateModified"><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
+      <small class="text-muted badge bg-grey__lightest" v-if="counts && counts.dateModified">
+        <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />Updated {{ counts.dateModified }}
       </small>
 
       <CirclePacking class="circle-packing" :data="counts.sources" :query="queryString" v-if="counts" />
@@ -54,10 +55,28 @@ import CirclePacking from "@/components/CirclePacking.vue";
 import HorizontalBargraph from "@/components/HorizontalBargraph.vue";
 import ResourceTimeline from "@/components/ResourceTimeline.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faClock, faSpinner);
+
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
-import { nest } from "d3";
+import {
+  nest
+} from "d3";
 
 export default {
   name: "NIAID",
@@ -65,11 +84,11 @@ export default {
     WhatsNew,
     CirclePacking,
     HorizontalBargraph,
-    ResourceTimeline
+    ResourceTimeline,
+    FontAwesomeIcon
   },
   mounted() {
     this.resultSubscription = getQuerySummaries(this.query, this.$resourceurl).subscribe(results => {
-      console.log(results)
       this.results = results;
       this.dates = results[0].facets.date.terms;
 

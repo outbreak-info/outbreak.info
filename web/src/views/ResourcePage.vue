@@ -2,7 +2,7 @@
 <div class="d-flex py-2 m-2">
   <!-- loading -->
   <div v-if="loading" class="loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
 
   <div class="row w-100 m-0" v-if="data">
@@ -200,6 +200,19 @@ import {
   mapState
 } from "vuex";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 import {
   getResourceMetadata
 } from "@/api/resources.js";
@@ -219,7 +232,8 @@ export default Vue.extend({
     ResourceSidebar,
     ClinicalTrialDescription,
     Citation,
-    Warning
+    Warning,
+    FontAwesomeIcon
   },
   data() {
     return ({

@@ -12,42 +12,42 @@
       <div class="uppercase orange-title">Arm {{idx + 1}}: {{arm.name}}</div>
       <div class="">
 
-      <!-- role -->
-      <div class="">
-        Role: <span class="text-dark" v-if="arm.role">{{arm.role}}</span>
-        <span v-else><small>not specified</small></span>
-      </div>
-
-      <!-- description -->
-      <div v-if="arm.description" v-html="arm.description" class="text-dark mt-2 mb-1">
-      </div>
-
-      <!-- interventions -->
-      <div v-for="(intervention, iIdx) in arm.intervention" :key="iIdx" class="ml-4">
-        <small class="uppercase bright">
-          <span class="mr-2">Intervention {{iIdx + 1}}:</span>
-          <i class="fas fa-pills bright" v-if="intervention.category == 'drug'"></i>
-          <!-- <i class="fas fa-prescription-bottle bright" v-if="intervention.category == 'drug'"></i> -->
-          <i class="fas fa-dna bright" v-if="intervention.category == 'genetic'"></i>
-          <i class="fas fa-virus bright" v-if="intervention.category == 'biological'"></i>
-          <i class="fas fa-mortar-pestle bright" v-if="intervention.category == 'combination product'"></i>
-          <i class="fas fa-notes-medical bright" v-if="intervention.category == 'behavioral'"></i>
-          <i class="fas fa-tablet-alt bright" v-if="intervention.category == 'device'"></i>
-          <!-- <i class="fas fa-laptop-medical bright" v-if="intervention.category == 'device'"></i> -->
-          <i class="fas fa-vial bright" v-if="intervention.category == 'diagnostic test'"></i>
-          <i class="fas fa-capsules bright" v-if="intervention.category == 'dietary supplement'"></i>
-          <i class="fas fa-user-nurse bright" v-if="intervention.category == 'procedure'"></i>
-          <i class="fas fa-radiation bright" v-if="intervention.category == 'radiation'"></i>
-          <SearchLink :data="[intervention.name]" filterField="@type:ClinicalTrial" tooltipLabel="trials" class="bright ml-1"/>
-        </small>
-        <!-- intervention type -->
-        <div v-if="intervention.category">
-          Category: <span class="text-dark">{{intervention.category}}</span>
+        <!-- role -->
+        <div class="">
+          Role: <span class="text-dark" v-if="arm.role">{{arm.role}}</span>
+          <span v-else><small>not specified</small></span>
         </div>
-        <!-- intervention description -->
-        <div v-if="intervention.description" v-html="intervention.description" class="text-dark mb-1">
+
+        <!-- description -->
+        <div v-if="arm.description" v-html="arm.description" class="text-dark mt-2 mb-1">
         </div>
-      </div>
+
+        <!-- interventions -->
+        <div v-for="(intervention, iIdx) in arm.intervention" :key="iIdx" class="ml-4">
+          <small class="uppercase bright">
+            <span class="mr-2">Intervention {{iIdx + 1}}:</span>
+            <font-awesome-icon class="bright" :icon="['fas', 'pills']" v-if="intervention.category == 'drug'" />
+            <!-- <i class="fas fa-prescription-bottle bright" v-if="intervention.category == 'drug'" /> -->
+            <font-awesome-icon class="bright" :icon="['fas', 'dna']" v-if="intervention.category == 'genetic'" />
+            <font-awesome-icon class="bright" :icon="['fas', 'virus']" v-if="intervention.category == 'biological'" />
+            <font-awesome-icon class="bright" :icon="['fas', 'mortar-pestle']" v-if="intervention.category == 'combination product'" />
+            <font-awesome-icon class="bright" :icon="['fas', 'notes-medical']" v-if="intervention.category == 'behavioral'" />
+            <font-awesome-icon class="bright" :icon="['fas', 'tablet-alt']" v-if="intervention.category == 'device'" />
+            <!-- <i class="fas fa-laptop-medical bright" v-if="intervention.category == 'device'" /> -->
+            <font-awesome-icon class="bright" :icon="['fas', 'vial']" v-if="intervention.category == 'diagnostic test'" />
+            <font-awesome-icon class="bright" :icon="['fas', 'capsules']" v-if="intervention.category == 'dietary supplement'" />
+            <font-awesome-icon class="bright" :icon="['fas', 'user-nurse']" v-if="intervention.category == 'procedure'" />
+            <font-awesome-icon class="bright" :icon="['fas', 'radiation']" v-if="intervention.category == 'radiation'" />
+            <SearchLink :data="[intervention.name]" filterField="@type:ClinicalTrial" tooltipLabel="trials" class="bright ml-1" />
+          </small>
+          <!-- intervention type -->
+          <div v-if="intervention.category">
+            Category: <span class="text-dark">{{intervention.category}}</span>
+          </div>
+          <!-- intervention description -->
+          <div v-if="intervention.description" v-html="intervention.description" class="text-dark mb-1">
+          </div>
+        </div>
 
       </div>
     </div>
@@ -59,6 +59,29 @@
 import TrialType from "@/components/TrialType.vue";
 import SearchLink from "@/components/SearchLink.vue";
 
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faPills,
+  faDna,
+  faVirus,
+  faMortarPestle,
+  faNotesMedical,
+  faTabletAlt,
+  faVial,
+  faCapsules,
+  faUserNurse,
+  faRadiation
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faPills, faDna, faVirus, faMortarPestle, faNotesMedical, faTabletAlt, faVial, faCapsules, faUserNurse, faRadiation);
+
 export default {
   name: "TrialInterventions",
   props: {
@@ -66,7 +89,8 @@ export default {
   },
   components: {
     TrialType,
-    SearchLink
+    SearchLink,
+    FontAwesomeIcon
   },
   data() {
     return {}
@@ -75,7 +99,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .bright {
     color: saturate($clinical-trial-color, 20%);
 }

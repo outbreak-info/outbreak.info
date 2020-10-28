@@ -19,7 +19,8 @@
 
     <div id="resource-counts" class="d-flex ml-3 flex-column align-items-center" v-if="counts.total">
       <h3 class="text-left text-highlight">{{counts.total}} resources</h3>
-      <small class="text-muted badge bg-grey__lightest" v-if="counts.dateModified"><i class="far fa-clock"></i> Updated {{ counts.dateModified }}
+      <small class="text-muted badge bg-grey__lightest" v-if="counts.dateModified">
+        <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />Updated {{ counts.dateModified }}
       </small>
 
       <CirclePacking class="circle-packing" :data="counts.sources" />
@@ -30,39 +31,39 @@
     <div class="w-100 mx-5 d-flex flex-column justify-content-between">
       <!-- search bar -->
       <div class="col-md-12 col-lg-8">
-      <div class="pb-4">
-        <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+        <div class="pb-4">
+          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb"><font-awesome-icon :icon="['fas', 'search']"/></span>
+              </div>
+              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
             </div>
-            <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
-          </div>
-        </form>
-        <div class="d-flex mt-1">
-          <span class="mr-2">Try:</span>
-          <span class="mr-3 d-flex align-items-center" v-for="(demo, idx) in demos" :key="idx">
-            <router-link :to="{name: 'Resources', query: {q: demo.query}} ">
-              {{demo.label}}
-              <i class="fas fa-angle-double-right"></i>
+          </form>
+          <div class="d-flex mt-1">
+            <span class="mr-2">Try:</span>
+            <span class="mr-3 d-flex align-items-center" v-for="(demo, idx) in demos" :key="idx">
+              <router-link :to="{name: 'Resources', query: {q: demo.query}} ">
+                {{demo.label}}
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <router-link :to="{name: 'NIAID'} ">
+              NIAID-related
+              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
-          </span>
-          <router-link :to="{name: 'NIAID'} ">
-            NIAID-related
-            <i class="fas fa-angle-double-right"></i>
-          </router-link>
+          </div>
         </div>
+
+        <router-link :to="{name: 'Resources'}" class="btn btn-main-outline router-link no-underline mt-2 mb-5">
+          View all resources
+        </router-link>
       </div>
 
-      <router-link :to="{name: 'Resources'}" class="btn btn-main-outline router-link no-underline mt-2 mb-5">
-        View all resources
-      </router-link>
     </div>
-
-  </div>
   </div>
 
-<WhatsNew />
+  <WhatsNew />
 
 </div>
 </template>
@@ -75,11 +76,29 @@ import {
 import WhatsNew from "@/components/WhatsNew.vue";
 import CirclePacking from "@/components/CirclePacking.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+import {
+  faAngleDoubleRight,
+  faSearch
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faClock, faAngleDoubleRight, faSearch);
+
 export default {
   name: "ResourceSummary",
   components: {
     WhatsNew,
-    CirclePacking
+    CirclePacking,
+    FontAwesomeIcon
   },
   data() {
     return {

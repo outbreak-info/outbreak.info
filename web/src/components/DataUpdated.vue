@@ -1,12 +1,25 @@
 <template>
   <small class="text-muted badge bg-grey__lightest" v-if="lastUpdated$"
-    ><i class="far fa-clock"></i> Updated {{ lastUpdated$ }} ago
+    ><font-awesome-icon  class="mr-1" :icon="['far', 'clock']"/> Updated {{ lastUpdated$ }} ago
   </small>
 </template>
 
 <script lang="js">
 import Vue from "vue";
 import { getDateUpdated } from "@/api/biothings.js";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faClock);
 
 export default Vue.extend({
   name: "DataUpdated",
@@ -15,7 +28,8 @@ export default Vue.extend({
     return {};
   },
   watch: {},
-  computed: {
+  components: {
+      FontAwesomeIcon
   },
   methods: {},
   subscriptions () {

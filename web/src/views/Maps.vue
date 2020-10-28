@@ -2,7 +2,7 @@
 <div class="full-page p-5 bg-light">
   <!-- loading -->
   <div v-if="dataloading" class="map-loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
 
   <div class="d-flex mb-3">
@@ -42,7 +42,6 @@
       </div>
       <div class="slidecontainer d-flex align-items-center justify-content-between mt-2">
         <DateSlider :date="selectedDate" :min="minDate" :max="maxDate" :adminLevel = "admin_level" v-if="maxDate" />
-        <!-- <i class="hidden fas fa-play btn btn-main-outline router-link no-underline ml-2 py-1 px-2" @click="playAnimation"></i> -->
       </div>
     </div>
   </div>
@@ -68,6 +67,19 @@ import {
   min
 } from "d3";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 import Choropleth from "@/components/Choropleth.vue";
 import DataSource from "@/components/DataSource.vue";
 import DateSlider from "@/components/DateSlider.vue";
@@ -77,7 +89,8 @@ export default {
   components: {
     Choropleth,
     DataSource,
-    DateSlider
+    DateSlider,
+    FontAwesomeIcon
   },
   props: {
     admin_level: {

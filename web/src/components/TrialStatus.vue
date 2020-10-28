@@ -10,7 +10,7 @@
         <!-- status date -->
         <span class="ml-3" v-if="includeDate">
           <small>
-            <i class="far fa-clock text-muted mr-1"></i>
+            <font-awesome-icon class="mr-1 text-muted" :icon="['far', 'clock']" />
             as of {{ status.statusDate }}
           </small>
         </span>
@@ -34,6 +34,19 @@ import Vue from "vue";
 import CountryMap from "@/components/CountryMap.vue";
 import uniq from "lodash/uniq";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faClock);
+
 export default Vue.extend({
   name: "TrialStatus",
   props: {
@@ -49,7 +62,8 @@ export default Vue.extend({
     }
   },
   components: {
-    CountryMap
+    CountryMap,
+    FontAwesomeIcon
   },
   data() {
     return {

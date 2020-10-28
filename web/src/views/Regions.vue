@@ -1,7 +1,7 @@
 <template>
 <div class="home flex-column text-left d-flex">
   <div v-if="loading" class="loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
 
 
@@ -80,12 +80,26 @@ import {
 
 import store from "@/store";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 export default {
   name: "Regions",
   components: {
     EpiStacked,
     CountryBarGraph,
-    DataSource
+    DataSource,
+    FontAwesomeIcon
   },
   data() {
     return {

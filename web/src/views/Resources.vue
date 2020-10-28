@@ -2,7 +2,7 @@
 <div class="">
   <!-- loading -->
   <div v-if="loading" class="loader">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
   <!-- header -->
@@ -22,14 +22,17 @@
           <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
             <div class="input-group">
               <div class="input-group-prepend">
-                <span class="input-group-text bg-grey text-muted border-0" id="sb"><i class="fas fa-search"></i></span>
+                <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" /></span>
               </div>
               <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
             </div>
           </form>
 
           <div class="text-left text-muted ml-5" v-if="showSearchHelper">
-            <small><i class="fas fa-info-circle mr-2"></i>Wrap terms in quotes if you want to search for an exact phrase, like
+            <small>
+              <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+              Wrap terms in quotes if you want to search for an exact phrase, like
               <router-link class=" inline-block" :to="{
                     name: 'Resources',
                     query: { q: quotedSearch}
@@ -89,11 +92,11 @@
               </div>
               <div class="col-sm-2 text-center p-1">
                 <!-- toggle fa class up->down -->
-                <i class="fas fa-chevron-up" v-if="!dateFacet.expanded"></i>
-                <i class="fas fa-chevron-down" v-if="dateFacet.expanded"></i>
+                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-up']" v-if="!dateFacet.expanded" />
+                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-down']" v-else />
               </div>
             </div>
-            <DateHistogram :data="dates" v-if="dates && dates.length && !dateFacet.expanded"/>
+            <DateHistogram :data="dates" v-if="dates && dates.length && !dateFacet.expanded" />
           </div>
           <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
@@ -103,8 +106,8 @@
               </div>
               <div class="col-sm-2 text-center p-1" v-if="facet.filtered.length">
                 <!-- toggle fa class up->down -->
-                <i class="fas fa-chevron-up" v-if="facet.expanded"></i>
-                <i class="fas fa-chevron-down" v-if="!facet.expanded"></i>
+                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-up']" v-if="!dateFacet.expanded" />
+                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-down']" v-else />
               </div>
             </div>
             <!-- Toggle content -->
@@ -119,19 +122,19 @@
                 </form>
                 <!-- Filters -->
                 <template v-if="facet.filtered.length">
-                <ul class="list-group list-unstyled rounded-0">
-                  <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
-                    <li class="rounded-0 text-left list-group-item-action p-1 border-0 line-height-sm my-1 text-break" :class="[option.count ? 'text-dark' : 'text-muted']" v-if="optIdx < facet.num2Display">
-                      <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
-                      <label :for="facet.id + optIdx" class="m-0 d-inline">
-                        <small>{{ option.term }}
-                          <span v-if="option.count">({{ option.count.toLocaleString() }})</span>
-                        </small>
-                      </label>
-                    </li>
-                  </div>
-                </ul>
-                <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
+                  <ul class="list-group list-unstyled rounded-0">
+                    <div v-for="(option, optIdx) in facet.filtered" :key="optIdx">
+                      <li class="rounded-0 text-left list-group-item-action p-1 border-0 line-height-sm my-1 text-break" :class="[option.count ? 'text-dark' : 'text-muted']" v-if="optIdx < facet.num2Display">
+                        <input type="checkbox" class="mr-1" name="item" :id="facet.id + optIdx" :value="option.term" :checked="option.checked" @change="selectFilter(facet.id, option)" />
+                        <label :for="facet.id + optIdx" class="m-0 d-inline">
+                          <small>{{ option.term }}
+                            <span v-if="option.count">({{ option.count.toLocaleString() }})</span>
+                          </small>
+                        </label>
+                      </li>
+                    </div>
+                  </ul>
+                  <small class="pointer link" @click="facet.num2Display = facet.total" v-if="facet.num2Display < facet.total">show all</small>
                 </template>
                 <div class="" v-else>
                   <small>none</small>
@@ -199,19 +202,19 @@
               <span v-for="(variable, vIdx) in varType.vars" :key="vIdx">
                 <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeFilter(variable, varType.id)">
                   <small><b>{{variable}}</b></small>
-                  <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+                  <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
                 </button>
               </span>
             </span>
             <!-- Date filters -->
             <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('min')" v-if="dateMin">
               <small><b>date &ge; {{dateMin}}</b></small>
-              <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+              <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
             </button>
 
             <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" @click="removeDateFilter('max')" v-if="dateMax">
               <small><b>date &le; {{dateMax}}</b></small>
-              <i class="far fa-times-circle ml-1" :style="{'font-size': '0.85em', 'opacity': '0.6'}"></i>
+              <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
             </button>
             <!-- clear all -->
             <a @click="clearFilters()" href="" class="ml-2"><small>clear filters</small></a>
@@ -294,7 +297,7 @@
                           item.dateCreated ||
                           item.datePublished
                       ">
-                      <i class="far fa-clock"></i>
+                      <font-awesome-icon :icon="['far', 'clock']" />
                       <span v-if="item.dateModified">
                         updated {{ item.dateModified }}
                       </span>
@@ -453,13 +456,23 @@ import {
 } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowLeft,
-  faArrowRight
+  faArrowRight,
+  faSpinner,
+  faSearch,
+  faInfoCircle,
+  faChevronUp,
+  faChevronDown
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClock,
+  faTimesCircle
+} from "@fortawesome/free-regular-svg-icons";
 
 import cloneDeep from "lodash/cloneDeep";
 import debounce from "lodash/debounce";
 
-library.add(faArrowLeft, faArrowRight);
+
+library.add(faArrowLeft, faArrowRight, faClock, faTimesCircle, faSpinner, faSearch, faInfoCircle, faChevronUp, faChevronDown);
 
 export default {
   name: "Resources",
@@ -501,7 +514,6 @@ export default {
         this.dateMin,
         this.dateMax
       ).subscribe(results => {
-        console.log(results)
         this.data = results.results;
         this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;

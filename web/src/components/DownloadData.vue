@@ -1,7 +1,7 @@
 <template>
 <div>
   <div v-if="loading && showLoading" class="loader dialog d-flex flex-column align-items-center">
-    <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
     <div class="text-light mt-3">Fetching data, please be patient</div>
     <div class="text-light">
       {{formatPercent(progress)}} complete
@@ -82,6 +82,19 @@ import {
   format
 } from "d3";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 import cloneDeep from "lodash/cloneDeep";
 import uniq from "lodash/uniq";
 
@@ -104,7 +117,7 @@ export default {
   },
   components: {
     DataUsage,
-    CiteUs
+    CiteUs, FontAwesomeIcon
   },
   data() {
     return ({

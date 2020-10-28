@@ -3,8 +3,12 @@
   {{this.formattedDate}}
   <div class="d-flex align-items-start">
     <div class="d-flex">
-      <i class="btn btn-main-outline fas fa-fast-backward px-2 py-1" style="font-size: 0.85em" @click="changeDate(-7)" :class="{disabled: hideBack7}"></i>
-      <i class="btn btn-main-outline fas fa-step-backward ml-1 px-2 py-1 d-flex align-items-center" @click="changeDate(-1)" style="font-size: 0.7em" :class="{disabled: hideBack1}"></i>
+      <div class="btn btn-main-outline px-2 py-1" style="font-size: 0.85em" @click="changeDate(-7)" :class="{disabled: hideBack7}">
+        <font-awesome-icon :icon="['fas', 'fast-backward']" />
+      </div>
+      <div class="btn btn-main-outline ml-1 px-2 py-1 d-flex align-items-center" style="font-size: 0.7em" @click="changeDate(-1)" :class="{disabled: hideBack1}">
+        <font-awesome-icon :icon="['fas', 'step-backward']" />
+      </div>
     </div>
     <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top" class="mr-3 ml-3">
       <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
@@ -12,11 +16,19 @@
       <g :transform="`translate(${margin.left}, ${height + margin.top})`" class="slider-axis axis--x" ref="xAxis"></g>
     </svg>
     <div class="d-flex">
-      <i class="btn btn-main-outline fas fa-step-forward mr-1 px-2 py-1 d-flex align-items-center" :class="{disabled: hideForward1}" @click="changeDate(1)" style="font-size: 0.7em"></i>
-      <i class="btn btn-main-outline fas fa-fast-forward px-2 py-1" style="font-size: 0.85em" :class="{disabled: hideForward7}" @click="changeDate(7)"></i>
+      <div class="btn btn-main-outline mr-1 px-2 py-1 d-flex align-items-center" :class="{disabled: hideForward1}" @click="changeDate(1)" style="font-size: 0.7em">
+        <font-awesome-icon :icon="['fas', 'step-forward']" />
+      </div>
+      <div class="btn btn-main-outline px-2 py-1" style="font-size: 0.85em" :class="{disabled: hideForward7}" @click="changeDate(7)">
+        <font-awesome-icon :icon="['fas', 'fast-forward']" />
+      </div>
+
     </div>
 
-    <i class="btn btn-main-outline fas px-2 py-1 ml-2" style="font-size: 0.85em" :class='[isPlaying ? "fa-pause" : "fa-play"]' @click="play()"></i>
+    <div class="btn btn-main-outline px-2 py-1 ml-2" style="font-size: 0.85em" @click="play()">
+      <font-awesome-icon :icon="['fas', 'pause']" v-if="isPlaying" />
+      <font-awesome-icon :icon="['fas', 'play']" v-else />
+    </div>
   </div>
 
 </div>
@@ -38,6 +50,24 @@ import {
   event
 } from "d3";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faPlay,
+  faPause,
+  faStepForward,
+  faFastForward,
+  faStepBackward,
+  faFastBackward
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faPlay, faPause, faStepForward, faFastForward, faStepBackward, faFastBackward);
+
 export default Vue.extend({
   name: "DateSlider",
   props: {
@@ -45,6 +75,9 @@ export default Vue.extend({
     max: Date,
     date: String,
     adminLevel: String
+  },
+  components: {
+    FontAwesomeIcon
   },
   data() {
     return {
@@ -95,7 +128,7 @@ export default Vue.extend({
     play() {
       this.isPlaying = !this.isPlaying;
 
-      const dayGap = this.adminLevel === "0"  || this.adminLevel === "1" ? 3 : 7; // parameter for how many days between
+      const dayGap = this.adminLevel === "0" || this.adminLevel === "1" ? 3 : 7; // parameter for how many days between
 
       if ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < dayGap) {
         this.selectedDate = this.minDate;

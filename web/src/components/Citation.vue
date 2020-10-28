@@ -32,13 +32,13 @@
 
 <!-- dates -->
 <span class="badge bg-grey__lightest" v-if="data.dateModified">
-  <i class="far fa-clock mr-1"></i>
+  <font-awesome-icon class="mr-1" :icon="['far', 'clock']"/>
   updated {{ this.formatDate(data.dateModified) }}
 </span>
 <span v-if="data.datePublished && data.dateModified
     " class="mx-1">&bull;</span>
 <span class="badge bg-grey__lightest" v-if="data.datePublished">
-  <i class="far fa-clock mr-1" v-if="!data.dateModified"></i>
+  <font-awesome-icon class="mr-1" :icon="['far', 'clock']" v-if="!data.dateModified"/>
   published {{ this.formatDate(data.datePublished) }}
 </span>
 </template>
@@ -61,13 +61,28 @@ import {
 
 import StripeAccent from "@/components/StripeAccent.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faClock);
+
+
 export default Vue.extend({
   name: "Citation",
   props: {
     data: Object
   },
   components: {
-    StripeAccent
+    StripeAccent,
+    FontAwesomeIcon
   },
   methods: {
     formatDate(dateStr) {

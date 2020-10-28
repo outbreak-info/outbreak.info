@@ -1,7 +1,7 @@
 <template>
   <div class="data flex-column align-left">
     <div v-if="loading" class="loader">
-      <i class="fas fa-spinner fa-pulse fa-4x text-highlight"></i>
+      <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
     </div>
     <section class="case-data-table p-1">
       <EpiTable
@@ -24,11 +24,25 @@ import { mapState } from "vuex";
 
 import store from "@/store";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSpinner);
+
 export default {
   name: "Home",
   components: {
     DataSource,
-    EpiTable
+    EpiTable,
+    FontAwesomeIcon
   },
   data() {
     return {
