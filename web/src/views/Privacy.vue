@@ -17,16 +17,6 @@
           Policy, the terms used in this Privacy Policy have the same meanings as
           in our Terms and Conditions, accessible from https://outbreak.info/
         </p>
-        <h3 class="my-3">Information Collection and Use</h3>
-        <p>
-          All data is from the
-          <a href="https://github.com/CSSEGISandData/COVID-19" rel="noreferrer" target="_blank">Johns Hopkins University Center for Systems Science and
-            Engineering</a>.
-        </p>
-        <p>
-          Any content that we do generate is released with no restriction under
-          <a href="https://creativecommons.org/share-your-work/public-domain/cc0/" rel="noreferrer" target="_blank">CC0</a>.
-        </p>
         <h3 class="my-3">Tracking & Cookies Data</h3>
         <p>
           We use cookies and similar tracking technologies to track the activity
