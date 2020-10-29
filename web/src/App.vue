@@ -100,13 +100,6 @@
 <script>
 import store from "@/store";
 
-import {
-  mapState
-} from "vuex";
-import {
-  getLocations
-} from "@/api/epi-basics.js";
-
 export default {
   name: "App",
   data() {
@@ -118,13 +111,8 @@ export default {
     var self = this;
     var currentTime = new Date();
     self.year = currentTime.getFullYear();
-  },
-  subscriptions() {
-    return {
-      placeNames$: getLocations(this.$apiurl)
-    };
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

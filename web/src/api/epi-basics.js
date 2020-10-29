@@ -1,4 +1,7 @@
-import { from, forkJoin } from "rxjs";
+import {
+  from,
+  forkJoin
+} from "rxjs";
 import axios from "axios";
 import {
   tap,
@@ -8,76 +11,89 @@ import {
   pluck,
   map
 } from "rxjs/operators";
-import { nest, timeParse, timeFormat, sum } from "d3";
+import {
+  nest,
+  timeParse,
+  timeFormat,
+  sum
+} from "d3";
 
-import { getSparklineTraces } from "@/api/epi-traces.js";
-import { getAll } from "@/api/biothings.js";
+import {
+  getSparklineTraces
+} from "@/api/epi-traces.js";
+import {
+  getAll
+} from "@/api/biothings.js";
 
 import store from "@/store";
 
 export function getLocations(apiUrl) {
   store.state.admin.loading = true;
 
-  return getAll(
-    apiUrl,
-    `mostRecent:true&fields=location_id,name,country_name,state_name,wb_region,admin_level`
-  ).pipe(
-    tap(results => {
-      let places = results.map(d => {
-        return {
-          label: getLabel(d),
-          id: d.location_id,
-          admin_level: d.admin_level
-        };
-      });
+  if (store.state.geo.allPlaces.length == 0) {
+    return getAll(
+      apiUrl,
+      `mostRecent:true&fields=location_id,name,country_name,state_name,wb_region,admin_level`
+    ).pipe(
+      map(results => {
+        let places = results.map(d => {
+          return {
+            label: getLabel(d),
+            id: d.location_id,
+            admin_level: d.admin_level
+          };
+        });
 
-      // Add in groups of Admin 1's, Admin 0's
-      const regions = nest()
-        .key(d => d.wb_region)
-        .rollup(values => values.map(d => d.location_id).join(";"))
-        .entries(results.filter(d => d.admin_level === 0));
+        // Add in groups of Admin 1's, Admin 0's
+        const regions = nest()
+          .key(d => d.wb_region)
+          .rollup(values => values.map(d => d.location_id).join(";"))
+          .entries(results.filter(d => d.admin_level === 0));
 
-      regions.forEach(d => {
-        d["label"] = `${d.key} (all countries)`;
-        d["id"] = d.value;
-        d["admin_level"] = -0.5;
-        delete d.key;
-        delete d.value;
-      });
-      const countries = nest()
-        .key(d => d.country_name)
-        .rollup(values => values.map(d => d.location_id).join(";"))
-        .entries(results.filter(d => d.admin_level === 1));
+        regions.forEach(d => {
+          d["label"] = `${d.key} (all countries)`;
+          d["id"] = d.value;
+          d["admin_level"] = -0.5;
+          delete d.key;
+          delete d.value;
+        });
+        const countries = nest()
+          .key(d => d.country_name)
+          .rollup(values => values.map(d => d.location_id).join(";"))
+          .entries(results.filter(d => d.admin_level === 1));
 
-      countries.forEach(d => {
-        d["label"] = `${d.key} (all states/provinces)`;
-        d["id"] = d.value;
-        d["admin_level"] = 0.5;
-        delete d.key;
-        delete d.value;
-      });
+        countries.forEach(d => {
+          d["label"] = `${d.key} (all states/provinces)`;
+          d["id"] = d.value;
+          d["admin_level"] = 0.5;
+          delete d.key;
+          delete d.value;
+        });
 
-      places = places.concat(regions).concat(countries);
-      places.sort((a, b) => (a.admin_level < b.admin_level ? -1 : 1));
-      store.state.epidata.allPlaces = places;
-      return places;
-    }),
-    catchError(e => {
-      console.log("%c Error in getting locations!", "color: red");
-      console.log(e);
-      return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false))
-  );
+        places = places.concat(regions).concat(countries);
+        places.sort((a, b) => (a.admin_level < b.admin_level ? -1 : 1));
+        store.state.geo.allPlaces = places;
+        return places;
+      }),
+      catchError(e => {
+        console.log("%c Error in getting locations!", "color: red");
+        console.log(e);
+        return from([]);
+      }),
+      finalize(() => (store.state.admin.loading = false))
+    );
+  } else {
+    return (from(store.state.geo.allPlaces))
+  }
 }
 
 function getLabel(entry) {
   if (entry.admin_level === 0) {
     return entry.name;
   } else if (entry.admin_level === 1) {
-    return entry.country_name == "United States of America"
-      ? `${entry.name} State, USA`
-      : `${entry.name} Province, ${entry.country_name}`;
+    return entry.country_name == "United States of America" ?
+      `${entry.name} State, USA` :
+      `${entry.name} Province, ${entry.country_name}`;
   } else if (String(entry.admin_level) == "1.7") {
     return `${entry.name}`;
   } else if (String(entry.admin_level) == "1.5") {
@@ -236,9 +252,9 @@ export function getGlanceSummary(apiUrl, locations) {
   const parseDate = timeParse("%Y-%m-%d");
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const location_string =
-    locations && locations.length
-      ? ` AND location_id:("${locations.join('","')}")`
-      : ` AND admin_level:[0 TO *]&sort=-confirmed_numIncrease`;
+    locations && locations.length ?
+    ` AND location_id:("${locations.join('","')}")` :
+    ` AND admin_level:[0 TO *]&sort=-confirmed_numIncrease`;
   const num2Return = locations && locations.length ? locations.length : 3;
 
   return from(

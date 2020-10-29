@@ -1,5 +1,6 @@
 // initial state
 const state = {
+  allPlaces: [],
   regionDict: [
     {
       display: false,

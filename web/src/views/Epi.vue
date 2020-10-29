@@ -147,6 +147,9 @@ import {
   epiTableSubject
 } from "@/api/epi-traces.js";
 import {
+  getLocations
+} from "@/api/epi-basics.js";
+import {
   getLocation,
   processLocation
 } from "@/js/get-location.js";
@@ -299,7 +302,7 @@ export default {
   },
   computed: {
     ...mapState("admin", ["loading"]),
-    ...mapState("epidata", ["allPlaces"]),
+    ...mapState("geo", ["allPlaces"]),
     colorScale: function() {
       const scale = store.getters["colors/getColor"];
       return scale;
@@ -578,6 +581,7 @@ export default {
     window.removeEventListener("resize", this.setDims);
   },
   mounted() {
+    getLocations(this.$apiurl).subscribe(_ => null);
     this.setLocation(this.location);
     this.$nextTick(function() {
       window.addEventListener("resize", this.setDims);

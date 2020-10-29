@@ -40,6 +40,7 @@ library.add(faSearch);
 
 // --- store / Vuex ---
 import store from "@/store";
+import { getLocations } from "@/api/epi-basics.js";
 
 export default Vue.extend({
   name: "SearchBar",
@@ -84,7 +85,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState("epidata", ["allPlaces"])
+    ...mapState("geo", ["allPlaces"])
   },
   watch: {
     items: function(val, oldValue) {
@@ -96,6 +97,7 @@ export default Vue.extend({
     }
   },
   mounted() {
+    getLocations(this.$apiurl).subscribe(_ => null);
     document.addEventListener("click", this.handleClickOutside, {
       passive: true
     });
