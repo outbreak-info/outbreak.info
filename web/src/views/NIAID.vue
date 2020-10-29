@@ -115,7 +115,6 @@ export default {
     });
 
     this.countSubscription = getSourceSummary(this.$resourceurl, this.queryString).subscribe(results => {
-      console.log(results)
       this.counts = results;
     });
   },
