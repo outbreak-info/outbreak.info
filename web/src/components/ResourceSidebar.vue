@@ -58,7 +58,7 @@
           " target="_blank" rel="noreferrer" class="twitter-share-button" aria-label="twitter link">
         <font-awesome-icon class="mr-3" :icon="['fab', 'twitter']" />
       </a>
-      <a :href="`mailto:?subject=outbreak.info%20${type}&body=${outbreakUrl}`" aria-label="email">
+      <a :href="`mailto:?subject=outbreak.info%20${type}&body=${outbreakUrl}`" aria-label="email" target="_blank">
         <font-awesome-icon class="mr-3" :icon="['fas', 'envelope']" />
       </a>
       <a @click="copy2Clipboard" aria-label="copy to clipboard">
@@ -67,7 +67,7 @@
       <p :class="{ snackbar: true, show: showSnackbar }">
         copied to clipboard
       </p>
-      <a @click="shareLink" v-if="canShare" aria-label="share">
+      <a @click="shareLink" v-if="canShare" aria-label="share"> target="_blank" 
         <font-awesome-icon class="share-link mr-3" :icon="['fas', 'share']" />
       </a>
     </div>

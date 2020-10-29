@@ -183,7 +183,7 @@
     </div>
   </div>
   <div v-else class="min-height">
-    Sorry, data on {{id}} is not found. Let us know at <a :href="`mailto:help@outbreak.info?subject=Missing metadata for id ${id}`">help@outbreak.info</a>
+    Sorry, data on {{id}} is not found. Let us know at <a :href="`mailto:help@outbreak.info?subject=Missing metadata for id ${id}`" target="_blank">help@outbreak.info</a>
   </div>
 </div>
 </template>

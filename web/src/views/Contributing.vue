@@ -39,7 +39,7 @@
     <p class="text-left">
       If you'd like to suggest a resource repository, you can create a
       <a href="https://github.com/outbreak-info/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D" target="_blank" rel="noreferrer">
-        Github Issue</a> to request adding a new source or send an email to <a href="mailto:help@outbreak.info?subject=Data Source">help@outbreak.info</a>.
+        Github Issue</a> to request adding a new source or send an email to <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">help@outbreak.info</a>.
     </p>
   </div>
 
@@ -49,7 +49,7 @@
       Keeping track of the growing list of COVID-19 and SARS-CoV-2 resources is a challenge, as is curating the information to make it more findable and discoverable.
     </p>
     <p class="text-left">
-      If you're interested in helping us add additional data sources and/or curating our existing database, please email <a href="mailto:help@outbreak.info?subject=Data Source">help@outbreak.info</a>.
+      If you're interested in helping us add additional data sources and/or curating our existing database, please email <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">help@outbreak.info</a>.
     </p>
   </div>
 
