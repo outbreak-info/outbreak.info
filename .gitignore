@@ -22,3 +22,13 @@ web/src/assets/home/api_resources_full.png
 performance/*
 web/src/assets/geo/US_counties_archive.json
 web/src/assets/geo/US_metro_archive.json
+web/src/assets/resources/biorxiv_full.png
+web/src/assets/resources/immport_full.png
+web/src/assets/resources/dataverse_full.png
+web/src/assets/resources/imperial_full.png
+web/src/assets/resources/jhu_full.png
+web/src/assets/resources/litcovid_pubmed_full.png
+web/src/assets/resources/medrxiv_full.png
+web/src/assets/resources/nih_full.png
+web/src/assets/resources/omicsdi_full.png
+web/src/assets/resources/naturalearth_full.png

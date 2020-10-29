@@ -74,6 +74,7 @@ const state = {
           id: "litcovid",
           name: "LitCovid / PubMed",
           img: "litcovid_pubmed.png",
+          img_lg: "litcovid_pubmed_lg.png",
           url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
           description: 'LitCovid is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus. It is the most comprehensive resource on the subject, providing a central access to 4929 (and growing) relevant articles in PubMed. The articles are updated daily and are further categorized by different research topics and geographic locations for improved access. You can read more at <a href="https://www.nature.com/articles/d41586-020-00694-1" target="_blank" rel="noreferrer">Chen et al. Nature (2020)</a> and download their data <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/#data-download" rel="noreferrer" target="_blank">here</a>.',
           license: {
@@ -186,6 +187,7 @@ const state = {
           id: "immport",
           name: "ImmPort",
           img: "immport.png",
+          img_lg: "immport_lg.png",
           url: "https://www.immport.org/shared/search?filters=study_2_condition_or_disease.condition_preferred:COVID-19%20-%20DOID:0080600&utm_source=COVID-19&utm_medium=banner&utm_campaign=COVID-19",
           license: {url: "https://www.immport.org/agreement"},
           citation: '<a href="https://www.immport.org/cite target="_blank"">Citing ImmPort</a>',
@@ -224,7 +226,7 @@ const state = {
         id: "protocolsio",
         name: "protocols.io",
         img: "protocolsio.png",
-        img_lg: "protocolsio_full.png",
+        img_lg: "protocolsio_lg.png",
         url: "https://www.protocols.io/groups/coronavirus-method-development-community",
         description: "protocols.io is a platform for sharing for science methods, assays, clinical trials, operational procedures and checklists.",
         license: {
