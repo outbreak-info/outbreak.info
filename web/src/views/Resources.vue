@@ -354,7 +354,7 @@
                   <div class="col-sm-12" :class="item['@type']">
                     <small>provided by {{ item.curatedBy.name }}</small>
                     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
-                      <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" height="25" class="ml-2" />
+                      <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" width="auto" height="25" class="ml-2" />
                     </router-link>
                   </div>
                 </div>

@@ -5,8 +5,8 @@
       <a :href="source.url" target="_blank" rel="noreferrer" class="d-flex align-items-center justify-content-between">{{
       source.name
     }}
-        <img class="ml-3" :src="require(`@/assets/resources/${source.img_lg}`)" :alt="source.name" height="32" v-if="source.img_lg" />
-        <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" height="32" v-else-if="source.img" />
+        <img class="ml-3" :src="require(`@/assets/resources/${source.img_lg}`)" :alt="source.name" width="auto" height="32" v-if="source.img_lg" />
+        <img class="ml-3" :src="require(`@/assets/resources/${source.img}`)" :alt="source.name" width="auto" height="32" v-else-if="source.img" />
       </a>
     </h5>
     <p v-html="source.description" class="text-justify mb-0"></p>
