@@ -93,7 +93,7 @@
                     ? row[column.value] + ", " + row.state_name
                     : row[column.value]
                 }}
-              <font-awesome-icon :icon="['far', 'chevron-right']" :style="{ color: row.color }" />
+              <font-awesome-icon :icon="['fas', 'chevron-right']" :style="{ color: row.color }" />
             </router-link>
             <!-- not routable location name -->
             <span v-else>{{
