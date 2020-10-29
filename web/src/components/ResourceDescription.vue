@@ -159,7 +159,7 @@
       <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}<img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" width="auto" height="25"
           class="ml-1 mr-4" />
       </a>
-      <router-link :to="{ name: 'Sources' }">Learn more</router-link>
+      <router-link :to="{ name: 'Sources' }" aria-label="Learn more about data sources">Learn more</router-link>
     </small>
   </div>
 
