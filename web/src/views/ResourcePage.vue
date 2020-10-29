@@ -254,15 +254,9 @@ export default Vue.extend({
     },
     getData(id) {
       this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
-        console.log(results);
         this.data = results;
         this.type = results["@type"];
         this.dateModified = this.formatDate(this.data.date);
-
-        // document.dispatchEvent(new Event('ZoteroItemUpdated', {
-        //   bubbles: true,
-        //   cancelable: true
-        // }))
       })
     }
   },
