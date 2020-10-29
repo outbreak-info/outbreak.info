@@ -67,7 +67,7 @@ export default {
     location: {
       immediate: true,
       handler(newValue, oldValue) {
-        this.glanceLocations = newValue.split(";");
+        this.glanceLocations = newValue ? newValue.split(";") : [];
         this.getData();
       }
     }
