@@ -1,8 +1,5 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-import Privacy from "../views/Privacy.vue";
-import Terms from "../views/Terms.vue";
 
 import store from "@/store";
 
@@ -11,17 +8,20 @@ Vue.use(VueRouter);
 const routes = [{
     path: "/",
     name: "Home",
-    component: Home
+    component: () =>
+      import( /* webpackChunkName: "home" */ "../views/Home.vue")
   },
   {
     path: "/privacy",
     name: "Privacy",
-    component: Privacy
+    component: () =>
+      import( /* webpackChunkName: "privacy" */ "../views/Privacy.vue")
   },
   {
     path: "/terms",
     name: "Terms",
-    component: Terms
+    component: () =>
+      import( /* webpackChunkName: "terms" */ "../views/Terms.vue")
   },
   {
     path: "/license",
