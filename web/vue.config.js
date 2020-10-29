@@ -1,3 +1,11 @@
+// const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+//   .BundleAnalyzerPlugin;
+
+// let plugins = [];
+
+// comment this to disable analyzer
+// plugins.push(new BundleAnalyzerPlugin());
+
 module.exports = {
   css: {
     loaderOptions: {
@@ -7,6 +15,7 @@ module.exports = {
     }
   },
   configureWebpack: {
+    // plugins,
     optimization: {
       splitChunks: {
         chunks: "async",
