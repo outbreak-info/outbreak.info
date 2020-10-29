@@ -355,7 +355,7 @@ export default Vue.extend({
         .attr("dx", "-0.5em")
         .attr("y", d => this.y(d.name) + this.y.bandwidth() / 2)
         .style("font-size", this.y.bandwidth())
-        .text(d => d[this.variable].toLocaleString());
+        .text(d => d[this.variable] ? d[this.variable].toLocaleString() : "");
 
       // --- sparklines ---
       this.chart
@@ -425,7 +425,7 @@ export default Vue.extend({
       // merge
       newCasesSelector
         .merge(newCasesEnter)
-        .text(d => d[`${this.variable}_numIncrease`].toLocaleString());
+        .text(d => d[`${this.variable}_numIncrease`] ? d[`${this.variable}_numIncrease`].toLocaleString() : "");
     }
   }
 });
