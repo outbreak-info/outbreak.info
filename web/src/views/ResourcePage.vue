@@ -1,3 +1,4 @@
+
 <template>
 <div class="d-flex py-2 m-2">
   <!-- loading -->
@@ -23,7 +24,7 @@
       </div>
       <!-- title -->
       <h4 class="d-flex align-item-center m-0 mb-2">
-        {{ data.name }}
+        <b>{{ data.name }}</b>
       </h4>
 
       <!-- mini-nav for resource types -->
