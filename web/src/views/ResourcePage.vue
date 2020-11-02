@@ -183,9 +183,9 @@
       <ResourceSidebar :data="data" :date="dateModified" :type="data['@type']" v-if="data" />
     </div>
   </div>
-  <div v-else class="min-height">
+  <!-- <div v-else class="min-height">
     Sorry, data on {{id}} is not found. Let us know at <a :href="`mailto:help@outbreak.info?subject=Missing metadata for id ${id}`" target="_blank">help@outbreak.info</a>
-  </div>
+  </div> -->
 </div>
 </template>
 
