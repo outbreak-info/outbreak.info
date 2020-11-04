@@ -3,15 +3,24 @@
   <!-- authors -->
   <div class="author-container d-flex flex-wrap" v-if="data.author || data.creator">
     <template v-if="data.author">
-      <div class="author" v-for="(author, idx) in data.author" :key="idx" id="authors">
-        <span>{{
+      <template v-if="Array.isArray(data.author)">
+        <div class="author" v-for="(author, idx) in data.author" :key="'author2'+idx" id="authors">
+          <span>{{
             author.name
               ? author.name
               : author.givenName + " " + author.familyName
           }}</span>
-        <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
-        <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
-        <span v-if="idx == data.author.length - 2 && data.author.length > 2" v-html="',&nbsp;and&nbsp;'"></span>
+          <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
+          <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
+          <span v-if="idx == data.author.length - 2 && data.author.length > 2" v-html="',&nbsp;and&nbsp;'"></span>
+        </div>
+      </template>
+      <div class="author" v-else id="authors">
+        <span>{{
+            data.author.name
+              ? data.author.name
+              : data.author.givenName + " " + data.author.familyName
+          }}</span>
       </div>
 
       <a @click.prevent="showAffiliation = !showAffiliation" href=""><small class="text-muted ml-2">
@@ -23,25 +32,41 @@
         </small>
       </a>
 
-      <div id="author-affiliations" class="d-flex flex-column w-100 mb-3" v-if="showAffiliation">
-        <small v-for="(author, idx) in data.author" :key="idx" class="text-muted">
+      <div id="author-affiliations" class="d-flex flex-column w-100 mb-3" v-if="showAffiliation && Array.isArray(data.author)">
+        <small v-for="(author, idx) in data.author" :key="'author3' +idx" class="text-muted">
           <b>{{
               author.name
                 ? author.name
                 : author.givenName + " " + author.familyName
             }}</b>:
           <template v-if="Array.isArray(author.affiliation)">
-            <span v-for="(affiliation, idx) in author.affiliation" :key="idx">{{ affiliation.name }}</span>
+            <span v-for="(affiliation, idx) in author.affiliation" :key="'author'+idx">{{ affiliation.name }}</span>
           </template>
           <template v-else>
-            <span>{{ author.affiliation }}</span>
+            <span>{{ author.affiliation.name }}</span>
+          </template>
+        </small>
+      </div>
+
+      <div id="author-affiliations" class="d-flex flex-column w-100 mb-3" v-else-if="showAffiliation">
+        <small class="text-muted">
+          <b>{{
+              data.author.name
+                ? data.author.name
+                : data.author.givenName + " " + data.author.familyName
+            }}</b>:
+          <template v-if="Array.isArray(data.author.affiliation)">
+            <span v-for="(affiliation, idx) in data.author.affiliation" :key="'affiliation'+idx">{{ affiliation.name }}</span>
+          </template>
+          <template v-else>
+            <span>{{ data.author.affiliation.name }}</span>
           </template>
         </small>
       </div>
     </template>
 
     <template v-else-if="data.creator">
-      <div class="creator" v-for="(creator, idx) in data.creator" :key="idx" id="authors">
+      <div class="creator" v-for="(creator, idx) in data.creator" :key="'creator'+idx" id="authors">
         <span>{{
             creator.name
               ? creator.name
@@ -62,14 +87,14 @@
       </a>
 
       <div id="creator-affiliations" class="d-flex flex-column w-100 mb-3" v-if="showAffiliation">
-        <small v-for="(creator, idx) in data.creator" :key="idx" class="text-muted">
+        <small v-for="(creator, idx) in data.creator" :key="'affiliation2' + idx" class="text-muted">
           <b>{{
               creator.name
                 ? creator.name
                 : creator.givenName + " " + creator.familyName
             }}</b>:
           <template v-if="Array.isArray(creator.affiliation)">
-            <span v-for="(affiliation, idx) in creator.affiliation" :key="idx">{{ affiliation.name }}</span>
+            <span v-for="(affiliation, idx) in creator.affiliation" :key="'affiliation3'+idx">{{ affiliation.name }}</span>
           </template>
           <template v-else>
             <span>{{ creator.affiliation }}</span>
@@ -157,7 +182,7 @@
       </router-link>
     </small>
 
-    <div v-for="(keyword, idx) in data.keywords" :key="idx" class="mb-1 mr-1">
+    <div v-for="(keyword, idx) in data.keywords" :key="'keyword'+idx" class="mb-1 mr-1">
       <small class="keyword px-2 py-1" v-if="keyword != ''" :data-tippy-info="`search ${keyword}`">
         <router-link :to="{
             name: 'Resources',
