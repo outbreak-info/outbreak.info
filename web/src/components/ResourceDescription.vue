@@ -18,8 +18,8 @@
           <span>{{
               showAffiliation ? "hide affiliations" : "view affiliations"
             }}</span>
-            <font-awesome-icon :icon="['fas', 'angle-double-down']" class="mx-1" v-if="!showAffiliation" />
-            <font-awesome-icon :icon="['fas', 'angle-double-up']" class="mx-1" v-if="showAffiliation" />
+          <font-awesome-icon :icon="['fas', 'angle-double-down']" class="mx-1" v-if="!showAffiliation" />
+          <font-awesome-icon :icon="['fas', 'angle-double-up']" class="mx-1" v-if="showAffiliation" />
         </small>
       </a>
 
@@ -56,8 +56,8 @@
           <span>{{
               showAffiliation ? "hide affiliations" : "view affiliations"
             }}</span>
-            <font-awesome-icon :icon="['fas', 'angle-double-down']" class="mx-1" v-if="!showAffiliation" />
-            <font-awesome-icon :icon="['fas', 'angle-double-up']" class="mx-1" v-if="showAffiliation" />
+          <font-awesome-icon :icon="['fas', 'angle-double-down']" class="mx-1" v-if="!showAffiliation" />
+          <font-awesome-icon :icon="['fas', 'angle-double-up']" class="mx-1" v-if="showAffiliation" />
         </small>
       </a>
 
@@ -81,7 +81,7 @@
   <div class="sponsor text-muted" v-if="data.sponsor" id="sponsor">
     sponsored by <span v-for="(sponsor, idx) in data.sponsor" :key="idx">
       {{sponsor.name}}
-      <span v-if="sponsor.role"> ({{sponsor.role}})</span>
+      <!-- <span v-if="sponsor.role"> ({{sponsor.role}})</span> -->
       <span v-if="idx < data.sponsor.length - 1">,&nbsp;</span>
     </span>
   </div>
@@ -136,28 +136,43 @@
 
   <!-- keywords -->
   <div class="keyword-container flex flex-wrap mt-2">
-    <small class="topic uppercase px-2 py-1 my-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
-      <router-link :to="{
+
+    <template v-if="Array.isArray(data.topicCategory)">
+      <small class="topic uppercase px-2 py-1 mb-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
+        <router-link :to="{
             name: 'Resources',
             query: { q: `&quot;${topic}&quot;` }
           }" class="no-underline">
-        {{ topic }}
+          {{ topic }}
+        </router-link>
+      </small>
+    </template>
+
+    <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory}`" v-else>
+      <router-link :to="{
+            name: 'Resources',
+            query: { q: `&quot;${data.topicCategory}&quot;` }
+          }" class="no-underline">
+        {{ data.topicCategory }}
       </router-link>
     </small>
-    <small class="keyword px-2 py-1 mb-1 mr-1" v-for="(keyword, idx) in data.keywords" :key="idx" :data-tippy-info="`search ${keyword}`">
-      <router-link :to="{
+
+    <div v-for="(keyword, idx) in data.keywords" :key="idx" class="mb-1 mr-1">
+      <small class="keyword px-2 py-1" v-if="keyword != ''" :data-tippy-info="`search ${keyword}`">
+        <router-link :to="{
             name: 'Resources',
             query: { q: `&quot;${keyword}&quot;` }
           }" class="no-underline text-dark">
-        {{ keyword }}
-      </router-link>
-    </small>
+          {{ keyword }}
+        </router-link>
+      </small>
+    </div>
   </div>
   <!-- source -->
   <div class="mt-2" v-if="data.curatedBy">
     <small>Record provided by
-      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}<img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" width="auto" height="25"
-          class="ml-1 mr-4" />
+      <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}<img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" width="auto"
+          height="25" class="ml-1 mr-4" />
       </a>
       <router-link :to="{ name: 'Sources' }" aria-label="Learn more about data sources">Learn more</router-link>
     </small>
@@ -210,7 +225,8 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
 import {
-  faAngleDoubleDown, faAngleDoubleUp
+  faAngleDoubleDown,
+  faAngleDoubleUp
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faClock, faAngleDoubleDown, faAngleDoubleUp);
