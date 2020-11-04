@@ -3,7 +3,7 @@
 <div class="d-flex py-2 m-2">
   <!-- loading -->
   <div v-if="loading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
   <div class="row w-100 m-0" v-if="data">
@@ -73,6 +73,7 @@
           <div v-if="data.funding || data.funder">
             <div v-if="data.funding">
               <ul>
+                <template v-if="Array.isArray(data.funding)">
                 <li v-for="(funding, idx) in data.funding" :key="idx" class="mb-3">
                   <template v-if="Array.isArray(funding.funder)">
                     <div v-for="(funder, idx) in funding.funder" :key="idx">
@@ -88,13 +89,39 @@
                       <b v-if="funding.funder && funding.funder.name">{{funding.funder.name}}</b>
                       <span v-if="funding.funder && funding.funder.name && funding.identifier">:&nbsp;</span>
                       <span v-if="funding.identifier">{{funding.identifier}}</span>
-                      <span v-if="funding.funder.role"> ({{sponsor.role}})</span>
+                      <span v-if="funding.funder && funding.funder.role"> ({{funding.funder.role}})</span>
                     </div>
                   </template>
                   <div v-if="funding.description" class="line-height-1">
                     {{funding.description}}
                   </div>
                 </li>
+                </template>
+                <template v-else>
+                  <li class="mb-3">
+                    <template v-if="Array.isArray(data.funding.funder)">
+                      <div v-for="(funder, idx) in data.funding.funder" :key="idx">
+                        <b v-if="funder.name">{{funder.name}}</b>
+                        <span v-if="funder.name && data.funding.identifier">:&nbsp;</span>
+                        <span v-if="data.funding.identifier">{{data.funding.identifier}}</span>
+                        <span v-if="funder.role"> ({{funder.role}})</span>
+                      </div>
+                    </template>
+
+                    <template v-else>
+                      <div class="m-0">
+                        <b v-if="data.funding.funder && data.funding.funder.name">{{data.funding.funder.name}}</b>
+                        <span v-if="data.funding.funder && data.funding.funder.name && data.funding.identifier">:&nbsp;</span>
+                        <span v-if="data.funding.identifier">{{data.funding.identifier}}</span>
+                        <span v-if="data.funding.funder && data.funding.funder.role"> ({{data.funding.funder.role}})</span>
+                      </div>
+                    </template>
+                    <div v-if="data.funding.description" class="line-height-1">
+                      {{data.funding.description}}
+                    </div>
+                  </li>
+                </template>
+
               </ul>
             </div>
             <template v-if="data.funder">
@@ -370,13 +397,21 @@ export default Vue.extend({
       }
 
       if (this.data.author) {
-        citationTags = citationTags.concat(this.data.author.map(d => {
-          return ({
-            title: "citation_author",
-            content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
-            vmid: "citation_author"
-          })
-        }))
+        if (Array.isArray(this.data.author)) {
+          citationTags = citationTags.concat(this.data.author.map(d => {
+            return ({
+              title: "citation_author",
+              content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
+              vmid: "citation_author"
+            })
+          }))
+        } else {
+          citationTags = citationTags.concat({
+              title: "citation_author",
+              content: this.data.author.name ? this.data.author.name : `${this.data.author.givenName} ${this.data.author.familyName}`,
+              vmid: "citation_author"
+            })
+        }
       }
 
       if (this.data.creator) {
