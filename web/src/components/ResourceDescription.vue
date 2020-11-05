@@ -8,7 +8,7 @@
           <span>{{
             author.name
               ? author.name
-              : author.givenName + " " + author.familyName
+              : (author.givenName ? author.givenName + " " + author.familyName : "")
           }}</span>
           <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
           <span v-if="idx == data.author.length - 2 && data.author.length == 2" v-html="'&nbsp;and&nbsp;'"></span>
@@ -19,7 +19,7 @@
         <span>{{
             data.author.name
               ? data.author.name
-              : data.author.givenName + " " + data.author.familyName
+              : ( data.author.givenName ? data.author.givenName + " " + data.author.familyName : "")
           }}</span>
       </div>
 
@@ -37,7 +37,7 @@
           <b>{{
               author.name
                 ? author.name
-                : author.givenName + " " + author.familyName
+                : (author.givenName ? author.givenName + " " + author.familyName : "")
             }}</b>:
           <template v-if="Array.isArray(author.affiliation)">
             <span v-for="(affiliation, idx) in author.affiliation" :key="'author'+idx">{{ affiliation.name }}</span>
@@ -53,7 +53,7 @@
           <b>{{
               data.author.name
                 ? data.author.name
-                : data.author.givenName + " " + data.author.familyName
+                : (data.author.givenName ? data.author.givenName + " " + data.author.familyName : "")
             }}</b>:
           <template v-if="Array.isArray(data.author.affiliation)">
             <span v-for="(affiliation, idx) in data.author.affiliation" :key="'affiliation'+idx">{{ affiliation.name }}</span>
@@ -70,7 +70,7 @@
         <span>{{
             creator.name
               ? creator.name
-              : creator.givenName + " " + creator.familyName
+              : (creator.givenName ? creator.givenName + " " + creator.familyName : "")
           }}</span>
         <span v-if="idx < data.creator.length - 2" v-html="',&nbsp;'"></span>
         <span v-if="idx == data.creator.length - 2 && !data.creator.length == 2" v-html="',&nbsp;and&nbsp;'"></span>
@@ -91,7 +91,7 @@
           <b>{{
               creator.name
                 ? creator.name
-                : creator.givenName + " " + creator.familyName
+                : (creator.givenName ? creator.givenName + " " + creator.familyName : "")
             }}</b>:
           <template v-if="Array.isArray(creator.affiliation)">
             <span v-for="(affiliation, idx) in creator.affiliation" :key="'affiliation3'+idx">{{ affiliation.name }}</span>
@@ -292,7 +292,7 @@ export default Vue.extend({
   mounted() {
     const id = this.$route.params.id;
 
-    console.log(this.data)
+    // console.log(this.data)
 
     tippy(".topic", {
       content: "Loading...",
