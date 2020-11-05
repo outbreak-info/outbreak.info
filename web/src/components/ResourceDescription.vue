@@ -161,26 +161,27 @@
 
   <!-- keywords -->
   <div class="keyword-container flex flex-wrap mt-2">
-
-    <template v-if="Array.isArray(data.topicCategory)">
-      <small class="topic uppercase px-2 py-1 mb-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
-        <router-link :to="{
+    <template v-if="data.topicCategory">
+      <template v-if="Array.isArray(data.topicCategory)">
+        <small class="topic uppercase px-2 py-1 mb-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
+          <router-link :to="{
             name: 'Resources',
             query: { q: `&quot;${topic}&quot;` }
           }" class="no-underline">
-          {{ topic }}
-        </router-link>
-      </small>
-    </template>
+            {{ topic }}
+          </router-link>
+        </small>
+      </template>
 
-    <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory}`" v-else>
-      <router-link :to="{
+      <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory}`" v-else>
+        <router-link :to="{
             name: 'Resources',
             query: { q: `&quot;${data.topicCategory}&quot;` }
           }" class="no-underline">
-        {{ data.topicCategory }}
-      </router-link>
-    </small>
+          {{ data.topicCategory }}
+        </router-link>
+      </small>
+    </template>
 
     <div v-for="(keyword, idx) in data.keywords" :key="'keyword'+idx" class="mb-1 mr-1">
       <small class="keyword px-2 py-1" v-if="keyword != ''" :data-tippy-info="`search ${keyword}`">
@@ -291,7 +292,7 @@ export default Vue.extend({
   mounted() {
     const id = this.$route.params.id;
 
-    // console.log(this.data)
+    console.log(this.data)
 
     tippy(".topic", {
       content: "Loading...",
