@@ -2,7 +2,7 @@
 <div class="d-flex flex-column text-left" v-if="data">
   <!-- authors -->
   <div class="author-container d-flex flex-wrap" v-if="data.author || data.creator">
-    <template v-if="data.author">
+    <template v-if="data.author && (data.author.length || data.author.name)">
       <template v-if="Array.isArray(data.author)">
         <div class="author" v-for="(author, idx) in data.author" :key="'author2'+idx" id="authors">
           <span>{{
