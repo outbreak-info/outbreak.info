@@ -83,6 +83,7 @@ export function getLocations(apiUrl) {
       finalize(() => (store.state.admin.loading = false))
     );
   } else {
+    store.state.admin.loading = false;
     return (from(store.state.geo.allPlaces))
   }
 }

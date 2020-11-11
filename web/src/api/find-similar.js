@@ -19,7 +19,7 @@ import {
 
 
 export function findSimilar(apiUrl, locationID, variable, similarityMetric, adminLevels, num2Return = 5) {
-  store.state.admin.loading = true;
+  store.state.admin.dataloading = true;
   // Choosing one specific date, since all dates contain the current info.
   // First get the location's data for the most recent date.
   // Use that value to get the most recent value of `similarityMetric` and find locations with similar values
@@ -73,7 +73,7 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, admi
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false))
+    finalize(() => (store.state.admin.dataloading = false))
   );
 }
 

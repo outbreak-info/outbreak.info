@@ -1,7 +1,7 @@
 <template>
 <div class="full-page p-5 bg-light">
-  <!-- loading -->
-  <div v-if="loading" class="map-loader">
+  <!-- dataloading -->
+  <div v-if="dataloading" class="map-loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
 
@@ -186,7 +186,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    ...mapState("admin", ["loading"]),
+    ...mapState("admin", ["dataloading"]),
     ...mapState("colors", ["colors"])
   },
   watch: {
