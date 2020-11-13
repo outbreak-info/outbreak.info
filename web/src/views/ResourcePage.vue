@@ -74,28 +74,28 @@
             <div v-if="data.funding">
               <ul>
                 <template v-if="Array.isArray(data.funding)">
-                <li v-for="(funding, idx) in data.funding" :key="idx" class="mb-3">
-                  <template v-if="Array.isArray(funding.funder)">
-                    <div v-for="(funder, idx) in funding.funder" :key="idx">
-                      <b v-if="funder.name">{{funder.name}}</b>
-                      <span v-if="funder.name && funding.identifier">:&nbsp;</span>
-                      <span v-if="funding.identifier">{{funding.identifier}}</span>
-                      <span v-if="funder.role"> ({{funder.role}})</span>
-                    </div>
-                  </template>
+                  <li v-for="(funding, idx) in data.funding" :key="idx" class="mb-3">
+                    <template v-if="Array.isArray(funding.funder)">
+                      <div v-for="(funder, idx) in funding.funder" :key="idx">
+                        <b v-if="funder.name">{{funder.name}}</b>
+                        <span v-if="funder.name && funding.identifier">:&nbsp;</span>
+                        <span v-if="funding.identifier">{{funding.identifier}}</span>
+                        <span v-if="funder.role"> ({{funder.role}})</span>
+                      </div>
+                    </template>
 
-                  <template v-else>
-                    <div class="m-0">
-                      <b v-if="funding.funder && funding.funder.name">{{funding.funder.name}}</b>
-                      <span v-if="funding.funder && funding.funder.name && funding.identifier">:&nbsp;</span>
-                      <span v-if="funding.identifier">{{funding.identifier}}</span>
-                      <span v-if="funding.funder && funding.funder.role"> ({{funding.funder.role}})</span>
+                    <template v-else>
+                      <div class="m-0">
+                        <b v-if="funding.funder && funding.funder.name">{{funding.funder.name}}</b>
+                        <span v-if="funding.funder && funding.funder.name && funding.identifier">:&nbsp;</span>
+                        <span v-if="funding.identifier">{{funding.identifier}}</span>
+                        <span v-if="funding.funder && funding.funder.role"> ({{funding.funder.role}})</span>
+                      </div>
+                    </template>
+                    <div v-if="funding.description" class="line-height-1">
+                      {{funding.description}}
                     </div>
-                  </template>
-                  <div v-if="funding.description" class="line-height-1">
-                    {{funding.description}}
-                  </div>
-                </li>
+                  </li>
                 </template>
                 <template v-else>
                   <li class="mb-3">
@@ -407,10 +407,10 @@ export default Vue.extend({
           }))
         } else {
           citationTags = citationTags.concat({
-              title: "citation_author",
-              content: this.data.author.name ? this.data.author.name : `${this.data.author.givenName} ${this.data.author.familyName}`,
-              vmid: "citation_author"
-            })
+            title: "citation_author",
+            content: this.data.author.name ? this.data.author.name : `${this.data.author.givenName} ${this.data.author.familyName}`,
+            vmid: "citation_author"
+          })
         }
       }
 
@@ -426,13 +426,14 @@ export default Vue.extend({
 
     }
 
-
-    return {
-      script: [{
-        type: 'application/ld+json',
-        json: metadata
-      }],
-      meta: citationTags
+    if (metadata) {
+      return {
+        script: [{
+          type: 'application/ld+json',
+          json: metadata
+        }],
+        meta: citationTags
+      }
     }
   },
   computed: {
