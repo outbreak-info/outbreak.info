@@ -4,14 +4,17 @@
   <div id="gender-eligiblity">
     Gender:
     <span class="ml-2">
+      <template v-if="inclFemale || inclFemale == false">
+        <font-awesome-icon class="bright" :icon="['far', 'check-square']" v-if="inclFemale" />
+        <font-awesome-icon :icon="['far', 'square']" v-else />
+        <font-awesome-icon :icon="['fas', 'venus']" class="ml-2 mr-4 icon-2x" :class="{'bright': inclFemale}" />
+      </template>
 
-      <font-awesome-icon class="bright" :icon="['far', 'check-square']" v-if="inclFemale" />
-      <font-awesome-icon :icon="['far', 'square']" v-else />
-      <font-awesome-icon :icon="['fas', 'venus']" class="ml-2 mr-4 icon-2x" :class="{'bright': inclFemale}" />
-
-      <font-awesome-icon class="bright" :icon="['far', 'check-square']" v-if="inclMale" />
-      <font-awesome-icon :icon="['far', 'square']" v-else />
-      <font-awesome-icon :icon="['fas', 'mars']" class="ml-2 mr-4 icon-2x" :class="{'bright': inclMale}" />
+      <template v-if="inclMale || inclMale == false">
+        <font-awesome-icon class="bright" :icon="['far', 'check-square']" v-if="inclMale" />
+        <font-awesome-icon :icon="['far', 'square']" v-else />
+        <font-awesome-icon :icon="['fas', 'mars']" class="ml-2 mr-4 icon-2x" :class="{'bright': inclMale}" />
+      </template>
     </span>
   </div>
 
@@ -119,10 +122,10 @@ export default {
   },
   computed: {
     inclMale() {
-      return ["all", "both", "male"].includes(this.data.gender.toLowerCase());
+      return this.data.gender ? ["all", "both", "male"].includes(this.data.gender.toLowerCase()) : null;
     },
     inclFemale() {
-      return ["all", "both", "female"].includes(this.data.gender.toLowerCase());
+      return this.data.gender ? ["all", "both", "female"].includes(this.data.gender.toLowerCase()) : null;
     },
     acceptedAges() {
       if (this.data.minimumAge && this.data.maximumAge) {
