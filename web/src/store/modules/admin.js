@@ -114,6 +114,18 @@ const state = {
             url: "https://www.imperial.ac.uk/research-and-innovation/support-for-staff/scholarly-communication/open-access/oa-policy/"
           },
           citation: 'Imperial College London. <i>MRC Centre for Global Infectious Disease Analysis COVID-19</i>. Available online: <a href="https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/" target="_blank">https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/</a> (2020)'
+        },
+        {
+          id: "covid19LST",
+          name: "COVID-19 Literature Surveillance Team",
+          img: "covid19_lst.png",
+          url: "https://www.covid19lst.org/",
+          description: "We are a non-profit composed of medical students, PhDs, physicians and other passionate individuals. We keep up with the latest research on COVID-19/SARS-CoV-2, find the newest articles, read them, grade their level of evidence, and bring you the bottom line. Our goal is to empower you to take the best care of yourself and those in your care.",
+          license: {
+            url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            name: "CC BY-NC-SA 4.0"
+          },
+          citation: 'COVID-19 Literature Surveillance Team. <i>Daily COVID-19 LST Reports</i>. Available online: <a href="https://www.covid19lst.org/reports" target="_blank">https://www.covid19lst.org/reports</a> (2020)'
         }
       ]
     },
@@ -259,6 +271,18 @@ const state = {
         name: "Resources",
         query: {
           q: "remdesivir"
+        }
+      }
+    },
+    {
+      date: new Date("2020-12-04 0:0"),
+      category: "data",
+      title: "Added COVID-19 Literature Surveillance Team Reports",
+      description: 'Added resource metadata from <a href="https://www.covid19lst.org/reports" target="_blank" rel="noreferrer">COVID-19 Literature Surveillance Team Reporst</a>. <a href="/sources#resources">View more about sources</a>',
+      route: {
+        name: "Resources",
+        query: {
+          filter: 'curatedBy.name:"COVID-19 Literature Surveillance Team"'
         }
       }
     },
