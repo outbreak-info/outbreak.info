@@ -97,7 +97,7 @@ export default Vue.extend({
       margin: {
         top: 15,
         bottom: 60,
-        left: 75,
+        left: 95,
         right: 25
       },
       // axes
