@@ -530,6 +530,9 @@ export default {
       if (dimWidth < 350) {
         this.bargraphWidth = 300;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
+      } else if (dimWidth < 450) {
+        this.bargraphWidth = dimWidth - framePadding - marginPadding*3;
+        this.bargraphHeight = this.bargraphWidth * hwRatio;
       } else if (dimWidth < 600) {
         this.bargraphWidth = dimWidth - framePadding - marginPadding;
         this.bargraphHeight = this.bargraphWidth * hwRatio;
