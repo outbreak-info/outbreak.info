@@ -277,6 +277,7 @@ export default Vue.extend({
 
       this.drawPlot();
 
+      // remove the brush box
       select(event.target).call(this.brush.move, [0, 0]);
     },
     prepData: function() {
