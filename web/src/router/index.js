@@ -201,6 +201,10 @@ const routes = [{
       variable: route.query.variable,
       log: route.query.log,
       fixedY: route.query.fixedY,
+      minX: route.minX,
+      maxX: route.minX,
+      minY: route.minX,
+      maxY: route.minX,
       percapita: route.query.percapita
     }),
     // route level code-splitting

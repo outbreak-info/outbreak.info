@@ -44,6 +44,12 @@
     </label>
   </div>
 
+<div class="d-flex justify-content-between align-items-center ml-5 mr-5">
+  <!-- zoom button -->
+  <button class="btn btn-main-outline" style="height:3em" @click="zoom">
+    zoom
+  </button>
+
   <!-- title / drop down variable selector -->
   <h4 class="plot-title pt-5 pb-3" v-if="location">
     Number of COVID-19
@@ -69,7 +75,7 @@
   <div v-if="subParts" class="mb-4">
     <router-link :to="{ hash: '#sub_parts' }">View counties in metro area(s)</router-link>
   </div>
-
+</div>
   <!-- warnings -->
   <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
     text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
@@ -159,7 +165,7 @@ import {
 } from "vuex";
 import {
   extent,
-  max
+  max, brush
 } from "d3";
 
 export default {
@@ -194,7 +200,11 @@ export default {
       type: String,
       default: "false"
     },
-    location: String
+    location: String,
+    xMin: Number,
+    xMax: Number,
+    yMin: Number,
+    yMax: Number
   },
   data() {
     return {
@@ -209,9 +219,9 @@ export default {
       isFixedY: false,
       isPerCapita: false,
       isOverlay: false,
+      isZoomed: false,
       bargraphWidth: 550,
       bargraphHeight: 400,
-      yMax: null,
       variableObj: {
         label: "cumulative cases",
         value: "confirmed",
@@ -479,6 +489,10 @@ export default {
       } else {
         this.clearLocations();
       }
+    },
+    zoom(){
+      this.isZoomed = true;
+      console.log("zooom")
     },
     clearLocations: function() {
       this.selectedPlaces = [];

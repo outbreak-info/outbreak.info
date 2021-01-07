@@ -52,7 +52,7 @@ import Vue from "vue";
 import DataSource from "@/components/DataSource.vue";
 import Warning from "@/components/Warning.vue";
 
-import { select, selectAll, scaleTime, scaleLog, axisBottom, axisLeft, line, range, mouse, event, extent, max, format, timeFormat, transition, easeLinear } from "d3";
+import { select, selectAll, scaleTime, scaleLog, axisBottom, axisLeft, line, range, mouse, event, extent, max, format, timeFormat, transition, easeLinear, brush, brushX, brushY } from "d3";
 import cloneDeep from "lodash/cloneDeep";
 
 import store from "@/store";
@@ -299,6 +299,11 @@ export default Vue.extend({
       this.svg = select("svg.doubling-curve");
       this.chart = select("#epi-curve");
       this.dots = this.chart.append("g").attr("id", "confirmed-timepoints");
+
+      this.svg
+      .append("g")
+      .call(brushX()                 // Add the brush feature using the d3.brush function
+      .extent( [ [0,0], [this.width,this.height] ] ))
 
       this.line = line()
         .x((d, i) => this.x(d.date))

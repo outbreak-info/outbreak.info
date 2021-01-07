@@ -43,7 +43,28 @@
 <script lang="ts">
 import Vue from "vue";
 
-import { scaleBand, scaleLinear, scaleLog, axisBottom, axisLeft, line, extent, timeDay, max, select, selectAll, format, timeFormat, timeParse, transition, easeLinear, event } from "d3";
+import {
+  scaleBand,
+  scaleLinear,
+  scaleLog,
+  axisBottom,
+  axisLeft,
+  line,
+  extent,
+  timeDay,
+  max,
+  select,
+  selectAll,
+  format,
+  timeFormat,
+  timeParse,
+  transition,
+  easeLinear,
+  event,
+  brush,
+  brushX,
+  brushSelection
+} from "d3";
 import cloneDeep from "lodash/cloneDeep";
 
 export default Vue.extend({
@@ -101,8 +122,11 @@ export default Vue.extend({
         right: 25
       },
       // axes
+      brush: null,
       y: null,
       x: scaleBand().paddingInner(0),
+      xDomain: [],
+      xLinear: scaleLinear(),
       numYTicks: 6,
       isLogY: false,
       yMin: 0,
@@ -169,6 +193,91 @@ export default Vue.extend({
       this.line = line()
         .x(d => this.x(d.date))
         .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
+
+      this.brush = brushX()
+        .extent([
+          [0, 0],
+          [this.width, this.height]
+        ]);
+
+      this.chart
+        .append("g")
+        .call(this.brush)
+        .on("start brush end", () => this.brushed(this))
+        .on("dblclick", this.dblclicked)
+    },
+    brushed(evt) {
+      console.log("brushed")
+      console.log(evt)
+    },
+    dblclicked() {
+      let selection = brushSelection(event.target);
+      let newDomain;
+
+      if (selection) {
+        let xMin = this.xLinear.invert(selection[0]);
+        let xMax = this.xLinear.invert(selection[1]);
+
+        // filter data and reset limits.
+        this.plottedData = this.plottedData.filter(d => d.date >= xMin && d.date <= xMax);
+        newDomain = this.xDomain.filter(d => d >= xMin && d <= xMax);
+      } else {
+        // reset the domains, data if nothing is selected.
+        this.prepData();
+        newDomain = this.xDomain;
+      }
+
+      this.x = this.x
+        .domain(newDomain);
+
+      const yMax = max(this.plottedData, d => d[this.variable]);
+
+      if (this.isLogY) {
+        this.yMin = 0.5;
+
+        this.y = scaleLog()
+          .range([this.height, 0])
+          .domain([this.yMin, yMax]);
+      } else {
+        this.yMin = 0;
+      }
+
+      this.y = this.y
+        .domain([this.yMin, yMax]);
+
+      // redraw axes
+      const plotInterval = Math.round(this.x.domain().length / 42) * 7;
+      this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
+        .tickValues(
+          this.x.domain().filter(function(d, i) {
+            return !(i % plotInterval);
+          })
+        )
+        .tickFormat(timeFormat("%d %b"));
+
+      select(this.$refs.xAxis).call(this.xAxis);
+
+
+      this.yAxis = this.isLogY ?
+        axisLeft(this.y)
+        .tickSizeOuter(0)
+        .ticks(this.numYTicks)
+        .tickFormat((d, i) => {
+          const log = Math.log10(d);
+          return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0 ?
+            format(",")(d) :
+            "";
+        }) :
+        axisLeft(this.y)
+        .tickSizeOuter(0)
+        .ticks(this.numYTicks);
+
+      select(this.$refs.yAxis).call(this.yAxis);
+
+      this.drawPlot();
+
+      select(event.target).call(this.brush.move, [0, 0]);
     },
     prepData: function() {
       if (this.percapita) {
@@ -204,9 +313,15 @@ export default Vue.extend({
         this.xVariableLim :
         extent(this.plottedData, d => d.date);
 
+      this.xDomain = timeDay.range(range[0], timeDay.offset(range[1], 1));
+
       this.x = this.x
         .range([0, this.width])
-        .domain(timeDay.range(range[0], timeDay.offset(range[1], 1)));
+        .domain(this.xDomain);
+
+      this.xLinear = this.xLinear
+        .range([0, this.width])
+        .domain(range);
 
       const yMax = this.fixedYMax ?
         this.fixedYMax :
@@ -282,7 +397,7 @@ export default Vue.extend({
 
       if (this.includeAxis) {
         // ~ 6 tick marks, rounded to the nearest week interval (6*7)
-        const plotInterval = Math.round(this.x.domain().length/42)*7;
+        const plotInterval = Math.round(this.x.domain().length / 42) * 7;
         this.xAxis = axisBottom(this.x)
           .tickSizeOuter(0)
           .tickValues(
@@ -295,7 +410,7 @@ export default Vue.extend({
         select(this.$refs.xAxis).call(this.xAxis);
 
         this.yAxis = this.isLogY ?
-        axisLeft(this.y)
+          axisLeft(this.y)
           .tickSizeOuter(0)
           .ticks(this.numYTicks)
           .tickFormat((d, i) => {

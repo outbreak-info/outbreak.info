@@ -38,7 +38,27 @@ import {
   epiDataState$
 } from "@/api/epi-traces.js";
 
-import { select, selectAll, scaleLinear, scaleLog, scaleTime, extent, max, axisBottom, axisLeft, format, timeFormat, forceCollide, forceY, forceSimulation, transition, easeLinear, line } from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleLog,
+  scaleTime,
+  extent,
+  max,
+  axisBottom,
+  axisLeft,
+  format,
+  timeFormat,
+  forceCollide,
+  forceY,
+  forceSimulation,
+  transition,
+  easeLinear,
+  line,
+  brushSelection,
+  brushX
+} from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
 
@@ -107,6 +127,7 @@ export default Vue.extend({
       yAxis: null,
       // refs
       svg: null,
+      brush: null,
       chart: null,
       switchBtn: null,
       // methods
@@ -121,7 +142,8 @@ export default Vue.extend({
     },
     title() {
       if (this.data.length == 1) {
-        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` :
+          `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
       } else {
         return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
       }
@@ -248,7 +270,7 @@ export default Vue.extend({
       if (this.data && this.chart) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
         this.updateScales();
-        this.drawDots();
+        this.drawPlot();
       }
     },
     prepData: function() {
@@ -269,8 +291,6 @@ export default Vue.extend({
           // ensure dates are sorted
           d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
         });
-
-
       }
     },
     setupPlot: function() {
@@ -287,9 +307,60 @@ export default Vue.extend({
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.epi_curve);
 
+      this.brush = brushX()
+        .extent([this.margin.left, this.margin.top], [this.width - this.margin.right, this.height - this.margin.bottom])
+        .on("start brush end", x => this.brushed(x));
+
       this.line = line()
         .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.variable]));
+
+      this.brush = brushX()
+        .extent([
+          [0, 0],
+          [this.width, this.height]
+        ]);
+
+      this.chart
+        .append("g")
+        .call(this.brush)
+        .on("start brush end", () => this.brushed(this))
+        .on("dblclick", this.dblclicked)
+    },
+    brushed(evt) {
+      console.log("brushed")
+      console.log(evt)
+    },
+    dblclicked() {
+      let selection = brushSelection(event.target);
+      let newDomain;
+      console.log(selection)
+
+      if (selection) {
+        let xMin = this.x.invert(selection[0]);
+        let xMax = this.x.invert(selection[1]);
+        console.log(this.plottedData)
+
+        // filter data and reset limits.
+        this.plottedData.forEach(region => {
+          region.value = region.value.filter(d => d.date >= xMin && d.date <= xMax);
+        });
+        newDomain = [xMin, xMax];
+        console.log(newDomain)
+        console.log(this.plottedData)
+      } else {
+        // reset the domains, data if nothing is selected.
+        this.prepData();
+      }
+
+      // redraw axes
+      this.updateScales();
+
+
+      this.drawPlot();
+
+      // remove the brush box
+      select(event.target).call(this.brush.move, [0, 0]);
     },
     updateScales: function() {
       if (this.xVariable == "date") {
@@ -430,8 +501,14 @@ export default Vue.extend({
         .style("right", this.margin.right + "px")
         .style("top", this.height - 28 + "px");
     },
-    drawDots: function() {
+    drawPlot: function() {
       if (this.plottedData && this.plottedData.length) {
+
+        select(".epi-curve").call(brushX().extent([
+          [0, 200],
+          [1400, 1400]
+        ]));
+
         const t1 = transition().duration(this.transitionDuration);
         const t2 = transition().duration(1500);
         const formatDate = timeFormat("%d %b %Y");
