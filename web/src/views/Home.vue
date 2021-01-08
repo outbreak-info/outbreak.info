@@ -1,31 +1,43 @@
 <template>
 <div class="home flex-column text-left d-flex">
   <div v-if="loading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
   <!-- INTRO -->
   <section>
     <div class="row m-0">
       <div class="col-sm-12 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
-        <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-25" />
+        <div class="d-flex flex-column w-100 align-items-center my-2">
+          <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-20" />
+          <p class="text-light my-1">
+            a standardized, open-source database of COVID-19 resources and epidemiology data
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
   <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
-    <div class="container p-3">
-      <p class="focustext">
-        During outbreaks of emerging diseases such as COVID-19,
-        efficiently collecting, sharing, and integrating data is critical
-        to scientific research.
-      </p>
-      <p class="text-dark h-100 focustext font-weight-bold">
-        <b class="text-highlight">outbreak.info</b> is a resource to
-        aggregate all this information into a single location.
-      </p>
-      <p class="m-0">
-        <router-link :to="{ name: 'Latest' }">View latest changes</router-link>
-      </p>
+    <div class="row d-flex align-items-center p-3">
+      <div class="col-sm-9 d-flex flex-column align-items-center justify-content-center px-4">
+        <p class="focustext">
+          During the COVID-19 pandemic, researchers have been sharing thousands of datasets, papers, and tools each week.
+        </p>
+        <p class="text-dark h-100 focustext">
+          <b class="text-highlight">outbreak.info</b> compiles a database of COVID-19 and SARS-CoV-2 resources and epidemiology data to easily discover this information.
+        </p>
+        <button class="btn btn-main-outline mt-3">
+          <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
+        </button>
+      </div>
+
+      <div class="col-sm-3">
+        <video class="w-100 mb-3" controls>
+          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
+          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </div>
   </div>
 
@@ -33,30 +45,17 @@
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
     <div class="row m-0 w-100 d-flex justify-content-center">
       <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
-        <h3 class="mt-2">
+        <h3 class="my-3">
           Resources</h3>
 
         <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
-        <!-- <p class="text-muted">
-          Keeping track of all the data and publications on COVID-19 and SARS-CoV-2 is a job in itself, requiring searching many different repositories and websites. outbreak.info combines the metadata from heterogeneous sources, creating one unified
-          platform to find publications, clinical trials, datasets, protocols, and more.
-        </p> -->
-
-        <video class="w-100 mb-3" controls>
-          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
-          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-          Your browser does not support the video tag.
-        </video>
-
-        <!-- <svg viewBox="0 0 100 3">
-          <line x1="0" y1="0" x2="100" vector-effect="non-scaling-stroke" stroke="#D13B62" stroke-width="5" />
-        </svg> -->
-
-        <div>
+        <div class="mb-4">
           <form autocomplete="off" class="w-100">
             <div class="input-group">
               <div class="input-group-prepend">
-                <span class="input-group-text bg-grey text-muted border-0" id="sb"><font-awesome-icon :icon="['fas', 'search']"/></span>
+                <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
               </div>
               <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
             </div>
@@ -65,130 +64,61 @@
             <span class="mr-3">
               <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
                 remdesivir
-                <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <router-link :to="{name: 'NIAID'} " class="text-light">
               NIAID-related
-              <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
+              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </small>
         </div>
-
-
-        <router-link :to='{ path: "/", hash: "#resource-examples" }'>
-          <button class="btn btn-main-outline w-100 px-2 py-1 mt-3" :style="{background: 'white'}">
-            What can I do with resources?
-          </button>
-        </router-link>
       </div>
 
 
       <!-- EPI INTRO -->
       <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column  justify-content-between epi-intro">
-        <h3 class="mt-2">
-          Epidemiology</h3>
-
+        <h3 class="my-3">Epidemiology</h3>
 
         <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
           metropolitan area, or U.S. county</div>
 
-        <!-- <p class="text-muted">
-          Explore and download epidemiological data on confirmed cases, deaths, hospitalizations, and testing. Compare between locations to visualize how the pandemic has varied over time and geography.
-        </p> -->
-
-        <video class="w-100 mb-3" controls>
-          <!-- <video class="w-100 mb-3" autoplay loop muted> -->
-          <source src="@/assets/home/epi_demo.mp4" type="video/mp4">
-          <!-- <source src="@/assets/home/epi_demo.ogv" type="video/ogg"> -->
-          Your browser does not support the video tag.
-        </video>
-
-        <div>
+        <div class="mb-4">
           <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
           <small id="sBar-example" class="form-text d-block text-left ml-5">
             <span class="mr-2">Try:</span>
             <span class="mr-3">
               <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
-                <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
-            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area <font-awesome-icon :icon="['fas', 'angle-double-right']"/>
+            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
+              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </small>
         </div>
-
-        <router-link :to='{ path: "/", hash: "#epi-examples" }' class="text-light">
-          <button class="btn btn-main-outline px-2 py-1 mt-3 w-100" :style="{background: 'white'}">What can I do with epi data?</button>
-        </router-link>
 
       </div>
     </div>
   </section>
 
   <!-- RESOURCE EXAMPLES -->
-  <section id="resource-examples" class="container my-5">
-    <h3>Search for COVID-19 resources</h3>
+  <section id="resource-examples" class="container my-3">
+    <h3>Find COVID-19 resources</h3>
     <div class="row d-flex flex-wrap">
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Search by Keyword</h5>
-            <video class="w-100" controls>
-              <source src="@/assets/home/query_example.mp4" type="video/mp4">
-              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-              Your browser does not support the video tag.
-            </video>
+            <h5 class="text-uppercase">Search Resource Library</h5>
+            <img src="@/assets/home/resources_search.png" alt="Search Outbreak.info resources" class="w-100 mb-3" />
           </router-link>
         </div>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Search by resource type</h5>
-            <video class="w-100" controls>
-              <source src="@/assets/home/type_example.mp4" type="video/mp4">
-              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-              Your browser does not support the video tag.
-            </video>
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Search by resource provider</h5>
-            <video class="w-100" controls>
-              <source src="@/assets/home/source_example.mp4" type="video/mp4">
-              <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-              Your browser does not support the video tag.
-            </video>
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Download search results</h5>
-            <div class="h-100 d-flex align-items-center">
-              <video class="w-100" controls>
-                <source src="@/assets/home/download_example.mp4" type="video/mp4">
-                <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          </router-link>
-        </div>
-      </div>
-
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Download resource metadata</h5>
+          <h5 class="text-uppercase">Download metadata</h5>
           <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
             <h6>API</h6>
             <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
@@ -215,7 +145,7 @@
   </section>
 
   <!-- EPI EXAMPLES -->
-  <section id="epi-examples" class="container my-5">
+  <section id="epi-examples" class="container my-3">
     <h3>Explore epidemiology data</h3>
     <div class="row">
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
@@ -265,28 +195,44 @@
             <div class="h-100 d-flex flex-column justify-content-center">
               <img src="@/assets/home/doubling_example.svg" alt="Outbreak.info doubling rates" class="w-100" />
             </div>
-
           </router-link>
         </div>
 
       </div>
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Access data</h5>
+          <router-link :to="{name: 'Data'}" class="text-dark h-100 d-flex flex-column">
+            <h5 class="text-uppercase">View tables</h5>
+            <div class="h-100 d-flex flex-column justify-content-center">
+              <img src="@/assets/home/data_table.png" alt="Outbreak.info doubling rates" class="w-100" />
+            </div>
+          </router-link>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Access data -->
+  <section id="epi-examples" class="container my-3">
+    <h3>Access data</h3>
+    <div class="row">
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
           <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
-            <h6>API</h6>
+            <h5 class="text-dark">API</h5>
             <img src="@/assets/home/api.png" alt="Outbreak.info" class="w-100 mb-3" />
           </a>
-
-          <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
-            <h6>R package</h6>
-            <img src="@/assets/home/r.png" alt="Outbreak.info" class="w-100" />
-          </a>
-
         </div>
       </div>
 
-
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
+            <h5 class="text-dark">R package</h5>
+            <img src="@/assets/home/R_package.png" alt="Outbreak.info" class="w-100" />
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -351,7 +297,9 @@ import {
   library
 } from "@fortawesome/fontawesome-svg-core";
 import {
-  faSpinner, faAngleDoubleRight, faSearch
+  faSpinner,
+  faAngleDoubleRight,
+  faSearch
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faSpinner, faAngleDoubleRight, faSearch);
@@ -471,5 +419,16 @@ export default {
 
 .add-items {
     height: 120px;
+}
+
+.w-20 {
+    width: 20% !important;
+}
+
+.btn-main-outline a {
+    color: $primary-color;
+    &:hover {
+        color: white !important;
+    }
 }
 </style>
