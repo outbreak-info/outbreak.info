@@ -10,58 +10,63 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav" v-if="!$route.meta.hideNavigation">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :key="$route.fullPath" :to="{
-                  name: 'Epidemiology'}">
+        <ul class="navbar-nav nav-link">
+          <!-- EPIDEMIOLOGY -->
+          <li class="dropdown nav-link">
+            <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Epidemiology
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
-                  name: 'Maps'
-                }">Maps</router-link>
+            </div>
+            <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :key="$route.fullPath" :to="{
+                    name: 'Epidemiology'}">
+                Compare locations over time
+              </router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
+                    name: 'Maps'
+                  }">Explore interactive maps</router-link>
+
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
+                    name: 'Compare'
+                  }">Find similar Locations</router-link>
+
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Regions' }" :key="$route.fullPath" :to="{
+                    name: 'Regions'
+                  }">Explore regions</router-link>
+
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Doubling Rates' }" :key="$route.fullPath" :to="{
+                    name: 'Doubling Rates',
+                    query: { location: 'USA', variable: 'confirmed' }
+                  }">View doubling rates</router-link>
+
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/data" :class="{ active: $route.name == 'Data' }">Access data tables
+              </router-link>
+            </div>
           </li>
 
-          <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
-                  name: 'Compare'
-                }">Compare Locations</router-link>
-          </li>
-
-          <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Doubling Rates' }" :key="$route.fullPath" :to="{
-                  name: 'Doubling Rates',
-                  query: { location: 'USA', variable: 'confirmed' }
-                }">Doubling Rates</router-link>
-          </li>
-
-          <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/data" :class="{ active: $route.name == 'Data' }">Tables
-            </router-link>
-          </li>
-
-          <li class="nav-item">
+          <!-- RESOURCES -->
+          <li>
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/resources" :class="{ active: $route.name == 'Resources' }">Resources
             </router-link>
           </li>
 
-          <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Sources
-            </router-link>
-          </li>
-
+          <!-- API -->
           <li class="nav-item">
             <a class="nav-link" href="https://api.outbreak.info/">API</a>
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link" href="https://outbreak.info/blog">News</a>
+          <!-- ABOUT -->
+          <li class="dropdown nav-link">
+            <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              About
+            </div>
+            <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About</router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Sources
+              </router-link>
+              <a class="nav-link" href="https://outbreak.info/blog">News</a>
+            </div>
           </li>
 
-          <li class="nav-item">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About</router-link>
-          </li>
         </ul>
       </div>
     </nav>
@@ -104,7 +109,6 @@
 </template>
 
 <script>
-
 export default {
   name: "App",
   data() {
@@ -131,5 +135,13 @@ export default {
     -ms-transition: height 0s;
     -o-transition: height 0s;
     transition: height 0s;
+}
+
+.dropdown-menu-dark {
+    background: $primary-color;
+}
+
+.dropdown-menu {
+    line-height: 1.2em;
 }
 </style>
