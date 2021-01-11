@@ -32,21 +32,46 @@
       </a>
     </div>
 
-    <div class="h-100 border-left pl-3 d-flex flex-column justify-content-center align-items-center">
-      <small class="text-light xsmall">Supported with funding from</small>
+    <div class="col-sm-3 d-flex flex-column justify-content-center p-0 z pl-3 border-left">
+      <div class="text-light xsmall text-left">Supported with funding from</div>
+
       <div class="d-flex">
-        <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
+        <!-- <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
+          <a href="https://www.niaid.nih.gov/" rel="noreferrer" target="_blank">
+            <img src="@/assets/niaid.png" class="w-100" alt="NIAID" />
+          </a>
+        </div> -->
+
+        <div class="col-sm-6 d-flex justify-content-center align-items-center picBox">
           <a href="https://www.niaid.nih.gov/" rel="noreferrer" target="_blank">
             <img src="@/assets/niaid.png" class="w-100" alt="NIAID" />
           </a>
         </div>
-        <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
+        <div class="col-sm-6 d-flex justify-content-center align-items-center picBox">
           <a href="https://ctsa.ncats.nih.gov/cd2h/" rel="noreferrer" target="_blank">
             <img src="@/assets/cd2h.png" class="w-100" alt="CD2H" />
           </a>
         </div>
       </div>
     </div>
+
+    <!-- <div class="col-sm-4 d-flex flex-column justify-content-center">
+      <div class="pl-3 border-left">
+        <small class="text-light xsmall text-left pt-2">Supported with funding from</small>
+        <div class="d-flex">
+          <div class="col-sm-6 d-flex justify-content-center align-items-center picBox pl-0">
+            <a href="https://www.niaid.nih.gov/" rel="noreferrer" target="_blank">
+              <img src="@/assets/niaid.png" class="w-100" alt="NIAID" />
+            </a>
+          </div>
+          <div class="col-sm-6 d-flex justify-content-center align-items-center picBox">
+            <a href="https://ctsa.ncats.nih.gov/cd2h/" rel="noreferrer" target="_blank">
+              <img src="@/assets/cd2h.png" class="w-100" alt="CD2H" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div> -->
   </div>
 
 </div>
