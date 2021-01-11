@@ -10,7 +10,7 @@
 	.st4{font-size:24px;}
 	.st5{font-size:21px;}
 	.st6{fill:#F28E2C;}
-	.st7{font-family:'DMSans-Medium','DM Sans',sans-serif;}
+	.st7{font-family:'DMSans-Medium','DM Sans',sans-serif;font-weight:600}
 	.st8{fill:none;stroke:#F28E2C;stroke-width:6;}
 	.st9{fill:none;stroke:#507EA3;stroke-width:6;}
 	.st10{fill:#507EA3;}
