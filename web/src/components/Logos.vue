@@ -65,7 +65,7 @@
         </li>
         <li class="d-inline m-3">
           All content copyright
-          <a href="http://sulab.org/" target="_blank" rel="noreferrer" class="mx-1 underline">
+          <a href="http://sulab.org/" target="_blank" rel="noreferrer" class="mx-1 white-underline">
             SuLab</a>
           &copy; <span v-text="year"></span>
         </li>
@@ -110,7 +110,7 @@ export default Vue.extend({
   background-color: #415365 !important;
 }
 
-.underline {
+.white-underline {
   text-decoration: underline;
   color: white !important;
 }
