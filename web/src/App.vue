@@ -203,6 +203,32 @@
 
     <!-- LOGO FOOTER -->
     <Logos class="bg-grey" />
+
+    <div class="row m-0 bg-main__darker d-flex justify-content-center align-items-center py-1" id="terms">
+      <div class="d-flex text-light xsmall">
+        <ul class="m-0">
+          <li class="d-inline m-3">
+            <router-link class="text-light" :to="{name: 'Citation'}">How to Cite</router-link>
+          </li>
+          <li class="d-inline m-3">
+            <router-link class="text-light" to="/privacy">Privacy Policy</router-link>
+          </li>
+          <li class="d-inline m-3">
+            <router-link class="text-light" to="/terms">Terms</router-link>
+          </li>
+          <li class="d-inline m-3">
+            All content copyright
+            <a href="http://sulab.org/" target="_blank" rel="noreferrer" class="mx-1 white-underline">
+              SuLab</a>
+            &copy; <span v-text="year"></span>
+          </li>
+          <li class="d-inline m-3">
+            All rights reserved
+          </li>
+        </ul>
+      </div>
+    </div>
+
   </footer>
 </div>
 </template>
@@ -214,6 +240,16 @@ export default {
   name: "App",
   components: {
     Logos
+  },
+  data() {
+    return {
+      year: ""
+    };
+  },
+  mounted() {
+    var self = this;
+    var currentTime = new Date();
+    self.year = currentTime.getFullYear();
   }
 }
 </script>

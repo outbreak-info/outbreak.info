@@ -20,17 +20,17 @@
   <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
     <div class="row d-flex align-items-center p-3">
       <div class="col-sm-9 d-flex flex-column align-items-center justify-content-center px-4">
-        <p>
+        <p class="larger">
           During the COVID-19 pandemic, researchers have been sharing thousands of datasets, papers, and tools each week.
         </p>
-        <p class="text-dark">
+        <p class="text-dark larger">
           <b class="text-highlight">outbreak.info</b> compiles a database of COVID-19 and SARS-CoV-2 resources and epidemiology data to easily discover this information.
         </p>
         <small>
-        <button class="btn btn-main-outline mt-3">
-          <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
-        </button>
-      </small>
+          <button class="btn btn-main-outline mt-3">
+            <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
+          </button>
+        </small>
       </div>
 
       <div class="col-sm-3">
@@ -263,14 +263,12 @@
     </div>
   </section>
 
-  <!-- <Logos class="bg-grey" /> -->
 </div>
 </template>
 <script>
 // @ is an alias to /src
 // import Vue from "vue";
 import SearchBar from "@/components/SearchBar.vue";
-import Logos from "@/components/Logos.vue";
 import GlanceSummary from "@/components/GlanceSummary";
 import {
   getGlanceSummary
@@ -301,7 +299,6 @@ export default {
   name: "Home",
   components: {
     SearchBar,
-    // Logos,
     GlanceSummary,
     FontAwesomeIcon
   },
@@ -423,5 +420,9 @@ export default {
     &:hover {
         color: white !important;
     }
+}
+
+.larger {
+    font-size: larger;
 }
 </style>
