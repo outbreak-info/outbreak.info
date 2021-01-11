@@ -27,7 +27,7 @@
 
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
                     name: 'Compare'
-                  }">Find similar Locations</router-link>
+                  }">Find similar locations</router-link>
 
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Regions' }" :key="$route.fullPath" :to="{
                     name: 'Regions'
@@ -61,9 +61,9 @@
             </div>
             <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About</router-link>
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Sources
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Data sources
               </router-link>
-              <a class="nav-link" href="https://outbreak.info/blog">News</a>
+              <a class="nav-link" href="https://outbreak.info/blog">Blog</a>
             </div>
           </li>
 
@@ -74,36 +74,156 @@
   <transition name="fade">
     <router-view class="main" />
   </transition>
+
+  
   <!-- FOOTER -->
   <footer id="outbreak-footer" class="bg-main__darker py-4">
-    <div class="text-center text-muted">
-      <ul>
-        <li class="d-inline m-2">
-          <a href="mailto:help@outbreak.info" target="_blank" class="text-light">
-            Contact Us
-          </a>
-        </li>
-        <li class="d-inline m-2">
-          <router-link class="text-light" :to="{name: 'Sources'}">Data Sources</router-link>
-        </li>
-        <li class="d-inline m-2">
-          <router-link class="text-light" :to="{name: 'Citation'}">How to Cite</router-link>
-        </li>
-        <li class="d-inline m-2">
-          <router-link class="text-light" to="/privacy">Privacy Policy</router-link>
-        </li>
-        <li class="d-inline m-2">
-          <router-link class="text-light" to="/terms">Terms</router-link>
-        </li>
-      </ul>
-      <small>
-        All content copyright
-        <a href="http://sulab.org/" target="_blank" rel="noreferrer">
-          SuLab</a>
-        © <span v-text="year"></span> <br />
-        All rights reserved.
-      </small>
+    <div class="d-flex justify-content-between text-left text-muted row border-bottom navbar-dark px-3 pb-3" id="footer-links">
+      <div class="text-light px-4">
+        <div>
+          Epidemiology
+        </div>
+        <ul class="navbar-nav navbar-footer">
+          <li class="nav-item">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :key="$route.fullPath" :to="{
+                  name: 'Epidemiology'}">
+              Compare locations over time
+            </router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
+                  name: 'Maps'
+                }">Explore interactive maps</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
+                  name: 'Compare'
+                }">Find similar locations</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Regions' }" :key="$route.fullPath" :to="{
+                  name: 'Regions'
+                }">Explore regions</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Doubling Rates' }" :key="$route.fullPath" :to="{
+                  name: 'Doubling Rates',
+                  query: { location: 'USA', variable: 'confirmed' }
+                }">View doubling rates</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/data" :class="{ active: $route.name == 'Data' }">Access data tables
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
+      <div class="text-light px-4">
+        <div>
+          Resources
+        </div>
+        <ul class="navbar-nav navbar-footer">
+          <li class="nav-item">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :key="$route.fullPath" :to="{
+                  name: 'Epidemiology'}">
+              Compare locations over time
+            </router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
+                  name: 'Maps'
+                }">Explore interactive maps</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
+                  name: 'Compare'
+                }">Find similar locations</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Regions' }" :key="$route.fullPath" :to="{
+                  name: 'Regions'
+                }">Explore regions</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Doubling Rates' }" :key="$route.fullPath" :to="{
+                  name: 'Doubling Rates',
+                  query: { location: 'USA', variable: 'confirmed' }
+                }">View doubling rates</router-link>
+          </li>
+          <li class="nav-item p-0">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/data" :class="{ active: $route.name == 'Data' }">Access data tables
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
+      <div class="text-light px-4">
+        <div>
+          About
+        </div>
+        <ul class="navbar-nav navbar-footer">
+          <li class="nav-link">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About us</router-link>
+          </li>
+
+          <li class="nav-link">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Data sources
+            </router-link>
+          </li>
+
+          <li class="nav-link">
+            <a class="nav-link" href="https://outbreak.info/blog">Blog</a>
+          </li>
+
+          <li class="nav-link">
+            <router-link class="nav-link" :to="{name: 'Citation'}">How to cite</router-link>
+          </li>
+        </ul>
+      </div>
+
+      <div class="text-light px-4">
+        <div>
+          Contact us
+        </div>
+        <ul class="navbar-nav navbar-footer">
+          <li class="nav-link">
+            <a href="mailto:help@outbreak.info" target="_blank" class="nav-link">
+              help@outbreak.info
+            </a>
+          </li>
+
+          <li class="nav-link">
+            <a class="nav-link" href="https://github.com/outbreak-info/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
+          </li>
+        </ul>
+      </div>
+
+
+
+
+
     </div>
+    <ul class="pt-3">
+      <li class="d-inline m-2">
+        <router-link class="text-light" :to="{name: 'Sources'}">Data Sources</router-link>
+      </li>
+      <li class="d-inline m-2">
+        <router-link class="text-light" :to="{name: 'Citation'}">How to Cite</router-link>
+      </li>
+      <li class="d-inline m-2">
+        <router-link class="text-light" to="/privacy">Privacy Policy</router-link>
+      </li>
+      <li class="d-inline m-2">
+        <router-link class="text-light" to="/terms">Terms</router-link>
+      </li>
+    </ul>
+    <small>
+      All content copyright
+      <a href="http://sulab.org/" target="_blank" rel="noreferrer">
+        SuLab</a>
+      © <span v-text="year"></span> <br />
+      All rights reserved.
+    </small>
   </footer>
 </div>
 </template>
@@ -143,5 +263,9 @@ export default {
 
 .dropdown-menu {
     line-height: 1.2em;
+}
+
+.navbar-footer {
+    font-size: small;
 }
 </style>

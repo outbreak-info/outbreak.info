@@ -20,15 +20,17 @@
   <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
     <div class="row d-flex align-items-center p-3">
       <div class="col-sm-9 d-flex flex-column align-items-center justify-content-center px-4">
-        <p class="focustext">
+        <p>
           During the COVID-19 pandemic, researchers have been sharing thousands of datasets, papers, and tools each week.
         </p>
-        <p class="text-dark h-100 focustext">
+        <p class="text-dark">
           <b class="text-highlight">outbreak.info</b> compiles a database of COVID-19 and SARS-CoV-2 resources and epidemiology data to easily discover this information.
         </p>
+        <small>
         <button class="btn btn-main-outline mt-3">
           <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
         </button>
+      </small>
       </div>
 
       <div class="col-sm-3">
@@ -261,15 +263,6 @@
     </div>
   </section>
 
-  <section class="container">
-    <p class="focustext">
-      Notice a bug, know of a COVID-19 data source, or want to suggest a
-      feature?
-    </p>
-    <p class="text-center">
-      <a class="btn btn-main m-5" href="https://github.com/outbreak-info/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
-    </p>
-  </section>
   <Logos class="bg-grey" />
 </div>
 </template>
