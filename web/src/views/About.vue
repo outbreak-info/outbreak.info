@@ -29,6 +29,10 @@
             data integration efforts to make data more usable.
           </p>
 
+          <p class="text-left focustext mb-5">
+            Outbreak.info is a project from the <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen</a> labs at Scripps Research.
+          </p>
+
           <p class="focustext text-left">
             <router-link :to="{ name: 'Sources' }" class="text-left"
               >Learn more about our data sources</router-link
@@ -40,10 +44,11 @@
               >View latest changes</router-link
             >
           </p>
+
+
         </div>
       </div>
 
-      <Logos class="col-sm-12 bg-grey p-0" />
       <div class="col-sm-12 jumbotron rounded-0 bg-grey__darker mb-0">
         <h4 class="text-light m-2">
           Notice a bug, know of a COVID-19 data source, or want to suggest a
@@ -67,12 +72,8 @@
 <script lang="js">
 import Vue from "vue";
 
-import Logos from "@/components/Logos.vue";
 
 export default Vue.extend({
-  name: "About",
-  components: {
-    Logos
-  }
+  name: "About"
 });
 </script>
