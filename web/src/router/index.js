@@ -30,10 +30,16 @@ const routes = [{
       import( /* webpackChunkName: "license" */ "../views/License.vue")
   },
   {
+    path: "/videos",
+    name: "Videos",
+    component: () =>
+      import( /* webpackChunkName: "videos" */ "../views/Videos.vue")
+  },
+  {
     path: "/citation",
     name: "Citation",
     component: () =>
-      import( /* webpackChunkName: "license" */ "../views/Citation.vue")
+      import( /* webpackChunkName: "citation" */ "../views/Citation.vue")
   },
   {
     path: "/about",

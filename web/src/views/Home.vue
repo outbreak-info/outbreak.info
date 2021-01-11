@@ -263,7 +263,7 @@
     </div>
   </section>
 
-  <Logos class="bg-grey" />
+  <!-- <Logos class="bg-grey" /> -->
 </div>
 </template>
 <script>
@@ -301,7 +301,7 @@ export default {
   name: "Home",
   components: {
     SearchBar,
-    Logos,
+    // Logos,
     GlanceSummary,
     FontAwesomeIcon
   },

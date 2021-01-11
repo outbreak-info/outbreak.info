@@ -75,9 +75,9 @@
     <router-view class="main" />
   </transition>
 
-  
+
   <!-- FOOTER -->
-  <footer id="outbreak-footer" class="bg-main__darker py-4">
+  <footer id="outbreak-footer" class="bg-main__darker pt-4">
     <div class="d-flex justify-content-between text-left text-muted row border-bottom navbar-dark px-3 pb-3" id="footer-links">
       <div class="text-light px-4">
         <div>
@@ -178,6 +178,10 @@
           <li class="nav-link">
             <router-link class="nav-link" :to="{name: 'Citation'}">How to cite</router-link>
           </li>
+
+          <li class="nav-link">
+            <router-link class="nav-link" :to="{name: 'Videos'}">Video demos</router-link>
+          </li>
         </ul>
       </div>
 
@@ -203,43 +207,18 @@
 
 
     </div>
-    <ul class="pt-3">
-      <li class="d-inline m-2">
-        <router-link class="text-light" :to="{name: 'Sources'}">Data Sources</router-link>
-      </li>
-      <li class="d-inline m-2">
-        <router-link class="text-light" :to="{name: 'Citation'}">How to Cite</router-link>
-      </li>
-      <li class="d-inline m-2">
-        <router-link class="text-light" to="/privacy">Privacy Policy</router-link>
-      </li>
-      <li class="d-inline m-2">
-        <router-link class="text-light" to="/terms">Terms</router-link>
-      </li>
-    </ul>
-    <small>
-      All content copyright
-      <a href="http://sulab.org/" target="_blank" rel="noreferrer">
-        SuLab</a>
-      © <span v-text="year"></span> <br />
-      All rights reserved.
-    </small>
+    <Logos class="bg-grey" />
   </footer>
 </div>
 </template>
 
 <script>
+import Logos from "@/components/Logos.vue";
+
 export default {
   name: "App",
-  data() {
-    return {
-      year: ""
-    };
-  },
-  mounted() {
-    var self = this;
-    var currentTime = new Date();
-    self.year = currentTime.getFullYear();
+  components: {
+    Logos
   }
 }
 </script>
