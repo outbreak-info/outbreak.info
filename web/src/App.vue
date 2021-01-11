@@ -1,5 +1,7 @@
 <template>
 <div id="app">
+  <!-- HEADER -->
+  <!-- IMPORTANT: when editing the header, make sure you edit the footer site map below too -->
   <header id="outbreak-header">
     <nav class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero">
       <router-link to="/" class="navbar-brand no-underline">
@@ -88,7 +90,9 @@
 
   <!-- FOOTER -->
   <footer id="outbreak-footer" class="bg-main__darker pt-4">
-    <div class="d-flex justify-content-between text-left text-muted row border-bottom navbar-dark px-3 pb-3" id="footer-links">
+    <!-- sitemap -->
+    <div class="d-flex justify-content-between text-left text-muted row border-bottom navbar-dark px-3 pb-3" id="footer-sitemap">
+      <!-- epi group -->
       <div class="text-light px-4">
         <div>
           Epidemiology
@@ -128,7 +132,7 @@
         </ul>
       </div>
 
-
+      <!-- resources group -->
       <div class="text-light px-4">
         <div>
           Resources
@@ -149,6 +153,7 @@
         </ul>
       </div>
 
+      <!-- about group -->
       <div class="text-light px-4">
         <div>
           About
@@ -177,6 +182,7 @@
         </ul>
       </div>
 
+      <!-- contact us group -->
       <div class="text-light px-4">
         <div>
           Contact us
@@ -193,8 +199,9 @@
           </li>
         </ul>
       </div>
-
     </div>
+
+    <!-- LOGO FOOTER -->
     <Logos class="bg-grey" />
   </footer>
 </div>
