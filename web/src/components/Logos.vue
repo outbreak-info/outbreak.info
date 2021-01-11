@@ -90,7 +90,7 @@ export default Vue.extend({
 }
 
 .xsmall {
-  font-size: x-small;
+  font-size: smaller;
 }
 
 #terms {
