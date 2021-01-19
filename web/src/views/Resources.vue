@@ -5,20 +5,15 @@
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
-  <!-- header -->
-  <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
-    <div class="row m-0 w-100">
-      <div class="col-sm-12 m-auto">
-        <h4>COVID-19 and SARS-CoV-2 datasets, analyses, and resources</h4>
-      </div>
-    </div>
-  </section>
-
-  <section class="d-flex py-2">
+  <section class="d-flex p-2">
     <div class="row m-0 w-100">
       <!-- search bar -->
-      <div class="col-sm-12 col-md-8">
-        <div class="py-3">
+      <div class="col-sm-12">
+        <h2 class="text-left mb-0 mt-3">Search for resources</h2>
+        <p class="text-left text-muted m-0">
+          Find COVID-19 and SARS-CoV-2 publications, datasets, clinical trials, protocols, and more
+        </p>
+        <div class="py-1 col-sm-9 col-md-6 col-lg-5 py-3">
           <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
             <div class="input-group">
               <div class="input-group-prepend">
@@ -40,26 +35,23 @@
             </small>
           </div>
         </div>
-
-
-      </div>
-
-      <!-- sidebar: links -->
-      <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
-        <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
-        <router-link :to="{path: '/sources', hash: '#resources'}">Where do we get our data?</router-link>
-        <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
-      </div>
-
-      <!-- what's new -->
-      <div class="col-sm-12">
-        <NewResources :newData="newData" />
       </div>
     </div>
   </section>
 
+  <!-- sidebar: links -->
+  <div class="d-flex align-items-center justify-content-between w-100 bg-grey__lightest p-2">
+    <!-- what's new -->
+    <NewResources :newData="newData" :searchInput="searchInput" />
+    <div>
+    <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
+    <router-link class="mx-2" :to="{path: '/sources', hash: '#resources'}">Where do we get our data?</router-link>
+    <router-link class="mx-2" :to="{ name: 'Contributing' }">Contributing a source</router-link>
+  </div>
+  </div>
+
   <!-- mini-nav for resource types -->
-  <section class="d-flex justify-content-end py-2 bg-sec">
+  <section class="d-flex justify-content-end py-1 bg-sec">
     <!-- <div class="row d-flex justify-content-center w-100">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <ul class="navbar-nav">
