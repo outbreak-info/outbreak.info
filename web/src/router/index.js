@@ -226,6 +226,19 @@ const routes = [{
         /* webpackChunkName: "doubling-rates" */
         "../views/DoublingRates.vue"
       )
+  },
+  {
+    path: "/sarscov2-mutations",
+    name: "Mutations",
+    props: route => ({
+      location: route.query.location,
+      variable: route.query.variable
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "mutations" */
+        "../views/Mutations.vue"
+      )
   }
 ];
 

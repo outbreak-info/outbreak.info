@@ -60,6 +60,19 @@
             </div>
           </li>
 
+          <!-- Genomics -->
+          <li class="dropdown px-3 nav-link">
+            <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Genomics
+            </div>
+            <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">Search SARS-CoV-2 mutations
+              </router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">B.1.1.7 USA Situation Reports
+              </router-link>
+            </div>
+          </li>
+
           <!-- API -->
           <li class="nav-item">
             <a class="nav-link" href="https://api.outbreak.info/">API</a>
@@ -148,6 +161,21 @@
           </li>
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/schema" :class="{ active: $route.name == 'Schema' }">View & adapt schema
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
+      <!-- genomics group -->
+      <div class="text-light px-4">
+        <div>
+          Genomics
+        </div>
+        <ul class="navbar-nav navbar-footer">
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">Search SARS-CoV-2 mutations
+            </router-link>
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">B.1.1.7 USA situation reports
             </router-link>
           </li>
         </ul>
