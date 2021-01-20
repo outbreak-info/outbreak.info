@@ -1,0 +1,11 @@
+{
+  "B1.1.7": [{
+    "gene": "ORF1ab",
+    "aa_original": "T",
+    "aa_new": "In",
+    "aa_location": 1001,
+    "nuc_original": "C",
+    "nuc_new": "T",
+    "nuc_location": 3266
+  }]
+}

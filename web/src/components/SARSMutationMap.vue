@@ -11,8 +11,9 @@
 <script lang="js">
 import Vue from "vue";
 
-import AA from "@/assets/genomics/sarscov2_aa.json";
+// import AA from "@/assets/genomics/sarscov2_aa.json";
 import AA_MAP from "@/assets/genomics/sarscov2_aa_gene_map.json";
+import MUTATIONS from "@/assets/genomics/sarscov2_mutations.json";
 
 import {
   select,
@@ -30,7 +31,7 @@ export default Vue.extend({
   props: {
     width: {
       type: Number,
-      default: 1000
+      default: 1200
     },
     height: {
       type: Number,
@@ -46,6 +47,7 @@ export default Vue.extend({
         left: 5
       },
       geneHeight: 30,
+      mutationHeight: 100,
       // refs
       svg: null,
       genes: null,
@@ -60,11 +62,12 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
-      this.svg = select(this.$refs.svg);
+      this.svg = select(this.$refs.svg).attr("transform", `translate(${this.margin.left},${this.margin.top})`);
       this.genes = select(this.$refs.genes)
-      .attr("transform", `translate(${this.margin.top},${this.margin.left})`);
+      .attr("transform", `translate(0,${this.mutationHeight})`);
 
       console.log(AA_MAP)
+      console.log(MUTATIONS)
 
       this.xAmino = this.xAmino
       .range([0, this.width - this.margin.left - this.margin.right])
