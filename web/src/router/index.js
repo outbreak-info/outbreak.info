@@ -259,7 +259,7 @@ const routes = [{
       )
   },
   {
-    path: "/situation-reports/:mutation/:date",
+    path: "/situation-reports/:mutation",
     name: "SituationReport",
     component: () =>
       import(
