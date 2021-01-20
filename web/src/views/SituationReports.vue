@@ -1,5 +1,5 @@
 <template>
-<div class="container text-left my-5">
+<div class=" text-left my-5">
   <h1 class="m-0">SARS-CoV-2 Mutation Situation Reports</h1>
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">

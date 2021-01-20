@@ -1,11 +1,110 @@
 {
-  "B1.1.7": [{
+  "B.1.1.7": [
+
+    {
     "gene": "ORF1ab",
     "aa_original": "T",
-    "aa_new": "In",
+    "aa_new": "I",
     "aa_location": 1001,
-    "nuc_original": "C",
-    "nuc_new": "T",
-    "nuc_location": 3266
-  }]
+    "gene_offset": 0
+  },
+    {
+    "gene": "ORF1ab",
+    "aa_original": "I",
+    "aa_location": 2230,
+    "aa_new": "T",
+    "gene_offset": 0
+  },
+    {
+    "gene": "ORF1ab",
+    "aa_original": "A",
+    "aa_location": 1708,
+    "aa_new": "D",
+    "gene_offset": 0
+  },
+    {
+    "gene": "S",
+    "aa_original": "N",
+    "aa_location": 501,
+    "aa_new": "Y",
+    "gene_offset": 7096
+  },
+    {
+    "gene": "S",
+    "aa_original": "A",
+    "aa_location": 570,
+    "aa_new": "D",
+    "gene_offset": 7096
+  },
+    {
+    "gene": "S",
+    "aa_original": "D",
+    "aa_location": 614,
+    "aa_new": "G",
+    "gene_offset": 7096
+  },
+    {
+    "gene": "S",
+    "aa_original": "P",
+    "aa_location": 681,
+    "aa_new": "H",
+    "gene_offset": 7096
+  },
+    {
+    "gene": "S",
+    "aa_original": "T",
+    "aa_location": 716,
+    "aa_new": "I",
+    "gene_offset": 7096
+  },
+    {
+    "gene": "S",
+    "aa_original": "S",
+    "aa_location": 982,
+    "aa_new": "A",
+    "gene_offset": 7096
+  },
+    {
+    "gene": "S",
+    "aa_original": "D",
+    "aa_location": 1118,
+    "aa_new": "H",
+    "gene_offset": 7096
+  },
+    {
+    "gene": "N",
+    "aa_original": "D",
+    "aa_location": 3,
+    "aa_new": "L",
+    "gene_offset": 9287
+  },
+    {
+    "gene": "N",
+    "aa_original": "S",
+    "aa_location": 235,
+    "aa_new": "F",
+    "gene_offset": 9287
+  },
+    {
+    "gene": "ORF8",
+    "aa_original": "R",
+    "aa_location": 52,
+    "aa_new": "I",
+    "gene_offset": 9166
+  },
+    {
+    "gene": "ORF8",
+    "aa_original": "Q",
+    "aa_location": 27,
+    "aa_new": "_",
+    "gene_offset": 9166
+  },
+    {
+    "gene": "ORF8",
+    "aa_original": "Y",
+    "aa_location": 73,
+    "aa_new": "C",
+    "gene_offset": 9166
+  }
+]
 }
