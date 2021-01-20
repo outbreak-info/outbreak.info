@@ -51,9 +51,10 @@
       <div class="report-group mb-3" v-for="(mutation, mIdx) in group.values" :key="mIdx">
         <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
           <template v-if="rIdx === 0">
-          <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
+          <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}">
             <h5 class="m-0">{{ mutation.key }}</h5>
           </router-link>
+          <SARSMutationMap />
           <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="report.name === 'B.1.1.7'">
             <small>View {{report.name}} resources</small>
           </router-link>
