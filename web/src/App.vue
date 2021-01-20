@@ -66,9 +66,9 @@
               Genomics
             </div>
             <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">Search SARS-CoV-2 mutations
-              </router-link>
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">B.1.1.7 USA Situation Reports
+              <!-- <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">Search SARS-CoV-2 mutations
+              </router-link> -->
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'SituationReports'}" :class="{ active: $route.name == 'SituationReports' }">SARS-CoV-2 Mutation Reports
               </router-link>
             </div>
           </li>
@@ -173,9 +173,9 @@
         </div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">Search SARS-CoV-2 mutations
-            </router-link>
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">B.1.1.7 USA situation reports
+            <!-- <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">Search SARS-CoV-2 mutations
+            </router-link> -->
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'SituationReports'}" :class="{ active: $route.name == 'Mutations' }">SARS-CoV-2 Mutation Reports
             </router-link>
           </li>
         </ul>

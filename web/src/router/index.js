@@ -239,6 +239,24 @@ const routes = [{
         /* webpackChunkName: "mutations" */
         "../views/Mutations.vue"
       )
+  },
+  {
+    path: "/situation-reports",
+    name: "SituationReports",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports" */
+        "../views/SituationReports.vue"
+      )
+  },
+  {
+    path: "/situation-reports/:mutation/:date",
+    name: "SituationReport",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports" */
+        "../views/SitReport.vue"
+      )
   }
 ];
 
