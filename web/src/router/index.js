@@ -226,6 +226,46 @@ const routes = [{
         /* webpackChunkName: "doubling-rates" */
         "../views/DoublingRates.vue"
       )
+  },
+  {
+    path: "/sarscov2-mutations",
+    name: "Mutations",
+    props: route => ({
+      location: route.query.location,
+      variable: route.query.variable
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "mutations" */
+        "../views/Mutations.vue"
+      )
+  },
+  {
+    path: "/situation-reports",
+    name: "SituationReports",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports" */
+        "../views/SituationReports.vue"
+      )
+  },
+  {
+    path: "/situation-reports/caveats",
+    name: "SituationReportCaveats",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports-caveats" */
+        "../views/SituationReportsCaveats.vue"
+      )
+  },
+  {
+    path: "/situation-reports/:mutation/:date",
+    name: "SituationReport",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports" */
+        "../views/SitReport.vue"
+      )
   }
 ];
 

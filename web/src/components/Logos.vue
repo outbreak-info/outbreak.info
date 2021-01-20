@@ -27,8 +27,13 @@
       </a>
     </div>
     <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
-      <a href=" https://globalhealth.scripps.edu/" rel="noreferrer" target="_blank">
+      <a href="https://globalhealth.scripps.edu/" rel="noreferrer" target="_blank">
         <img src="@/assets/global-logo.png" class="w-100" alt="SDCGH" />
+      </a>
+    </div>
+    <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
+      <a href="https://searchcovid.info/" rel="noreferrer" target="_blank">
+        <img src="@/assets/search-logo.png" class="w-100" alt="SEARCH Alliance" />
       </a>
     </div>
 
