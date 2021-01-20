@@ -14,6 +14,12 @@
       </a>
     </div>
 
+    <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
+      <a href="https://cvisb.org/" rel="noreferrer" target="_blank">
+        <img src="@/assets/cvisb-logo-light.png" class="w-100" alt="CVISB" />
+      </a>
+    </div>
+
     <div class="logo mr-4">
       <a href="https://globalhealth.scripps.edu/" rel="noreferrer" target="_blank">
         <img src="@/assets/global-logo-light.png" class="w-100" alt="SDCGH" />
