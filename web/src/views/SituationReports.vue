@@ -45,7 +45,7 @@
         <h5 class="m-0">{{ mutation.key }}</h5>
         <ul class="d-flex flex-column m-0">
           <li v-for="(report, rIdx) in mutation.values" :key="rIdx">
-            <router-link :to="{name:'SituationReportCaveats', params:{date: report.date, mutation: report.name, url: report.url }}">{{ rIdx === 0 ? `current (${report.date})` : report.date }}</router-link>
+            <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">{{ rIdx === 0 ? `current (${report.date})` : report.date }}</router-link>
           </li>
         </ul>
         <!-- <span @click="showAll(mutation.key)">view older</span> -->
