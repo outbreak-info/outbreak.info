@@ -43,6 +43,7 @@
       <h2>{{ group.key }}</h2>
       <div class="report-group mb-3" v-for="(mutation, mIdx) in group.values" :key="mIdx">
         <h5 class="m-0">{{ mutation.key }}</h5>
+        <SARSMutationMap />
         <ul class="d-flex flex-column m-0">
           <li v-for="(report, rIdx) in mutation.values" :key="rIdx">
             <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">{{ rIdx === 0 ? `current (${report.date})` : report.date }}</router-link>
@@ -58,6 +59,7 @@
 
 <script>
 import Vue from "vue";
+import SARSMutationMap from "@/components/SARSMutationMap.vue";
 
 import axios from "axios";
 
@@ -67,6 +69,9 @@ import { orderBy } from "lodash";
 
 export default {
   name: "SituationReports",
+  components: {
+    SARSMutationMap
+  },
   data() {
     return {
       reports: null,
