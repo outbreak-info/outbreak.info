@@ -1,15 +1,42 @@
 <template>
 <div class="container text-left my-5 full">
   <h1 class="m-0">SARS-CoV-2 Mutation Situation Reports</h1>
-  <div class="d-flex align-items-center mb-4">
-    <div>
-      Created by the <a>Andersen Lab</a> at Scripps Research
+  <div class="mb-1">
+    <div class="d-flex flex-column justify-content-center align-items-center">
+      <div>The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several mutations or groups of mutations (lineages) within the SARS-CoV-2 genome. Every two days, we will produce a report describing the current situation, focusing on the United States.</div>
+        <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
     </div>
-    <div class="logo ml-3">
+
+    <div class="logo-group d-flex align-items-center justify-content-center border-top border-bottom w-100 py-1 my-3">
+    <div class="logo mr-4">
       <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">
         <img src="@/assets/anderson-logo-light.png" class="w-100" alt="Anderson Lab" />
       </a>
     </div>
+
+    <div class="logo mr-4">
+      <a href="https://globalhealth.scripps.edu/" rel="noreferrer" target="_blank">
+        <img src="@/assets/global-logo-light.png" class="w-100" alt="SDCGH" />
+      </a>
+    </div>
+
+    <div class="logo mr-4">
+      <a href="https://searchcovid.info/" rel="noreferrer" target="_blank">
+        <img src="@/assets/search-logo.png" class="w-100" alt="SEARCH Alliance" />
+      </a>
+    </div>
+
+    <div class="logo mr-4">
+      <a href="https://outbreak.info/" rel="noreferrer" target="_blank">
+        <img src="@/assets/logo-full-01.svg" class="w-100" alt="outbreak.info" />
+      </a>
+    </div>
+    </div>
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline">How to interpret these reports</router-link>
+    </div>
+
+
   </div>
   <section id="report-list">
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i">
@@ -18,9 +45,10 @@
         <h5 class="m-0">{{ mutation.key }}</h5>
         <ul class="d-flex flex-column m-0">
           <li v-for="(report, rIdx) in mutation.values" :key="rIdx">
-            <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">{{ rIdx === 0 ? `current (${report.date})` : report.date }}</router-link>
+            <router-link :to="{name:'SituationReportCaveats', params:{date: report.date, mutation: report.name, url: report.url }}">{{ rIdx === 0 ? `current (${report.date})` : report.date }}</router-link>
           </li>
         </ul>
+        <!-- <span @click="showAll(mutation.key)">view older</span> -->
       </div>
     </div>
 
@@ -35,16 +63,20 @@ import axios from "axios";
 
 import { nest } from "d3";
 
+import { orderBy } from "lodash";
+
 export default {
   name: "SituationReports",
   data() {
     return {
-      reports: null
+      reports: null,
+      maxReports: 2
     }
   },
   mounted() {
     axios.get("https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/metadata.json").then(response => {
-      response.data.sort((a,b) => b.date > a.date ? 1 : -1);
+      // response.data.sort((a,b) => (b.type > a.type ? -1 : 1) || (b.name > a.name ? -1 : 1) || b.date > a.date ? 1 : -1);
+      response.data = orderBy(response.data, ["lineage", "name", "date"], ["asc", "asc", "desc"])
 
       this.reports = nest()
       .key(d => d.type)

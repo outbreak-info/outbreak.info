@@ -250,6 +250,15 @@ const routes = [{
       )
   },
   {
+    path: "/situation-reports/caveats",
+    name: "SituationReportCaveats",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports-caveats" */
+        "../views/SituationReportsCaveats.vue"
+      )
+  },
+  {
     path: "/situation-reports/:mutation/:date",
     name: "SituationReport",
     component: () =>

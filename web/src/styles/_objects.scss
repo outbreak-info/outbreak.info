@@ -46,6 +46,27 @@ button {
   }
 }
 
+
+.btn-main-outline a {
+    color: $primary-color;
+    &:hover {
+        color: white !important;
+    }
+}
+
+.btn-no-outline {
+  color: $secondary-color;
+  transition: all .5s;
+  // padding: 0.5rem;
+  text-transform: uppercase;
+  &:hover{
+    background: $primary-color !important;
+    color: white;
+    text-decoration: none;
+  }
+}
+
+
 .all-selected,
 .to-add.all-selected,
 button.chip:hover {

@@ -415,13 +415,6 @@ export default {
     width: 20% !important;
 }
 
-.btn-main-outline a {
-    color: $primary-color;
-    &:hover {
-        color: white !important;
-    }
-}
-
 .larger {
     font-size: larger;
 }

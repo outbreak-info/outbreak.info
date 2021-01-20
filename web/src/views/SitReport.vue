@@ -1,9 +1,9 @@
 <template>
-  <div>
+<div>
   <!-- <div v-html="htmlContent">
   </div> -->
-  <iframe class="w-100" height="1000" :src="reportUrl"/>
-  </div>
+  <iframe class="w-100" height="1000" :src="reportUrl" />
+</div>
 </template>
 
 <script>
@@ -19,7 +19,6 @@ export default Vue.extend({
   },
   mounted() {
     const url = this.$route.params.url.split("/");
-    console.log(url)
     this.reportUrl = `${this.htmlPreface}/${url.slice(-1)[0]}`;
   }
 })
