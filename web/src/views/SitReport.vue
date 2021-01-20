@@ -18,8 +18,16 @@ export default Vue.extend({
     };
   },
   mounted() {
-    const url = this.$route.params.url.split("/");
-    this.reportUrl = `${this.htmlPreface}/${url.slice(-1)[0]}`;
+
+    axios.get("https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/metadata.json").then(response => {
+      console.log(response.data)
+      const report = response.data.filter(d => d.name == this.$route.params.mutation).sort((a, b) => a.date > b.date ? -1 : 1)[0];
+      console.log(this.$route.params.mutation)
+      console.log(report)
+      const url = report.url.split("/");
+      this.reportUrl = `${this.htmlPreface}/${url.slice(-1)[0]}`;
+    })
+
   }
 })
 </script>
