@@ -239,10 +239,8 @@ export default Vue.extend({
           .nodes(MUTATIONS[this.mutationKey])
           .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
           .force("x", forceX(d => d.targetX).strength(1))
-          // .force(
-          //   "clamp",
-          //   forceClamp(0, this.width - this.margin.left - this.margin.right)
-          // )
+          // clamp within bounds of the axes. Gets weird when you're zooming in.
+          // .force("clamp", forceClamp(0, this.width - this.margin.left - this.margin.right))
           .stop();
 
         // Execute the simulation
@@ -252,7 +250,6 @@ export default Vue.extend({
         MUTATIONS[this.mutationKey].forEach(d => {
           d["adjustedX"] = Math.abs(d.vx) > 1e-6;
         })
-        console.log(MUTATIONS[this.mutationKey])
 
         const labelY = this.aaCircleR * 2 + 7;
         const shiftedLabelY = this.aaCircleR + 3;
@@ -310,9 +307,9 @@ export default Vue.extend({
               .attr("y", d => d.adjustedX ? circleAdjY : this.aaCircleR)
               .style("font-weight", 600)
               .style("fill", "white")
-              .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
+              .style("font-family", d => d.aa_new == "_" || d.aa_new == "*" ? "'Font Awesome 5 Free'" : "inherit")
               .style("font-size", "0.85rem")
-              .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
+              .text(d => d.aa_new == "_" || d.aa_new == "*" ? "\uf28d" : d.aa_new)
           },
           update => {
             // leader lines
@@ -348,8 +345,8 @@ export default Vue.extend({
               .selectAll(".aa-mutation-change")
               .attr("x", d => d.x)
               .attr("y", d => d.adjustedX ? circleAdjY : this.aaCircleR)
-              .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
-              .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
+              .style("font-family", d => d.aa_new == "_" || d.aa_new == "*" ? "'Font Awesome 5 Free'" : "inherit")
+              .text(d => d.aa_new == "_" || d.aa_new == "*" ? "\uf28d" : d.aa_new)
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
