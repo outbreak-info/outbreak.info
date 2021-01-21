@@ -1,13 +1,18 @@
 <template>
 <div class="w-100" id="mutation-map">
+  <div class="tooltip" id="tooltip-gene">
+    <h6>
+      Gene
+    </h6>
+  </div>
   <svg :width="width" :height="height" ref="svg" :hidden="!hasMutations">
-    <g ref="gene_map">
-      <g ref="genes" class="genes"></g>
-      <g ref="nucleotide_axis" class="axis axis--x"></g>
-      <g ref="aminoacid_axis" class="axis axis--x"></g>
-      <g ref="aminoacids" class="mutations mutations--aa"></g>
-      <g ref="deletions" class="mutations deletions--aa"></g>
-      <g ref="brush" class="brush"></g>
+    <g ref="gene_map" id="gene-map-group">
+      <g ref="genes" class="genes" id="gene-group"></g>
+      <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
+      <!-- <g ref="aminoacid_axis" class="axis axis--x"></g> -->
+      <g ref="aminoacids" class="mutations mutations--aa" id="aa-mutation-group"></g>
+      <g ref="deletions" class="mutations deletions--aa" id="aa-deletion-group"></g>
+      <g ref="brush" class="brush" id="brush-zoom"></g>
     </g>
   </svg>
 </div>
@@ -64,7 +69,7 @@ export default Vue.extend({
       return this.setWidth ? this.setWidth : this.maxWidth;
     },
     hasMutations() {
-      return (MUTATIONS[this.mutationKey] || DELETIONS[this.mutationKey])
+      return (this.mutations || DELETIONS[this.mutationKey])
     }
   },
   data() {
@@ -80,12 +85,15 @@ export default Vue.extend({
       mutationHeight: 55,
       aaCircleR: 9,
       geneDisplayThresh: 35,
+      // data
+      mutations: null,
+      deletions: null,
       // refs
       svg: null,
       genes: null,
       aas: null,
       brush: null,
-      deletions: null,
+      deletionRef: null,
       xAmino: scaleLinear(),
       xAminoAxis: null,
       geneColorScale: null
@@ -100,6 +108,9 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
+      this.mutations = MUTATIONS[this.mutationKey];
+      this.deletions = DELETIONS[this.mutationKey];
+
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
         // set initial dimensions for the plots.
@@ -118,8 +129,11 @@ export default Vue.extend({
       this.aas = select(this.$refs.aminoacids)
         .attr("transform", `translate(0,22)`);
 
-      this.deletions = select(this.$refs.deletions)
+      this.deletionRef = select(this.$refs.deletions)
         .attr("transform", `translate(0,18)`);
+
+      select(".brush").on("mousemove", () => this.tooltipOn(this.xAmino))
+      select(".brush").on("mouseout", this.tooltipOff)
 
       // Add another class for the last of the SARS-CoV-2 genes
       schemeTableau10.push("#555555");
@@ -146,20 +160,56 @@ export default Vue.extend({
           [0, 0],
           [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
         ])
-        .on("end", this.brushended);
+        .on("end", this.zoom);
 
       select(this.$refs.brush)
         .call(this.brush)
         // .call(brush.move, [3, 5].map(x))
         .on("dblclick", this.resetAxis);
     },
-    brushended() {
+    tooltipOn() {
+      // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
+      // That has to have a rect on top of everything which detects the pointer events.
+      // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
+      if (event.offsetY < this.mutationHeight) {
+        // UPPER HALF: mutations and deletions
+        console.log("mutation groups")
+      } else {
+        // LOWER HALF: gene map
+        const selectedX = this.xAmino.invert(event.offsetX);
+        const selectedGenes = AA_MAP.filter(d => d.startNum <= selectedX && d.stopNum >= selectedX);
+
+        if (selectedGenes.length === 1) {
+          const selectedGene = selectedGenes[0].gene;
+
+          const selectedMutations = MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene);
+          // const selectedDeletions = this.deletions.filter(d => d.gene == selectedGene);
+
+          console.log(selectedMutations)
+
+          // turn genes off
+          selectAll(".gene")
+            .style("opacity", 0.3);
+          // turn selected gene on
+          select(`#${selectedGene}`)
+            .style("opacity", 1)
+        }
+      }
+    },
+    tooltipOff() {
+      selectAll(".gene")
+        .style("opacity", 1);
+    },
+    zoom() {
       // reset domain to new coords
       const selection = event.selection;
       if (selection) {
         const newMin = this.xAmino.invert(selection[0]);
         const newMax = this.xAmino.invert(selection[1]);
         this.xAmino = this.xAmino.domain([newMin, newMax]);
+        console.log(this.xAmino.domain())
+        // update axis for tooltip rollover
+        select(".brush").on("mousemove", () => this.tooltipOn())
         this.svg.select(".brush").call(this.brush.move, null);
         this.drawPlot();
       }
@@ -219,10 +269,10 @@ export default Vue.extend({
 
         // --- AMINO ACID MUTATIONS ---
         let aaMutationSelector = this.aas.selectAll(".aa-mutation")
-          .data(MUTATIONS[this.mutationKey]);
+          .data(this.mutations);
 
         // Add force direction to avoid overlap
-        MUTATIONS[this.mutationKey].forEach(d => {
+        this.mutations.forEach(d => {
           d["fy"] = 0;
           d["targetX"] = this.xAmino(d.aa_location + d.gene_offset)
         });
@@ -242,7 +292,7 @@ export default Vue.extend({
 
         // Set up the force simulation
         const force = forceSimulation()
-          .nodes(MUTATIONS[this.mutationKey])
+          .nodes(this.mutations)
           .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
           .force("x", forceX(d => d.targetX).strength(1))
           // clamp within bounds of the axes. Gets weird when you're zooming in.
@@ -253,7 +303,7 @@ export default Vue.extend({
         for (let i = 0; i < 300; i++) force.tick();
 
         // Tag if it moved:
-        MUTATIONS[this.mutationKey].forEach(d => {
+        this.mutations.forEach(d => {
           d["adjustedX"] = Math.abs(d.vx) > 1e-6;
         })
 
@@ -293,7 +343,7 @@ export default Vue.extend({
               .attr("cx", d => d.x)
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
-              .style("fill-opacity", 0.9);
+              .style("fill-opacity", 0.8);
 
             // position locations
             aaGrp
@@ -326,11 +376,11 @@ export default Vue.extend({
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`);
 
             update
-                .selectAll(".leader-terminus")
-                .transition(t1)
-                .attr("cx", d => d.targetX)
-                .attr("cy", d => labelY)
-                .style("opacity", d => d.adjustedX ? 1 : 0)
+              .selectAll(".leader-terminus")
+              .transition(t1)
+              .attr("cx", d => d.targetX)
+              .attr("cy", d => labelY)
+              .style("opacity", d => d.adjustedX ? 1 : 0)
 
             // circles for mutations
             update
@@ -363,7 +413,7 @@ export default Vue.extend({
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
 
-        let aaDeletionSelector = this.deletions.selectAll(".aa-deletion")
+        let aaDeletionSelector = this.deletionRef.selectAll(".aa-deletion")
           .data(DELETIONS[this.mutationKey]);
 
         aaDeletionSelector.join(
@@ -428,8 +478,8 @@ export default Vue.extend({
 }
 
 .leader-terminus {
-  stroke: none;
-  fill: $grey-90;
+    stroke: none;
+    fill: $grey-90;
 }
 
 .aa-mutation-text,
