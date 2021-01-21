@@ -128,16 +128,34 @@ export default Vue.extend({
 
       this.geneColorScale = scaleOrdinal(schemeTableau10).domain(geneNames);
 
-// Update brush so it spans the whole of the area
+      // Update brush so it spans the whole of the area
       this.brush = brushX()
-      .extent([[0, this.margin.top], [this.width - this.margin.left - this.margin.right, this.height - this.margin.bottom]])
-      .on("end", this.brushended);
+        .extent([
+          [0, 0],
+          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+        ])
+        .on("end", this.brushended);
 
       select(this.$refs.brush)
-        .call(this.brush);
+        .call(this.brush)
+        // .call(brush.move, [3, 5].map(x))
+        .on("dblclick", this.resetAxis);
     },
     brushended() {
-      console.log(event)
+      // reset domain to new coords
+      const selection = event.selection;
+      if (selection) {
+        const newMin = this.xAmino.invert(selection[0]);
+        const newMax = this.xAmino.invert(selection[1]);
+        this.xAmino = this.xAmino.domain([newMin, newMax]);
+        this.svg.select(".brush").call(this.brush.move, null);
+        this.drawPlot();
+      }
+
+    },
+    resetAxis() {
+      this.xAmino = this.xAmino.domain([0, max(AA_MAP, d => d.stopNum)]);
+      this.drawPlot();
     },
     drawPlot() {
       let geneSelector =
@@ -288,10 +306,11 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-rect {
+.gene rect {
     stroke: $base-grey;
     stroke-width: 0.5;
 }
+
 .aa-mutation-text,
 .deletion-symbol,
 .gene-name {
