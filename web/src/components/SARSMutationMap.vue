@@ -169,6 +169,8 @@ export default Vue.extend({
       this.drawPlot();
     },
     drawPlot() {
+      if(this.hasMutations) {
+      // GENE MAP: constant for all maps
       let geneSelector =
         this.genes.selectAll(".gene")
         .data(AA_MAP);
@@ -209,9 +211,46 @@ export default Vue.extend({
         exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
       )
 
-
+      // AMINO ACID MUTATIONS
       let aaMutationSelector = this.aas.selectAll(".aa-mutation")
         .data(MUTATIONS[this.mutationKey]);
+
+        // Add force direction to avoid overlap
+        MUTATIONS[this.mutationKey].forEach(d => {
+          d["fy"] = 0;
+          d["targetX"] = this.xAmino(d.aa_location + d.gene_offset)
+        });
+
+        // Define a custom force
+        const forceClamp = (min, max) => {
+          let nodes;
+          const force = () => {
+            nodes.forEach(n => {
+              if (n.x > max) n.x = max;
+              if (n.x < min) n.x = min;
+            });
+          };
+          force.initialize = _ => (nodes = _);
+          return force;
+        };
+
+        // Set up the force simulation
+        const force = forceSimulation()
+          .nodes(MUTATIONS[this.mutationKey])
+          .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
+          .force("x", forceX(d => d.targetX).strength(1))
+          .force(
+            "clamp",
+            forceClamp(0, this.width - this.margin.left - this.margin.right)
+          )
+          .stop();
+
+        // Execute the simulation
+        for (let i = 0; i < 300; i++) force.tick();
+
+
+        console.log(MUTATIONS[this.mutationKey])
+
 
       aaMutationSelector.join(
         enter => {
@@ -224,7 +263,7 @@ export default Vue.extend({
             .attr("class", "aa-mutation-circle")
             .attr("r", this.aaCircleR)
             .attr("cy", this.aaCircleR)
-            .attr("cx", d => this.xAmino(d.aa_location + d.gene_offset))
+            .attr("cx", d => d.x)
             .style("fill", d => this.geneColorScale(d.gene))
             .style("stroke", d => this.geneColorScale(d.gene))
             .style("fill-opacity", 0.9);
@@ -233,7 +272,7 @@ export default Vue.extend({
             .append("text")
             .attr("class", "aa-mutation-text aa-mutation-location")
             .attr("y", this.aaCircleR * 2 + 7)
-            .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
+            .attr("x", d => d.x)
             .text(d => d.aa_location)
             .style("font-size", "0.65rem")
 
@@ -241,7 +280,7 @@ export default Vue.extend({
             .append("text")
             .attr("class", "aa-mutation-text aa-mutation-change")
             .attr("y", this.aaCircleR)
-            .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
+            .attr("x", d => d.x)
             .style("font-weight", 600)
             .style("fill", "white")
             .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
@@ -251,18 +290,18 @@ export default Vue.extend({
         update => {
           update
             .selectAll("circle")
-            .attr("cx", d => this.xAmino(d.aa_location + d.gene_offset))
+            .attr("cx", d => d.x)
             .style("fill", d => this.geneColorScale(d.gene))
             .style("stroke", d => this.geneColorScale(d.gene));
 
           update
             .selectAll(".aa-mutation-location")
-            .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
+            .attr("x", d => d.x)
             .text(d => d.aa_location);
 
           update
             .selectAll(".aa-mutation-change")
-            .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
+            .attr("x", d => d.x)
             .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
             .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
         },
@@ -311,6 +350,7 @@ export default Vue.extend({
         },
         exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
       )
+    }
     }
   }
 })
