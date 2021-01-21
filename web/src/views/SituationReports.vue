@@ -3,9 +3,16 @@
   <h1 class="m-0">SARS-CoV-2 Mutation Situation Reports</h1>
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
-      <div>The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several mutations or groups of mutations (lineages) within the SARS-CoV-2 genome. Every two days,
+      <div>The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several mutations or groups of mutations (lineages) within the SARS-CoV-2 genome. Every day,
         we will produce a report describing the current situation, focusing on the United States.</div>
       <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
+    </div>
+
+    <div class="text-left d-flex align-items-center my-3">
+      Generated using data from
+              <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
+                <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID" />
+              </a>
     </div>
 
     <div class="logo-group d-flex align-items-center justify-content-center border-top border-bottom w-100 py-1 my-3">
@@ -111,5 +118,9 @@ export default {
 <style lang="scss" scoped>
 .logo {
     width: 150px;
+}
+
+.gisaid {
+  height: 25px;
 }
 </style>
