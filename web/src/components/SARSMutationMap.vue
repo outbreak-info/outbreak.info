@@ -208,17 +208,17 @@ export default Vue.extend({
           this.svg.select(`#${selectedGene}`)
             .style("opacity", 1);
 
-            // tooltip on
-            let ttip = select(this.$refs.tooltip);
-            // edit text
-            ttip.select("h5")
+          // tooltip on
+          let ttip = select(this.$refs.tooltip);
+          // edit text
+          ttip.select("h5")
             .style("color", this.geneColorScale(selectedGene))
             .text(`${this.mutationKey} | ${selectedGene} gene`)
 
-            const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
-            mutList.join(enter => {
+          const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
+          mutList.join(enter => {
               enter.append("li")
-              .text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
+                .text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
             },
             update => {
               update.text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
@@ -226,10 +226,10 @@ export default Vue.extend({
             exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
           )
 
-            const delList = ttip.select("ul#deletion-list").selectAll("li").data(selectedDeletions);
-            delList.join(enter => {
+          const delList = ttip.select("ul#deletion-list").selectAll("li").data(selectedDeletions);
+          delList.join(enter => {
               enter.append("li")
-              .text(d => `${d.del_start}-${d.del_end}`)
+                .text(d => `${d.del_start}-${d.del_end}`)
             },
             update => {
               update.text(d => `${d.del_start}-${d.del_end}`)
@@ -237,7 +237,7 @@ export default Vue.extend({
             exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
           )
 
-            ttip
+          ttip
             .style("left", `${event.clientX}px`)
             .style("border-color", this.geneColorScale(selectedGene))
             .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
@@ -249,7 +249,7 @@ export default Vue.extend({
       selectAll(".gene")
         .style("opacity", 1);
 
-        // select(this.$refs.tooltip).style("display", "none")
+      select(this.$refs.tooltip).style("display", "none")
     },
     zoom() {
       // reset domain to new coords
@@ -286,7 +286,7 @@ export default Vue.extend({
 
             geneGrp.append("rect")
               .attr("x", d => this.xAmino(d.startNum))
-              .attr("width", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum))
+              .attr("width", d => this.xAmino(d.stopNum + 1) - this.xAmino(d.startNum))
               .attr("y", 0)
               .attr("height", this.geneHeight)
               .style("fill-opacity", 0.40)
@@ -304,7 +304,7 @@ export default Vue.extend({
               .selectAll("rect")
               .transition(t1)
               .attr("x", d => this.xAmino(d.startNum))
-              .attr("width", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum))
+              .attr("width", d => this.xAmino(d.stopNum + 1) - this.xAmino(d.startNum))
               .style("fill", d => this.geneColorScale(d.gene))
 
             update
