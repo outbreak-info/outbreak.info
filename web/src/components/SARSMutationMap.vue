@@ -1,10 +1,5 @@
 <template>
 <div class="w-100" id="mutation-map">
-  <div class="tooltip" id="tooltip-gene">
-    <h6>
-      Gene
-    </h6>
-  </div>
   <svg :width="width" :height="height" ref="svg" :hidden="!hasMutations">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
@@ -15,6 +10,24 @@
       <g ref="brush" class="brush" id="brush-zoom"></g>
     </g>
   </svg>
+  <div ref="tooltip" class="tooltip box-shadow" id="tooltip-gene">
+    <h5>
+    </h5>
+    <div id="gene-mutations" class="m-0">
+      <h6>
+        Mutations
+      </h6>
+      <ul id="mutation-list">
+      </ul>
+    </div>
+    <div id="gene-deletions">
+      <h6>
+        Deletions
+      </h6>
+      <ul id="deletion-list" class="m-0">
+      </ul>
+    </div>
+  </div>
 </div>
 </template>
 
@@ -41,6 +54,8 @@ import {
   forceSimulation,
   forceX
 } from "d3";
+
+import chroma from 'chroma-js';
 
 import {
   schemeTableau10
@@ -174,6 +189,7 @@ export default Vue.extend({
       if (event.offsetY < this.mutationHeight) {
         // UPPER HALF: mutations and deletions
         console.log("mutation groups")
+        console.log(event)
       } else {
         // LOWER HALF: gene map
         const selectedX = this.xAmino.invert(event.offsetX);
@@ -183,22 +199,57 @@ export default Vue.extend({
           const selectedGene = selectedGenes[0].gene;
 
           const selectedMutations = MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene);
-          // const selectedDeletions = this.deletions.filter(d => d.gene == selectedGene);
-
-          console.log(selectedMutations)
+          const selectedDeletions = DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene);
 
           // turn genes off
           this.svg.selectAll(".gene")
             .style("opacity", 0.3);
           // turn selected gene on
           this.svg.select(`#${selectedGene}`)
-            .style("opacity", 1)
+            .style("opacity", 1);
+
+            // tooltip on
+            let ttip = select(this.$refs.tooltip);
+            // edit text
+            ttip.select("h5")
+            .style("color", this.geneColorScale(selectedGene))
+            .text(`${this.mutationKey} | ${selectedGene} gene`)
+
+            const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
+            mutList.join(enter => {
+              enter.append("li")
+              .text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
+            },
+            update => {
+              update.text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
+            },
+            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+          )
+
+            const delList = ttip.select("ul#deletion-list").selectAll("li").data(selectedDeletions);
+            delList.join(enter => {
+              enter.append("li")
+              .text(d => `${d.del_start}-${d.del_end}`)
+            },
+            update => {
+              update.text(d => `${d.del_start}-${d.del_end}`)
+            },
+            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+          )
+
+            ttip
+            .style("left", `${event.clientX}px`)
+            .style("border-color", this.geneColorScale(selectedGene))
+            .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
+            .style("display", "block");
         }
       }
     },
     tooltipOff() {
       selectAll(".gene")
         .style("opacity", 1);
+
+        select(this.$refs.tooltip).style("display", "none")
     },
     zoom() {
       // reset domain to new coords
@@ -207,7 +258,6 @@ export default Vue.extend({
         const newMin = this.xAmino.invert(selection[0]);
         const newMax = this.xAmino.invert(selection[1]);
         this.xAmino = this.xAmino.domain([newMin, newMax]);
-        console.log(this.xAmino.domain())
         // update axis for tooltip rollover
         select(".brush").on("mousemove", () => this.tooltipOn())
         this.svg.select(".brush").call(this.brush.move, null);
@@ -495,5 +545,15 @@ export default Vue.extend({
 
 .aa-deletion-rect {
     stroke: 1 !important;
+}
+
+#tooltip-gene {
+    background-color: #fff;
+    padding: 7px;
+    border: 1px solid;
+    border-radius: 3px;
+    opacity: 0.95;
+    position: absolute;
+    display: none;
 }
 </style>
