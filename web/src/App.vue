@@ -19,23 +19,23 @@
               Epidemiology
             </div>
             <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :key="$route.fullPath" :to="{
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :to="{
                     name: 'Epidemiology'}">
                 Compare locations over time
               </router-link>
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Maps' }" :to="{
                     name: 'Maps'
                   }">Explore interactive maps</router-link>
 
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Compare' }" :to="{
                     name: 'Compare'
                   }">Find similar locations</router-link>
 
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Regions' }" :key="$route.fullPath" :to="{
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Regions' }" :to="{
                     name: 'Regions'
                   }">Explore regions</router-link>
 
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Doubling Rates' }" :key="$route.fullPath" :to="{
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Doubling Rates' }" :to="{
                     name: 'Doubling Rates',
                     query: { location: 'USA', variable: 'confirmed' }
                   }">View doubling rates</router-link>
@@ -112,28 +112,28 @@
         </div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Epidemiology' }" :key="$route.fullPath" :to="{
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Epidemiology' }" :to="{
                   name: 'Epidemiology'}">
               Compare locations over time
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Maps' }" :key="$route.fullPath" :to="{
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Maps' }" :to="{
                   name: 'Maps'
                 }">Explore interactive maps</router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Compare' }" :key="$route.fullPath" :to="{
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Compare' }" :to="{
                   name: 'Compare'
                 }">Find similar locations</router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Regions' }" :key="$route.fullPath" :to="{
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Regions' }" :to="{
                   name: 'Regions'
                 }">Explore regions</router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Doubling Rates' }" :key="$route.fullPath" :to="{
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Doubling Rates' }" :to="{
                   name: 'Doubling Rates',
                   query: { location: 'USA', variable: 'confirmed' }
                 }">View doubling rates</router-link>
