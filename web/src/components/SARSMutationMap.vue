@@ -41,7 +41,7 @@ export default Vue.extend({
     },
     height: {
       type: Number,
-      default: 150
+      default: 100
     }
   },
   watch: {

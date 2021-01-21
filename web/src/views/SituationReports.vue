@@ -1,18 +1,20 @@
 <template>
-<div class=" text-left my-5">
+<div class="my-5 mx-4">
   <h1 class="m-0">SARS-CoV-2 Mutation Situation Reports</h1>
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
-      <div>The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several mutations or groups of mutations (lineages) within the SARS-CoV-2 genome. Every day,
+      <div class="w-75 mt-2 text-left">The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several mutations or groups of mutations (lineages) within the
+        SARS-CoV-2 genome. Every day,
         we will produce a report describing the current situation, focusing on the United States.</div>
       <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
-    </div>
 
-    <div class="text-left d-flex align-items-center my-3">
-      Generated using data from
-              <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-                <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID" />
-              </a>
+
+      <div class="text-left w-75 d-flex align-items-center my-3">
+        Generated using data from
+        <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
+          <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID" />
+        </a>
+      </div>
     </div>
 
     <div class="logo-group d-flex align-items-center justify-content-center border-top border-bottom w-100 py-1 my-3">
@@ -52,21 +54,21 @@
 
 
   </div>
-  <section id="report-list">
+  <section id="report-list" class="text-left">
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i">
       <h2>{{ group.key }}</h2>
       <div class="report-group mb-3" v-for="(mutation, mIdx) in group.values" :key="mIdx">
         <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
           <template v-if="rIdx === 0">
-          <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
-          <!-- <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}"> -->
-            <h5 class="m-0">{{ mutation.key }}</h5>
-          </router-link>
-          <SARSMutationMap />
-          <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="report.name === 'B.1.1.7'">
-            <small>View {{report.name}} resources</small>
-          </router-link>
-        </template>
+            <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
+              <!-- <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}"> -->
+              <h5 class="m-0">{{ mutation.key }}</h5>
+            </router-link>
+            <SARSMutationMap />
+            <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="report.name === 'B.1.1.7'">
+              <small>View {{report.name}} resources</small>
+            </router-link>
+          </template>
         </div>
         <!-- <span @click="showAll(mutation.key)">view older</span> -->
       </div>
@@ -121,6 +123,6 @@ export default {
 }
 
 .gisaid {
-  height: 25px;
+    height: 25px;
 }
 </style>
