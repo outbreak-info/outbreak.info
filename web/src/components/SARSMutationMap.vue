@@ -6,6 +6,7 @@
     <g ref="aminoacid_axis" class="axis axis--x"></g>
     <g ref="aminoacids" class="mutations mutations--aa"></g>
     <g ref="deletions" class="mutations deletions--aa"></g>
+    <g ref="brush" class="brush"></g>
   </svg>
 </div>
 </template>
@@ -25,7 +26,9 @@ import {
   min,
   max,
   map,
-  scaleOrdinal
+  scaleOrdinal,
+  brushX,
+  event
 } from "d3";
 
 import {
@@ -71,6 +74,7 @@ export default Vue.extend({
       svg: null,
       genes: null,
       aas: null,
+      brush: null,
       deletions: null,
       xAmino: scaleLinear(),
       xAminoAxis: null,
@@ -123,6 +127,17 @@ export default Vue.extend({
       let geneNames = AA_MAP.sort((a, b) => a.gene_order - b.gene_order).map(d => d.gene);
 
       this.geneColorScale = scaleOrdinal(schemeTableau10).domain(geneNames);
+
+// Update brush so it spans the whole of the area
+      this.brush = brushX()
+      .extent([[0, this.margin.top], [this.width - this.margin.left - this.margin.right, this.height - this.margin.bottom]])
+      .on("end", this.brushended);
+
+      select(this.$refs.brush)
+        .call(this.brush);
+    },
+    brushended() {
+      console.log(event)
     },
     drawPlot() {
       let geneSelector =
