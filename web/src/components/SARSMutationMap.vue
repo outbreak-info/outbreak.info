@@ -1,6 +1,6 @@
 <template>
 <div class="w-100" id="mutation-map">
-  <svg :width="width" :height="height" ref="svg" v-if="mutationKey">
+  <svg :width="width" :height="height" ref="svg" :hidden="!hasMutations">
     <g ref="gene_map">
       <g ref="genes" class="genes"></g>
       <g ref="nucleotide_axis" class="axis axis--x"></g>
@@ -61,6 +61,9 @@ export default Vue.extend({
   computed: {
     width() {
       return this.setWidth ? this.setWidth : this.maxWidth;
+    },
+    hasMutations() {
+      return(MUTATIONS[this.mutationKey] || DELETIONS[this.mutationKey])
     }
   },
   data() {
