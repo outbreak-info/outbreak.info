@@ -14,14 +14,14 @@
     <h5>
     </h5>
     <div id="gene-mutations" class="m-0">
-      <h6>
+      <h6 class="m-0">
         Mutations
       </h6>
       <ul id="mutation-list">
       </ul>
     </div>
     <div id="gene-deletions">
-      <h6>
+      <h6 class="m-0">
         Deletions
       </h6>
       <ul id="deletion-list" class="m-0">
@@ -198,8 +198,8 @@ export default Vue.extend({
         if (selectedGenes.length === 1) {
           const selectedGene = selectedGenes[0].gene;
 
-          const selectedMutations = MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene);
-          const selectedDeletions = DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene);
+          const selectedMutations = MUTATIONS[this.mutationKey] ? MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
+          const selectedDeletions = DELETIONS[this.mutationKey] ? DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
 
           // turn genes off
           this.svg.selectAll(".gene")
@@ -249,7 +249,7 @@ export default Vue.extend({
       selectAll(".gene")
         .style("opacity", 1);
 
-        select(this.$refs.tooltip).style("display", "none")
+        // select(this.$refs.tooltip).style("display", "none")
     },
     zoom() {
       // reset domain to new coords
