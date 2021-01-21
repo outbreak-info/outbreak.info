@@ -56,7 +56,7 @@
   </div>
   <section id="report-list" class="text-left">
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i">
-      <h2>{{ group.key }}</h2>
+      <h2>{{ group.key }} Reports</h2>
       <div class="report-group mb-3" v-for="(mutation, mIdx) in group.values" :key="mIdx">
         <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
           <template v-if="rIdx === 0">

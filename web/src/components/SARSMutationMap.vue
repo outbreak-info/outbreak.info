@@ -70,9 +70,9 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 5,
+        top: 2,
         right: 10,
-        bottom: 5,
+        bottom: 2,
         left: 10
       },
       maxWidth: null,
@@ -211,7 +211,8 @@ export default Vue.extend({
               .selectAll("text")
               .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
               .transition(t1)
-              .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2);
+              .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
+              .style("opacity", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? 1 : 0);
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
@@ -326,10 +327,10 @@ export default Vue.extend({
 
             update
                 .selectAll(".leader-terminus")
-                .classed("hidden", d => !d.adjustedX)
                 .transition(t1)
                 .attr("cx", d => d.targetX)
-                .attr("cy", d => labelY);
+                .attr("cy", d => labelY)
+                .style("opacity", d => d.adjustedX ? 1 : 0)
 
             // circles for mutations
             update
