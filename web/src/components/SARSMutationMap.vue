@@ -132,8 +132,8 @@ export default Vue.extend({
       this.deletionRef = select(this.$refs.deletions)
         .attr("transform", `translate(0,18)`);
 
-      select(".brush").on("mousemove", () => this.tooltipOn(this.xAmino))
-      select(".brush").on("mouseout", this.tooltipOff)
+      select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.xAmino))
+      select(this.$refs.brush).on("mouseout", this.tooltipOff)
 
       // Add another class for the last of the SARS-CoV-2 genes
       schemeTableau10.push("#555555");
@@ -188,10 +188,10 @@ export default Vue.extend({
           console.log(selectedMutations)
 
           // turn genes off
-          selectAll(".gene")
+          this.svg.selectAll(".gene")
             .style("opacity", 0.3);
           // turn selected gene on
-          select(`#${selectedGene}`)
+          this.svg.select(`#${selectedGene}`)
             .style("opacity", 1)
         }
       }
