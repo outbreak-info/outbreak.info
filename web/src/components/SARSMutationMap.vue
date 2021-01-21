@@ -63,7 +63,7 @@ export default Vue.extend({
       return this.setWidth ? this.setWidth : this.maxWidth;
     },
     hasMutations() {
-      return(MUTATIONS[this.mutationKey] || DELETIONS[this.mutationKey])
+      return (MUTATIONS[this.mutationKey] || DELETIONS[this.mutationKey])
     }
   },
   data() {
@@ -169,51 +169,51 @@ export default Vue.extend({
       this.drawPlot();
     },
     drawPlot() {
-      if(this.hasMutations) {
-      // GENE MAP: constant for all maps
-      let geneSelector =
-        this.genes.selectAll(".gene")
-        .data(AA_MAP);
+      if (this.hasMutations) {
+        // GENE MAP: constant for all maps
+        let geneSelector =
+          this.genes.selectAll(".gene")
+          .data(AA_MAP);
 
-      geneSelector.join(
-        enter => {
-          let geneGrp = enter.append("g")
-            .attr("class", "gene")
-            .attr("id", d => d.gene);
+        geneSelector.join(
+          enter => {
+            let geneGrp = enter.append("g")
+              .attr("class", "gene")
+              .attr("id", d => d.gene);
 
-          geneGrp.append("rect")
-            .attr("x", d => this.xAmino(d.startNum))
-            .attr("width", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum))
-            .attr("y", 0)
-            .attr("height", this.geneHeight)
-            .style("fill-opacity", 0.40)
-            .style("fill", d => this.geneColorScale(d.gene))
+            geneGrp.append("rect")
+              .attr("x", d => this.xAmino(d.startNum))
+              .attr("width", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum))
+              .attr("y", 0)
+              .attr("height", this.geneHeight)
+              .style("fill-opacity", 0.40)
+              .style("fill", d => this.geneColorScale(d.gene))
 
-          geneGrp.append("text")
-            .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
-            .attr("y", (this.geneHeight + 1) / 2)
-            .attr("class", "gene-name")
-            .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
-          // .style("fill", "white")
-        },
-        update => {
-          update
-            .selectAll("rect")
-            .attr("x", d => this.xAmino(d.startNum))
-            .attr("width", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum))
-            .style("fill", d => this.geneColorScale(d.gene))
+            geneGrp.append("text")
+              .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
+              .attr("y", (this.geneHeight + 1) / 2)
+              .attr("class", "gene-name")
+              .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
+            // .style("fill", "white")
+          },
+          update => {
+            update
+              .selectAll("rect")
+              .attr("x", d => this.xAmino(d.startNum))
+              .attr("width", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum))
+              .style("fill", d => this.geneColorScale(d.gene))
 
-          update
-            .selectAll("text")
-            .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
-            .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
-        },
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-      )
+            update
+              .selectAll("text")
+              .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
+              .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
+          },
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+        )
 
-      // AMINO ACID MUTATIONS
-      let aaMutationSelector = this.aas.selectAll(".aa-mutation")
-        .data(MUTATIONS[this.mutationKey]);
+        // AMINO ACID MUTATIONS
+        let aaMutationSelector = this.aas.selectAll(".aa-mutation")
+          .data(MUTATIONS[this.mutationKey]);
 
         // Add force direction to avoid overlap
         MUTATIONS[this.mutationKey].forEach(d => {
@@ -239,118 +239,164 @@ export default Vue.extend({
           .nodes(MUTATIONS[this.mutationKey])
           .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
           .force("x", forceX(d => d.targetX).strength(1))
-          .force(
-            "clamp",
-            forceClamp(0, this.width - this.margin.left - this.margin.right)
-          )
+          // .force(
+          //   "clamp",
+          //   forceClamp(0, this.width - this.margin.left - this.margin.right)
+          // )
           .stop();
 
         // Execute the simulation
         for (let i = 0; i < 300; i++) force.tick();
 
-
+        // Tag if it moved:
+        MUTATIONS[this.mutationKey].forEach(d => {
+          d["adjustedX"] = Math.abs(d.vx) > 1e-6;
+        })
         console.log(MUTATIONS[this.mutationKey])
 
+        const labelY = this.aaCircleR * 2 + 7;
+        const shiftedLabelY = this.aaCircleR + 3;
+        const circleAdjY = -this.aaCircleR + 4;
 
-      aaMutationSelector.join(
-        enter => {
-          let aaGrp = enter.append("g")
-            .attr("class", "aa-mutation")
-            .attr("id", d => `${d.gene}${d.aa_location + d.gene_offset}`);
+        aaMutationSelector.join(
+          enter => {
+            let aaGrp = enter.append("g")
+              .attr("class", "aa-mutation")
+              .attr("id", d => `${d.gene}${d.aa_location + d.gene_offset}`);
 
-          aaGrp
-            .append("circle")
-            .attr("class", "aa-mutation-circle")
-            .attr("r", this.aaCircleR)
-            .attr("cy", this.aaCircleR)
-            .attr("cx", d => d.x)
-            .style("fill", d => this.geneColorScale(d.gene))
-            .style("stroke", d => this.geneColorScale(d.gene))
-            .style("fill-opacity", 0.9);
+            // leader lines
+            aaGrp
+              .append("path")
+              .attr("class", "aa-mutation-leader")
+              .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`)
+              .classed("hidden", d => !d.adjustedX)
+              .attr("transform", "translate(0, 5)")
 
-          aaGrp
-            .append("text")
-            .attr("class", "aa-mutation-text aa-mutation-location")
-            .attr("y", this.aaCircleR * 2 + 7)
-            .attr("x", d => d.x)
-            .text(d => d.aa_location)
-            .style("font-size", "0.65rem")
+            aaGrp
+              .append("circle")
+              .attr("class", "leader-terminus")
+              .attr("cx", d => d.targetX)
+              .attr("cy", d => labelY)
+              .attr("r", 1.8)
+              .classed("hidden", d => !d.adjustedX)
+              .attr("transform", "translate(0, 5)")
 
-          aaGrp
-            .append("text")
-            .attr("class", "aa-mutation-text aa-mutation-change")
-            .attr("y", this.aaCircleR)
-            .attr("x", d => d.x)
-            .style("font-weight", 600)
-            .style("fill", "white")
-            .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
-            .style("font-size", "0.85rem")
-            .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
-        },
-        update => {
-          update
-            .selectAll("circle")
-            .attr("cx", d => d.x)
-            .style("fill", d => this.geneColorScale(d.gene))
-            .style("stroke", d => this.geneColorScale(d.gene));
+            // circles for mutations
+            aaGrp
+              .append("circle")
+              .attr("class", "aa-mutation-circle")
+              .attr("r", this.aaCircleR)
+              .attr("cy", d => d.adjustedX ? circleAdjY : this.aaCircleR)
+              .attr("cx", d => d.x)
+              .style("fill", d => this.geneColorScale(d.gene))
+              .style("stroke", d => this.geneColorScale(d.gene))
+              .style("fill-opacity", 0.9);
 
-          update
-            .selectAll(".aa-mutation-location")
-            .attr("x", d => d.x)
-            .text(d => d.aa_location);
+            // position locations
+            aaGrp
+              .append("text")
+              .attr("class", "aa-mutation-text aa-mutation-location")
+              .attr("y", this.aaCircleR * 2 + 7)
+              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
+              .attr("x", d => d.x)
+              .text(d => d.aa_location)
+              .style("font-size", "0.6rem")
 
-          update
-            .selectAll(".aa-mutation-change")
-            .attr("x", d => d.x)
-            .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
-            .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
-        },
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-      )
+            // amino acid change text
+            aaGrp
+              .append("text")
+              .attr("class", "aa-mutation-text aa-mutation-change")
+              .attr("x", d => d.x)
+              .attr("y", d => d.adjustedX ? circleAdjY : this.aaCircleR)
+              .style("font-weight", 600)
+              .style("fill", "white")
+              .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
+              .style("font-size", "0.85rem")
+              .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
+          },
+          update => {
+            // leader lines
+            update
+              .selectAll(".aa-mutation-leader")
+              .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`)
+              .attr("transform", "translate(0, 5)")
+              .classed("hidden", d => !d.adjustedX);
 
-      let aaDeletionSelector = this.deletions.selectAll(".aa-deletion")
-        .data(DELETIONS[this.mutationKey]);
+            update
+                .selectAll(".leader-terminus")
+                .attr("cx", d => d.targetX)
+                .attr("cy", d => labelY)
+                .classed("hidden", d => !d.adjustedX);
 
-      aaDeletionSelector.join(
-        enter => {
-          let aaGrp = enter.append("g")
-            .attr("class", "aa-deletion")
-            .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
+            // circles for mutations
+            update
+              .selectAll(".aa-mutation-circle")
+              .attr("cx", d => d.x)
+              .attr("cy", d => d.adjustedX ? circleAdjY : this.aaCircleR)
+              .style("fill", d => this.geneColorScale(d.gene))
+              .style("stroke", d => this.geneColorScale(d.gene));
 
-          aaGrp.append("rect")
-            .attr("class", "aa-deletion-rect")
-            .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
-            .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1)
-            .attr("y", 0)
-            .attr("height", 7)
-            .style("fill", d => this.geneColorScale(d.gene))
-            .style("stroke", d => this.geneColorScale(d.gene));
+            // text: mutation codon position
+            update
+              .selectAll(".aa-mutation-location")
+              .attr("x", d => d.x)
+              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
+              .text(d => d.aa_location);
 
-          aaGrp
-            .append("text")
-            .attr("class", "aa-mutation-text")
-            .attr("y", -10)
-            .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
-            .style("font-weight", 600)
-            .style("fill", d => this.geneColorScale(d.gene))
-            .style("font-size", "0.85rem")
-            .text(d => "\u0394")
-        },
-        update => {
-          update.selectAll("rect")
-            .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
-            .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1)
-            .style("fill", d => this.geneColorScale(d.gene))
-            .style("stroke", d => this.geneColorScale(d.gene));
+            // text: amino acid change
+            update
+              .selectAll(".aa-mutation-change")
+              .attr("x", d => d.x)
+              .attr("y", d => d.adjustedX ? circleAdjY : this.aaCircleR)
+              .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
+              .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
+          },
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+        )
 
-          update
-            .selectAll("text")
-            .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
-            .text(d => "\u0394")
-        },
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-      )
-    }
+        let aaDeletionSelector = this.deletions.selectAll(".aa-deletion")
+          .data(DELETIONS[this.mutationKey]);
+
+        aaDeletionSelector.join(
+          enter => {
+            let aaGrp = enter.append("g")
+              .attr("class", "aa-deletion")
+              .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
+
+            aaGrp.append("rect")
+              .attr("class", "aa-deletion-rect")
+              .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
+              .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1)
+              .attr("y", 0)
+              .attr("height", 7)
+              .style("fill", d => this.geneColorScale(d.gene))
+              .style("stroke", d => this.geneColorScale(d.gene));
+
+            aaGrp
+              .append("text")
+              .attr("class", "aa-mutation-text")
+              .attr("y", -10)
+              .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
+              .style("font-weight", 600)
+              .style("fill", d => this.geneColorScale(d.gene))
+              .style("font-size", "0.85rem")
+              .text(d => "\u0394")
+          },
+          update => {
+            update.selectAll("rect")
+              .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
+              .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1)
+              .style("fill", d => this.geneColorScale(d.gene))
+              .style("stroke", d => this.geneColorScale(d.gene));
+
+            update
+              .selectAll("text")
+              .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
+              .text(d => "\u0394")
+          },
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+        )
+      }
     }
   }
 })
@@ -360,6 +406,19 @@ export default Vue.extend({
 .gene rect {
     stroke: $base-grey;
     stroke-width: 0.5;
+    shape-rendering: crispedges;
+}
+
+.aa-mutation-leader {
+    stroke: $grey-60;
+    stroke-width: 1;
+    shape-rendering: crispedges;
+    fill: none;
+}
+
+.leader-terminus {
+  stroke: none;
+  fill: $grey-90;
 }
 
 .aa-mutation-text,
