@@ -1,12 +1,14 @@
 <template>
 <div class="w-100" id="mutation-map">
   <svg :width="width" :height="height" ref="svg" v-if="mutationKey">
-    <g ref="genes" class="genes"></g>
-    <g ref="nucleotide_axis" class="axis axis--x"></g>
-    <g ref="aminoacid_axis" class="axis axis--x"></g>
-    <g ref="aminoacids" class="mutations mutations--aa"></g>
-    <g ref="deletions" class="mutations deletions--aa"></g>
-    <g ref="brush" class="brush"></g>
+    <g ref="gene_map">
+      <g ref="genes" class="genes"></g>
+      <g ref="nucleotide_axis" class="axis axis--x"></g>
+      <g ref="aminoacid_axis" class="axis axis--x"></g>
+      <g ref="aminoacids" class="mutations mutations--aa"></g>
+      <g ref="deletions" class="mutations deletions--aa"></g>
+      <g ref="brush" class="brush"></g>
+    </g>
   </svg>
 </div>
 </template>
@@ -65,9 +67,9 @@ export default Vue.extend({
     return {
       margin: {
         top: 5,
-        right: 5,
+        right: 10,
         bottom: 5,
-        left: 5
+        left: 10
       },
       maxWidth: null,
       geneHeight: 25,
@@ -102,8 +104,10 @@ export default Vue.extend({
 
       this.setDims();
 
-      this.svg = select(this.$refs.svg)
+      this.svg = select(this.$refs.svg);
+      select(this.$refs.gene_map)
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
+
       this.genes = select(this.$refs.genes)
         .attr("transform", `translate(0,${this.mutationHeight})`);
 
