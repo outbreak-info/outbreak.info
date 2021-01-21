@@ -68,7 +68,7 @@ export default Vue.extend({
   },
   mounted() {
     this.setupPlot();
-    this.drawPlot();
+    this.updatePlot();
   },
   methods: {
     setupPlot() {
@@ -82,16 +82,21 @@ export default Vue.extend({
       this.deletions = select(this.$refs.deletions)
         .attr("transform", `translate(0,18)`);
 
+      // Add another class for the last of the SARS-CoV-2 genes
+      schemeTableau10.push("#555555");
+    },
+    updatePlot() {
+      this.updateScales();
+      this.drawPlot()
+    },
+    updateScales() {
       this.xAmino = this.xAmino
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, max(AA_MAP, d => d.stopNum)]);
 
       let geneNames = AA_MAP.sort((a, b) => a.gene_order - b.gene_order).map(d => d.gene);
 
-      schemeTableau10.push("#555555");
       this.geneColorScale = scaleOrdinal(schemeTableau10).domain(geneNames);
-
-
     },
     drawPlot() {
       let geneSelector =
@@ -171,7 +176,7 @@ export default Vue.extend({
             .attr("class", "aa-deletion")
             .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
 
-            aaGrp.append("rect")
+          aaGrp.append("rect")
             .attr("class", "aa-deletion-rect")
             .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
             .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1)
@@ -180,16 +185,16 @@ export default Vue.extend({
             .style("fill", d => this.geneColorScale(d.gene))
             .style("stroke", d => this.geneColorScale(d.gene));
 
-            aaGrp
-              .append("text")
-              .attr("class", "aa-mutation-text")
-              .attr("y", -10)
-              .attr("x", d => this.xAmino((d.del_start + d.del_end)/2 + d.gene_offset))
-              .style("font-weight", 600)
-              .style("fill", d => this.geneColorScale(d.gene))
-              .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
-              .style("font-size", "0.85rem")
-              .text(d => "\u0394")
+          aaGrp
+            .append("text")
+            .attr("class", "aa-mutation-text")
+            .attr("y", -10)
+            .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
+            .style("font-weight", 600)
+            .style("fill", d => this.geneColorScale(d.gene))
+            .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
+            .style("font-size", "0.85rem")
+            .text(d => "\u0394")
 
         })
     }
@@ -198,15 +203,13 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-svg {
-}
 rect {
     stroke: $base-grey;
     stroke-width: 0.5;
 }
 .aa-mutation-text,
-.gene-name,
-.deletion-symbol {
+.deletion-symbol,
+.gene-name {
     dominant-baseline: central;
     text-anchor: middle;
 }
@@ -216,6 +219,6 @@ rect {
 }
 
 .aa-deletion-rect {
-  stroke: 1 !important;
+    stroke: 1 !important;
 }
 </style>
