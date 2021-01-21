@@ -12,7 +12,7 @@
       <div class="text-left w-75 d-flex align-items-center my-3">
         Generated using data from
         <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-          <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID" />
+          <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
         </a>
       </div>
     </div>
