@@ -1,8 +1,16 @@
 <template>
-<div>
+<div class="half-page">
   <!-- <div v-html="htmlContent">
   </div> -->
-  <iframe class="w-100" height="1000" :src="reportUrl" />
+  <iframe class="w-100" height="1000" :src="reportUrl" @load="load" />
+
+  <p v-if="iframeError" class="my-5">
+    Your browser does not support iframes. <a :href="reportUrl" target="_blank">Please view the report on GitHub</a>.
+  </p>
+
+  <button class="btn btn-main-outline my-5">
+    <a :href="reportUrl" target="_blank">View report on GitHub</a>
+  </button>
 </div>
 </template>
 
@@ -15,15 +23,21 @@ export default Vue.extend({
     return {
       reportUrl: null,
       htmlPreface: "https://andersen-lab.github.io/hCoV19-sitrep",
+      iframeError: false
     };
+  },
+  methods: {
+    load(evt) {
+      if (!evt.returnValue) {
+        this.iframeError = true;
+        console.log("Browser doesn't support iFrames")
+      }
+    }
   },
   mounted() {
 
     axios.get("https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/metadata.json").then(response => {
-      console.log(response.data)
       const report = response.data.filter(d => d.name == this.$route.params.mutation).sort((a, b) => a.date > b.date ? -1 : 1)[0];
-      console.log(this.$route.params.mutation)
-      console.log(report)
       const url = report.url.split("/");
       this.reportUrl = `${this.htmlPreface}/${url.slice(-1)[0]}`;
     })
@@ -34,6 +48,6 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .max-height {
-  height: 1000px;
+    height: 1000px;
 }
-</style?
+</style>
