@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="w-100" id="mutation-map">
   <svg :width="width" :height="height" ref="svg">
     <g ref="genes" class="genes"></g>
     <g ref="nucleotide_axis" class="axis axis--x"></g>
@@ -35,13 +35,23 @@ import {
 export default Vue.extend({
   name: "SARSMutationMap",
   props: {
-    width: {
+    setWidth: {
       type: Number,
-      default: 1800
+      default: null
     },
     height: {
       type: Number,
       default: 150
+    }
+  },
+  watch: {
+    width() {
+      this.updatePlot();
+    }
+  },
+  computed: {
+    width() {
+      return this.setWidth ? this.setWidth : this.maxWidth;
     }
   },
   data() {
@@ -52,10 +62,11 @@ export default Vue.extend({
         bottom: 5,
         left: 5
       },
+      maxWidth: null,
       geneHeight: 25,
       mutationHeight: 55,
       aaCircleR: 9,
-      geneDisplayThresh: 50,
+      geneDisplayThresh: 35,
       // refs
       svg: null,
       genes: null,
@@ -70,9 +81,21 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
+  destroyed() {
+    window.removeEventListener("resize", this.setDims);
+  },
   methods: {
     setupPlot() {
-      this.svg = select(this.$refs.svg).attr("transform", `translate(${this.margin.left},${this.margin.top})`);
+      this.$nextTick(function() {
+        window.addEventListener("resize", this.setDims);
+        // set initial dimensions for the plots.
+        this.setDims();
+      });
+
+      this.setDims();
+
+      this.svg = select(this.$refs.svg)
+        .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
       this.genes = select(this.$refs.genes)
         .attr("transform", `translate(0,${this.mutationHeight})`);
 
@@ -84,6 +107,9 @@ export default Vue.extend({
 
       // Add another class for the last of the SARS-CoV-2 genes
       schemeTableau10.push("#555555");
+    },
+    setDims() {
+      this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
     },
     updatePlot() {
       this.updateScales();
@@ -123,7 +149,20 @@ export default Vue.extend({
             .attr("class", "gene-name")
             .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
           // .style("fill", "white")
-        }
+        },
+        update => {
+          update
+            .selectAll("rect")
+            .attr("x", d => this.xAmino(d.startNum))
+            .attr("width", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum))
+            .style("fill", d => this.geneColorScale(d.gene))
+
+          update
+            .selectAll("text")
+            .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
+            .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
+        },
+        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
       )
 
 
@@ -148,7 +187,7 @@ export default Vue.extend({
 
           aaGrp
             .append("text")
-            .attr("class", "aa-mutation-text")
+            .attr("class", "aa-mutation-text aa-mutation-location")
             .attr("y", this.aaCircleR * 2 + 7)
             .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
             .text(d => d.aa_location)
@@ -156,7 +195,7 @@ export default Vue.extend({
 
           aaGrp
             .append("text")
-            .attr("class", "aa-mutation-text")
+            .attr("class", "aa-mutation-text aa-mutation-change")
             .attr("y", this.aaCircleR)
             .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
             .style("font-weight", 600)
@@ -164,7 +203,26 @@ export default Vue.extend({
             .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
             .style("font-size", "0.85rem")
             .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
-        }
+        },
+        update => {
+          update
+            .selectAll("circle")
+            .attr("cx", d => this.xAmino(d.aa_location + d.gene_offset))
+            .style("fill", d => this.geneColorScale(d.gene))
+            .style("stroke", d => this.geneColorScale(d.gene));
+
+          update
+            .selectAll(".aa-mutation-location")
+            .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
+            .text(d => d.aa_location);
+
+          update
+            .selectAll(".aa-mutation-change")
+            .attr("x", d => this.xAmino(d.aa_location + d.gene_offset))
+            .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
+            .text(d => d.aa_new == "_" ? "\uf28d" : d.aa_new)
+        },
+        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
       )
 
       let aaDeletionSelector = this.deletions.selectAll(".aa-deletion")
@@ -192,11 +250,23 @@ export default Vue.extend({
             .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
             .style("font-weight", 600)
             .style("fill", d => this.geneColorScale(d.gene))
-            .style("font-family", d => d.aa_new == "_" ? "'Font Awesome 5 Free'" : "inherit")
             .style("font-size", "0.85rem")
             .text(d => "\u0394")
+        },
+        update => {
+          update.selectAll("rect")
+            .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
+            .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1)
+            .style("fill", d => this.geneColorScale(d.gene))
+            .style("stroke", d => this.geneColorScale(d.gene));
 
-        })
+          update
+            .selectAll("text")
+            .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
+            .text(d => "\u0394")
+        },
+        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+      )
     }
   }
 })
