@@ -1,6 +1,6 @@
 <template>
 <div class="w-100" id="mutation-map">
-  <svg :width="width" :height="height" ref="svg">
+  <svg :width="width" :height="height" ref="svg" v-if="mutationKey">
     <g ref="genes" class="genes"></g>
     <g ref="nucleotide_axis" class="axis axis--x"></g>
     <g ref="aminoacid_axis" class="axis axis--x"></g>
@@ -28,7 +28,10 @@ import {
   map,
   scaleOrdinal,
   brushX,
-  event
+  event,
+  forceCollide,
+  forceSimulation,
+  forceX
 } from "d3";
 
 import {
@@ -38,6 +41,7 @@ import {
 export default Vue.extend({
   name: "SARSMutationMap",
   props: {
+    mutationKey: String,
     setWidth: {
       type: Number,
       default: null
@@ -200,7 +204,7 @@ export default Vue.extend({
 
 
       let aaMutationSelector = this.aas.selectAll(".aa-mutation")
-        .data(MUTATIONS["B.1.1.7"]);
+        .data(MUTATIONS[this.mutationKey]);
 
       aaMutationSelector.join(
         enter => {
@@ -259,7 +263,7 @@ export default Vue.extend({
       )
 
       let aaDeletionSelector = this.deletions.selectAll(".aa-deletion")
-        .data(DELETIONS["B.1.1.7"]);
+        .data(DELETIONS[this.mutationKey]);
 
       aaDeletionSelector.join(
         enter => {
