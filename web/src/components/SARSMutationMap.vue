@@ -10,7 +10,12 @@
       <g ref="brush" class="brush" id="brush-zoom"></g>
     </g>
   </svg>
-  <div ref="tooltip" class="tooltip box-shadow" id="tooltip-gene">
+
+  <div ref="tooltip_mutation" class="tooltip box-shadow" id="tooltip-mutation">
+    <h5>
+    </h5>
+  </div>
+  <div ref="tooltip_gene" class="tooltip box-shadow" id="tooltip-gene">
     <h5>
     </h5>
     <div id="gene-mutations" class="m-0">
@@ -55,7 +60,11 @@ import {
   forceX
 } from "d3";
 
-import chroma from 'chroma-js';
+import {
+  cloneDeep
+} from "lodash";
+
+import chroma from "chroma-js";
 
 import {
   schemeTableau10
@@ -148,7 +157,7 @@ export default Vue.extend({
         .attr("transform", `translate(0,18)`);
 
       select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.xAmino))
-      select(this.$refs.brush).on("mouseout", this.tooltipOff)
+      select(this.$refs.brush).on("mouseleave", this.tooltipOff)
 
       // Add another class for the last of the SARS-CoV-2 genes
       schemeTableau10.push("#555555");
@@ -188,8 +197,37 @@ export default Vue.extend({
       // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
       if (event.offsetY < this.mutationHeight) {
         // UPPER HALF: mutations and deletions
-        console.log("mutation groups")
-        console.log(event)
+        let muts = cloneDeep(MUTATIONS[this.mutationKey]);
+        muts.forEach(d => {
+          d["tooltipDiff"] = Math.abs(event.offsetX - d.x);
+        })
+        muts.sort((a, b) => a.tooltipDiff - b.tooltipDiff);
+
+        const selectedMut = muts[0];
+
+        // turn off mutations / other ttip
+        this.svg.selectAll(".aa-mutation")
+          .style("opacity", 0.3);
+
+        select(this.$refs.tooltip_gene).style("display", "none");
+
+        // turn on selected mutations
+        this.svg.selectAll(`#mutation_${selectedMut.gene}${selectedMut.aa_location}`)
+          .style("opacity", 1);
+
+          // tooltip on
+          let ttip = select(this.$refs.tooltip_mutation);
+          // edit text
+          ttip.select("h5")
+          .style("color", this.geneColorScale(selectedMut.gene))
+          .html(`<b>${selectedMut.aa_original}${selectedMut.aa_location}${selectedMut.aa_new}</b> | ${this.mutationKey} | ${selectedMut.gene} gene`);
+
+          ttip
+            .style("left", `${event.clientX}px`)
+            .style("border-color", this.geneColorScale(selectedMut.gene))
+            .style("background", chroma(this.geneColorScale(selectedMut.gene)).luminance(0.8))
+            .style("display", "block");
+
       } else {
         // LOWER HALF: gene map
         const selectedX = this.xAmino.invert(event.offsetX);
@@ -202,6 +240,8 @@ export default Vue.extend({
           const selectedDeletions = DELETIONS[this.mutationKey] ? DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
 
           // turn genes off
+          select(this.$refs.tooltip_mutation).style("display", "none");
+
           this.svg.selectAll(".gene")
             .style("opacity", 0.3);
           // turn selected gene on
@@ -209,7 +249,7 @@ export default Vue.extend({
             .style("opacity", 1);
 
           // tooltip on
-          let ttip = select(this.$refs.tooltip);
+          let ttip = select(this.$refs.tooltip_gene);
           // edit text
           ttip.select("h5")
             .style("color", this.geneColorScale(selectedGene))
@@ -246,10 +286,14 @@ export default Vue.extend({
       }
     },
     tooltipOff() {
+      selectAll(".aa-mutation")
+        .style("opacity", 1);
+
       selectAll(".gene")
         .style("opacity", 1);
 
-      select(this.$refs.tooltip).style("display", "none")
+      select(this.$refs.tooltip_mutation).style("display", "none");
+      select(this.$refs.tooltip_gene).style("display", "none");
     },
     zoom() {
       // reset domain to new coords
@@ -365,7 +409,7 @@ export default Vue.extend({
           enter => {
             let aaGrp = enter.append("g")
               .attr("class", "aa-mutation")
-              .attr("id", d => `${d.gene}${d.aa_location + d.gene_offset}`);
+              .attr("id", d => `mutation_${d.gene}${d.aa_location}`);
 
             // leader lines
             aaGrp
@@ -475,7 +519,7 @@ export default Vue.extend({
             aaGrp.append("rect")
               .attr("class", "aa-deletion-rect")
               .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
-              .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1)
+              .attr("width", d => this.xAmino(d.del_end + d.gene_offset + 1) - this.xAmino(d.del_start + d.gene_offset))
               .attr("y", 0)
               .attr("height", 7)
               .style("fill", d => this.geneColorScale(d.gene))
@@ -497,7 +541,7 @@ export default Vue.extend({
               .style("stroke", d => this.geneColorScale(d.gene))
               .transition(t1)
               .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
-              .attr("width", d => this.xAmino(d.del_end + d.gene_offset) - this.xAmino(d.del_start + d.gene_offset) + 0.1);
+              .attr("width", d => this.xAmino(d.del_end + d.gene_offset + 1) - this.xAmino(d.del_start + d.gene_offset));
 
             update
               .selectAll("text")
@@ -547,7 +591,7 @@ export default Vue.extend({
     stroke: 1 !important;
 }
 
-#tooltip-gene {
+#tooltip-mutation, #tooltip-gene {
     background-color: #fff;
     padding: 7px;
     border: 1px solid;
