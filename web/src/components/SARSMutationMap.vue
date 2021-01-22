@@ -164,7 +164,6 @@ export default Vue.extend({
     },
     setDims() {
       this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
-      console.log(this.maxWidth)
     },
     updatePlot() {
       this.updateScales();
