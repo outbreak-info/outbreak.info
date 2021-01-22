@@ -1,37 +1,5 @@
 {
-  "CA VUI1": [{
-    "gene": "ORF1ab",
-    "aa_original": "I",
-    "aa_new": "V",
-    "aa_location": 4205,
-    "gene_offset": 0
-  },
-  {
-    "gene": "ORF1ab",
-    "aa_original": "I",
-    "aa_new": "?",
-    "aa_location": 0,
-    "gene_offset": 0
-  },
-  {
-    "gene": "S",
-    "aa_original": "L",
-    "aa_new": "R",
-    "aa_location": 452,
-    "gene_offset": 7096
-  }, {
-    "gene": "S",
-    "aa_original": "S",
-    "aa_new": "I",
-    "aa_location": 13,
-    "gene_offset": 7096
-  }, {
-    "gene": "S",
-    "aa_original": "W",
-    "aa_new": "C",
-    "aa_location": 152,
-    "gene_offset": 7096
-  }],
+
   "ORF1A:I4205V": [{
     "gene": "ORF1ab",
     "aa_original": "I",
