@@ -80,7 +80,7 @@ export default Vue.extend({
     },
     height: {
       type: Number,
-      default: 100
+      default: 90
     }
   },
   watch: {
