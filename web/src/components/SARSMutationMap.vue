@@ -245,9 +245,20 @@ export default Vue.extend({
 
             this.svg.selectAll(".gene")
               .style("opacity", 0.3);
+
+            this.svg.selectAll(".aa-mutation")
+              .style("opacity", 0.3);
+
+            this.svg.selectAll(".aa-deletion")
+              .style("opacity", 0.3);
+
             // turn selected gene on
             this.svg.select(`#${selectedGene}`)
               .style("opacity", 1);
+
+            this.svg.selectAll(`.${selectedGene}`)
+              .style("opacity", 1);
+
 
             // tooltip on
             let ttip = select(this.$refs.tooltip_gene);
@@ -289,6 +300,9 @@ export default Vue.extend({
     },
     tooltipOff() {
       selectAll(".aa-mutation")
+        .style("opacity", 1);
+
+      selectAll(".aa-deletion")
         .style("opacity", 1);
 
       selectAll(".gene")
@@ -410,7 +424,7 @@ export default Vue.extend({
         aaMutationSelector.join(
           enter => {
             let aaGrp = enter.append("g")
-              .attr("class", "aa-mutation")
+              .attr("class", d => `aa-mutation ${d.gene}`)
               .attr("id", d => `mutation_${d.gene}${d.aa_location}`);
 
             // leader lines
@@ -464,6 +478,10 @@ export default Vue.extend({
               .text(d => d.aa_new == "_" || d.aa_new == "*" ? "\uf28d" : d.aa_new)
           },
           update => {
+            update
+              .attr("class", d => `aa-mutation ${d.gene}`)
+              .attr("id", d => `mutation_${d.gene}${d.aa_location}`);
+
             // leader lines
             update
               .selectAll(".aa-mutation-leader")
@@ -515,7 +533,7 @@ export default Vue.extend({
         aaDeletionSelector.join(
           enter => {
             let aaGrp = enter.append("g")
-              .attr("class", "aa-deletion")
+              .attr("class", d => `aa-deletion ${d.gene}`)
               .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
 
             aaGrp.append("rect")
@@ -538,6 +556,10 @@ export default Vue.extend({
               .text(d => "\u0394")
           },
           update => {
+            update
+              .attr("class", d => `aa-deletion ${d.gene}`)
+              .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
+              
             update.selectAll("rect")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
