@@ -17,37 +17,8 @@
       </div>
     </div>
 
-    <div class="logo-group d-flex align-items-center justify-content-center border-top border-bottom w-100 py-1 my-3">
-      <div class="logo mr-4">
-        <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">
-          <img src="@/assets/anderson-logo-light.png" class="w-100" alt="Anderson Lab" />
-        </a>
-      </div>
+    <ReportLogos />
 
-      <div class="col-sm-2 d-flex justify-content-center align-items-center picBox">
-        <a href="https://cvisb.org/" rel="noreferrer" target="_blank">
-          <img src="@/assets/cvisb-logo-light.png" class="w-100" alt="CVISB" />
-        </a>
-      </div>
-
-      <div class="logo mr-4">
-        <a href="https://globalhealth.scripps.edu/" rel="noreferrer" target="_blank">
-          <img src="@/assets/global-logo-light.png" class="w-100" alt="SDCGH" />
-        </a>
-      </div>
-
-      <div class="logo mr-4">
-        <a href="https://searchcovid.info/" rel="noreferrer" target="_blank">
-          <img src="@/assets/search-logo.png" class="w-100" alt="SEARCH Alliance" />
-        </a>
-      </div>
-
-      <div class="logo mr-4">
-        <a href="https://outbreak.info/" rel="noreferrer" target="_blank">
-          <img src="@/assets/logo-full-01.svg" class="w-100" alt="outbreak.info" />
-        </a>
-      </div>
-    </div>
     <div class="d-flex flex-column justify-content-center align-items-center">
       <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline">How to interpret these reports</router-link>
     </div>
@@ -60,19 +31,19 @@
       <div class="report-group mb-1" v-for="(mutation, mIdx) in group.values" :key="mIdx">
         <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
           <div class="d-flex align-items-end justify-content-between w-100">
-          <template v-if="rIdx === 0">
-            <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
-              <!-- <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}"> -->
-              <h5 class="m-0 pb-1 mutation-name">{{ mutation.key }}</h5>
-            </router-link>
-            <div class="mutation-map flex-grow-1">
-              <SARSMutationMap :mutationKey="mutation.key"/>
-            </div>
-          </template>
-        </div>
-        <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="rIdx === 0 && report.name === 'B.1.1.7'">
-          <small>View {{report.name}} resources</small>
-        </router-link>
+            <template v-if="rIdx === 0">
+              <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
+                <!-- <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}"> -->
+                <h5 class="m-0 pb-1 mutation-name">{{ mutation.key }}</h5>
+              </router-link>
+              <div class="mutation-map flex-grow-1">
+                <SARSMutationMap :mutationKey="mutation.key" />
+              </div>
+            </template>
+          </div>
+          <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="rIdx === 0 && report.name === 'B.1.1.7'">
+            <small>View {{report.name}} resources</small>
+          </router-link>
         </div>
 
         <!-- <span @click="showAll(mutation.key)">view older</span> -->
@@ -85,6 +56,8 @@
 
 <script>
 import Vue from "vue";
+
+import ReportLogos from "@/components/ReportLogos.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 
 import axios from "axios";
@@ -100,6 +73,7 @@ import {
 export default {
   name: "SituationReports",
   components: {
+    ReportLogos,
     SARSMutationMap
   },
   data() {
@@ -133,8 +107,8 @@ export default {
 
 $mutation-width: 130px;
 .mutation-name {
-  flex: 0 0 $mutation-width;
-  width: $mutation-width;
+    flex: 0 0 $mutation-width;
+    width: $mutation-width;
     // flex-basis: $mutation-width !important;
     // flex-grow: 0 !important;
     // flex-shrink: 0 !important;
@@ -142,6 +116,6 @@ $mutation-width: 130px;
 }
 
 .mutation-map {
-  min-width: 0;
+    min-width: 0;
 }
 </style>
