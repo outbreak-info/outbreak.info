@@ -58,7 +58,8 @@
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i">
       <h2>{{ group.key }} Reports</h2>
       <div class="report-group mb-1" v-for="(mutation, mIdx) in group.values" :key="mIdx">
-        <div v-for="(report, rIdx) in mutation.values" :key="rIdx" class="d-flex align-items-end justify-content-between">
+        <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
+          <div class="d-flex align-items-end justify-content-between w-100">
           <template v-if="rIdx === 0">
             <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
               <!-- <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}"> -->
@@ -67,13 +68,13 @@
             <div class="mutation-map flex-grow-1">
               <SARSMutationMap :mutationKey="mutation.key"/>
             </div>
-
           </template>
         </div>
-        <!-- <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="report.name === 'B.1.1.7'">
+        <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="rIdx === 0 && report.name === 'B.1.1.7'">
           <small>View {{report.name}} resources</small>
-        </router-link> -->
-        <small>view resources</small>
+        </router-link>
+        </div>
+
         <!-- <span @click="showAll(mutation.key)">view older</span> -->
       </div>
     </div>
