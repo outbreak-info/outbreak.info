@@ -20,7 +20,7 @@
           <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'confirmed_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
         </div>
         <div class="d-flex flex-column ml-3">
-          <small class="underline">on {{date}}</small>
+          <small class="text-underline">on {{date}}</small>
           <table>
             <tr>
               <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
@@ -48,7 +48,7 @@
           <Bargraph :data="timeTrace" :date1="date1" :include2Week="isDiff" :variableObj="{ value: 'dead_numIncrease' }" :width="100" :height="40" id="time-trace" :color="'#9f9f9f'" colorAverage="#2c3e50" />
         </div>
         <div class="d-flex flex-column ml-3">
-          <small class="underline">on {{date}}</small>
+          <small class="text-underline">on {{date}}</small>
           <table>
             <tr>
               <td class="line-height-1 text-right pb-1" style="vertical-align: top;">
@@ -514,8 +514,5 @@ export default {
     background: #ffffff;
     opacity: 0;
     pointer-events: none;
-}
-.underline {
-    text-decoration: underline;
 }
 </style>

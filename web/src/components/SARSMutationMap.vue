@@ -559,7 +559,7 @@ export default Vue.extend({
             update
               .attr("class", d => `aa-deletion ${d.gene}`)
               .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
-              
+
             update.selectAll("rect")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
