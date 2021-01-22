@@ -1,6 +1,6 @@
 <template>
-<div class="w-100" id="mutation-map">
-  <svg :width="width" :height="height" ref="svg" :hidden="!hasMutations">
+<div class="" id="mutation-map">
+  <svg :width="width" :height="height" ref="svg">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
       <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
@@ -164,6 +164,7 @@ export default Vue.extend({
     },
     setDims() {
       this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
+      console.log(this.maxWidth)
     },
     updatePlot() {
       this.updateScales();
@@ -192,35 +193,36 @@ export default Vue.extend({
         .on("dblclick", this.resetAxis);
     },
     tooltipOn() {
-      // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
-      // That has to have a rect on top of everything which detects the pointer events.
-      // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
-      if (event.offsetY < this.mutationHeight) {
-        // UPPER HALF: mutations and deletions
-        let muts = cloneDeep(MUTATIONS[this.mutationKey]);
-        muts.forEach(d => {
-          d["tooltipDiff"] = Math.abs(event.offsetX - d.x);
-        })
-        muts.sort((a, b) => a.tooltipDiff - b.tooltipDiff);
+      if (this.hasMutations) {
+        // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
+        // That has to have a rect on top of everything which detects the pointer events.
+        // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
+        if (event.offsetY < this.mutationHeight) {
+          // UPPER HALF: mutations and deletions
+          let muts = cloneDeep(MUTATIONS[this.mutationKey]);
+          muts.forEach(d => {
+            d["tooltipDiff"] = Math.abs(event.offsetX - d.x);
+          })
+          muts.sort((a, b) => a.tooltipDiff - b.tooltipDiff);
 
-        const selectedMut = muts[0];
+          const selectedMut = muts[0];
 
-        // turn off mutations / other ttip
-        this.svg.selectAll(".aa-mutation")
-          .style("opacity", 0.3);
+          // turn off mutations / other ttip
+          this.svg.selectAll(".aa-mutation")
+            .style("opacity", 0.3);
 
-        select(this.$refs.tooltip_gene).style("display", "none");
+          select(this.$refs.tooltip_gene).style("display", "none");
 
-        // turn on selected mutations
-        this.svg.selectAll(`#mutation_${selectedMut.gene}${selectedMut.aa_location}`)
-          .style("opacity", 1);
+          // turn on selected mutations
+          this.svg.selectAll(`#mutation_${selectedMut.gene}${selectedMut.aa_location}`)
+            .style("opacity", 1);
 
           // tooltip on
           let ttip = select(this.$refs.tooltip_mutation);
           // edit text
           ttip.select("h5")
-          .style("color", this.geneColorScale(selectedMut.gene))
-          .html(`<b>${selectedMut.aa_original}${selectedMut.aa_location}${selectedMut.aa_new}</b> | ${this.mutationKey} | ${selectedMut.gene} gene`);
+            .style("color", this.geneColorScale(selectedMut.gene))
+            .html(`<b>${selectedMut.aa_original}${selectedMut.aa_location}${selectedMut.aa_new}</b> | ${this.mutationKey} | ${selectedMut.gene} gene`);
 
           ttip
             .style("left", `${event.clientX}px`)
@@ -228,60 +230,61 @@ export default Vue.extend({
             .style("background", chroma(this.geneColorScale(selectedMut.gene)).luminance(0.8))
             .style("display", "block");
 
-      } else {
-        // LOWER HALF: gene map
-        const selectedX = this.xAmino.invert(event.offsetX);
-        const selectedGenes = AA_MAP.filter(d => d.startNum <= selectedX && d.stopNum >= selectedX);
+        } else {
+          // LOWER HALF: gene map
+          const selectedX = this.xAmino.invert(event.offsetX);
+          const selectedGenes = AA_MAP.filter(d => d.startNum <= selectedX && d.stopNum >= selectedX);
 
-        if (selectedGenes.length === 1) {
-          const selectedGene = selectedGenes[0].gene;
+          if (selectedGenes.length === 1) {
+            const selectedGene = selectedGenes[0].gene;
 
-          const selectedMutations = MUTATIONS[this.mutationKey] ? MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
-          const selectedDeletions = DELETIONS[this.mutationKey] ? DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
+            const selectedMutations = MUTATIONS[this.mutationKey] ? MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
+            const selectedDeletions = DELETIONS[this.mutationKey] ? DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
 
-          // turn genes off
-          select(this.$refs.tooltip_mutation).style("display", "none");
+            // turn genes off
+            select(this.$refs.tooltip_mutation).style("display", "none");
 
-          this.svg.selectAll(".gene")
-            .style("opacity", 0.3);
-          // turn selected gene on
-          this.svg.select(`#${selectedGene}`)
-            .style("opacity", 1);
+            this.svg.selectAll(".gene")
+              .style("opacity", 0.3);
+            // turn selected gene on
+            this.svg.select(`#${selectedGene}`)
+              .style("opacity", 1);
 
-          // tooltip on
-          let ttip = select(this.$refs.tooltip_gene);
-          // edit text
-          ttip.select("h5")
-            .style("color", this.geneColorScale(selectedGene))
-            .text(`${this.mutationKey} | ${selectedGene} gene`)
+            // tooltip on
+            let ttip = select(this.$refs.tooltip_gene);
+            // edit text
+            ttip.select("h5")
+              .style("color", this.geneColorScale(selectedGene))
+              .text(`${this.mutationKey} | ${selectedGene} gene`)
 
-          const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
-          mutList.join(enter => {
-              enter.append("li")
-                .text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
-            },
-            update => {
-              update.text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
-            },
-            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-          )
+            const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
+            mutList.join(enter => {
+                enter.append("li")
+                  .text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
+              },
+              update => {
+                update.text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
+              },
+              exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+            )
 
-          const delList = ttip.select("ul#deletion-list").selectAll("li").data(selectedDeletions);
-          delList.join(enter => {
-              enter.append("li")
-                .text(d => `${d.del_start}-${d.del_end}`)
-            },
-            update => {
-              update.text(d => `${d.del_start}-${d.del_end}`)
-            },
-            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-          )
+            const delList = ttip.select("ul#deletion-list").selectAll("li").data(selectedDeletions);
+            delList.join(enter => {
+                enter.append("li")
+                  .text(d => `${d.del_start}-${d.del_end}`)
+              },
+              update => {
+                update.text(d => `${d.del_start}-${d.del_end}`)
+              },
+              exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+            )
 
-          ttip
-            .style("left", `${event.clientX}px`)
-            .style("border-color", this.geneColorScale(selectedGene))
-            .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
-            .style("display", "block");
+            ttip
+              .style("left", `${event.clientX}px`)
+              .style("border-color", this.geneColorScale(selectedGene))
+              .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
+              .style("display", "block");
+          }
         }
       }
     },
@@ -591,7 +594,8 @@ export default Vue.extend({
     stroke: 1 !important;
 }
 
-#tooltip-mutation, #tooltip-gene {
+#tooltip-gene,
+#tooltip-mutation {
     background-color: #fff;
     padding: 7px;
     border: 1px solid;

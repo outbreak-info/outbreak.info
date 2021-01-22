@@ -57,19 +57,23 @@
   <section id="report-list" class="text-left">
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i">
       <h2>{{ group.key }} Reports</h2>
-      <div class="report-group mb-3" v-for="(mutation, mIdx) in group.values" :key="mIdx">
-        <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
+      <div class="report-group mb-1" v-for="(mutation, mIdx) in group.values" :key="mIdx">
+        <div v-for="(report, rIdx) in mutation.values" :key="rIdx" class="d-flex align-items-end justify-content-between">
           <template v-if="rIdx === 0">
             <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
               <!-- <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}"> -->
-              <h5 class="m-0">{{ mutation.key }}</h5>
+              <h5 class="m-0 pb-1 mutation-name">{{ mutation.key }}</h5>
             </router-link>
-            <SARSMutationMap :mutationKey="mutation.key"/>
-            <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="report.name === 'B.1.1.7'">
-              <small>View {{report.name}} resources</small>
-            </router-link>
+            <div class="mutation-map flex-grow-1">
+              <SARSMutationMap :mutationKey="mutation.key"/>
+            </div>
+
           </template>
         </div>
+        <!-- <router-link :to='{name:"Resources", query:{q: `"${report.name}"`}}' class="ml-3" v-if="report.name === 'B.1.1.7'">
+          <small>View {{report.name}} resources</small>
+        </router-link> -->
+        <small>view resources</small>
         <!-- <span @click="showAll(mutation.key)">view older</span> -->
       </div>
     </div>
@@ -124,5 +128,19 @@ export default {
 
 .gisaid {
     height: 25px;
+}
+
+$mutation-width: 130px;
+.mutation-name {
+  flex: 0 0 $mutation-width;
+  width: $mutation-width;
+    // flex-basis: $mutation-width !important;
+    // flex-grow: 0 !important;
+    // flex-shrink: 0 !important;
+    // width: $mutation-width;
+}
+
+.mutation-map {
+  min-width: 0;
 }
 </style>
