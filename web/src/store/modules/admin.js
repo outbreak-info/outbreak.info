@@ -365,6 +365,14 @@ const state = {
         }
       }
     }, {
+      date: new Date("2021-01-21 0:0"),
+      category: "data",
+      title: "Added SARS-CoV-2 Mutation Situation Reports",
+      description: 'Added situation reports describing the prevalence of certain sets of mutations in SARS-CoV-2 sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>.',
+      route: {
+        name: "SituationReports"
+      }
+    }, {
       date: new Date("2020-07-06 0:1"),
       category: "feature",
       title: "Copyable visualizations",
