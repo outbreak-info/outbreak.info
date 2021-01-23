@@ -89,7 +89,10 @@
           <thead>
             <tr class="border-bottom">
               <th>
+
                 location
+                <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
+                <!-- sync, globe-americas, map-marked-alt -->
               </th>
               <th class="text-center">
                 sequence count
@@ -135,7 +138,11 @@
             </tr>
           </tbody>
         </table>
-        <small class="bright-hyperlink"><a href="#longitudinal">view change over time</a></small>
+        <div class="d-flex justify-content-between">
+          <small class="bright-hyperlink"><a href="#longitudinal">view change over time</a></small>
+          <small class="bright-hyperlink"><a href="#longitudinal">change locations</a></small>
+        </div>
+
       </div>
 
       <div id="geo-summary">
@@ -193,13 +200,13 @@ import {
 import {
   faLink,
   faShare,
-  faEnvelope
+  faEnvelope, faSync
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faTwitter
 } from "@fortawesome/free-brands-svg-icons";
 
-library.add(faLink, faShare, faEnvelope, faTwitter, faClock);
+library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
 
 
 export default {
@@ -253,6 +260,10 @@ export default {
 
 .font-size-2 {
     font-size: 1.25rem;
+}
+
+.font-size-small {
+  font-size: small;
 }
 
 .vis {
