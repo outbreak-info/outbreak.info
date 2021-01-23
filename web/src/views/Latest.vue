@@ -87,7 +87,7 @@ $circle-width: 8px;
 
 .update-date {
   opacity: 0.6;
-  min-width: 170px;
+  min-width: 200px;
   position: relative;
 }
 
