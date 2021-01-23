@@ -166,7 +166,7 @@
     </p>
     <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small>
     <Warning class="mt-2"
-      text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
+      text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
 
   </section>
 
