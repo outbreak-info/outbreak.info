@@ -70,10 +70,13 @@
         <h4>Key Insights</h4>
         <ul>
           <li>
-            Eep! This is all very scary.
+            {{ mutationName }} has been <b>increasing</b> in prevalence over the past two weeks.
           </li>
           <li>
-            But mutations are expected.
+            Its apparent prevalence is higher in rest of the world compared to the United States or San Diego.
+          </li>
+          <li>
+            Experimental data suggests it is more transmissable than other SARS-CoV-2 variants.
           </li>
         </ul>
       </div>
