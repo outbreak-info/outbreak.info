@@ -1,5 +1,5 @@
 <template>
-<div class="my-5 mx-4">
+<div class="my-5 mx-4 px-4">
   <h1 class="m-0">SARS-CoV-2 Mutation Situation Reports</h1>
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
@@ -8,15 +8,16 @@
         we will produce a report describing the current situation, focusing on the United States.</div>
       <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
 
-
-      <div class="text-left w-75 d-flex align-items-center my-3">
-        Generated using data from
-        <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-          <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
-        </a>
+      <div class="d-flex w-75 justify-content-between">
+        <div class="text-leftd-flex align-items-center my-3">
+          Generated using data from
+          <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
+            <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
+          </a>
+        </div>
+        <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
       </div>
     </div>
-
     <ReportLogos />
 
     <div class="d-flex flex-column justify-content-center align-items-center">
@@ -49,7 +50,11 @@
         <!-- <span @click="showAll(mutation.key)">view older</span> -->
       </div>
     </div>
+  </section>
 
+  <section id="custom-report" class="text-left">
+    <h2>Create custom report</h2>
+    <CustomReportForm />
   </section>
 </div>
 </template>
@@ -59,6 +64,7 @@ import Vue from "vue";
 
 import ReportLogos from "@/components/ReportLogos.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
+import CustomReportForm from "@/components/CustomReportForm.vue";
 
 import axios from "axios";
 
@@ -74,7 +80,8 @@ export default {
   name: "SituationReports",
   components: {
     ReportLogos,
-    SARSMutationMap
+    SARSMutationMap,
+    CustomReportForm
   },
   data() {
     return {
