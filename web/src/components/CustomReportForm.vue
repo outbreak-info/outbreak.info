@@ -1,65 +1,85 @@
 <template>
 <div>
-  <form class="d-flex align-items-center">
-    <div class="d-flex flex-column align-items-start mr-4" id="coordinate-type">
-      <h6 class="text-uppercase text-muted">coordinate system</h6>
-      <div class="radio-item">
-        <input type="radio" id="aa" value="aminoacid" v-model="selectedCoordinate" class="mr-2">
-        <label for="aminoacid">amino acids</label>
-      </div>
-      <div class="radio-item">
-        <input type="radio" id="nuc" value="nuc" v-model="selectedCoordinate" class="mr-2">
-        <label for="nuc">nucleotides</label>
-      </div>
-    </div>
-    <div id="gene-name" class="mr-4" v-if="selectedCoordinate === 'aminoacid'">
-      <h6 class="text-uppercase text-muted">gene</h6>
-      <select v-model="selectedGene" class="select-dropdown">
-        <option v-for="gene in genes" :value="gene" :key="gene.name">
-          {{gene.name}}
-        </option>
-      </select>
-    </div>
+  <div id="selected mutations">
 
-    <div class="d-flex flex-column align-items-start mr-4" id="mutation-type">
-      <h6 class="text-uppercase text-muted">mutation type</h6>
-      <div class="radio-item">
-        <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
-        <label for="substitution">substitution</label>
-      </div>
-      <div class="radio-item">
-        <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
-        <label for="deletion">deletion</label>
-      </div>
-    </div>
-
-    <div id="location" class="mr-4">
-      <h6 class="text-uppercase text-muted">location</h6>
-      <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
-    </div>
-
-    <div id="ref_codon" class="mr-4" v-if="selectedLocation">
-      <h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-      <div>
-        {{ selectedRef }}
-      </div>
-    </div>
-
-    <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
-      <h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-      <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
-    </div>
-
-    <button class="btn btn-main p-0 d-flex">
-      <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
-        </span>
-        <div class="bg-sec py-2 px-2 border-theme">
-        <font-awesome-icon :icon="['fas', 'plus']" />
+  </div>
+  <form class="d-flex align-items-center" @submit.prevent="onSubmit">
+    <div class="d-flex align-items-start">
+      <div class="d-flex flex-column align-items-start mr-4" id="coordinate-type">
+        <h6 class="text-uppercase text-muted">coordinate system</h6>
+        <div class="radio-item">
+          <input type="radio" id="aa" value="aminoacid" v-model="selectedCoordinate" class="mr-2">
+          <label for="aminoacid">amino acids</label>
         </div>
+        <div class="radio-item">
+          <input type="radio" id="nuc" value="nuc" v-model="selectedCoordinate" class="mr-2">
+          <label for="nuc">nucleotides</label>
+        </div>
+      </div>
+      <div id="gene-name" class="mr-4" v-if="selectedCoordinate === 'aminoacid'">
+        <h6 class="text-uppercase text-muted">gene</h6>
+        <select v-model="selectedGene" class="select-dropdown">
+          <option v-for="gene in genes" :value="gene" :key="gene.name">
+            {{gene.name}}
+          </option>
+        </select>
+      </div>
 
+      <div class="d-flex flex-column align-items-start mr-4" id="mutation-type">
+        <h6 class="text-uppercase text-muted">mutation type</h6>
+        <div class="radio-item">
+          <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
+          <label for="substitution">substitution</label>
+        </div>
+        <div class="radio-item">
+          <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
+          <label for="deletion">deletion</label>
+        </div>
+      </div>
+
+      <div id="location" class="mr-4">
+        <h6 class="text-uppercase text-muted">location</h6>
+        <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
+      </div>
+
+      <div id="ref_codon" class="mr-4" v-if="selectedRef">
+        <h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+        <div>
+          {{ selectedRef }}
+        </div>
+      </div>
+
+      <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
+        <h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+        <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
+      </div>
+    </div>
+
+    <button class="btn btn-main p-0 d-flex" role="button" @click="addMutation">
+      <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
+      </span>
+      <div class="bg-sec py-2 px-2 border-theme">
+        <font-awesome-icon :icon="['fas', 'plus']" />
+      </div>
     </button>
 
   </form>
+  <div id="selected-mutations" class="my-3" v-if="selectedMutations.length">
+    <h5>Selected mutations</h5>
+    <div class="d-flex flex-wrap">
+      <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx"  @click="deleteMutation(mIdx)">
+        <span v-html="mutation.mutation"></span>
+        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+      </button>
+    </div>
+
+    <SARSMutationMap mutationKey="test" />
+
+  </div>
+  <div class="d-flex justify-content-center w-100">
+    <button class="btn btn-accent">Create report</button>
+  </div>
+
 </div>
 </template>
 
@@ -67,6 +87,7 @@
 import Vue from "vue";
 
 import AA_MAP from "@/assets/genomics/sarscov2_aa.json";
+import SARSMutationMap from "@/components/SARSMutationMap.vue"
 
 // --- font awesome --
 import {
@@ -78,13 +99,17 @@ import {
 import {
   faPlus
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimesCircle
+} from "@fortawesome/free-regular-svg-icons";
 
-library.add(faPlus);
+library.add(faPlus, faTimesCircle);
 
 export default Vue.extend({
   name: "CustomReportForm",
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    SARSMutationMap
   },
   computed: {
     selectedMax() {
@@ -97,30 +122,62 @@ export default Vue.extend({
       return (this.selectedCoordinate == "aminoacid" ? "new AA" : "A, T, G, C")
     },
     selectedRef() {
-      if (this.selectedCoordinate == "aminoacid") {
+      if (this.selectedCoordinate == "aminoacid" && this.selectedGene) {
         const selected = AA_MAP.filter(d => d.gene == this.selectedGene.name && d.codon_num == this.selectedLocation)
         return (selected.length == 1 ? selected[0].aa : "unknown")
       } else {
-        return ("unknown")
+        return (null)
       }
     },
     formValid() {
-      if(this.selectedMutationType == "substitution") {
-        return(this.selectedGene && this.selectedLocation && this.selectedMutation)
-      } else if(this.selectedMutationType == "deletion") {
-        return(this.selectedGene && this.selectedLocation)
+      if (this.selectedMutationType == "substitution") {
+        return (this.selectedGene && this.selectedLocation && this.selectedMutation)
+      } else if (this.selectedMutationType == "deletion") {
+        return (this.selectedGene && this.selectedLocation)
       }
       return (false);
     },
     selectedLabel() {
       if (this.formValid) {
         if (this.selectedMutationType == "substitution") {
-          return (`${this.selectedRef}${this.selectedLocation}${this.selectedMutation}`)
+          return (`${this.selectedGene.name}:${this.selectedRef}${this.selectedLocation}${this.selectedMutation}`)
         } else if (this.selectedMutationType == "deletion") {
-          return (`&#916;${this.selectedLocation}`)
+          return (`${this.selectedGene.name}:&#916;${this.selectedLocation}`)
         }
       }
       return (null)
+    }
+  },
+  methods: {
+    onSubmit() {
+      console.log("submitted")
+    },
+    addMutation() {
+      // Add to mutation array
+      let mutationStr;
+      if (this.selectedCoordinate == "aminoacid") {
+        if (this.selectedMutationType == "substitution") {
+          mutationStr = `${this.selectedGene.name}:${this.selectedRef}${this.selectedLocation}${this.selectedMutation}`;
+        } else if (this.selectedMutationType == "deletion") {
+          mutationStr = `${this.selectedGene.name}:&#916;${this.selectedLocation}`;
+        }
+        this.selectedMutations.push({
+          type: this.selectedMutationType,
+          gene: this.selectedGene.name,
+          codon_num: this.selectedLocation,
+          ref_aa: this.selectedRef,
+          alt_aa: this.selectedMutation,
+          mutation: mutationStr
+        });
+      }
+      // Clear the form
+      this.selectedMutationType = null;
+      this.selectedGene = null;
+      this.selectedLocation = null;
+      this.selectedMutation = null;
+    },
+    deleteMutation(idx) {
+      this.selectedMutations.splice(idx, 1);
     }
   },
   data() {
@@ -196,22 +253,21 @@ export default Vue.extend({
 }
 
 .w-110px {
-  width: 110px;
+    width: 110px;
 }
 
 .w-100px {
-  width: 100px;
+    width: 100px;
 }
 .w-90px {
-  width: 90px;
+    width: 90px;
 }
 
 .w-50px {
-  width: 50px;
+    width: 50px;
 }
 
 .w-75px {
-  width: 75px;
+    width: 75px;
 }
-
 </style>

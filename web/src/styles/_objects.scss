@@ -119,6 +119,28 @@ button.chip.to-add:hover {
   }
 }
 
+
+.btn-accent{
+  background: $warning-color !important;
+  color: white;
+  transition: all .5s;
+  text-transform: uppercase;
+  &:hover{
+    background: darken($warning-color, 20%) !important;
+    color: white;
+  }
+  &-outline{
+    background: transparent;
+    border: darken($warning-color, 5%) 2px solid !important;
+    color: $warning-color;
+    transition: all .5s;
+    text-transform:uppercase;
+    &:hover{
+      background: $warning-color !important;
+      color: white;
+    }
+  }
+}
 .btn-outline-secondary:hover {
     background: #6c757d !important;
     color: white;

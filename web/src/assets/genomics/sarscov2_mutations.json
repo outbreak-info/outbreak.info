@@ -28,6 +28,41 @@
     "aa_location": 152,
     "gene_offset": 7096
   }],
+  "test": [{
+        "gene": "ORF1ab",
+        "aa_original": "T",
+        "aa_new": "I",
+        "aa_location": 1001,
+        "gene_offset": 0
+      },
+      {
+        "gene": "ORF1ab",
+        "aa_original": "I",
+        "aa_location": 2230,
+        "aa_new": "T",
+        "gene_offset": 0
+      },
+      {
+        "gene": "ORF1ab",
+        "aa_original": "A",
+        "aa_location": 1708,
+        "aa_new": "D",
+        "gene_offset": 0
+      },
+      {
+        "gene": "S",
+        "aa_original": "N",
+        "aa_location": 501,
+        "aa_new": "Y",
+        "gene_offset": 7096
+      },
+      {
+        "gene": "S",
+        "aa_original": "A",
+        "aa_location": 570,
+        "aa_new": "D",
+        "gene_offset": 7096
+      }],
   "B.1.1.7": [{
       "gene": "ORF1ab",
       "aa_original": "T",
