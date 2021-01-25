@@ -3,7 +3,7 @@
   <div id="selected mutations">
 
   </div>
-  <form class="d-flex align-items-center" @submit.prevent="onSubmit">
+  <form class="d-flex align-items-center mb-3" @submit.prevent="onSubmit">
     <div class="d-flex align-items-start">
       <div class="d-flex flex-column align-items-start mr-4" id="coordinate-type">
         <h6 class="text-uppercase text-muted">coordinate system</h6>
@@ -40,6 +40,8 @@
       <div id="location" class="mr-4">
         <h6 class="text-uppercase text-muted">location</h6>
         <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
+        <small>relative to <a :href="refSeq.url" target="_blank"
+          rel="noreferrer">{{refSeq.name}}</a></small>
       </div>
 
       <div id="ref_codon" class="mr-4" v-if="selectedRef">
@@ -89,6 +91,11 @@ import Vue from "vue";
 import AA_MAP from "@/assets/genomics/sarscov2_aa.json";
 import SARSMutationMap from "@/components/SARSMutationMap.vue"
 
+// --- store / Vuex ---
+import {
+  mapState
+} from "vuex";
+
 // --- font awesome --
 import {
   FontAwesomeIcon
@@ -112,6 +119,7 @@ export default Vue.extend({
     SARSMutationMap
   },
   computed: {
+      ...mapState("genomics", ["refSeq"]),
     selectedMax() {
       if (this.selectedCoordinate == "aminoacid") {
         return (this.selectedGene ? `1 - ${this.selectedGene.length}` : "select gene");

@@ -190,6 +190,11 @@ import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
 
+// --- store / Vuex ---
+import {
+  mapState
+} from "vuex";
+
 // --- font awesome --
 import {
   FontAwesomeIcon
@@ -203,7 +208,8 @@ import {
 import {
   faLink,
   faShare,
-  faEnvelope, faSync
+  faEnvelope,
+  faSync
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faTwitter
@@ -221,13 +227,12 @@ export default {
     CountryMap,
     Warning
   },
+  computed: {
+    ...mapState("genomics", ["refSeq"])
+  },
   data() {
     return {
       mutationName: "B.1.1.7",
-      refSeq: {
-        url: "https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2/",
-        name: "NC_045512"
-      },
       reportType: "lineage",
       lastUpdated: "2 hours",
       dateUpdated: "22 January 2021",
@@ -266,7 +271,7 @@ export default {
 }
 
 .font-size-small {
-  font-size: small;
+    font-size: small;
 }
 
 .vis {
