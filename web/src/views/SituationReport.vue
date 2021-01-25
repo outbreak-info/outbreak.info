@@ -163,10 +163,7 @@
 
   <section class="my-3">
     <h4>Methodology</h4>
-    <p class="m-0">
-      All SARS-CoV sequences were downloaded from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> on {{ dateUpdated }} and aligned to reference sequence <a :href="refSeq.url" target="_blank"
-        rel="noreferrer">{{refSeq.name}}</a>.
-    </p>
+    <ReportMethodology/>
     <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small>
     <Warning class="mt-2"
       text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
@@ -186,14 +183,10 @@
 import Vue from "vue";
 
 import ReportLogos from "@/components/ReportLogos.vue";
+import ReportMethodology from "@/components/ReportMethodology.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
-
-// --- store / Vuex ---
-import {
-  mapState
-} from "vuex";
 
 // --- font awesome --
 import {
@@ -219,16 +212,14 @@ library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
 
 
 export default {
-  name: "SituationReports",
+  name: "SituationReport",
   components: {
     ReportLogos,
+    ReportMethodology,
     SARSMutationMap,
     FontAwesomeIcon,
     CountryMap,
     Warning
-  },
-  computed: {
-    ...mapState("genomics", ["refSeq"])
   },
   data() {
     return {
