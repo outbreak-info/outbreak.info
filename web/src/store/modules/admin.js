@@ -44,6 +44,18 @@ const state = {
       citation: 'The Atlantic. <i>The COVID Tracking Project</i>. Available online: <a href="https://covidtracking.com/" target="_blank">https://covidtracking.com/</a> (2020)'
     }
   ],
+  genomicSources: [{
+      id: "gisaid",
+      name: "GISAID Initiative",
+      img: "gisaid.png",
+      scope: "SARS-CoV-2 virus sequences",
+      description: "<p class='mb-2'>The GISAID Initiative promotes the rapid sharing of data from all influenza viruses and the coronavirus causing COVID-19. This includes genetic sequence and related clinical and epidemiological data associated with human viruses, and geographical as well as species-specific data associated with avian and other animal viruses, to help researchers understand how viruses evolve and spread during epidemics and pandemics.</p><p class='mb-2'>GISAID does so by overcoming disincentive hurdles and restrictions, which discourage or prevented sharing of virological data prior to formal publication.</p><p class='mb-2'>The Initiative ensures that open access to data in GISAID is provided free-of-charge to all individuals that agreed to identify themselves and agreed to uphold the GISAID sharing mechanism governed through its <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Database Access Agreement</a>.",
+      url: "https://www.gisaid.org/",
+      license: {
+        url: "https://www.gisaid.org/registration/terms-of-use/",
+      },
+      citation: 'Elbe, S., and Buckland-Merrett, G. (2017) Data, disease and diplomacy: GISAID’s innovative contribution to global health. Global Challenges, 1:33-46. DOI: <a href="http://dx.doi.org/10.1002/gch2.1018" target="_blank">10.1002/gch2.1018</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6607375/" target="_blank">31565258</a>; Shu, Y., McCauley, J. (2017)  GISAID: Global initiative on sharing all influenza data – from vision to reality. EuroSurveillance, 22(13) DOI: <a href="http://dx.doi.org/10.2807/1560-7917.ES.2017.22.13.30494" target="_blank">10.2807/1560-7917.ES.2017.22.13.30494</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5388101/" target="_blank">PMC5388101</a>'
+    }],
   geoSources: [{
       id: "naturaleath",
       name: "Natural Earth",
