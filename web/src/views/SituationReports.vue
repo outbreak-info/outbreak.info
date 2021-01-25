@@ -12,7 +12,7 @@
         <div class="text-leftd-flex align-items-center my-3">
           Generated using data from
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-            <img src="@/assets/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
+            <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
           </a>
         </div>
         <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>

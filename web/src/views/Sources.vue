@@ -22,6 +22,11 @@
         </div>
 
         <div class="text-left mt-5">
+          <h3 id="geographic">Genomic Data</h3>
+          <SourceDescription :sources="genomicSources" />
+        </div>
+
+        <div class="text-left mt-5">
           <h3 id="geographic">Geographic Data</h3>
           <SourceDescription :sources="geoSources" />
         </div>
@@ -66,7 +71,7 @@ export default Vue.extend({
     DownloadData
   },
   computed: {
-    ...mapState("admin", ["sources", "geoSources", "resources"])
+    ...mapState("admin", ["sources", "geoSources", "genomicSources", "resources"])
   }
 });
 </script>
