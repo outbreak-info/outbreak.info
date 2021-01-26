@@ -210,6 +210,7 @@ import {
 
 library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
 
+import { quantile } from '@stdlib/stats/base/dists/beta';
 
 export default {
   name: "SituationReport",
@@ -232,9 +233,17 @@ export default {
       totalSeqs: 22470
     }
   },
+  mounted() {
+    this.calcCI(57, 3165)
+  },
   methods: {
     downloadGISAID() {
       console.log("Downloading GISAID IDs")
+    },
+    calcCI(x, n) {
+      const upper = quantile(0.975, x+0.5, n-x+0.5);
+      const lower = quantile(0.025, x+0.5, n-x+0.5);
+      const est = x / n;
     }
   }
 }
