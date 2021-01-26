@@ -56,6 +56,7 @@
     <h2>Create custom report</h2>
     <CustomReportForm />
   </section>
+
   <ReportAcknowledgements />
 </div>
 </template>
@@ -66,6 +67,7 @@ import Vue from "vue";
 import ReportLogos from "@/components/ReportLogos.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
+import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 import axios from "axios";
 
@@ -82,7 +84,8 @@ export default {
   components: {
     ReportLogos,
     SARSMutationMap,
-    CustomReportForm
+    CustomReportForm,
+    ReportAcknowledgements
   },
   data() {
     return {

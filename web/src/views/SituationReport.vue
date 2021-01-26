@@ -16,7 +16,7 @@
 
     <div class="d-flex flex-column align-items-end">
       <div class="d-flex align-items-center">
-        Generated using data from
+        Enabled by data from
         <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
           <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
         </a>
@@ -176,6 +176,7 @@
       Andersen lab, 2021.
     </p>
   </section>
+<ReportAcknowledgements />
 </div>
 </template>
 
@@ -187,6 +188,7 @@ import ReportMethodology from "@/components/ReportMethodology.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
+import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 // --- font awesome --
 import {
@@ -220,7 +222,8 @@ export default {
     SARSMutationMap,
     FontAwesomeIcon,
     CountryMap,
-    Warning
+    Warning,
+    ReportAcknowledgements
   },
   data() {
     return {
