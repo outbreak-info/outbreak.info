@@ -10,7 +10,7 @@
 
 
       <div class="text-left w-75 d-flex align-items-center my-3">
-        Generated using data from
+        Enabled by data from
         <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
           <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
         </a>
@@ -78,14 +78,15 @@
         <!-- <span @click="showAll(mutation.key)">view older</span> -->
       </div>
     </div>
-
   </section>
+  <ReportAcknowledgements />
 </div>
 </template>
 
 <script>
 import Vue from "vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
+import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 import axios from "axios";
 
@@ -100,7 +101,8 @@ import {
 export default {
   name: "SituationReports",
   components: {
-    SARSMutationMap
+    SARSMutationMap,
+    ReportAcknowledgements
   },
   data() {
     return {
