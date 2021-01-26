@@ -176,7 +176,7 @@
       Andersen lab, 2021.
     </p>
   </section>
-<ReportAcknowledgements />
+<ReportAcknowledgements class="border-top pt-3" />
 </div>
 </template>
 
