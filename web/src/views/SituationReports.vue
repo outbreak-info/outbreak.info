@@ -10,7 +10,7 @@
 
       <div class="d-flex w-75 justify-content-between">
         <div class="text-leftd-flex align-items-center my-3">
-          Generated using data from
+          Enabled by data from
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
             <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
           </a>
@@ -56,6 +56,7 @@
     <h2>Create custom report</h2>
     <CustomReportForm />
   </section>
+  <ReportAcknowledgements />
 </div>
 </template>
 
