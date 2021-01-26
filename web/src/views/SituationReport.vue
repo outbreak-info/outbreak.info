@@ -118,7 +118,7 @@
     </section>
 
 
-    <section id="summary" class="col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
+    <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
       <h3>Summary</h3>
       <div class="summary-counts mb-3">
         As of {{ dateUpdated }}, <b>{{ totalSeqs.toLocaleString() }}</b> sequences containing the variations in {{ mutationName }} have been detected:
@@ -271,6 +271,14 @@ export default {
     Warning,
     ReportAcknowledgements,
     ReportPrevalence
+  },
+  props: {
+    isCurated: {
+      type: Boolean,
+      default: false },
+      location: Array,
+      muts: String,
+      lineage: String
   },
   data() {
     return {

@@ -270,6 +270,11 @@ const routes = [{
   {
     path: "/report2.0",
     name: "Report2.0",
+    props: route => ({
+      location: route.query.location,
+      muts: route.query.muts,
+      lineage: route.query.lineage
+    }),
     component: () =>
       import(
         /* webpackChunkName: "situation-report" */
