@@ -268,8 +268,8 @@ const routes = [{
       )
   },
   {
-    path: "/test",
-    name: "Test",
+    path: "/report2.0",
+    name: "Report2.0",
     component: () =>
       import(
         /* webpackChunkName: "situation-report" */
