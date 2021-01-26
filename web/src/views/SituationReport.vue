@@ -228,8 +228,8 @@ export default {
       reportType: "lineage",
       lastUpdated: "2 hours",
       dateUpdated: "22 January 2021",
-      countries: ["France", "Spain", "Canada", "United States of America", "Brazil", "India", "Australia"],
-      states: ["California"],
+      countries: ["Argentina","Australia","Austria","Belgium","Brazil","Canada","Czech Republic","Denmark","Ecuador","Finland","France","Germany","Greece","Hong Kong","Hungary","Iceland","India","Iran","Ireland","Israel","Italy","Jamaica","Japan","Latvia","Lebanon","Luxembourg","Mexico","Netherlands","New Zealand","Norway","Oman","Pakistan","Peru","Poland","Portugal","Romania","Singapore","Slovakia","South Korea","Spain","Sri Lanka","Sweden","Switzerland","Turkey","United Kingdom","United States of America","Vietnam"],
+      states: ["California","Colorado","Connecticut","Florida","Georgia","Illinois","Indiana","Maryland","Massachusetts","Michigan","Minnesota","New Mexico","New York","Oklahoma","Oregon","Pennsylvania","Texas","Utah"],
       totalSeqs: 22470
     }
   },
