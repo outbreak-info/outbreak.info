@@ -80,6 +80,41 @@
           </li>
         </ul>
       </div>
+
+      <div class="mt-4">
+        <h4>What's new today</h4>
+        <table>
+          <tr class="border-bottom">
+            <th colspan="2">
+              New sequences identified
+            </th>
+          </tr>
+          <tr>
+            <td>
+              Worldwide
+            </td>
+            <td>
+              114
+            </td>
+          </tr>
+          <tr>
+            <td>
+              United States
+            </td>
+            <td>
+              8
+            </td>
+          </tr>
+          <tr>
+            <td>
+              San Diego
+            </td>
+            <td>
+              0
+            </td>
+          </tr>
+        </table>
+      </div>
     </section>
 
 
@@ -156,14 +191,22 @@
     </section>
   </div>
 
-  <section class="vis my-3 py-3" id="longitudinal">
-    <h4>Prevalence over time</h4>
-    vis vis vis
+  <section class="vis my-3 py-3 d-flex flex-column align-items-start" id="longitudinal">
+    <h4>Average daily {{mutationName}} prevalence</h4>
+    <div>
+      <button class="btn btn-tab" @click="changeLocation('global')">Global</button>
+      <button class="btn btn-tab" @click="changeLocation('US')">United States</button>
+      <button class="btn btn-tab">San Diego County</button>
+      <button class="btn btn-main-outline">Change locations
+        <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
+      </button>
+    </div>
+    <ReportPrevalence :data="prevalence" />
   </section>
 
   <section class="my-3">
     <h4>Methodology</h4>
-    <ReportMethodology/>
+    <ReportMethodology />
     <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small>
     <Warning class="mt-2"
       text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
@@ -176,7 +219,7 @@
       Andersen lab, 2021.
     </p>
   </section>
-<ReportAcknowledgements class="border-top pt-3" />
+  <ReportAcknowledgements class="border-top pt-3" />
 </div>
 </template>
 
@@ -189,6 +232,7 @@ import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
+import ReportPrevalence from "@/components/ReportPrevalence.vue";
 
 // --- font awesome --
 import {
@@ -212,7 +256,9 @@ import {
 
 library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
 
-import { quantile } from '@stdlib/stats/base/dists/beta';
+import {
+  getDates
+} from "@/api/genomics.js";
 
 export default {
   name: "SituationReport",
@@ -223,7 +269,8 @@ export default {
     FontAwesomeIcon,
     CountryMap,
     Warning,
-    ReportAcknowledgements
+    ReportAcknowledgements,
+    ReportPrevalence
   },
   data() {
     return {
@@ -231,22 +278,25 @@ export default {
       reportType: "lineage",
       lastUpdated: "2 hours",
       dateUpdated: "22 January 2021",
-      countries: ["Argentina","Australia","Austria","Belgium","Brazil","Canada","Czech Republic","Denmark","Ecuador","Finland","France","Germany","Greece","Hong Kong","Hungary","Iceland","India","Iran","Ireland","Israel","Italy","Jamaica","Japan","Latvia","Lebanon","Luxembourg","Mexico","Netherlands","New Zealand","Norway","Oman","Pakistan","Peru","Poland","Portugal","Romania","Singapore","Slovakia","South Korea","Spain","Sri Lanka","Sweden","Switzerland","Turkey","United Kingdom","United States of America","Vietnam"],
-      states: ["California","Colorado","Connecticut","Florida","Georgia","Illinois","Indiana","Maryland","Massachusetts","Michigan","Minnesota","New Mexico","New York","Oklahoma","Oregon","Pennsylvania","Texas","Utah"],
-      totalSeqs: 22470
+      countries: ["Argentina", "Australia", "Austria", "Belgium", "Brazil", "Canada", "Czech Republic", "Denmark", "Ecuador", "Finland", "France", "Germany", "Greece", "Hong Kong", "Hungary", "Iceland", "India", "Iran", "Ireland", "Israel", "Italy",
+        "Jamaica", "Japan", "Latvia", "Lebanon", "Luxembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Oman", "Pakistan", "Peru", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "South Korea", "Spain", "Sri Lanka", "Sweden",
+        "Switzerland", "Turkey", "United Kingdom", "United States of America", "Vietnam"
+      ],
+      states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah"],
+      totalSeqs: 22470,
+      prevalence: []
     }
   },
   mounted() {
-    this.calcCI(57, 3165)
+    this.prevalence = getDates("global");
+    console.log(this.prevalence)
   },
   methods: {
+    changeLocation(location) {
+      this.prevalence = getDates(location);
+    },
     downloadGISAID() {
       console.log("Downloading GISAID IDs")
-    },
-    calcCI(x, n) {
-      const upper = quantile(0.975, x+0.5, n-x+0.5);
-      const lower = quantile(0.025, x+0.5, n-x+0.5);
-      const est = x / n;
     }
   }
 }
@@ -275,9 +325,5 @@ export default {
 
 .font-size-small {
     font-size: small;
-}
-
-.vis {
-    background: aliceblue;
 }
 </style>
