@@ -53,7 +53,7 @@
   </section>
 
   <section id="custom-report" class="text-left">
-    <h2>Create custom report</h2>
+    <h2 class="m-0 p-0">Create custom report</h2>
     <CustomReportForm />
   </section>
 

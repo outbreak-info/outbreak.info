@@ -1,75 +1,99 @@
 <template>
 <div>
-  <div id="selected mutations">
-
+  <div class="text-muted mb-2">
+    Choose either a <router-link :to="{ hash: '#pangolin' }">lineage</router-link> or a <router-link :to="{ hash: '#mutation-set' }">set of mutations</router-link>
   </div>
-  <form class="d-flex align-items-center mb-3" @submit.prevent="onSubmit">
-    <div class="d-flex align-items-start">
-      <div class="d-flex flex-column align-items-start mr-4" id="coordinate-type">
-        <h6 class="text-uppercase text-muted">coordinate system</h6>
-        <div class="radio-item">
-          <input type="radio" id="aa" value="aminoacid" v-model="selectedCoordinate" class="mr-2">
-          <label for="aminoacid">amino acids</label>
+  <div id="pangolin" class="my-3">
+    <h4 class="mb-0">Custom lineage</h4>
+    <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">Pangolin lineages</a></small>
+<form class="" @submit.prevent="onSubmit">
+    <select v-model="selectedLineage" class="w-200px">
+  <option :value="opt" v-for="(opt, idx) in lineageOpts" :key="idx">{{opt}}</option>
+</select>
+</form>
+  </div>
+
+  <b>or</b>
+
+  <div id="mutation-set" class="my-3">
+    <h4>Set of mutations</h4>
+    <form class="d-flex align-items-center mb-3" @submit.prevent="onSubmit">
+      <div class="d-flex align-items-start">
+        <div class="d-flex flex-column align-items-start mr-4 coords p-2" id="coordinate-type">
+          <h6 class="text-uppercase text-muted">coordinate system</h6>
+          <div class="radio-item">
+            <input type="radio" id="aa" value="aminoacid" v-model="selectedCoordinate" class="mr-2">
+            <label for="aminoacid">amino acids</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" id="nuc" value="nuc" v-model="selectedCoordinate" class="mr-2">
+            <label for="nuc">nucleotides</label>
+          </div>
         </div>
-        <div class="radio-item">
-          <input type="radio" id="nuc" value="nuc" v-model="selectedCoordinate" class="mr-2">
-          <label for="nuc">nucleotides</label>
+
+        <div id="bulk-mutations" class="mr-4">
+          <h6 class="text-uppercase text-muted">List of mutations</h6>
+          <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, E:484K"'></textarea>
+        </div>
+        <div class="mr-4 align-self-center">
+          <b>or</b>
+        </div>
+
+        <div id="gene-name" class="mr-4" v-if="selectedCoordinate === 'aminoacid'">
+          <h6 class="text-uppercase text-muted">gene</h6>
+          <select v-model="selectedGene" class="select-dropdown">
+            <option v-for="gene in genes" :value="gene" :key="gene.name">
+              {{gene.name}}
+            </option>
+          </select>
+        </div>
+
+        <div class="d-flex flex-column align-items-start mr-4" id="mutation-type">
+          <h6 class="text-uppercase text-muted">mutation type</h6>
+          <div class="radio-item">
+            <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
+            <label for="substitution">substitution</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
+            <label for="deletion">deletion</label>
+          </div>
+        </div>
+
+        <div id="location" class="mr-4">
+          <h6 class="text-uppercase text-muted">location</h6>
+          <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
+          <small>relative to <a :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a></small>
+        </div>
+
+        <div id="ref_codon" class="mr-4" v-if="selectedRef">
+          <h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+          <div>
+            {{ selectedRef }}
+          </div>
+        </div>
+
+        <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
+          <h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+          <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
         </div>
       </div>
-      <div id="gene-name" class="mr-4" v-if="selectedCoordinate === 'aminoacid'">
-        <h6 class="text-uppercase text-muted">gene</h6>
-        <select v-model="selectedGene" class="select-dropdown">
-          <option v-for="gene in genes" :value="gene" :key="gene.name">
-            {{gene.name}}
-          </option>
-        </select>
-      </div>
 
-      <div class="d-flex flex-column align-items-start mr-4" id="mutation-type">
-        <h6 class="text-uppercase text-muted">mutation type</h6>
-        <div class="radio-item">
-          <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
-          <label for="substitution">substitution</label>
+      <button class="btn btn-main p-0 d-flex" role="button" @click="addMutation">
+        <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
+        </span>
+        <div class="bg-sec py-2 px-2 border-theme">
+          <font-awesome-icon :icon="['fas', 'plus']" />
         </div>
-        <div class="radio-item">
-          <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
-          <label for="deletion">deletion</label>
-        </div>
-      </div>
+      </button>
 
-      <div id="location" class="mr-4">
-        <h6 class="text-uppercase text-muted">location</h6>
-        <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
-        <small>relative to <a :href="refSeq.url" target="_blank"
-          rel="noreferrer">{{refSeq.name}}</a></small>
-      </div>
+    </form>
+  </div>
 
-      <div id="ref_codon" class="mr-4" v-if="selectedRef">
-        <h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-        <div>
-          {{ selectedRef }}
-        </div>
-      </div>
-
-      <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
-        <h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-        <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
-      </div>
-    </div>
-
-    <button class="btn btn-main p-0 d-flex" role="button" @click="addMutation">
-      <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
-      </span>
-      <div class="bg-sec py-2 px-2 border-theme">
-        <font-awesome-icon :icon="['fas', 'plus']" />
-      </div>
-    </button>
-
-  </form>
   <div id="selected-mutations" class="my-3" v-if="selectedMutations.length">
     <h5>Selected mutations</h5>
     <div class="d-flex flex-wrap">
-      <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx"  @click="deleteMutation(mIdx)">
+      <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx" @click="deleteMutation(mIdx)">
         <span v-html="mutation.mutation"></span>
         <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
       </button>
@@ -119,7 +143,7 @@ export default Vue.extend({
     SARSMutationMap
   },
   computed: {
-      ...mapState("genomics", ["refSeq"]),
+    ...mapState("genomics", ["refSeq"]),
     selectedMax() {
       if (this.selectedCoordinate == "aminoacid") {
         return (this.selectedGene ? `1 - ${this.selectedGene.length}` : "select gene");
@@ -191,6 +215,10 @@ export default Vue.extend({
   data() {
     return {
       selectedMutations: [],
+      selectedLineage: null,
+      lineageOpts: ["B.1.1.7", "B.1.351", "P.1", "B.1.429"],
+      selectedBulkString: null,
+      selectedBulkMutations: [],
       selectedCoordinate: "aminoacid",
       selectedGene: null,
       selectedLocation: null,
@@ -277,5 +305,13 @@ export default Vue.extend({
 
 .w-75px {
     width: 75px;
+}
+.w-200px {
+    width: 200px;
+}
+
+.coords {
+    background: #dcf4ff;
+    border-radius: 0.25rem;
 }
 </style>
