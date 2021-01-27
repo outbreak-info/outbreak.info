@@ -202,6 +202,24 @@
     <ReportPrevalence :data="prevalence" />
   </section>
 
+  <section id="resources" v-if="resources">
+    <h4>{{mutationName}} Publications &amp; Resources</h4>
+    <div v-for="(item, rIdx) in resources" :key="rIdx" class="line-height-1">
+      <span class="resource-type" :class="item['@type'].replace(/\s/g, '')" v-if="item['@type']">
+        {{ item['@type'] }}
+      </span>
+      <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="ml-1">
+        {{ item.name }}
+      </router-link>
+      <b class="ml-1" id="author" v-if="item.author && item.author.length">
+        {{ item.author[0].name ? item.author[0].name : `${item.author[0].givenName} ${item.author[0].familyName}` }}
+        <span v-if="item.author.length > 1">et al.</span>
+      </b>
+      <em class="ml-1" v-if="item.journalName">{{ item.journalName }}</em>
+      <span class="ml-1">{{ item.dateFormatted }}</span>
+    </div>
+  </section>
+
   <section class="my-3">
     <h4>Methodology</h4>
     <ReportMethodology />
@@ -255,8 +273,12 @@ import {
 library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
 
 import {
-  getDates
+  getDates, getCuratedMetadata
 } from "@/api/genomics.js";
+
+import {
+  subscribe
+} from "rxjs";
 
 export default {
   name: "SituationReport",
@@ -282,6 +304,8 @@ export default {
   data() {
     return {
       mutationName: "B.1.1.7",
+      mutationID: "B-1-1-7",
+      reportMetadata: null,
       reportType: "lineage",
       lastUpdated: "2 hours",
       dateUpdated: "22 January 2021",
@@ -290,6 +314,7 @@ export default {
         "Switzerland", "Turkey", "United Kingdom", "United States of America", "Vietnam"
       ],
       states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah"],
+      resources: null,
       totalSeqs: 22470,
       selectedLocations: [{
           name: "Global",
@@ -313,6 +338,12 @@ export default {
   mounted() {
     this.prevalence = getDates("global");
     console.log(this.prevalence)
+
+    getCuratedMetadata(this.$resourceurl, this.mutationID).subscribe(results => {
+      this.reportMetadata = results.md;
+      this.resources = results.resources;
+      console.log(results)
+    });
   },
   methods: {
     changeLocation(location) {
@@ -358,5 +389,11 @@ export default {
 .btn-active {
     background-color: $primary-color;
     color: white;
+}
+
+.resource-type {
+    opacity: 0.6;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 </style>
