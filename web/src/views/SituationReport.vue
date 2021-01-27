@@ -194,7 +194,7 @@
   <section class="vis my-3 py-3 d-flex flex-column align-items-start" id="longitudinal">
     <h4>Average daily {{mutationName}} prevalence</h4>
     <div>
-      <button class="btn btn-tab" @click="changeLocation('global')">Global</button>
+      <button class="btn btn-tab btn-active" @click="changeLocation('global')">Global</button>
       <button class="btn btn-tab" @click="changeLocation('US')">United States</button>
       <button class="btn btn-tab">San Diego County</button>
       <button class="btn btn-main-outline">Change locations
@@ -333,5 +333,10 @@ export default {
 
 .font-size-small {
     font-size: small;
+}
+
+.btn-active {
+    background-color: $primary-color;
+    color: white;
 }
 </style>
