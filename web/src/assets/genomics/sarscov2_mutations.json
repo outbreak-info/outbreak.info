@@ -7,21 +7,21 @@
     "aa_location": 4205,
     "gene_offset": 0
   }],
-  "S: L452R": [{
+  "S:L452R": [{
     "gene": "S",
     "aa_original": "L",
     "aa_new": "R",
     "aa_location": 452,
     "gene_offset": 7096
   }],
-  "S: S13I": [{
+  "S:S13I": [{
     "gene": "S",
     "aa_original": "S",
     "aa_new": "I",
     "aa_location": 13,
     "gene_offset": 7096
   }],
-  "S: W152C": [{
+  "S:W152C": [{
     "gene": "S",
     "aa_original": "W",
     "aa_new": "C",
