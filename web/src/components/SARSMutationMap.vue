@@ -7,7 +7,7 @@
       <!-- <g ref="aminoacid_axis" class="axis axis--x"></g> -->
       <g ref="aminoacids" class="mutations mutations--aa" id="aa-mutation-group"></g>
       <g ref="deletions" class="mutations deletions--aa" id="aa-deletion-group"></g>
-      <g ref="brush" class="brush" id="brush-zoom"></g>
+      <g ref="brush" class="brush" id="brush-zoom" v-if="hasMutations"></g>
     </g>
   </svg>
 
