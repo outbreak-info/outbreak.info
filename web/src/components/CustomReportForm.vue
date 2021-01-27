@@ -6,11 +6,15 @@
   <div id="pangolin" class="my-3">
     <h4 class="mb-0">Custom lineage</h4>
     <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">Pangolin lineages</a></small>
-<form class="" @submit.prevent="onSubmit">
-    <select v-model="selectedLineage" class="w-200px">
-  <option :value="opt" v-for="(opt, idx) in lineageOpts" :key="idx">{{opt}}</option>
-</select>
-</form>
+    <form class="d-flex" id="custom-pangolin" @submit.prevent="submitPangolin">
+      <select v-model="selectedLineage" class="w-200px mr-4">
+        <option :value="null">{{null}}</option>
+        <option :value="opt" v-for="(opt, idx) in lineageOpts" :key="idx">{{opt}}</option>
+      </select>
+      <div class="">
+        <input class="btn btn-accent"  :disabled="!selectedLineage" type="submit" value="Create report" />
+      </div>
+    </form>
   </div>
 
   <b>or</b>
@@ -181,6 +185,14 @@ export default Vue.extend({
     }
   },
   methods: {
+    submitPangolin() {
+      this.$router.push({
+        name: "CustomReport",
+        query: {
+          pangolin: this.selectedLineage
+        }
+      })
+    },
     onSubmit() {
       console.log("submitted")
     },

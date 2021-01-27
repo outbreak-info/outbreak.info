@@ -141,6 +141,13 @@ button.chip.to-add:hover {
     }
   }
 }
+
+.btn-accent:disabled {
+    background: #CCC !important;
+    color: #444 !important;
+    cursor: default !important;
+}
+
 .btn-outline-secondary:hover {
     background: #6c757d !important;
     color: white;

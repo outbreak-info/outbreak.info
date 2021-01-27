@@ -30,7 +30,7 @@
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i">
       <h2 class="mb-0">{{ group.key }} Reports</h2>
       <small class="text-highlight">{{group.key == "Lineage" ? "sequences classified as a particular Pangolin lineage" : "sequences with a particular mutation(s)" }}</small>
-      <div class="report-group mb-1" v-for="(mutation, mIdx) in group.values" :key="mIdx">
+      <div class="report-group mb-1 card col-sm-4" v-for="(mutation, mIdx) in group.values" :key="mIdx">
         <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
           <div class="d-flex align-items-end justify-content-between w-100">
             <template v-if="rIdx === 0">
