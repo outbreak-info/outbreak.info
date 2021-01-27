@@ -193,10 +193,8 @@
 
   <section class="vis my-3 py-3 d-flex flex-column align-items-start" id="longitudinal">
     <h4>Average daily {{mutationName}} prevalence</h4>
-    <div>
-      <button class="btn btn-tab btn-active" @click="changeLocation('global')">Global</button>
-      <button class="btn btn-tab" @click="changeLocation('US')">United States</button>
-      <button class="btn btn-tab">San Diego County</button>
+    <div id="location-buttons">
+      <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
       <button class="btn btn-main-outline">Change locations
         <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
       </button>
@@ -275,10 +273,11 @@ export default {
   props: {
     isCurated: {
       type: Boolean,
-      default: false },
-      location: Array,
-      muts: String,
-      lineage: String
+      default: false
+    },
+    location: Array,
+    muts: String,
+    lineage: String
   },
   data() {
     return {
@@ -292,6 +291,22 @@ export default {
       ],
       states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah"],
       totalSeqs: 22470,
+      selectedLocations: [{
+          name: "Global",
+          isActive: true,
+          query: "global"
+        },
+        {
+          name: "United States",
+          isActive: false,
+          query: "US"
+        },
+        {
+          name: "San Diego County",
+          isActive: false,
+          query: "global"
+        }
+      ],
       prevalence: []
     }
   },
@@ -301,7 +316,12 @@ export default {
   },
   methods: {
     changeLocation(location) {
-      this.prevalence = getDates(location);
+      this.selectedLocations.forEach(d => {
+        d.isActive = false;
+      })
+
+      location.isActive = !location.isActive;
+      this.prevalence = getDates(location.query);
     },
     downloadGISAID() {
       console.log("Downloading GISAID IDs")
