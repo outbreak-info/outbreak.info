@@ -34,10 +34,15 @@
         <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
           <div class="d-flex align-items-end justify-content-between w-100">
             <template v-if="rIdx === 0">
-              <div>
-                <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
-                  <h5 class="m-0 pb-1 mutation-name">{{ mutation.key }}</h5>
-                </router-link>
+              <div class="d-flex flex-column mr-3 mutation-name">
+                <div class="d-flex align-items-center">
+                  <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
+                    <h5 class="m-0 pb-1 mr-3"><b>{{ mutation.key }}</b></h5>
+                  </router-link>
+                  <div class="VOC" v-if="mIdx < 3">Variant of Concern</div>
+                  <div class="VOI" v-if="mIdx >= 3">Variant of Interest</div>
+                </div>
+
                 <small>a.k.a.: </small>
                 <small><em>first identified in</em></small>
               </div>
@@ -121,7 +126,7 @@ export default {
     height: 25px;
 }
 
-$mutation-width: 130px;
+$mutation-width: 275px;
 .mutation-name {
     flex: 0 0 $mutation-width;
     width: $mutation-width;
@@ -133,5 +138,29 @@ $mutation-width: 130px;
 
 .mutation-map {
     min-width: 0;
+}
+
+.VOC, .VOI {
+    padding: 0.35rem;
+    border-radius: 0.25rem;
+    border-style: solid;
+    border-width: 1px;
+    line-height: 1;
+    flex-shrink: 0;
+    font-size: small;
+    font-weight: 700;
+}
+
+
+.VOC {
+  background: lighten($publication-color, 35%);
+  color: $publication-color;
+  border-color: $publication-color;
+}
+
+.VOI {
+  background: lighten($website-color, 40%);
+  color: $website-color;
+  border-color: $website-color;
 }
 </style>
