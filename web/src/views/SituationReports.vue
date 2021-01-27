@@ -155,6 +155,8 @@ $mutation-width: 275px;
     flex-shrink: 0;
     font-size: small;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
     // font-weight: 700;
 }
 
