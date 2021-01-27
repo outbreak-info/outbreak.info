@@ -8,13 +8,19 @@
         we will produce a report describing the current situation, focusing on the United States.</div>
       <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
 
-      <div class="d-flex w-75 justify-content-between">
+      <div class="d-flex w-75 justify-content-between align-items-center">
         <div class="text-leftd-flex align-items-center my-3">
           Enabled by data from
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
             <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
           </a>
         </div>
+<div id="date-updated">
+  <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+    <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
+  </small>
+</div>
+
         <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
       </div>
     </div>
@@ -87,6 +93,20 @@ import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 import axios from "axios";
 
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faClock);
+
 import {
   nest
 } from "d3";
@@ -101,12 +121,14 @@ export default {
     ReportLogos,
     SARSMutationMap,
     CustomReportForm,
-    ReportAcknowledgements
+    ReportAcknowledgements,
+    FontAwesomeIcon
   },
   data() {
     return {
       // reminder: must be the raw verison of the file
       curatedFile: "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json",
+      lastUpdated: "1 day",
       reports: null
     }
   },
