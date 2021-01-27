@@ -204,10 +204,12 @@
 
   <section id="resources" v-if="resources">
     <h4>{{mutationName}} Publications &amp; Resources</h4>
-    <div v-for="(item, rIdx) in resources" :key="rIdx" class="line-height-1">
+    <div v-for="(item, rIdx) in resources" :key="rIdx" class="line-height-1 mb-3 d-flex">
       <span class="resource-type" :class="item['@type'].replace(/\s/g, '')" v-if="item['@type']">
         {{ item['@type'] }}
       </span>
+<div>
+
       <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="ml-1">
         {{ item.name }}
       </router-link>
@@ -217,6 +219,7 @@
       </b>
       <em class="ml-1" v-if="item.journalName">{{ item.journalName }}</em>
       <span class="ml-1">{{ item.dateFormatted }}</span>
+    </div>
     </div>
   </section>
 
