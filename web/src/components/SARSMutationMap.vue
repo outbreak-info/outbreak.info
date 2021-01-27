@@ -100,9 +100,9 @@ export default Vue.extend({
     return {
       margin: {
         top: 2,
-        right: 10,
+        right: 25,
         bottom: 2,
-        left: 10
+        left: 15
       },
       maxWidth: null,
       geneHeight: 25,
