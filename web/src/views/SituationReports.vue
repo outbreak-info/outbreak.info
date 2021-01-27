@@ -154,7 +154,8 @@ $mutation-width: 275px;
     line-height: 1;
     flex-shrink: 0;
     font-size: small;
-    font-weight: 700;
+    text-transform: uppercase;
+    // font-weight: 700;
 }
 
 .VOC {
