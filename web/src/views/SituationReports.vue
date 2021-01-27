@@ -28,15 +28,20 @@
   </div>
   <section id="report-list" class="text-left">
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i">
-      <h2>{{ group.key }} Reports</h2>
+      <h2 class="mb-0">{{ group.key }} Reports</h2>
+      <small class="text-highlight">{{group.key == "Lineage" ? "sequences classified as a particular Pangolin lineage" : "sequences with a particular mutation(s)" }}</small>
       <div class="report-group mb-1" v-for="(mutation, mIdx) in group.values" :key="mIdx">
         <div v-for="(report, rIdx) in mutation.values" :key="rIdx">
           <div class="d-flex align-items-end justify-content-between w-100">
             <template v-if="rIdx === 0">
-              <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
-                <!-- <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name.replace(': ', '_').replace(':', '_').replace(' ', '_'), url: report.url }}"> -->
-                <h5 class="m-0 pb-1 mutation-name">{{ mutation.key }}</h5>
-              </router-link>
+              <div>
+                <router-link :to="{name:'SituationReport', params:{date: report.date, mutation: report.name, url: report.url }}">
+                  <h5 class="m-0 pb-1 mutation-name">{{ mutation.key }}</h5>
+                </router-link>
+                <small>a.k.a.: </small>
+                <small><em>first identified in</em></small>
+              </div>
+
               <div class="mutation-map flex-grow-1">
                 <SARSMutationMap :mutationKey="mutation.key" />
               </div>
