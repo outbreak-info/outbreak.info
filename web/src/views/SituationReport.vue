@@ -205,21 +205,21 @@
   <section id="resources" v-if="resources">
     <h4>{{mutationName}} Publications &amp; Resources</h4>
     <div v-for="(item, rIdx) in resources" :key="rIdx" class="line-height-1 mb-3 d-flex">
-      <span class="resource-type" :class="item['@type'].replace(/\s/g, '')" v-if="item['@type']">
+      <span class="resource-type mr-2" :class="item['@type'].replace(/\s/g, '')" v-if="item['@type']">
         {{ item['@type'] }}
       </span>
-<div>
+      <div>
 
-      <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="ml-1">
-        {{ item.name }}
-      </router-link>
-      <b class="ml-1" id="author" v-if="item.author && item.author.length">
-        {{ item.author[0].name ? item.author[0].name : `${item.author[0].givenName} ${item.author[0].familyName}` }}
-        <span v-if="item.author.length > 1">et al.</span>
-      </b>
-      <em class="ml-1" v-if="item.journalName">{{ item.journalName }}</em>
-      <span class="ml-1">{{ item.dateFormatted }}</span>
-    </div>
+        <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="ml-1">
+          {{ item.name }}
+        </router-link>
+        <b class="ml-1" id="author" v-if="item.author && item.author.length">
+          {{ item.author[0].name ? item.author[0].name : `${item.author[0].givenName} ${item.author[0].familyName}` }}
+          <span v-if="item.author.length > 1">et al.</span>
+        </b>
+        <em class="ml-1 text-underline" v-if="item.journalName">{{ item.journalName }}</em>
+        <span class="ml-1">{{ item.dateFormatted }}</span>
+      </div>
     </div>
   </section>
 
@@ -276,7 +276,8 @@ import {
 library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
 
 import {
-  getDates, getCuratedMetadata
+  getDates,
+  getCuratedMetadata
 } from "@/api/genomics.js";
 
 import {
