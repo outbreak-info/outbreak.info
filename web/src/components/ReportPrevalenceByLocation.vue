@@ -67,7 +67,7 @@ export default Vue.extend({
         top: 2,
         right: 25,
         bottom: 25,
-        left: 200
+        left: 130
       },
       bandHeight: 15,
       circleR: 8,
@@ -163,16 +163,15 @@ export default Vue.extend({
           const grp = enter.append("g")
             .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
 
-          grp.append("line")
-            .attr("class", "dot-ci confidence-interval")
-            .attr("x1", d => 0)
-            .attr("x2", d => this.xDot(d.est))
-            .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .style("stroke", "#555555")
-            .style("stroke-width", 1)
-            .style("display", "none")
-            .transition(t1)
+          // grp.append("line")
+          //   .attr("class", "dot-ci confidence-interval")
+          //   .attr("x1", d => 0)
+          //   .attr("x2", d => this.xDot(d.est))
+          //   .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+          //   .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+          //   .style("stroke", "#555555")
+          //   .style("stroke-width", 1)
+          //   .transition(t1)
 
           grp.append("line")
             .attr("class", "dot-ci confidence-interval")

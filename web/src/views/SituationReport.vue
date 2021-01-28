@@ -202,8 +202,10 @@
     <ReportPrevalence :data="prevalence" />
   </section>
 
-  <section>
-    <ReportPrevalenceByLocation :data="ctryData" />
+  <section class="my-4">
+    <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
+    <small class="text-muted">Since first identification</small>
+    <ReportPrevalenceByLocation :data="ctryData" class="mt-2"/>
   </section>
 
   <section id="resources">
