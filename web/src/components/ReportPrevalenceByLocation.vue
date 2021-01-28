@@ -2,6 +2,31 @@
 <div class="d-flex">
   <div class="d-flex flex-column">
     <h6><b>Prevalence</b></h6>
+
+    <div class="d-flex flex-column height-fixed">
+      <div class="d-flex align-items-center">
+        <svg id="legend" width="15" height="15" class="mr-2">
+          <circle cx="7" cy="7" r="7" class="circle-legend"></circle>
+        </svg>
+        <small class="text-muted">prevalence of B.1.1.7 since first identification</small>
+      </div>
+
+      <div class="d-flex  align-items-center">
+        <svg>
+          <defs>
+            <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+              <stop :offset="i*100/10 + '%'" :style="{'stop-color':color}" v-for="(color, i) in legendColors" :key="i"/>
+            </linearGradient>
+          </defs>
+          <rect width="150" height="15" fill="url(#linear-gradient)" stroke="#2c3e50" stroke-width="0.25"></rect>
+        </svg>
+        <svg id="legend" width="15" height="15" class="mr-2">
+          <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
+        </svg>
+        <small class="text-muted">95% confidence interval</small>
+      </div>
+    </div>
+
     <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
       <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
@@ -9,8 +34,28 @@
       <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
   </div>
+
+
   <div class="d-flex flex-column ml-5">
     <h6><b>Number of samples sequenced</b></h6>
+
+    <div class="d-flex flex-column height-fixed">
+      <div class="d-flex align-items-center">
+        <div class="rect-legend mr-2" :style="{background: accentColor}">
+
+        </div>
+        <small class="text-muted">B.1.1.7-positive samples</small>
+      </div>
+
+      <div class="d-flex align-items-center">
+        <div class="rect-legend mr-2" :style="{background: baseColor}">
+
+        </div>
+        <small class="text-muted">all sequenced samples</small>
+      </div>
+    </div>
+
+
     <svg :width="barWidth" :height="height" class="sequencing-count" ref="svg_count" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
       <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
@@ -33,6 +78,7 @@ import {
   scaleLog,
   scaleBand,
   scaleSequential,
+  range,
   axisTop,
   axisBottom,
   axisLeft,
@@ -83,13 +129,15 @@ export default Vue.extend({
         top: 35,
         right: 5,
         rightBar: 25,
-        bottom: 25,
+        bottom: 30,
         left: 175
       },
       barWidth: 400,
       bandHeight: 15,
       circleR: 8,
       ciStrokeWidth: 7,
+      accentColor: "#df4ab7",
+      baseColor: "#f6cceb",
       // refs
       dotplot: null,
       bargraph: null,
@@ -106,7 +154,8 @@ export default Vue.extend({
       xBarAxis2: null,
       yAxis: null,
       numXTicks: 6,
-      colorScale: null
+      colorScale: null,
+      legendColors: []
     }
   },
   mounted() {
@@ -145,9 +194,6 @@ export default Vue.extend({
     updateScales() {
       // ensure the data is sorted in the proper order
       this.data.sort((a, b) => a[this.sortVar] - b[this.sortVar]);
-
-      this.colorScale = this.colorScale
-        .domain([0, max(this.data, d => d.est)]);
 
       this.xDot = this.xDot
         .domain([0, max(this.data, d => d.upper)]);
@@ -194,6 +240,13 @@ export default Vue.extend({
 
       select(this.$refs.yAxis).call(this.yAxis);
       select(this.$refs.yAxisBar).call(this.yAxis);
+
+      // color scale
+      this.colorScale = this.colorScale
+        .domain([0, max(this.data, d => d.est)]);
+
+      // legend gradient
+      this.legendColors = range(11).map(d => interpolateYlGnBu(d / 10));
     },
     drawPlot() {
       const t1 = transition().duration(1500);
@@ -208,26 +261,26 @@ export default Vue.extend({
             .attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
           grp.append("rect")
-          .attr("class", "seq-count")
+            .attr("class", "seq-count")
             .attr("x", this.xBar(1))
             .attr("width", d => this.xBar(d.n) - this.xBar(1))
             .attr("y", d => this.y(d[this.yVariable]))
             .attr("height", this.y.bandwidth())
-            .style("fill", "#f6cceb");
+            .style("fill", this.baseColor);
 
           grp.append("rect")
-          .attr("class", "mutation-count")
+            .attr("class", "mutation-count")
             .attr("x", this.xBar(1))
             .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
             .attr("y", d => this.y(d[this.yVariable]))
             .attr("height", this.y.bandwidth())
-            .style("fill", "#df4ab7")
+            .style("fill", this.accentColor)
 
           grp.append("text")
-          .attr("class", "count-annotation")
+            .attr("class", "count-annotation")
             .attr("x", d => this.xBar(d.n))
             .attr("dx", d => this.xBar(d.n) < this.barWidth * 0.25 ? 4 : -4)
-            .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth()/2)
+            .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
             .style("fill", "#777")
             .style("font-size", "9pt")
             .style("dominant-baseline", "central")
@@ -243,20 +296,20 @@ export default Vue.extend({
             .attr("y", d => this.y(d[this.yVariable]))
             .attr("height", this.y.bandwidth());
 
-            update.selectAll(".mutation-count")
-              .attr("x", this.xBar(1))
-              .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
-              .attr("y", d => this.y(d[this.yVariable]))
-              .attr("height", this.y.bandwidth());
+          update.selectAll(".mutation-count")
+            .attr("x", this.xBar(1))
+            .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
+            .attr("y", d => this.y(d[this.yVariable]))
+            .attr("height", this.y.bandwidth());
         }
       )
       const checkbookSelector = select(this.$refs.svg_dot)
         .selectAll(".checkbook")
-        .data(this.data.filter((d, i) => !((i+1) % 5)));
+        .data(this.data.filter((d, i) => !((i + 1) % 5)));
 
       const checkbookSelector2 = this.bargraph
         .selectAll(".checkbook")
-        .data(this.data.filter((d, i) => !((i+1) % 5)));
+        .data(this.data.filter((d, i) => !((i + 1) % 5)));
 
       checkbookSelector.join(enter => {
         enter.append("line")
@@ -265,8 +318,8 @@ export default Vue.extend({
           .style("stroke-width", 0.35)
           .attr("x1", 0)
           .attr("x2", this.width)
-          .attr("y1",  d => this.y(d[this.yVariable]))
-          .attr("y2",  d => this.y(d[this.yVariable]))
+          .attr("y1", d => this.y(d[this.yVariable]))
+          .attr("y2", d => this.y(d[this.yVariable]))
       })
 
       checkbookSelector2.join(enter => {
@@ -277,8 +330,8 @@ export default Vue.extend({
           .attr("transform", `translate(${-1*this.margin.left},${-1*this.margin.top})`)
           .attr("x1", 0)
           .attr("x2", this.barWidth)
-          .attr("y1",  d => this.y(d[this.yVariable]))
-          .attr("y2",  d => this.y(d[this.yVariable]))
+          .attr("y1", d => this.y(d[this.yVariable]))
+          .attr("y2", d => this.y(d[this.yVariable]))
       })
 
 
@@ -343,8 +396,38 @@ export default Vue.extend({
     display: none;
 }
 
+.dotplot-prevalence,
+.sequencing-count {
+    background: white;
+}
+
 .count-axis line {
-  stroke: #aaa;
-  stroke-width: 0.25;
+    stroke: #aaa;
+    stroke-width: 0.25;
+}
+.height-fixed {
+    // border: 1px solid $base-grey;
+    background: white;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    height: 50px !important;
+}
+
+.circle-legend {
+    stroke: #2c3e50;
+    stroke-width: 0.25;
+    fill: #BBB;
+}
+
+.ci-legend {
+    stroke: #CCCCCC;
+    stroke-width: 7;
+    opacity: 0.5;
+}
+
+.rect-legend {
+    width: 15px;
+    height: 15px;
 }
 </style>
