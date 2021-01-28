@@ -269,7 +269,7 @@ const routes = [{
   },
   {
     path: "/report2.0",
-    name: "CureatedReport",
+    name: "CuratedReport",
     props: route => ({
       location: route.query.location,
       muts: route.query.muts,

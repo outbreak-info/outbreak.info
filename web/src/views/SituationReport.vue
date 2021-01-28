@@ -216,9 +216,9 @@
   </section>
 
   <section class="my-3">
-    <h4 class="m-0">Citing this report</h4>
+    <h4 class="">Citing this report</h4>
     <p class="m-0">
-      Andersen lab, 2021.
+      <b>{{ mutationName }} {{ reportType | capitalize }} Report</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
     </p>
   </section>
   <ReportAcknowledgements class="border-top pt-3" />
@@ -260,13 +260,17 @@ import {
 library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
 
 import {
+  mapState
+} from "vuex";
+
+import {
   getDates,
   getCuratedMetadata
 } from "@/api/genomics.js";
 
 import {
-  subscribe
-} from "rxjs";
+  timeFormat
+} from "d3";
 
 export default {
   name: "SituationReport",
@@ -290,8 +294,13 @@ export default {
     muts: String,
     lineage: String
   },
+  computed: {
+    ...mapState("admin", ["mutationAuthors"])
+  },
   data() {
     return {
+      today: null,
+      url: null,
       mutationName: "B.1.1.7",
       mutationID: "B-1-1-7",
       reportMetadata: null,
@@ -325,6 +334,14 @@ export default {
     }
   },
   mounted() {
+    const formatDate = timeFormat("%e %B %Y");
+      var currentTime = new Date();
+    this.today = formatDate(currentTime);
+
+          this.$nextTick(function() {
+            this.url = window.location.href;
+          })
+
     this.prevalence = getDates("global");
 
     getCuratedMetadata(this.mutationID).subscribe(results => {
