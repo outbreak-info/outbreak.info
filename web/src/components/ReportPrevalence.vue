@@ -189,7 +189,7 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.prevalence-axis {
+.prevalence-axis, .count-axis {
   font-size: 16px;
   text {
   fill: $grey-90;

@@ -1,10 +1,22 @@
 <template>
-<div class="">
-  <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
-    <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-  </svg>
+<div class="d-flex">
+  <div class="d-flex flex-column">
+    <h6><b>Prevalence</b></h6>
+    <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
+      <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
+      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
+      <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+    </svg>
+  </div>
+  <div class="d-flex flex-column">
+    <h6><b>Number of samples sequenced</b></h6>
+    <svg :width="barWidth" :height="height" class="sequencing-count" ref="svg_count" :name="title">
+      <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="count-axis axis--x" ref="xAxisBar"></g>
+      <g :transform="`translate(${margin.left}, ${margin.top})`" class="count-axis axis--y" ref="yAxisBar"></g>
+      <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+    </svg>
+  </div>
+
 </div>
 </template>
 
@@ -16,6 +28,7 @@ import {
   select,
   selectAll,
   scaleLinear,
+  scaleLog,
   scaleBand,
   scaleSequential,
   axisBottom,
@@ -37,7 +50,7 @@ export default Vue.extend({
     data: Array,
     setWidth: {
       type: Number,
-      default: 800
+      default: 600
     },
     height: {
       type: Number,
@@ -69,18 +82,22 @@ export default Vue.extend({
         bottom: 25,
         left: 130
       },
+      barWidth: 400,
       bandHeight: 15,
       circleR: 8,
       ciStrokeWidth: 7,
       // refs
       dotplot: null,
+      bargraph: null,
       // variables
       yVariable: "country",
       yIdentifier: "location_id",
       // scales
       xDot: null,
+      xBar: null,
       y: null,
       xDotAxis: null,
+      xBarAxis: null,
       yAxis: null,
       numXTicks: 6,
       colorScale: null
@@ -99,9 +116,13 @@ export default Vue.extend({
     },
     setupPlot() {
       this.dotplot = select(this.$refs.dotplot);
+      this.bargraph = select(this.$refs.bargraph);
 
       this.xDot = scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right]);
+
+      this.xBar = scaleLog()
+        .range([0, this.barWidth - this.margin.left - this.margin.right]);
 
       this.y = scaleBand()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -125,6 +146,9 @@ export default Vue.extend({
       this.xDot = this.xDot
         .domain([0, max(this.data, d => d.upper)]);
 
+      this.xBar = this.xBar
+        .domain([1, max(this.data, d => d.n)]);
+
       this.y = this.y
         .domain(this.data.map(d => d[this.yVariable]));
 
@@ -134,13 +158,56 @@ export default Vue.extend({
 
       select(this.$refs.xAxis).call(this.xDotAxis);
 
+      this.xBarAxis = axisBottom(this.xBar)
+        .tickSize(-this.height)
+        .tickFormat((d, i) => {
+          const log = Math.log10(d);
+          return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
+        })
+        .ticks(4)
+        .tickSizeOuter(0);
+
+      select(this.$refs.xAxisBar).call(this.xBarAxis);
+
       this.yAxis = axisLeft(this.y);
 
       select(this.$refs.yAxis).call(this.yAxis);
+      select(this.$refs.yAxisBar).call(this.yAxis);
     },
     drawPlot() {
       const t1 = transition().duration(1500);
 
+      const barSelector = this.bargraph
+        .selectAll(".bar-group")
+        .data(this.data, d => d[this.yVariable]);
+
+
+      barSelector.join(enter => {
+          const grp = enter.append("g")
+            .attr("class", d => `bar-group ${d[this.yIdentifier]}`);
+
+          grp.append("rect")
+            .attr("x", this.xBar(1))
+            .attr("width", d => this.xBar(d.n) - this.xBar(1))
+            .attr("y", d => this.y(d[this.yVariable]))
+            .attr("height", this.y.bandwidth())
+            .style("fill", "#f6cceb");
+
+          grp.append("rect")
+            .attr("x", this.xBar(1))
+            .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
+            .attr("y", d => this.y(d[this.yVariable]))
+            .attr("height", this.y.bandwidth())
+            .style("fill", "#df4ab7")
+        },
+        update => {
+          update.selectAll("rect")
+            .attr("x", this.xBar(1))
+            .attr("width", d => this.xBar(d.n) - this.xBar(1))
+            .attr("y", d => this.y(d[this.yVariable]))
+            .attr("height", this.y.bandwidth())
+        }
+      )
       // const checkbookSelector = select(this.$refs.svg_dot)
       //   .selectAll(".checkbook")
       //   .data(this.data.filter((d, i) => (i+1) % 2));
@@ -197,6 +264,9 @@ export default Vue.extend({
             .attr("cx", d => this.xDot(d.est));
         },
         update => {
+          update
+            .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
+
           update.selectAll(".dot-ci")
             .attr("x1", d => this.xDot(d.lower))
             .attr("x2", d => this.xDot(d.upper))
@@ -222,5 +292,10 @@ export default Vue.extend({
 g.axis--y g.tick line,
 g.axis--y path {
     display: none;
+}
+
+.count-axis line {
+  stroke: #222;
+  stroke-width: 0.25;
 }
 </style>
