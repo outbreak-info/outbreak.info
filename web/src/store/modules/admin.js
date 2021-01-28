@@ -3,8 +3,31 @@ const state = {
   loading: false,
   dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   outbreak: {
-    authors: "Hughes, Laura D.; Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Mullen, Julia; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I."
+    authors: "Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Latif, Alaa Abdel;  Mullen, Julia L.; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I.; Hughes, Laura D.;"
   },
+  funding: [{
+      identifier: "5 U19 AI135995-02",
+      name: "CViSB",
+      funder: {
+        name: "National Institute for Allergy and Infectious Diseases"
+      },
+      url: "https://projectreporter.nih.gov/project_info_details.cfm?aid=9634840"
+    },
+    {
+      identifier: "5 U24 TR00230",
+      name: "CD2H",
+      funder: {
+        name: "National Center for Data to Health"
+      }
+    },
+    {
+      identifier: "75D30120C09795",
+      name: "CDC",
+      funder: {
+        name: "Centers for Disease Control and Prevention"
+      }
+    }
+  ],
   sources: [{
       id: "JHU",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
@@ -45,17 +68,17 @@ const state = {
     }
   ],
   genomicSources: [{
-      id: "gisaid",
-      name: "GISAID Initiative",
-      img: "gisaid.png",
-      scope: "SARS-CoV-2 virus sequences",
-      description: "<p class='mb-2'>The GISAID Initiative promotes the rapid sharing of data from all influenza viruses and the coronavirus causing COVID-19. This includes genetic sequence and related clinical and epidemiological data associated with human viruses, and geographical as well as species-specific data associated with avian and other animal viruses, to help researchers understand how viruses evolve and spread during epidemics and pandemics.</p><p class='mb-2'>GISAID does so by overcoming disincentive hurdles and restrictions, which discourage or prevented sharing of virological data prior to formal publication.</p><p class='mb-2'>The Initiative ensures that open access to data in GISAID is provided free-of-charge to all individuals that agreed to identify themselves and agreed to uphold the GISAID sharing mechanism governed through its <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Database Access Agreement</a>.",
-      url: "https://www.gisaid.org/",
-      license: {
-        url: "https://www.gisaid.org/registration/terms-of-use/",
-      },
-      citation: 'Elbe, S., and Buckland-Merrett, G. (2017) Data, disease and diplomacy: GISAID’s innovative contribution to global health. Global Challenges, 1:33-46. DOI: <a href="http://dx.doi.org/10.1002/gch2.1018" target="_blank">10.1002/gch2.1018</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6607375/" target="_blank">31565258</a>; Shu, Y., McCauley, J. (2017)  GISAID: Global initiative on sharing all influenza data – from vision to reality. EuroSurveillance, 22(13) DOI: <a href="http://dx.doi.org/10.2807/1560-7917.ES.2017.22.13.30494" target="_blank">10.2807/1560-7917.ES.2017.22.13.30494</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5388101/" target="_blank">PMC5388101</a>'
-    }],
+    id: "gisaid",
+    name: "GISAID Initiative",
+    img: "gisaid.png",
+    scope: "SARS-CoV-2 virus sequences",
+    description: "<p class='mb-2'>The GISAID Initiative promotes the rapid sharing of data from all influenza viruses and the coronavirus causing COVID-19. This includes genetic sequence and related clinical and epidemiological data associated with human viruses, and geographical as well as species-specific data associated with avian and other animal viruses, to help researchers understand how viruses evolve and spread during epidemics and pandemics.</p><p class='mb-2'>GISAID does so by overcoming disincentive hurdles and restrictions, which discourage or prevented sharing of virological data prior to formal publication.</p><p class='mb-2'>The Initiative ensures that open access to data in GISAID is provided free-of-charge to all individuals that agreed to identify themselves and agreed to uphold the GISAID sharing mechanism governed through its <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Database Access Agreement</a>.",
+    url: "https://www.gisaid.org/",
+    license: {
+      url: "https://www.gisaid.org/registration/terms-of-use/",
+    },
+    citation: 'Elbe, S., and Buckland-Merrett, G. (2017) Data, disease and diplomacy: GISAID’s innovative contribution to global health. Global Challenges, 1:33-46. DOI: <a href="http://dx.doi.org/10.1002/gch2.1018" target="_blank">10.1002/gch2.1018</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6607375/" target="_blank">31565258</a>; Shu, Y., McCauley, J. (2017)  GISAID: Global initiative on sharing all influenza data – from vision to reality. EuroSurveillance, 22(13) DOI: <a href="http://dx.doi.org/10.2807/1560-7917.ES.2017.22.13.30494" target="_blank">10.2807/1560-7917.ES.2017.22.13.30494</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5388101/" target="_blank">PMC5388101</a>'
+  }],
   geoSources: [{
       id: "naturaleath",
       name: "Natural Earth",
@@ -171,8 +194,7 @@ const state = {
     {
       category: "Datasets",
       id: "Dataset",
-      sources: [
-        {
+      sources: [{
           id: "dde",
           name: "Data Discovery Engine",
           img: "dde.svg",
@@ -203,7 +225,9 @@ const state = {
           img: "dataverse_icon.png",
           img_lg: "dataverse.png",
           url: "https://dataverse.harvard.edu/dataverse/covid19",
-          license: {url: "https://dataverse.org/best-practices/harvard-dataverse-general-terms-use"},
+          license: {
+            url: "https://dataverse.org/best-practices/harvard-dataverse-general-terms-use"
+          },
           citation: '<a href="https://dataverse.org/best-practices/data-citation target="_blank"">Dataverse Citation Policies</a>',
           description: "This is a general collection of COVID-19 data deposited in the Harvard Dataverse repository. The list in this collection is maintained by the Harvard Dataverse data curation team (IQSS and Harvard Library). Researchers who deposit their related data into Harvard Dataverse will have their data linked to this collection, to increase discoverability of their data."
         },
@@ -213,7 +237,9 @@ const state = {
           img: "immport.png",
           img_lg: "immport_lg.png",
           url: "https://www.immport.org/shared/search?filters=study_2_condition_or_disease.condition_preferred:COVID-19%20-%20DOID:0080600&utm_source=COVID-19&utm_medium=banner&utm_campaign=COVID-19",
-          license: {url: "https://www.immport.org/agreement"},
+          license: {
+            url: "https://www.immport.org/agreement"
+          },
           citation: '<a href="https://www.immport.org/cite target="_blank"">Citing ImmPort</a>',
           description: "The Immunology Database and Analysis Portal (ImmPort) provides an open access platform for research data sharing, ontaining experimental data and metadata describing the purpose of the study and the methods of data generation.  To better understand the COVID-19 pandemic, ImmPort presents an opportunity to leverage legacy studies on infectious diseases, including Influenza (over 100 studies) and other respiratory-like illnesses from diverse cohorts (e.g., age, race, gender) sourced from NIAID-sponsored programs and beyond."
         },

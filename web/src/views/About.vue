@@ -30,7 +30,10 @@
           </p>
 
           <p class="text-left focustext mb-5">
-            Outbreak.info is a project from the <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen</a> labs at Scripps Research.
+            Outbreak.info is a project from the <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen</a> labs at Scripps Research and is supported <span class="my-4" v-if="funding">by the <span v-for="(grant, idx) in funding" :key="idx">
+                    <span v-if="grant.funder.name">{{ grant.funder.name }}</span> ({{ grant.identifier }})<span v-if="idx < funding.length - 2">, </span>
+                    <span v-if="idx == funding.length - 2">, and </span>
+                  </span>.</span>
           </p>
 
           <p class="focustext text-left">
@@ -72,8 +75,14 @@
 <script lang="js">
 import Vue from "vue";
 
+import {
+  mapState
+} from "vuex";
 
 export default Vue.extend({
-  name: "About"
+  name: "About",
+  computed: {
+    ...mapState("admin", ["funding"])
+  }
 });
 </script>
