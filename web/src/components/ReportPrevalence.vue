@@ -5,15 +5,15 @@
       <svg id="legend" width="15" height="15" class="mr-2">
         <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
       </svg>
-  <small class="text-muted">7 day rolling average of percent of B.1.1.7-positive sequences</small>
+      <small class="text-muted">7 day rolling average of percent of B.1.1.7-positive sequences</small>
     </div>
 
-  <div class="d-flex">
-    <div class="ci-legend mr-2" :style="{background: CIColor}">
+    <div class="d-flex">
+      <div class="ci-legend mr-2" :style="{background: CIColor}">
 
+      </div>
+      <small class="text-muted">95% confidence interval</small>
     </div>
-    <small class="text-muted">95% confidence interval</small>
-  </div>
   </div>
 
   <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
@@ -136,16 +136,16 @@ export default Vue.extend({
         this.updateScales();
 
         const CISelector = this.chart
-        .selectAll(".confidence-interval")
-        .data([this.data]);
+          .selectAll(".confidence-interval")
+          .data([this.data]);
 
         CISelector.join(
           enter => {
             enter.append("path")
-            .attr("class", "confidence-interval")
-            .style("fill", this.CIColor)
-            .style("fill-opacity", 0.3)
-            .attr("d", this.area)
+              .attr("class", "confidence-interval")
+              .style("fill", this.CIColor)
+              .style("fill-opacity", 0.3)
+              .attr("d", this.area)
           },
           update => update
           // .transition(t1)
@@ -159,7 +159,7 @@ export default Vue.extend({
         pathSelector.join(
           enter => {
             enter.append("path")
-            .attr("class", "prevalence-line")
+              .attr("class", "prevalence-line")
               .style("stroke", "#2c3e50")
               .style("fill", "none")
               .style("stroke-width", "2.5")
@@ -189,20 +189,21 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.prevalence-axis, .count-axis {
-  font-size: 16px;
-  text {
-  fill: $grey-90;
-  }
+.count-axis,
+.prevalence-axis {
+    font-size: 16px;
+    text {
+        fill: $grey-90;
+    }
 
 }
 .ci-legend {
-  width: 15px;
-  height: 15px;
-  opacity: 0.3;
+    width: 15px;
+    height: 15px;
+    opacity: 0.3;
 }
 .trace-legend {
-  stroke: $base-grey;
-  stroke-width: 2.5;
+    stroke: $base-grey;
+    stroke-width: 2.5;
 }
 </style>
