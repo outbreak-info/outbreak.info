@@ -6,7 +6,7 @@ import {
 
 import { quantile } from "@stdlib/stats/base/dists/beta";
 
-export function rollingAverage(df, all, dateVar = "term", numDays = 3) {
+export function rollingAverage(df, all, dateVar = "date_time", numDays = 3) {
   const parseDate = timeParse("%Y-%m-%d");
 
   df.forEach(d => {
@@ -23,8 +23,8 @@ export function rollingAverage(df, all, dateVar = "term", numDays = 3) {
     const lowerDate = timeDay.offset(d.dateTime, -1 * numDays);
     const countRange = df.filter(d => d.dateTime <= upperDate && d.dateTime >= lowerDate);
     const allRange = all.filter(d => d.dateTime <= upperDate && d.dateTime >= lowerDate);
-    d["countAverage"] = sum(countRange, x => x.count) / countRange.length;
-    d["allAverage"] = sum(allRange, x => x.count) / allRange.length;
+    d["countAverage"] = sum(countRange, x => x.n) / countRange.length;
+    d["allAverage"] = sum(allRange, x => x.n) / allRange.length;
     let ci = calcCI(d.countAverage, d.allAverage);
     d["est"] = ci["est"];
     d["li"] = ci["lower"];

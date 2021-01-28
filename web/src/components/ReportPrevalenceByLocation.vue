@@ -79,9 +79,9 @@ export default Vue.extend({
       margin: {
         top: 5,
         right: 5,
-        rightBar: 5,
+        rightBar: 25,
         bottom: 25,
-        left: 130
+        left: 175
       },
       barWidth: 400,
       bandHeight: 15,

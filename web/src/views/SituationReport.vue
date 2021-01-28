@@ -102,7 +102,7 @@
               United States
             </td>
             <td>
-              8
+              1
             </td>
           </tr>
           <tr>
@@ -121,7 +121,7 @@
     <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
       <h3>Summary</h3>
       <div class="summary-counts mb-3">
-        As of {{ dateUpdated }}, <b>{{ totalSeqs.toLocaleString() }}</b> sequences containing the variations in {{ mutationName }} have been detected:
+        As of {{ dateUpdated }}, <b>{{ totalSeqs.toLocaleString() }}</b> sequences in the {{ mutationName }} lineage have been detected:
 
         <table class="border-bottom line-height-1 mt-2 w-100">
           <thead>
@@ -149,7 +149,7 @@
                 {{ totalSeqs.toLocaleString() }}
               </td>
               <td class="text-center">
-                5.6%
+                13.5%
               </td>
             </tr>
             <tr>
@@ -157,10 +157,10 @@
                 United States
               </td>
               <td class="text-center">
-                180
+                213
               </td>
               <td class="text-center">
-                0.2%
+                0.9%
               </td>
             </tr>
             <tr>
@@ -179,6 +179,9 @@
         <div class="d-flex justify-content-between">
           <small class="bright-hyperlink"><a href="#longitudinal">view change over time</a></small>
           <small class="bright-hyperlink"><a href="#longitudinal">change locations</a></small>
+        </div>
+        <div class="line-height-1 my-2">
+          <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}}</em> </small>
         </div>
 
       </div>
@@ -314,18 +317,15 @@ export default {
       mutationID: "B-1-1-7",
       reportMetadata: null,
       reportType: "lineage",
-      lastUpdated: "2 hours",
-      dateUpdated: "22 January 2021",
+      lastUpdated: "1 day",
+      dateUpdated: "26 January 2021",
       // subscriptions
       curatedSubscription: null,
       ctryData: null,
-      countries: ["Argentina", "Australia", "Austria", "Belgium", "Brazil", "Canada", "Czech Republic", "Denmark", "Ecuador", "Finland", "France", "Germany", "Greece", "Hong Kong", "Hungary", "Iceland", "India", "Iran", "Ireland", "Israel", "Italy",
-        "Jamaica", "Japan", "Latvia", "Lebanon", "Luxembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Oman", "Pakistan", "Peru", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "South Korea", "Spain", "Sri Lanka", "Sweden",
-        "Switzerland", "Turkey", "United Kingdom", "United States of America", "Vietnam"
-      ],
-      states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah"],
+      countries: null,
+      states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Jersey", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah", "Washington"   ],
       searchTerms: null,
-      totalSeqs: 22470,
+      totalSeqs: 26189,
       selectedLocations: [{
           name: "Global",
           isActive: true,
@@ -339,7 +339,7 @@ export default {
         {
           name: "San Diego County",
           isActive: false,
-          query: "global"
+          query: "SD"
         }
       ],
       prevalence: []
@@ -355,6 +355,7 @@ export default {
           })
 
           this.ctryData = ctry;
+          this.countries = ctry.map(d => d.country);
           console.log(this.ctryData)
 
     this.prevalence = getDates("global");
