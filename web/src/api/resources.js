@@ -142,9 +142,10 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
     map(results => {
       const resources = results.hits;
       const total = results.total;
+      console.log(resources)
 
       resources.forEach(d => {
-        d["longDescription"] = d.abstract ? d.abstract : d.description;
+        d["longDescription"] = d.abstract && d.abstract.length ? d.abstract : d.description;
         if (d.longDescription) {
           let descriptionArray = d.longDescription.split(" ");
           d["shortDescription"] = descriptionArray
