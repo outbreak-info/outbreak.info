@@ -3,29 +3,38 @@
   <div class="d-flex flex-column">
     <h6><b>Prevalence</b></h6>
 
-    <div class="d-flex flex-column height-fixed">
-      <div class="d-flex align-items-center">
-        <svg id="legend" width="15" height="15" class="mr-2">
-          <circle cx="7" cy="7" r="7" class="circle-legend"></circle>
-        </svg>
-        <small class="text-muted">prevalence of B.1.1.7 since first identification</small>
-      </div>
 
-      <div class="d-flex  align-items-center">
-        <svg>
-          <defs>
-            <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
-              <stop :offset="i*100/10 + '%'" :style="{'stop-color':color}" v-for="(color, i) in legendColors" :key="i"/>
-            </linearGradient>
-          </defs>
-          <rect width="150" height="15" fill="url(#linear-gradient)" stroke="#2c3e50" stroke-width="0.25"></rect>
-        </svg>
-        <svg id="legend" width="15" height="15" class="mr-2">
-          <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
-        </svg>
-        <small class="text-muted">95% confidence interval</small>
+      <div class="d-flex align-items-center justify-content-between height-fixed">
+        <div class="d-flex flex-column">
+          <div class="d-flex align-items-center">
+            <!-- <svg id="legend" width="15" height="15" class="mr-2">
+              <circle cx="7" cy="7" r="7" class="circle-legend"></circle>
+            </svg> -->
+            <small class="text-muted">Est. B.1.1.7 prevalence since identification</small>
+          </div>
+
+
+          <svg width="legendWidth" height="30" transform="translate(0,0)">
+            <defs>
+              <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                <stop :offset="i*100/10 + '%'" :style="{'stop-color':color}" v-for="(color, i) in legendColors" :key="i" />
+              </linearGradient>
+            </defs>
+            <rect :width="legendWidth" height="15" fill="url(#linear-gradient)" stroke="#2c3e50" stroke-width="0.25"></rect>
+            <text x="0" y="18" fill="#555" font-size="0.85em" dominant-baseline="hanging">0</text>
+            <text :x="legendWidth" y="18" dominant-baseline="hanging" text-anchor="end" fill="#555" font-size="0.85em">{{maxEstFormatted}}</text>
+          </svg>
+
+        </div>
+
+
+        <div class="d-flex  align-items-center">
+          <svg id="legend" width="15" height="15" class="mr-2">
+            <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
+          </svg>
+          <small class="text-muted">95% confidence interval</small>
+        </div>
       </div>
-    </div>
 
     <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
@@ -121,6 +130,10 @@ export default Vue.extend({
     },
     title() {
       return ("title")
+    },
+    maxEstFormatted() {
+      const formatter = format(".0%");
+      return this.maxEst ? formatter(this.maxEst) : null;
     }
   },
   data() {
@@ -132,7 +145,8 @@ export default Vue.extend({
         bottom: 30,
         left: 175
       },
-      barWidth: 400,
+      legendWidth: 200,
+      barWidth: 500,
       bandHeight: 15,
       circleR: 8,
       ciStrokeWidth: 7,
@@ -144,6 +158,7 @@ export default Vue.extend({
       // variables
       yVariable: "country",
       yIdentifier: "location_id",
+      maxEst: null,
       // scales
       xDot: null,
       xBar: null,
@@ -242,8 +257,9 @@ export default Vue.extend({
       select(this.$refs.yAxisBar).call(this.yAxis);
 
       // color scale
+      this.maxEst = max(this.data, d => d.est);
       this.colorScale = this.colorScale
-        .domain([0, max(this.data, d => d.est)]);
+        .domain([0, this.maxEst]);
 
       // legend gradient
       this.legendColors = range(11).map(d => interpolateYlGnBu(d / 10));
