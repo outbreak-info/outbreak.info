@@ -3,15 +3,17 @@
   <div class="d-flex flex-column">
     <h6><b>Prevalence</b></h6>
     <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
-      <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
+      <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
+      <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
       <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
       <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
   </div>
-  <div class="d-flex flex-column ml-3">
+  <div class="d-flex flex-column ml-4">
     <h6><b>Number of samples sequenced</b></h6>
     <svg :width="barWidth" :height="height" class="sequencing-count" ref="svg_count" :name="title">
-      <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="count-axis axis--x" ref="xAxisBar"></g>
+      <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
+      <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
       <g :transform="`translate(${margin.left}, ${margin.top})`" class="count-axis axis--y" ref="yAxisBar"></g>
       <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
@@ -31,6 +33,7 @@ import {
   scaleLog,
   scaleBand,
   scaleSequential,
+  axisTop,
   axisBottom,
   axisLeft,
   max,
@@ -77,7 +80,7 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 5,
+        top: 35,
         right: 5,
         rightBar: 25,
         bottom: 25,
@@ -98,7 +101,9 @@ export default Vue.extend({
       xBar: null,
       y: null,
       xDotAxis: null,
+      xDotAxis2: null,
       xBarAxis: null,
+      xBarAxis2: null,
       yAxis: null,
       numXTicks: 6,
       colorScale: null
@@ -153,13 +158,27 @@ export default Vue.extend({
       this.y = this.y
         .domain(this.data.map(d => d[this.yVariable]));
 
-      this.xDotAxis = axisBottom(this.xDot)
+      this.xDotAxis = axisTop(this.xDot)
+        .ticks(this.numXTicks)
+        .tickFormat(format(".0%"));
+
+      this.xDotAxis2 = axisBottom(this.xDot)
         .ticks(this.numXTicks)
         .tickFormat(format(".0%"));
 
       select(this.$refs.xAxis).call(this.xDotAxis);
+      select(this.$refs.xAxis2).call(this.xDotAxis2);
 
-      this.xBarAxis = axisBottom(this.xBar)
+      this.xBarAxis = axisTop(this.xBar)
+        .tickSize(-this.height)
+        .tickFormat((d, i) => {
+          const log = Math.log10(d);
+          return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
+        })
+        .ticks(4)
+        .tickSizeOuter(0);
+
+      this.xBarAxis2 = axisBottom(this.xBar)
         .tickSize(-this.height)
         .tickFormat((d, i) => {
           const log = Math.log10(d);
@@ -169,6 +188,7 @@ export default Vue.extend({
         .tickSizeOuter(0);
 
       select(this.$refs.xAxisBar).call(this.xBarAxis);
+      select(this.$refs.xAxisBar2).call(this.xBarAxis2);
 
       this.yAxis = axisLeft(this.y);
 
