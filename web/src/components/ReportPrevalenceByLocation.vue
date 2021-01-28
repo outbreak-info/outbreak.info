@@ -8,7 +8,7 @@
       <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
   </div>
-  <div class="d-flex flex-column">
+  <div class="d-flex flex-column ml-3">
     <h6><b>Number of samples sequenced</b></h6>
     <svg :width="barWidth" :height="height" class="sequencing-count" ref="svg_count" :name="title">
       <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="count-axis axis--x" ref="xAxisBar"></g>
@@ -77,8 +77,9 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 2,
-        right: 25,
+        top: 5,
+        right: 5,
+        rightBar: 5,
         bottom: 25,
         left: 130
       },
@@ -122,7 +123,7 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right]);
 
       this.xBar = scaleLog()
-        .range([0, this.barWidth - this.margin.left - this.margin.right]);
+        .range([0, this.barWidth - this.margin.left - this.margin.rightBar]);
 
       this.y = scaleBand()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -187,6 +188,7 @@ export default Vue.extend({
             .attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
           grp.append("rect")
+          .attr("class", "seq-count")
             .attr("x", this.xBar(1))
             .attr("width", d => this.xBar(d.n) - this.xBar(1))
             .attr("y", d => this.y(d[this.yVariable]))
@@ -194,51 +196,78 @@ export default Vue.extend({
             .style("fill", "#f6cceb");
 
           grp.append("rect")
+          .attr("class", "mutation-count")
             .attr("x", this.xBar(1))
             .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
             .attr("y", d => this.y(d[this.yVariable]))
             .attr("height", this.y.bandwidth())
             .style("fill", "#df4ab7")
+
+          grp.append("text")
+          .attr("class", "count-annotation")
+            .attr("x", d => this.xBar(d.n))
+            .attr("dx", d => this.xBar(d.n) < this.barWidth * 0.25 ? 4 : -4)
+            .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth()/2)
+            .style("fill", "#777")
+            .style("font-size", "9pt")
+            .style("dominant-baseline", "central")
+            .style("text-anchor", d => this.xBar(d.n) < this.barWidth * 0.25 ? "start" : "end")
+            .text(d => `${format(",")(d.x)}/${format(",")(d.n)}`)
         },
         update => {
-          update.selectAll("rect")
+          update.attr("class", d => `bar-group ${d[this.yIdentifier]}`);
+
+          update.selectAll(".seq-count")
             .attr("x", this.xBar(1))
             .attr("width", d => this.xBar(d.n) - this.xBar(1))
             .attr("y", d => this.y(d[this.yVariable]))
-            .attr("height", this.y.bandwidth())
+            .attr("height", this.y.bandwidth());
+
+            update.selectAll(".mutation-count")
+              .attr("x", this.xBar(1))
+              .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
+              .attr("y", d => this.y(d[this.yVariable]))
+              .attr("height", this.y.bandwidth());
         }
       )
-      // const checkbookSelector = select(this.$refs.svg_dot)
-      //   .selectAll(".checkbook")
-      //   .data(this.data.filter((d, i) => (i+1) % 2));
-      //
-      // checkbookSelector.join(enter => {
-      //   enter.append("rect")
-      //     .attr("class", "checkbook")
-      //     .style("fill", "#EEEEEE")
-      //     .style("fill-opacity", 0.8)
-      //     .attr("x", 0)
-      //     .attr("width", this.width)
-      //     .attr("y", d => this.y(d[this.yVariable]))
-      //     .attr("height", this.y.bandwidth())
-      //
-      // })
+      const checkbookSelector = select(this.$refs.svg_dot)
+        .selectAll(".checkbook")
+        .data(this.data.filter((d, i) => !((i+1) % 5)));
+
+      const checkbookSelector2 = this.bargraph
+        .selectAll(".checkbook")
+        .data(this.data.filter((d, i) => !((i+1) % 5)));
+
+      checkbookSelector.join(enter => {
+        enter.append("line")
+          .attr("class", "checkbook")
+          .style("stroke", "#222")
+          .style("stroke-width", 0.35)
+          .attr("x1", 0)
+          .attr("x2", this.width)
+          .attr("y1",  d => this.y(d[this.yVariable]))
+          .attr("y2",  d => this.y(d[this.yVariable]))
+      })
+
+      checkbookSelector2.join(enter => {
+        enter.append("line")
+          .attr("class", "checkbook")
+          .style("stroke", "#222")
+          .style("stroke-width", 0.35)
+          .attr("transform", `translate(${-1*this.margin.left},${-1*this.margin.top})`)
+          .attr("x1", 0)
+          .attr("x2", this.barWidth)
+          .attr("y1",  d => this.y(d[this.yVariable]))
+          .attr("y2",  d => this.y(d[this.yVariable]))
+      })
+
+
       const dotSelector = this.dotplot.selectAll(".dot-group")
         .data(this.data, d => d[this.yVariable]);
 
       dotSelector.join(enter => {
           const grp = enter.append("g")
             .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
-
-          // grp.append("line")
-          //   .attr("class", "dot-ci confidence-interval")
-          //   .attr("x1", d => 0)
-          //   .attr("x2", d => this.xDot(d.est))
-          //   .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-          //   .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-          //   .style("stroke", "#555555")
-          //   .style("stroke-width", 1)
-          //   .transition(t1)
 
           grp.append("line")
             .attr("class", "dot-ci confidence-interval")
@@ -295,7 +324,7 @@ g.axis--y path {
 }
 
 .count-axis line {
-  stroke: #222;
+  stroke: #aaa;
   stroke-width: 0.25;
 }
 </style>
