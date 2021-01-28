@@ -202,25 +202,8 @@
     <ReportPrevalence :data="prevalence" />
   </section>
 
-  <section id="resources" v-if="resources">
-    <h4>{{mutationName}} Publications &amp; Resources</h4>
-    <div v-for="(item, rIdx) in resources" :key="rIdx" class="line-height-1 mb-3 d-flex">
-      <span class="resource-type mr-2" :class="item['@type'].replace(/\s/g, '')" v-if="item['@type']">
-        {{ item['@type'] }}
-      </span>
-      <div>
-
-        <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="ml-1">
-          {{ item.name }}
-        </router-link>
-        <b class="ml-1" id="author" v-if="item.author && item.author.length">
-          {{ item.author[0].name ? item.author[0].name : `${item.author[0].givenName} ${item.author[0].familyName}` }}
-          <span v-if="item.author.length > 1">et al.</span>
-        </b>
-        <em class="ml-1 text-underline" v-if="item.journalName">{{ item.journalName }}</em>
-        <span class="ml-1">{{ item.dateFormatted }}</span>
-      </div>
-    </div>
+  <section id="resources">
+    <ReportResources :mutationName="mutationName" :searchTerms="searchTerms" />
   </section>
 
   <section class="my-3">
@@ -252,6 +235,7 @@ import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import ReportPrevalence from "@/components/ReportPrevalence.vue";
+import ReportResources from "@/components/ReportResources.vue";
 
 // --- font awesome --
 import {
@@ -294,7 +278,8 @@ export default {
     CountryMap,
     Warning,
     ReportAcknowledgements,
-    ReportPrevalence
+    ReportPrevalence,
+    ReportResources
   },
   props: {
     isCurated: {
@@ -318,7 +303,7 @@ export default {
         "Switzerland", "Turkey", "United Kingdom", "United States of America", "Vietnam"
       ],
       states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah"],
-      resources: null,
+      searchTerms: null,
       totalSeqs: 22470,
       selectedLocations: [{
           name: "Global",
@@ -341,11 +326,10 @@ export default {
   },
   mounted() {
     this.prevalence = getDates("global");
-    console.log(this.prevalence)
 
-    getCuratedMetadata(this.$resourceurl, this.mutationID).subscribe(results => {
-      this.reportMetadata = results.md;
-      this.resources = results.resources;
+    getCuratedMetadata(this.mutationID).subscribe(results => {
+      this.reportMetadata = results;
+      this.searchTerms = results.searchTerms;
       console.log(results)
     });
   },

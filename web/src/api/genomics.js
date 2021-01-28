@@ -27,7 +27,7 @@ return(rollingAverage(b117_us, all_us))
 }
 
 
-export function getCuratedMetadata(apiUrl, id) {
+export function getCuratedMetadata(id) {
   return from(
     axios.get(curatedFile, {
       headers: {
@@ -37,8 +37,6 @@ export function getCuratedMetadata(apiUrl, id) {
   ).pipe(
     pluck("data"),
     map(results => {
-      console.log(results)
-      console.log(id)
       const curated = results.filter(d => d.identifier == id);
       if (curated.length === 1) {
         return (curated[0])
@@ -46,11 +44,12 @@ export function getCuratedMetadata(apiUrl, id) {
         console.log("No reports or more than one report metadata found!")
       }
     }),
-    mergeMap(md => getLineageResources(apiUrl, md, 10, 1).pipe(
-      map(resources => {
-        return({ md: md, resources: resources, })
-      })
-    )),
+    // mergeMap(md => getLineageResources(apiUrl, md, 10, 1).pipe(
+    //   map(resources => {
+    //     resources["md"] = md;
+    //     return(resources)
+    //   })
+    // )),
     catchError(e => {
       console.log("%c Error in getting curated data!", "color: red");
       console.log(e);
@@ -59,9 +58,9 @@ export function getCuratedMetadata(apiUrl, id) {
   )
 }
 
-export function getLineageResources(apiUrl, md, size, page, sort = "-date") {
+export function getLineageResources(apiUrl, searchTerms, size, page, sort = "-date") {
   const fields = "@type, name, author, date, journalName"
-  const queryString = `"${md.searchTerms.join('" OR "')}"`;
+  const queryString = `"${searchTerms.join('" OR "')}"`;
   const timestamp = Math.round(new Date().getTime() / 36e5);
 
 
@@ -72,17 +71,17 @@ export function getLineageResources(apiUrl, md, size, page, sort = "-date") {
       }
     })
   ).pipe(
-    pluck("data", "hits"),
+    pluck("data"),
     map(results => {
       const formatDate = timeFormat("%e %B %Y");
       const parseDate = timeParse("%Y-%m-%d");
 
-      results.forEach(d => {
+      results["hits"].forEach(d => {
         const parsedDate = parseDate(d.date)
         d["dateFormatted"] = formatDate(parsedDate);
       })
 
-      return(results)
+      return({resources: results["hits"], total: results["total"] })
     }),
   catchError(e => {
     console.log("%c Error in getting resource metadata!", "color: red");
