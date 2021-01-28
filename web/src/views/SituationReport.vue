@@ -307,6 +307,8 @@ export default {
       reportType: "lineage",
       lastUpdated: "2 hours",
       dateUpdated: "22 January 2021",
+      // subscriptions
+      curatedSubscription: null,
       countries: ["Argentina", "Australia", "Austria", "Belgium", "Brazil", "Canada", "Czech Republic", "Denmark", "Ecuador", "Finland", "France", "Germany", "Greece", "Hong Kong", "Hungary", "Iceland", "India", "Iran", "Ireland", "Israel", "Italy",
         "Jamaica", "Japan", "Latvia", "Lebanon", "Luxembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Oman", "Pakistan", "Peru", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "South Korea", "Spain", "Sri Lanka", "Sweden",
         "Switzerland", "Turkey", "United Kingdom", "United States of America", "Vietnam"
@@ -344,7 +346,7 @@ export default {
 
     this.prevalence = getDates("global");
 
-    getCuratedMetadata(this.mutationID).subscribe(results => {
+    this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
       this.reportMetadata = results;
       this.searchTerms = results.searchTerms;
       console.log(results)
@@ -361,6 +363,11 @@ export default {
     },
     downloadGISAID() {
       console.log("Downloading GISAID IDs")
+    }
+  },
+  destroyed() {
+    if (this.curatedSubscription) {
+      this.curatedSubscription.unsubscribe();
     }
   }
 }
