@@ -21,7 +21,7 @@
           <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
         </a>
       </div>
-      <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small>
+      <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
     </div>
 
   </div>
@@ -226,7 +226,7 @@
   <section class="my-3">
     <h4>Methodology</h4>
     <ReportMethodology />
-    <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small>
+    <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
     <Warning class="mt-2"
       text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
 
