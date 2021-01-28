@@ -194,7 +194,7 @@
     </section>
   </div>
 
-  <section class="vis my-3 py-3 d-flex flex-column align-items-start" id="longitudinal">
+  <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
     <h4 class="mb-0">Average daily {{mutationName}} prevalence</h4>
     <small class="text-muted mb-2">Based on reported sample collection date</small>
     <div id="location-buttons">
@@ -206,7 +206,7 @@
     <ReportPrevalence :data="prevalence" />
   </section>
 
-  <section class="my-4">
+  <section class="my-4 d-flex flex-column align-items-center">
     <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
     <small class="text-muted">Since first identification</small>
     <ReportPrevalenceByLocation :data="ctryData" class="mt-2"/>

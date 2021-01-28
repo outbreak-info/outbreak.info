@@ -5,16 +5,16 @@
     <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
       <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
-      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
+      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
       <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
   </div>
-  <div class="d-flex flex-column ml-4">
+  <div class="d-flex flex-column ml-5">
     <h6><b>Number of samples sequenced</b></h6>
     <svg :width="barWidth" :height="height" class="sequencing-count" ref="svg_count" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
       <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
-      <g :transform="`translate(${margin.left}, ${margin.top})`" class="count-axis axis--y" ref="yAxisBar"></g>
+      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
       <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
   </div>
@@ -338,8 +338,8 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-g.axis--y g.tick line,
-g.axis--y path {
+.prevalence-location-axis.axis--y g.tick line,
+.prevalence-location-axis.axis--y path {
     display: none;
 }
 
