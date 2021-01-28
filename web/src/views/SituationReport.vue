@@ -202,6 +202,10 @@
     <ReportPrevalence :data="prevalence" />
   </section>
 
+  <section>
+    <ReportPrevalenceByLocation :data="ctryData" />
+  </section>
+
   <section id="resources">
     <ReportResources :mutationName="mutationName" :searchTerms="searchTerms" />
   </section>
@@ -235,6 +239,7 @@ import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import ReportPrevalence from "@/components/ReportPrevalence.vue";
+import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
 import ReportResources from "@/components/ReportResources.vue";
 
 // --- font awesome --
@@ -264,7 +269,7 @@ import {
 } from "vuex";
 
 import {
-  getDates,
+  getDates, ctry,
   getCuratedMetadata
 } from "@/api/genomics.js";
 
@@ -283,6 +288,7 @@ export default {
     Warning,
     ReportAcknowledgements,
     ReportPrevalence,
+    ReportPrevalenceByLocation,
     ReportResources
   },
   props: {
@@ -309,6 +315,7 @@ export default {
       dateUpdated: "22 January 2021",
       // subscriptions
       curatedSubscription: null,
+      ctryData: null,
       countries: ["Argentina", "Australia", "Austria", "Belgium", "Brazil", "Canada", "Czech Republic", "Denmark", "Ecuador", "Finland", "France", "Germany", "Greece", "Hong Kong", "Hungary", "Iceland", "India", "Iran", "Ireland", "Israel", "Italy",
         "Jamaica", "Japan", "Latvia", "Lebanon", "Luxembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Oman", "Pakistan", "Peru", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "South Korea", "Spain", "Sri Lanka", "Sweden",
         "Switzerland", "Turkey", "United Kingdom", "United States of America", "Vietnam"
@@ -344,12 +351,14 @@ export default {
             this.url = window.location.href;
           })
 
+          this.ctryData = ctry;
+          console.log(this.ctryData)
+
     this.prevalence = getDates("global");
 
     this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
       this.reportMetadata = results;
       this.searchTerms = results.searchTerms;
-      console.log(results)
     });
   },
   methods: {

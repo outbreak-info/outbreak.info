@@ -16,7 +16,7 @@
   </div>
   </div>
 
-  <svg :width="width" :height="height" class="epi-curve" ref="svg" :name="title">
+  <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
     <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
     <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
@@ -134,7 +134,6 @@ export default Vue.extend({
       const t1 = transition().duration(2500)
       if (this.data) {
         this.updateScales();
-        console.log(this.data)
 
         const CISelector = this.chart
         .selectAll(".confidence-interval")
