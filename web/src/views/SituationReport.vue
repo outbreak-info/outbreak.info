@@ -192,7 +192,8 @@
   </div>
 
   <section class="vis my-3 py-3 d-flex flex-column align-items-start" id="longitudinal">
-    <h4>Average daily {{mutationName}} prevalence</h4>
+    <h4 class="mb-0">Average daily {{mutationName}} prevalence</h4>
+    <small class="text-muted mb-2">Based on reported sample collection date</small>
     <div id="location-buttons">
       <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
       <button class="btn btn-main-outline">Change locations
