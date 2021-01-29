@@ -22,7 +22,7 @@ import {
 } from "vuex";
 
 export default {
-  name: "SituationReports",
+  name: "ReportMethodology",
   computed: {
     ...mapState("genomics", ["refSeq"])
   },

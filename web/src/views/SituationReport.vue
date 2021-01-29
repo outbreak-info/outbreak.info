@@ -1,17 +1,12 @@
 <template>
 <div class="my-4 mx-4 full-page text-left">
   <!-- SOCIAL MEDIA SHARE -->
-  <div class="d-flex w-100 justify-content-end text-muted mb-2">
-    <font-awesome-icon class="ml-3" :icon="['fas', 'share']" />
-    <font-awesome-icon class="ml-3" :icon="['fab', 'twitter']" />
-    <font-awesome-icon class="ml-3" :icon="['fas', 'envelope']" />
-    <font-awesome-icon class="ml-3" :icon="['fas', 'link']" />
-  </div>
+<ShareReport title="title" url="url" />
 
   <!-- HEADER TITLE -->
   <div class="d-flex justify-content-between align-items-center">
     <div class="d-flex flex-column align-items-start">
-      <h1 class="m-0">{{ mutationName }} {{ reportType | capitalize }} Report</h1>
+      <h1 class="m-0">{{ title }}</h1>
       <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
       </small>
@@ -53,7 +48,7 @@
           </button>
         </small>
 
-        <small class="ml-2 my-1"><a @click="downloadGISAID" href="">Download mutation list</a></small>
+        <small class="ml-2 my-1"><a @click="downloadMutations" href="">Download mutation list</a></small>
 
         <SARSMutationMap mutationKey="B.1.1.7" />
 
@@ -244,7 +239,10 @@
     <p class="m-0">
       <b>{{ mutationName }} {{ reportType | capitalize }} Report</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
     </p>
+    <ShareReport :title="title" :url="url" />
   </section>
+
+  <!-- ACKNOWLEDGEMENTS -->
   <ReportAcknowledgements class="border-top pt-3" />
 </div>
 </template>
@@ -261,6 +259,7 @@ import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import ReportPrevalence from "@/components/ReportPrevalence.vue";
 import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
 import ReportResources from "@/components/ReportResources.vue";
+import ShareReport from "@/components/ShareReport.vue";
 
 // --- font awesome --
 import {
@@ -273,16 +272,11 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
 import {
-  faLink,
-  faShare,
-  faEnvelope,
   faSync
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faTwitter
-} from "@fortawesome/free-brands-svg-icons";
 
-library.add(faLink, faShare, faEnvelope, faTwitter, faClock, faSync);
+
+library.add(faClock, faSync);
 
 import {
   mapState
@@ -310,7 +304,8 @@ export default {
     ReportAcknowledgements,
     ReportPrevalence,
     ReportPrevalenceByLocation,
-    ReportResources
+    ReportResources,
+    ShareReport
   },
   props: {
     isCurated: {
@@ -323,6 +318,9 @@ export default {
   },
   computed: {
     ...mapState("admin", ["mutationAuthors"]),
+    title() {
+      return(`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)
+    },
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
     }
@@ -376,8 +374,6 @@ export default {
 
     this.ctryData = ctry;
     this.countries = ctry.map(d => d.country);
-    console.log(this.ctryData)
-
     this.prevalence = getDates("global");
 
     this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
@@ -394,8 +390,8 @@ export default {
       location.isActive = !location.isActive;
       this.prevalence = getDates(location.query);
     },
-    downloadGISAID() {
-      console.log("Downloading GISAID IDs")
+    downloadMutations() {
+      console.log("muts")
     }
   },
   destroyed() {
