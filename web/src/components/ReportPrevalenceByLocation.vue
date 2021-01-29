@@ -225,7 +225,6 @@ export default Vue.extend({
       select(this.$refs.xAxis2).call(this.xDotAxis2);
 
       this.xBarAxis = axisTop(this.xBar)
-        .tickSize(-this.height)
         .tickFormat((d, i) => {
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
@@ -234,7 +233,6 @@ export default Vue.extend({
         .tickSizeOuter(0);
 
       this.xBarAxis2 = axisBottom(this.xBar)
-        .tickSize(-this.height)
         .tickFormat((d, i) => {
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
@@ -270,6 +268,7 @@ export default Vue.extend({
 
 
         barSelector.join(enter => {
+          console.log("enter")
             const grp = enter.append("g")
               .attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
@@ -301,6 +300,7 @@ export default Vue.extend({
               .text(d => `${format(",")(d.x)}/${format(",")(d.n)}`)
           },
           update => {
+            console.log("update")
             update.attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
             update.selectAll(".seq-count")
@@ -429,8 +429,8 @@ export default Vue.extend({
 }
 
 .count-axis line {
-    stroke: #aaa;
-    stroke-width: 0.25;
+    // stroke: #aaa;
+    // stroke-width: 0.25;
 }
 .height-fixed {
     // border: 1px solid $base-grey;
