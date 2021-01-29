@@ -227,19 +227,19 @@ const routes = [{
         "../views/DoublingRates.vue"
       )
   },
-  {
-    path: "/sarscov2-mutations",
-    name: "Mutations",
-    props: route => ({
-      location: route.query.location,
-      variable: route.query.variable
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "mutations" */
-        "../views/Mutations.vue"
-      )
-  },
+  // {
+  //   path: "/sarscov2-mutations",
+  //   name: "Mutations",
+  //   props: route => ({
+  //     location: route.query.location,
+  //     variable: route.query.variable
+  //   }),
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "mutations" */
+  //       "../views/Mutations.vue"
+  //     )
+  // },
   {
     path: "/situation-reports",
     name: "SituationReports",
@@ -268,12 +268,13 @@ const routes = [{
       )
   },
   {
-    path: "/report2.0",
-    name: "CuratedReport",
+    path: "/report2.0/custom",
+    name: "CustomReport",
     props: route => ({
       location: route.query.location,
       muts: route.query.muts,
-      pangolin: route.query.pangolin
+      pangolin: route.query.lineage,
+        isCurated: route.query.isCurated = false
     }),
     component: () =>
       import(
@@ -282,12 +283,13 @@ const routes = [{
       )
   },
   {
-    path: "/report2.0/custom",
-    name: "CustomReport",
+    path: "/report2.0/:mutation",
+    name: "CuratedReport",
     props: route => ({
       location: route.query.location,
       muts: route.query.muts,
-      lineage: route.query.lineage
+      pangolin: route.query.pangolin,
+      isCurated: route.query.isCurated = true
     }),
     component: () =>
       import(

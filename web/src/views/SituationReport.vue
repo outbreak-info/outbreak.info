@@ -307,13 +307,13 @@ export default {
     MutationTable
   },
   props: {
-    isCurated: {
-      type: Boolean,
-      default: false
+    isCurated: Boolean,
+    location: {
+      type: Array,
+      default: () => ["world", "United States of America", "United Kingdom"]
     },
-    location: Array,
-    muts: String,
-    lineage: String
+    muts: Array,
+    pangolin: String
   },
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
@@ -328,8 +328,8 @@ export default {
     return {
       today: null,
       url: null,
-      mutationName: "P.1",
-      mutationID: "P-1",
+      mutationName: "B.1.1.7",
+      mutationID: null,
       mutations: null,
       reportMetadata: null,
       reportType: "lineage",
@@ -364,26 +364,35 @@ export default {
     }
   },
   mounted() {
+    // Get date for the citation object
     const formatDate = timeFormat("%e %B %Y");
     var currentTime = new Date();
     this.today = formatDate(currentTime);
 
+// set URL for sharing, etc.
     this.$nextTick(function() {
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}`: `${location.origin}${location.pathname}`;
     })
 
+    if(this.isCurated) {
+      this.setupCuratedReport();
+    }
+
     this.ctryData = ctry;
     this.countries = ctry.map(d => d.country);
     this.prevalence = getDates("global");
-
-    this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
-      this.reportMetadata = results;
-      this.searchTerms = results.searchTerms;
-      this.mutations = results.mutations;
-    });
   },
   methods: {
+    setupCuratedReport(){
+      this.mutationID = this.$route.params.mutation;
+
+      this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
+        this.reportMetadata = results;
+        this.searchTerms = results.searchTerms;
+        this.mutations = results.mutations;
+      });
+    },
     changeLocation(location) {
       this.selectedLocations.forEach(d => {
         d.isActive = false;
