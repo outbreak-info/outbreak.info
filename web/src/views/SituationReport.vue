@@ -34,11 +34,11 @@
         Concerns surrounding a new strain of SARS-CoV-2, the virus behind the COVID-19 pandemic, have been developing. <b class="text-highlight">B.1.1.7</b> lineage, also known as <b>Variant of Concern 202012/01 (VOC-202012/01)</b> or
         <b>20B/501Y.V1</b>, was first identified in the UK in early December 2020 and has since been detected in the US and other counties. This is of growing concern because it has shown to be significantly more transmissible than other variants.
       </div>
-      <router-link :to='{name:"Resources", query:{q: `"${mutationName}"`}}'>
+      <router-link :to='{hash: "#resources"}'>
         <small>View publications, datasets, and more related to {{mutationName}}</small>
       </router-link>
       <div class="mt-4" id="definition">
-        <h4 class="">{{reportType | capitalize}} definition</h4>
+        <h4 class="">{{ definitionLabel }}</h4>
 
         <small class="">
           <button class="btn btn-main-outline py-1" data-toggle="collapse" href="#mutation-table" aria-expanded="false" aria-controls="mutation-table">
@@ -307,7 +307,10 @@ export default {
     lineage: String
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors"])
+    ...mapState("admin", ["mutationAuthors"]),
+    definitionLabel() {
+      return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
+    }
   },
   data() {
     return {
