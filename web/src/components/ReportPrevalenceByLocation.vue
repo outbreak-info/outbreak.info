@@ -14,7 +14,7 @@
           </div>
 
 
-          <svg width="legendWidth" height="30" transform="translate(0,0)">
+          <svg :width="legendWidth" height="30" transform="translate(0,0)">
             <defs>
               <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
                 <stop :offset="i*100/10 + '%'" :style="{'stop-color':color}" v-for="(color, i) in legendColors" :key="i" />
