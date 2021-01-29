@@ -21,7 +21,7 @@
       </span>
       <div>
 
-        <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="ml-1">
+        <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" class="">
           {{ item.name }}
         </router-link>
         <b class="ml-1" id="author" v-if="item.author && item.author.length">
