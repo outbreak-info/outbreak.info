@@ -1,5 +1,11 @@
 <template>
 <div class="my-4 mx-4 full-page text-left">
+
+  <!-- LOADING -->
+  <div v-if="reportloading" class="loader">
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
+  </div>
+
   <!-- SOCIAL MEDIA SHARE -->
   <ShareReport title="title" url="url" />
 
@@ -310,7 +316,7 @@ export default {
     lineage: String
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors"]),
+    ...mapState("admin", ["mutationAuthors", "reportloading"]),
     title() {
       return (`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)
     },
