@@ -24,9 +24,10 @@ export function rollingAverage(df, all, dateVar = "date_time", numDays = 3) {
     const countRange = df.filter(x => x.dateTime <= upperDate && x.dateTime >= lowerDate);
     const allRange = all.filter(x => x.dateTime <= upperDate && x.dateTime >= lowerDate);
     const total = allRange.filter(x => x.dateTime - d.dateTime === 0);
-    d["countAverage"] = sum(countRange, x => x.n) / countRange.length;
+    // d["countVals"] = countRange;
+    d["countAverage"] = sum(countRange, x => x.n) / 7;
+    d["allAverage"] = sum(allRange, x => x.n) / 7;
     d["total"] = total.length == 1 ? total[0].n : 0;
-    d["allAverage"] = sum(allRange, x => x.n) / allRange.length;
     let ci = calcCI(d.countAverage, d.allAverage);
     d["est"] = ci["est"];
     d["li"] = ci["lower"];
