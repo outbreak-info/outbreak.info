@@ -1,13 +1,16 @@
 <template>
 <div class="d-flex flex-column align-items-end">
-  <div class="d-flex flex-column">
+  <!-- LEGEND -->
+  <div class="d-flex flex-column" id="legend">
+    <!-- legend: rolling average -->
     <div class="d-flex">
-      <svg id="legend" width="15" height="15" class="mr-2">
+      <svg width="15" height="15" class="mr-2">
         <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
       </svg>
       <small class="text-muted">7 day rolling average of percent of B.1.1.7-positive sequences</small>
     </div>
 
+    <!-- legend: confidence interval -->
     <div class="d-flex">
       <div class="ci-legend mr-2" :style="{background: CIColor}">
 
@@ -15,18 +18,22 @@
       <small class="text-muted">95% confidence interval</small>
     </div>
   </div>
-<div class="d-flex flex-column align-items-start">
-  <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
-    <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-  </svg>
 
-  <svg :width="width" :height="heightCounts" class="prevalence-curve-counts" ref="svg-counts">
-    <g ref="counts" :transform="`translate(${margin.left}, 0)`"></g>
+  <!-- SVGs -->
+  <div class="d-flex flex-column align-items-start">
+    <!-- TIME TRACE -->
+    <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
+      <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
+      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
+      <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+    </svg>
 
-  </svg>
-  <small class="text-uppercase mt-1 purple" :style="{'margin-left' : this.margin.left + 'px'}">Total sequenced per day</small>
+    <!-- SEQUENCING HISTOGRAM -->
+    <svg :width="width" :height="heightCounts" class="prevalence-curve-counts" ref="svg-counts">
+      <g ref="counts" :transform="`translate(${margin.left}, 0)`"></g>
+
+    </svg>
+    <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total sequenced per day</small>
   </div>
 </div>
 </template>
@@ -79,6 +86,7 @@ export default Vue.extend({
       // variables
       xVariable: "dateTime",
       yVariable: "est",
+      totalVariable: "total_count",
       // axes
       x: scaleTime(),
       y: scaleLinear(),
@@ -134,9 +142,9 @@ export default Vue.extend({
 
       this.yCounts = scaleLinear()
         .range([0, this.heightCounts])
-        .domain([0, max(this.data, d => d.total)]);
+        .domain([0, max(this.data, d => d[this.totalVariable])]);
 
-        this.xBandwidth = (0.65)*(this.width - this.margin.left - this.margin.right)/this.data.length;
+      this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / this.data.length;
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks);
@@ -165,7 +173,7 @@ export default Vue.extend({
               .attr("x1", d => this.x(d[this.xVariable]))
               .attr("x2", d => this.x(d[this.xVariable]))
               .attr("y1", d => this.yCounts(0))
-              .attr("y2", d => this.yCounts(d.total))
+              .attr("y2", d => this.yCounts(d[this.totalVariable]))
               .style("stroke-width", this.xBandwidth)
               .style("stroke", "purple");
           },
@@ -173,7 +181,7 @@ export default Vue.extend({
           update.attr("x1", d => this.x(d[this.xVariable]))
           .attr("x2", d => this.x(d[this.xVariable]))
           .attr("y1", d => this.yCounts(0))
-          .attr("y2", d => this.yCounts(d.total))
+          .attr("y2", d => this.yCounts(d[this.totalVariable]))
           .style("stroke-width", this.xBandwidth),
           exit =>
           exit.call(exit =>
@@ -264,6 +272,6 @@ export default Vue.extend({
 }
 
 .purple {
-  color: purple;
+    color: purple;
 }
 </style>

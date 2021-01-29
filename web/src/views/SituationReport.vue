@@ -283,7 +283,7 @@ import {
 import {
   getDates,
   ctry,
-  getCuratedMetadata
+  getCuratedMetadata, getTemporalPrevalence
 } from "@/api/genomics.js";
 
 import {
@@ -310,7 +310,7 @@ export default {
     isCurated: Boolean,
     location: {
       type: Array,
-      default: () => ["world", "United States of America", "United Kingdom"]
+      default: () => ["Worldwide", "United States of America", "United Kingdom"]
     },
     muts: Array,
     pangolin: String
@@ -322,6 +322,11 @@ export default {
     },
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
+    },
+    selectedLocations() {
+      return this.location.map((d,i) => {
+        return{name: d, isActive: i === 0};
+      })
     }
   },
   data() {
@@ -337,6 +342,8 @@ export default {
       dateUpdated: "26 January 2021",
       // subscriptions
       curatedSubscription: null,
+      temporalSubscription: null,
+
       ctryData: null,
       countries: null,
       states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Jersey", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah",
@@ -344,22 +351,6 @@ export default {
       ],
       searchTerms: null,
       totalSeqs: 26189,
-      selectedLocations: [{
-          name: "Global",
-          isActive: true,
-          query: "global"
-        },
-        {
-          name: "United States",
-          isActive: false,
-          query: "US"
-        },
-        {
-          name: "San Diego County",
-          isActive: false,
-          query: "SD"
-        }
-      ],
       prevalence: []
     }
   },
@@ -393,13 +384,18 @@ export default {
         this.mutations = results.mutations;
       });
     },
+    getTemporalData(location) {
+      this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName).subscribe(data => {
+        this.prevalence = data;
+      });
+    },
     changeLocation(location) {
       this.selectedLocations.forEach(d => {
         d.isActive = false;
       })
 
       location.isActive = !location.isActive;
-      this.prevalence = getDates(location.query);
+      this.getTemporalData(location.name);
     },
     downloadMutations() {
       console.log("muts")
@@ -408,6 +404,10 @@ export default {
   destroyed() {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
+    }
+
+    if (this.temporalSubscription) {
+      this.temporalSubscription.unsubscribe();
     }
   }
 }

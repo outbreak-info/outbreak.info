@@ -4,7 +4,9 @@ import {
   sum
 } from "d3";
 
-import { quantile } from "@stdlib/stats/base/dists/beta";
+import {
+  quantile
+} from "@stdlib/stats/base/dists/beta";
 
 export function rollingAverage(df, all, dateVar = "date_time", numDays = 3) {
   const parseDate = timeParse("%Y-%m-%d");
@@ -34,6 +36,21 @@ export function rollingAverage(df, all, dateVar = "date_time", numDays = 3) {
     d["ui"] = ci["upper"];
   })
 
+  return (df)
+}
+
+export function calcPrevalence(df, dateVariable = "date", countVariable = "lineage_count_rolling", totalVariable = "total_count_rolling") {
+  const parseDate = timeParse("%Y-%m-%d");
+
+  df.forEach(d => {
+    d["dateTime"] = parseDate(d[dateVariable]);
+    let ci = calcCI(d[countVariable], d[totalVariable]);
+    d["est"] = ci["est"];
+    d["li"] = ci["lower"];
+    d["ui"] = ci["upper"];
+  })
+
+  df.sort((a, b) => a.dateTime - b.dateTime)
   return (df)
 }
 

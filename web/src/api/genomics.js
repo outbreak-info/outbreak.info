@@ -5,7 +5,7 @@ import {
   timeParse,
   timeFormat
 } from "d3";
-import { rollingAverage } from "@/js/stats.js";
+import { rollingAverage, calcPrevalence } from "@/js/stats.js";
 
 // reminder: must be the raw verison of the file
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
@@ -25,13 +25,39 @@ const all_sd = [{"date_time":"2020-09-20","n":2},{"date_time":"2020-09-21","n":1
 export const ctry = [{"country":"Argentina","x":1,"n":92,"location_id":"Argentina","est":0.0109,"lower":0.0012,"upper":0.0497},{"country":"Australia","x":50,"n":801,"location_id":"Australia","est":0.0624,"lower":0.0472,"upper":0.0808},{"country":"Austria","x":42,"n":299,"location_id":"Austria","est":0.1405,"lower":0.1046,"upper":0.1832},{"country":"Belgium","x":89,"n":1395,"location_id":"Belgium","est":0.0638,"lower":0.0519,"upper":0.0775},{"country":"Brazil","x":7,"n":381,"location_id":"Brazil","est":0.0184,"lower":0.0083,"upper":0.0357},{"country":"Canada","x":1,"n":821,"location_id":"Canada","est":0.0012,"lower":0.0001,"upper":0.0057},{"country":"Czech Republic","x":10,"n":201,"location_id":"CzechRepublic","est":0.0498,"lower":0.0259,"upper":0.0865},{"country":"Denmark","x":370,"n":26764,"location_id":"Denmark","est":0.0138,"lower":0.0125,"upper":0.0153},{"country":"Ecuador","x":4,"n":36,"location_id":"Ecuador","est":0.1111,"lower":0.0387,"upper":0.2429},{"country":"Finland","x":40,"n":638,"location_id":"Finland","est":0.0627,"lower":0.0458,"upper":0.0835},{"country":"France","x":98,"n":1081,"location_id":"France","est":0.0907,"lower":0.0746,"upper":0.1089},{"country":"Germany","x":21,"n":1218,"location_id":"Germany","est":0.0172,"lower":0.011,"upper":0.0257},{"country":"Greece","x":4,"n":6,"location_id":"Greece","est":0.6667,"lower":0.2864,"upper":0.9232},{"country":"Hong Kong","x":3,"n":57,"location_id":"HongKong","est":0.0526,"lower":0.015,"upper":0.1338},{"country":"Hungary","x":5,"n":115,"location_id":"Hungary","est":0.0435,"lower":0.0168,"upper":0.0927},{"country":"Iceland","x":21,"n":3148,"location_id":"Iceland","est":0.0067,"lower":0.0043,"upper":0.01},{"country":"India","x":22,"n":196,"location_id":"India","est":0.1122,"lower":0.0738,"upper":0.1621},{"country":"Iran","x":1,"n":8,"location_id":"Iran","est":0.125,"lower":0.0138,"upper":0.4537},{"country":"Ireland","x":80,"n":605,"location_id":"Ireland","est":0.1322,"lower":0.107,"upper":0.161},{"country":"Israel","x":64,"n":395,"location_id":"Israel","est":0.162,"lower":0.1282,"upper":0.2008},{"country":"Italy","x":99,"n":1001,"location_id":"Italy","est":0.0989,"lower":0.0816,"upper":0.1186},{"country":"Jamaica","x":4,"n":5,"location_id":"Jamaica","est":0.8,"lower":0.3714,"upper":0.9775},{"country":"Latvia","x":4,"n":51,"location_id":"Latvia","est":0.0784,"lower":0.0271,"upper":0.1758},{"country":"Lebanon","x":1,"n":4,"location_id":"Lebanon","est":0.25,"lower":0.0285,"upper":0.7162},{"country":"Luxembourg","x":3,"n":1933,"location_id":"Luxembourg","est":0.0016,"lower":0.0004,"upper":0.0041},{"country":"Mexico","x":1,"n":30,"location_id":"Mexico","est":0.0333,"lower":0.0036,"upper":0.1454},{"country":"Netherlands","x":95,"n":2607,"location_id":"Netherlands","est":0.0364,"lower":0.0298,"upper":0.0442},{"country":"New Zealand","x":17,"n":194,"location_id":"NewZealand","est":0.0876,"lower":0.0539,"upper":0.1335},{"country":"Norway","x":30,"n":827,"location_id":"Norway","est":0.0363,"lower":0.0251,"upper":0.0507},{"country":"Oman","x":1,"n":2,"location_id":"Oman","est":0.5,"lower":0.0608,"upper":0.9392},{"country":"Pakistan","x":2,"n":3,"location_id":"Pakistan","est":0.6667,"lower":0.1767,"upper":0.9613},{"country":"Peru","x":1,"n":132,"location_id":"Peru","est":0.0076,"lower":0.0008,"upper":0.0349},{"country":"Poland","x":1,"n":7,"location_id":"Poland","est":0.1429,"lower":0.0159,"upper":0.5008},{"country":"Portugal","x":114,"n":601,"location_id":"Portugal","est":0.1897,"lower":0.1599,"upper":0.2225},{"country":"Romania","x":2,"n":42,"location_id":"Romania","est":0.0476,"lower":0.01,"upper":0.1441},{"country":"Singapore","x":21,"n":298,"location_id":"Singapore","est":0.0705,"lower":0.0455,"upper":0.1037},{"country":"Slovakia","x":22,"n":47,"location_id":"Slovakia","est":0.4681,"lower":0.3309,"upper":0.6091},{"country":"South Korea","x":13,"n":329,"location_id":"SouthKorea","est":0.0395,"lower":0.0223,"upper":0.0647},{"country":"Spain","x":132,"n":1596,"location_id":"Spain","est":0.0827,"lower":0.0699,"upper":0.097},{"country":"Sri Lanka","x":1,"n":32,"location_id":"SriLanka","est":0.0312,"lower":0.0034,"upper":0.1369},{"country":"Sweden","x":15,"n":435,"location_id":"Sweden","est":0.0345,"lower":0.0203,"upper":0.0548},{"country":"Switzerland","x":56,"n":3613,"location_id":"Switzerland","est":0.0155,"lower":0.0118,"upper":0.0199},{"country":"Trinidad and Tobago","x":1,"n":7,"location_id":"TrinidadandTobago","est":0.1429,"lower":0.0159,"upper":0.5008},{"country":"Turkey","x":21,"n":92,"location_id":"Turkey","est":0.2283,"lower":0.1518,"upper":0.3216},{"country":"United Arab Emirates","x":22,"n":317,"location_id":"UnitedArabEmirates","est":0.0694,"lower":0.0453,"upper":0.1013},{"country":"United Kingdom","x":24364,"n":114385,"location_id":"UnitedKingdom","est":0.213,"lower":0.2106,"upper":0.2154},{"country":"United States of America","x":213,"n":24336,"location_id":"UnitedStatesofAmerica","est":0.0088,"lower":0.0076,"upper":0.01}]
 
 export function getDates(scope) {
-if(scope == "global"){
-return(rollingAverage(b117_global, all_global))
-} else if(scope == "US") {
-return(rollingAverage(b117_us, all_us))
-} else {
-  return(rollingAverage(b117_sd, all_sd))
+  if (scope == "global") {
+    return (rollingAverage(b117_global, all_global))
+  } else if (scope == "US") {
+    return (rollingAverage(b117_us, all_us))
+  } else {
+    return (rollingAverage(b117_sd, all_sd))
+  }
 }
+
+export function getTemporalPrevalence(apiurl, location, mutationString, locationType = "country", mutationVar = "pangolin_lineage") {
+  let url;
+  if (location == "Worldwide") {
+    url = `${apiurl}prevalence?${mutationVar}=${mutationString}`;
+  } else {
+    url = `${apiurl}prevalence-by-country?${mutationVar}=${mutationString}&${locationType}=${location}`;
+  }
+
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      console.log(results)
+      return(calcPrevalence(results))
+    }),
+    catchError(e => {
+      console.log("%c Error in getting temporal data by location!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
 }
 
 
@@ -89,13 +115,16 @@ export function getLineageResources(apiUrl, searchTerms, size, page, sort = "-da
         d["dateFormatted"] = formatDate(parsedDate);
       })
 
-      return({resources: results["hits"], total: results["total"] })
+      return ({
+        resources: results["hits"],
+        total: results["total"]
+      })
     }),
-  catchError(e => {
-    console.log("%c Error in getting resource metadata!", "color: red");
-    console.log(e);
-    return from([]);
-  })
-)
+    catchError(e => {
+      console.log("%c Error in getting resource metadata!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
 
 }
