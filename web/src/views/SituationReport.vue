@@ -213,7 +213,7 @@
   </section>
 
   <!-- GEOGRAPHIC PREVALENCE -->
-  <section class="my-4 d-flex flex-column align-items-center">
+  <section class="my-4 d-flex flex-column align-items-center" id="geographic">
     <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
     <small class="text-muted">Since first identification</small>
     <ReportPrevalenceByLocation :data="ctryData" class="mt-2" />
