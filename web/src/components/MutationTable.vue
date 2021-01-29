@@ -21,7 +21,9 @@
         {{mutation.ref_aa}}{{mutation.codon_num}}{{mutation.alt_aa}}
       </td>
       <td v-else-if="mutation.mutation_type == 'deletion'">
-        &Delta;{{mutation.codon_num[0]}}-{{mutation.codon_num.slice(-1)[0]}}
+        <span v-if="Array.isArray(mutation.codon_num)">&Delta;{{mutation.codon_num[0]}}-{{mutation.codon_num.slice(-1)[0]}}</span>
+        <span v-else>&Delta;{{mutation.codon_num}}
+          </span>
       </td>
     </tr>
   </tbody>
