@@ -1,11 +1,14 @@
 <template>
 <div class="my-4 mx-4 full-page text-left">
+  <!-- SOCIAL MEDIA SHARE -->
   <div class="d-flex w-100 justify-content-end text-muted mb-2">
     <font-awesome-icon class="ml-3" :icon="['fas', 'share']" />
     <font-awesome-icon class="ml-3" :icon="['fab', 'twitter']" />
     <font-awesome-icon class="ml-3" :icon="['fas', 'envelope']" />
     <font-awesome-icon class="ml-3" :icon="['fas', 'link']" />
   </div>
+
+  <!-- HEADER TITLE -->
   <div class="d-flex justify-content-between align-items-center">
     <div class="d-flex flex-column align-items-start">
       <h1 class="m-0">{{ mutationName }} {{ reportType | capitalize }} Report</h1>
@@ -23,13 +26,15 @@
       </div>
       <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
     </div>
-
   </div>
 
+  <!-- LOGOS -->
   <ReportLogos class="mb-4" />
+
 
   <div class="row">
     <section id="intro" class="col-sm-6 col-md-8 pr-4">
+      <!-- INTRO TEXT - OVERVIEW -->
       <div class="font-size-2">
         Concerns surrounding a new strain of SARS-CoV-2, the virus behind the COVID-19 pandemic, have been developing. <b class="text-highlight">B.1.1.7</b> lineage, also known as <b>Variant of Concern 202012/01 (VOC-202012/01)</b> or
         <b>20B/501Y.V1</b>, was first identified in the UK in early December 2020 and has since been detected in the US and other counties. This is of growing concern because it has shown to be significantly more transmissible than other variants.
@@ -37,6 +42,8 @@
       <router-link :to='{hash: "#resources"}'>
         <small>View publications, datasets, and more related to {{mutationName}}</small>
       </router-link>
+
+      <!-- CHARACTERISTIC MUTATIONS -->
       <div class="mt-4" id="definition">
         <h4 class="">{{ definitionLabel }}</h4>
 
@@ -64,8 +71,9 @@
             </thead>
           </table>
         </div>
-
       </div>
+
+      <!-- KEY INSIGHTS -->
       <div class="mt-4">
         <h4>Key Insights</h4>
         <ul>
@@ -81,6 +89,7 @@
         </ul>
       </div>
 
+      <!-- NEW TODAY -->
       <div class="mt-4">
         <h4>What's new today</h4>
         <table>
@@ -117,17 +126,17 @@
       </div>
     </section>
 
-
+    <!-- RIGHT: SUMMARY BOX -->
     <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
       <h3>Summary</h3>
       <div class="summary-counts mb-3">
         As of {{ dateUpdated }}, <b>{{ totalSeqs.toLocaleString() }}</b> sequences in the {{ mutationName }} lineage have been detected:
 
+        <!-- PREVALENCE SUMMARY TABLE -->
         <table class="border-bottom line-height-1 mt-2 w-100">
           <thead>
             <tr class="border-bottom">
               <th>
-
                 location
                 <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
                 <!-- sync, globe-americas, map-marked-alt -->
@@ -183,9 +192,9 @@
         <div class="line-height-1 my-2">
           <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}}</em> </small>
         </div>
-
       </div>
 
+      <!-- GEO SUMMARY -->
       <div id="geo-summary" v-if="countries">
         The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b>{{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
         <CountryMap :countries="countries" :width="400" :showNames="false" />
@@ -194,6 +203,8 @@
     </section>
   </div>
 
+
+  <!-- DAILY PREVALENCE -->
   <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
     <h4 class="mb-0">Average daily {{mutationName}} prevalence</h4>
     <small class="text-muted mb-2">Based on reported sample collection date</small>
@@ -206,25 +217,28 @@
     <ReportPrevalence :data="prevalence" />
   </section>
 
+  <!-- GEOGRAPHIC PREVALENCE -->
   <section class="my-4 d-flex flex-column align-items-center">
     <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
     <small class="text-muted">Since first identification</small>
-    <ReportPrevalenceByLocation :data="ctryData" class="mt-2"/>
+    <ReportPrevalenceByLocation :data="ctryData" class="mt-2" />
   </section>
 
+  <!-- RESOURCES -->
   <section id="resources">
     <ReportResources :mutationName="mutationName" :searchTerms="searchTerms" />
   </section>
 
+  <!-- METHODOLOGY -->
   <section class="my-3">
     <h4>Methodology</h4>
     <ReportMethodology />
     <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
     <Warning class="mt-2"
       text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
-
   </section>
 
+  <!-- CITATION -->
   <section class="my-3">
     <h4 class="">Citing this report</h4>
     <p class="m-0">
@@ -275,7 +289,8 @@ import {
 } from "vuex";
 
 import {
-  getDates, ctry,
+  getDates,
+  ctry,
   getCuratedMetadata
 } from "@/api/genomics.js";
 
@@ -326,7 +341,9 @@ export default {
       curatedSubscription: null,
       ctryData: null,
       countries: null,
-      states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Jersey", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah", "Washington"   ],
+      states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Jersey", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah",
+        "Washington"
+      ],
       searchTerms: null,
       totalSeqs: 26189,
       selectedLocations: [{
@@ -350,16 +367,16 @@ export default {
   },
   mounted() {
     const formatDate = timeFormat("%e %B %Y");
-      var currentTime = new Date();
+    var currentTime = new Date();
     this.today = formatDate(currentTime);
 
-          this.$nextTick(function() {
-            this.url = window.location.href;
-          })
+    this.$nextTick(function() {
+      this.url = window.location.href;
+    })
 
-          this.ctryData = ctry;
-          this.countries = ctry.map(d => d.country);
-          console.log(this.ctryData)
+    this.ctryData = ctry;
+    this.countries = ctry.map(d => d.country);
+    console.log(this.ctryData)
 
     this.prevalence = getDates("global");
 
