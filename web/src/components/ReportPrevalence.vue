@@ -30,8 +30,9 @@
 
     <!-- SEQUENCING HISTOGRAM -->
     <svg :width="width" :height="heightCounts" class="prevalence-curve-counts" ref="svg-counts">
-      <g ref="counts" :transform="`translate(${margin.left}, 0)`"></g>
-
+      <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+      <g :transform="`translate(${margin.left - 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft"></g>
+      <g :transform="`translate(${width - margin.right + 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight"></g>
     </svg>
     <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total sequenced per day</small>
   </div>
@@ -48,6 +49,7 @@ import {
   scaleTime,
   axisBottom,
   axisLeft,
+  axisRight,
   extent,
   max,
   format,
@@ -76,10 +78,10 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 15,
+        top: 10,
         bottom: 40,
-        left: 50,
-        right: 25
+        left: 55,
+        right: 55
       },
       heightCounts: 80,
       CIColor: "#df4ab7",
@@ -91,9 +93,12 @@ export default Vue.extend({
       x: scaleTime(),
       y: scaleLinear(),
       yCounts: scaleLinear(),
+      maxCounts: null,
       xBandwith: 1,
       xAxis: null,
       yAxis: null,
+      yCountsAxisLeft: null,
+      yCountsAxisRight: null,
       numXTicks: 5,
       numYTicks: 6,
       // methods
@@ -140,9 +145,10 @@ export default Vue.extend({
         .nice()
         .domain([0, max(this.data, d => d.proportion_ci_upper)])
 
+      this.maxCounts = max(this.data, d => d[this.totalVariable]);
       this.yCounts = scaleLinear()
-        .range([0, this.heightCounts])
-        .domain([0, max(this.data, d => d[this.totalVariable])]);
+        .range([0, this.heightCounts - this.margin.top - this.margin.top])
+        .domain([0, this.maxCounts]);
 
       this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / this.data.length;
 
@@ -154,7 +160,15 @@ export default Vue.extend({
         .ticks(this.numYTicks)
         .tickFormat(format(".0%"));
 
+      this.yCountsAxisLeft = axisLeft(this.yCounts).tickSizeOuter(0)
+        .tickValues([0, this.maxCounts]);
+
+      this.yCountsAxisRight = axisRight(this.yCounts).tickSizeOuter(0)
+      .tickValues([0, this.maxCounts]);
+
       select(this.$refs.yAxis).call(this.yAxis);
+      select(this.$refs.yCountsAxisLeft).call(this.yCountsAxisLeft);
+      select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
     },
     updatePlot() {
       const t1 = transition().duration(2500);
