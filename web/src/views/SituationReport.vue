@@ -369,7 +369,8 @@ export default {
     this.today = formatDate(currentTime);
 
     this.$nextTick(function() {
-      this.url = window.location.href;
+      const location = window.location;
+      this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}`: `${location.origin}${location.pathname}`;
     })
 
     this.ctryData = ctry;
@@ -380,7 +381,6 @@ export default {
       this.reportMetadata = results;
       this.searchTerms = results.searchTerms;
       this.mutations = results.mutations;
-      console.log(this.mutations)
     });
   },
   methods: {
