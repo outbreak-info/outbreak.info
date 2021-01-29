@@ -4,6 +4,18 @@
     <font-awesome-icon class="ml-3" :icon="['fab', 'twitter']" />
   </a>
 
+  <a :href="facebookUrl" target="_blank" rel="noreferrer" class="facebook-share-button" aria-label="facebook link">
+    <font-awesome-icon class="ml-3" :icon="['fab', 'facebook-f']" />
+  </a>
+
+  <a :href="redditUrl" target="_blank" rel="noreferrer" class="reddit-share-button" aria-label="reddit link">
+    <font-awesome-icon class="ml-3" :icon="['fab', 'reddit-alien']" />
+  </a>
+
+  <a :href="linkedinUrl" target="_blank" rel="noreferrer" class="linkedin-share-button" aria-label="twitter link">
+    <font-awesome-icon class="ml-3" :icon="['fab', 'linkedin-in']" />
+  </a>
+
   <a :href="emailUrl" aria-label="email" target="_blank">
     <font-awesome-icon class="ml-3" :icon="['fas', 'envelope']" />
   </a>
@@ -15,6 +27,7 @@
   <a @click="copy2Clipboard" aria-label="copy to clipboard">
     <font-awesome-icon class="share-link ml-3" :icon="['fas', 'link']" />
   </a>
+
   <p :class="{ snackbar: true, show: showSnackbar }">
     copied to clipboard
   </p>
@@ -41,10 +54,10 @@ import {
   faSync
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  faTwitter
+  faTwitter, faFacebookF, faRedditAlien, faLinkedinIn
 } from "@fortawesome/free-brands-svg-icons";
 
-library.add(faLink, faShare, faEnvelope, faTwitter);
+library.add(faLink, faShare, faEnvelope, faTwitter, faFacebookF, faRedditAlien, faLinkedinIn);
 
 export default Vue.extend({
   name: "ShareReport",
@@ -61,6 +74,15 @@ export default Vue.extend({
     },
     twitterUrl() {
       return `https://twitter.com/intent/tweet?url=${this.outbreakUrl}&hashtags=covid-19,outbreak.info`;
+    },
+    facebookUrl() {
+      return `https://www.facebook.com/sharer/sharer.php?u=${this.outbreakUrl}`;
+    },
+    redditUrl() {
+      return `http://www.reddit.com/submit?url=${this.outbreakUrl}`;
+    },
+    linkedinUrl() {
+      return `https://www.linkedin.com/sharing/share-offsite/?url=${this.outbreakUrl}`;
     },
     emailUrl() {
       return `mailto:?subject=outbreak.info%20Mutation%20Report&body=${this.outbreakUrl}`
