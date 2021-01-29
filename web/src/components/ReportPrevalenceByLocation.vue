@@ -4,37 +4,37 @@
     <h6><b>Prevalence</b></h6>
 
 
-      <div class="d-flex align-items-center justify-content-between height-fixed">
-        <div class="d-flex flex-column">
-          <div class="d-flex align-items-center">
-            <!-- <svg id="legend" width="15" height="15" class="mr-2">
+    <div class="d-flex align-items-center justify-content-between height-fixed">
+      <div class="d-flex flex-column">
+        <div class="d-flex align-items-center">
+          <!-- <svg id="legend" width="15" height="15" class="mr-2">
               <circle cx="7" cy="7" r="7" class="circle-legend"></circle>
             </svg> -->
-            <small class="text-muted">Est. B.1.1.7 prevalence since identification</small>
-          </div>
-
-
-          <svg :width="legendWidth" height="30" transform="translate(0,0)">
-            <defs>
-              <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
-                <stop :offset="i*100/10 + '%'" :style="{'stop-color':color}" v-for="(color, i) in legendColors" :key="i" />
-              </linearGradient>
-            </defs>
-            <rect :width="legendWidth" height="15" fill="url(#linear-gradient)" stroke="#2c3e50" stroke-width="0.25"></rect>
-            <text x="0" y="18" fill="#555" font-size="0.85em" dominant-baseline="hanging">0</text>
-            <text :x="legendWidth" y="18" dominant-baseline="hanging" text-anchor="end" fill="#555" font-size="0.85em">{{maxEstFormatted}}</text>
-          </svg>
-
+          <small class="text-muted">Est. B.1.1.7 prevalence since identification</small>
         </div>
 
 
-        <div class="d-flex  align-items-center">
-          <svg id="legend" width="15" height="15" class="mr-2">
-            <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
-          </svg>
-          <small class="text-muted">95% confidence interval</small>
-        </div>
+        <svg :width="legendWidth" height="30" transform="translate(0,0)">
+          <defs>
+            <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+              <stop :offset="i*100/10 + '%'" :style="{'stop-color':color}" v-for="(color, i) in legendColors" :key="i" />
+            </linearGradient>
+          </defs>
+          <rect :width="legendWidth" height="15" fill="url(#linear-gradient)" stroke="#2c3e50" stroke-width="0.25"></rect>
+          <text x="0" y="18" fill="#555" font-size="0.85em" dominant-baseline="hanging">0</text>
+          <text :x="legendWidth" y="18" dominant-baseline="hanging" text-anchor="end" fill="#555" font-size="0.85em">{{maxEstFormatted}}</text>
+        </svg>
+
       </div>
+
+
+      <div class="d-flex  align-items-center">
+        <svg id="legend" width="15" height="15" class="mr-2">
+          <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
+        </svg>
+        <small class="text-muted">95% confidence interval</small>
+      </div>
+    </div>
 
     <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
@@ -200,12 +200,6 @@ export default Vue.extend({
 
       this.colorScale = scaleSequential(interpolateYlGnBu);
     },
-    updatePlot() {
-      if (this.data) {
-        this.updateScales();
-        this.drawPlot()
-      }
-    },
     updateScales() {
       // ensure the data is sorted in the proper order
       this.data.sort((a, b) => a[this.sortVar] - b[this.sortVar]);
@@ -264,143 +258,147 @@ export default Vue.extend({
       // legend gradient
       this.legendColors = range(11).map(d => interpolateYlGnBu(d / 10));
     },
-    drawPlot() {
-      const t1 = transition().duration(1500);
+    updatePlot() {
+      if (this.data) {
+        this.updateScales();
 
-      const barSelector = this.bargraph
-        .selectAll(".bar-group")
-        .data(this.data, d => d[this.yVariable]);
+        const t1 = transition().duration(1500);
 
-
-      barSelector.join(enter => {
-          const grp = enter.append("g")
-            .attr("class", d => `bar-group ${d[this.yIdentifier]}`);
-
-          grp.append("rect")
-            .attr("class", "seq-count")
-            .attr("x", this.xBar(1))
-            .attr("width", d => this.xBar(d.n) - this.xBar(1))
-            .attr("y", d => this.y(d[this.yVariable]))
-            .attr("height", this.y.bandwidth())
-            .style("fill", this.baseColor);
-
-          grp.append("rect")
-            .attr("class", "mutation-count")
-            .attr("x", this.xBar(1))
-            .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
-            .attr("y", d => this.y(d[this.yVariable]))
-            .attr("height", this.y.bandwidth())
-            .style("fill", this.accentColor)
-
-          grp.append("text")
-            .attr("class", "count-annotation")
-            .attr("x", d => this.xBar(d.n))
-            .attr("dx", d => this.xBar(d.n) < this.barWidth * 0.25 ? 4 : -4)
-            .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .style("fill", "#777")
-            .style("font-size", "9pt")
-            .style("dominant-baseline", "central")
-            .style("text-anchor", d => this.xBar(d.n) < this.barWidth * 0.25 ? "start" : "end")
-            .text(d => `${format(",")(d.x)}/${format(",")(d.n)}`)
-        },
-        update => {
-          update.attr("class", d => `bar-group ${d[this.yIdentifier]}`);
-
-          update.selectAll(".seq-count")
-            .attr("x", this.xBar(1))
-            .attr("width", d => this.xBar(d.n) - this.xBar(1))
-            .attr("y", d => this.y(d[this.yVariable]))
-            .attr("height", this.y.bandwidth());
-
-          update.selectAll(".mutation-count")
-            .attr("x", this.xBar(1))
-            .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
-            .attr("y", d => this.y(d[this.yVariable]))
-            .attr("height", this.y.bandwidth());
-        }
-      )
-      const checkbookSelector = select(this.$refs.svg_dot)
-        .selectAll(".checkbook")
-        .data(this.data.filter((d, i) => !((i + 1) % 5)));
-
-      const checkbookSelector2 = this.bargraph
-        .selectAll(".checkbook")
-        .data(this.data.filter((d, i) => !((i + 1) % 5)));
-
-      checkbookSelector.join(enter => {
-        enter.append("line")
-          .attr("class", "checkbook")
-          .style("stroke", "#222")
-          .style("stroke-width", 0.35)
-          .attr("x1", 0)
-          .attr("x2", this.width)
-          .attr("y1", d => this.y(d[this.yVariable]))
-          .attr("y2", d => this.y(d[this.yVariable]))
-      })
-
-      checkbookSelector2.join(enter => {
-        enter.append("line")
-          .attr("class", "checkbook")
-          .style("stroke", "#222")
-          .style("stroke-width", 0.35)
-          .attr("transform", `translate(${-1*this.margin.left},${-1*this.margin.top})`)
-          .attr("x1", 0)
-          .attr("x2", this.barWidth)
-          .attr("y1", d => this.y(d[this.yVariable]))
-          .attr("y2", d => this.y(d[this.yVariable]))
-      })
+        const barSelector = this.bargraph
+          .selectAll(".bar-group")
+          .data(this.data, d => d[this.yVariable]);
 
 
-      const dotSelector = this.dotplot.selectAll(".dot-group")
-        .data(this.data, d => d[this.yVariable]);
+        barSelector.join(enter => {
+            const grp = enter.append("g")
+              .attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
-      dotSelector.join(enter => {
-          const grp = enter.append("g")
-            .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
+            grp.append("rect")
+              .attr("class", "seq-count")
+              .attr("x", this.xBar(1))
+              .attr("width", d => this.xBar(d.n) - this.xBar(1))
+              .attr("y", d => this.y(d[this.yVariable]))
+              .attr("height", this.y.bandwidth())
+              .style("fill", this.baseColor);
 
-          grp.append("line")
-            .attr("class", "dot-ci confidence-interval")
-            .attr("x1", d => this.xDot(d.lower))
-            .attr("x2", d => this.xDot(d.upper))
-            .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .style("stroke", "#CCCCCC")
-            .style("stroke-width", this.ciStrokeWidth)
-            .style("opacity", 0)
-            .transition(t1)
-            .delay(400)
-            .style("opacity", 0.5);
+            grp.append("rect")
+              .attr("class", "mutation-count")
+              .attr("x", this.xBar(1))
+              .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
+              .attr("y", d => this.y(d[this.yVariable]))
+              .attr("height", this.y.bandwidth())
+              .style("fill", this.accentColor)
 
-          grp.append("circle")
-            .attr("class", "dot-circle point-estimate")
-            .attr("cy", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .attr("r", this.circleR)
-            .style("stroke", "#2c3e50")
-            .style("stroke-width", 0.25)
-            .style("fill", d => this.colorScale(d.est))
-            .transition(t1)
-            .attr("cx", d => this.xDot(d.est));
-        },
-        update => {
-          update
-            .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
+            grp.append("text")
+              .attr("class", "count-annotation")
+              .attr("x", d => this.xBar(d.n))
+              .attr("dx", d => this.xBar(d.n) < this.barWidth * 0.25 ? 4 : -4)
+              .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .style("fill", "#777")
+              .style("font-size", "9pt")
+              .style("dominant-baseline", "central")
+              .style("text-anchor", d => this.xBar(d.n) < this.barWidth * 0.25 ? "start" : "end")
+              .text(d => `${format(",")(d.x)}/${format(",")(d.n)}`)
+          },
+          update => {
+            update.attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
-          update.selectAll(".dot-ci")
-            .attr("x1", d => this.xDot(d.lower))
-            .attr("x2", d => this.xDot(d.upper))
-            .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-            .style("opacity", 0)
-            .transition(t1)
-            .delay(400)
-            .style("opacity", 1);
+            update.selectAll(".seq-count")
+              .attr("x", this.xBar(1))
+              .attr("width", d => this.xBar(d.n) - this.xBar(1))
+              .attr("y", d => this.y(d[this.yVariable]))
+              .attr("height", this.y.bandwidth());
 
-          update.selectAll(".point-estimate")
-            .transition(t1)
-            .style("fill", d => this.colorScale(d.est))
-            .attr("cx", d => this.xDot(d.est));
-        },
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()))
+            update.selectAll(".mutation-count")
+              .attr("x", this.xBar(1))
+              .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
+              .attr("y", d => this.y(d[this.yVariable]))
+              .attr("height", this.y.bandwidth());
+          }
+        )
+        const checkbookSelector = select(this.$refs.svg_dot)
+          .selectAll(".checkbook")
+          .data(this.data.filter((d, i) => !((i + 1) % 5)));
+
+        const checkbookSelector2 = this.bargraph
+          .selectAll(".checkbook")
+          .data(this.data.filter((d, i) => !((i + 1) % 5)));
+
+        checkbookSelector.join(enter => {
+          enter.append("line")
+            .attr("class", "checkbook")
+            .style("stroke", "#222")
+            .style("stroke-width", 0.35)
+            .attr("x1", 0)
+            .attr("x2", this.width)
+            .attr("y1", d => this.y(d[this.yVariable]))
+            .attr("y2", d => this.y(d[this.yVariable]))
+        })
+
+        checkbookSelector2.join(enter => {
+          enter.append("line")
+            .attr("class", "checkbook")
+            .style("stroke", "#222")
+            .style("stroke-width", 0.35)
+            .attr("transform", `translate(${-1*this.margin.left},${-1*this.margin.top})`)
+            .attr("x1", 0)
+            .attr("x2", this.barWidth)
+            .attr("y1", d => this.y(d[this.yVariable]))
+            .attr("y2", d => this.y(d[this.yVariable]))
+        })
+
+
+        const dotSelector = this.dotplot.selectAll(".dot-group")
+          .data(this.data, d => d[this.yVariable]);
+
+        dotSelector.join(enter => {
+            const grp = enter.append("g")
+              .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
+
+            grp.append("line")
+              .attr("class", "dot-ci confidence-interval")
+              .attr("x1", d => this.xDot(d.lower))
+              .attr("x2", d => this.xDot(d.upper))
+              .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .style("stroke", "#CCCCCC")
+              .style("stroke-width", this.ciStrokeWidth)
+              .style("opacity", 0)
+              .transition(t1)
+              .delay(400)
+              .style("opacity", 0.5);
+
+            grp.append("circle")
+              .attr("class", "dot-circle point-estimate")
+              .attr("cy", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .attr("r", this.circleR)
+              .style("stroke", "#2c3e50")
+              .style("stroke-width", 0.25)
+              .style("fill", d => this.colorScale(d.est))
+              .transition(t1)
+              .attr("cx", d => this.xDot(d.est));
+          },
+          update => {
+            update
+              .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
+
+            update.selectAll(".dot-ci")
+              .attr("x1", d => this.xDot(d.lower))
+              .attr("x2", d => this.xDot(d.upper))
+              .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .style("opacity", 0)
+              .transition(t1)
+              .delay(400)
+              .style("opacity", 1);
+
+            update.selectAll(".point-estimate")
+              .transition(t1)
+              .style("fill", d => this.colorScale(d.est))
+              .attr("cx", d => this.xDot(d.est));
+          },
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()))
+      }
     }
   }
 })
