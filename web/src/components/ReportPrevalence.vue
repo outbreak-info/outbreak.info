@@ -1,7 +1,7 @@
 <template>
-<div class="d-flex flex-column align-items-end">
+<div class="d-flex flex-column align-items-start">
   <!-- LEGEND -->
-  <div class="d-flex flex-column" id="legend">
+  <div class="d-flex flex-column ml-5 mt-3" id="legend">
     <!-- legend: rolling average -->
     <div class="d-flex">
       <svg width="15" height="15" class="mr-2">
@@ -20,12 +20,22 @@
   </div>
 
   <!-- SVGs -->
-  <div class="d-flex flex-column align-items-start">
+  <div class="d-flex flex-column align-items-start mt-2">
     <!-- TIME TRACE -->
     <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
+      <defs>
+        <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
+
       <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
       <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
       <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+      <g id="weird-last values">
+        <text :x="width - margin.left" :y="0" fill="#929292" font-size="10 px" dominant-baseline="hanging" text-anchor="end">Latest dates are noisy due to fewer samples</text>
+        <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
+      </g>
     </svg>
 
     <!-- SEQUENCING HISTOGRAM -->
@@ -34,7 +44,7 @@
       <g :transform="`translate(${margin.left - 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft"></g>
       <g :transform="`translate(${width - margin.right + 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight"></g>
     </svg>
-    <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total sequenced per day</small>
+    <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
   </div>
 </div>
 </template>
