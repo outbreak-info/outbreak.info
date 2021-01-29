@@ -186,7 +186,7 @@
 
       </div>
 
-      <div id="geo-summary">
+      <div id="geo-summary" v-if="countries">
         The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b>{{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
         <CountryMap :countries="countries" :width="400" :showNames="false" />
         <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
