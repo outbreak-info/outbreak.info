@@ -143,7 +143,7 @@ export default Vue.extend({
         right: 5,
         rightBar: 25,
         bottom: 30,
-        left: 175
+        left: 200
       },
       legendWidth: 200,
       barWidth: 500,
