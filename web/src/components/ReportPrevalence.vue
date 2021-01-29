@@ -15,12 +15,19 @@
       <small class="text-muted">95% confidence interval</small>
     </div>
   </div>
-
+<div class="d-flex flex-column align-items-start">
   <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
     <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
     <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
   </svg>
+
+  <svg :width="width" :height="heightCounts" class="prevalence-curve-counts" ref="svg-counts">
+    <g ref="counts" :transform="`translate(${margin.left}, 0)`"></g>
+
+  </svg>
+  <small class="text-uppercase mt-1 purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples per day</small>
+  </div>
 </div>
 </template>
 
@@ -63,10 +70,11 @@ export default Vue.extend({
     return {
       margin: {
         top: 15,
-        bottom: 60,
+        bottom: 40,
         left: 50,
         right: 25
       },
+      heightCounts: 80,
       CIColor: "#df4ab7",
       // variables
       xVariable: "dateTime",
@@ -74,6 +82,8 @@ export default Vue.extend({
       // axes
       x: scaleTime(),
       y: scaleLinear(),
+      yCounts: scaleLinear(),
+      xBandwith: 1,
       xAxis: null,
       yAxis: null,
       numXTicks: 5,
@@ -82,7 +92,8 @@ export default Vue.extend({
       line: null,
       area: null,
       // refs
-      chart: null
+      chart: null,
+      counts: null
     }
   },
   watch: {
@@ -98,6 +109,7 @@ export default Vue.extend({
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
+      this.counts = select(this.$refs.counts);
 
       // estimate
       this.line = line()
@@ -120,6 +132,12 @@ export default Vue.extend({
         .nice()
         .domain([0, max(this.data, d => d.ui)])
 
+      this.yCounts = scaleLinear()
+        .range([0, this.heightCounts])
+        .domain([0, max(this.data, d => d.total)]);
+
+        this.xBandwidth = (0.65)*(this.width - this.margin.left - this.margin.right)/this.data.length;
+
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks);
       select(this.$refs.xAxis).call(this.xAxis);
@@ -131,9 +149,40 @@ export default Vue.extend({
       select(this.$refs.yAxis).call(this.yAxis);
     },
     updatePlot() {
-      const t1 = transition().duration(2500)
+      const t1 = transition().duration(2500);
+
       if (this.data) {
         this.updateScales();
+
+        const countSelector = this.counts
+          .selectAll(".raw-counts")
+          .data(this.data);
+
+        countSelector.join(
+          enter => {
+            enter.append("line")
+              .attr("class", "raw-counts")
+              .attr("x1", d => this.x(d[this.xVariable]))
+              .attr("x2", d => this.x(d[this.xVariable]))
+              .attr("y1", d => this.yCounts(0))
+              .attr("y2", d => this.yCounts(d.total))
+              .style("stroke-width", this.xBandwidth)
+              .style("stroke", "purple");
+          },
+          update =>
+          update.attr("x1", d => this.x(d[this.xVariable]))
+          .attr("x2", d => this.x(d[this.xVariable]))
+          .attr("y1", d => this.yCounts(0))
+          .attr("y2", d => this.yCounts(d.total))
+          .style("stroke-width", this.xBandwidth),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
 
         const CISelector = this.chart
           .selectAll(".confidence-interval")
@@ -149,7 +198,14 @@ export default Vue.extend({
           },
           update => update
           // .transition(t1)
-          .attr("d", this.area)
+          .attr("d", this.area),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
         )
 
         const pathSelector = this.chart
@@ -205,5 +261,9 @@ export default Vue.extend({
 .trace-legend {
     stroke: $base-grey;
     stroke-width: 2.5;
+}
+
+.purple {
+  color: purple;
 }
 </style>
