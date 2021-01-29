@@ -1,7 +1,7 @@
 <template>
 <div class="my-4 mx-4 full-page text-left">
   <!-- SOCIAL MEDIA SHARE -->
-<ShareReport title="title" url="url" />
+  <ShareReport title="title" url="url" />
 
   <!-- HEADER TITLE -->
   <div class="d-flex justify-content-between align-items-center">
@@ -43,8 +43,10 @@
         <h4 class="">{{ definitionLabel }}</h4>
 
         <small class="">
-          <button class="btn btn-main-outline py-1" data-toggle="collapse" href="#mutation-table" aria-expanded="false" aria-controls="mutation-table">
-            View mutation table
+          <button class="btn btn-main-outline py-1 collapsed" data-toggle="collapse" href="#mutation-table" aria-expanded="false" aria-controls="mutation-table">
+            <span class="if-collapsed">View</span>
+            <span class="if-not-collapsed">Hide</span>
+            mutation table
           </button>
         </small>
 
@@ -52,19 +54,8 @@
 
         <SARSMutationMap mutationKey="B.1.1.7" />
 
-        <div class="collape ml-2" id="mutation-table">
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  gene
-                </th>
-                <th>
-                  nucleotides
-                </th>
-              </tr>
-            </thead>
-          </table>
+        <div class="collapse ml-2" id="mutation-table">
+          <MutationTable :mutations="mutations" />
         </div>
       </div>
 
@@ -260,6 +251,7 @@ import ReportPrevalence from "@/components/ReportPrevalence.vue";
 import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
 import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
+import MutationTable from "@/components/MutationTable.vue";
 
 // --- font awesome --
 import {
@@ -305,7 +297,8 @@ export default {
     ReportPrevalence,
     ReportPrevalenceByLocation,
     ReportResources,
-    ShareReport
+    ShareReport,
+    MutationTable
   },
   props: {
     isCurated: {
@@ -319,7 +312,7 @@ export default {
   computed: {
     ...mapState("admin", ["mutationAuthors"]),
     title() {
-      return(`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)
+      return (`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)
     },
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
@@ -329,8 +322,9 @@ export default {
     return {
       today: null,
       url: null,
-      mutationName: "B.1.1.7",
-      mutationID: "B-1-1-7",
+      mutationName: "P.1",
+      mutationID: "P-1",
+      mutations: null,
       reportMetadata: null,
       reportType: "lineage",
       lastUpdated: "1 day",
@@ -379,6 +373,8 @@ export default {
     this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
       this.reportMetadata = results;
       this.searchTerms = results.searchTerms;
+      this.mutations = results.mutations;
+      console.log(this.mutations)
     });
   },
   methods: {
@@ -436,5 +432,14 @@ export default {
     opacity: 0.6;
     font-weight: 700;
     text-transform: uppercase;
+}
+
+[data-toggle="collapse"] {
+    &.collapsed .if-not-collapsed {
+        display: none;
+    }
+    &:not(.collapsed) .if-collapsed {
+        display: none;
+    }
 }
 </style>
