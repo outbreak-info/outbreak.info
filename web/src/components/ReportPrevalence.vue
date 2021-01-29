@@ -26,7 +26,7 @@
     <g ref="counts" :transform="`translate(${margin.left}, 0)`"></g>
 
   </svg>
-  <small class="text-uppercase mt-1 purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples per day</small>
+  <small class="text-uppercase mt-1 purple" :style="{'margin-left' : this.margin.left + 'px'}">Total sequenced per day</small>
   </div>
 </div>
 </template>
