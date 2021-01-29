@@ -3,7 +3,7 @@
 
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
   <!-- SOCIAL MEDIA SHARE -->
@@ -281,9 +281,9 @@ import {
 } from "vuex";
 
 import {
-  getDates,
   ctry,
-  getCuratedMetadata, getTemporalPrevalence
+  getCuratedMetadata,
+  getTemporalPrevalence
 } from "@/api/genomics.js";
 
 import {
@@ -324,8 +324,12 @@ export default {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
     },
     selectedLocations() {
-      return this.location.map((d,i) => {
-        return{name: d, isActive: i === 0};
+      const locations = typeof(this.location) == "string" ? [this.location] : this.location;
+      return locations.map((d, i) => {
+        return {
+          name: d,
+          isActive: i === 0
+        };
       })
     }
   },
@@ -333,7 +337,7 @@ export default {
     return {
       today: null,
       url: null,
-      mutationName: "B.1.1.7",
+      mutationName: "B.1.429",
       mutationID: null,
       mutations: null,
       reportMetadata: null,
@@ -360,22 +364,21 @@ export default {
     var currentTime = new Date();
     this.today = formatDate(currentTime);
 
-// set URL for sharing, etc.
+    // set URL for sharing, etc.
     this.$nextTick(function() {
       const location = window.location;
-      this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}`: `${location.origin}${location.pathname}`;
+      this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
-    if(this.isCurated) {
+    if (this.isCurated) {
       this.setupCuratedReport();
     }
 
     this.ctryData = ctry;
     this.countries = ctry.map(d => d.country);
-    this.prevalence = getDates("global");
   },
   methods: {
-    setupCuratedReport(){
+    setupCuratedReport() {
       this.mutationID = this.$route.params.mutation;
 
       this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
@@ -383,6 +386,8 @@ export default {
         this.searchTerms = results.searchTerms;
         this.mutations = results.mutations;
       });
+
+
     },
     getTemporalData(location) {
       this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName).subscribe(data => {

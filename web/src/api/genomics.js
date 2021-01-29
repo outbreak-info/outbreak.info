@@ -50,7 +50,12 @@ export function getTemporalPrevalence(apiurl, location, mutationString, location
     pluck("data", "results"),
     map(results => {
       console.log(results)
-      return(calcPrevalence(results))
+      const parseDate = timeParse("%Y-%m-%d");
+
+      results.forEach(d => {
+        d["dateTime"] = parseDate(d.date);
+      })
+      return(results)
     }),
     catchError(e => {
       console.log("%c Error in getting temporal data by location!", "color: red");

@@ -85,7 +85,7 @@ export default Vue.extend({
       CIColor: "#df4ab7",
       // variables
       xVariable: "dateTime",
-      yVariable: "est",
+      yVariable: "proportion",
       totalVariable: "total_count",
       // axes
       x: scaleTime(),
@@ -127,8 +127,8 @@ export default Vue.extend({
       // confidence interval
       this.area = area()
         .x(d => this.x(d[this.xVariable]))
-        .y0(d => this.y(d.li))
-        .y1(d => this.y(d.ui));
+        .y0(d => this.y(d.proportion_ci_lower))
+        .y1(d => this.y(d.proportion_ci_upper));
     },
     updateScales() {
       this.x = this.x
@@ -138,7 +138,7 @@ export default Vue.extend({
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0, max(this.data, d => d.ui)])
+        .domain([0, max(this.data, d => d.proportion_ci_upper)])
 
       this.yCounts = scaleLinear()
         .range([0, this.heightCounts])
