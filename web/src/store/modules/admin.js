@@ -2,9 +2,25 @@
 const state = {
   loading: false,
   dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
+  reportloading: false, // separate loader for reports
   outbreak: {
-    authors: "Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Latif, Alaa Abdel;  Mullen, Julia L.; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I.; Hughes, Laura D.;"
+    authors: "Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Haag, Emily; Latif, Alaa Abdel; Mullen, Julia L.; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I.; Hughes, Laura D."
   },
+    mutationAuthors: "Alaa Abdel Latif, Karthik Gangavarapu, Emily Haag, Nate Matteson, Julia L. Mullen, Ginger Tsueng, Mark Zeller, Chunlei Wu, Andrew I. Su, Laura D. Hughes, Kristian G. Andersen, and the Center for Viral Systems Biology",
+    team: [
+      {name: "Manar Alkuzweny", img:"manar.jpg"},
+      {name: "Kristian Andersen", img:"kristian.jpg", twitter:"https://twitter.com/K_G_Andersen", linkedin:"http://www.linkedin.com/in/kga1978"},
+      {name: "Marco Cano", img:"marco.jpg"},
+      {name: "Karthik Gangavarapu", img:"karthik.jpg"},
+      {name: "Emily Haag", img:"emily.jpg"},
+      {name: "Laura Hughes", img:"laura.jpg", twitter:"https://twitter.com/flaneuseks", email:"lhughes@scripps.edu", linkedin:"https://www.linkedin.com/in/lauradhughes/"},
+      {name: "Alaa Abdel Latif", img:"alaa.jpg"},
+      {name: "Julia Mullen", img:"julia.jpg"},
+      {name: "Ginger Tsueng", img:"ginger.jpg"},
+      {name: "Andrew Su", img:"andrew.jpg", email:"asu@scripps.edu", twitter:"http://twitter.com/andrewsu", linkedin:"http://www.linkedin.com/in/andrewsu"},
+      {name: "Chunlei Wu", img:"chunlei.jpg", email:"cwu@scripps.edu", twitter:"https://twitter.com/chunleiwu", linkedin:"https://www.linkedin.com/in/chunleiwu"},
+      {name: "Jerry Zhou", img:"jerry.jpg"}
+    ],
   funding: [{
       identifier: "5 U19 AI135995-02",
       name: "CViSB",
