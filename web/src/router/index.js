@@ -268,28 +268,12 @@ const routes = [{
       )
   },
   {
-    path: "/report2.0/custom",
-    name: "CustomReport",
+    path: "/report2.0",
+    name: "MutationReport",
     props: route => ({
       location: route.query.location,
       muts: route.query.muts,
-      pangolin: route.query.lineage,
-        isCurated: route.query.isCurated = false
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SituationReport.vue"
-      )
-  },
-  {
-    path: "/report2.0/:mutation",
-    name: "CuratedReport",
-    props: route => ({
-      location: route.query.location,
-      muts: route.query.muts,
-      pangolin: route.query.pangolin,
-      isCurated: route.query.isCurated = true
+      pangolin: route.query.pangolin
     }),
     component: () =>
       import(

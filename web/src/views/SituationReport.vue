@@ -282,6 +282,7 @@ import {
 
 import {
   ctry,
+  getReportData,
   getCuratedMetadata,
   getTemporalPrevalence
 } from "@/api/genomics.js";
@@ -307,7 +308,6 @@ export default {
     MutationTable
   },
   props: {
-    isCurated: Boolean,
     location: {
       type: Array,
       default: () => ["Worldwide", "United States of America", "United Kingdom"]
@@ -335,25 +335,30 @@ export default {
   },
   data() {
     return {
+      // report details
       today: null,
       url: null,
-      mutationName: "B.1.429",
-      mutationID: null,
+      mutationName: null,
+      mutationVar: null,
       mutations: null,
-      reportMetadata: null,
-      reportType: "lineage",
+      reportType: null,
       lastUpdated: "1 day",
       dateUpdated: "26 January 2021",
+
       // subscriptions
+      dataSubscription: null,
       curatedSubscription: null,
       temporalSubscription: null,
 
+      // curated values
+      searchTerms: null,
+
+      // data
       ctryData: null,
       countries: null,
       states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Jersey", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah",
         "Washington"
       ],
-      searchTerms: null,
       totalSeqs: 26189,
       prevalence: []
     }
@@ -370,24 +375,34 @@ export default {
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
-    if (this.isCurated) {
-      this.setupCuratedReport();
-    }
+    this.setupReport();
 
-    this.ctryData = ctry;
     this.countries = ctry.map(d => d.country);
   },
   methods: {
-    setupCuratedReport() {
-      this.mutationID = this.$route.params.mutation;
+    setupReport() {
+      if (this.$route.query.pangolin) {
+        this.mutationName = this.$route.query.pangolin;
+        this.reportType = "lineage";
+        this.mutationVar = "pangolin_lineage";
+      } else if (this.$route.query.muts) {
+        this.mutationName = this.$route.query.muts.join(" ");
+        this.reportType = "mutation";
+        this.mutationVar = "mutations";
+      }
 
-      this.curatedSubscription = getCuratedMetadata(this.mutationID).subscribe(results => {
-        this.reportMetadata = results;
-        this.searchTerms = results.searchTerms;
-        this.mutations = results.mutations;
-      });
+      this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName).subscribe(results => {
+        console.log(results)
+        this.prevalence = results.longitudinal;
 
-
+        if (results.md) {
+          // this.reportMetadata = results.md;
+          this.searchTerms = results.md.searchTerms;
+          this.mutations = results.md.mutations;
+        } else {
+          this.searchTerms = [this.mutationName];
+        }
+      })
     },
     getTemporalData(location) {
       this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName).subscribe(data => {
@@ -407,6 +422,10 @@ export default {
     }
   },
   destroyed() {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
+
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
     }

@@ -7,6 +7,8 @@ import {
 } from "d3";
 import { rollingAverage, calcPrevalence } from "@/js/stats.js";
 
+import store from "@/store";
+
 // reminder: must be the raw verison of the file
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
@@ -34,7 +36,31 @@ export function getDates(scope) {
   }
 }
 
-export function getTemporalPrevalence(apiurl, location, mutationString, locationType = "country", mutationVar = "pangolin_lineage") {
+
+export function getReportData(apiurl, locations, mutationVar, mutationString, locationType = "country") {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([
+    getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
+    getCuratedMetadata(mutationString)
+  ]).pipe(
+    map(([longitudinal, md]) => {
+      return({longitudinal: longitudinal, md: md})
+    }),
+    catchError(e => {
+      console.log("%c Error in getting initial report data!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function updateLocationData() {
+
+}
+
+export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, locationType = "country") {
   let url;
   if (location == "Worldwide") {
     url = `${apiurl}prevalence?${mutationVar}=${mutationString}`;
@@ -65,7 +91,6 @@ export function getTemporalPrevalence(apiurl, location, mutationString, location
   )
 }
 
-
 export function getCuratedMetadata(id) {
   return from(
     axios.get(curatedFile, {
@@ -76,7 +101,7 @@ export function getCuratedMetadata(id) {
   ).pipe(
     pluck("data"),
     map(results => {
-      const curated = results.filter(d => d.identifier == id);
+      const curated = results.filter(d => d.mutation_name == id);
       if (curated.length === 1) {
         return (curated[0])
       } else {
