@@ -187,7 +187,7 @@
   <!-- GEOGRAPHIC PREVALENCE -->
   <section class="my-4 d-flex flex-column align-items-center" id="geographic">
     <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
-    <small class="text-muted">Since first identification</small>
+    <small class="text-muted mb-3">Since first identification</small>
     <ReportChoropleth :data="ctryData" :mutationName="mutationName" />
     <ReportPrevalenceByLocation :data="ctryData" :mutationName="mutationName" class="mt-2" />
   </section>

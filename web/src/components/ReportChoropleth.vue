@@ -1,14 +1,27 @@
-<template>
+countThreshold<template>
 <div class="d-flex flex-column">
   <!-- Total count filter -->
-  <small>include locations with at least </small>
-  <GradientLegend :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`"/>
-  <svg ref="count_filter" id="count-filter" :width="width" :height="legendHeight">
-    <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
-    <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThresh}} samples</text>
-    <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>
-    <rect x="0" y="20" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
-  </svg>
+  <div class="d-flex" id="choropleth-legend">
+    <GradientLegend class="mr-4" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
+    <svg ref="count_filter" id="count-filter" :width="width" :height="legendHeight">
+      <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
+      <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
+      <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>
+      <rect x="0" y="20" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
+
+      <g transform="translate(350,8)" id="threshold-slider">
+        <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of samples</text>
+        <g transform="translate(0,18)">
+        <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
+        <line x1="10" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
+        <circle ref="threshold_slider" cx="10" cy="0" r="8" fill="#df4ab7" />
+        <text x="10" y="0" dy="12" font-size="14px" font-weight="700" fill="#df4ab7" text-anchor="middle" dominant-baseline="hanging">{{countThreshold}}</text>
+        <!-- <text x="0" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="start" dominant-baseline="hanging">1</text> -->
+        <text :x="filterWidth" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="end" dominant-baseline="hanging">{{maxCount}}</text>
+        </g>
+      </g>
+    </svg>
+  </div>
 
   <!-- choropleth -->
   <svg :width="width" :height="height" ref="choropleth" class="epi-map-svg" :name="title">
@@ -61,10 +74,10 @@ export default {
   },
   data() {
     return {
-      countThresh: 50,
       width: 800,
       height: 400,
-      legendHeight: 100,
+      legendHeight: 50,
+      filterWidth: 200,
       margin: {
         top: 2,
         right: 2,
@@ -74,7 +87,7 @@ export default {
       // variables
       variable: "proportion",
       thresholdVar: "cum_total_count",
-      countThreshold: 25,
+      countThreshold: 1,
       filteredColor: "#A5A5A5",
       nullColor: "#EFEFEF",
       strokeColor: "#2c3e50",
@@ -108,6 +121,9 @@ export default {
     },
     maxFormatted() {
       return format(".0%")(this.maxVal);
+    },
+    maxCount() {
+      return this.data ? format(",")(max(this.data, d => d[this.thresholdVar])) : null;
     },
     minVal() {
       return this.data ? min(this.data, d => d[this.variable]) : null;
