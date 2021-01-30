@@ -188,6 +188,7 @@
   <section class="my-4 d-flex flex-column align-items-center" id="geographic">
     <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
     <small class="text-muted">Since first identification</small>
+    <ReportChoropleth :data="ctryData" :mutationName="mutationName" />
     <ReportPrevalenceByLocation :data="ctryData" :mutationName="mutationName" class="mt-2" />
   </section>
 
@@ -230,6 +231,7 @@ import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import ReportPrevalence from "@/components/ReportPrevalence.vue";
 import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
+import ReportChoropleth from "@/components/ReportChoropleth.vue";
 import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
 import MutationTable from "@/components/MutationTable.vue";
@@ -277,6 +279,7 @@ export default {
     ReportAcknowledgements,
     ReportPrevalence,
     ReportPrevalenceByLocation,
+    ReportChoropleth,
     ReportResources,
     ShareReport,
     MutationTable
