@@ -150,29 +150,18 @@
                 {{ totalSeqs.toLocaleString() }}
               </td>
               <td class="text-center">
-                13.5%
+                XXXXX
               </td>
             </tr>
-            <tr>
+            <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
               <td>
-                United States
+                {{ location.name }}
               </td>
               <td class="text-center">
-                213
+                {{ location.cum_lineage_count.toLocaleString() }}
               </td>
               <td class="text-center">
-                0.9%
-              </td>
-            </tr>
-            <tr>
-              <td>
-                San Diego County
-              </td>
-              <td class="text-center">
-                1
-              </td>
-              <td class="text-center">
-                &lt; 0.1%
+                {{ location.proportion_formatted }}
               </td>
             </tr>
           </tbody>
@@ -341,8 +330,8 @@ export default {
       mutationVar: null,
       mutations: null,
       reportType: null,
-      lastUpdated: "1 day",
-      dateUpdated: "26 January 2021",
+      lastUpdated: "XX day",
+      dateUpdated: "XXXXX January 2021",
 
       // subscriptions
       dataSubscription: null,
@@ -355,10 +344,11 @@ export default {
       // data
       ctryData: null,
       countries: null,
+      locationTotals: null,
       states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Jersey", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah",
         "Washington"
       ],
-      totalSeqs: 26189,
+      totalSeqs: 0,
       prevalence: []
     }
   },
@@ -394,8 +384,10 @@ export default {
         this.prevalence = results.longitudinal;
 
         // recent data by country & countries with that lineage.
-        this.countries = results.byCountry.map(d => d.country);
+        this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.country);
         this.ctryData = results.byCountry;
+        console.log(this.selectedLocations)
+        this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(d => d.name).includes(d.country));
 
         if (results.md) {
           // this.reportMetadata = results.md;

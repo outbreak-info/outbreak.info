@@ -3,10 +3,11 @@ import { from, forkJoin, BehaviorSubject } from "rxjs";
 import { finalize, catchError, pluck, map, mergeMap } from "rxjs/operators";
 import {
   timeParse,
-  timeFormat
+  timeFormat, format
 } from "d3";
 import { rollingAverage, calcPrevalence } from "@/js/stats.js";
 const parseDate = timeParse("%Y-%m-%d");
+const formatPercent = format(".0%");
 
 import store from "@/store";
 
@@ -71,6 +72,8 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
+        d["name"] = d.country;
+        d["proportion_formatted"] = formatPercent(d.proportion);
         d["dateTime"] = parseDate(d.date);
         d["location_id"] = d.country.replace(/\s/g, "");
       })
