@@ -177,7 +177,7 @@
 
       <!-- GEO SUMMARY -->
       <div id="geo-summary" v-if="countries">
-        The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b>{{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
+        The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b>{{ "states.length" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
         <CountryMap :countries="countries" :width="400" :showNames="false" />
         <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
       </div>
@@ -344,10 +344,8 @@ export default {
       // data
       ctryData: null,
       countries: null,
+      states: [],
       locationTotals: null,
-      states: ["California", "Colorado", "Connecticut", "Florida", "Georgia", "Illinois", "Indiana", "Maryland", "Massachusetts", "Michigan", "Minnesota", "New Jersey", "New Mexico", "New York", "Oklahoma", "Oregon", "Pennsylvania", "Texas", "Utah",
-        "Washington"
-      ],
       totalSeqs: 0,
       prevalence: []
     }

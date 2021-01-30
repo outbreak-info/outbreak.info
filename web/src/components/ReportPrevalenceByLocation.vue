@@ -1,5 +1,15 @@
 .proportion<template>
+<div class="d-flex flex-column">
+  <div class="d-flex align-items-center justify-content-end">
+    sort by
+    <select v-model="sortVar" class="ml-3">
+      <option value="proportion">prevalence</option>
+      <option value="cum_total_count">total sequenced</option>
+      <option value="country">name</option>
+    </select>
+  </div>
 <div class="d-flex">
+
   <div class="d-flex flex-column">
     <h6><b>Prevalence</b></h6>
 
@@ -74,6 +84,7 @@
   </div>
 
 </div>
+</div>
 </template>
 
 
@@ -98,6 +109,9 @@ import {
 } from "d3";
 
 import chroma from "chroma-js";
+import {
+  cloneDeep
+} from "lodash";
 
 import {
   interpolateYlGnBu
@@ -111,14 +125,13 @@ export default Vue.extend({
     setWidth: {
       type: Number,
       default: 600
-    },
-    sortVar: {
-      type: String,
-      default: "proportion"
     }
   },
   watch: {
     data() {
+      this.updatePlot();
+    },
+    sortVar() {
       this.updatePlot();
     }
   },
@@ -151,12 +164,15 @@ export default Vue.extend({
       ciStrokeWidth: 7,
       accentColor: "#df4ab7",
       baseColor: "#f6cceb",
+      // data
+      plottedData: null,
       // refs
       dotplot: null,
       bargraph: null,
       // variables
       yVariable: "country",
       yIdentifier: "location_id",
+      sortVar: "proportion",
       maxEst: null,
       // scales
       xDot: null,
@@ -199,19 +215,18 @@ export default Vue.extend({
       this.colorScale = scaleSequential(interpolateYlGnBu);
     },
     updateScales() {
-      this.height = this.data.length * this.bandHeight;
-      // ensure the data is sorted in the proper order
-      // this.data.sort((a, b) => a[this.sortVar] - b[this.sortVar]);
+      // resize the canvas to cover the length of the data.
+      this.height = this.plottedData.length * this.bandHeight;
 
       this.xDot = this.xDot
-        .domain([0, max(this.data, d => d.proportion_ci_upper)]);
+        .domain([0, max(this.plottedData, d => d.proportion_ci_upper)]);
 
       this.xBar = this.xBar
-        .domain([1, max(this.data, d => d.cum_total_count)]);
+        .domain([1, max(this.plottedData, d => d.cum_total_count)]);
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain(this.data.map(d => d[this.yVariable]));
+        .domain(this.plottedData.map(d => d[this.yVariable]));
 
       this.xDotAxis = axisTop(this.xDot)
         .ticks(this.numXTicks)
@@ -249,7 +264,7 @@ export default Vue.extend({
       select(this.$refs.yAxisBar).call(this.yAxis);
 
       // color scale
-      this.maxEst = max(this.data, d => d.proportion);
+      this.maxEst = max(this.plottedData, d => d.proportion);
       this.colorScale = this.colorScale
         .domain([0, this.maxEst]);
 
@@ -258,13 +273,25 @@ export default Vue.extend({
     },
     updatePlot() {
       if (this.data) {
+        // ensure the data is sorted in the proper order
+        // Create a copy so Vue doesn't flip out.
+        this.plottedData = cloneDeep(this.data);
+        if (this.sortVar == "country") {
+          // asc
+          this.plottedData.sort((a, b) => a[this.sortVar] > b[this.sortVar] ? -1 : 1);
+        } else {
+          // desc
+          this.plottedData.sort((a, b) => b[this.sortVar] > a[this.sortVar] ? -1 : 1);
+        }
+
+
         this.updateScales();
 
         const t1 = transition().duration(1500);
 
         const barSelector = this.bargraph
           .selectAll(".bar-group")
-          .data(this.data, d => d[this.yVariable]);
+          .data(this.plottedData, d => d[this.yVariable]);
 
 
         barSelector.join(enter => {
@@ -304,23 +331,34 @@ export default Vue.extend({
             update.selectAll(".seq-count")
               .attr("x", this.xBar(1))
               .attr("width", d => this.xBar(d.cum_total_count) - this.xBar(1))
-              .attr("y", d => this.y(d[this.yVariable]))
-              .attr("height", this.y.bandwidth());
+              .attr("height", this.y.bandwidth())
+              .transition(t1)
+              .attr("y", d => this.y(d[this.yVariable]));
 
             update.selectAll(".mutation-count")
               .attr("x", this.xBar(1))
               .attr("width", d => (this.xBar(d.cum_total_count) - this.xBar(1)) * d.proportion)
-              .attr("y", d => this.y(d[this.yVariable]))
-              .attr("height", this.y.bandwidth());
+              .attr("height", this.y.bandwidth())
+              .transition(t1)
+              .attr("y", d => this.y(d[this.yVariable]));
+
+            update
+              .selectAll(".count-annotation")
+              .attr("x", d => this.xBar(d.cum_total_count))
+              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
+              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? "start" : "end")
+              .text(d => `${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
+              .transition(t1)
+              .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
           }
         )
         const checkbookSelector = select(this.$refs.svg_dot)
           .selectAll(".checkbook")
-          .data(this.data.filter((d, i) => !((i + 1) % 5)));
+          .data(this.plottedData.filter((d, i) => !((i + 1) % 5)));
 
         const checkbookSelector2 = this.bargraph
           .selectAll(".checkbook")
-          .data(this.data.filter((d, i) => !((i + 1) % 5)));
+          .data(this.plottedData.filter((d, i) => !((i + 1) % 5)));
 
         checkbookSelector.join(enter => {
             enter.append("line")
@@ -329,8 +367,8 @@ export default Vue.extend({
               .style("stroke-width", 0.35)
               .attr("x1", 0)
               .attr("x2", this.width)
-              .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() * (1-this.y.paddingInner()))
-              .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() * (1-this.y.paddingInner()))
+              .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() * (1 - this.y.paddingInner()))
+              .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() * (1 - this.y.paddingInner()))
               .attr("transform", `translate(0, ${0})`)
           },
           update => update.attr("x2", this.width)
@@ -347,7 +385,7 @@ export default Vue.extend({
               .attr("transform", `translate(${-1*this.margin.left},${-1*this.margin.top})`)
               .attr("x1", 0)
               .attr("x2", this.barWidth)
-              .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth()* (1 - this.y.paddingInner()))
+              .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() * (1 - this.y.paddingInner()))
               .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() * (1 - this.y.paddingInner()))
           },
           update => update
@@ -360,7 +398,7 @@ export default Vue.extend({
 
 
         const dotSelector = this.dotplot.selectAll(".dot-group")
-          .data(this.data, d => d[this.yVariable]);
+          .data(this.plottedData, d => d[this.yVariable]);
 
         dotSelector.join(enter => {
             const grp = enter.append("g")
@@ -393,20 +431,18 @@ export default Vue.extend({
             update
               .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
 
+            update
+              .selectAll(".dot-circle")
+              .attr("cx", d => this.xDot(d.proportion))
+              .transition(t1)
+              .attr("cy", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
+
             update.selectAll(".dot-ci")
               .attr("x1", d => this.xDot(d.proportion_ci_lower))
               .attr("x2", d => this.xDot(d.proportion_ci_upper))
+              .transition(t1)
               .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-              .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
-              .style("opacity", 0)
-              .transition(t1)
-              .delay(400)
-              .style("opacity", 1);
-
-            update.selectAll(".point-estimate")
-              .transition(t1)
-              .style("fill", d => this.colorScale(d.proportion))
-              .attr("cx", d => this.xDot(d.proportion));
+              .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()))
       }
