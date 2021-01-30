@@ -67,7 +67,7 @@
       <p :class="{ snackbar: true, show: showSnackbar }">
         copied to clipboard
       </p>
-      <a @click="shareLink" v-if="canShare" aria-label="share"> target="_blank" 
+      <a @click="shareLink" v-if="canShare" aria-label="share">
         <font-awesome-icon class="share-link mr-3" :icon="['fas', 'share']" />
       </a>
     </div>
