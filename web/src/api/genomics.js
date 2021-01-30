@@ -87,7 +87,8 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
 )
 }
 
-export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, locationType = "country") {
+export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, indivCall = false, locationType = "country") {
+  store.state.admin.reportloading = true;
   let url;
   if (location == "Worldwide") {
     url = `${apiurl}prevalence?${mutationVar}=${mutationString}`;
@@ -111,7 +112,8 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
       console.log("%c Error in getting temporal data by location!", "color: red");
       console.log(e);
       return from([]);
-    })
+    }),
+    finalize(() => indivCall ? store.state.admin.reportloading = false : null)
   )
 }
 

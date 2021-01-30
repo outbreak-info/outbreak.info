@@ -377,7 +377,6 @@ export default {
         // recent data by country & countries with that lineage.
         this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.country);
         this.ctryData = results.byCountry;
-        console.log(this.selectedLocations)
         this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(d => d.name).includes(d.country));
 
         if (results.md) {
@@ -390,7 +389,7 @@ export default {
       })
     },
     getTemporalData(location) {
-      this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName).subscribe(data => {
+      this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName, this.mutationVar, true).subscribe(data => {
         this.prevalence = data;
       });
     },
