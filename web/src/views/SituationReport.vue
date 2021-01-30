@@ -281,7 +281,6 @@ import {
 } from "vuex";
 
 import {
-  ctry,
   getReportData,
   getCuratedMetadata,
   getTemporalPrevalence
@@ -376,8 +375,6 @@ export default {
     })
 
     this.setupReport();
-
-    this.countries = ctry.map(d => d.country);
   },
   methods: {
     setupReport() {
@@ -393,7 +390,12 @@ export default {
 
       this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName).subscribe(results => {
         console.log(results)
+        // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
+
+        // recent data by country & countries with that lineage.
+        this.countries = results.byCountry.map(d => d.country);
+        this.ctryData = results.byCountry;
 
         if (results.md) {
           // this.reportMetadata = results.md;

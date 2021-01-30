@@ -1,4 +1,4 @@
-<template>
+.proportion<template>
 <div class="d-flex">
   <div class="d-flex flex-column">
     <h6><b>Prevalence</b></h6>
@@ -82,11 +82,6 @@ import Vue from "vue";
 
 
 import {
-  ctry
-} from "@/api/genomics.js";
-
-
-import {
   select,
   selectAll,
   scaleLinear,
@@ -122,7 +117,7 @@ export default Vue.extend({
     },
     sortVar: {
       type: String,
-      default: "est"
+      default: "proportion"
     }
   },
   watch: {
@@ -211,10 +206,10 @@ export default Vue.extend({
       this.data.sort((a, b) => a[this.sortVar] - b[this.sortVar]);
 
       this.xDot = this.xDot
-        .domain([0, max(this.data, d => d.upper)]);
+        .domain([0, max(this.data, d => d.proportion_ci_upper)]);
 
       this.xBar = this.xBar
-        .domain([1, max(this.data, d => d.n)]);
+        .domain([1, max(this.data, d => d.cum_total_count)]);
 
       this.y = this.y
         .domain(this.data.map(d => d[this.yVariable]));
@@ -255,7 +250,7 @@ export default Vue.extend({
       select(this.$refs.yAxisBar).call(this.yAxis);
 
       // color scale
-      this.maxEst = max(this.data, d => d.est);
+      this.maxEst = max(this.data, d => d.proportion);
       this.colorScale = this.colorScale
         .domain([0, this.maxEst]);
 
@@ -263,8 +258,6 @@ export default Vue.extend({
       this.legendColors = range(11).map(d => interpolateYlGnBu(d / 10));
     },
     updatePlot() {
-      this.data = ctry;
-      console.log(ctry)
       if (this.data) {
         this.updateScales();
 
@@ -276,14 +269,13 @@ export default Vue.extend({
 
 
         barSelector.join(enter => {
-          console.log("enter")
             const grp = enter.append("g")
               .attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
             grp.append("rect")
               .attr("class", "seq-count")
               .attr("x", this.xBar(1))
-              .attr("width", d => this.xBar(d.n) - this.xBar(1))
+              .attr("width", d => this.xBar(d.cum_total_count) - this.xBar(1))
               .attr("y", d => this.y(d[this.yVariable]))
               .attr("height", this.y.bandwidth())
               .style("fill", this.baseColor);
@@ -291,35 +283,34 @@ export default Vue.extend({
             grp.append("rect")
               .attr("class", "mutation-count")
               .attr("x", this.xBar(1))
-              .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
+              .attr("width", d => (this.xBar(d.cum_total_count) - this.xBar(1)) * d.proportion)
               .attr("y", d => this.y(d[this.yVariable]))
               .attr("height", this.y.bandwidth())
               .style("fill", this.accentColor)
 
             grp.append("text")
               .attr("class", "count-annotation")
-              .attr("x", d => this.xBar(d.n))
-              .attr("dx", d => this.xBar(d.n) < this.barWidth * 0.25 ? 4 : -4)
+              .attr("x", d => this.xBar(d.cum_total_count))
+              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .style("fill", "#777")
               .style("font-size", "9pt")
               .style("dominant-baseline", "central")
-              .style("text-anchor", d => this.xBar(d.n) < this.barWidth * 0.25 ? "start" : "end")
-              .text(d => `${format(",")(d.x)}/${format(",")(d.n)}`)
+              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? "start" : "end")
+              .text(d => `${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
           },
           update => {
-            console.log("update")
             update.attr("class", d => `bar-group ${d[this.yIdentifier]}`);
 
             update.selectAll(".seq-count")
               .attr("x", this.xBar(1))
-              .attr("width", d => this.xBar(d.n) - this.xBar(1))
+              .attr("width", d => this.xBar(d.cum_total_count) - this.xBar(1))
               .attr("y", d => this.y(d[this.yVariable]))
               .attr("height", this.y.bandwidth());
 
             update.selectAll(".mutation-count")
               .attr("x", this.xBar(1))
-              .attr("width", d => (this.xBar(d.n) - this.xBar(1)) * d.est)
+              .attr("width", d => (this.xBar(d.cum_total_count) - this.xBar(1)) * d.proportion)
               .attr("y", d => this.y(d[this.yVariable]))
               .attr("height", this.y.bandwidth());
           }
@@ -378,8 +369,8 @@ export default Vue.extend({
 
             grp.append("line")
               .attr("class", "dot-ci confidence-interval")
-              .attr("x1", d => this.xDot(d.lower))
-              .attr("x2", d => this.xDot(d.upper))
+              .attr("x1", d => this.xDot(d.proportion_ci_lower))
+              .attr("x2", d => this.xDot(d.proportion_ci_upper))
               .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .style("stroke", "#CCCCCC")
@@ -395,17 +386,17 @@ export default Vue.extend({
               .attr("r", this.circleR)
               .style("stroke", "#2c3e50")
               .style("stroke-width", 0.25)
-              .style("fill", d => this.colorScale(d.est))
+              .style("fill", d => this.colorScale(d.proportion))
               .transition(t1)
-              .attr("cx", d => this.xDot(d.est));
+              .attr("cx", d => this.xDot(d.proportion));
           },
           update => {
             update
               .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
 
             update.selectAll(".dot-ci")
-              .attr("x1", d => this.xDot(d.lower))
-              .attr("x2", d => this.xDot(d.upper))
+              .attr("x1", d => this.xDot(d.proportion_ci_lower))
+              .attr("x2", d => this.xDot(d.proportion_ci_upper))
               .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .style("opacity", 0)
@@ -415,8 +406,8 @@ export default Vue.extend({
 
             update.selectAll(".point-estimate")
               .transition(t1)
-              .style("fill", d => this.colorScale(d.est))
-              .attr("cx", d => this.xDot(d.est));
+              .style("fill", d => this.colorScale(d.proportion))
+              .attr("cx", d => this.xDot(d.proportion));
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()))
       }
