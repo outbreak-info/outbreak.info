@@ -121,7 +121,7 @@ export default Vue.extend({
     }
   },
   watch: {
-    width() {
+    data() {
       this.updatePlot();
     }
   },
