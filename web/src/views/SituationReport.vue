@@ -37,8 +37,8 @@
     <section id="intro" class="col-sm-6 col-md-8 pr-4">
       <!-- INTRO TEXT - OVERVIEW -->
       <div class="font-size-2">
-        Concerns surrounding a new strain of SARS-CoV-2, the virus behind the COVID-19 pandemic, have been developing. <b class="text-highlight">B.1.1.7</b> lineage, also known as <b>Variant of Concern 202012/01 (VOC-202012/01)</b> or
-        <b>20B/501Y.V1</b>, was first identified in the UK in early December 2020 and has since been detected in the US and other counties. This is of growing concern because it has shown to be significantly more transmissible than other variants.
+        XXXXX Concerns surrounding a new strain of SARS-CoV-2, the virus behind the COVID-19 pandemic, have been developing. <b class="text-highlight">B.1.1.7</b> lineage, also known as <b>Variant of Concern 202012/01 (VOC-202012/01)</b> or
+        <b>20B/501Y.V1</b>, was first identified in the UK in early December 2020 and has since been detected in the US and other counties. This is of growing concern because it has shown to be significantly more transmissible than other variants. XXXXX
       </div>
       <router-link :to='{hash: "#resources"}'>
         <small>View publications, datasets, and more related to {{mutationName}}</small>
@@ -70,13 +70,13 @@
         <h4>Key Insights</h4>
         <ul>
           <li>
-            {{ mutationName }} has been <b>increasing</b> in prevalence over the past two weeks.
+            XXXX {{ mutationName }} has been <b>increasing/decreasing</b> in prevalence over the past two weeks.
           </li>
           <li>
-            Its apparent prevalence is higher in rest of the world compared to the United States or San Diego.
+            XXXX Its apparent prevalence is higher in rest of the world compared to the United States or San Diego.
           </li>
           <li>
-            Experimental data suggests it is more transmissable than other SARS-CoV-2 variants.
+            XXXX Experimental data suggests it is more transmissable than other SARS-CoV-2 variants.
           </li>
         </ul>
       </div>
@@ -95,23 +95,15 @@
               Worldwide
             </td>
             <td>
-              114
+              XXX
             </td>
           </tr>
-          <tr>
+          <tr v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
             <td>
-              United States
+              {{ location.name }}
             </td>
             <td>
-              1
-            </td>
-          </tr>
-          <tr>
-            <td>
-              San Diego
-            </td>
-            <td>
-              0
+              XXX
             </td>
           </tr>
         </table>
@@ -147,7 +139,8 @@
                 Worldwide
               </td>
               <td class="text-center">
-                {{ totalSeqs.toLocaleString() }}
+                XXX
+                <!-- {{ totalSeqs.toLocaleString() }} -->
               </td>
               <td class="text-center">
                 XXXXX
@@ -177,7 +170,7 @@
 
       <!-- GEO SUMMARY -->
       <div id="geo-summary" v-if="countries">
-        The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b>{{ "states.length" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
+        The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ "XXXX" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
         <CountryMap :countries="countries" :width="400" :showNames="false" />
         <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
       </div>
