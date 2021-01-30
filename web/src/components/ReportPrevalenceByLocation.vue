@@ -46,9 +46,9 @@
     </div>
 
 <!-- LEFT: DOTPLOT -->
-    <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
+    <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence" ref="svg_dot" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
-      <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
+      <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
       <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
       <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
@@ -75,9 +75,9 @@
     </div>
 
 
-    <svg :width="barWidth" :height="height" class="sequencing-count" ref="svg_count" :name="title">
+    <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count" ref="svg_count" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
-      <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
+      <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
       <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
       <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     </svg>
@@ -157,7 +157,7 @@ export default Vue.extend({
         left: 270
       },
       height: 100,
-      bandHeight: 18,
+      bandHeight: 15,
       legendWidth: 200,
       barWidth: 500,
       circleR: 8,
@@ -225,7 +225,7 @@ export default Vue.extend({
         .domain([1, max(this.plottedData, d => d.cum_total_count)]);
 
       this.y = this.y
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
+        .range([this.height, 0])
         .domain(this.plottedData.map(d => d[this.yVariable]));
 
       this.xDotAxis = axisTop(this.xDot)
