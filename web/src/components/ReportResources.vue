@@ -43,7 +43,7 @@
     <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
       <font-awesome-icon :icon="['fas', 'arrow-right']" />
     </button>
-    <router-link :to='{ name:"Resources", query: { q: queryString} }'><button class="btn btn-main-outline p-1 px-2"><small>view all</small></button></router-link>
+    <router-link :to='{ name:"Resources", query: { q: queryString } }'><button class="btn btn-main-outline p-1 px-2"><small>view all</small></button></router-link>
   </div>
 </div>
 </template>
