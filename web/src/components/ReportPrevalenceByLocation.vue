@@ -16,26 +16,7 @@
 <!-- LEGEND -->
     <div class="d-flex align-items-center justify-content-between height-fixed">
       <!-- scale bar with gradient -->
-      <div class="d-flex flex-column">
-        <div class="d-flex align-items-center">
-          <!-- <svg id="legend" width="15" height="15" class="mr-2">
-              <circle cx="7" cy="7" r="7" class="circle-legend"></circle>
-            </svg> -->
-          <small class="text-muted">Est. {{ mutationName }} prevalence since identification</small>
-        </div>
-
-        <svg :width="legendWidth" height="30" transform="translate(0,0)">
-          <defs>
-            <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
-              <stop :offset="i*100/10 + '%'" :style="{'stop-color':color}" v-for="(color, i) in legendColors" :key="i" />
-            </linearGradient>
-          </defs>
-          <rect :width="legendWidth" height="15" fill="url(#linear-gradient)" stroke="#2c3e50" stroke-width="0.25"></rect>
-          <text x="0" y="18" fill="#555" font-size="0.85em" dominant-baseline="hanging">0</text>
-          <text :x="legendWidth" y="18" dominant-baseline="hanging" text-anchor="end" fill="#555" font-size="0.85em">{{maxEstFormatted}}</text>
-        </svg>
-
-      </div>
+<GradientLegend :maxValue="maxEstFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`"/>
 
       <div class="d-flex  align-items-center">
         <svg id="legend" width="15" height="15" class="mr-2">
@@ -117,8 +98,13 @@ import {
   interpolateYlGnBu
 } from "d3-scale-chromatic";
 
+import GradientLegend from "@/components/GradientLegend.vue";
+
 export default Vue.extend({
   name: "ReportPrevalenceByLocation",
+  components: {
+    GradientLegend
+  },
   props: {
     data: Array,
     mutationName: String,
@@ -158,7 +144,6 @@ export default Vue.extend({
       },
       height: 100,
       bandHeight: 15,
-      legendWidth: 200,
       barWidth: 500,
       circleR: 8,
       ciStrokeWidth: 7,
@@ -184,8 +169,7 @@ export default Vue.extend({
       xBarAxis2: null,
       yAxis: null,
       numXTicks: 6,
-      colorScale: null,
-      legendColors: []
+      colorScale: null
     }
   },
   mounted() {
@@ -268,8 +252,7 @@ export default Vue.extend({
       this.colorScale = this.colorScale
         .domain([0, this.maxEst]);
 
-      // legend gradient
-      this.legendColors = range(11).map(d => interpolateYlGnBu(d / 10));
+
     },
     updatePlot() {
       if (this.data) {

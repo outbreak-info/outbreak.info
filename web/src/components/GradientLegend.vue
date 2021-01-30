@@ -25,7 +25,7 @@ export default Vue.extend({
     label: String,
     legendWidth: {
       type: Number,
-      default: 150
+      default: 200
     },
     minValue: {
       type: String,
