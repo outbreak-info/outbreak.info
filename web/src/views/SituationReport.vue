@@ -91,14 +91,6 @@
               New sequences identified
             </th>
           </tr>
-          <tr>
-            <td>
-              Worldwide
-            </td>
-            <td>
-              XXX
-            </td>
-          </tr>
           <tr v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
             <td>
               {{ location.name }}
