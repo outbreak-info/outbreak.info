@@ -80,6 +80,12 @@
 <script lang="js">
 import Vue from "vue";
 
+
+import {
+  ctry
+} from "@/api/genomics.js";
+
+
 import {
   select,
   selectAll,
@@ -257,6 +263,8 @@ export default Vue.extend({
       this.legendColors = range(11).map(d => interpolateYlGnBu(d / 10));
     },
     updatePlot() {
+      this.data = ctry;
+      console.log(ctry)
       if (this.data) {
         this.updateScales();
 
