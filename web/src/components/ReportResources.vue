@@ -43,6 +43,7 @@
     <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
       <font-awesome-icon :icon="['fas', 'arrow-right']" />
     </button>
+    <router-link :to='{ name:"Resources", query: { q: queryString} }'><button class="btn btn-main-outline p-1 px-2"><small>view all</small></button></router-link>
   </div>
 </div>
 </template>
@@ -113,6 +114,9 @@ computed: {
     return this.total ?
       Math.floor(this.total / this.numPerPage) :
       null;
+  },
+  queryString() {
+    return `"${this.searchTerms.join('" OR "')}"`;
   }
 },
 methods: {
@@ -125,7 +129,7 @@ methods: {
         this.updateResults();
   },
   updateResults() {
-    this.resultSubscription = getLineageResources(this.$resourceurl, this.searchTerms, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
+    this.resultSubscription = getLineageResources(this.$resourceurl, this.queryString, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
       this.total = results.total;
       this.resources = results.resources;
     })

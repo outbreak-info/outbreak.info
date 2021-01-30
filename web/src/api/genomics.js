@@ -146,9 +146,8 @@ export function getCuratedMetadata(id) {
   )
 }
 
-export function getLineageResources(apiUrl, searchTerms, size, page, sort = "-date") {
+export function getLineageResources(apiUrl, queryString, size, page, sort = "-date") {
   const fields = "@type, name, author, date, journalName"
-  const queryString = `"${searchTerms.join('" OR "')}"`;
   const timestamp = Math.round(new Date().getTime() / 36e5);
 
 
