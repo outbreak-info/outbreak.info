@@ -1,4 +1,4 @@
-.proportion<template>
+<template>
 <div class="d-flex flex-column">
   <div class="d-flex align-items-center justify-content-end">
     sort by
