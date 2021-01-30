@@ -7,7 +7,7 @@
       <svg width="15" height="15" class="mr-2">
         <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
       </svg>
-      <small class="text-muted">7 day rolling average of percent of B.1.1.7-positive sequences</small>
+      <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
     </div>
 
     <!-- legend: confidence interval -->
@@ -71,6 +71,7 @@ export default Vue.extend({
   name: "ReportPrevalence",
   props: {
     data: Array,
+    mutationName: String,
     width: {
       type: Number,
       default: 800

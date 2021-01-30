@@ -53,7 +53,7 @@
         <div class="rect-legend mr-2" :style="{background: accentColor}">
 
         </div>
-        <small class="text-muted">B.1.1.7-positive samples</small>
+        <small class="text-muted">{{ mutationName }}-positive samples</small>
       </div>
 
       <div class="d-flex align-items-center">
@@ -107,6 +107,7 @@ export default Vue.extend({
   name: "ReportPrevalenceByLocation",
   props: {
     data: Array,
+    mutationName: String,
     setWidth: {
       type: Number,
       default: 600
