@@ -3,16 +3,16 @@
   <div class="d-flex flex-column">
     <h6><b>Prevalence</b></h6>
 
-
+<!-- LEGEND -->
     <div class="d-flex align-items-center justify-content-between height-fixed">
+      <!-- scale bar with gradient -->
       <div class="d-flex flex-column">
         <div class="d-flex align-items-center">
           <!-- <svg id="legend" width="15" height="15" class="mr-2">
               <circle cx="7" cy="7" r="7" class="circle-legend"></circle>
             </svg> -->
-          <small class="text-muted">Est. B.1.1.7 prevalence since identification</small>
+          <small class="text-muted">Est. {{ mutationName }} prevalence since identification</small>
         </div>
-
 
         <svg :width="legendWidth" height="30" transform="translate(0,0)">
           <defs>
@@ -27,7 +27,6 @@
 
       </div>
 
-
       <div class="d-flex  align-items-center">
         <svg id="legend" width="15" height="15" class="mr-2">
           <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
@@ -36,6 +35,7 @@
       </div>
     </div>
 
+<!-- LEFT: DOTPLOT -->
     <svg :width="width" :height="height" class="dotplot-prevalence" ref="svg_dot" :name="title">
       <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
       <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
@@ -44,7 +44,7 @@
     </svg>
   </div>
 
-
+<!-- RIGHT: BARPLOT -->
   <div class="d-flex flex-column ml-5">
     <h6><b>Number of samples sequenced</b></h6>
 
@@ -111,10 +111,6 @@ export default Vue.extend({
       type: Number,
       default: 600
     },
-    height: {
-      type: Number,
-      default: 1000
-    },
     sortVar: {
       type: String,
       default: "proportion"
@@ -141,14 +137,15 @@ export default Vue.extend({
     return {
       margin: {
         top: 35,
-        right: 5,
+        right: 15,
         rightBar: 25,
         bottom: 30,
-        left: 200
+        left: 270
       },
+      height: 100,
+      bandHeight: 18,
       legendWidth: 200,
       barWidth: 500,
-      bandHeight: 15,
       circleR: 8,
       ciStrokeWidth: 7,
       accentColor: "#df4ab7",
@@ -196,14 +193,14 @@ export default Vue.extend({
         .range([0, this.barWidth - this.margin.left - this.margin.rightBar]);
 
       this.y = scaleBand()
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
         .paddingInner(0.2);
 
       this.colorScale = scaleSequential(interpolateYlGnBu);
     },
     updateScales() {
+      this.height = this.data.length * this.bandHeight;
       // ensure the data is sorted in the proper order
-      this.data.sort((a, b) => a[this.sortVar] - b[this.sortVar]);
+      // this.data.sort((a, b) => a[this.sortVar] - b[this.sortVar]);
 
       this.xDot = this.xDot
         .domain([0, max(this.data, d => d.proportion_ci_upper)]);
@@ -212,6 +209,7 @@ export default Vue.extend({
         .domain([1, max(this.data, d => d.cum_total_count)]);
 
       this.y = this.y
+        .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain(this.data.map(d => d[this.yVariable]));
 
       this.xDotAxis = axisTop(this.xDot)
