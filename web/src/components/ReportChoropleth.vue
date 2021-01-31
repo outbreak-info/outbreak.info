@@ -212,28 +212,27 @@ export default {
         .scale(scale);
     },
     prepData() {
-      this.filteredData = cloneDeep(this.baseMap.features);
-      console.log(this.data)
+      if (this.data) {
+        this.filteredData = cloneDeep(this.baseMap.features);
 
-      this.colorScale = scaleSequential(interpolateYlGnBu)
-        .domain([0, this.maxVal]);
+        this.colorScale = scaleSequential(interpolateYlGnBu)
+          .domain([0, this.maxVal]);
 
-      this.filteredData.forEach(d => {
-        const filtered = this.data.filter(seq => seq.country == d.properties.NAME);
-        if (filtered.length == 1) {
-          const seq = filtered[0];
-          d[this.variable] = seq[this.variable];
-          d["fill"] = seq.cum_total_count >= this.countThreshold ? this.colorScale(d[this.variable]) : this.filteredColor;
-          d["lower"] = seq.proportion_ci_lower;
-          d["upper"] = seq.proportion_ci_upper;
-          d["cum_lineage_count"] = seq["cum_lineage_count"];
-          d["cum_total_count"] = seq["cum_total_count"];
-          d["proportion_formatted"] = seq.proportion_formatted;
-        }
-      })
-      // filter values with too few values
-      // this.filteredData = this.filteredData.filter(d => d[this.thresholdVar] >= this.countThreshold);
-
+        this.filteredData.forEach(d => {
+          const filtered = this.data.filter(seq => seq.country == d.properties.NAME);
+          if (filtered.length == 1) {
+            const seq = filtered[0];
+            d[this.variable] = seq[this.variable];
+            // filter values with too few values
+            d["fill"] = seq.cum_total_count >= this.countThreshold ? this.colorScale(d[this.variable]) : this.filteredColor;
+            d["lower"] = seq.proportion_ci_lower;
+            d["upper"] = seq.proportion_ci_upper;
+            d["cum_lineage_count"] = seq["cum_lineage_count"];
+            d["cum_total_count"] = seq["cum_total_count"];
+            d["proportion_formatted"] = seq.proportion_formatted;
+          }
+        })
+      }
     },
     drawMap() {
       this.setupMap();
