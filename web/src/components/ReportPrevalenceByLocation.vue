@@ -195,8 +195,6 @@ export default Vue.extend({
 
       this.y = scaleBand()
         .paddingInner(0.2);
-
-      this.colorScale = scaleSequential(interpolateYlGnBu);
     },
     updateScales() {
       // resize the canvas to cover the length of the data.
@@ -249,7 +247,7 @@ export default Vue.extend({
 
       // color scale
       this.maxEst = max(this.plottedData, d => d.proportion);
-      this.colorScale = this.colorScale
+      this.colorScale = scaleSequential(interpolateYlGnBu)
         .domain([0, this.maxEst]);
 
 

@@ -182,7 +182,6 @@ export default {
       this.regions = select(this.$refs.regions);
       this.ttips = select(this.$refs.choropleth_tooltip);
 
-      this.colorScale = scaleSequential(interpolateYlGnBu);
     },
     setupMap() {
       if (this.adminLevel === "country") {
@@ -216,7 +215,7 @@ export default {
       this.filteredData = cloneDeep(this.baseMap.features);
       console.log(this.data)
 
-      this.colorScale = this.colorScale
+      this.colorScale = scaleSequential(interpolateYlGnBu)
         .domain([0, this.maxVal]);
 
       this.filteredData.forEach(d => {
