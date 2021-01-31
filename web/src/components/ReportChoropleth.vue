@@ -1,4 +1,4 @@
-countThreshold<template>
+<template>
 <div class="d-flex flex-column">
   <!-- Total count filter -->
   <div class="d-flex" id="choropleth-legend">
@@ -13,10 +13,9 @@ countThreshold<template>
         <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of samples</text>
         <g transform="translate(0,18)">
         <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
-        <line x1="10" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
-        <circle ref="threshold_slider" cx="10" cy="0" r="8" fill="#df4ab7" />
-        <text x="10" y="0" dy="12" font-size="14px" font-weight="700" fill="#df4ab7" text-anchor="middle" dominant-baseline="hanging">{{countThreshold}}</text>
-        <!-- <text x="0" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="start" dominant-baseline="hanging">1</text> -->
+        <line ref="selected_threshold" :x1="filterShift" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
+        <circle ref="threshold_slider" :transform="`translate(${filterShift}, 0)`" cx="0" cy="0" r="8" fill="#df4ab7" class="pointer" />
+        <text ref="threshold_label" :transform="`translate(${filterShift}, 0)`" x="0" y="0" dy="12" font-size="14px" font-weight="700" fill="#df4ab7" text-anchor="middle" dominant-baseline="hanging">{{countThreshold}}</text>
         <text :x="filterWidth" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="end" dominant-baseline="hanging">{{maxCount}}</text>
         </g>
       </g>
@@ -46,9 +45,11 @@ import {
   format,
   event,
   transition,
+  drag,
   select,
   selectAll,
-  scaleSequential
+  scaleSequential,
+  scaleLog
 } from "d3";
 
 import {
@@ -87,7 +88,7 @@ export default {
       // variables
       variable: "proportion",
       thresholdVar: "cum_total_count",
-      countThreshold: 1,
+      countThreshold: 25,
       filteredColor: "#A5A5A5",
       nullColor: "#EFEFEF",
       strokeColor: "#2c3e50",
@@ -101,6 +102,8 @@ export default {
       overlay: null,
       regions: null,
       ttips: null,
+      // axis -- threshold filter
+      xFilter: null,
       // methods
       colorScale: null,
       path: geoPath(),
@@ -111,9 +114,6 @@ export default {
     data: function() {
       this.drawMap();
     },
-    countThreshold: function() {
-      this.drawMap();
-    }
   },
   computed: {
     maxVal() {
@@ -133,6 +133,9 @@ export default {
     },
     title() {
       return (`prevalence by ${this.geoLevel}`)
+    },
+    filterShift() {
+      return(this.xFilter ? this.xFilter(this.countThreshold) : 0)
     }
   },
   created: function() {
@@ -144,30 +147,34 @@ export default {
       // set initial dimensions for the stacked area plots.
       this.setDims(false);
 
-      // event listener to hide tooltips
-      document.addEventListener(
-        "mousemove",
-        evt => {
-          if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
-            this.mouseOff();
-          }
-        }, {
-          passive: true
-        }
-      );
-      document.addEventListener(
-        "mouseleave",
-        evt => {
-          if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
-            this.mouseOff();
-          }
-        }, {
-          passive: true
-        }
-      );
+      // set up drag for threshold filter
+      this.setupDrag();
+
+      // // event listener to hide tooltips
+      // document.addEventListener(
+      //   "mousemove",
+      //   evt => {
+      //     if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+      //       this.mouseOff();
+      //     }
+      //   }, {
+      //     passive: true
+      //   }
+      // );
+      // document.addEventListener(
+      //   "mouseleave",
+      //   evt => {
+      //     if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+      //       this.mouseOff();
+      //     }
+      //   }, {
+      //     passive: true
+      //   }
+      // );
     });
 
     this.setupChoro();
+    this.setupMap();
     this.drawMap();
   },
   methods: {
@@ -231,11 +238,31 @@ export default {
             d["cum_total_count"] = seq["cum_total_count"];
             d["proportion_formatted"] = seq.proportion_formatted;
           }
-        })
+        });
+
+        this.xFilter = scaleLog()
+          .range([0, this.filterWidth])
+          .domain([1, max(this.data, d => d[this.thresholdVar])])
+          .clamp(true);
       }
     },
+    setupDrag() {
+      // draggable filters
+      select(this.$refs.threshold_slider)
+        .call(drag()
+          .on("drag", () => this. updateDrag())
+          .on("end", () => this.changeFilters())
+        )
+    },
+    updateDrag() {
+      this.countThreshold = Math.round(this.xFilter.invert(event.x));
+      select(this.$refs.threshold_label)
+        .text(format(",")(this.countThreshold));
+    },
+    changeFilters() {
+      this.drawMap();
+    },
     drawMap() {
-      this.setupMap();
       this.prepData();
 
       this.regions
@@ -254,10 +281,16 @@ export default {
               .style("fill", d => d.fill ? d.fill : this.nullColor)
               .style("stroke", this.strokeColor)
               .style("stroke-width", 0.5)
-            // .attr("stroke", d => this.countries.includes(d.properties.NAME) ? "white" : "none");
           },
-          update => update,
-          // .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec"),
+          update => update
+          .attr("id", d => d.location_id)
+          // draw each region
+          .attr("d", this.path
+            .projection(this.projection)
+          )
+          .transition()
+          .duration(250)
+          .style("fill", d => d.fill ? d.fill : this.nullColor),
           exit =>
           exit.call(exit =>
             exit
@@ -267,9 +300,6 @@ export default {
             .remove()
           )
         )
-
-      console.log(this.filteredData);
-      console.log("drawing")
     },
     mouseOn() {
       console.log("ttip on")
