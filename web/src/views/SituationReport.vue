@@ -59,7 +59,7 @@
 
         <small class="ml-2 my-1"><a @click="downloadMutations" href="">Download mutation list</a></small>
 
-        <SARSMutationMap mutationKey="B.1.1.7" />
+        <SARSMutationMap mutationKey="B.1.1.7" :mutationArr="mutations" />
 
         <div class="collapse ml-2" id="mutation-table">
           <MutationTable :mutations="mutations" />

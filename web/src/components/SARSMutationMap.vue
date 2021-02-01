@@ -39,7 +39,7 @@
 <script lang="js">
 import Vue from "vue";
 
-// import AA from "@/assets/genomics/sarscov2_aa.json";
+import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 import AA_MAP from "@/assets/genomics/sarscov2_aa_gene_map.json";
 import MUTATIONS from "@/assets/genomics/sarscov2_mutations.json";
 import DELETIONS from "@/assets/genomics/sarscov2_deletions.json";
@@ -66,14 +66,11 @@ import {
 
 import chroma from "chroma-js";
 
-import {
-  schemeTableau10
-} from "d3-scale-chromatic";
-
 export default Vue.extend({
   name: "SARSMutationMap",
   props: {
     mutationKey: String,
+    mutationArr: Array,
     setWidth: {
       type: Number,
       default: null
@@ -93,7 +90,7 @@ export default Vue.extend({
       return this.setWidth ? this.setWidth : this.maxWidth;
     },
     hasMutations() {
-      return (this.mutations || DELETIONS[this.mutationKey])
+      return (true)
     }
   },
   data() {
@@ -110,6 +107,7 @@ export default Vue.extend({
       aaCircleR: 9,
       geneDisplayThresh: 35,
       // data
+      ntMapArr: null,
       mutations: null,
       deletions: null,
       // refs
@@ -118,12 +116,31 @@ export default Vue.extend({
       aas: null,
       brush: null,
       deletionRef: null,
-      xAmino: scaleLinear(),
-      xAminoAxis: null,
-      geneColorScale: null
+      // scales
+      x: scaleLinear(),
+      xAxis: null,
+      geneColorScale: scaleOrdinal(
+        ["#bab0ab", // lt grey -- UTRs
+      "#1f77b4", // dk blue
+      "#aec7e8", // lt blue
+      "#f28e2c", // orange
+      "#e15759",  // red
+      "#9edae5", // teal
+      "#59a14f", // green
+      "#edc949", // yellow
+      "#9467bd", // purple
+      "#ff9da7", // pink
+      "#8c564b", // brown
+      "#555555", // grey
+      "#bcbd22", // puce
+      "#bab0ab"]),
     }
   },
   mounted() {
+    console.log(this.mutationArr)
+    this.ntMapArr = Object.entries(NT_MAP).map(d => {
+      return { gene: d[0], start: d[1].start, end: d[1].end}
+    })
     this.setupPlot();
     this.updatePlot();
   },
@@ -156,11 +173,8 @@ export default Vue.extend({
       this.deletionRef = select(this.$refs.deletions)
         .attr("transform", `translate(0,18)`);
 
-      select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.xAmino))
+      select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.x))
       select(this.$refs.brush).on("mouseleave", this.tooltipOff)
-
-      // Add another class for the last of the SARS-CoV-2 genes
-      schemeTableau10.push("#555555");
     },
     setDims() {
       this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
@@ -170,13 +184,13 @@ export default Vue.extend({
       this.drawPlot()
     },
     updateScales() {
-      this.xAmino = this.xAmino
+      this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([0, max(AA_MAP, d => d.stopNum)]);
+        .domain([0, max(this.ntMapArr, d => d.end)]);
 
-      let geneNames = AA_MAP.sort((a, b) => a.gene_order - b.gene_order).map(d => d.gene);
+      let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
 
-      this.geneColorScale = scaleOrdinal(schemeTableau10).domain(geneNames);
+      this.geneColorScale = this.geneColorScale.domain(geneNames);
 
       // Update brush so it spans the whole of the area
       this.brush = brushX()
@@ -231,8 +245,8 @@ export default Vue.extend({
 
         } else {
           // LOWER HALF: gene map
-          const selectedX = this.xAmino.invert(event.offsetX);
-          const selectedGenes = AA_MAP.filter(d => d.startNum <= selectedX && d.stopNum >= selectedX);
+          const selectedX = this.x.invert(event.offsetX);
+          const selectedGenes = AA_MAP.filter(d => d.start <= selectedX && d.end >= selectedX);
 
           if (selectedGenes.length === 1) {
             const selectedGene = selectedGenes[0].gene;
@@ -315,9 +329,9 @@ export default Vue.extend({
       // reset domain to new coords
       const selection = event.selection;
       if (selection) {
-        const newMin = this.xAmino.invert(selection[0]);
-        const newMax = this.xAmino.invert(selection[1]);
-        this.xAmino = this.xAmino.domain([newMin, newMax]);
+        const newMin = this.x.invert(selection[0]);
+        const newMax = this.x.invert(selection[1]);
+        this.x = this.x.domain([newMin, newMax]);
         // update axis for tooltip rollover
         select(".brush").on("mousemove", () => this.tooltipOn())
         this.svg.select(".brush").call(this.brush.move, null);
@@ -326,7 +340,7 @@ export default Vue.extend({
 
     },
     resetAxis() {
-      this.xAmino = this.xAmino.domain([0, max(AA_MAP, d => d.stopNum)]);
+      this.x = this.x.domain([0, max(AA_MAP, d => d.end)]);
       this.drawPlot();
     },
     drawPlot() {
@@ -336,7 +350,7 @@ export default Vue.extend({
         // --- GENE MAP: constant for all maps ---
         let geneSelector =
           this.genes.selectAll(".gene")
-          .data(AA_MAP);
+          .data(this.ntMapArr);
 
         geneSelector.join(
           enter => {
@@ -345,34 +359,34 @@ export default Vue.extend({
               .attr("id", d => d.gene);
 
             geneGrp.append("rect")
-              .attr("x", d => this.xAmino(d.startNum))
-              .attr("width", d => this.xAmino(d.stopNum + 1) - this.xAmino(d.startNum))
+              .attr("x", d => this.x(d.start))
+              .attr("width", d => this.x(d.end + 1) - this.x(d.end))
               .attr("y", 0)
               .attr("height", this.geneHeight)
               .style("fill-opacity", 0.40)
               .style("fill", d => this.geneColorScale(d.gene))
 
             geneGrp.append("text")
-              .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
+              .attr("x", d => (this.x(d.end) + this.x(d.start)) / 2)
               .attr("y", (this.geneHeight + 1) / 2)
               .attr("class", "gene-name")
-              .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
+              .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
             // .style("fill", "white")
           },
           update => {
             update
               .selectAll("rect")
               .transition(t1)
-              .attr("x", d => this.xAmino(d.startNum))
-              .attr("width", d => this.xAmino(d.stopNum + 1) - this.xAmino(d.startNum))
+              .attr("x", d => this.x(d.start))
+              .attr("width", d => this.x(d.end + 1) - this.x(d.start))
               .style("fill", d => this.geneColorScale(d.gene))
 
             update
               .selectAll("text")
-              .text(d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? d.gene : "")
+              .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
               .transition(t1)
-              .attr("x", d => (this.xAmino(d.stopNum) + this.xAmino(d.startNum)) / 2)
-              .style("opacity", d => this.xAmino(d.stopNum) - this.xAmino(d.startNum) > this.geneDisplayThresh ? 1 : 0);
+              .attr("x", d => (this.x(d.end) + this.x(d.start)) / 2)
+              .style("opacity", d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? 1 : 0);
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
@@ -384,7 +398,7 @@ export default Vue.extend({
         // Add force direction to avoid overlap
         this.mutations.forEach(d => {
           d["fy"] = 0;
-          d["targetX"] = this.xAmino(d.aa_location + d.gene_offset)
+          d["targetX"] = this.x(d.aa_location + d.gene_offset)
         });
 
         // Define a custom force
@@ -538,8 +552,8 @@ export default Vue.extend({
 
             aaGrp.append("rect")
               .attr("class", "aa-deletion-rect")
-              .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
-              .attr("width", d => this.xAmino(d.del_end + d.gene_offset + 1) - this.xAmino(d.del_start + d.gene_offset))
+              .attr("x", d => this.x(d.del_start + d.gene_offset))
+              .attr("width", d => this.x(d.del_end + d.gene_offset + 1) - this.x(d.del_start + d.gene_offset))
               .attr("y", 0)
               .attr("height", 7)
               .style("fill", d => this.geneColorScale(d.gene))
@@ -549,7 +563,7 @@ export default Vue.extend({
               .append("text")
               .attr("class", "aa-mutation-text")
               .attr("y", -10)
-              .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset))
+              .attr("x", d => this.x((d.del_start + d.del_end) / 2 + d.gene_offset))
               .style("font-weight", 600)
               .style("fill", d => this.geneColorScale(d.gene))
               .style("font-size", "0.85rem")
@@ -564,14 +578,14 @@ export default Vue.extend({
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
               .transition(t1)
-              .attr("x", d => this.xAmino(d.del_start + d.gene_offset))
-              .attr("width", d => this.xAmino(d.del_end + d.gene_offset + 1) - this.xAmino(d.del_start + d.gene_offset));
+              .attr("x", d => this.x(d.del_start + d.gene_offset))
+              .attr("width", d => this.x(d.del_end + d.gene_offset + 1) - this.x(d.del_start + d.gene_offset));
 
             update
               .selectAll("text")
               .text(d => "\u0394")
               .transition(t1)
-              .attr("x", d => this.xAmino((d.del_start + d.del_end) / 2 + d.gene_offset));
+              .attr("x", d => this.x((d.del_start + d.del_end) / 2 + d.gene_offset));
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
