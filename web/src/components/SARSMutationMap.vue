@@ -4,7 +4,6 @@
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
       <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
-      <!-- <g ref="aminoacid_axis" class="axis axis--x"></g> -->
       <g ref="substitutions" class="mutations substitutions" id="substitution-group"></g>
       <g ref="deletions" class="mutations deletions" id="deletion-group"></g>
       <g ref="brush" class="brush" id="brush-zoom" v-if="hasMutations"></g>
