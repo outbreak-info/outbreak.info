@@ -456,7 +456,7 @@ export default Vue.extend({
           enter => {
             let mutGrp = enter.append("g")
               .attr("class", d => `substitution ${d.gene}`)
-              .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
+              .attr("id", d => `mutation_${d.mutation}`);
 
             // leader lines
             mutGrp
@@ -510,7 +510,7 @@ export default Vue.extend({
           update => {
             update
               .attr("class", d => `substitution ${d.gene}`)
-              .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
+              .attr("id", d => `mutation_${d.mutation}`);
 
             // leader lines
             update
@@ -586,7 +586,7 @@ export default Vue.extend({
               .attr("class", "deletion-text del-symbol")
               .attr("y", d => d.adjustedX ? rectAdjY : rectY)
               .attr("dy", -10)
-              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2))
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .style("font-weight", 600)
               .style("text-anchor", "middle")
               .style("fill", d => this.geneColorScale(d.gene))
@@ -598,7 +598,7 @@ export default Vue.extend({
               .append("text")
               .attr("class", "deletion-text deletion-location")
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
-              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2))
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
               .style("font-size", "0.6rem");
           },
@@ -607,6 +607,7 @@ export default Vue.extend({
               .attr("class", d => `deletion ${d.gene}`)
               .attr("id", d => `${d.mutation}`);
 
+            // del rectangle
             update.selectAll("rect")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
@@ -615,13 +616,13 @@ export default Vue.extend({
               .attr("x", d => d.x)
               .attr("width", d => this.x(d.pos_nt + d.change_length_nt) - this.x(d.pos_nt));
 
-// del symbol
+            // del symbol
             update
               .selectAll(".del-symbol")
               .text(d => "\u0394")
               .attr("y", d => d.adjustedX ? rectAdjY : rectY)
               .transition(t1)
-              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2));
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2));
 
             // position locations
             update
@@ -629,7 +630,7 @@ export default Vue.extend({
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
               .transition(t1)
-              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2));
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2));
 
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
