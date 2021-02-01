@@ -1,10 +1,10 @@
 <template>
 <div class="my-5 mx-4 px-4">
-  <h1 class="m-0">SARS-CoV-2 Mutation Situation Reports</h1>
+  <h1 class="m-0">SARS-CoV-2 (hCoV-19) Mutation Situation Reports</h1>
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
       <div class="w-75 mt-2 text-left">The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several lineages or sets of mutations within the
-        SARS-CoV-2 genome. Every day,
+        SARS-CoV-2 (hCoV-19) genome. Every day,
         we will produce a report describing the current situation, focusing on the United States.</div>
       <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
 
