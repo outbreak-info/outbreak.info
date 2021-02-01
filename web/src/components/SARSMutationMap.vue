@@ -40,8 +40,6 @@
 import Vue from "vue";
 
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
-import MUTATIONS from "@/assets/genomics/sarscov2_mutations.json";
-import DELETIONS from "@/assets/genomics/sarscov2_deletions.json";
 
 import {
   select,
@@ -123,25 +121,30 @@ export default Vue.extend({
       xAxis: null,
       geneColorScale: scaleOrdinal(
         ["#bab0ab", // lt grey -- UTRs
-      "#1f77b4", // dk blue
-      "#aec7e8", // lt blue
-      "#f28e2c", // orange
-      "#e15759",  // red
-      "#9edae5", // teal
-      "#59a14f", // green
-      "#edc949", // yellow
-      "#9467bd", // purple
-      "#ff9da7", // pink
-      "#8c564b", // brown
-      "#555555", // grey
-      "#bcbd22", // puce
-      "#bab0ab"]),
+          "#1f77b4", // dk blue
+          "#aec7e8", // lt blue
+          "#f28e2c", // orange
+          "#e15759", // red
+          "#9edae5", // teal
+          "#59a14f", // green
+          "#edc949", // yellow
+          "#9467bd", // purple
+          "#ff9da7", // pink
+          "#8c564b", // brown
+          "#555555", // grey
+          "#bcbd22", // puce
+          "#bab0ab"
+        ]),
     }
   },
   mounted() {
     // convert object of nucleotides into an array
     this.ntMapArr = Object.entries(NT_MAP).map(d => {
-      return { gene: d[0], start: d[1].start, end: d[1].end}
+      return {
+        gene: d[0],
+        start: d[1].start,
+        end: d[1].end
+      }
     })
 
     this.setupPlot();
@@ -152,9 +155,6 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
-      this.mutations = MUTATIONS[this.mutationKey];
-      this.deletions = DELETIONS[this.mutationKey];
-
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
         // set initial dimensions for the plots.
@@ -174,7 +174,7 @@ export default Vue.extend({
         .attr("transform", `translate(0,22)`);
 
       this.deletionRef = select(this.$refs.deletions)
-        .attr("transform", `translate(0,18)`);
+        .attr("transform", `translate(0,22)`);
 
       select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.x))
       select(this.$refs.brush).on("mouseleave", this.tooltipOff)
@@ -237,7 +237,7 @@ export default Vue.extend({
       //     // edit text
       //     ttip.select("h5")
       //       .style("color", this.geneColorScale(selectedMut.gene))
-      //       .html(`<b>${selectedMut.aa_original}${selectedMut.codon_num}${selectedMut.alt_aa}</b> | ${this.mutationKey} | ${selectedMut.gene} gene`);
+      //       .html(`<b>${selectedMut.ref_aa}${selectedMut.codon_num}${selectedMut.alt_aa}</b> | ${this.mutationKey} | ${selectedMut.gene} gene`);
       //
       //     ttip
       //       .style("left", `${event.clientX}px`)
@@ -286,10 +286,10 @@ export default Vue.extend({
       //       const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
       //       mutList.join(enter => {
       //           enter.append("li")
-      //             .text(d => `${d.aa_original}${d.codon_num}${d.alt_aa}`)
+      //             .text(d => `${d.ref_aa}${d.codon_num}${d.alt_aa}`)
       //         },
       //         update => {
-      //           update.text(d => `${d.aa_original}${d.codon_num}${d.alt_aa}`)
+      //           update.text(d => `${d.ref_aa}${d.codon_num}${d.alt_aa}`)
       //         },
       //         exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
       //       )
@@ -346,58 +346,56 @@ export default Vue.extend({
       this.drawPlot();
     },
     prepData() {
-      if(this.mutationArr) {
-      // 1) Convert amino acid coordinates into nucleotide coordinates
-      // 2) Set up force direction to shift labels if they overlap
+      if (this.mutationArr) {
+        // 1) Convert amino acid coordinates into nucleotide coordinates
+        // 2) Set up force direction to shift labels if they overlap
 
-      // convert aa --> nucleotide coords
-      this.mutationArr.forEach(d => {
-        const gene = NT_MAP[d.gene];
-        const gene_offset = gene ? gene.start : 0;
-        // calculating center of the nucleotide
-        d["pos_nt"] = d.pos ? d.pos : ((d.codon_num - 1) * 3 + gene_offset + 1);
+        // convert aa --> nucleotide coords
+        this.mutationArr.forEach(d => {
+          const gene = NT_MAP[d.gene];
+          const gene_offset = gene ? gene.start : 0;
+          // calculating center of the nucleotide
+          d["pos_nt"] = d.pos ? d.pos : ((d.codon_num - 1) * 3 + gene_offset + 1);
 
-        // set up for force direction
-        d["fy"] = 0;
-        d["targetX"] = this.x(d.pos_nt);
-      })
+          // set up for force direction
+          d["fy"] = 0;
+          d["targetX"] = this.x(d.pos_nt);
+        })
 
-      // Add force direction to avoid overlap
-      // Define a custom force
-      const forceClamp = (min, max) => {
-        let nodes;
-        const force = () => {
-          nodes.forEach(n => {
-            if (n.x > max) n.x = max;
-            if (n.x < min) n.x = min;
-          });
+        // Add force direction to avoid overlap
+        // Define a custom force
+        const forceClamp = (min, max) => {
+          let nodes;
+          const force = () => {
+            nodes.forEach(n => {
+              if (n.x > max) n.x = max;
+              if (n.x < min) n.x = min;
+            });
+          };
+          force.initialize = _ => (nodes = _);
+          return force;
         };
-        force.initialize = _ => (nodes = _);
-        return force;
-      };
 
-      // Set up the force simulation
-      const force = forceSimulation()
-        .nodes(this.mutationArr)
-        .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
-        .force("x", forceX(d => d.targetX).strength(1))
-        // clamp within bounds of the axes. Gets weird when you're zooming in.
-        // .force("clamp", forceClamp(0, this.width - this.margin.left - this.margin.right))
-        .stop();
+        // Set up the force simulation
+        const force = forceSimulation()
+          .nodes(this.mutationArr)
+          .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
+          .force("x", forceX(d => d.targetX).strength(1))
+          // clamp within bounds of the axes. Gets weird when you're zooming in.
+          // .force("clamp", forceClamp(0, this.width - this.margin.left - this.margin.right))
+          .stop();
 
-      // Execute the simulation
-      for (let i = 0; i < 300; i++) force.tick();
+        // Execute the simulation
+        for (let i = 0; i < 300; i++) force.tick();
 
-      // Tag if it moved:
-      this.mutationArr.forEach(d => {
-        d["adjustedX"] = Math.abs(d.vx) > 1e-6;
-      })
-
-      console.log(this.mutationArr)
-    }
+        // Tag if it moved:
+        this.mutationArr.forEach(d => {
+          d["adjustedX"] = Math.abs(d.vx) > 1e-6;
+        })
+      }
     },
     drawPlot() {
-      if (this.hasMutations) {
+      if (this.mutationArr && this.hasMutations) {
         const t1 = transition().duration(1500);
 
         this.prepData();
@@ -448,8 +446,7 @@ export default Vue.extend({
         // --- SUBSTITUTIONS ---
         console.log(this.mutationArr)
         let substitutionSelector = this.substitutionRef.selectAll(".substitution")
-          .data(this.mutationArr);
-          // .data(this.mutationArr.filter(d => d.mutation_type == "substitution"));
+          .data(this.mutationArr.filter(d => d.type == "substitution"));
 
         const labelY = this.aaCircleR * 2 + 7;
         const shiftedLabelY = this.aaCircleR + 3;
@@ -457,19 +454,19 @@ export default Vue.extend({
 
         substitutionSelector.join(
           enter => {
-            let aaGrp = enter.append("g")
+            let mutGrp = enter.append("g")
               .attr("class", d => `substitution ${d.gene}`)
               .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
-            aaGrp
+            mutGrp
               .append("path")
               .attr("class", "substitution-leader")
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`)
               .classed("hidden", d => !d.adjustedX)
               .attr("transform", "translate(0, 5)")
 
-            aaGrp
+            mutGrp
               .append("circle")
               .attr("class", "leader-terminus")
               .attr("cx", d => d.targetX)
@@ -479,7 +476,7 @@ export default Vue.extend({
               .attr("transform", "translate(0, 5)")
 
             // circles for mutations
-            aaGrp
+            mutGrp
               .append("circle")
               .attr("class", "substitution-circle")
               .attr("r", this.aaCircleR)
@@ -490,17 +487,16 @@ export default Vue.extend({
               .style("fill-opacity", 0.8);
 
             // position locations
-            aaGrp
+            mutGrp
               .append("text")
               .attr("class", "substitution-text substitution-location")
-              .attr("y", this.aaCircleR * 2 + 7)
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .attr("x", d => d.x)
               .text(d => d.codon_num)
               .style("font-size", "0.6rem")
 
             // amino acid change text
-            aaGrp
+            mutGrp
               .append("text")
               .attr("class", "substitution-text substitution-change")
               .attr("x", d => d.x)
@@ -562,51 +558,79 @@ export default Vue.extend({
         )
 
         // DELETIONS
-        let aaDeletionSelector = this.deletionRef.selectAll(".aa-deletion")
-          .data(DELETIONS[this.mutationKey]);
+        const rectY = this.aaCircleR - 0.5 * this.aaCircleR;
+        const rectAdjY = circleAdjY - 0.5 * this.aaCircleR;
 
-        aaDeletionSelector.join(
+        let deletionSelector = this.deletionRef.selectAll(".deletion")
+          .data(this.mutationArr.filter(d => d.type == "deletion"));
+
+        deletionSelector.join(
           enter => {
-            let aaGrp = enter.append("g")
-              .attr("class", d => `aa-deletion ${d.gene}`)
-              .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
+            let mutGrp = enter.append("g")
+              .attr("class", d => `deletion ${d.gene}`)
+              .attr("id", d => `${d.mutation}`);
 
-            aaGrp.append("rect")
-              .attr("class", "aa-deletion-rect")
-              .attr("x", d => this.x(d.del_start + d.gene_offset))
-              .attr("width", d => this.x(d.del_end + d.gene_offset + 1) - this.x(d.del_start + d.gene_offset))
-              .attr("y", 0)
-              .attr("height", 7)
+            // del rectangle
+            mutGrp.append("rect")
+              .attr("class", "deletion-rect")
+              .attr("x", d => d.x)
+              .attr("width", d => this.x(d.pos_nt + d.change_length_nt) - this.x(d.pos_nt))
+              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
+              .attr("height", this.aaCircleR)
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene));
 
-            aaGrp
+            // del symbol
+            mutGrp
               .append("text")
-              .attr("class", "substitution-text")
-              .attr("y", -10)
-              .attr("x", d => this.x((d.del_start + d.del_end) / 2 + d.gene_offset))
+              .attr("class", "deletion-text del-symbol")
+              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
+              .attr("dy", -10)
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2))
               .style("font-weight", 600)
+              .style("text-anchor", "middle")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("font-size", "0.85rem")
               .text(d => "\u0394")
+
+            // position locations
+            mutGrp
+              .append("text")
+              .attr("class", "deletion-text deletion-location")
+              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2))
+              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
+              .style("font-size", "0.6rem");
           },
           update => {
             update
-              .attr("class", d => `aa-deletion ${d.gene}`)
-              .attr("id", d => `${d.gene}${d.del_start}_${d.del_end}`);
+              .attr("class", d => `deletion ${d.gene}`)
+              .attr("id", d => `${d.mutation}`);
 
             update.selectAll("rect")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
+              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
               .transition(t1)
-              .attr("x", d => this.x(d.del_start + d.gene_offset))
-              .attr("width", d => this.x(d.del_end + d.gene_offset + 1) - this.x(d.del_start + d.gene_offset));
+              .attr("x", d => d.x)
+              .attr("width", d => this.x(d.pos_nt + d.change_length_nt) - this.x(d.pos_nt));
 
+// del symbol
             update
-              .selectAll("text")
+              .selectAll(".del-symbol")
               .text(d => "\u0394")
+              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
               .transition(t1)
-              .attr("x", d => this.x((d.del_start + d.del_end) / 2 + d.gene_offset));
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2));
+
+            // position locations
+            update
+              .selectAll(".deletion-location")
+              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
+              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
+              .transition(t1)
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt)/2));
+
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
@@ -635,9 +659,10 @@ export default Vue.extend({
     fill: $grey-90;
 }
 
-.substitution-text,
+.deletion,
 .deletion-symbol,
-.gene-name {
+.gene-name,
+.substitution-text {
     dominant-baseline: central;
     text-anchor: middle;
 }
