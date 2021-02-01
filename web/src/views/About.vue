@@ -5,7 +5,7 @@
       <div class="container half-page">
         <h1>About</h1>
         <img src="@/assets/logo-full-01.svg" alt="Outbreak.info" class="w-50 mb-5" />
-        <p class="text-left focustext">
+        <p class="text-left focustext py-2">
           In response to the current outbreak of SARS-CoV-2 (the virus that
           causes COVID-19), researchers worldwide have been generating and
           openly sharing data, publications, reagents, code, protocols, and
@@ -14,15 +14,14 @@
           standards and repositories for collecting all this information in
           one place.
         </p>
-        <p class="text-left focustext">
-          <b>Outbreak.info</b> focuses on aggregating all SARS-CoV-2 /
-          COVID-19 information into a single site. We focus on making the
-          metadata about these resources more standardized, on creating web
-          interfaces to make the resources more findable, and on a few focused
-          data integration efforts to make data more usable.
+        <p class="text-left focustext py-2">
+          <b>Outbreak.info</b> aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. We standardize the metadata describing these resources, providing a web interface to easily search over 100,000 resources. The platform also serves as a data integration tool that makes COVID-19 data more usable.
+        </p>
+        <p class="text-left focustext py-2">
+          We also are tracking developments about new SARS-CoV-2 mutations and epidemiological trends, offering key insights and daily reports.
         </p>
 
-        <p class="text-left focustext mb-5">
+        <p class="text-left focustext mty-5 py-4 border-top">
           Outbreak.info is a project from the <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer"
             target="_blank">Andersen</a> labs at Scripps Research and is supported <span class="my-4" v-if="funding">by the <span v-for="(grant, idx) in funding" :key="idx">
               <span v-if="grant.funder.name">{{ grant.funder.name }}</span> ({{ grant.identifier }})<span v-if="idx < funding.length - 2">, </span>
