@@ -5,8 +5,8 @@
       <g ref="genes" class="genes" id="gene-group"></g>
       <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
       <!-- <g ref="aminoacid_axis" class="axis axis--x"></g> -->
-      <g ref="aminoacids" class="mutations mutations--aa" id="aa-mutation-group"></g>
-      <g ref="deletions" class="mutations deletions--aa" id="aa-deletion-group"></g>
+      <g ref="substitutions" class="mutations substitutions" id="substitution-group"></g>
+      <g ref="deletions" class="mutations deletions" id="deletion-group"></g>
       <g ref="brush" class="brush" id="brush-zoom" v-if="hasMutations"></g>
     </g>
   </svg>
@@ -40,7 +40,6 @@
 import Vue from "vue";
 
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
-import AA_MAP from "@/assets/genomics/sarscov2_aa_gene_map.json";
 import MUTATIONS from "@/assets/genomics/sarscov2_mutations.json";
 import DELETIONS from "@/assets/genomics/sarscov2_deletions.json";
 
@@ -83,6 +82,9 @@ export default Vue.extend({
   watch: {
     width() {
       this.updatePlot();
+    },
+    mutationArr() {
+      this.updatePlot();
     }
   },
   computed: {
@@ -113,8 +115,8 @@ export default Vue.extend({
       // refs
       svg: null,
       genes: null,
-      aas: null,
       brush: null,
+      substitutionRef: null,
       deletionRef: null,
       // scales
       x: scaleLinear(),
@@ -137,10 +139,11 @@ export default Vue.extend({
     }
   },
   mounted() {
-    console.log(this.mutationArr)
+    // convert object of nucleotides into an array
     this.ntMapArr = Object.entries(NT_MAP).map(d => {
       return { gene: d[0], start: d[1].start, end: d[1].end}
     })
+
     this.setupPlot();
     this.updatePlot();
   },
@@ -167,7 +170,7 @@ export default Vue.extend({
       this.genes = select(this.$refs.genes)
         .attr("transform", `translate(0,${this.mutationHeight})`);
 
-      this.aas = select(this.$refs.aminoacids)
+      this.substitutionRef = select(this.$refs.substitutions)
         .attr("transform", `translate(0,22)`);
 
       this.deletionRef = select(this.$refs.deletions)
@@ -181,7 +184,7 @@ export default Vue.extend({
     },
     updatePlot() {
       this.updateScales();
-      this.drawPlot()
+      this.drawPlot();
     },
     updateScales() {
       this.x = this.x
@@ -202,118 +205,117 @@ export default Vue.extend({
 
       select(this.$refs.brush)
         .call(this.brush)
-        // .call(brush.move, [3, 5].map(x))
         .on("dblclick", this.resetAxis);
     },
     tooltipOn() {
-      if (this.hasMutations) {
-        // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
-        // That has to have a rect on top of everything which detects the pointer events.
-        // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
-        if (event.offsetY < this.mutationHeight) {
-          // UPPER HALF: mutations and deletions
-          let muts = cloneDeep(MUTATIONS[this.mutationKey]);
-          muts.forEach(d => {
-            d["tooltipDiff"] = Math.abs(event.offsetX - d.x);
-          })
-          muts.sort((a, b) => a.tooltipDiff - b.tooltipDiff);
-
-          const selectedMut = muts[0];
-
-          // turn off mutations / other ttip
-          this.svg.selectAll(".aa-mutation")
-            .style("opacity", 0.3);
-
-          select(this.$refs.tooltip_gene).style("display", "none");
-
-          // turn on selected mutations
-          this.svg.selectAll(`#mutation_${selectedMut.gene}${selectedMut.aa_location}`)
-            .style("opacity", 1);
-
-          // tooltip on
-          let ttip = select(this.$refs.tooltip_mutation);
-          // edit text
-          ttip.select("h5")
-            .style("color", this.geneColorScale(selectedMut.gene))
-            .html(`<b>${selectedMut.aa_original}${selectedMut.aa_location}${selectedMut.aa_new}</b> | ${this.mutationKey} | ${selectedMut.gene} gene`);
-
-          ttip
-            .style("left", `${event.clientX}px`)
-            .style("border-color", this.geneColorScale(selectedMut.gene))
-            .style("background", chroma(this.geneColorScale(selectedMut.gene)).luminance(0.8))
-            .style("display", "block");
-
-        } else {
-          // LOWER HALF: gene map
-          const selectedX = this.x.invert(event.offsetX);
-          const selectedGenes = AA_MAP.filter(d => d.start <= selectedX && d.end >= selectedX);
-
-          if (selectedGenes.length === 1) {
-            const selectedGene = selectedGenes[0].gene;
-
-            const selectedMutations = MUTATIONS[this.mutationKey] ? MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
-            const selectedDeletions = DELETIONS[this.mutationKey] ? DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
-
-            // turn genes off
-            select(this.$refs.tooltip_mutation).style("display", "none");
-
-            this.svg.selectAll(".gene")
-              .style("opacity", 0.3);
-
-            this.svg.selectAll(".aa-mutation")
-              .style("opacity", 0.3);
-
-            this.svg.selectAll(".aa-deletion")
-              .style("opacity", 0.3);
-
-            // turn selected gene on
-            this.svg.select(`#${selectedGene}`)
-              .style("opacity", 1);
-
-            this.svg.selectAll(`.${selectedGene}`)
-              .style("opacity", 1);
-
-
-            // tooltip on
-            let ttip = select(this.$refs.tooltip_gene);
-            // edit text
-            ttip.select("h5")
-              .style("color", this.geneColorScale(selectedGene))
-              .text(`${this.mutationKey} | ${selectedGene} gene`)
-
-            const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
-            mutList.join(enter => {
-                enter.append("li")
-                  .text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
-              },
-              update => {
-                update.text(d => `${d.aa_original}${d.aa_location}${d.aa_new}`)
-              },
-              exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-            )
-
-            const delList = ttip.select("ul#deletion-list").selectAll("li").data(selectedDeletions);
-            delList.join(enter => {
-                enter.append("li")
-                  .text(d => `${d.del_start}-${d.del_end}`)
-              },
-              update => {
-                update.text(d => `${d.del_start}-${d.del_end}`)
-              },
-              exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-            )
-
-            ttip
-              .style("left", `${event.clientX}px`)
-              .style("border-color", this.geneColorScale(selectedGene))
-              .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
-              .style("display", "block");
-          }
-        }
-      }
+      // if (this.hasMutations) {
+      //   // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
+      //   // That has to have a rect on top of everything which detects the pointer events.
+      //   // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
+      //   if (event.offsetY < this.mutationHeight) {
+      //     // UPPER HALF: mutations and deletions
+      //     let muts = cloneDeep(MUTATIONS[this.mutationKey]);
+      //     muts.forEach(d => {
+      //       d["tooltipDiff"] = Math.abs(event.offsetX - d.x);
+      //     })
+      //     muts.sort((a, b) => a.tooltipDiff - b.tooltipDiff);
+      //
+      //     const selectedMut = muts[0];
+      //
+      //     // turn off mutations / other ttip
+      //     this.svg.selectAll(".substitution")
+      //       .style("opacity", 0.3);
+      //
+      //     select(this.$refs.tooltip_gene).style("display", "none");
+      //
+      //     // turn on selected mutations
+      //     this.svg.selectAll(`#mutation_${selectedMut.gene}${selectedMut.codon_num}`)
+      //       .style("opacity", 1);
+      //
+      //     // tooltip on
+      //     let ttip = select(this.$refs.tooltip_mutation);
+      //     // edit text
+      //     ttip.select("h5")
+      //       .style("color", this.geneColorScale(selectedMut.gene))
+      //       .html(`<b>${selectedMut.aa_original}${selectedMut.codon_num}${selectedMut.alt_aa}</b> | ${this.mutationKey} | ${selectedMut.gene} gene`);
+      //
+      //     ttip
+      //       .style("left", `${event.clientX}px`)
+      //       .style("border-color", this.geneColorScale(selectedMut.gene))
+      //       .style("background", chroma(this.geneColorScale(selectedMut.gene)).luminance(0.8))
+      //       .style("display", "block");
+      //
+      //   } else {
+      //     // LOWER HALF: gene map
+      //     const selectedX = this.x.invert(event.offsetX);
+      //     const selectedGenes = AA_MAP.filter(d => d.start <= selectedX && d.end >= selectedX);
+      //
+      //     if (selectedGenes.length === 1) {
+      //       const selectedGene = selectedGenes[0].gene;
+      //
+      //       const selectedMutations = MUTATIONS[this.mutationKey] ? MUTATIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
+      //       const selectedDeletions = DELETIONS[this.mutationKey] ? DELETIONS[this.mutationKey].filter(d => d.gene == selectedGene) : [];
+      //
+      //       // turn genes off
+      //       select(this.$refs.tooltip_mutation).style("display", "none");
+      //
+      //       this.svg.selectAll(".gene")
+      //         .style("opacity", 0.3);
+      //
+      //       this.svg.selectAll(".substitution")
+      //         .style("opacity", 0.3);
+      //
+      //       this.svg.selectAll(".aa-deletion")
+      //         .style("opacity", 0.3);
+      //
+      //       // turn selected gene on
+      //       this.svg.select(`#${selectedGene}`)
+      //         .style("opacity", 1);
+      //
+      //       this.svg.selectAll(`.${selectedGene}`)
+      //         .style("opacity", 1);
+      //
+      //
+      //       // tooltip on
+      //       let ttip = select(this.$refs.tooltip_gene);
+      //       // edit text
+      //       ttip.select("h5")
+      //         .style("color", this.geneColorScale(selectedGene))
+      //         .text(`${this.mutationKey} | ${selectedGene} gene`)
+      //
+      //       const mutList = ttip.select("ul#mutation-list").selectAll("li").data(selectedMutations);
+      //       mutList.join(enter => {
+      //           enter.append("li")
+      //             .text(d => `${d.aa_original}${d.codon_num}${d.alt_aa}`)
+      //         },
+      //         update => {
+      //           update.text(d => `${d.aa_original}${d.codon_num}${d.alt_aa}`)
+      //         },
+      //         exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+      //       )
+      //
+      //       const delList = ttip.select("ul#deletion-list").selectAll("li").data(selectedDeletions);
+      //       delList.join(enter => {
+      //           enter.append("li")
+      //             .text(d => `${d.del_start}-${d.del_end}`)
+      //         },
+      //         update => {
+      //           update.text(d => `${d.del_start}-${d.del_end}`)
+      //         },
+      //         exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+      //       )
+      //
+      //       ttip
+      //         .style("left", `${event.clientX}px`)
+      //         .style("border-color", this.geneColorScale(selectedGene))
+      //         .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
+      //         .style("display", "block");
+      //     }
+      //   }
+      // }
     },
     tooltipOff() {
-      selectAll(".aa-mutation")
+      selectAll(".substitution")
         .style("opacity", 1);
 
       selectAll(".aa-deletion")
@@ -340,12 +342,65 @@ export default Vue.extend({
 
     },
     resetAxis() {
-      this.x = this.x.domain([0, max(AA_MAP, d => d.end)]);
+      this.x = this.x.domain([0, max(this.ntMapArr, d => d.end)]);
       this.drawPlot();
+    },
+    prepData() {
+      if(this.mutationArr) {
+      // 1) Convert amino acid coordinates into nucleotide coordinates
+      // 2) Set up force direction to shift labels if they overlap
+
+      // convert aa --> nucleotide coords
+      this.mutationArr.forEach(d => {
+        const gene = NT_MAP[d.gene];
+        const gene_offset = gene ? gene.start : 0;
+        // calculating center of the nucleotide
+        d["pos_nt"] = d.pos ? d.pos : ((d.codon_num - 1) * 3 + gene_offset + 1);
+
+        // set up for force direction
+        d["fy"] = 0;
+        d["targetX"] = this.x(d.pos_nt);
+      })
+
+      // Add force direction to avoid overlap
+      // Define a custom force
+      const forceClamp = (min, max) => {
+        let nodes;
+        const force = () => {
+          nodes.forEach(n => {
+            if (n.x > max) n.x = max;
+            if (n.x < min) n.x = min;
+          });
+        };
+        force.initialize = _ => (nodes = _);
+        return force;
+      };
+
+      // Set up the force simulation
+      const force = forceSimulation()
+        .nodes(this.mutationArr)
+        .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
+        .force("x", forceX(d => d.targetX).strength(1))
+        // clamp within bounds of the axes. Gets weird when you're zooming in.
+        // .force("clamp", forceClamp(0, this.width - this.margin.left - this.margin.right))
+        .stop();
+
+      // Execute the simulation
+      for (let i = 0; i < 300; i++) force.tick();
+
+      // Tag if it moved:
+      this.mutationArr.forEach(d => {
+        d["adjustedX"] = Math.abs(d.vx) > 1e-6;
+      })
+
+      console.log(this.mutationArr)
+    }
     },
     drawPlot() {
       if (this.hasMutations) {
         const t1 = transition().duration(1500);
+
+        this.prepData();
 
         // --- GENE MAP: constant for all maps ---
         let geneSelector =
@@ -371,7 +426,6 @@ export default Vue.extend({
               .attr("y", (this.geneHeight + 1) / 2)
               .attr("class", "gene-name")
               .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
-            // .style("fill", "white")
           },
           update => {
             update
@@ -391,60 +445,26 @@ export default Vue.extend({
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
 
-        // --- AMINO ACID MUTATIONS ---
-        let aaMutationSelector = this.aas.selectAll(".aa-mutation")
-          .data(this.mutations);
-
-        // Add force direction to avoid overlap
-        this.mutations.forEach(d => {
-          d["fy"] = 0;
-          d["targetX"] = this.x(d.aa_location + d.gene_offset)
-        });
-
-        // Define a custom force
-        const forceClamp = (min, max) => {
-          let nodes;
-          const force = () => {
-            nodes.forEach(n => {
-              if (n.x > max) n.x = max;
-              if (n.x < min) n.x = min;
-            });
-          };
-          force.initialize = _ => (nodes = _);
-          return force;
-        };
-
-        // Set up the force simulation
-        const force = forceSimulation()
-          .nodes(this.mutations)
-          .force("collide", forceCollide(this.aaCircleR + 1.5).strength(0.1))
-          .force("x", forceX(d => d.targetX).strength(1))
-          // clamp within bounds of the axes. Gets weird when you're zooming in.
-          // .force("clamp", forceClamp(0, this.width - this.margin.left - this.margin.right))
-          .stop();
-
-        // Execute the simulation
-        for (let i = 0; i < 300; i++) force.tick();
-
-        // Tag if it moved:
-        this.mutations.forEach(d => {
-          d["adjustedX"] = Math.abs(d.vx) > 1e-6;
-        })
+        // --- SUBSTITUTIONS ---
+        console.log(this.mutationArr)
+        let substitutionSelector = this.substitutionRef.selectAll(".substitution")
+          .data(this.mutationArr);
+          // .data(this.mutationArr.filter(d => d.mutation_type == "substitution"));
 
         const labelY = this.aaCircleR * 2 + 7;
         const shiftedLabelY = this.aaCircleR + 3;
         const circleAdjY = -this.aaCircleR + 4;
 
-        aaMutationSelector.join(
+        substitutionSelector.join(
           enter => {
             let aaGrp = enter.append("g")
-              .attr("class", d => `aa-mutation ${d.gene}`)
-              .attr("id", d => `mutation_${d.gene}${d.aa_location}`);
+              .attr("class", d => `substitution ${d.gene}`)
+              .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
             aaGrp
               .append("path")
-              .attr("class", "aa-mutation-leader")
+              .attr("class", "substitution-leader")
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`)
               .classed("hidden", d => !d.adjustedX)
               .attr("transform", "translate(0, 5)")
@@ -461,7 +481,7 @@ export default Vue.extend({
             // circles for mutations
             aaGrp
               .append("circle")
-              .attr("class", "aa-mutation-circle")
+              .attr("class", "substitution-circle")
               .attr("r", this.aaCircleR)
               .attr("cy", d => d.adjustedX ? circleAdjY : this.aaCircleR)
               .attr("cx", d => d.x)
@@ -472,33 +492,33 @@ export default Vue.extend({
             // position locations
             aaGrp
               .append("text")
-              .attr("class", "aa-mutation-text aa-mutation-location")
+              .attr("class", "substitution-text substitution-location")
               .attr("y", this.aaCircleR * 2 + 7)
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .attr("x", d => d.x)
-              .text(d => d.aa_location)
+              .text(d => d.codon_num)
               .style("font-size", "0.6rem")
 
             // amino acid change text
             aaGrp
               .append("text")
-              .attr("class", "aa-mutation-text aa-mutation-change")
+              .attr("class", "substitution-text substitution-change")
               .attr("x", d => d.x)
               .attr("y", d => d.adjustedX ? circleAdjY : this.aaCircleR)
               .style("font-weight", 600)
               .style("fill", "white")
-              .style("font-family", d => d.aa_new == "_" || d.aa_new == "*" ? "'Font Awesome 5 Free'" : "inherit")
+              .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'Font Awesome 5 Free'" : "inherit")
               .style("font-size", "0.85rem")
-              .text(d => d.aa_new == "_" || d.aa_new == "*" ? "\uf28d" : d.aa_new)
+              .text(d => d.alt_aa == "_" || d.alt_aa == "*" ? "\uf28d" : d.alt_aa)
           },
           update => {
             update
-              .attr("class", d => `aa-mutation ${d.gene}`)
-              .attr("id", d => `mutation_${d.gene}${d.aa_location}`);
+              .attr("class", d => `substitution ${d.gene}`)
+              .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
             update
-              .selectAll(".aa-mutation-leader")
+              .selectAll(".substitution-leader")
               .classed("hidden", d => !d.adjustedX)
               .transition(t1)
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`);
@@ -512,7 +532,7 @@ export default Vue.extend({
 
             // circles for mutations
             update
-              .selectAll(".aa-mutation-circle")
+              .selectAll(".substitution-circle")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
 
@@ -523,17 +543,17 @@ export default Vue.extend({
 
             // text: mutation codon position
             update
-              .selectAll(".aa-mutation-location")
-              .text(d => d.aa_location)
+              .selectAll(".substitution-location")
+              .text(d => d.codon_num)
               .transition(t1)
               .attr("x", d => d.x)
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY);
 
             // text: amino acid change
             update
-              .selectAll(".aa-mutation-change")
-              .style("font-family", d => d.aa_new == "_" || d.aa_new == "*" ? "'Font Awesome 5 Free'" : "inherit")
-              .text(d => d.aa_new == "_" || d.aa_new == "*" ? "\uf28d" : d.aa_new)
+              .selectAll(".substitution-change")
+              .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'Font Awesome 5 Free'" : "inherit")
+              .text(d => d.alt_aa == "_" || d.alt_aa == "*" ? "\uf28d" : d.alt_aa)
               .transition(t1)
               .attr("x", d => d.x)
               .attr("y", d => d.adjustedX ? circleAdjY : this.aaCircleR);
@@ -541,6 +561,7 @@ export default Vue.extend({
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
 
+        // DELETIONS
         let aaDeletionSelector = this.deletionRef.selectAll(".aa-deletion")
           .data(DELETIONS[this.mutationKey]);
 
@@ -561,7 +582,7 @@ export default Vue.extend({
 
             aaGrp
               .append("text")
-              .attr("class", "aa-mutation-text")
+              .attr("class", "substitution-text")
               .attr("y", -10)
               .attr("x", d => this.x((d.del_start + d.del_end) / 2 + d.gene_offset))
               .style("font-weight", 600)
@@ -602,7 +623,7 @@ export default Vue.extend({
     shape-rendering: crispedges;
 }
 
-.aa-mutation-leader {
+.substitution-leader {
     stroke: $grey-60;
     stroke-width: 1;
     shape-rendering: crispedges;
@@ -614,14 +635,14 @@ export default Vue.extend({
     fill: $grey-90;
 }
 
-.aa-mutation-text,
+.substitution-text,
 .deletion-symbol,
 .gene-name {
     dominant-baseline: central;
     text-anchor: middle;
 }
 
-.aa-mutation-circle {
+.substitution-circle {
     stroke-width: 0.75;
 }
 
