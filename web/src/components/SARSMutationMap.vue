@@ -412,7 +412,7 @@ export default Vue.extend({
 
             geneGrp.append("rect")
               .attr("x", d => this.x(d.start))
-              .attr("width", d => this.x(d.end + 1) - this.x(d.end))
+              .attr("width", d => this.x(d.end) - this.x(d.start))
               .attr("y", 0)
               .attr("height", this.geneHeight)
               .style("fill-opacity", 0.40)
@@ -429,7 +429,7 @@ export default Vue.extend({
               .selectAll("rect")
               .transition(t1)
               .attr("x", d => this.x(d.start))
-              .attr("width", d => this.x(d.end + 1) - this.x(d.start))
+              .attr("width", d => this.x(d.end) - this.x(d.start))
               .style("fill", d => this.geneColorScale(d.gene))
 
             update
