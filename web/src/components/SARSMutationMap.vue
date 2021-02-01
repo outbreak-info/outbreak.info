@@ -95,7 +95,7 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 2,
+        top: 4,
         right: 25,
         bottom: 2,
         left: 15
@@ -443,7 +443,6 @@ export default Vue.extend({
         )
 
         // --- SUBSTITUTIONS ---
-        console.log(this.mutationArr)
         let substitutionSelector = this.substitutionRef.selectAll(".substitution")
           .data(this.mutationArr.filter(d => d.type == "substitution"));
 
@@ -557,8 +556,8 @@ export default Vue.extend({
         )
 
         // DELETIONS
-        const rectY = this.aaCircleR - 0.5 * this.aaCircleR;
-        const rectAdjY = circleAdjY - 0.5 * this.aaCircleR;
+        const rectY = this.aaCircleR - 0.75 * this.aaCircleR;
+        const rectAdjY = circleAdjY - 0.75 * this.aaCircleR;
 
         let deletionSelector = this.deletionRef.selectAll(".deletion")
           .data(this.mutationArr.filter(d => d.type == "deletion"));
@@ -569,13 +568,30 @@ export default Vue.extend({
               .attr("class", d => `deletion ${d.gene}`)
               .attr("id", d => `${d.mutation}`);
 
+            // leader lines
+            mutGrp
+              .append("path")
+              .attr("class", "deletion-leader")
+              .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`)
+              .classed("hidden", d => !d.adjustedX)
+              .attr("transform", "translate(0, 5)")
+
+            mutGrp
+              .append("circle")
+              .attr("class", "deletion-leader-terminus")
+              .attr("cx", d => d.targetX)
+              .attr("cy", d => labelY)
+              .attr("r", 1.8)
+              .classed("hidden", d => !d.adjustedX)
+              .attr("transform", "translate(0, 5)")
+
             // del rectangle
             mutGrp.append("rect")
               .attr("class", "deletion-rect")
               .attr("x", d => d.x)
               .attr("width", d => this.x(d.pos_nt + d.change_length_nt) - this.x(d.pos_nt))
               .attr("y", d => d.adjustedX ? rectAdjY : rectY)
-              .attr("height", this.aaCircleR)
+              .attr("height", this.aaCircleR * 1.5)
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene));
 
@@ -584,7 +600,7 @@ export default Vue.extend({
               .append("text")
               .attr("class", "deletion-text del-symbol")
               .attr("y", d => d.adjustedX ? rectAdjY : rectY)
-              .attr("dy", -10)
+              .attr("dy", -9)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .style("font-weight", 600)
               .style("text-anchor", "middle")
@@ -606,30 +622,44 @@ export default Vue.extend({
               .attr("class", d => `deletion ${d.gene}`)
               .attr("id", d => `${d.mutation}`);
 
+            // leader lines
+            update.selectAll(".deletion-leader")
+              .classed("hidden", d => !d.adjustedX)
+              .transition(t1)
+              .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`);
+
+
+            update.selectAll(".deletion-leader-terminus")
+              .classed("hidden", d => !d.adjustedX)
+              .transition(t1)
+              .attr("cx", d => d.targetX)
+              .attr("cy", d => labelY)
+
+
             // del rectangle
-            update.selectAll("rect")
+            update.selectAll(".deletion-rect")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
-              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
               .transition(t1)
               .attr("x", d => d.x)
+              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
               .attr("width", d => this.x(d.pos_nt + d.change_length_nt) - this.x(d.pos_nt));
 
             // del symbol
             update
               .selectAll(".del-symbol")
               .text(d => "\u0394")
-              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
               .transition(t1)
-              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2));
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
+              .attr("y", d => d.adjustedX ? rectAdjY : rectY)
 
             // position locations
             update
               .selectAll(".deletion-location")
-              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
               .transition(t1)
-              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2));
+              .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
+              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY);
 
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
@@ -647,6 +677,7 @@ export default Vue.extend({
     shape-rendering: crispedges;
 }
 
+.deletion-leader,
 .substitution-leader {
     stroke: $grey-60;
     stroke-width: 1;
@@ -654,6 +685,7 @@ export default Vue.extend({
     fill: none;
 }
 
+.deletion-leader-terminus,
 .leader-terminus {
     stroke: none;
     fill: $grey-90;
