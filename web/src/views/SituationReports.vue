@@ -15,11 +15,11 @@
             <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
           </a>
         </div>
-<div id="date-updated">
-  <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
-    <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
-  </small>
-</div>
+        <div id="date-updated">
+          <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+            <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
+          </small>
+        </div>
 
         <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
       </div>
@@ -65,7 +65,7 @@
 
             <!-- MUTATION MAP / DEFINITION -->
             <div class="mutation-map flex-grow-1 px-2">
-              <SARSMutationMap :mutationKey="report.mutation_name" />
+              <SARSMutationMap :mutationArr="report.mutations" />
             </div>
           </div>
         </div>
