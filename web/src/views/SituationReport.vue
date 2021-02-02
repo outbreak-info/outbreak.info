@@ -41,7 +41,7 @@
 
     <div class="row">
       <section id="intro" class="col-sm-6 col-md-8 pr-4">
-        <div id="about-variant" class="mb-3 mx-2" v-if="reportMetadata">
+        <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
           <div class="d-flex flex-wrap align-items-center justify-content-end" v-if="reportMetadata">
             <small class="mx-3 text-muted" v-if="reportMetadata.location_first_identified"><em>First identified in {{ reportMetadata.location_first_identified }}</em></small>
             <div class="VOC" v-if="reportMetadata.variantType == 'Variant of Concern'">Variant of Concern</div>
