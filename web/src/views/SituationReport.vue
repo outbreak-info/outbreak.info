@@ -36,12 +36,13 @@
     <div class="row">
       <section id="intro" class="col-sm-6 col-md-8 pr-4">
         <!-- INTRO TEXT - OVERVIEW -->
-        <div class="font-size-2">
-          <span v-html="reportDescription"></span>
+        <div class="d-flex flex-column mb-3">
+          <span v-html="reportDescription" class="font-size-2"></span>
+
+          <router-link :to='{ hash: "#resources" , query: this.$route.query }'>
+            <small>View publications, datasets, and more related to {{mutationName}}</small>
+          </router-link>
         </div>
-        <router-link :to='{hash: "#resources"}'>
-          <small>View publications, datasets, and more related to {{mutationName}}</small>
-        </router-link>
 
         <!-- CHARACTERISTIC MUTATIONS -->
         <div class="mt-4" id="definition">
@@ -413,6 +414,7 @@ export default {
             this.searchTerms = [this.mutationName];
             this.reportDescription = this.genericDescription;
           }
+          console.log(this.searchTerms)
         })
       }
     },
