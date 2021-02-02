@@ -33,7 +33,7 @@
           </div>
 
           <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
-            <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" />
+            <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
 
           </div>
         </div>
@@ -168,7 +168,7 @@
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
         <h3>Summary</h3>
         <div class="summary-counts mb-3">
-          As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the {{ mutationName }} lineage have been detected:
+          As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the {{ mutationName }} lineage have been detected since the {{reportType}} was identified:
 
           <!-- PREVALENCE SUMMARY TABLE -->
           <table class="border-bottom line-height-1 mt-2 w-100">
