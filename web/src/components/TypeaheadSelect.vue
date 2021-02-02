@@ -1,8 +1,8 @@
 <template>
 <div>
-  <div style="position:relative" class="dropdown show" :class="{'open':openSuggestion}">
+  <div style="position:relative" class="dropdown">
     <input class="form-control" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
-    <div class="dropdownmenu" style="width:100%">
+    <div class="dropdown-menu" :class="{'show':isOpen}" style="width:100%">
       <a href="#" v-for="(suggestion, idx) in matches" :key="idx" class="dropdown-item" :class="{'active': isActive(idx)}" @click="suggestionClick(idx)">
         {{ suggestion }}</a>
     </div>
@@ -24,19 +24,12 @@ export default {
     apiUrl: String,
     placeholder: String
   },
-  computed: {
-    openSuggestion() {
-      return this.selected !== "" &&
-        this.matches.length != 0 &&
-        this.open === true;
-    }
-  },
   created: function() {
     this.debounceSearch = debounce(this.change, 250);
   },
   data() {
     return {
-      open: true,
+      isOpen: false,
       current: 0,
       selected: null,
       matches: []
@@ -45,9 +38,9 @@ export default {
   methods: {
     enter() {
       this.selected = this.matches[this.current];
-      this.open = false;
+      this.isOpen = false;
       this.$emit("selected", this.selected);
-      this.open = false;
+      this.selected = null; // reset
     },
 
     // When up pressed while suggestions are open
@@ -70,20 +63,21 @@ export default {
     //When the user changes input
     change() {
       this.querySubscription = this.queryFunction(this.apiUrl, this.selected).subscribe(results => {
-        this.matches = results.map(d => d.name)
+        this.matches = results.map(d => d.name);
+
+        if (this.isOpen == false) {
+          this.isOpen = true;
+          this.current = 0;
+        }
       })
-      if (this.open == false) {
-        this.open = true;
-        this.current = 0;
-      }
+
     },
     //When one of the suggestion is clicked
     suggestionClick(index) {
-      console.log("click")
-      console.log(this.selected)
       this.selected = this.matches[index];
       this.$emit("selected", this.selected);
-      this.open = false;
+      this.isOpen = false;
+      this.selected = null; // reset
     }
   }
 }
