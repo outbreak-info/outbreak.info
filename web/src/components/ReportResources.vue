@@ -96,11 +96,12 @@ export default Vue.extend({
     }
   },
   watch: {
-  searchTerms() {
-    if(this.searchTerms.length) {
-this.updateResults();
-  }
-  }
+    queryString: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.updateResults();
+      }
+    }
 },
 computed: {
   lowerLim: function() {
@@ -129,10 +130,12 @@ methods: {
         this.updateResults();
   },
   updateResults() {
+    if(this.searchTerms.length) {
     this.resultSubscription = getLineageResources(this.$resourceurl, this.queryString, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
       this.total = results.total;
       this.resources = results.resources;
     })
+  }
   }
 },
 beforeDestroy() {
