@@ -6,11 +6,9 @@
   <div id="pangolin" class="my-3">
     <h4 class="mb-0">Custom lineage</h4>
     <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">Pangolin lineages</a></small>
-    <form class="d-flex" id="custom-pangolin" @submit.prevent="submitPangolin">
-      <select v-model="selectedLineage" class="w-200px mr-4">
-        <option :value="null">{{null}}</option>
-        <option :value="opt" v-for="(opt, idx) in lineageOpts" :key="idx">{{opt}}</option>
-      </select>
+    <form class="d-flex w-400px" id="custom-pangolin" @submit.prevent="submitPangolin">
+      <TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select Pangolin lineage" />
+
       <div class="">
         <input class="btn btn-accent"  :disabled="!selectedLineage" type="submit" value="Create report" />
       </div>
@@ -120,8 +118,10 @@
 import Vue from "vue";
 
 import AA_MAP from "@/assets/genomics/sarscov2_aa.json";
-import TypeaheadSelect from "@/components/TypeaheadSelect.vue"
-import SARSMutationMap from "@/components/SARSMutationMap.vue"
+import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
+import SARSMutationMap from "@/components/SARSMutationMap.vue";
+
+import { findPangolin } from "@/api/genomics.js";
 
 // --- store / Vuex ---
 import {
@@ -148,7 +148,7 @@ export default Vue.extend({
   name: "CustomReportForm",
   components: {
     // FontAwesomeIcon,
-    // TypeaheadSelect,
+    TypeaheadSelect,
     // SARSMutationMap
   },
   computed: {
@@ -189,10 +189,16 @@ export default Vue.extend({
       return (null)
     }
   },
+  mounted() {
+    this.queryPangolin = findPangolin;
+  },
   methods: {
+    updatePangolin(selected) {
+      this.selectedLineage = selected.name;
+    },
     submitPangolin() {
       this.$router.push({
-        name: "CustomReport",
+        name: "MutationReport",
         query: {
           pangolin: this.selectedLineage
         }
@@ -231,9 +237,9 @@ export default Vue.extend({
   },
   data() {
     return {
+      queryPangolin: null,
       selectedMutations: [],
       selectedLineage: null,
-      lineageOpts: ["B.1.1.7", "B.1.351", "P.1", "B.1.429"],
       selectedBulkString: null,
       selectedBulkMutations: [],
       selectedCoordinate: "aminoacid",
@@ -325,6 +331,10 @@ export default Vue.extend({
 }
 .w-200px {
     width: 200px;
+}
+
+.w-400px {
+    width: 400px;
 }
 
 .coords {
