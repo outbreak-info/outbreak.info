@@ -14,6 +14,12 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex flex-column align-items-start">
         <h1 class="m-0">{{ title }}</h1>
+        <small class="text-muted my-1" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
+          <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
+            <b>{{ synonym }}</b>
+            <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
+        </small>
+
         <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
         </small>
@@ -35,6 +41,14 @@
 
     <div class="row">
       <section id="intro" class="col-sm-6 col-md-8 pr-4">
+        <div id="about-variant" class="mb-3 mx-2" v-if="reportMetadata">
+          <div class="d-flex flex-wrap align-items-center justify-content-end" v-if="reportMetadata">
+            <small class="mx-3 text-muted" v-if="reportMetadata.location_first_identified"><em>First identified in {{ reportMetadata.location_first_identified }}</em></small>
+            <div class="VOC" v-if="reportMetadata.variantType == 'Variant of Concern'">Variant of Concern</div>
+            <div class="VOI" v-if="reportMetadata.variantType == 'Variant of Interest'">Variant of Interest</div>
+          </div>
+
+        </div>
         <!-- INTRO TEXT - OVERVIEW -->
         <div class="d-flex flex-column mb-3">
           <span v-html="reportDescription" class="font-size-2"></span>
@@ -358,6 +372,7 @@ export default {
       reportDescription: null,
 
       // data
+      reportMetadata: null,
       ctryData: null,
       countries: null,
       states: [],
@@ -406,7 +421,7 @@ export default {
           this.hasData = results.longitudinal.length || results.byCountry.length;
 
           if (results.md) {
-            // this.reportMetadata = results.md;
+            this.reportMetadata = results.md;
             this.searchTerms = results.md.searchTerms;
             this.mutations = results.md.mutations;
             this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
@@ -414,7 +429,6 @@ export default {
             this.searchTerms = [this.mutationName];
             this.reportDescription = this.genericDescription;
           }
-          console.log(this.searchTerms)
         })
       }
     },

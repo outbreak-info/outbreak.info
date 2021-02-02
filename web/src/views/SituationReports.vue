@@ -167,30 +167,4 @@ $mutation-width: 275px;
     min-width: 0;
 }
 
-.VOC,
-.VOI {
-    padding: 0.35rem;
-    border-radius: 0.25rem;
-    border-style: solid;
-    border-width: 1px;
-    line-height: 1;
-    flex-shrink: 0;
-    font-size: small;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    // font-weight: 700;
-}
-
-.VOC {
-    background: lighten($publication-color, 35%);
-    color: $publication-color;
-    border-color: $publication-color;
-}
-
-.VOI {
-    background: lighten($website-color, 40%);
-    color: $website-color;
-    border-color: $website-color;
-}
 </style>
