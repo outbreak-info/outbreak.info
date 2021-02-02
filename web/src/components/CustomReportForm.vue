@@ -7,7 +7,6 @@
     <h4 class="mb-0">Custom lineage</h4>
     <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">Pangolin lineages</a></small>
     <form class="d-flex" id="custom-pangolin" @submit.prevent="submitPangolin">
-      <!-- <AutocompleteSimple :items="lineageOpts" placeholder="select lineage"/> -->
       <select v-model="selectedLineage" class="w-200px mr-4">
         <option :value="null">{{null}}</option>
         <option :value="opt" v-for="(opt, idx) in lineageOpts" :key="idx">{{opt}}</option>
@@ -118,7 +117,7 @@
 import Vue from "vue";
 
 import AA_MAP from "@/assets/genomics/sarscov2_aa.json";
-import AutocompleteSimple from "@/components/AutocompleteSimple.vue"
+import TypeaheadSelect from "@/components/TypeaheadSelect.vue"
 import SARSMutationMap from "@/components/SARSMutationMap.vue"
 
 // --- store / Vuex ---
@@ -146,7 +145,7 @@ export default Vue.extend({
   name: "CustomReportForm",
   components: {
     FontAwesomeIcon,
-    // AutocompleteSimple,
+    // TypeaheadSelect,
     SARSMutationMap
   },
   computed: {

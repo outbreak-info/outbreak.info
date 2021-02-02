@@ -232,3 +232,28 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
   )
 
 }
+
+
+export function findCountry(apiUrl, queryString) {
+  const url = `${apiUrl}country?name=*${queryString}*`
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      console.log(results)
+      return(results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting country names!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
+
+}
