@@ -88,7 +88,7 @@ export default {
       this.isOpen = false;
       if(this.removeOnSelect){
         this.selected = null; // reset
-      }  else {
+      } else {
         this.selected = this.selected.name;
       }
     }
