@@ -2,11 +2,11 @@
 <div class="border-top border-bottom pt-3 pb-2">
   <div class="d-flex align-items-center justify-content-between mb-3">
     <h4>{{mutationName}} Publications &amp; Resources</h4>
-    <div class="ml-3 text-highlight">
+    <div class="ml-3 text-highlight font-size-2">
       {{ total }} results
     </div>
 
-    <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown ml-5">
+    <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown ml-5" v-if="total">
       <option v-for="option in pageOpts" :value="option" :key="option">
         {{ option }} results
       </option>
@@ -145,3 +145,8 @@ beforeDestroy() {
 }
 })
   </script>
+<style lang="scss">
+.font-size-2 {
+    font-size: 1.25rem;
+}
+</style>
