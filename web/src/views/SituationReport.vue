@@ -37,9 +37,7 @@
     <section id="intro" class="col-sm-6 col-md-8 pr-4">
       <!-- INTRO TEXT - OVERVIEW -->
       <div class="font-size-2">
-        XXXXX Concerns surrounding a new strain of SARS-CoV-2, the virus behind the COVID-19 pandemic, have been developing. <b class="text-highlight">B.1.1.7</b> lineage, also known as <b>Variant of Concern 202012/01 (VOC-202012/01)</b> or
-        <b>20B/501Y.V1</b>, was first identified in the UK in early December 2020 and has since been detected in the US and other counties. This is of growing concern because it has shown to be significantly more transmissible than other variants.
-        XXXXX
+      <span v-html="reportDescription"></span>
       </div>
       <router-link :to='{hash: "#resources"}'>
         <small>View publications, datasets, and more related to {{mutationName}}</small>
@@ -300,6 +298,9 @@ export default {
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
     },
+    genericDescription() {
+      return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+    },
     selectedLocations() {
       const locations = typeof(this.location) == "string" ? [this.location] : this.location;
       // always have the world there too.
@@ -335,6 +336,7 @@ export default {
 
       // curated values
       searchTerms: null,
+      reportDescription: null,
 
       // data
       ctryData: null,
@@ -385,8 +387,10 @@ export default {
           // this.reportMetadata = results.md;
           this.searchTerms = results.md.searchTerms;
           this.mutations = results.md.mutations;
+          this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
         } else {
           this.searchTerms = [this.mutationName];
+          this.reportDescription = this.genericDescription;
         }
       })
     },
