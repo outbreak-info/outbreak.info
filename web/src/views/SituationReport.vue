@@ -6,6 +6,31 @@
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
+  <!-- CHANGE LOCATION MODAL -->
+  <div id="change-locations-modal" class="modal fade">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Select report locations</h5>
+          <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
+            {{ location.name }} <button class="btn btn-accent-flat px-2 py-1">
+              <font-awesome-icon class="fa-sm" :icon="['fas', 'trash-alt']" />
+              </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+          <button type="button" class="btn btn-primary" @click="selectNewLocations">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <template v-if="hasData">
     <!-- SOCIAL MEDIA SHARE -->
     <ShareReport title="title" url="url" />
@@ -136,7 +161,7 @@
               <tr class="border-bottom">
                 <th>
                   location
-                  <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
+                  <font-awesome-icon class="ml-1 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
                   <!-- sync, globe-americas, map-marked-alt -->
                 </th>
                 <th class="text-center">
@@ -174,7 +199,7 @@
           </table>
           <div class="d-flex justify-content-between">
             <small class="bright-hyperlink"><a href="#longitudinal">view change over time</a></small>
-            <small class="bright-hyperlink"><a href="#longitudinal">change locations</a></small>
+            <small class="bright-hyperlink pointer"><a data-toggle="modal" data-target="#change-locations-modal">change locations</a></small>
           </div>
           <div class="line-height-1 my-2">
             <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}}</em> </small>
@@ -197,7 +222,7 @@
       <small class="text-muted mb-2">Based on reported sample collection date</small>
       <div id="location-buttons">
         <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
-        <button class="btn btn-main-outline">Change locations
+        <button class="btn btn-main-outline" data-toggle="modal" data-target="#change-locations-modal">Change locations
           <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
@@ -220,7 +245,7 @@
     <!-- METHODOLOGY -->
     <section class="mt-3 mb-5">
       <h4>Methodology</h4>
-      <ReportMethodology :dateUpdated="dateGenerated"/>
+      <ReportMethodology :dateUpdated="dateGenerated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       <Warning class="mt-2"
         text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
@@ -284,11 +309,11 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
 import {
-  faSync
+  faSync, faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 
-library.add(faClock, faSync);
+library.add(faClock, faSync, faTrashAlt);
 
 import {
   mapState
@@ -452,6 +477,9 @@ export default {
       this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName, this.mutationVar, true).subscribe(data => {
         this.prevalence = data;
       });
+    },
+    selectNewLocations() {
+      console.log(this.location)
     },
     changeLocation(location) {
       this.selectedLocations.forEach(d => {
