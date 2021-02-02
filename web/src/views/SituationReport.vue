@@ -489,11 +489,11 @@ export default {
           this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(d => d.name).includes(d.country));
 
           this.hasData = results.longitudinal.length || results.byCountry.length;
+          this.mutations = results.mutations;
 
           if (results.md) {
             this.reportMetadata = results.md;
             this.searchTerms = results.md.searchTerms;
-            this.mutations = results.md.mutations;
             this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
           } else {
             this.searchTerms = [this.mutationName];

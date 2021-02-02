@@ -38,15 +38,19 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
     getCountryPrevalence(apiurl, mutationString, mutationVar),
-    getCuratedMetadata(mutationString)
+    getCuratedMetadata(mutationString),
+    getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([mostRecent, longitudinal, globalPrev, byCountry, md]) => {
+    map(([mostRecent, longitudinal, globalPrev, byCountry, md, mutations]) => {
+      const characteristicMuts = md && md.mutations ? md.mutations : mutations;
+
       return ({
         mostRecent: mostRecent,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
         byCountry: byCountry,
-        md: md
+        md: md,
+        mutations: characteristicMuts
       })
     }),
     catchError(e => {
@@ -58,33 +62,30 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   )
 }
 
-export function updateLocationData(apiurl, locations, mutationVar, mutationString, locationType = "country") {
-  store.state.admin.reportloading = true;
-
-  return forkJoin([
-    getMostRecentSeq(apiurl, mutationString, mutationVar, null),
-    getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
-    getWorldPrevalence(apiurl, mutationString, mutationVar),
-    getCountryPrevalence(apiurl, mutationString, mutationVar),
-    getCuratedMetadata(mutationString)
-  ]).pipe(
-    map(([mostRecent, longitudinal, globalPrev, byCountry, md]) => {
-      return ({
-        mostRecent: mostRecent,
-        longitudinal: longitudinal,
-        globalPrev: globalPrev,
-        byCountry: byCountry,
-        md: md
+export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = 0.97) {
+  const url = `${apiurl}lineage-mutations?lineage=${lineage}&frequency=${prevalenceThreshold}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d["codon_num"] = +d.pos;
+        d["mutation"] = d.name;
+        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";
+;        delete d.pos;
       })
+      return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting initial report data!", "color: red");
+      console.log("%c Error in getting characteristic mutations!", "color: red");
       console.log(e);
       return from([]);
-    }),
-    finalize(() => store.state.admin.reportloading = false)
+    })
   )
-}
+  }
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   const url = `${apiurl}most-recent-collection-date`;
