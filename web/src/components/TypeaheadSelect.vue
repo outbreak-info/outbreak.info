@@ -46,6 +46,8 @@ export default {
     enter() {
       this.selected = this.matches[this.current];
       this.open = false;
+      this.$emit("selected", this.selected);
+      this.open = false;
     },
 
     // When up pressed while suggestions are open
