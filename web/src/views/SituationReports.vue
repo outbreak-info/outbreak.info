@@ -29,9 +29,23 @@
     <div class="d-flex flex-column justify-content-center align-items-center">
       <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline">How to interpret these reports</router-link>
     </div>
-
-
   </div>
+
+  <section id="latest" class="text-left">
+  <h4>Lineage overview</h4>
+  <p>
+    Fastest increasing lineages over the past two weeks
+  </p>
+  <ol>
+    <li>
+      1.
+    </li>
+    <li>
+      2.
+    </li>
+  </ol>
+  </section>
+
   <section id="report-list" class="text-left">
     <!-- lineage or mutation -->
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" id="report-group">
