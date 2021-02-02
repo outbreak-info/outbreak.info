@@ -104,14 +104,22 @@
                 New sequences identified
               </th>
             </tr>
-            <tr v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
+            <tr>
+              <td>
+                Worldwide
+              </td>
+              <td>
+                {{ newTodayGlobal.toLocaleString() }}
+              </td>
+            </tr>
+            <!-- <tr v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
               <td>
                 {{ location.name }}
               </td>
               <td>
                 XXX
               </td>
-            </tr>
+            </tr> -->
           </table>
         </div>
       </section>
@@ -120,7 +128,7 @@
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
         <h3>Summary</h3>
         <div class="summary-counts mb-3">
-          As of {{ dateUpdated }}, <b>{{ totalSeqs.toLocaleString() }}</b> sequences in the {{ mutationName }} lineage have been detected:
+          As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the {{ mutationName }} lineage have been detected:
 
           <!-- PREVALENCE SUMMARY TABLE -->
           <table class="border-bottom line-height-1 mt-2 w-100">
@@ -145,11 +153,10 @@
                   Worldwide
                 </td>
                 <td class="text-center">
-                  XXX
-                  <!-- {{ totalSeqs.toLocaleString() }} -->
+                  {{ totalLineage }}
                 </td>
                 <td class="text-center">
-                  XXXXX
+                  {{ globalPrev }}
                 </td>
               </tr>
               <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
@@ -211,9 +218,9 @@
     </section>
 
     <!-- METHODOLOGY -->
-    <section class="my-3">
+    <section class="mt-3 mb-5">
       <h4>Methodology</h4>
-      <ReportMethodology />
+      <ReportMethodology :dateUpdated="dateGenerated"/>
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       <Warning class="mt-2"
         text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
@@ -359,7 +366,7 @@ export default {
       mutations: null,
       reportType: null,
       lastUpdated: "XX day",
-      dateUpdated: "XXXXX January 2021",
+      dateGenerated: "XX XXX XXXX",
 
       // subscriptions
       dataSubscription: null,
@@ -372,12 +379,15 @@ export default {
       reportDescription: null,
 
       // data
+      dateUpdated: null,
       reportMetadata: null,
       ctryData: null,
       countries: null,
       states: [],
       locationTotals: null,
-      totalSeqs: 0,
+      totalLineage: null,
+      globalPrev: null,
+      newTodayGlobal: null,
       prevalence: []
     }
   },
@@ -410,6 +420,12 @@ export default {
       if (this.mutationName) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName).subscribe(results => {
           console.log(results)
+          // worldwide stats
+          this.globalPrev = results.globalPrev.proportion_formatted;
+          this.totalLineage = results.globalPrev.lineage_count_formatted;
+          this.newTodayGlobal = results.mostRecent.date_count;
+          this.dateUpdated = results.mostRecent.dateFormatted;
+
           // longitudinal data: prevalence over time
           this.prevalence = results.longitudinal;
 

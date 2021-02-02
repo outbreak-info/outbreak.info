@@ -1,12 +1,27 @@
 import axios from "axios";
-import { from, forkJoin, BehaviorSubject } from "rxjs";
-import { finalize, catchError, pluck, map, mergeMap } from "rxjs/operators";
+import {
+  from,
+  forkJoin,
+  BehaviorSubject
+} from "rxjs";
+import {
+  finalize,
+  catchError,
+  pluck,
+  map,
+  mergeMap
+} from "rxjs/operators";
 import {
   timeParse,
-  timeFormat, format
+  timeFormat,
+  format
 } from "d3";
-import { rollingAverage, calcPrevalence } from "@/js/stats.js";
+import {
+  rollingAverage,
+  calcPrevalence
+} from "@/js/stats.js";
 const parseDate = timeParse("%Y-%m-%d");
+const formatDate = timeFormat("%e %B %Y");
 const formatPercent = format(".0%");
 
 import store from "@/store";
@@ -19,12 +34,20 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   store.state.admin.reportloading = true;
 
   return forkJoin([
+    getMostRecentSeq(apiurl, mutationString, mutationVar, null),
     getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
+    getWorldPrevalence(apiurl, mutationString, mutationVar),
     getCountryPrevalence(apiurl, mutationString, mutationVar),
     getCuratedMetadata(mutationString)
   ]).pipe(
-    map(([longitudinal, byCountry, md]) => {
-      return({ longitudinal: longitudinal, byCountry: byCountry, md: md })
+    map(([mostRecent, longitudinal, globalPrev, byCountry, md]) => {
+      return ({
+        mostRecent: mostRecent,
+        longitudinal: longitudinal,
+        globalPrev: globalPrev,
+        byCountry: byCountry,
+        md: md
+      })
     }),
     catchError(e => {
       console.log("%c Error in getting initial report data!", "color: red");
@@ -37,6 +60,57 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
 
 export function updateLocationData() {
 
+}
+
+export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
+  const url = `${apiurl}most-recent-collection-date`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      const filtered = results.filter(d => d.lineage == mutationString);
+      let lineageRecent;
+      if(filtered.length == 1) {
+        lineageRecent = filtered[0];
+        const dateTime = parseDate(lineageRecent.date)
+        lineageRecent["dateFormatted"] = formatDate(dateTime)
+      }
+      return (lineageRecent)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent global prevalence data!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
+}
+
+export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
+  const url = `${apiurl}prevalence?cumulative=true&${mutationVar}=${mutationString}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      // results["name"] = "Worldwide";
+      results["proportion_formatted"] = formatPercent(results.global_prevalence);
+      results["lineage_count_formatted"] = format(",")(results.lineage_count);
+      // results["proportion"] = results.global_prevalence;
+      // results["cum_lineage_count"] = results.lineage_count;
+      // results["location_id"] = "worldwide";
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent global prevalence data!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
 }
 
 export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
@@ -54,14 +128,14 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
         d["dateTime"] = parseDate(d.date);
         d["location_id"] = d.country.replace(/\s/g, "");
       })
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting recent prevalence data by country!", "color: red");
       console.log(e);
       return from([]);
     })
-)
+  )
 }
 
 export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, indivCall = false, locationType = "country") {
@@ -83,7 +157,7 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
       results.forEach(d => {
         d["dateTime"] = parseDate(d.date);
       })
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting temporal data by location!", "color: red");
@@ -125,6 +199,7 @@ export function getCuratedMetadata(id) {
   )
 }
 
+
 export function getLineageResources(apiUrl, queryString, size, page, sort = "-date") {
   const fields = "@type, name, author, date, journalName"
   const timestamp = Math.round(new Date().getTime() / 36e5);
@@ -139,8 +214,6 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
   ).pipe(
     pluck("data"),
     map(results => {
-      const formatDate = timeFormat("%e %B %Y");
-
       results["hits"].forEach(d => {
         const parsedDate = parseDate(d.date)
         d["dateFormatted"] = formatDate(parsedDate);
