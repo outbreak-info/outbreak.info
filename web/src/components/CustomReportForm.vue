@@ -21,7 +21,10 @@
 
   <div id="mutation-set" class="my-3">
     <h4>Set of mutations</h4>
-    <form class="d-flex align-items-center mb-3" @submit.prevent="onSubmit">
+    <em class="text-muted">
+      Coming soon
+    </em>
+    <!-- <form class="d-flex align-items-center mb-3" @submit.prevent="onSubmit">
       <div class="d-flex align-items-start">
         <div class="d-flex flex-column align-items-start mr-4 coords p-2" id="coordinate-type">
           <h6 class="text-uppercase text-muted">coordinate system</h6>
@@ -91,10 +94,10 @@
         </div>
       </button>
 
-    </form>
+    </form> -->
   </div>
 
-  <div id="selected-mutations" class="my-3" v-if="selectedMutations.length">
+  <!-- <div id="selected-mutations" class="my-3" v-if="selectedMutations.length">
     <h5>Selected mutations</h5>
     <div class="d-flex flex-wrap">
       <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx" @click="deleteMutation(mIdx)">
@@ -108,7 +111,7 @@
   </div>
   <div class="d-flex justify-content-center w-100">
     <button class="btn btn-accent">Create report</button>
-  </div>
+  </div> -->
 
 </div>
 </template>
@@ -144,9 +147,9 @@ library.add(faPlus, faTimesCircle);
 export default Vue.extend({
   name: "CustomReportForm",
   components: {
-    FontAwesomeIcon,
+    // FontAwesomeIcon,
     // TypeaheadSelect,
-    SARSMutationMap
+    // SARSMutationMap
   },
   computed: {
     ...mapState("genomics", ["refSeq"]),
