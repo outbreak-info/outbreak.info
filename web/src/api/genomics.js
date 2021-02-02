@@ -58,8 +58,32 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   )
 }
 
-export function updateLocationData() {
+export function updateLocationData(apiurl, locations, mutationVar, mutationString, locationType = "country") {
+  store.state.admin.reportloading = true;
 
+  return forkJoin([
+    getMostRecentSeq(apiurl, mutationString, mutationVar, null),
+    getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
+    getWorldPrevalence(apiurl, mutationString, mutationVar),
+    getCountryPrevalence(apiurl, mutationString, mutationVar),
+    getCuratedMetadata(mutationString)
+  ]).pipe(
+    map(([mostRecent, longitudinal, globalPrev, byCountry, md]) => {
+      return ({
+        mostRecent: mostRecent,
+        longitudinal: longitudinal,
+        globalPrev: globalPrev,
+        byCountry: byCountry,
+        md: md
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting initial report data!", "color: red");
+      console.log(e);
+      return from([]);
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
 }
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
@@ -246,7 +270,6 @@ export function findCountry(apiUrl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       return(results)
     }),
     catchError(e => {

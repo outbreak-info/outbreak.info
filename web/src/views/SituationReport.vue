@@ -1,8 +1,5 @@
 <template>
 <div class="my-4 mx-4 half-page text-left" v-if="mutationName">
-  {{ctry2Add }}
-  <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" />
-
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
@@ -19,21 +16,31 @@
           </button>
         </div>
         <div class="modal-body">
-          <button class="btn btn-accent-flat px-2 py-1 mr-2" v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
-            {{ location.name }}
-            <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
-          </button>
+          <div class="mb-3">
+            <h6 class="text-muted text-underline m-0">Current locations</h6>
+            <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
+              {{ location }}
+              <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+            </button>
+          </div>
+
+          <div>
+            <h6 class="text-sec text-underline m-0">Countries to add</h6>
+            <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
+              {{ country }}
+              <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+            </button>
+          </div>
 
           <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
-            <button class="btn btn-main">
-              <font-awesome-icon class="fa-sm" :icon="['fas', 'plus-circle']" />
-            </button>
+            <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" />
+
           </div>
         </div>
 
         <div class="modal-footer">
           <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-          <button type="button" class="btn btn-primary" @click="selectNewLocations">Save changes</button>
+          <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
         </div>
       </div>
     </div>
@@ -334,6 +341,7 @@ import {
   getReportData,
   getCuratedMetadata,
   getTemporalPrevalence,
+  updateLocationData,
   findCountry
 } from "@/api/genomics.js";
 
@@ -396,7 +404,6 @@ export default {
   },
   data() {
     return {
-      ctry2Add: [],
       // report details
       today: null,
       url: null,
@@ -407,8 +414,10 @@ export default {
       lastUpdated: "XX day",
       dateGenerated: "XX XXX XXXX",
 
-      // functions
+      // Changing locations
       queryCountry: null,
+      currentLocs: null, // placeholder for current locations
+      ctry2Add: [], // array to store new locations to add
 
       // subscriptions
       dataSubscription: null,
@@ -434,6 +443,7 @@ export default {
     }
   },
   mounted() {
+    this.currentLocs = this.selectedLocations.map(d => d.name).filter(d => d != "Worldwide");
     this.queryCountry = findCountry;
 
     // Get date for the citation object
@@ -497,8 +507,28 @@ export default {
         this.prevalence = data;
       });
     },
+    removeLocation(idx) {
+      this.currentLocs.splice(idx, 1);
+    },
+    removeCountry2Add(idx) {
+      this.ctry2Add.splice(idx, 1);
+    },
     selectNewLocations() {
-      console.log(this.location)
+      let newLocations = this.currentLocs.concat(this.ctry2Add);
+
+      const queryParams = this.$route.query;
+
+      this.locationTotals = this.ctryData.filter(d => newLocations.includes(d.country));
+
+      this.$router.push({
+        name: "MutationReport",
+        path: "/report2.0",
+        query: {
+          location: newLocations,
+          pangolin: queryParams.pangolin,
+          muts: queryParams.muts
+        }
+      })
     },
     changeLocation(location) {
       this.selectedLocations.forEach(d => {
@@ -512,9 +542,7 @@ export default {
       console.log("muts")
     },
     updateSelected(selected) {
-      console.log("selected")
-  this.ctry2Add.push(selected);
-      console.log(this.ctry2Add)
+      this.ctry2Add.push(selected.name);
     }
   },
   destroyed() {

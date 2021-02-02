@@ -1,10 +1,10 @@
 <template>
-<div>
-  <div style="position:relative" class="dropdown">
+<div class="w-100">
+  <div class="dropdown">
     <input class="form-control" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
     <div class="dropdown-menu" :class="{'show':isOpen}" style="width:100%">
       <a href="#" v-for="(suggestion, idx) in matches" :key="idx" class="dropdown-item" :class="{'active': isActive(idx)}" @click="suggestionClick(idx)">
-        {{ suggestion }}</a>
+        {{ suggestion.name }} ({{ suggestion.total_count.toLocaleString() }})</a>
     </div>
   </div>
 
@@ -63,7 +63,7 @@ export default {
     //When the user changes input
     change() {
       this.querySubscription = this.queryFunction(this.apiUrl, this.selected).subscribe(results => {
-        this.matches = results.map(d => d.name);
+        this.matches = results;
 
         if (this.isOpen == false) {
           this.isOpen = true;

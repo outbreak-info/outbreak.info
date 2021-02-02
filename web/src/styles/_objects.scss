@@ -117,6 +117,17 @@ button.chip.to-add:hover {
       color: white;
     }
   }
+  &-flat{
+    background: transparent;
+    border: none !important;
+    color: $secondary-color;
+    transition: all .5s;
+    // text-transform:uppercase;
+    &:hover{
+      background: $primary-color !important;
+      color: white !important;
+    }
+  }
 }
 
 
@@ -143,12 +154,12 @@ button.chip.to-add:hover {
   &-flat{
     background: transparent;
     border: none !important;
-    color: $warning-color;
+    // color: $warning-color;
     transition: all .5s;
-    text-transform:uppercase;
+    // text-transform:uppercase;
     &:hover{
       background: $warning-color !important;
-      color: white;
+      color: white !important;
     }
   }
 }
