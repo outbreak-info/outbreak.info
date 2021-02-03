@@ -263,7 +263,7 @@
       <ReportMethodology :dateUpdated="dateGenerated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       <Warning class="mt-2"
-        text="B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage in the US.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>" />
+        :text="disclaimer" />
     </section>
 
     <!-- CITATION -->
@@ -386,6 +386,9 @@ export default {
     genericDescription() {
       return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
     },
+    disclaimer() {
+      return `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`
+    },
     selectedLocations() {
       const locations = typeof(this.location) == "string" ? [this.location] : this.location;
       // always have the world there too.
@@ -495,6 +498,7 @@ export default {
             this.reportMetadata = results.md;
             this.searchTerms = results.md.searchTerms;
             this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
+            this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
           } else {
             this.searchTerms = [this.mutationName];
             this.reportDescription = this.genericDescription;
