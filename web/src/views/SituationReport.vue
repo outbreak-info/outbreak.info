@@ -584,13 +584,4 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
 }
-
-[data-toggle="collapse"] {
-    &.collapsed .if-not-collapsed {
-        display: none;
-    }
-    &:not(.collapsed) .if-collapsed {
-        display: none;
-    }
-}
 </style>
