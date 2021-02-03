@@ -268,7 +268,7 @@ const routes = [{
       )
   },
   {
-    path: "/report2.0",
+    path: "/demo-report",
     name: "MutationReport",
     props: route => ({
       location: route.query.location,
@@ -279,6 +279,15 @@ const routes = [{
       import(
         /* webpackChunkName: "situation-report" */
         "../views/SituationReport.vue"
+      )
+  },
+  {
+    path: "/situation-reports-demo",
+    name: "SituationReportsDemo",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-report" */
+        "../views/SituationReportsDemo.vue"
       )
   }
 ];
