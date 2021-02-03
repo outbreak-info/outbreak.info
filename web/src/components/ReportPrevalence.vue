@@ -36,13 +36,13 @@
         <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No samples found</text>
       </g>
       <g id="weird-last values" :hidden="!data.length">
-        <text :x="width - margin.left" :y="0" fill="#929292" font-size="10 px" dominant-baseline="hanging" text-anchor="end">Latest dates are noisy due to fewer samples</text>
+        <text :x="width - margin.left" :y="0" fill="#929292" font-size="10 px" dominant-baseline="hanging" text-anchor="end" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;">Latest dates are noisy due to fewer samples</text>
         <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
       </g>
     </svg>
 
     <!-- SEQUENCING HISTOGRAM -->
-    <svg :width="width" :height="heightCounts" class="prevalence-curve-counts" ref="svg-counts">
+    <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="countTitle">
       <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
       <g :transform="`translate(${margin.left - 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
       <g :transform="`translate(${width - margin.right + 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
@@ -61,6 +61,9 @@
     <div id="sequencing-count"></div>
     <div id="sequencing-count-rolling"></div>
   </div>
+
+  <DownloadReportData :data="data" figureRef="prevalence-curve"/>
+
 </div>
 </template>
 
@@ -83,11 +86,15 @@ import {
   transition,
   timeDay
 } from "d3";
+
+import DownloadReportData from "@/components/DownloadReportData.vue";
+
 export default Vue.extend({
   name: "ReportPrevalence",
   props: {
     data: Array,
     mutationName: String,
+    location: String,
     width: {
       type: Number,
       default: 800
@@ -97,9 +104,15 @@ export default Vue.extend({
       default: 500
     }
   },
+  components: {
+    DownloadReportData
+  },
   computed: {
     title() {
-      return ("Prevalence over time")
+      return (`${this.mutationName} prevalence over time in ${this.location}`)
+    },
+    countTitle() {
+      return (`Total samples sequenced by collection date in ${this.location}`)
     }
   },
   data() {

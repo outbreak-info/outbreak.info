@@ -241,7 +241,7 @@
           <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
-      <ReportPrevalence :data="prevalence" :mutationName="mutationName" />
+      <ReportPrevalence :data="prevalence" :mutationName="mutationName" :location="activeLocation" />
     </section>
 
     <!-- GEOGRAPHIC PREVALENCE -->
@@ -416,6 +416,7 @@ export default {
       disclaimer: null,
 
       // Changing locations
+      activeLocation: "the world",
       queryCountry: null,
       currentLocs: null, // placeholder for current locations
       ctry2Add: [], // array to store new locations to add
@@ -539,6 +540,8 @@ export default {
       })
 
       location.isActive = !location.isActive;
+      this.activeLocation = location.name;
+
       this.getTemporalData(location.name);
     },
     downloadMutations() {
