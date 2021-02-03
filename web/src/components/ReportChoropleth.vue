@@ -1,9 +1,9 @@
 <template>
-<div class="d-flex flex-column">
+<div class="d-flex flex-column align-items-center">
   <!-- Total count filter -->
-  <div class="d-flex" id="choropleth-legend">
+  <div class="d-flex justify-content-around" id="choropleth-legend">
     <GradientLegend class="mr-4" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-    <svg ref="count_filter" id="count-filter" :width="width" :height="legendHeight">
+    <svg ref="count_filter" id="count-filter" :width="width-225" :height="legendHeight">
       <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
       <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
       <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>

@@ -120,7 +120,7 @@
         </div>
 
         <!-- KEY INSIGHTS -->
-        <div class="mt-4">
+        <!-- <div class="mt-4">
           <h4>Key Insights</h4>
           <ul>
             <li>
@@ -133,7 +133,7 @@
               XXXX Experimental data suggests it is more transmissable than other SARS-CoV-2 variants.
             </li>
           </ul>
-        </div>
+        </div> -->
 
         <!-- NEW TODAY -->
         <div class="mt-4">
