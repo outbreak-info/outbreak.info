@@ -268,7 +268,7 @@ const routes = [{
       )
   },
   {
-    path: "/demo-report",
+    path: "/situation-report-demo",
     name: "MutationReport",
     props: route => ({
       location: route.query.location,
