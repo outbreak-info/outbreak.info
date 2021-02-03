@@ -695,3 +695,12 @@ select:hover {
 .text-underline {
     text-decoration: underline;
 }
+
+.tooltip-basic {
+    background: #ffffffd6;
+    padding: 7px;
+    border: 1px solid $base-grey;
+    border-radius: 3px;
+    position: absolute;
+    display: none;
+}

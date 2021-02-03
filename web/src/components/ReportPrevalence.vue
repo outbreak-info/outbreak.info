@@ -51,7 +51,7 @@
   </div>
 
   <!-- TOOLTIPS -->
-  <div ref="tooltip_prevalence" class="tooltip box-shadow" id="tooltip-prevalence">
+  <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
     <h5 id="date"></h5>
     <div class="d-flex align-items-center">
       <b id="proportion" class="font-size-2"></b>
@@ -378,15 +378,5 @@ export default Vue.extend({
 
 .purple {
     color: purple;
-}
-
-#tooltip-prevalence {
-    background-color: #fff;
-    padding: 7px;
-    border: 1px solid;
-    border-radius: 3px;
-    opacity: 0.95;
-    position: absolute;
-    display: none;
 }
 </style>
