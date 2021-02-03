@@ -217,7 +217,7 @@
             <small class="bright-hyperlink pointer"><a data-toggle="modal" data-target="#change-locations-modal">change locations</a></small>
           </div>
           <div class="line-height-1 my-2">
-            <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}}</em> </small>
+            <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
           </div>
         </div>
 
