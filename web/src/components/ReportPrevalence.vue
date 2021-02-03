@@ -201,7 +201,7 @@ export default Vue.extend({
       const ttipShift = 20;
 
       // find closest date
-      const selectedX = this.x.invert(event.offsetX);
+      const selectedX = this.x.invert(event.offsetX-this.margin.left);
       const selectedDate = timeDay.round(selectedX);
       const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
 
@@ -225,7 +225,7 @@ export default Vue.extend({
       }
     },
     tooltipOff() {
-        select(this.$refs.tooltip_prevalence)
+      select(this.$refs.tooltip_prevalence)
         .style("display", "none");
     },
     updatePlot() {
@@ -288,11 +288,6 @@ export default Vue.extend({
           )
         )
 
-        // event listener for tooltips
-        this.chart.selectAll(".confidence-interval")
-          .on("mousemove", () => this.tooltipOn())
-          .on("mouseleave", () => this.tooltipOff())
-
         const pathSelector = this.chart
           .selectAll(".prevalence-line")
           .data([this.data]);
@@ -323,6 +318,10 @@ export default Vue.extend({
           )
         )
 
+        // event listener for tooltips
+        this.chart.selectAll(".confidence-interval")
+          .on("mousemove", () => this.tooltipOn())
+          .on("mouseleave", () => this.tooltipOff())
       }
     }
   }
