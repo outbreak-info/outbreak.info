@@ -3,7 +3,7 @@
   <!-- Total count filter -->
   <div class="d-flex justify-content-around" id="choropleth-legend">
     <GradientLegend class="mr-4" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-    <svg ref="count_filter" id="count-filter" :width="width-225" :height="legendHeight">
+    <svg ref="count_filter" id="count-filter" :width="width-225" :height="legendHeight" class="report-choropleth-legend">
       <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
       <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
       <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>
@@ -23,7 +23,7 @@
   </div>
 
   <!-- choropleth -->
-  <svg :width="width" :height="height" ref="choropleth" class="epi-map-svg" :name="title">
+  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth" :name="title">
     <g ref="blank_map" class="blank-map-group"></g>
     <g ref="regions" class="region-group"></g>
     <g ref="overlay" class="overlay-map-group"></g>
@@ -38,11 +38,14 @@
     </div>
     <div id="sequencing-count"></div>
   </div>
+
+  <DownloadReportData :data="data" figureRef="report-choropleth" />
 </div>
 </template>
 
 <script>
 import cloneDeep from "lodash/cloneDeep";
+import DownloadReportData from "@/components/DownloadReportData.vue";
 
 import {
   geoEqualEarth,
@@ -81,7 +84,8 @@ export default {
     }
   },
   components: {
-    GradientLegend
+    GradientLegend,
+    DownloadReportData
   },
   data() {
     return {
@@ -142,7 +146,7 @@ export default {
       return (Math.max(Math.abs(this.minVal), this.maxVal))
     },
     title() {
-      return (`prevalence by ${this.geoLevel}`)
+      return (`${this.mutationName} prevalence by ${this.adminLevel}`)
     },
     filterShift() {
       return (this.xFilter ? this.xFilter(this.countThreshold) : 0)

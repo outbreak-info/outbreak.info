@@ -27,7 +27,7 @@
       </div>
 
       <!-- LEFT: DOTPLOT -->
-      <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence" ref="svg_dot" :name="title">
+      <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
         <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
         <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
@@ -56,22 +56,23 @@
       </div>
 
 
-      <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count" ref="svg_count" :name="title">
+      <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
         <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
         <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
         <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
       </svg>
     </div>
-
   </div>
+  <DownloadReportData :data="data" figureRef="prevalence-by-location" class="mt-2" />
+
 </div>
 </template>
 
 
 <script lang="js">
 import Vue from "vue";
-
+import DownloadReportData from "@/components/DownloadReportData.vue";
 
 import {
   select,
@@ -103,7 +104,8 @@ import GradientLegend from "@/components/GradientLegend.vue";
 export default Vue.extend({
   name: "ReportPrevalenceByLocation",
   components: {
-    GradientLegend
+    GradientLegend,
+    DownloadReportData
   },
   props: {
     data: Array,
@@ -111,6 +113,10 @@ export default Vue.extend({
     setWidth: {
       type: Number,
       default: 600
+    },
+    adminLevel: {
+      type: String,
+      default: "country"
     }
   },
   watch: {
@@ -126,7 +132,7 @@ export default Vue.extend({
       return this.setWidth ? this.setWidth : this.maxWidth;
     },
     title() {
-      return ("title")
+      return (`${this.mutationName} prevalence by ${this.adminLevel}`)
     },
     maxEstFormatted() {
       const formatter = format(".0%");
