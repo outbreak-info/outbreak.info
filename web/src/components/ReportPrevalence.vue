@@ -235,11 +235,21 @@ export default Vue.extend({
           .style("left", `${event.pageX + ttipShift}px`)
           .style("top", `${event.pageY + ttipShift}px`)
           .style("display", "block");
+
+          // histogram off/on
+          selectAll(".raw-counts")
+          .style("opacity", 0.3);
+
+          selectAll(`#date${selected[0].date}`)
+          .style("opacity", 1);
       }
     },
     tooltipOff() {
       select(this.$refs.tooltip_prevalence)
         .style("display", "none");
+
+        selectAll(".raw-counts")
+        .style("opacity", 1);
     },
     updatePlot() {
       const t1 = transition().duration(2500);
@@ -255,6 +265,7 @@ export default Vue.extend({
           enter => {
             enter.append("line")
               .attr("class", "raw-counts")
+              .attr("id", d => `date${d.date}`)
               .attr("x1", d => this.x(d[this.xVariable]))
               .attr("x2", d => this.x(d[this.xVariable]))
               .attr("y1", d => this.yCounts(0))
@@ -263,7 +274,9 @@ export default Vue.extend({
               .style("stroke", "purple");
           },
           update =>
-          update.attr("x1", d => this.x(d[this.xVariable]))
+          update
+          .attr("id", d => `date${d.date}`)
+          .attr("x1", d => this.x(d[this.xVariable]))
           .attr("x2", d => this.x(d[this.xVariable]))
           .attr("y1", d => this.yCounts(0))
           .attr("y2", d => this.yCounts(d[this.totalVariable]))
