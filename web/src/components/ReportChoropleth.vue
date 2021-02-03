@@ -12,11 +12,11 @@
       <g transform="translate(350,8)" id="threshold-slider">
         <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of samples</text>
         <g transform="translate(0,18)">
-        <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
-        <line ref="selected_threshold" :x1="filterShift" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
-        <circle ref="threshold_slider" :transform="`translate(${filterShift}, 0)`" cx="0" cy="0" r="8" fill="#df4ab7" class="pointer" />
-        <text ref="threshold_label" :transform="`translate(${filterShift}, 0)`" x="0" y="0" dy="12" font-size="14px" font-weight="700" fill="#df4ab7" text-anchor="middle" dominant-baseline="hanging">{{countThreshold}}</text>
-        <text :x="filterWidth" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="end" dominant-baseline="hanging">{{maxCount}}</text>
+          <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
+          <line ref="selected_threshold" :x1="filterShift" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
+          <circle ref="threshold_slider" :transform="`translate(${filterShift}, 0)`" cx="0" cy="0" r="8" fill="#df4ab7" class="pointer" />
+          <text ref="threshold_label" :transform="`translate(${filterShift}, 0)`" x="0" y="0" dy="12" font-size="14px" font-weight="700" fill="#df4ab7" text-anchor="middle" dominant-baseline="hanging">{{countThreshold}}</text>
+          <text :x="filterWidth" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="end" dominant-baseline="hanging">{{maxCount}}</text>
         </g>
       </g>
     </svg>
@@ -28,6 +28,16 @@
     <g ref="regions" class="region-group"></g>
     <g ref="overlay" class="overlay-map-group"></g>
   </svg>
+
+  <div ref="tooltip_choro" class="tooltip-basic box-shadow" id="tooltip-choro">
+    <h5 id="location-name"></h5>
+    <em id="no-sequencing">No reported sequencing</em>
+    <div class="d-flex align-items-center">
+      <b id="proportion" class="font-size-2"></b>
+      <span id="confidence-interval" class="text-muted ml-2"></span>
+    </div>
+    <div id="sequencing-count"></div>
+  </div>
 </div>
 </template>
 
@@ -135,7 +145,7 @@ export default {
       return (`prevalence by ${this.geoLevel}`)
     },
     filterShift() {
-      return(this.xFilter ? this.xFilter(this.countThreshold) : 0)
+      return (this.xFilter ? this.xFilter(this.countThreshold) : 0)
     }
   },
   created: function() {
@@ -150,27 +160,27 @@ export default {
       // set up drag for threshold filter
       this.setupDrag();
 
-      // // event listener to hide tooltips
-      // document.addEventListener(
-      //   "mousemove",
-      //   evt => {
-      //     if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
-      //       this.mouseOff();
-      //     }
-      //   }, {
-      //     passive: true
-      //   }
-      // );
-      // document.addEventListener(
-      //   "mouseleave",
-      //   evt => {
-      //     if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
-      //       this.mouseOff();
-      //     }
-      //   }, {
-      //     passive: true
-      //   }
-      // );
+      // event listener to hide tooltips
+      document.addEventListener(
+        "mousemove",
+        evt => {
+          if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+            this.mouseOff();
+          }
+        }, {
+          passive: true
+        }
+      );
+      document.addEventListener(
+        "mouseleave",
+        evt => {
+          if (!evt.target.className || !evt.target.className.baseVal || !evt.target.className.baseVal.includes("region")) {
+            this.mouseOff();
+          }
+        }, {
+          passive: true
+        }
+      );
     });
 
     this.setupChoro();
@@ -182,13 +192,11 @@ export default {
       console.log("setting dims")
     },
     setupChoro() {
-      console.log("settingup")
       this.svg = select(this.$refs.svg);
       this.blank = select(this.$refs.blank_map);
       this.overlay = select(this.$refs.overlay);
       this.regions = select(this.$refs.regions);
       this.ttips = select(this.$refs.choropleth_tooltip);
-
     },
     setupMap() {
       if (this.adminLevel === "country") {
@@ -250,7 +258,7 @@ export default {
       // draggable filters
       select(this.$refs.threshold_slider)
         .call(drag()
-          .on("drag", () => this. updateDrag())
+          .on("drag", () => this.updateDrag())
           .on("end", () => this.changeFilters())
         )
     },
@@ -273,7 +281,7 @@ export default {
             enter
               .append("path")
               .attr("class", "region")
-              .attr("id", d => d.location_id)
+              .attr("id", d => d.properties.location_id)
               // draw each region
               .attr("d", this.path
                 .projection(this.projection)
@@ -283,7 +291,7 @@ export default {
               .style("stroke-width", 0.5)
           },
           update => update
-          .attr("id", d => d.location_id)
+          .attr("id", d => d.properties.location_id)
           // draw each region
           .attr("d", this.path
             .projection(this.projection)
@@ -300,12 +308,65 @@ export default {
             .remove()
           )
         )
+      this.regions.selectAll("path.region")
+        .on("mouseenter", d => this.debounceMouseon(d))
+        .on("mouseleave", this.mouseOff);
     },
-    mouseOn() {
-      console.log("ttip on")
+    mouseOn(d) {
+      const ttipShift = 15;
+
+      // dim everything
+      this.regions
+        .selectAll("path")
+        .style("opacity", 0.2)
+        .style("stroke-opacity", 0.2);
+
+      // turn on the location
+      this.regions
+        .select(`#${d.properties.location_id}`)
+        .style("opacity", 1)
+        .style("stroke-opacity", 1);
+
+      const ttip = select(this.$refs.tooltip_choro);
+
+      // edit text
+      ttip.select("h5").text(d.properties.NAME);
+      if (d.proportion) {
+        ttip.select("#no-sequencing").classed("hidden", true);
+        ttip.select("#proportion")
+          .text(d.proportion_formatted)
+          .classed("hidden", false);
+
+        ttip.select("#confidence-interval")
+          .text(`(95% CI: ${format(".0%")(d.lower)}-${format(".0%")(d.upper)})`)
+          .classed("hidden", false);
+
+        ttip.select("#sequencing-count")
+          .text(`Number of total cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
+          .classed("hidden", false);
+
+      } else {
+        ttip.select("#no-sequencing").classed("hidden", false);
+        ttip.select("#proportion").classed("hidden", true);
+        ttip.select("#confidence-interval").classed("hidden", true);
+        ttip.select("#sequencing-count").classed("hidden", true);
+      }
+
+      // fix location
+      ttip
+        .style("left", `${this.event.pageX + ttipShift}px`)
+        .style("top", `${this.event.pageY + ttipShift}px`)
+        .style("display", "block");
     },
     mouseOff() {
-      console.log("ttip off")
+      select(this.$refs.tooltip_choro)
+        .style("display", "none");
+
+      this.regions
+        .selectAll("path")
+        .style("opacity", 1)
+        .style("stroke-opacity", 1);
+
     },
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this
