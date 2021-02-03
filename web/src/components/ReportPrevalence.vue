@@ -49,6 +49,18 @@
     </svg>
     <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
   </div>
+
+  <!-- TOOLTIPS -->
+  <div ref="tooltip_prevalence" class="tooltip box-shadow" id="tooltip-prevalence">
+    <h5 id="date"></h5>
+    <div class="d-flex align-items-center">
+      <b id="proportion" class="font-size-2"></b>
+      <span id="confidence-interval" class="text-muted ml-2"></span>
+    </div>
+
+    <div id="sequencing-count"></div>
+    <div id="sequencing-count-rolling"></div>
+  </div>
 </div>
 </template>
 
@@ -68,7 +80,8 @@ import {
   format,
   line,
   area,
-  transition
+  transition,
+  timeDay
 } from "d3";
 export default Vue.extend({
   name: "ReportPrevalence",
@@ -143,7 +156,7 @@ export default Vue.extend({
         .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.yVariable]));
 
-      // confidence interval
+      // confidence interval area method
       this.area = area()
         .x(d => this.x(d[this.xVariable]))
         .y0(d => this.y(d.proportion_ci_lower))
@@ -178,16 +191,47 @@ export default Vue.extend({
         .tickValues([0, this.maxCounts]);
 
       this.yCountsAxisRight = axisRight(this.yCounts).tickSizeOuter(0)
-      .tickValues([0, this.maxCounts]);
+        .tickValues([0, this.maxCounts]);
 
       select(this.$refs.yAxis).call(this.yAxis);
       select(this.$refs.yCountsAxisLeft).call(this.yCountsAxisLeft);
       select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
     },
+    tooltipOn() {
+      const ttipShift = 20;
+
+      // find closest date
+      const selectedX = this.x.invert(event.offsetX);
+      const selectedDate = timeDay.round(selectedX);
+      const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
+
+      if (selected.length) {
+        // tooltip on
+        const ttip = select(this.$refs.tooltip_prevalence);
+
+        // edit text
+        ttip.select("h5").text(selected[0].date)
+
+        ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
+        ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
+        ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
+        ttip.select("#sequencing-count-rolling").text(`1 week average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
+
+        // fix location
+        ttip
+          .style("left", `${event.pageX + ttipShift}px`)
+          .style("top", `${event.pageY + ttipShift}px`)
+          .style("display", "block");
+      }
+    },
+    tooltipOff() {
+        select(this.$refs.tooltip_prevalence)
+        .style("display", "none");
+    },
     updatePlot() {
       const t1 = transition().duration(2500);
 
-      if(this.data) {
+      if (this.data) {
         this.updateScales();
 
         const countSelector = this.counts
@@ -243,6 +287,11 @@ export default Vue.extend({
             .remove()
           )
         )
+
+        // event listener for tooltips
+        this.chart.selectAll(".confidence-interval")
+          .on("mousemove", () => this.tooltipOn())
+          .on("mouseleave", () => this.tooltipOff())
 
         const pathSelector = this.chart
           .selectAll(".prevalence-line")
@@ -301,5 +350,15 @@ export default Vue.extend({
 
 .purple {
     color: purple;
+}
+
+#tooltip-prevalence {
+    background-color: #fff;
+    padding: 7px;
+    border: 1px solid;
+    border-radius: 3px;
+    opacity: 0.95;
+    position: absolute;
+    display: none;
 }
 </style>
