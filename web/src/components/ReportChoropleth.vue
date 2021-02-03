@@ -189,7 +189,6 @@ export default {
   },
   methods: {
     setDims() {
-      console.log("setting dims")
     },
     setupChoro() {
       this.svg = select(this.$refs.svg);
