@@ -17,10 +17,7 @@ import {
   timeFormat,
   format
 } from "d3";
-import {
-  rollingAverage,
-  calcPrevalence
-} from "@/js/stats.js";
+
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
 const formatPercent = format(".0%");
