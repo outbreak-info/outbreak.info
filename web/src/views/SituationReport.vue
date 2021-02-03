@@ -78,7 +78,7 @@
     <!-- LOGOS -->
     <ReportLogos class="mb-4" />
 
-
+<!-- REPORT -->
     <div class="row">
       <section id="intro" class="col-sm-6 col-md-8 pr-4">
         <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
@@ -100,23 +100,7 @@
 
         <!-- CHARACTERISTIC MUTATIONS -->
         <div class="mt-4" id="definition">
-          <h4 class="">{{ definitionLabel }}</h4>
-
-          <small class="">
-            <button class="btn btn-main-outline py-1 collapsed" data-toggle="collapse" href="#mutation-table" aria-expanded="false" aria-controls="mutation-table">
-              <span class="if-collapsed">View</span>
-              <span class="if-not-collapsed">Hide</span>
-              mutation table
-            </button>
-          </small>
-
-          <small class="ml-2 my-1"><a @click="downloadMutations" href="">Download mutation list</a></small>
-
-          <SARSMutationMap :mutationKey="mutationName" :mutationArr="mutations" />
-
-          <div class="collapse ml-2" id="mutation-table">
-            <MutationTable :mutations="mutations" />
-          </div>
+<CharacteristicMutations :mutationName="mutationName" :mutations="mutations" :definitionLabel="definitionLabel"/>
         </div>
 
         <!-- KEY INSIGHTS -->
@@ -302,7 +286,7 @@ import Vue from "vue";
 
 import ReportLogos from "@/components/ReportLogos.vue";
 import ReportMethodology from "@/components/ReportMethodology.vue";
-import SARSMutationMap from "@/components/SARSMutationMap.vue";
+import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
 import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
@@ -311,7 +295,6 @@ import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.
 import ReportChoropleth from "@/components/ReportChoropleth.vue";
 import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
-import MutationTable from "@/components/MutationTable.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 
 // --- font awesome --
@@ -354,7 +337,7 @@ export default {
   components: {
     ReportLogos,
     ReportMethodology,
-    SARSMutationMap,
+    CharacteristicMutations,
     FontAwesomeIcon,
     CountryMap,
     Warning,
@@ -364,7 +347,6 @@ export default {
     ReportChoropleth,
     ReportResources,
     ShareReport,
-    MutationTable,
     TypeaheadSelect
   },
   props: {
