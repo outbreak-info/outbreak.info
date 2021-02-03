@@ -322,6 +322,9 @@ export default Vue.extend({
         this.chart.selectAll(".confidence-interval")
           .on("mousemove", () => this.tooltipOn())
           .on("mouseleave", () => this.tooltipOff())
+        this.counts.selectAll(".raw-counts")
+          .on("mousemove", () => this.tooltipOn())
+          .on("mouseleave", () => this.tooltipOff())
       }
     }
   }
