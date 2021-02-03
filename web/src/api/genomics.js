@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   from,
+  of,
   forkJoin,
   BehaviorSubject
 } from "rxjs";
@@ -56,7 +57,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     catchError(e => {
       console.log("%c Error in getting initial report data!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     }),
     finalize(() => store.state.admin.reportloading = false)
   )
@@ -82,7 +83,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     catchError(e => {
       console.log("%c Error in getting characteristic mutations!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
   }
@@ -108,7 +109,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
     catchError(e => {
       console.log("%c Error in getting recent global prevalence data!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
 }
@@ -133,7 +134,7 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
     catchError(e => {
       console.log("%c Error in getting recent global prevalence data!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
 }
@@ -158,7 +159,7 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
     catchError(e => {
       console.log("%c Error in getting recent prevalence data by country!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
 }
@@ -187,7 +188,7 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
     catchError(e => {
       console.log("%c Error in getting temporal data by location!", "color: red");
       console.log(e);
-      return from([]);
+      return of([]);
     }),
     finalize(() => indivCall ? store.state.admin.reportloading = false : null)
   )
@@ -219,7 +220,7 @@ export function getCuratedMetadata(id) {
     catchError(e => {
       console.log("%c Error in getting curated data!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
 }
@@ -252,7 +253,7 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
     catchError(e => {
       console.log("%c Error in getting resource metadata!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
 
@@ -276,7 +277,7 @@ export function findCountry(apiUrl, queryString) {
     catchError(e => {
       console.log("%c Error in getting country names!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
 }
@@ -298,7 +299,7 @@ export function findPangolin(apiUrl, queryString) {
     catchError(e => {
       console.log("%c Error in getting Pangolin lineage names!", "color: red");
       console.log(e);
-      return from([]);
+      return(of([]));
     })
   )
 }

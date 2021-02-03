@@ -184,7 +184,7 @@ export default Vue.extend({
     updatePlot() {
       const t1 = transition().duration(2500);
 
-      if(this.data && this.data.length) {
+      if(this.data) {
         this.updateScales();
 
         const countSelector = this.counts
