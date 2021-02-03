@@ -318,7 +318,7 @@ export default {
       this.regions
         .selectAll("path")
         .style("opacity", 0.2)
-        .style("stroke-opacity", 0.2);
+        .style("stroke-opacity", 0.5);
 
       // turn on the location
       this.regions

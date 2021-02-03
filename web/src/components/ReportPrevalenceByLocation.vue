@@ -333,13 +333,17 @@ export default Vue.extend({
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
           }
         )
+
+        const checkbookSpacing = 5;
+        // CHECKBOOK DIVISIONS FOR ORIENTATION
+        if(this.data.length > checkbookSpacing * 1.5) {
         const checkbookSelector = this.dotplot
           .selectAll(".checkbook")
-          .data(this.plottedData.filter((d, i) => !(i % 5)));
+          .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
 
         const checkbookSelector2 = this.bargraph
           .selectAll(".checkbook")
-          .data(this.plottedData.filter((d, i) => !(i % 5)));
+          .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
 
         checkbookSelector.join(enter => {
             enter.append("line")
@@ -376,7 +380,7 @@ export default Vue.extend({
           .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
           .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
         )
-
+}
 
         const dotSelector = this.dotplot.selectAll(".dot-group")
           .data(this.plottedData, d => d[this.yVariable]);
