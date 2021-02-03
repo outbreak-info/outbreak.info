@@ -3,7 +3,7 @@
   <small>
     <div>
       We would like to thank the GISAID Initiative and are grateful to all of the data contributors, i.e.the Authors, the Originating laboratories responsible for obtaining the specimens, and the Submitting laboratories for generating the genetic
-      sequence andmetadata and sharing via the GISAID Initiative, on which this research is based. GISAID data provided on this website are subject to GISAID’s <a href="https://www.gisaid.org/registration/terms-of-use/" target="_blank">Terms and
+      sequence and metadata and sharing via the GISAID Initiative, on which this research is based. GISAID data provided on this website are subject to GISAID’s <a href="https://www.gisaid.org/registration/terms-of-use/" target="_blank">Terms and
         Conditions</a>.
     </div>
     <div class="my-2">
