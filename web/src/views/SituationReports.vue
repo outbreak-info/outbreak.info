@@ -21,7 +21,6 @@
           </small>
         </div>
 
-        <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
       </div>
     </div>
     <ReportLogos />
@@ -74,11 +73,6 @@
     </div>
   </section>
 
-  <section id="custom-report" class="text-left">
-    <h2 class="m-0 p-0">Create custom report</h2>
-    <CustomReportForm />
-  </section>
-
   <ReportAcknowledgements />
 </div>
 </template>
@@ -88,7 +82,6 @@ import Vue from "vue";
 
 import ReportLogos from "@/components/ReportLogos.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
-import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 import axios from "axios";
@@ -120,7 +113,6 @@ export default {
   components: {
     ReportLogos,
     SARSMutationMap,
-    CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
   },
