@@ -10,7 +10,7 @@
       <rect x="0" y="20" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
 
       <g transform="translate(350,8)" id="threshold-slider">
-        <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of samples</text>
+        <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of total samples</text>
         <g transform="translate(0,18)">
           <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
           <line ref="selected_threshold" :x1="filterShift" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
