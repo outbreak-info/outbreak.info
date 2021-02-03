@@ -386,9 +386,6 @@ export default {
     genericDescription() {
       return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
     },
-    disclaimer() {
-      return `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`
-    },
     selectedLocations() {
       const locations = typeof(this.location) == "string" ? [this.location] : this.location;
       // always have the world there too.
@@ -416,6 +413,7 @@ export default {
       reportType: null,
       lastUpdated: "XX day",
       dateGenerated: "XX XXX XXXX",
+      disclaimer: null,
 
       // Changing locations
       queryCountry: null,
@@ -448,6 +446,7 @@ export default {
   mounted() {
     this.currentLocs = this.selectedLocations.map(d => d.name).filter(d => d != "Worldwide");
     this.queryCountry = findCountry;
+    this.disclaimer = `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
     // Get date for the citation object
     const formatDate = timeFormat("%e %B %Y");
