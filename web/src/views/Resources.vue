@@ -759,8 +759,8 @@ export default {
     }
   },
   beforeDestroy() {
-    if (this.resultSubscription) {
-      this.resultSubscrption.unsubscribe();
+    if (this.resultsSubscription) {
+      this.resultsSubscription.unsubscribe();
     }
   },
   computed: {

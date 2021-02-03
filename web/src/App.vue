@@ -283,10 +283,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.no-underline {
-    text-decoration: none;
-}
-
 .navbar-collapse.collapsing {
     -webkit-transition: height 0s;
     -moz-transition: height 0s;

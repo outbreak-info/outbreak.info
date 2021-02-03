@@ -21,6 +21,7 @@
           </small>
         </div>
 
+        <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
       </div>
     </div>
     <ReportLogos />
@@ -43,9 +44,13 @@
           <div class="w-100 p-3 card">
             <!-- NAME -->
             <div class="d-flex justify-content-between" id="mutation-name">
-              <router-link :to="{name:'SituationReport', params:{ mutation: report.identifier }}">
+              <router-link :to="{name:'MutationReport', query:{ pangolin: report.mutation_name }}" v-if="group.key == 'lineage'">
                 <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
               </router-link>
+              <router-link :to="{name:'SituationReport', params:{ mutation: report.identifier }}" v-else>
+                <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
+              </router-link>
+
               <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
               <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
             </div>
@@ -73,6 +78,11 @@
     </div>
   </section>
 
+  <section id="custom-report" class="text-left">
+    <h2 class="m-0 p-0">Create custom report</h2>
+    <CustomReportForm />
+  </section>
+
   <ReportAcknowledgements />
 </div>
 </template>
@@ -82,6 +92,7 @@ import Vue from "vue";
 
 import ReportLogos from "@/components/ReportLogos.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
+import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 import axios from "axios";
@@ -109,10 +120,11 @@ import {
 } from "lodash";
 
 export default {
-  name: "SituationReports",
+  name: "SituationReportsDemo",
   components: {
     ReportLogos,
     SARSMutationMap,
+    CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
   },
@@ -127,8 +139,6 @@ export default {
   mounted() {
     axios.get(this.curatedFile).then(response => {
       response.data = orderBy(response.data, ["reportType", "variantType", "mutation_name"]);
-
-      response.data = response.data.filter(d => !["B.1.351", "P.1"].includes(d.mutation_name))
 
       this.reports = nest()
         .key(d => d.reportType)

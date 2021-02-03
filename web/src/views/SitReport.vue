@@ -36,10 +36,9 @@ export default Vue.extend({
   },
   mounted() {
 
-    axios.get("https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/metadata.json").then(response => {
-      const report = response.data.filter(d => d.name == this.$route.params.mutation).sort((a, b) => a.date > b.date ? -1 : 1)[0];
-      const url = report.url.split("/");
-      this.reportUrl = `${this.htmlPreface}/${url.slice(-1)[0]}`;
+    axios.get("https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json").then(response => {
+      const report = response.data.filter(d => d.identifier == this.$route.params.mutation);
+      this.reportUrl = report.length == 1 ? report[0].url : null;
     })
 
   }

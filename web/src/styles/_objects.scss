@@ -117,9 +117,88 @@ button.chip.to-add:hover {
       color: white;
     }
   }
+  &-flat{
+    background: transparent;
+    border: none !important;
+    color: $secondary-color;
+    transition: all .5s;
+    // text-transform:uppercase;
+    &:hover{
+      background: $primary-color !important;
+      color: white !important;
+    }
+  }
+}
+
+
+.btn-accent{
+  background: $warning-color !important;
+  color: white;
+  transition: all .5s;
+  text-transform: uppercase;
+  &:hover{
+    background: darken($warning-color, 20%) !important;
+    color: white;
+  }
+  &-outline{
+    background: transparent;
+    border: darken($warning-color, 5%) 2px solid !important;
+    color: $warning-color;
+    transition: all .5s;
+    text-transform:uppercase;
+    &:hover{
+      background: $warning-color !important;
+      color: white;
+    }
+  }
+  &-flat{
+    background: transparent;
+    border: none !important;
+    // color: $warning-color;
+    transition: all .5s;
+    // text-transform:uppercase;
+    &:hover{
+      background: $warning-color !important;
+      color: white !important;
+    }
+  }
+}
+
+.btn-accent:disabled {
+    background: #CCC !important;
+    color: #444 !important;
+    cursor: default !important;
 }
 
 .btn-outline-secondary:hover {
     background: #6c757d !important;
     color: white;
+}
+
+
+.VOC,
+.VOI {
+    padding: 0.35rem;
+    border-radius: 0.25rem;
+    border-style: solid;
+    border-width: 1px;
+    line-height: 1;
+    flex-shrink: 0;
+    font-size: small;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    // font-weight: 700;
+}
+
+.VOC {
+    background: lighten($publication-color, 35%);
+    color: $publication-color;
+    border-color: $publication-color;
+}
+
+.VOI {
+    background: lighten($website-color, 40%);
+    color: $website-color;
+    border-color: $website-color;
 }

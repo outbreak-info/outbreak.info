@@ -25,7 +25,17 @@
     </div>
   </div>
 
-  <div id="epi-citation" class="mb-2 py-3 border-bottom">
+  <div id="genomics-citation" class="mb-2 py-3 border-bottom">
+    <h6 class="m-0">Genomic data</h6>
+    <div v-for="(source, gIdx) in genomicSources" :key="gIdx">
+      <span class="text-highlight">{{source.name}}:</span> <span v-html="source.citation"></span>
+      <small v-if="source.license" class="d-block mt-1">
+        <span class="font-weight-700">data license</span>: <a :href="source.license.url" v-if="source.license.name" target="_blank">{{source.license.name}}</a><a :href="source.license.url" v-else-if="source.license.url">{{source.license.url}}</a>
+      </small>
+    </div>
+  </div>
+
+  <div id="resources-citation" class="mb-2 py-3 border-bottom">
     <h6 class="m-0">Resources</h6>
     <div v-for="(sourceGroup, rIdx) in resources" :key="rIdx">
       <div v-for="(source, sIdx) in sourceGroup.sources" :key="sIdx"  class="mb-4  line-height-1">
@@ -51,7 +61,7 @@ export default Vue.extend({
   name: "CiteUs",
   components: {},
   computed: {
-    ...mapState("admin", ["outbreak", "sources", "geoSources", "resources"])
+    ...mapState("admin", ["outbreak", "sources", "geoSources", "resources", "genomicSources"])
   }
 });
 </script>

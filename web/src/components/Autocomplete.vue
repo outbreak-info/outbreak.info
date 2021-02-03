@@ -205,7 +205,7 @@ export default Vue.extend({
         : this.search;
       // this.$emit('input', result);
       this.selected.push(result.id);
-      this.$emit("input", this.selected);
+      this.$emit("selected", this.selected);
       this.search = "";
       this.isOpen = false;
       this.arrowCounter = -1;

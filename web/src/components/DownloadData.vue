@@ -29,7 +29,7 @@
 
       <!-- Actual data download -->
       <h2 class="my-3">Download</h2>
-      <div v-if="type == 'epidemiology' || type == 'regions' || type == 'maps'" class="mb-4">
+      <div v-if="type == 'epidemiology' || type == 'regions' || type == 'maps'  || type == 'report'" class="mb-4">
         <h4 class="m-0">Figure</h4>
         <a class="text-uppercase pointer" @click="downloadSvg">
           <p class="focustext m-0">
@@ -145,6 +145,8 @@ export default {
         return (`${this.data[0].key}_outbreakinfo_epidemiology_data_${this.todayFormatted}`)
       } else if (this.type == "resources") {
         return (`outbreakinfo_resources_metadata_${this.todayFormatted}`)
+      } else if (this.type == "report") {
+        return (`outbreakinfo_mutation_report_data_${this.todayFormatted}`)
       } else {
         return (`outbreakinfo_epidemiology_data_${this.todayFormatted}`)
       }

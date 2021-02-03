@@ -227,19 +227,19 @@ const routes = [{
         "../views/DoublingRates.vue"
       )
   },
-  {
-    path: "/sarscov2-mutations",
-    name: "Mutations",
-    props: route => ({
-      location: route.query.location,
-      variable: route.query.variable
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "mutations" */
-        "../views/Mutations.vue"
-      )
-  },
+  // {
+  //   path: "/sarscov2-mutations",
+  //   name: "Mutations",
+  //   props: route => ({
+  //     location: route.query.location,
+  //     variable: route.query.variable
+  //   }),
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "mutations" */
+  //       "../views/Mutations.vue"
+  //     )
+  // },
   {
     path: "/situation-reports",
     name: "SituationReports",
@@ -263,8 +263,31 @@ const routes = [{
     name: "SituationReport",
     component: () =>
       import(
-        /* webpackChunkName: "situation-reports" */
+        /* webpackChunkName: "situation-report" */
         "../views/SitReport.vue"
+      )
+  },
+  {
+    path: "/situation-report-demo",
+    name: "MutationReport",
+    props: route => ({
+      location: route.query.location,
+      muts: route.query.muts,
+      pangolin: route.query.pangolin
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-report" */
+        "../views/SituationReport.vue"
+      )
+  },
+  {
+    path: "/situation-reports-demo",
+    name: "SituationReportsDemo",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-report" */
+        "../views/SituationReportsDemo.vue"
       )
   }
 ];
