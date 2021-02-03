@@ -128,6 +128,8 @@ export default {
     axios.get(this.curatedFile).then(response => {
       response.data = orderBy(response.data, ["reportType", "variantType", "mutation_name"]);
 
+      response.data = response.data.filter(d => !["B.1.351", "P.1"].includes(d.mutation_name))
+
       this.reports = nest()
         .key(d => d.reportType)
         .entries(response.data);
