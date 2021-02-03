@@ -74,8 +74,8 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       results.forEach(d => {
         d["codon_num"] = +d.pos;
         d["mutation"] = d.name;
-        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";
-;        delete d.pos;
+        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";;
+        delete d.pos;
       })
       return (results)
     }),
@@ -85,7 +85,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       return from([]);
     })
   )
-  }
+}
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   const url = `${apiurl}most-recent-collection-date`;
@@ -98,7 +98,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
     map(results => {
       const filtered = results.filter(d => d.lineage == mutationString);
       let lineageRecent;
-      if(filtered.length == 1) {
+      if (filtered.length == 1) {
         lineageRecent = filtered[0];
         const dateTime = parseDate(lineageRecent.date)
         lineageRecent["dateFormatted"] = formatDate(dateTime)
@@ -132,6 +132,29 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
     }),
     catchError(e => {
       console.log("%c Error in getting recent global prevalence data!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
+}
+
+export function getCountryLineages(apiurl, country) {
+  const url = `${apiurl}prevalence-by-country-all-lineages?country=${country}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      console.log(results)
+      results.forEach(d => {
+        d["proportion"] = d.lineage_count / d.total_count;
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent prevalence data by country!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -271,7 +294,7 @@ export function findCountry(apiUrl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting country names!", "color: red");
@@ -293,7 +316,7 @@ export function findPangolin(apiUrl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting Pangolin lineage names!", "color: red");

@@ -231,6 +231,10 @@
     </div>
 
 
+<section>
+  <LocationLineages :data="countryLineages"/>
+</section>
+
     <!-- DAILY PREVALENCE -->
     <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
       <h4 class="mb-0">Average daily {{mutationName}} prevalence</h4>
@@ -313,6 +317,7 @@ import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
 import MutationTable from "@/components/MutationTable.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
+import LocationLineages from "@/components/LocationLineages.vue";
 
 // --- font awesome --
 import {
@@ -342,6 +347,7 @@ import {
   getCuratedMetadata,
   getTemporalPrevalence,
   updateLocationData,
+  getCountryLineages,
   findCountry
 } from "@/api/genomics.js";
 
@@ -365,7 +371,8 @@ export default {
     ReportResources,
     ShareReport,
     MutationTable,
-    TypeaheadSelect
+    TypeaheadSelect,
+    LocationLineages
   },
   props: {
     location: {
@@ -439,6 +446,7 @@ export default {
       totalLineage: null,
       globalPrev: null,
       newTodayGlobal: null,
+      countryLineages: null,
       prevalence: []
     }
   },
@@ -472,6 +480,9 @@ export default {
       }
 
       if (this.mutationName) {
+        getCountryLineages(this.$genomicsurl, "United Kingdom").subscribe(results => {
+          this.countryLineages = results;
+        })
         this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName).subscribe(results => {
           console.log(results)
           // worldwide stats
@@ -504,6 +515,7 @@ export default {
     },
     getTemporalData(location) {
       this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName, this.mutationVar, true).subscribe(data => {
+        console.log(data)
         this.prevalence = data;
       });
     },
