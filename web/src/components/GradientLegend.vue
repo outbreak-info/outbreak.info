@@ -43,10 +43,12 @@ export default Vue.extend({
     colorScale: {
       immediate: true,
       handler(newVal, oldVal) {
-        if(this.colorScale) {
-        // legend gradient
-        this.legendColors = range(11).map(d => this.colorScale(d / 10));
-      }
+        if (this.colorScale) {
+          // legend gradient
+          const domain = this.colorScale.domain();
+          const step = (domain[1] - domain[0]) / 10;
+          this.legendColors = range(domain[0], domain[1] + step, step).map(d => this.colorScale(d));
+        }
       }
     }
   }
