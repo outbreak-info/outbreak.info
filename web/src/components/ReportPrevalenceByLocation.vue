@@ -225,7 +225,7 @@ export default Vue.extend({
       const ttip = select(this.$refs.tooltip_chart);
 
       // edit text
-      ttip.select("h5").text(d.country);
+      ttip.select("h5").text(d.name);
       ttip.select("#no-sequencing").classed("hidden", true);
       ttip.select("#proportion")
         .text(d.proportion_formatted)
