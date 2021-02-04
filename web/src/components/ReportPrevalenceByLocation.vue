@@ -173,7 +173,7 @@ export default Vue.extend({
       dotplot: null,
       bargraph: null,
       // variables
-      yVariable: "country",
+      yVariable: "name",
       yIdentifier: "location_id",
       sortVar: "proportion",
       maxEst: null,

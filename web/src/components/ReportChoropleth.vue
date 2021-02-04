@@ -237,7 +237,7 @@ export default {
           .domain([0, this.maxVal]);
 
         this.filteredData.forEach(d => {
-          const filtered = this.data.filter(seq => seq.country == d.properties.NAME);
+          const filtered = this.data.filter(seq => seq.name == d.properties.NAME);
           if (filtered.length == 1) {
             const seq = filtered[0];
             d[this.variable] = seq[this.variable];
