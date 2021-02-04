@@ -1,6 +1,6 @@
 <template>
 <div class="" id="mutation-map">
-  <svg :width="width" :height="height" ref="svg" class="mutation-map" :title="`${mutationKey} characteristic mutations`">
+  <svg :width="width" :height="height" ref="svg" class="mutation-map" :name="`${mutationKey} characteristic mutations`">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
       <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
