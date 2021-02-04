@@ -27,7 +27,7 @@
       </div>
 
       <!-- LEFT: DOTPLOT -->
-      <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence" ref="svg_dot" :name="title">
+      <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
         <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
         <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
@@ -56,22 +56,34 @@
       </div>
 
 
-      <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count" ref="svg_count" :name="title">
+      <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
         <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
         <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
         <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
       </svg>
     </div>
-
   </div>
+
+  <div ref="tooltip_chart" class="tooltip-basic box-shadow" id="tooltip_chart">
+    <h5 id="location-name"></h5>
+    <em id="no-sequencing">No reported sequencing</em>
+    <div class="d-flex align-items-center">
+      <b id="proportion" class="font-size-2"></b>
+      <span id="confidence-interval" class="text-muted ml-2"></span>
+    </div>
+    <div id="sequencing-count"></div>
+  </div>
+
+  <DownloadReportData :data="data" figureRef="prevalence-by-location" class="mt-2" />
+
 </div>
 </template>
 
 
 <script lang="js">
 import Vue from "vue";
-
+import DownloadReportData from "@/components/DownloadReportData.vue";
 
 import {
   select,
@@ -86,7 +98,8 @@ import {
   axisLeft,
   max,
   format,
-  transition
+  transition,
+  event
 } from "d3";
 
 import chroma from "chroma-js";
@@ -103,7 +116,8 @@ import GradientLegend from "@/components/GradientLegend.vue";
 export default Vue.extend({
   name: "ReportPrevalenceByLocation",
   components: {
-    GradientLegend
+    GradientLegend,
+    DownloadReportData
   },
   props: {
     data: Array,
@@ -111,6 +125,10 @@ export default Vue.extend({
     setWidth: {
       type: Number,
       default: 600
+    },
+    adminLevel: {
+      type: String,
+      default: "country"
     }
   },
   watch: {
@@ -126,7 +144,7 @@ export default Vue.extend({
       return this.setWidth ? this.setWidth : this.maxWidth;
     },
     title() {
-      return ("title")
+      return (`${this.mutationName} prevalence by ${this.adminLevel}`)
     },
     maxEstFormatted() {
       const formatter = format(".0%");
@@ -182,6 +200,61 @@ export default Vue.extend({
   methods: {
     setDims() {
       this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
+    },
+    tooltipOn(d) {
+      const ttipShift = 15;
+
+      // dim everything
+      this.dotplot
+        .selectAll(".dot-group")
+        .style("opacity", 0.2);
+
+      this.bargraph
+        .selectAll(".bar-group")
+        .style("opacity", 0.2);
+
+      // turn on the location
+      this.dotplot
+        .select(`.${d.location_id}`)
+        .style("opacity", 1);
+
+      this.bargraph
+        .select(`.${d.location_id}`)
+        .style("opacity", 1);
+
+      const ttip = select(this.$refs.tooltip_chart);
+
+      // edit text
+      ttip.select("h5").text(d.country);
+      ttip.select("#no-sequencing").classed("hidden", true);
+      ttip.select("#proportion")
+        .text(d.proportion_formatted)
+        .classed("hidden", false);
+
+      ttip.select("#confidence-interval")
+        .text(`(95% CI: ${format(".0%")(d.proportion_ci_lower)}-${format(".0%")(d.proportion_ci_upper)})`)
+        .classed("hidden", false);
+
+      ttip.select("#sequencing-count")
+        .text(`Number of total cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
+
+        // fix location
+        ttip
+          .style("left", `${event.pageX + ttipShift}px`)
+          .style("top", `${event.pageY + ttipShift}px`)
+          .style("display", "block");
+    },
+    tooltipOff() {
+      select(this.$refs.tooltip_chart)
+        .style("display", "none");
+
+      this.dotplot
+        .selectAll(".dot-group")
+        .style("opacity",1);
+
+      this.bargraph
+        .selectAll(".bar-group")
+        .style("opacity",1);
     },
     setupPlot() {
       this.dotplot = select(this.$refs.dotplot);
@@ -300,6 +373,7 @@ export default Vue.extend({
               .attr("x", d => this.xBar(d.cum_total_count))
               .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", "#777")
               .style("font-size", "9pt")
               .style("dominant-baseline", "central")
@@ -336,51 +410,51 @@ export default Vue.extend({
 
         const checkbookSpacing = 5;
         // CHECKBOOK DIVISIONS FOR ORIENTATION
-        if(this.data.length > checkbookSpacing * 1.5) {
-        const checkbookSelector = this.dotplot
-          .selectAll(".checkbook")
-          .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
+        if (this.data.length > checkbookSpacing * 1.5) {
+          const checkbookSelector = this.dotplot
+            .selectAll(".checkbook")
+            .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
 
-        const checkbookSelector2 = this.bargraph
-          .selectAll(".checkbook")
-          .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
+          const checkbookSelector2 = this.bargraph
+            .selectAll(".checkbook")
+            .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
 
-        checkbookSelector.join(enter => {
-            enter.append("line")
-              .attr("class", "checkbook")
-              .style("stroke", "#222")
-              .style("stroke-width", 0.35)
-              .attr("transform", `translate(${-1*this.margin.left},${0})`)
-              .attr("x1", 0)
-              .attr("x2", this.width)
-              .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-              .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-          },
-          update => update.attr("x2", this.width)
-          .attr("transform", `translate(${-1*this.margin.left},${0})`)
-          .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-          .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-        )
+          checkbookSelector.join(enter => {
+              enter.append("line")
+                .attr("class", "checkbook")
+                .style("stroke", "#222")
+                .style("stroke-width", 0.35)
+                .attr("transform", `translate(${-1*this.margin.left},${0})`)
+                .attr("x1", 0)
+                .attr("x2", this.width)
+                .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+                .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+            },
+            update => update.attr("x2", this.width)
+            .attr("transform", `translate(${-1*this.margin.left},${0})`)
+            .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+          )
 
-        checkbookSelector2.join(enter => {
-            enter.append("line")
-              .attr("class", "checkbook")
-              .style("stroke", "#222")
-              .style("stroke-width", 0.35)
-              .attr("transform", `translate(${-1*this.margin.left},${0})`)
-              .attr("x1", 0)
-              .attr("x2", this.barWidth)
-              .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-              .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-          },
-          update => update
-          .attr("transform", `translate(${-1*this.margin.left},${0})`)
-          .attr("x1", 0)
-          .attr("x2", this.barWidth)
-          .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-          .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-        )
-}
+          checkbookSelector2.join(enter => {
+              enter.append("line")
+                .attr("class", "checkbook")
+                .style("stroke", "#222")
+                .style("stroke-width", 0.35)
+                .attr("transform", `translate(${-1*this.margin.left},${0})`)
+                .attr("x1", 0)
+                .attr("x2", this.barWidth)
+                .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+                .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+            },
+            update => update
+            .attr("transform", `translate(${-1*this.margin.left},${0})`)
+            .attr("x1", 0)
+            .attr("x2", this.barWidth)
+            .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+          )
+        }
 
         const dotSelector = this.dotplot.selectAll(".dot-group")
           .data(this.plottedData, d => d[this.yVariable]);
@@ -429,7 +503,18 @@ export default Vue.extend({
               .attr("y1", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
           },
-          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()))
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()));
+
+
+        this.bargraph
+          .selectAll(".bar-group")
+          .on("mousemove", d => this.tooltipOn(d))
+          .on("mouseleave", () => this.tooltipOff());
+
+        this.dotplot
+          .selectAll(".dot-group")
+          .on("mousemove", d => this.tooltipOn(d))
+          .on("mouseleave", () => this.tooltipOff());
       }
     }
   }

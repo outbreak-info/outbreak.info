@@ -1,6 +1,6 @@
 <template>
 <div class="" id="mutation-map">
-  <svg :width="width" :height="height" ref="svg">
+  <svg :width="width" :height="height" ref="svg" class="mutation-map" :title="`${mutationKey} characteristic mutations`">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
       <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
@@ -448,6 +448,7 @@ export default Vue.extend({
               .attr("x", d => (this.x(d.end) + this.x(d.start)) / 2)
               .attr("y", (this.geneHeight + 1) / 2)
               .attr("class", "gene-name")
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
           },
           update => {
@@ -517,6 +518,7 @@ export default Vue.extend({
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .attr("x", d => d.x)
               .text(d => d.codon_num)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("font-size", "0.6rem")
 
             // amino acid change text
@@ -527,7 +529,7 @@ export default Vue.extend({
               .attr("y", d => d.adjustedX ? circleAdjY : this.aaCircleR)
               .style("font-weight", 600)
               .style("fill", "white")
-              .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'Font Awesome 5 Free'" : "inherit")
+              .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'DM Sans', Avenir, Helvetica, Arial, 'Font Awesome 5 Free', sans-serif" : "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("font-size", "0.85rem")
               .text(d => d.alt_aa == "_" || d.alt_aa == "*" ? "\uf28d" : d.alt_aa)
           },
@@ -567,12 +569,13 @@ export default Vue.extend({
               .text(d => d.codon_num)
               .transition(t1)
               .attr("x", d => d.x)
-              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY);
+              .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif");
 
             // text: amino acid change
             update
               .selectAll(".substitution-change")
-              .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'Font Awesome 5 Free'" : "inherit")
+              .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'DM Sans', Avenir, Helvetica, Arial, 'Font Awesome 5 Free', sans-serif" : "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .text(d => d.alt_aa == "_" || d.alt_aa == "*" ? "\uf28d" : d.alt_aa)
               .transition(t1)
               .attr("x", d => d.x)
@@ -632,6 +635,7 @@ export default Vue.extend({
               .style("text-anchor", "middle")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("font-size", "0.85rem")
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .text(d => "\u0394")
 
             // position locations
@@ -641,6 +645,7 @@ export default Vue.extend({
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("font-size", "0.6rem");
           },
           update => {

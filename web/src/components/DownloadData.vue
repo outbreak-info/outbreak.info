@@ -110,6 +110,10 @@ export default {
       type: String,
       default: "vis & data"
     },
+    isVertical: {
+      type: Boolean,
+      default: false
+    },
     sourceString: {
       type: String,
       default: "Johns Hopkins University Center for Systems Science and Engineering (non-U.S. data); The New York Times (U.S. data); The COVID Tracking Project (testing data), updated daily."
@@ -245,7 +249,7 @@ ${resourcesString}
         'event_category': `${this.type}_${this.downloadLabel}`,
         'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (.png)`
       });
-      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormattedLong, true, `${this.filename}.png`);
+      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormattedLong, this.isVertical, true, `${this.filename}.png`);
       this.downloadData([this.getMetadata(this.filename)], "text/plain", `${this.filename}_README.txt`, true);
     },
     prepData(fileType) {

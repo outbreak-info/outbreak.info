@@ -3,7 +3,7 @@
     <div class="btn ml-3 py-0 px-2 btn-main-outline">
       <font-awesome-icon :icon="['far', 'copy']" @click="copyPng" v-if="copyable" />
     </div>
-    <DownloadData class="ml-3" id="download-btn" v-if="data" type="report" :figureRef="figureRef" :data="data" :sourceString="sourceString" />
+    <DownloadData class="ml-3" id="download-btn" v-if="data" type="report" :figureRef="figureRef" :data="data" :sourceString="sourceString" :isVertical="isVertical" />
 
     <p :class="{ snackbar: true, show: showSnackbar }">
       {{ snackbarText }}
@@ -46,6 +46,10 @@ export default Vue.extend({
       type: Number,
       default: 1
     },
+    isVertical: {
+      type: Boolean,
+      default: false
+    },
     figureRef: String
   },
   components: {
@@ -82,7 +86,7 @@ export default Vue.extend({
         'event_label': `copying {vis} from [${this.$route.fullPath}]`
       })
 
-      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormatted).then(msg => {
+      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormatted, this.isVertical).then(msg => {
         this.snackbarText = msg;
         setTimeout(() => {
           this.showSnackbar = false;

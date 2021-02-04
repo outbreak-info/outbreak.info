@@ -62,7 +62,7 @@
     <div id="sequencing-count-rolling"></div>
   </div>
 
-  <DownloadReportData :data="data" figureRef="prevalence-curve"/>
+  <DownloadReportData :data="data" figureRef="prevalence-curve" :isVertical="true" />
 
 </div>
 </template>
@@ -214,7 +214,7 @@ export default Vue.extend({
       const ttipShift = 20;
 
       // find closest date
-      const selectedX = this.x.invert(event.offsetX-this.margin.left);
+      const selectedX = this.x.invert(event.offsetX - this.margin.left);
       const selectedDate = timeDay.round(selectedX);
       const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
 
@@ -236,11 +236,11 @@ export default Vue.extend({
           .style("top", `${event.pageY + ttipShift}px`)
           .style("display", "block");
 
-          // histogram off/on
-          selectAll(".raw-counts")
+        // histogram off/on
+        selectAll(".raw-counts")
           .style("opacity", 0.3);
 
-          selectAll(`#date${selected[0].date}`)
+        selectAll(`#date${selected[0].date}`)
           .style("opacity", 1);
       }
     },
@@ -248,7 +248,7 @@ export default Vue.extend({
       select(this.$refs.tooltip_prevalence)
         .style("display", "none");
 
-        selectAll(".raw-counts")
+      selectAll(".raw-counts")
         .style("opacity", 1);
     },
     updatePlot() {
