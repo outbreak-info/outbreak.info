@@ -36,7 +36,7 @@
         <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No samples found</text>
       </g>
       <g id="weird-last values" :hidden="!data.length">
-        <text :x="width - margin.left" :y="0" fill="#929292" font-size="10 px" dominant-baseline="hanging" text-anchor="end" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;">Latest dates are noisy due to fewer samples</text>
+        <text :x="width - margin.left" :y="0" fill="#929292" font-size="10 px" dominant-baseline="hanging" text-anchor="end" :style='`{font-family=${fontFamily}}`'>Latest dates are noisy due to fewer samples</text>
         <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
       </g>
     </svg>
@@ -125,6 +125,7 @@ export default Vue.extend({
       },
       heightCounts: 80,
       CIColor: "#df4ab7",
+      fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
       xVariable: "dateTime",
       yVariable: "proportion",
