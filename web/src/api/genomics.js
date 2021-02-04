@@ -18,6 +18,8 @@ import {
   format
 } from "d3";
 
+import { isEmpty } from "lodash";
+
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
 const formatPercent = format(".0%");
@@ -53,7 +55,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
     map(([mostRecent, longitudinal, globalPrev, byCountry, md, mutations]) => {
-      const characteristicMuts = md && md.mutations ? md.mutations : mutations;
+      const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
         mostRecent: mostRecent,
