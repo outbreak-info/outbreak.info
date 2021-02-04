@@ -146,7 +146,7 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d["name"] = d.country;
+        d["name"] = this.$options.filters.capitalize(d.country);
         d["proportion_formatted"] = formatPercent(d.proportion);
         d["dateTime"] = parseDate(d.date);
         d["location_id"] = d.country.replace(/\s/g, "");
@@ -269,6 +269,9 @@ export function findCountry(apiUrl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
+      results.forEach(d => {
+        d.name = this.$options.filters.capitalize(d.name);
+      })
       return(results)
     }),
     catchError(e => {
@@ -291,6 +294,10 @@ export function findPangolin(apiUrl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
+      results.forEach(d => {
+        d.name = this.$options.filters.capitalize(d.name);
+      })
+
       return(results)
     }),
     catchError(e => {

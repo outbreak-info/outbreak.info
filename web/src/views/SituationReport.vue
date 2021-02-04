@@ -448,7 +448,7 @@ export default {
   methods: {
     setupReport() {
       if (this.$route.query.pangolin) {
-        this.mutationName = this.$route.query.pangolin;
+        this.mutationName = this.$options.filters.capitalize(this.$route.query.pangolin);
         this.reportType = "lineage";
         this.mutationVar = "pangolin_lineage";
       } else if (this.$route.query.muts) {
