@@ -24,6 +24,12 @@ const formatPercent = format(".0%");
 
 import store from "@/store";
 
+function capitalize(value) {
+  if (!value) return ''
+  value = value.toString()
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
 // reminder: must be the raw verison of the file
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
@@ -146,7 +152,7 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d["name"] = d.country;
+        d["name"] = capitalize(d.country);
         d["proportion_formatted"] = formatPercent(d.proportion);
         d["dateTime"] = parseDate(d.date);
         d["location_id"] = d.country.replace(/\s/g, "");
@@ -269,6 +275,9 @@ export function findCountry(apiUrl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
+      results.forEach(d => {
+        d.name = capitalize(d.name);
+      })
       return(results)
     }),
     catchError(e => {
@@ -291,6 +300,10 @@ export function findPangolin(apiUrl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
+      results.forEach(d => {
+        d.name = capitalize(d.name);
+      })
+
       return(results)
     }),
     catchError(e => {
