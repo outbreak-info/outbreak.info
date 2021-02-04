@@ -13,8 +13,7 @@
       </div>
 
       <div class="w-75 mt-2 text-left">The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several lineages or sets of mutations within the
-        SARS-CoV-2 (hCoV-19) genome. Every day,
-        we will produce a report describing the current situation, focusing on the United States.</div>
+        SARS-CoV-2 (hCoV-19) genome. We will regularly produce a report describing the current situation, focusing on the United States.</div>
       <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
       <div class="d-flex align-items-center justify-content-between my-2">
         <div id="date-updated" class="mr-5">
