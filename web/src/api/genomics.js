@@ -18,8 +18,6 @@ import {
   format
 } from "d3";
 
-import { isEmpty } from "lodash";
-
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
 const formatPercent = format(".0%");
