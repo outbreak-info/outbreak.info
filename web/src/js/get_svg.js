@@ -121,9 +121,7 @@ function getFooter(width, height, sources, date, footerHeight) {
   }
 
 
-  return ({
-    height: footerHeight,
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} ${footerHeight}" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, 0)">
+  return (`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} ${footerHeight}" width="${width}" height="${footerHeight}" id="footer" class="sources mt-2" transform="translate(0, 0)">
       <g id="background">
         <rect width="${width}" height="${footerHeight}" style="fill: #dee2e6"></rect>
       </g>
@@ -184,7 +182,7 @@ function getFooter(width, height, sources, date, footerHeight) {
         </g>
       </g>
     </svg>`
-  })
+  )
 }
 
 function setInlineStyles(svg, emptySvgDeclarationComputed) {
@@ -245,6 +243,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
     const footerHeight = 40;
     const headerFraction = 0.075;
     const subheaderFraction = 0.75 * headerFraction;
+
     var document = global.document,
       body = document.body,
       forEach = Array.prototype.forEach,
@@ -266,9 +265,6 @@ export function getPng(selector, sources, date, vertical = false, download = fal
     var canvasWidth = 0;
     var canvasHeight = 0;
     var counter = 0;
-    var widths = [];
-    var heights = [];
-    var headerHeights = [];
     var dims = [];
     var colCounter = 0;
     var rowCounter = 0;
@@ -340,6 +336,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       // Add each image
       const dx = sum(dims.filter(d => d.colI === colNum + rowCounter), row => row.w);
       const dy = sum(dims.filter(d => d.rowI === rowNum), row => row.h);
+
       dims.push({
         w: width,
         h: height,
@@ -377,12 +374,8 @@ export function getPng(selector, sources, date, vertical = false, download = fal
 
       console.log(dims)
 
-
       // canvas height = header + subhead + spacer + max(height of each row) + spacer + footerHeight
       canvasHeight = sum(dims.filter(d => d.rowI === 0), row => row.h);
-
-      console.log(canvasWidth)
-      console.log(canvasHeight)
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       var source = (new XMLSerializer()).serializeToString(svg);
@@ -399,7 +392,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
         type: "image/svg+xml"
       }));
 
-      var footerUrl = URL.createObjectURL(new Blob([footer.svg], {
+      var footerUrl = URL.createObjectURL(new Blob([footer], {
         type: "image/svg+xml"
       }));
 
