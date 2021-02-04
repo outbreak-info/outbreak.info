@@ -238,7 +238,6 @@ export function getPng(selector, sources, date, vertical = false, download = fal
 
 
     const svgs = document.querySelectorAll(selector);
-    console.log(svgs)
     const numSvgs = svgs.length;
     if (numSvgs === 0) {
       reject("Error: no svg found with that selector")
