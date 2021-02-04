@@ -220,7 +220,7 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 // Thanks, Mike.
 
-export function getPng(selector, sources, date, download = false, filename = "outbreakinfo_visualization.png") {
+export function getPng(selector, sources, date, vertical = false, download = false, filename = "outbreakinfo_visualization.png") {
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
   // make sure no tooltips are active
@@ -230,7 +230,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
   return new Promise((resolve, reject) => {
     const spacer = 30;
-    const footerHeight = 55;
+    const footerHeight = 95;
     var document = global.document,
       body = document.body,
       forEach = Array.prototype.forEach,
@@ -238,12 +238,18 @@ export function getPng(selector, sources, date, download = false, filename = "ou
 
 
     const svgs = document.querySelectorAll(selector);
+    console.log(svgs)
     const numSvgs = svgs.length;
     if (numSvgs === 0) {
       reject("Error: no svg found with that selector")
     }
 
-    const numAcross = numSvgs > 3 ? Math.ceil(Math.sqrt(numSvgs)) : numSvgs;
+    let numAcross = numSvgs > 3 ? Math.ceil(Math.sqrt(numSvgs)) : numSvgs;
+
+    if (vertical) {
+      numAcross = 1;
+    }
+
     var canvasWidth = 0;
     var canvasHeight = 0;
     var counter = 0;
@@ -339,7 +345,7 @@ export function getPng(selector, sources, date, download = false, filename = "ou
           // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            context.drawImage(imageFooter, 0, canvasHeight + headerHeights[0] * ratio - spacer * 2, canvasWidth, footerHeight * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight + headerHeights[0] * ratio, canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
