@@ -10,7 +10,9 @@ var canvas = document.createElement("canvas"),
 
 import {
   selectAll,
-  select
+  select,
+  max,
+  sum
 } from "d3";
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
@@ -84,6 +86,8 @@ function getHeader(width, height, title) {
   if (!title) {
     title = "";
   }
+  console.log(width)
+  console.log(height)
 
   const fontSize = height;
   // view box needs to be a bit bigger to not get cut off
@@ -103,7 +107,6 @@ function getFooter(width, height, sources, date, footerHeight) {
     x: 30,
     y: 30,
   }
-  console.log(fontSize)
   // lazy way to wrap
   var sourceString;
   if (width > 700) {
@@ -240,7 +243,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
   return new Promise((resolve, reject) => {
     const spacer = 30;
     const footerHeight = 40;
-    const headerFraction = 0.08;
+    const headerFraction = 0.075;
     const subheaderFraction = 0.75 * headerFraction;
     var document = global.document,
       body = document.body,
@@ -266,7 +269,12 @@ export function getPng(selector, sources, date, vertical = false, download = fal
     var widths = [];
     var heights = [];
     var headerHeights = [];
-
+    var dims = [];
+    var colCounter = 0;
+    var rowCounter = 0;
+    var header;
+    var subheader;
+    var footer;
 
     forEach.call(svgs, function(svg, i) {
       if (svg.namespaceURI !== "http://www.w3.org/2000/svg") return; // Not really an SVG.
@@ -293,47 +301,90 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       // update the width of the canvas
       const rowNum = Math.floor(i / numAcross);
       const colNum = i % numAcross;
-      canvasWidth = rowNum === 0 ? canvasWidth + spacer + width : canvasWidth;
 
-      if (i != 0) {
-        widths.push(widths[i - 1])
-        heights.push(heights[i - 1])
-      } else {
-        widths.push(width);
-        heights.push(height)
-      }
-
-      // add the height of the header
+      // store the dims of the image Array
       if (i === 0) {
-        headerHeights.push(height * headerFraction * ratio);
+        // add the header
+        const headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
+        dims.push({
+          w: width,
+          h: headerHeight,
+          rowI: 0,
+          colI: 0,
+          role: "header"
+        });
+        header = getHeader(width, headerHeight, title);
+
+        rowCounter += 1;
+        if (subtitle) {
+          dims.push({
+            w: width,
+            h: Math.min(width * subheaderFraction, height * subheaderFraction),
+            rowI: 0,
+            colI: rowCounter,
+            role: "subhead"
+          });
+          subheader = getHeader(width, height * headerFraction, subtitle);
+          rowCounter += 1;
+        }
+        dims.push({
+          w: width,
+          h: spacer,
+          rowI: 0,
+          colI: rowCounter,
+          role: "spacer"
+        });
+        rowCounter += 1;
       }
-      if (subtitle) {
-        headerHeights.push(height * subheaderFraction * ratio);
+
+      // Add each image
+      const dx = sum(dims.filter(d => d.colI === colNum + rowCounter), row => row.w);
+      const dy = sum(dims.filter(d => d.rowI === rowNum), row => row.h);
+      dims.push({
+        w: width,
+        h: height,
+        rowI: rowNum,
+        colI: colNum + rowCounter,
+        role: "image",
+        imageI: i,
+        dx: dx,
+        dy: dy
+      });
+
+
+      // canvas width = max of the rows/cols
+      canvasWidth = max(dims, d => d.w);
+
+      // Add the footer
+      if (i == numSvgs - 1) {
+        const maxCol = max(dims, d => d.colI);
+        dims.push({
+          w: width,
+          h: spacer,
+          rowI: 0,
+          colI: maxCol + 1,
+          role: "spacer"
+        });
+        dims.push({
+          w: width,
+          h: footerHeight * ratio,
+          rowI: 0,
+          colI: maxCol + 2,
+          role: "footer"
+        });
+        footer = getFooter(width, -15, sources, date, footerHeight * ratio);
       }
+
+      console.log(dims)
+
 
       // canvas height = header + subhead + spacer + max(height of each row) + spacer + footerHeight
-      canvasHeight = headerHeights.reduce((prev, curr) => prev + curr, 0) + spacer * 2 + heights[0] + footerHeight * ratio;
+      canvasHeight = sum(dims.filter(d => d.rowI === 0), row => row.h);
 
-      console.log(heights)
+      console.log(canvasWidth)
       console.log(canvasHeight)
-      console.log(headerHeights)
-
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
-      var header;
-      var subheader;
-      if (i === 0) {
-        header = getHeader(rect.width, headerHeights[i], title);
-        subheader = getHeader(rect.width, headerHeights[i], subtitle);
-      } else {
-        header = subtitle ? getHeader(rect.width, headerHeights[i], subtitle) : getHeader(rect.width, headerHeights[i], "");
-      }
-
-      const footer = getFooter(canvasWidth, -15, sources, date, footerHeight * ratio);
-
-      console.log(rect)
-      console.log(ratio)
-
       var source = (new XMLSerializer()).serializeToString(svg);
 
       var imageUrl = URL.createObjectURL(new Blob([source], {
@@ -358,21 +409,20 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           if (selector === "svg.epi-curve") {
             context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[i] + spacer, width, height); // epi
           } else {
-            context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[i] + headerHeights[0] * ratio + spacer, width, height); // bar, map
+            const imageDims = dims.filter(d => d.imageI === i);
+            context.drawImage(image, imageDims[0].dx, imageDims[0].dy, width, height); // everything else
           }
 
           if (i === 0) {
-            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2), canvasWidth, headerHeights[i] * ratio);
-            context.drawImage(imageSubheader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[0] * ratio, width, headerHeights[i] * ratio);
-          } else {
-            context.drawImage(imageHeader, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[0] * ratio, width, headerHeights[i] * ratio);
+            // add header
+            const headerDims = dims.filter(d => d.role == "header");
+            context.drawImage(imageHeader, 0, 0, headerDims[0].w, headerDims[0].h);
           }
 
           counter = counter + 1;
-          // console.log(`${counter} of ${numSvgs} svgs`)
           // only draw the footer on the last image
           if (counter === numSvgs) {
-            context.drawImage(imageFooter, 0, canvasHeight, canvasWidth, footerHeight * ratio);
+            context.drawImage(imageFooter, 0, canvasHeight - footerHeight - spacer, canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
             canvas.toBlob(function(blob) {
@@ -442,7 +492,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       };
 
       canvas.width = canvasWidth;
-      canvas.height = canvasHeight + footerHeight + headerHeights[0] * ratio;
+      canvas.height = canvasHeight;
       image.src = imageUrl;
       imageHeader.src = headerUrl;
       imageSubheader.src = subheaderUrl;
