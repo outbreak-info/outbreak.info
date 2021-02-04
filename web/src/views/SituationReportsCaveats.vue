@@ -18,5 +18,8 @@
       Estimates of true prevalence in the U.S. are discussed in the <a href="https://blog.helix.com/b117-variant-updated-data/ target='_blank'">Helix Research blog</a>.
     </p>
   </section>
+  <section id="methods" class="d-flex w-75 justify-content-center my-5">
+    <router-link :to="{name: 'SituationReportMethodology'}"><button class="btn btn-main">View methods</button></router-link>
+  </section>
 </div>
 </template>
