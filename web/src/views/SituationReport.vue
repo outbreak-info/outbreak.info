@@ -64,13 +64,14 @@
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
         </small>
       </div>
-      <div class="d-flex flex-column align-items-end">
+      <div class="d-flex flex-column align-items-end justify-content-between">
         <div class="d-flex align-items-center">
           Enabled by data from
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
             <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
           </a>
         </div>
+        <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline mt-3 p-0 px-1"><small>How to interpret these reports</small></router-link>
         <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       </div>
     </div>
