@@ -373,6 +373,7 @@ export default Vue.extend({
               .attr("x", d => this.xBar(d.cum_total_count))
               .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", "#777")
               .style("font-size", "9pt")
               .style("dominant-baseline", "central")
