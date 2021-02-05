@@ -338,7 +338,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       if (subtitle) {
         dims.push({
           w: width,
-          h: Math.min(width * subheaderFraction, height * subheaderFraction),
+          h: height * subheaderFraction,
           rowI: rowNum + rowCounter,
           imageI: i,
           colI: colNum,
@@ -347,7 +347,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           role: "subhead"
         });
 
-        subheader = getHeader(width, Math.min(width * subheaderFraction, height * subheaderFraction), subtitle);
+        subheader = getHeader(width, height * subheaderFraction, subtitle);
       }
 
       dims.push({
@@ -465,7 +465,6 @@ export function getPng(selector, sources, date, vertical = false, download = fal
               footerUrl = URL.revokeObjectURL(footerUrl);
 
               if (navigator.clipboard) {
-
                 if (i === numSvgs - 1) {
                   // console.log("copied")
                   canvas.toBlob(blob => {
@@ -499,9 +498,9 @@ export function getPng(selector, sources, date, vertical = false, download = fal
                   })
                 }
               } // end of navigator.clipboard
-            }, 10);
+            }, 100); /// needs to be long enough to grab the data
           } // end else
-        }, 10);
+        }, 10); // end image load timeout
       };
 
       canvas.width = canvasWidth;
