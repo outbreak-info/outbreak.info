@@ -220,6 +220,7 @@ export default Vue.extend({
           muts.sort((a, b) => a.tooltipDiff - b.tooltipDiff);
 
           muts = muts.filter(d => d.tooltipDiff <= maxDiff);
+          console.log(muts)
 
           const selectedMut = muts.length ? muts[0] : null;
 
@@ -645,7 +646,7 @@ export default Vue.extend({
               .attr("class", "deletion-text deletion-location")
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
-              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
+              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 - 1}`)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("font-size", "0.6rem");
           },
@@ -688,7 +689,7 @@ export default Vue.extend({
             // position locations
             update
               .selectAll(".deletion-location")
-              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
+              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 -1}`)
               .transition(t1)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY);
