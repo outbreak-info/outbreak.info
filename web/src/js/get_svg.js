@@ -439,22 +439,25 @@ export function getPng(selector, sources, date, vertical = false, download = fal
             context.drawImage(imageFooter, 0, canvasHeight - footerHeight - spacer, canvasWidth, footerHeight * ratio);
           }
           if (download && i === numSvgs - 1) {
-            canvas.toBlob(function(blob) {
-              var a = document.createElement("a"),
-                aUrl = URL.createObjectURL(blob);
-              a.download = filename;
-              a.href = aUrl;
-              body.appendChild(a);
-              setTimeout(function() {
-                a.click();
-                aUrl = URL.revokeObjectURL(aUrl);
-                imageUrl = URL.revokeObjectURL(imageUrl);
-                headerUrl = URL.revokeObjectURL(headerUrl);
-                subheaderUrl = URL.revokeObjectURL(subheaderUrl);
-                footerUrl = URL.revokeObjectURL(footerUrl);
-                body.removeChild(a);
-              }, 10);
-            });
+            setTimeout(function() {
+              imageUrl = URL.revokeObjectURL(imageUrl);
+              headerUrl = URL.revokeObjectURL(headerUrl);
+              subheaderUrl = URL.revokeObjectURL(subheaderUrl);
+              footerUrl = URL.revokeObjectURL(footerUrl);
+
+              canvas.toBlob(function(blob) {
+                var a = document.createElement("a"),
+                  aUrl = URL.createObjectURL(blob);
+                a.download = filename;
+                a.href = aUrl;
+                body.appendChild(a);
+                setTimeout(function() {
+                  a.click();
+                  aUrl = URL.revokeObjectURL(aUrl);
+                  body.removeChild(a);
+                }, 10);
+              });
+            }, 100);
           }
           // copy
           else {
