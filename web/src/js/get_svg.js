@@ -254,6 +254,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       reject("Error: no svg found with that selector")
     }
 
+    // calc number of columns
     let numAcross = numSvgs > 3 ? Math.ceil(Math.sqrt(numSvgs)) : numSvgs;
 
     if (vertical) {
@@ -313,32 +314,43 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           dims.push({
             w: width,
             h: Math.min(width * subheaderFraction, height * subheaderFraction),
-            rowI: 0,
-            colI: rowCounter,
+            rowI: rowCounter,
+            colI: 0,
             role: "subhead"
           });
 
           rowCounter += 1;
         }
+
+        // add a spacer == new row
         dims.push({
           w: width,
           h: spacer,
-          rowI: 0,
-          colI: rowCounter,
+          rowI: rowCounter,
+          colI: 0,
           role: "spacer"
         });
         rowCounter += 1;
       }
 
-      // Add each image
-      const dx = sum(dims.filter(d => d.colI === colNum + rowCounter), row => row.w);
-      const dy = sum(dims.filter(d => d.rowI === rowNum), row => row.h);
+      // Add each image; calculate how much it needs to be shifted horizontally or vertically.
+      const dx = nest()
+      .key(d => d.colI)
+      .rollup(values => max(values, x => x.w))
+      .entries(dims.filter(d => d.colI < colNum))
+      .reduce((prev, curr) => prev + curr.value, 0);
+
+      const dy = nest()
+      .key(d => d.rowI)
+      .rollup(values => max(values, x => x.h))
+      .entries(dims.filter(d => d.rowI < rowNum + rowCounter))
+      .reduce((prev, curr) => prev + curr.value, 0);
 
       dims.push({
         w: width,
         h: height,
-        rowI: rowNum,
-        colI: colNum + rowCounter,
+        rowI: rowNum + rowCounter,
+        colI: colNum,
         role: "image",
         imageI: i,
         dx: dx,
@@ -356,19 +368,19 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           .reduce((prev, curr) => prev + curr.value, 0);
 
         console.log(canvasWidth)
-        const maxCol = max(dims, d => d.colI);
+        const maxRow = max(dims, d => d.rowI);
         dims.push({
           w: canvasWidth,
           h: spacer,
-          rowI: 0,
-          colI: maxCol + 1,
+          rowI: maxRow + 1,
+          colI: 0,
           role: "spacer"
         });
         dims.push({
           w: canvasWidth,
           h: footerHeight * ratio,
-          rowI: 0,
-          colI: maxCol + 2,
+          rowI: maxRow + 2,
+          colI: 0,
           role: "footer"
         });
 
