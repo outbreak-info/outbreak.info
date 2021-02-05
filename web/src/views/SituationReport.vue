@@ -9,14 +9,14 @@
   <div id="change-locations-modal" class="modal fade">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header border-secondary">
           <h5 class="modal-title" id="exampleModalLabel">Select report locations</h5>
           <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
+          <div class="mb-3 py-3 border-bottom border-secondary">
             <h6 class="text-muted text-underline m-0">Current locations</h6>
             <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
               {{ location }}
@@ -24,23 +24,42 @@
             </button>
           </div>
 
-          <div>
-            <h6 class="text-sec text-underline m-0">Countries to add</h6>
-            <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
-              {{ country }}
-              <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
-            </button>
+          <div class="py-3 border-bottom">
+            <div v-if="ctry2Add.length" class="my-3">
+              <h6 class="text-sec text-underline m-0">Countries to add</h6>
+              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
+                {{ country }}
+                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+              </button>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
+              <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
+            </div>
           </div>
 
-          <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
-            <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
+          <div class="py-3">
+            <div v-if="div2Add.length" class="my-3">
+              <h6 class="text-sec text-underline m-0">Divisions (States/Provinces) to add</h6>
+              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(division, dIdx) in div2Add" :key="dIdx" id="new-divisions" @click="removeDivision2Add(cIdx)">
+                {{ division }}
+                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+              </button>
+            </div>
 
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
+              <TypeaheadSelect :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Add division" totalLabel="total sequences" />
+            </div>
           </div>
         </div>
 
-        <div class="modal-footer">
+
+        <div class="modal-footer border-secondary">
           <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+          <button type="button" class="btn" @click="clearNewLocations" data-dismiss="modal">Clear changes</button>
           <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
+
         </div>
       </div>
     </div>
@@ -151,14 +170,7 @@
 
       <!-- RIGHT: SUMMARY BOX -->
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
-      <ReportSummary :dateUpdated="dateUpdated"
-          :totalLineage="totalLineage"
-          :mutationName="mutationName"
-          :reportType="reportType"
-          :globalPrev="globalPrev"
-          :locationTotals="locationTotals"
-          :countries="countries"
-      />
+        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" />
       </section>
     </div>
 
@@ -271,7 +283,8 @@ import {
   getCuratedMetadata,
   getTemporalPrevalence,
   updateLocationData,
-  findCountry
+  findCountry,
+  findDivision
 } from "@/api/genomics.js";
 
 import {
@@ -360,8 +373,10 @@ export default {
       // Changing locations
       activeLocation: "the world",
       queryCountry: null,
+      queryDivision: null,
       currentLocs: null, // placeholder for current locations
       ctry2Add: [], // array to store new locations to add
+      div2Add: [], // array to store new locations to add
 
       // subscriptions
       dataSubscription: null,
@@ -389,6 +404,7 @@ export default {
   mounted() {
     this.currentLocs = this.selectedLocations.map(d => d.name).filter(d => d != "Worldwide");
     this.queryCountry = findCountry;
+    this.queryDivision = findDivision;
     this.disclaimer =
       `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
@@ -423,6 +439,7 @@ export default {
           // worldwide stats
           this.globalPrev = results.globalPrev.proportion_formatted;
           this.totalLineage = results.globalPrev.lineage_count_formatted;
+          this.newTodayGlobal = results.mostRecent;
           this.newTodayGlobal = results.mostRecent.date_count;
           this.dateUpdated = results.mostRecent.dateFormatted;
 
@@ -460,6 +477,13 @@ export default {
     removeCountry2Add(idx) {
       this.ctry2Add.splice(idx, 1);
     },
+    removeDivision2Add(idx) {
+      this.div2Add.splice(idx, 1);
+    },
+    clearNewLocations() {
+      this.ctry2Add = [];
+      this.div2Add = [];
+    },
     selectNewLocations() {
       let newLocations = this.currentLocs.concat(this.ctry2Add);
 
@@ -492,6 +516,9 @@ export default {
     },
     updateSelected(selected) {
       this.ctry2Add.push(selected.name);
+    },
+    updateDivision(selected) {
+      this.div2Add.push(selected.name);
     }
   },
   destroyed() {
