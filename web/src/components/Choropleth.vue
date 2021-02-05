@@ -2,7 +2,7 @@
 <div class="d-flex flex-wrap justify-content-center align-items-center" ref="map_container" id="map_container">
   <div class="d-flex flex-column align-items-center">
     <h4 ref="date"></h4>
-    <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :name="title">
+    <svg :width="width" :height="height" ref="svg" class="epi-map-svg" :subtitle="title">
       <g ref="blank_map" class="blank-map-group"></g>
       <g ref="regions" class="region-group"></g>
       <g ref="overlay" class="overlay-map-group"></g>

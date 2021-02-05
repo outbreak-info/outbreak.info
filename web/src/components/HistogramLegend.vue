@@ -131,7 +131,7 @@ export default {
         filter = (`&le; ${this.maxVal.toLocaleString()}`)
       }
 
-      return filter ? `filtered ${filter} ${this.variableLabel}` : "";
+      return filter ? `filtered ${filter} ${this.variableLabel}` : this.variableLabel;
     }
   },
   mounted() {
