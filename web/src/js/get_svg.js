@@ -399,7 +399,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
         header = getHeader(canvasWidth, headerHeight, title);
       }
 
-      console.log(dims)
+      // console.log(dims)
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       var source = (new XMLSerializer()).serializeToString(svg);
@@ -463,45 +463,44 @@ export function getPng(selector, sources, date, vertical = false, download = fal
               headerUrl = URL.revokeObjectURL(headerUrl);
               subheaderUrl = URL.revokeObjectURL(subheaderUrl);
               footerUrl = URL.revokeObjectURL(footerUrl);
+
+              if (navigator.clipboard) {
+
+                if (i === numSvgs - 1) {
+                  // console.log("copied")
+                  canvas.toBlob(blob => {
+                    var data = [new ClipboardItem({
+                      "image/png": blob
+                    })];
+
+                    navigator.clipboard.write(data).then(function() {
+                      // garbage collect
+                      setTimeout(function() {
+                        imageUrl = URL.revokeObjectURL(imageUrl);
+                        headerUrl = URL.revokeObjectURL(headerUrl);
+                        subheaderUrl = URL.revokeObjectURL(subheaderUrl);
+                        footerUrl = URL.revokeObjectURL(footerUrl);
+                      }, 10);
+
+                      resolve("copied to the clipboard")
+
+                    }, function() {
+                      // garbage collect
+                      setTimeout(function() {
+                        imageUrl = URL.revokeObjectURL(imageUrl);
+                        headerUrl = URL.revokeObjectURL(headerUrl);
+                        subheaderUrl = URL.revokeObjectURL(subheaderUrl);
+                        footerUrl = URL.revokeObjectURL(footerUrl);
+                      }, 10);
+
+                      console.error("Unable to write to clipboard. :-(");
+                      resolve("sorry; copying this figure is unavailable")
+                    });
+                  })
+                }
+              } // end of navigator.clipboard
             }, 10);
-
-            if (navigator.clipboard) {
-
-              if (i === numSvgs - 1) {
-                // console.log("copied")
-                canvas.toBlob(blob => {
-                  var data = [new ClipboardItem({
-                    "image/png": blob
-                  })];
-
-                  navigator.clipboard.write(data).then(function() {
-                    // garbage collect
-                    setTimeout(function() {
-                      imageUrl = URL.revokeObjectURL(imageUrl);
-                      headerUrl = URL.revokeObjectURL(headerUrl);
-                      subheaderUrl = URL.revokeObjectURL(subheaderUrl);
-                      footerUrl = URL.revokeObjectURL(footerUrl);
-                    }, 10);
-
-                    resolve("copied to the clipboard")
-
-                  }, function() {
-                    // garbage collect
-                    setTimeout(function() {
-                      imageUrl = URL.revokeObjectURL(imageUrl);
-                      headerUrl = URL.revokeObjectURL(headerUrl);
-                      subheaderUrl = URL.revokeObjectURL(subheaderUrl);
-                      footerUrl = URL.revokeObjectURL(footerUrl);
-                    }, 10);
-
-                    console.error("Unable to write to clipboard. :-(");
-                    resolve("sorry; copying this figure is unavailable")
-                  });
-                })
-              }
-            }
-
-          }
+          } // end else
         }, 10);
       };
 
