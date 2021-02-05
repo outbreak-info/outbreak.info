@@ -151,68 +151,14 @@
 
       <!-- RIGHT: SUMMARY BOX -->
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
-        <h3>Summary</h3>
-        <div class="summary-counts mb-3">
-          As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the {{ mutationName }} lineage have been detected since the {{reportType}} was identified:
-
-          <!-- PREVALENCE SUMMARY TABLE -->
-          <table class="border-bottom line-height-1 mt-2 w-100">
-            <thead>
-              <tr class="border-bottom">
-                <th>
-                  location
-                  <font-awesome-icon class="ml-1 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
-                  <!-- sync, globe-americas, map-marked-alt -->
-                </th>
-                <th class="text-center">
-                  sequence count
-                </th>
-                <th class="text-center">
-                  apparent prevalence<sup>*</sup>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="checkbook">
-              <tr>
-                <td>
-                  Worldwide
-                </td>
-                <td class="text-center">
-                  {{ totalLineage }}
-                </td>
-                <td class="text-center">
-                  {{ globalPrev }}
-                </td>
-              </tr>
-              <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
-                <td>
-                  {{ location.name }}
-                </td>
-                <td class="text-center">
-                  {{ location.cum_lineage_count.toLocaleString() }}
-                </td>
-                <td class="text-center">
-                  {{ location.proportion_formatted }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="d-flex justify-content-between">
-            <small class="bright-hyperlink"><a href="#longitudinal">view change over time</a></small>
-            <small class="bright-hyperlink pointer"><a data-toggle="modal" data-target="#change-locations-modal">change locations</a></small>
-          </div>
-          <div class="line-height-1 my-2">
-            <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
-          </div>
-        </div>
-
-        <!-- GEO SUMMARY -->
-        <div id="geo-summary" v-if="countries">
-          The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b>.
-          <!-- and <b> {{ "XXXX" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>. -->
-          <CountryMap :countries="countries" :width="400" :showNames="false" />
-          <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
-        </div>
+      <ReportSummary :dateUpdated="dateUpdated"
+          :totalLineage="totalLineage"
+          :mutationName="mutationName"
+          :reportType="reportType"
+          :globalPrev="globalPrev"
+          :locationTotals="locationTotals"
+          :countries="countries"
+      />
       </section>
     </div>
 
@@ -288,7 +234,6 @@ import Vue from "vue";
 import ReportLogos from "@/components/ReportLogos.vue";
 import ReportMethodology from "@/components/ReportMethodology.vue";
 import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
-import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import ReportPrevalence from "@/components/ReportPrevalence.vue";
@@ -297,6 +242,7 @@ import ReportChoropleth from "@/components/ReportChoropleth.vue";
 import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
+import ReportSummary from "@/components/ReportSummary.vue";
 
 // --- font awesome --
 import {
@@ -309,13 +255,12 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
 import {
-  faSync,
   faTrashAlt,
   faPlusCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 
-library.add(faClock, faSync, faTrashAlt, faPlusCircle);
+library.add(faClock, faTrashAlt, faPlusCircle);
 
 import {
   mapState
@@ -340,7 +285,6 @@ export default {
     ReportMethodology,
     CharacteristicMutations,
     FontAwesomeIcon,
-    CountryMap,
     Warning,
     ReportAcknowledgements,
     ReportPrevalence,
@@ -348,6 +292,7 @@ export default {
     ReportChoropleth,
     ReportResources,
     ShareReport,
+    ReportSummary,
     TypeaheadSelect
   },
   props: {

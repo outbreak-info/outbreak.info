@@ -42,6 +42,10 @@ export default Vue.extend({
   watch: {
     countries: function() {
       this.drawMetro();
+    },
+    width: function() {
+      this.height = this.width * 0.5;
+      this.drawMetro();
     }
   },
   data() {
@@ -93,7 +97,10 @@ export default Vue.extend({
               .attr("stroke", d => this.countries.includes(d.properties.NAME) ? "white" : "none");
           },
           update => update
-          .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec"),
+          .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec")
+          .attr("d", path
+            .projection(projection)
+          ),
           exit =>
           exit.call(exit =>
             exit
