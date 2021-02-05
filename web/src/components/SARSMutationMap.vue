@@ -206,6 +206,8 @@ export default Vue.extend({
         .on("dblclick", this.resetAxis);
     },
     tooltipOn() {
+      const ttipXOffset = 35;
+      const ttipYOffset = 125;
       if (this.mutationArr) {
         // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
         // That has to have a rect on top of everything which detects the pointer events.
@@ -220,7 +222,6 @@ export default Vue.extend({
           muts.sort((a, b) => a.tooltipDiff - b.tooltipDiff);
 
           muts = muts.filter(d => d.tooltipDiff <= maxDiff);
-          console.log(muts)
 
           const selectedMut = muts.length ? muts[0] : null;
 
@@ -248,7 +249,8 @@ export default Vue.extend({
               .html(ttipText);
 
             ttip
-              .style("left", `${event.clientX}px`)
+              .style("left", `${event.offsetX + ttipXOffset}px`)
+              .style("top", `${event.offsetY + ttipYOffset}px`)
               .style("border-color", this.geneColorScale(selectedMut.gene))
               .style("background", chroma(this.geneColorScale(selectedMut.gene)).luminance(0.8))
               .style("display", "block");
@@ -329,7 +331,8 @@ export default Vue.extend({
             )
 
             ttip
-              .style("left", `${event.clientX}px`)
+              .style("left", `${event.offsetX + ttipXOffset}px`)
+              .style("top", `${event.offsetY + ttipYOffset}px`)
               .style("border-color", this.geneColorScale(selectedGene))
               .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
               .style("display", "block");
@@ -689,7 +692,7 @@ export default Vue.extend({
             // position locations
             update
               .selectAll(".deletion-location")
-              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 -1}`)
+              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 - 1}`)
               .transition(t1)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY);
