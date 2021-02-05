@@ -64,13 +64,14 @@
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
         </small>
       </div>
-      <div class="d-flex flex-column align-items-end">
+      <div class="d-flex flex-column align-items-end justify-content-between">
         <div class="d-flex align-items-center">
           Enabled by data from
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
             <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
           </a>
         </div>
+        <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline mt-3 p-0 px-1"><small>How to interpret these reports</small></router-link>
         <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       </div>
     </div>
@@ -78,7 +79,7 @@
     <!-- LOGOS -->
     <ReportLogos class="mb-4" />
 
-<!-- REPORT -->
+    <!-- REPORT -->
     <div class="row">
       <section id="intro" class="col-sm-6 col-md-8 pr-4">
         <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
@@ -100,7 +101,7 @@
 
         <!-- CHARACTERISTIC MUTATIONS -->
         <div class="mt-4" id="definition">
-<CharacteristicMutations :mutationName="mutationName" :mutations="mutations" :definitionLabel="definitionLabel"/>
+          <CharacteristicMutations :mutationName="mutationName" :mutations="mutations" :definitionLabel="definitionLabel" />
         </div>
 
         <!-- KEY INSIGHTS -->
@@ -208,7 +209,7 @@
         <!-- GEO SUMMARY -->
         <div id="geo-summary" v-if="countries">
           The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b>.
-           <!-- and <b> {{ "XXXX" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>. -->
+          <!-- and <b> {{ "XXXX" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>. -->
           <CountryMap :countries="countries" :width="400" :showNames="false" />
           <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
         </div>
@@ -247,8 +248,7 @@
       <h4>Methodology</h4>
       <ReportMethodology :dateUpdated="dateGenerated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
-      <Warning class="mt-2"
-        :text="disclaimer" />
+      <Warning class="mt-2" :text="disclaimer" />
     </section>
 
     <!-- CITATION -->
@@ -430,7 +430,8 @@ export default {
   mounted() {
     this.currentLocs = this.selectedLocations.map(d => d.name).filter(d => d != "Worldwide");
     this.queryCountry = findCountry;
-    this.disclaimer = `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+    this.disclaimer =
+      `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
     // Get date for the citation object
     const formatDate = timeFormat("%e %B %Y");
@@ -470,9 +471,9 @@ export default {
           this.prevalence = results.longitudinal;
 
           // recent data by country & countries with that lineage.
-          this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.country);
+          this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.name);
           this.ctryData = results.byCountry;
-          this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(d => d.name).includes(d.country));
+          this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(loc => loc.name).includes(d.name));
 
           this.hasData = results.longitudinal.length || results.byCountry.length;
           this.mutations = results.mutations;
@@ -505,7 +506,7 @@ export default {
 
       const queryParams = this.$route.query;
 
-      this.locationTotals = this.ctryData.filter(d => newLocations.includes(d.country));
+      this.locationTotals = this.ctryData.filter(d => newLocations.includes(d.name));
 
       this.$router.push({
         name: "MutationReport",

@@ -278,10 +278,7 @@ export default Vue.extend({
               .style("opacity", 0.3);
 
             // turn selected gene on
-            this.svg.select(`#${selectedGene}`)
-              .style("opacity", 1);
-
-            this.svg.selectAll(`.${selectedGene}`)
+            this.svg.selectAll(`.gene_${selectedGene}`)
               .style("opacity", 1);
 
 
@@ -433,8 +430,8 @@ export default Vue.extend({
         geneSelector.join(
           enter => {
             let geneGrp = enter.append("g")
-              .attr("class", "gene")
-              .attr("id", d => d.gene);
+              .attr("id", d => `gene_${d.gene}`)
+              .attr("class", d => `gene gene_${d.gene}`);
 
             geneGrp.append("rect")
               .attr("x", d => this.x(d.start))
@@ -452,6 +449,10 @@ export default Vue.extend({
               .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
           },
           update => {
+            update
+            .attr("id", d => `gene_${d.gene}`)
+            .attr("class", d => `gene gene_${d.gene}`);
+
             update
               .selectAll("rect")
               .transition(t1)
@@ -480,7 +481,7 @@ export default Vue.extend({
         substitutionSelector.join(
           enter => {
             let mutGrp = enter.append("g")
-              .attr("class", d => `substitution ${d.gene}`)
+              .attr("class", d => `substitution gene_${d.gene}`)
               .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
@@ -535,7 +536,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .attr("class", d => `substitution ${d.gene}`)
+              .attr("class", d => `substitution gene_${d.gene}`)
               .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
@@ -594,7 +595,7 @@ export default Vue.extend({
         deletionSelector.join(
           enter => {
             let mutGrp = enter.append("g")
-              .attr("class", d => `deletion ${d.gene}`)
+              .attr("class", d => `deletion gene_${d.gene}`)
               .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
@@ -650,7 +651,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .attr("class", d => `deletion ${d.gene}`)
+              .attr("class", d => `deletion gene_${d.gene}`)
               .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines

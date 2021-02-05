@@ -250,6 +250,15 @@ const routes = [{
       )
   },
   {
+    path: "/situation-reports/methods",
+    name: "SituationReportMethodology",
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports-caveats" */
+        "../views/SituationReportMethodology.vue"
+      )
+  },
+  {
     path: "/situation-reports/caveats",
     name: "SituationReportCaveats",
     component: () =>

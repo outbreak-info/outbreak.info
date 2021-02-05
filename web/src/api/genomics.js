@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
   from,
-  of,
+  of ,
   forkJoin,
   BehaviorSubject
 } from "rxjs";
@@ -27,7 +27,14 @@ import store from "@/store";
 function capitalize(value) {
   if (!value) return ''
   value = value.toString()
-  return value.charAt(0).toUpperCase() + value.slice(1)
+  return value != "of" ? value.charAt(0).toUpperCase() + value.slice(1) : value
+}
+
+function titleCase(value) {
+  if (value) {
+    const values = value.split(" ");
+    return values.map(d => capitalize(d)).join(" ");
+  }
 }
 
 // reminder: must be the raw verison of the file
@@ -46,7 +53,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
     map(([mostRecent, longitudinal, globalPrev, byCountry, md, mutations]) => {
-      const characteristicMuts = md && md.mutations ? md.mutations : mutations;
+      const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
         mostRecent: mostRecent,
@@ -60,7 +67,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     catchError(e => {
       console.log("%c Error in getting initial report data!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     }),
     finalize(() => store.state.admin.reportloading = false)
   )
@@ -76,20 +83,20 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d["codon_num"] = +d.pos;
+        d["codon_num"] = +d.codon_num;
         d["mutation"] = d.name;
-        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";
-;        delete d.pos;
+        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";;
+        delete d.pos;
       })
       return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting characteristic mutations!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
-  }
+}
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   const url = `${apiurl}most-recent-collection-date`;
@@ -100,9 +107,9 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      const filtered = results.filter(d => d.lineage == mutationString);
+      const filtered = results.filter(d => d.lineage == mutationString.toLowerCase());
       let lineageRecent;
-      if(filtered.length == 1) {
+      if (filtered.length == 1) {
         lineageRecent = filtered[0];
         const dateTime = parseDate(lineageRecent.date)
         lineageRecent["dateFormatted"] = formatDate(dateTime)
@@ -112,7 +119,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
     catchError(e => {
       console.log("%c Error in getting recent global prevalence data!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
 }
@@ -137,7 +144,7 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
     catchError(e => {
       console.log("%c Error in getting recent global prevalence data!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
 }
@@ -152,7 +159,7 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d["name"] = capitalize(d.country);
+        d["name"] = titleCase(d.country);
         d["proportion_formatted"] = formatPercent(d.proportion);
         d["dateTime"] = parseDate(d.date);
         d["location_id"] = d.country.replace(/\s/g, "");
@@ -162,7 +169,7 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
     catchError(e => {
       console.log("%c Error in getting recent prevalence data by country!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
 }
@@ -185,6 +192,7 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
     map(results => {
       results.forEach(d => {
         d["dateTime"] = parseDate(d.date);
+        d["name"] = titleCase(d.country);
       })
       return (results)
     }),
@@ -223,7 +231,7 @@ export function getCuratedMetadata(id) {
     catchError(e => {
       console.log("%c Error in getting curated data!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
 }
@@ -256,7 +264,7 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
     catchError(e => {
       console.log("%c Error in getting resource metadata!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
 
@@ -276,14 +284,14 @@ export function findCountry(apiUrl, queryString) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d.name = capitalize(d.name);
+        d.name = titleCase(d.name);
       })
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting country names!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
 }
@@ -304,12 +312,12 @@ export function findPangolin(apiUrl, queryString) {
         d.name = capitalize(d.name);
       })
 
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error in getting Pangolin lineage names!", "color: red");
       console.log(e);
-      return(of([]));
+      return ( of ([]));
     })
   )
 }
