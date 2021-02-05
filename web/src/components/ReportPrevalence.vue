@@ -36,7 +36,7 @@
         <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No samples found</text>
       </g>
       <g id="weird-last values" :hidden="!data.length">
-        <text :x="width - margin.left" :y="0" fill="#929292" font-size="10 px" dominant-baseline="hanging" text-anchor="end" :style='`font-family=${fontFamily}`'>Latest dates are noisy due to fewer samples</text>
+        <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
         <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
       </g>
     </svg>
@@ -241,16 +241,16 @@ export default Vue.extend({
         selectAll(".raw-counts")
           .style("opacity", 0.3);
 
-        selectAll(`#date${selected[0].date}`)
-          .style("opacity", 1);
+        // selectAll(`#date${selected[0].date}`)
+        //   .style("opacity", 1);
       }
     },
     tooltipOff() {
       select(this.$refs.tooltip_prevalence)
         .style("display", "none");
 
-      selectAll(".raw-counts")
-        .style("opacity", 1);
+      // selectAll(".raw-counts")
+      //   .style("opacity", 1);
     },
     updatePlot() {
       const t1 = transition().duration(2500);

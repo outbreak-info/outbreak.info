@@ -88,7 +88,7 @@ function getHeader(width, height, title) {
     title = "";
   }
 
-  const fontSize = height * 0.97;
+  const fontSize = height * 0.95;
   // view box needs to be a bit bigger to not get cut off
   return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet">
   <text x="0" y="0" transform="translate(5,5)" fill="currentColor"
