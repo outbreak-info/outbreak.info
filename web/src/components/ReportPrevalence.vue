@@ -241,8 +241,8 @@ export default Vue.extend({
         selectAll(".raw-counts")
           .style("opacity", 0.3);
 
-        // selectAll(`#date${selected[0].date}`)
-        //   .style("opacity", 1);
+        selectAll(`#date${selected[0].date}`)
+          .style("opacity", 1);
       }
     },
     tooltipOff() {
