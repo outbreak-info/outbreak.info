@@ -65,7 +65,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
     const subtitle = svg.getAttribute("subtitle");
     const footer = getFooter(rect.width, rect.height, sources, date);
     const header = getHeader(rect.width, rect.height * 0.1, title);
-    const subheader = getHeader(rect.width, rect.height * 0.07, subtitle);
+    const subheader = getHeader(rect.width, rect.height * 0.07, subtitle, 25);
 
 
     svgInfo.push({
@@ -83,7 +83,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
   return svgInfo;
 }
 
-function getHeader(width, height, title) {
+function getHeader(width, height, title, marginL = 5) {
   if (!title) {
     title = "";
   }
@@ -91,7 +91,7 @@ function getHeader(width, height, title) {
   const fontSize = height * 0.95;
   // view box needs to be a bit bigger to not get cut off
   return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet">
-  <text x="0" y="0" transform="translate(5,5)" fill="currentColor"
+  <text x="0" y="0" transform="translate(${marginL},5)" fill="currentColor"
     style="dominant-baseline: hanging; font-size:${fontSize}px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
   ${title.replace("&mdash;", "\u2014").replace("&le;", "\u2264").replace("&ge;", "\u2265").replace("&", "and")}</text>
   </svg>`)
@@ -240,7 +240,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
     const spacer = 30;
     const footerHeight = 40;
     const headerFraction = 0.05;
-    const subheaderFraction = 0.75 * headerFraction;
+    const subheaderFraction = headerFraction;
 
     var document = global.document,
       body = document.body,
@@ -347,7 +347,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           role: "subhead"
         });
 
-        subheader = getHeader(width, height * subheaderFraction, subtitle);
+        subheader = getHeader(width, height * subheaderFraction, subtitle, 75);
       }
 
       dims.push({
