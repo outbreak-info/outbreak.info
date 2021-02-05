@@ -310,24 +310,13 @@ export function getPng(selector, sources, date, vertical = false, download = fal
         });
 
         rowCounter += 1;
-        if (subtitle) {
-          dims.push({
-            w: width,
-            h: Math.min(width * subheaderFraction, height * subheaderFraction),
-            rowI: rowCounter,
-            colI: 0,
-            role: "subhead"
-          });
-
-          rowCounter += 1;
-        }
 
         // add a spacer == new row
         dims.push({
           w: width,
           h: spacer,
           rowI: rowCounter,
-          colI: 0,
+          colI: colNum,
           role: "spacer"
         });
         rowCounter += 1;
@@ -335,16 +324,31 @@ export function getPng(selector, sources, date, vertical = false, download = fal
 
       // Add each image; calculate how much it needs to be shifted horizontally or vertically.
       const dx = nest()
-      .key(d => d.colI)
-      .rollup(values => max(values, x => x.w))
-      .entries(dims.filter(d => d.colI < colNum))
-      .reduce((prev, curr) => prev + curr.value, 0);
+        .key(d => d.colI)
+        .rollup(values => max(values, x => x.w))
+        .entries(dims.filter(d => d.colI < colNum))
+        .reduce((prev, curr) => prev + curr.value, 0);
 
       const dy = nest()
-      .key(d => d.rowI)
-      .rollup(values => max(values, x => x.h))
-      .entries(dims.filter(d => d.rowI < rowNum + rowCounter))
-      .reduce((prev, curr) => prev + curr.value, 0);
+        .key(d => d.rowI)
+        .rollup(values => max(values, x => x.h))
+        .entries(dims.filter(d => d.rowI < rowNum + rowCounter))
+        .reduce((prev, curr) => prev + curr.value, 0);
+
+      if (subtitle) {
+        dims.push({
+          w: width,
+          h: Math.min(width * subheaderFraction, height * subheaderFraction),
+          rowI: rowNum + rowCounter,
+          imageI: i,
+          colI: colNum,
+          dx: dx,
+          dy: dy,
+          role: "subhead"
+        });
+
+        subheader = getHeader(width, Math.min(width * subheaderFraction, height * subheaderFraction), subtitle);
+      }
 
       dims.push({
         w: width,
@@ -391,15 +395,11 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           .reduce((prev, curr) => prev + curr.value, 0);
 
         // get the header/footer svg objects
-        // headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
         footer = getFooter(canvasWidth, -15, sources, date, footerHeight * ratio);
         header = getHeader(canvasWidth, headerHeight, title);
-        subheader = getHeader(canvasWidth, height * headerFraction, subtitle);
       }
 
       console.log(dims)
-      console.log(canvasWidth)
-      console.log(canvasHeight)
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       var source = (new XMLSerializer()).serializeToString(svg);
@@ -426,9 +426,14 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           const imageDims = dims.filter(d => d.imageI === i);
           context.drawImage(image, imageDims[0].dx, imageDims[0].dy, width, height); // everything else
 
+          const subheaderDims = dims.filter(d => d.role == "subhead" && d.imageI === i);
+          if (subheaderDims.length === 1) {
+            context.drawImage(imageSubheader, subheaderDims[0].dx, subheaderDims[0].dy, subheaderDims[0].w, subheaderDims[0].h);
+          }
+
           // only draw the footer on the last image
           if (i === numSvgs - 1) {
-            // add header
+            // add headers
             const headerDims = dims.filter(d => d.role == "header");
             context.drawImage(imageHeader, 0, 0, canvasWidth, headerDims[0].h);
             context.drawImage(imageFooter, 0, canvasHeight - footerHeight - spacer, canvasWidth, footerHeight * ratio);
@@ -445,6 +450,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
                 aUrl = URL.revokeObjectURL(aUrl);
                 imageUrl = URL.revokeObjectURL(imageUrl);
                 headerUrl = URL.revokeObjectURL(headerUrl);
+                subheaderUrl = URL.revokeObjectURL(subheaderUrl);
                 footerUrl = URL.revokeObjectURL(footerUrl);
                 body.removeChild(a);
               }, 10);
@@ -473,7 +479,6 @@ export function getPng(selector, sources, date, vertical = false, download = fal
                     setTimeout(function() {
                       imageUrl = URL.revokeObjectURL(imageUrl);
                       headerUrl = URL.revokeObjectURL(headerUrl);
-                      subheaderUrl = URL.revokeObjectURL(subheaderUrl);
                       subheaderUrl = URL.revokeObjectURL(subheaderUrl);
                       footerUrl = URL.revokeObjectURL(footerUrl);
                     }, 10);
