@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
   from,
-  of ,
+  of,
   forkJoin,
   BehaviorSubject
 } from "rxjs";
@@ -74,7 +74,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
 }
 
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = 0.97) {
-  const url = `${apiurl}lineage-mutations?lineage=${lineage}&frequency=${prevalenceThreshold}`;
+  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -107,7 +107,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      const filtered = results.filter(d => d.lineage == mutationString.toLowerCase());
+      const filtered = results.filter(d => d.pangolin_lineage.toLowerCase() == mutationString.toLowerCase());
       let lineageRecent;
       if (filtered.length == 1) {
         lineageRecent = filtered[0];
@@ -125,7 +125,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
 }
 
 export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}prevalence?cumulative=true&${mutationVar}=${mutationString}`;
+  const url = `${apiurl}global-prevalence?cumulative=true&${mutationVar}=${mutationString}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -159,10 +159,10 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d["name"] = titleCase(d.country);
+        d["name"] = titleCase(d.name);
         d["proportion_formatted"] = formatPercent(d.proportion);
         d["dateTime"] = parseDate(d.date);
-        d["location_id"] = d.country.replace(/\s/g, "");
+        d["location_id"] = d.name.replace(/\s/g, "");
       })
       return (results)
     }),
@@ -178,7 +178,7 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
   store.state.admin.reportloading = true;
   let url;
   if (location == "Worldwide") {
-    url = `${apiurl}prevalence?${mutationVar}=${mutationString}`;
+    url = `${apiurl}global-prevalence?${mutationVar}=${mutationString}`;
   } else {
     url = `${apiurl}prevalence-by-country?${mutationVar}=${mutationString}&${locationType}=${location}`;
   }
@@ -192,7 +192,7 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
     map(results => {
       results.forEach(d => {
         d["dateTime"] = parseDate(d.date);
-        d["name"] = titleCase(d.country);
+        d["name"] = titleCase(d.name);
       })
       return (results)
     }),
@@ -273,6 +273,31 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
 
 export function findCountry(apiUrl, queryString) {
   const url = `${apiUrl}country?name=*${queryString}*`
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d.name = titleCase(d.name);
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting country names!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function findDivision(apiUrl, queryString) {
+  const url = `${apiUrl}division?name=*${queryString}*`
 
   return from(
     axios.get(url, {
