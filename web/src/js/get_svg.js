@@ -367,7 +367,6 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           .entries(dims)
           .reduce((prev, curr) => prev + curr.value, 0);
 
-        console.log(canvasWidth)
         const maxRow = max(dims, d => d.rowI);
         dims.push({
           w: canvasWidth,
@@ -390,17 +389,17 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           .rollup(values => max(values, x => x.h))
           .entries(dims)
           .reduce((prev, curr) => prev + curr.value, 0);
-        console.log(canvasHeight)
 
         // get the header/footer svg objects
         // headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
         footer = getFooter(canvasWidth, -15, sources, date, footerHeight * ratio);
         header = getHeader(canvasWidth, headerHeight, title);
-        console.log(header)
         subheader = getHeader(canvasWidth, height * headerFraction, subtitle);
       }
 
       console.log(dims)
+      console.log(canvasWidth)
+      console.log(canvasHeight)
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       var source = (new XMLSerializer()).serializeToString(svg);
@@ -424,20 +423,13 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       image.onload = function() {
         setTimeout(function() {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
-          // if (selector === "svg.epi-curve") {
-          //   context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[i] + spacer, width, height); // epi
-          // } else {
           const imageDims = dims.filter(d => d.imageI === i);
           context.drawImage(image, imageDims[0].dx, imageDims[0].dy, width, height); // everything else
-          // }
 
           // only draw the footer on the last image
           if (i === numSvgs - 1) {
             // add header
             const headerDims = dims.filter(d => d.role == "header");
-            console.log(headerDims)
-            console.log(canvasWidth)
-            console.log(imageHeader)
             context.drawImage(imageHeader, 0, 0, canvasWidth, headerDims[0].h);
             context.drawImage(imageFooter, 0, canvasHeight - footerHeight - spacer, canvasWidth, footerHeight * ratio);
           }
