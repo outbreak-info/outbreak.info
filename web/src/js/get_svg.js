@@ -262,7 +262,6 @@ export function getPng(selector, sources, date, vertical = false, download = fal
 
     var canvasWidth = 0;
     var canvasHeight = 0;
-    var counter = 0;
     var dims = [];
     var colCounter = 0;
     var rowCounter = 0;
@@ -419,17 +418,14 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           context.drawImage(image, imageDims[0].dx, imageDims[0].dy, width, height); // everything else
           // }
 
-          counter = counter + 1;
-
-
           // only draw the footer on the last image
-          if (counter === numSvgs) {
+          if (i === numSvgs - 1) {
             // add header
             const headerDims = dims.filter(d => d.role == "header");
             context.drawImage(imageHeader, 0, 0, canvasWidth, headerDims[0].h);
             context.drawImage(imageFooter, 0, canvasHeight - footerHeight - spacer, canvasWidth, footerHeight * ratio);
           }
-          if (download && counter === numSvgs) {
+          if (download && i === numSvgs - 1) {
             canvas.toBlob(function(blob) {
               var a = document.createElement("a"),
                 aUrl = URL.createObjectURL(blob);
@@ -457,7 +453,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
 
             if (navigator.clipboard) {
 
-              if (counter === numSvgs) {
+              if (i === numSvgs - 1) {
                 // console.log("copied")
                 canvas.toBlob(blob => {
                   var data = [new ClipboardItem({
