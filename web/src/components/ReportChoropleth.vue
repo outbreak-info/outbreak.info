@@ -1,15 +1,18 @@
 <template>
-<div class="d-flex flex-column align-items-center">
+<div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- Total count filter -->
-  <div class="d-flex justify-content-around" id="choropleth-legend">
-    <GradientLegend class="mr-4" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-    <svg ref="count_filter" id="count-filter" :width="width-225" :height="legendHeight" class="report-choropleth-legend">
+  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
+    <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
+    <svg ref="count_filter" id="count-filter" :width="240" :height="37" class="report-choropleth-legend mx-3 my-2">
+      <g transform="translate(1,1)">
       <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
       <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
       <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>
       <rect x="0" y="20" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
-
-      <g transform="translate(350,8)" id="threshold-slider">
+      </g>
+    </svg>
+    <svg ref="count_filter" id="count-filter" :width="230" :height="legendHeight" class="report-choropleth-legend my-2">
+      <g transform="translate(5,8)" id="threshold-slider">
         <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of total samples</text>
         <g transform="translate(0,18)">
           <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
@@ -23,7 +26,7 @@
   </div>
 
   <!-- choropleth -->
-  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth" :name="title">
+  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title">
     <g ref="blank_map" class="blank-map-group"></g>
     <g ref="regions" class="region-group"></g>
     <g ref="overlay" class="overlay-map-group"></g>
@@ -39,7 +42,10 @@
     <div id="sequencing-count"></div>
   </div>
 
+<div  class="w-75">
   <DownloadReportData :data="data" figureRef="report-choropleth" />
+</div>
+
 </div>
 </template>
 
@@ -108,8 +114,10 @@ export default {
       strokeColor: "#2c3e50",
       // data
       filteredData: null,
+      // map data
       baseMap: null,
       projection: null,
+      hwRatio: null,
       // refs
       svg: null,
       blank: null,
@@ -128,6 +136,9 @@ export default {
     data: function() {
       this.drawMap();
     },
+    width: function() {
+      this.drawMap();
+    }
   },
   computed: {
     maxVal() {
@@ -154,12 +165,11 @@ export default {
   },
   created: function() {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
+    this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   mounted() {
     this.$nextTick(function() {
-      window.addEventListener("resize", this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims(false);
+      window.addEventListener("resize", this.debounceSetDims);
 
       // set up drag for threshold filter
       this.setupDrag();
@@ -187,12 +197,44 @@ export default {
       );
     });
 
-    this.setupChoro();
-    this.setupMap();
-    this.drawMap();
+    this.chooseMap();
+    // set initial dimensions for the choropleth plots.
+    this.setDims();
+    this.setupChoro(); // svg handles, etc.
   },
   methods: {
     setDims() {
+      const mx = 0.95;
+      const my = 0.95;
+      const svgContainer = document.getElementById('report-choropleth');
+
+      const maxWidth = svgContainer? svgContainer.offsetWidth * mx : 800;
+      const maxHeight = window.innerHeight * my;
+
+      const idealHeight = this.hwRatio * maxWidth;
+      if(idealHeight <= maxHeight) {
+                this.height = idealHeight;
+        this.width = maxWidth;
+      } else {
+        this.height = maxHeight;
+        this.width = this.height / this.hwRatio;
+      }
+    },
+    chooseMap() {
+      if (this.adminLevel === "country") {
+        this.projection = geoEqualEarth()
+          .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
+          .scale(1)
+          .translate([this.width / 2, this.height / 2]);
+
+        this.baseMap = GEODATA;
+        this.hwRatio = 0.45;
+
+      } else {
+        this.projection = geoAlbersUsa()
+          .scale(1)
+          .translate([this.width / 2, this.height / 2]);
+      }
     },
     setupChoro() {
       this.svg = select(this.$refs.svg);
@@ -201,20 +243,10 @@ export default {
       this.regions = select(this.$refs.regions);
       this.ttips = select(this.$refs.choropleth_tooltip);
     },
-    setupMap() {
-      if (this.adminLevel === "country") {
-        this.projection = geoEqualEarth()
-          .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
-          .scale(1)
-          .translate([this.width / 2, this.height / 2]);
-
-        this.baseMap = GEODATA;
-
-      } else {
-        this.projection = geoAlbersUsa()
-          .scale(1)
-          .translate([this.width / 2, this.height / 2]);
-      }
+    updateProjection() {
+      this.projection = this.projection
+      .scale(1)
+      .translate([this.width / 2, this.height / 2]);
 
       this.path = this.path.projection(this.projection);
       // calc and set scale
@@ -231,6 +263,9 @@ export default {
     },
     prepData() {
       if (this.data) {
+        // Update projection / scales
+        this.updateProjection();
+
         this.filteredData = cloneDeep(this.baseMap.features);
 
         this.colorScale = scaleSequential(interpolateYlGnBu)
