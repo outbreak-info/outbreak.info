@@ -12,7 +12,8 @@ import {
   selectAll,
   select,
   max,
-  sum
+  sum,
+  nest
 } from "d3";
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
@@ -86,8 +87,6 @@ function getHeader(width, height, title) {
   if (!title) {
     title = "";
   }
-  console.log(width)
-  console.log(height)
 
   const fontSize = height;
   // view box needs to be a bit bigger to not get cut off
@@ -181,8 +180,7 @@ function getFooter(width, height, sources, date, footerHeight) {
           ${sourceString}
         </g>
       </g>
-    </svg>`
-  )
+    </svg>`)
 }
 
 function setInlineStyles(svg, emptySvgDeclarationComputed) {
@@ -241,7 +239,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
   return new Promise((resolve, reject) => {
     const spacer = 30;
     const footerHeight = 40;
-    const headerFraction = 0.075;
+    const headerFraction = 0.05;
     const subheaderFraction = 0.75 * headerFraction;
 
     var document = global.document,
@@ -269,6 +267,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
     var colCounter = 0;
     var rowCounter = 0;
     var header;
+    var headerHeight;
     var subheader;
     var footer;
 
@@ -301,7 +300,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       // store the dims of the image Array
       if (i === 0) {
         // add the header
-        const headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
+        headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
         dims.push({
           w: width,
           h: headerHeight,
@@ -309,7 +308,6 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           colI: 0,
           role: "header"
         });
-        header = getHeader(width, headerHeight, title);
 
         rowCounter += 1;
         if (subtitle) {
@@ -320,7 +318,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
             colI: rowCounter,
             role: "subhead"
           });
-          subheader = getHeader(width, height * headerFraction, subtitle);
+
           rowCounter += 1;
         }
         dims.push({
@@ -349,33 +347,48 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       });
 
 
-      // canvas width = max of the rows/cols
-      canvasWidth = max(dims, d => d.w);
-
       // Add the footer
       if (i == numSvgs - 1) {
+        // canvas width = max of the cols, summed.
+        canvasWidth = nest()
+          .key(d => d.colI)
+          .rollup(values => max(values, x => x.w))
+          .entries(dims)
+          .reduce((prev, curr) => prev + curr.value, 0);
+
+        console.log(canvasWidth)
         const maxCol = max(dims, d => d.colI);
         dims.push({
-          w: width,
+          w: canvasWidth,
           h: spacer,
           rowI: 0,
           colI: maxCol + 1,
           role: "spacer"
         });
         dims.push({
-          w: width,
+          w: canvasWidth,
           h: footerHeight * ratio,
           rowI: 0,
           colI: maxCol + 2,
           role: "footer"
         });
-        footer = getFooter(width, -15, sources, date, footerHeight * ratio);
+
+        // canvas height = header + subhead + spacer + max(height of each row) + spacer + footerHeight
+        canvasHeight = nest()
+          .key(d => d.rowI)
+          .rollup(values => max(values, x => x.h))
+          .entries(dims)
+          .reduce((prev, curr) => prev + curr.value, 0);
+        console.log(canvasHeight)
+
+        // get the header/footer svg objects
+        headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
+        footer = getFooter(canvasWidth, -15, sources, date, footerHeight * ratio);
+        header = getHeader(canvasWidth, headerHeight, title);
+        subheader = getHeader(canvasWidth, height * headerFraction, subtitle);
       }
 
       console.log(dims)
-
-      // canvas height = header + subhead + spacer + max(height of each row) + spacer + footerHeight
-      canvasHeight = sum(dims.filter(d => d.rowI === 0), row => row.h);
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
       var source = (new XMLSerializer()).serializeToString(svg);
@@ -399,22 +412,21 @@ export function getPng(selector, sources, date, vertical = false, download = fal
       image.onload = function() {
         setTimeout(function() {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
-          if (selector === "svg.epi-curve") {
-            context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[i] + spacer, width, height); // epi
-          } else {
-            const imageDims = dims.filter(d => d.imageI === i);
-            context.drawImage(image, imageDims[0].dx, imageDims[0].dy, width, height); // everything else
-          }
-
-          if (i === 0) {
-            // add header
-            const headerDims = dims.filter(d => d.role == "header");
-            context.drawImage(imageHeader, 0, 0, headerDims[0].w, headerDims[0].h);
-          }
+          // if (selector === "svg.epi-curve") {
+          //   context.drawImage(image, colNum * (widths[i] + spacer), rowNum * (heights[i] + spacer * 2) + headerHeights[i] + spacer, width, height); // epi
+          // } else {
+          const imageDims = dims.filter(d => d.imageI === i);
+          context.drawImage(image, imageDims[0].dx, imageDims[0].dy, width, height); // everything else
+          // }
 
           counter = counter + 1;
+
+
           // only draw the footer on the last image
           if (counter === numSvgs) {
+            // add header
+            const headerDims = dims.filter(d => d.role == "header");
+            context.drawImage(imageHeader, 0, 0, canvasWidth, headerDims[0].h);
             context.drawImage(imageFooter, 0, canvasHeight - footerHeight - spacer, canvasWidth, footerHeight * ratio);
           }
           if (download && counter === numSvgs) {
