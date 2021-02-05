@@ -351,9 +351,13 @@ export default {
     TypeaheadSelect
   },
   props: {
-    location: {
+    country: {
       type: Array,
       default: () => ["United States of America", "United Kingdom"]
+    },
+    division: {
+      type: Array,
+      default: () => ["California"]
     },
     muts: Array,
     pangolin: String
@@ -370,19 +374,29 @@ export default {
       return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
     },
     selectedLocations() {
-      const locations = typeof(this.location) == "string" ? [this.location] : this.location;
-      // always have the world there too.
-      const allLocs = [{
-        name: "Worldwide",
-        isActive: true
-      }];
-
-      return (allLocs.concat(locations.map(d => {
+      let ctries = typeof(this.country) == "string" ? [this.country] : this.country;
+      ctries = ctries.map(d => {
         return {
           name: d,
           isActive: false
         };
-      })));
+      })
+
+      let divisions = typeof(this.division) == "string" ? [this.division] : this.division;
+      divisions = divisions.map(d => {
+        return {
+          name: d,
+          isActive: false
+        };
+      })
+
+      // always have the world there too.
+      let allLocs = [{
+        name: "Worldwide",
+        isActive: true
+      }];
+
+      return (allLocs.concat(ctries, divisions));
     }
   },
   data() {
