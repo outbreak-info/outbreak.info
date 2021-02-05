@@ -393,9 +393,10 @@ export function getPng(selector, sources, date, vertical = false, download = fal
         console.log(canvasHeight)
 
         // get the header/footer svg objects
-        headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
+        // headerHeight = height < 400 ? height * headerFraction * 3 : height * headerFraction;
         footer = getFooter(canvasWidth, -15, sources, date, footerHeight * ratio);
         header = getHeader(canvasWidth, headerHeight, title);
+        console.log(header)
         subheader = getHeader(canvasWidth, height * headerFraction, subtitle);
       }
 
@@ -434,6 +435,9 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           if (i === numSvgs - 1) {
             // add header
             const headerDims = dims.filter(d => d.role == "header");
+            console.log(headerDims)
+            console.log(canvasWidth)
+            console.log(imageHeader)
             context.drawImage(imageHeader, 0, 0, canvasWidth, headerDims[0].h);
             context.drawImage(imageFooter, 0, canvasHeight - footerHeight - spacer, canvasWidth, footerHeight * ratio);
           }
