@@ -204,8 +204,8 @@ export default {
   },
   methods: {
     setDims() {
-      const mx = 0.95;
-      const my = 0.95;
+      const mx = 0.9;
+      const my = 0.9;
       const svgContainer = document.getElementById('report-choropleth');
 
       const maxWidth = svgContainer? svgContainer.offsetWidth * mx : 800;
