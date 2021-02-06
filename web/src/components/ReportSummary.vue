@@ -10,7 +10,7 @@
         <tr class="border-bottom">
           <th>
             location
-            <font-awesome-icon class="ml-1 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
+            <font-awesome-icon class="ml-2 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
             <!-- sync, globe-americas, map-marked-alt -->
           </th>
           <th class="text-center">

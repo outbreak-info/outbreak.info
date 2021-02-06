@@ -56,8 +56,7 @@
 
 
         <div class="modal-footer border-secondary">
-          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-          <button type="button" class="btn" @click="clearNewLocations" data-dismiss="modal">Clear changes</button>
+          <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
           <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
 
         </div>
@@ -179,10 +178,10 @@
     <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
       <h4 class="mb-0">Average daily {{mutationName}} prevalence</h4>
       <small class="text-muted mb-2">Based on reported sample collection date</small>
-      <div id="location-buttons">
-        <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
-        <button class="btn btn-main-outline" data-toggle="modal" data-target="#change-locations-modal">Change locations
-          <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
+      <div id="location-buttons" class="d-flex flex-wrap">
+        <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
+        <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+          <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
       <ReportPrevalence :data="prevalence" :mutationName="mutationName" :location="activeLocation" />
@@ -485,17 +484,19 @@ export default {
       this.div2Add = [];
     },
     selectNewLocations() {
-      let newLocations = this.currentLocs.concat(this.ctry2Add);
+      let newCountries = this.country.concat(this.ctry2Add);
+      let newDivisions = this.div2Add;
 
       const queryParams = this.$route.query;
 
-      this.locationTotals = this.ctryData.filter(d => newLocations.includes(d.name));
+      this.locationTotals = this.ctryData.filter(d => newCountries.includes(d.name));
 
       this.$router.push({
         name: "MutationReport",
         path: "/report2.0",
         query: {
-          location: newLocations,
+          country: newCountries,
+          division: newDivisions,
           pangolin: queryParams.pangolin,
           muts: queryParams.muts
         }
