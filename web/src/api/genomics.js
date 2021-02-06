@@ -84,9 +84,6 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     map(results => {
       results.forEach(d => {
         d["codon_num"] = +d.codon_num;
-        d["mutation"] = d.name;
-        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";;
-        delete d.pos;
       })
       return (results)
     }),
