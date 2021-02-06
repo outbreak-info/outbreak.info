@@ -189,10 +189,13 @@
 
     <!-- GEOGRAPHIC PREVALENCE -->
     <section class="my-4 d-flex flex-column align-items-center" id="geographic">
-      <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
+      <div class="d-flex">
+        <h4 class="mb-0">Cumulative {{mutationName}} prevalence</h4>
+        <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeChoropleth(location)">{{ location.name }}</button>
+      </div>
       <small class="text-muted mb-3">Since first identification</small>
-      <ReportChoropleth :data="ctryData" :mutationName="mutationName" />
-      <ReportPrevalenceByLocation :data="ctryData" :mutationName="mutationName" class="mt-2" />
+      <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="choroLocation" />
+      <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
     </section>
 
     <!-- RESOURCES -->
@@ -283,7 +286,8 @@ import {
   getTemporalPrevalence,
   updateLocationData,
   findCountry,
-  findDivision
+  findDivision,
+  getLocationPrevalence
 } from "@/api/genomics.js";
 
 import {
@@ -354,6 +358,23 @@ export default {
       }];
 
       return (allLocs.concat(ctries, divisions));
+    },
+    choroplethCountries() {
+      let ctries = typeof(this.country) == "string" ? [this.country] : this.country;
+      ctries = ctries.map(d => {
+        return {
+          name: d,
+          isActive: false
+        };
+      })
+
+      // always have the world there too.
+      let allLocs = [{
+        name: "Global",
+        isActive: true
+      }];
+
+      return allLocs.concat(ctries);
     }
   },
   data() {
@@ -381,6 +402,7 @@ export default {
       dataSubscription: null,
       curatedSubscription: null,
       temporalSubscription: null,
+      choroSubscription: null,
       hasData: false,
 
       // curated values
@@ -390,7 +412,8 @@ export default {
       // data
       dateUpdated: null,
       reportMetadata: null,
-      ctryData: null,
+      choroLocation: "country",
+      choroData: null,
       countries: null,
       states: [],
       locationTotals: null,
@@ -447,7 +470,7 @@ export default {
 
           // recent data by country & countries with that lineage.
           this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.name);
-          this.ctryData = results.byCountry;
+          this.choroData = results.byCountry;
           this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(loc => loc.name).includes(d.name));
 
           this.hasData = results.longitudinal.length || results.byCountry.length;
@@ -483,13 +506,31 @@ export default {
       this.ctry2Add = [];
       this.div2Add = [];
     },
+    changeChoropleth(location) {
+      this.choroplethCountries.forEach(d => {
+        d.isActive = false;
+      })
+      location.isActive = true;
+      
+      this.choroSubscription = getLocationPrevalence(this.$genomicsurl, this.mutationName, this.mutationVar, location.name).subscribe(results => {
+        if (location.name == "Global") {
+          this.choroLocation = "country"
+        } else {
+          this.choroLocation = location.name;
+        }
+
+        this.choroData = results;
+        console.log(results)
+      })
+
+    },
     selectNewLocations() {
       let newCountries = this.country.concat(this.ctry2Add);
       let newDivisions = this.div2Add;
 
       const queryParams = this.$route.query;
 
-      this.locationTotals = this.ctryData.filter(d => newCountries.includes(d.name));
+      this.locationTotals = this.choroData.filter(d => newCountries.includes(d.name));
 
       this.$router.push({
         name: "MutationReport",
@@ -525,6 +566,10 @@ export default {
   destroyed() {
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
+    }
+
+    if (this.choroSubscription) {
+      this.choroSubscription.unsubscribe();
     }
 
     if (this.curatedSubscription) {

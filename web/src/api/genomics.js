@@ -48,7 +48,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getMostRecentSeq(apiurl, mutationString, mutationVar, null),
     getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
-    getCountryPrevalence(apiurl, mutationString, mutationVar),
+    getLocationPrevalence(apiurl, mutationString, mutationVar),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
@@ -146,8 +146,12 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   )
 }
 
-export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}`;
+export function getLocationPrevalence(apiurl, mutationString, mutationVar, location = "Global") {
+  let url;
+  url = location == "Global" ?
+  `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}` :
+  `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}`;
+  ;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"

@@ -5,10 +5,10 @@
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
     <svg ref="count_filter" id="count-filter" :width="240" :height="37" class="report-choropleth-legend mx-3 my-2">
       <g transform="translate(1,1)">
-      <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
-      <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
-      <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>
-      <rect x="0" y="20" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
+        <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
+        <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
+        <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>
+        <rect x="0" y="20" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
       </g>
     </svg>
     <svg ref="count_filter" id="count-filter" :width="230" :height="legendHeight" class="report-choropleth-legend my-2">
@@ -42,9 +42,9 @@
     <div id="sequencing-count"></div>
   </div>
 
-<div  class="w-75">
-  <DownloadReportData :data="data" figureRef="report-choropleth" />
-</div>
+  <div class="w-75">
+    <DownloadReportData :data="data" figureRef="report-choropleth" />
+  </div>
 
 </div>
 </template>
@@ -78,13 +78,14 @@ import {
 import GradientLegend from "@/components/GradientLegend.vue";
 
 import GEODATA from "@/assets/geo/countries.json";
+import USADATA from "@/assets/geo/US_states.json";
 
 export default {
   name: "ReportChoropleth",
   props: {
     data: Array,
     mutationName: String,
-    adminLevel: {
+    location: {
       type: String,
       default: "country"
     }
@@ -157,7 +158,7 @@ export default {
       return (Math.max(Math.abs(this.minVal), this.maxVal))
     },
     title() {
-      return (`${this.mutationName} prevalence by ${this.adminLevel}`)
+      return (this.location == "Global" ? `${this.mutationName} prevalence by country` : `${this.mutationName} prevalence in ${this.location}`)
     },
     filterShift() {
       return (this.xFilter ? this.xFilter(this.countThreshold) : 0)
@@ -208,12 +209,12 @@ export default {
       const my = 0.9;
       const svgContainer = document.getElementById('report-choropleth');
 
-      const maxWidth = svgContainer? svgContainer.offsetWidth * mx : 800;
+      const maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       const maxHeight = window.innerHeight * my;
 
       const idealHeight = this.hwRatio * maxWidth;
-      if(idealHeight <= maxHeight) {
-                this.height = idealHeight;
+      if (idealHeight <= maxHeight) {
+        this.height = idealHeight;
         this.width = maxWidth;
       } else {
         this.height = maxHeight;
@@ -221,7 +222,7 @@ export default {
       }
     },
     chooseMap() {
-      if (this.adminLevel === "country") {
+      if (this.location === "country") {
         this.projection = geoEqualEarth()
           .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
           .scale(1)
@@ -234,6 +235,8 @@ export default {
         this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
+
+        this.baseMap = USADATA;
       }
     },
     setupChoro() {
@@ -244,9 +247,13 @@ export default {
       this.ttips = select(this.$refs.choropleth_tooltip);
     },
     updateProjection() {
+      this.chooseMap();
+
+      console.log(this.baseMap)
+
       this.projection = this.projection
-      .scale(1)
-      .translate([this.width / 2, this.height / 2]);
+        .scale(1)
+        .translate([this.width / 2, this.height / 2]);
 
       this.path = this.path.projection(this.projection);
       // calc and set scale
@@ -266,7 +273,8 @@ export default {
         // Update projection / scales
         this.updateProjection();
 
-        this.filteredData = cloneDeep(this.baseMap.features);
+        this.filteredData = this.baseMap.features;
+        // this.filteredData = cloneDeep(this.baseMap.features);
 
         this.colorScale = scaleSequential(interpolateYlGnBu)
           .domain([0, this.maxVal]);
@@ -283,6 +291,13 @@ export default {
             d["cum_lineage_count"] = seq["cum_lineage_count"];
             d["cum_total_count"] = seq["cum_total_count"];
             d["proportion_formatted"] = seq.proportion_formatted;
+          } else {
+            d["fill"] = null;
+            d["lower"] = null
+            d["upper"] = null
+            d["cum_lineage_count"] = null;
+            d["cum_total_count"] = null;
+            d["proportion_formatted"] = null;
           }
         });
 
