@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
+<div class="d-flex flex-column align-items-center w-100" id="report-choropleth"  :class="{'hidden': noMap}">
   <!-- Total count filter -->
   <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
@@ -12,7 +12,7 @@
       </g>
     </svg>
     <svg ref="count_filter" id="count-filter" :width="230" :height="legendHeight" class="report-choropleth-legend my-2">
-      <g transform="translate(5,8)" id="threshold-slider">
+      <g transform="translate(10,8)" id="threshold-slider">
         <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of total samples</text>
         <g transform="translate(0,18)">
           <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
@@ -27,9 +27,7 @@
 
   <!-- choropleth -->
   <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title">
-    <g ref="blank_map" class="blank-map-group"></g>
     <g ref="regions" class="region-group"></g>
-    <g ref="overlay" class="overlay-map-group"></g>
   </svg>
 
   <div ref="tooltip_choro" class="tooltip-basic box-shadow" id="tooltip-choro">
@@ -121,8 +119,6 @@ export default {
       hwRatio: null,
       // refs
       svg: null,
-      blank: null,
-      overlay: null,
       regions: null,
       ttips: null,
       // axis -- threshold filter
@@ -130,11 +126,13 @@ export default {
       // methods
       colorScale: null,
       path: geoPath(),
-      transition1: 500
+      transition1: 500,
+      noMap: true
     }
   },
   watch: {
     data: function() {
+      this.chooseMap();
       this.drawMap();
     },
     width: function() {
@@ -231,26 +229,22 @@ export default {
         this.baseMap = GEODATA;
         this.hwRatio = 0.45;
 
-      } else {
+      } else if(this.location === "United States of America") {
         this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
         this.baseMap = USADATA;
+      } else {
+        this.baseMap = null;
       }
     },
     setupChoro() {
       this.svg = select(this.$refs.svg);
-      this.blank = select(this.$refs.blank_map);
-      this.overlay = select(this.$refs.overlay);
       this.regions = select(this.$refs.regions);
       this.ttips = select(this.$refs.choropleth_tooltip);
     },
     updateProjection() {
-      this.chooseMap();
-
-      console.log(this.baseMap)
-
       this.projection = this.projection
         .scale(1)
         .translate([this.width / 2, this.height / 2]);
@@ -267,14 +261,15 @@ export default {
 
       this.projection = this.projection
         .scale(scale);
+
+        // this.filteredData = this.baseMap.features;
+        this.filteredData = cloneDeep(this.baseMap.features);
     },
     prepData() {
-      if (this.data) {
+      if (this.data && this.baseMap) {
+        console.log(this.baseMap)
         // Update projection / scales
         this.updateProjection();
-
-        this.filteredData = this.baseMap.features;
-        // this.filteredData = cloneDeep(this.baseMap.features);
 
         this.colorScale = scaleSequential(interpolateYlGnBu)
           .domain([0, this.maxVal]);
@@ -305,6 +300,11 @@ export default {
           .range([0, this.filterWidth])
           .domain([1, max(this.data, d => d[this.thresholdVar])])
           .clamp(true);
+
+          this.noMap = false;
+      } else {
+        this.filteredData = null;
+        this.noMap = true;
       }
     },
     setupDrag() {
