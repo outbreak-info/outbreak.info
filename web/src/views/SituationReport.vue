@@ -139,7 +139,7 @@
         </div> -->
 
         <!-- NEW TODAY -->
-        <div class="mt-4">
+        <div class="my-4">
           <h4>What's new today</h4>
           <table>
             <tr class="border-bottom">
@@ -191,7 +191,12 @@
     <section class="my-4 d-flex flex-column align-items-center" id="geographic">
       <div class="d-flex">
         <h4 class="mb-0">Cumulative {{mutationName}} prevalence</h4>
+        <div id="location-buttons" class="d-flex flex-wrap">
         <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeChoropleth(location)">{{ location.name }}</button>
+        <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+          <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+        </button>
+      </div>
       </div>
       <small class="text-muted mb-3">Since first identification</small>
       <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="choroLocation" />
