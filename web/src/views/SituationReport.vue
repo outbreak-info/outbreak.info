@@ -188,18 +188,18 @@
     </section>
 
     <!-- GEOGRAPHIC PREVALENCE -->
-    <section class="my-4 d-flex flex-column align-items-center" id="geographic">
+    <section class="my-4 d-flex flex-column align-items-center" id="geographic" v-if="selectedType != 'division'">
       <div class="d-flex align-items-center">
         <h4 class="mb-0 mr-3">Cumulative {{mutationName}} prevalence</h4>
-        <div id="location-buttons" class="d-flex flex-wrap">
-        <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeChoropleth(location)">{{ location.name }}</button>
+        <div id="location-buttons" class="d-flex flex-wrap align-items-center">
+        <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeLocation(location)">{{ location.name }}</button>
         <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
           <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
       </div>
       <small class="text-muted mb-3">Since first identification</small>
-      <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="choroLocation" />
+      <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="selected" />
       <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
     </section>
 
@@ -288,7 +288,6 @@ import {
 import {
   getReportData,
   getCuratedMetadata,
-  getTemporalPrevalence,
   updateLocationData,
   findCountry,
   findDivision,
@@ -330,6 +329,10 @@ export default {
     selected: {
       type: String,
       default: "Worldwide"
+    },
+    selectedType: {
+      type: String,
+      default: "country"
     }
   },
   computed: {
@@ -348,7 +351,7 @@ export default {
       ctries = ctries.map(d => {
         return {
           name: d,
-          isActive: false,
+          isActive: d == this.selected && this.selectedType == "country",
           type: "country"
         };
       })
@@ -357,7 +360,7 @@ export default {
       divisions = divisions.map(d => {
         return {
           name: d,
-          isActive: false,
+          isActive: d == this.selected && this.selectedType == "division",
           type: "division"
         };
       })
@@ -365,27 +368,26 @@ export default {
       // always have the world there too.
       let allLocs = [{
         name: "Worldwide",
-        isActive: true
+        type: "world",
+        isActive: this.selected == "Worldwide"
       }];
 
       return (allLocs.concat(ctries, divisions));
     },
     choroplethCountries() {
-      let ctries = typeof(this.country) == "string" ? [this.country] : this.country;
-      ctries = ctries.map(d => {
-        return {
-          name: d,
-          isActive: false
-        };
+      return(this.selectedLocations.filter(d => d.type != "division"))
+    }
+  },
+  watch: {
+    selected: function() {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
+        // longitudinal data: prevalence over time
+        this.prevalence = results.longitudinal;
+
+        // recent data by country.
+        this.choroData = results.byCountry;
+
       })
-
-      // always have the world there too.
-      let allLocs = [{
-        name: "Worldwide",
-        isActive: true
-      }];
-
-      return allLocs.concat(ctries);
     }
   },
   data() {
@@ -412,7 +414,7 @@ export default {
       // subscriptions
       dataSubscription: null,
       curatedSubscription: null,
-      temporalSubscription: null,
+      locationChangeSubscription: null,
       choroSubscription: null,
       hasData: false,
 
@@ -467,7 +469,7 @@ export default {
       }
 
       if (this.mutationName) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName).subscribe(results => {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
           console.log(results)
           // worldwide stats
           this.globalPrev = results.globalPrev.proportion_formatted;
@@ -499,12 +501,6 @@ export default {
         })
       }
     },
-    getTemporalData(location) {
-      console.log(location)
-      this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location.name, this.mutationName, this.mutationVar, location.type, true).subscribe(data => {
-        this.prevalence = data;
-      });
-    },
     removeLocation(idx) {
       this.currentLocs.splice(idx, 1);
     },
@@ -518,23 +514,23 @@ export default {
       this.ctry2Add = [];
       this.div2Add = [];
     },
-    changeChoropleth(location) {
-      this.choroplethCountries.forEach(d => {
-        d.isActive = false;
-      })
-      location.isActive = true;
-
-      this.choroSubscription = getLocationPrevalence(this.$genomicsurl, this.mutationName, this.mutationVar, location.name).subscribe(results => {
-        if (location.name == "Worldwide") {
-          this.choroLocation = "country"
-        } else {
-          this.choroLocation = location.name;
-        }
-
-        this.choroData = results;
-      })
-
-    },
+    // changeChoropleth(location) {
+    //   this.choroplethCountries.forEach(d => {
+    //     d.isActive = false;
+    //   })
+    //   location.isActive = true;
+    //
+    //   this.choroSubscription = getLocationPrevalence(this.$genomicsurl, this.mutationName, this.mutationVar, location.name).subscribe(results => {
+    //     if (location.name == "Worldwide") {
+    //       this.choroLocation = "country"
+    //     } else {
+    //       this.choroLocation = location.name;
+    //     }
+    //
+    //     this.choroData = results;
+    //   })
+    //
+    // },
     selectNewLocations() {
       let newCountries = this.country.concat(this.ctry2Add);
       let newDivisions = this.div2Add;
@@ -550,19 +546,29 @@ export default {
           country: newCountries,
           division: newDivisions,
           pangolin: queryParams.pangolin,
-          muts: queryParams.muts
+          muts: queryParams.muts,
+          selected: queryParams.selected,
+          selectedType: queryParams.selectedType
         }
       })
     },
     changeLocation(location) {
-      this.selectedLocations.forEach(d => {
-        d.isActive = false;
+      const queryParams = this.$route.query;
+
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          country: queryParams.country,
+          division: queryParams.division,
+          pangolin: queryParams.pangolin,
+          muts: queryParams.muts,
+          selected: location.name,
+          selectedType: location.type
+        },
+        params: {
+          disableScroll: true
+        }
       })
-
-      location.isActive = !location.isActive;
-      this.activeLocation = location.name;
-
-      this.getTemporalData(location);
     },
     downloadMutations() {
       console.log("muts")
@@ -587,8 +593,8 @@ export default {
       this.curatedSubscription.unsubscribe();
     }
 
-    if (this.temporalSubscription) {
-      this.temporalSubscription.unsubscribe();
+    if (this.locationChangeSubscription) {
+      this.locationChangeSubscription.unsubscribe();
     }
   }
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
   from,
-  of,
+  of ,
   forkJoin,
   BehaviorSubject
 } from "rxjs";
@@ -41,14 +41,14 @@ function titleCase(value) {
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
 
-export function getReportData(apiurl, locations, mutationVar, mutationString, location = "Worldwide", locationType = "country") {
+export function getReportData(apiurl, locations, mutationVar, mutationString, location, locationType) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
     getMostRecentSeq(apiurl, mutationString, mutationVar, null),
-    getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
+    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
-    getLocationPrevalence(apiurl, mutationString, mutationVar, location),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
@@ -66,6 +66,28 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     }),
     catchError(e => {
       console.log("%c Error in getting initial report data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function updateLocationData(apiurl, mutationVar, mutationString, location, locationType) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([
+    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType)
+  ]).pipe(
+    map(([longitudinal, byLocation]) => {
+      return ({
+        longitudinal: longitudinal,
+        byCountry: byLocation
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in updating report location data!", "color: red");
       console.log(e);
       return ( of ([]));
     }),
@@ -146,37 +168,40 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   )
 }
 
-export function getLocationPrevalence(apiurl, mutationString, mutationVar, location) {
-  let url;
-  url = location == "Worldwide" ?
-  `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}` :
-  `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}`;
-  ;
-  return from(axios.get(url, {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })).pipe(
-    pluck("data", "results"),
-    map(results => {
-      results.forEach(d => {
-        d["name"] = titleCase(d.name);
-        d["proportion_formatted"] = formatPercent(d.proportion);
-        d["dateTime"] = parseDate(d.date);
-        // fixes the Georgia (state) / Georgia (country) problem
-        d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}`: d.name.replace(/\s/g, "");
+export function getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
+  if (locationType != "division") {
+    let url;
+    url = location == "Worldwide" ?
+      `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}` :
+      `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}`;;
+    return from(axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })).pipe(
+      pluck("data", "results"),
+      map(results => {
+        results.forEach(d => {
+          d["name"] = titleCase(d.name);
+          d["proportion_formatted"] = formatPercent(d.proportion);
+          d["dateTime"] = parseDate(d.date);
+          // fixes the Georgia (state) / Georgia (country) problem
+          d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
+        })
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting recent prevalence data by country!", "color: red");
+        console.log(e);
+        return ( of ([]));
       })
-      return (results)
-    }),
-    catchError(e => {
-      console.log("%c Error in getting recent prevalence data by country!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
+    )
+  } else {
+    return ( of ([]))
+  }
 }
 
-export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, locationType = "country", indivCall = false) {
+export function getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, indivCall = false) {
   store.state.admin.reportloading = true;
   let url;
   if (location == "Worldwide") {

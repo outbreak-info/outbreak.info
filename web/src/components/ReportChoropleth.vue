@@ -90,7 +90,7 @@ export default {
     mutationName: String,
     location: {
       type: String,
-      default: "country"
+      default: "Worldwide"
     }
   },
   components: {
@@ -161,7 +161,7 @@ export default {
       return (Math.max(Math.abs(this.minVal), this.maxVal))
     },
     title() {
-      return (this.location == "Global" ? `${this.mutationName} prevalence by country` : `${this.mutationName} prevalence in ${this.location}`)
+      return (this.location == "Worldwide" ? `${this.mutationName} prevalence by country` : `${this.mutationName} prevalence in ${this.location}`)
     },
     filterShift() {
       return (this.xFilter ? this.xFilter(this.countThreshold) : 0)
@@ -225,7 +225,7 @@ export default {
       }
     },
     chooseMap() {
-      if (this.location === "country") {
+      if (this.location === "Worldwide") {
         this.projection = geoEqualEarth()
           .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the ADMIN1 anyway...
           .scale(1)
@@ -374,7 +374,6 @@ export default {
       //       .remove()
       //     )
       //   )
-      console.log(this.filteredData)
       this.regions
         .selectAll(".region")
         .data(this.filteredData, d => d.properties.location_id)

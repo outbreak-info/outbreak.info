@@ -284,7 +284,8 @@ const routes = [{
       division: route.query.division,
       muts: route.query.muts,
       pangolin: route.query.pangolin,
-      selected: route.query.selected
+      selected: route.query.selected,
+      selectedType: route.query.selectedType
     }),
     component: () =>
       import(
