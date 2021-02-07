@@ -41,14 +41,14 @@ function titleCase(value) {
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
 
-export function getReportData(apiurl, locations, mutationVar, mutationString, locationType = "country") {
+export function getReportData(apiurl, locations, mutationVar, mutationString, location = "Global", locationType = "country") {
   store.state.admin.reportloading = true;
 
   return forkJoin([
     getMostRecentSeq(apiurl, mutationString, mutationVar, null),
     getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
-    getLocationPrevalence(apiurl, mutationString, mutationVar),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
@@ -146,7 +146,7 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   )
 }
 
-export function getLocationPrevalence(apiurl, mutationString, mutationVar, location = "Global") {
+export function getLocationPrevalence(apiurl, mutationString, mutationVar, location) {
   let url;
   url = location == "Global" ?
   `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}` :
@@ -175,13 +175,13 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
   )
 }
 
-export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, indivCall = false, locationType = "country") {
+export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, locationType = "country", indivCall = false) {
   store.state.admin.reportloading = true;
   let url;
   if (location == "Worldwide") {
     url = `${apiurl}global-prevalence?${mutationVar}=${mutationString}`;
   } else {
-    url = `${apiurl}prevalence-by-country?${mutationVar}=${mutationString}&${locationType}=${location}`;
+    url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}`;
   }
 
   return from(axios.get(url, {

@@ -339,7 +339,8 @@ export default {
       ctries = ctries.map(d => {
         return {
           name: d,
-          isActive: false
+          isActive: false,
+          type: "country"
         };
       })
 
@@ -347,7 +348,8 @@ export default {
       divisions = divisions.map(d => {
         return {
           name: d,
-          isActive: false
+          isActive: false,
+          type: "division"
         };
       })
 
@@ -489,7 +491,8 @@ export default {
       }
     },
     getTemporalData(location) {
-      this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName, this.mutationVar, true).subscribe(data => {
+      console.log(location)
+      this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location.name, this.mutationName, this.mutationVar, location.type, true).subscribe(data => {
         this.prevalence = data;
       });
     },
@@ -551,7 +554,7 @@ export default {
       location.isActive = !location.isActive;
       this.activeLocation = location.name;
 
-      this.getTemporalData(location.name);
+      this.getTemporalData(location);
     },
     downloadMutations() {
       console.log("muts")
