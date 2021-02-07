@@ -78,11 +78,11 @@ import {
 
 import GradientLegend from "@/components/GradientLegend.vue";
 
-import GEODATA from "@/assets/geo/countries.json";
+import ADMIN0 from "@/assets/geo/countries.json";
 import USADATA from "@/assets/geo/US_states.json";
-import WORLD from "@/assets/geo/canada.json";
-// import WORLD from "@/assets/geo/gadm_adm1_simplified.json";
-// import WORLD from "@/assets/geo/gadm_world_adm1.json";
+import ADMIN1 from "@/assets/geo/canada.json";
+// import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
+// import ADMIN1 from "@/assets/geo/gadm_ADMIN1_adm1.json";
 
 export default {
   name: "ReportChoropleth",
@@ -228,11 +228,11 @@ export default {
     chooseMap() {
       if (this.location === "country") {
         this.projection = geoEqualEarth()
-          .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
+          .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the ADMIN1 anyway...
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
-        this.baseMap = GEODATA;
+        this.baseMap = ADMIN0;
         this.hwRatio = 0.45;
 
       } else if (this.location === "United States of America") {
@@ -241,11 +241,10 @@ export default {
           .translate([this.width / 2, this.height / 2]);
 
         this.baseMap = USADATA;
-        console.log(geoBounds(this.baseMap))
+        const mapBounds = geoBounds(this.baseMap)
         this.hwRatio = 0.45;
       } else {
-        // this.baseMap = WORLD["world"];
-        this.baseMap = WORLD[this.location];
+        this.baseMap = ADMIN1[this.location];
         const mapBounds = geoBounds(this.baseMap);
 
         this.projection = geoAzimuthalEqualArea()
@@ -254,7 +253,10 @@ export default {
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
-        this.hwRatio = 0.45;
+
+        const mapRatio = Math.abs(mapBounds[0][1] - mapBounds[1][1]) / Math.abs(mapBounds[0][0] - mapBounds[1][0]);
+        this.hwRatio = mapRatio;
+        this.setDims();
       }
     },
     setupChoro() {
@@ -318,7 +320,6 @@ export default {
           .clamp(true);
 
         this.noMap = false;
-        console.log(this.filteredData)
       } else {
         this.filteredData = null;
         this.noMap = true;
@@ -343,8 +344,41 @@ export default {
     drawMap() {
       this.prepData();
 
+      // this.regions
+      //   .selectAll(".basemap")
+      //   .data(ADMIN0.features.filter(d => d.properties.NAME != "India"))
+      //   .join(
+      //     enter => {
+      //       enter
+      //         .append("path")
+      //         .attr("class", "basemap")
+      //         .attr("id", d => d.properties.location_id)
+      //         // draw each region
+      //         .attr("d", this.path
+      //           .projection(this.projection)
+      //         )
+      //         .style("fill", "#FDFDFD")
+      //         .style("stroke", this.strokeColor)
+      //         .style("stroke-width", 0.25)
+      //     },
+      //     update => update
+      //     .attr("id", d => d.properties.location_id)
+      //     // draw each region
+      //     .attr("d", this.path
+      //       .projection(this.projection)
+      //     ),
+      //     exit =>
+      //     exit.call(exit =>
+      //       exit
+      //       .transition()
+      //       .duration(10)
+      //       .style("opacity", 1e-5)
+      //       .remove()
+      //     )
+      //   )
+
       this.regions
-        .selectAll("path")
+        .selectAll(".region")
         .data(this.filteredData)
         .join(
           enter => {
@@ -378,6 +412,41 @@ export default {
             .remove()
           )
         )
+
+
+      // this.regions
+      //   .selectAll(".overlay")
+      //   .data(ADMIN0.features.filter(d => d.properties.NAME == "India"))
+      //   .join(
+      //     enter => {
+      //       enter
+      //         .append("path")
+      //         .attr("class", "overlay")
+      //         .attr("id", d => d.properties.location_id)
+      //         // draw each region
+      //         .attr("d", this.path
+      //           .projection(this.projection)
+      //         )
+      //         .style("fill", "none")
+      //         .style("stroke", this.strokeColor)
+      //         .style("stroke-width", 1.75)
+      //     },
+      //     update => update
+      //     .attr("id", d => d.properties.location_id)
+      //     // draw each region
+      //     .attr("d", this.path
+      //       .projection(this.projection)
+      //     ),
+      //     exit =>
+      //     exit.call(exit =>
+      //       exit
+      //       .transition()
+      //       .duration(10)
+      //       .style("opacity", 1e-5)
+      //       .remove()
+      //     )
+      //   )
+
       this.regions.selectAll("path.region")
         .on("mouseenter", d => this.debounceMouseon(d))
         .on("mouseleave", this.mouseOff);
