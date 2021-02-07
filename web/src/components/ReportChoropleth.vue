@@ -240,7 +240,6 @@ export default {
           .translate([this.width / 2, this.height / 2]);
 
         this.baseMap = USADATA;
-        const mapBounds = geoBounds(this.baseMap)
         // this.hwRatio = 0.45;
         // this.setDims();
       } else {
@@ -375,6 +374,7 @@ export default {
       //       .remove()
       //     )
       //   )
+      console.log(this.filteredData)
       this.regions
         .selectAll(".region")
         .data(this.filteredData, d => d.properties.location_id)
@@ -454,7 +454,7 @@ export default {
 
       // dim everything
       this.regions
-        .selectAll("path")
+        .selectAll(".region")
         .style("opacity", 0.2)
         .style("stroke-opacity", 0.5);
 
@@ -500,7 +500,7 @@ export default {
         .style("display", "none");
 
       this.regions
-        .selectAll("path")
+        .selectAll(".region")
         .style("opacity", 1)
         .style("stroke-opacity", 1);
 
