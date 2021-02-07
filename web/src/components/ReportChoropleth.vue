@@ -1,5 +1,6 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="report-choropleth"  :class="{'hidden': noMap}">
+<div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
+  <!-- <div class="d-flex flex-column align-items-center w-100" id="report-choropleth"  :class="{'hidden': noMap}"> -->
   <!-- Total count filter -->
   <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
@@ -54,7 +55,9 @@ import DownloadReportData from "@/components/DownloadReportData.vue";
 import {
   geoEqualEarth,
   geoAlbersUsa,
+  geoAzimuthalEqualArea,
   geoPath,
+  geoBounds,
   max,
   min,
   timeParse,
@@ -77,6 +80,9 @@ import GradientLegend from "@/components/GradientLegend.vue";
 
 import GEODATA from "@/assets/geo/countries.json";
 import USADATA from "@/assets/geo/US_states.json";
+import WORLD from "@/assets/geo/canada.json";
+// import WORLD from "@/assets/geo/gadm_adm1_simplified.json";
+// import WORLD from "@/assets/geo/gadm_world_adm1.json";
 
 export default {
   name: "ReportChoropleth",
@@ -229,14 +235,26 @@ export default {
         this.baseMap = GEODATA;
         this.hwRatio = 0.45;
 
-      } else if(this.location === "United States of America") {
+      } else if (this.location === "United States of America") {
         this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
         this.baseMap = USADATA;
+        console.log(geoBounds(this.baseMap))
+        this.hwRatio = 0.45;
       } else {
-        this.baseMap = null;
+        // this.baseMap = WORLD["world"];
+        this.baseMap = WORLD[this.location];
+        const mapBounds = geoBounds(this.baseMap);
+
+        this.projection = geoAzimuthalEqualArea()
+          .center([0, 0])
+          .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])
+          .scale(1)
+          .translate([this.width / 2, this.height / 2]);
+
+        this.hwRatio = 0.45;
       }
     },
     setupChoro() {
@@ -262,12 +280,10 @@ export default {
       this.projection = this.projection
         .scale(scale);
 
-        // this.filteredData = this.baseMap.features;
-        this.filteredData = cloneDeep(this.baseMap.features);
+      this.filteredData = this.baseMap.features;
     },
     prepData() {
       if (this.data && this.baseMap) {
-        console.log(this.baseMap)
         // Update projection / scales
         this.updateProjection();
 
@@ -301,7 +317,8 @@ export default {
           .domain([1, max(this.data, d => d[this.thresholdVar])])
           .clamp(true);
 
-          this.noMap = false;
+        this.noMap = false;
+        console.log(this.filteredData)
       } else {
         this.filteredData = null;
         this.noMap = true;
