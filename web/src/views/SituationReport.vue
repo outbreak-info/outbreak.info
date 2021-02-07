@@ -192,11 +192,11 @@
       <div class="d-flex align-items-center">
         <h4 class="mb-0 mr-3">Cumulative {{mutationName}} prevalence</h4>
         <div id="location-buttons" class="d-flex flex-wrap align-items-center">
-        <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeLocation(location)">{{ location.name }}</button>
-        <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
-          <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-        </button>
-      </div>
+          <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeLocation(location)">{{ location.name }}</button>
+          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+        </div>
       </div>
       <small class="text-muted mb-3">Since first identification</small>
       <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="selected" />
@@ -316,14 +316,8 @@ export default {
     TypeaheadSelect
   },
   props: {
-    country: {
-      type: Array,
-      default: () => ["United States of America", "United Kingdom"]
-    },
-    division: {
-      type: Array,
-      default: () => ["California"]
-    },
+    country: Array,
+    division: Array,
     muts: Array,
     pangolin: String,
     selected: {
@@ -347,35 +341,61 @@ export default {
       return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
     },
     selectedLocations() {
-      let ctries = typeof(this.country) == "string" ? [this.country] : this.country;
-      ctries = ctries.map(d => {
-        return {
-          name: d,
-          isActive: d == this.selected && this.selectedType == "country",
-          type: "country"
-        };
-      })
+      if (!this.country && !this.division) {
+        return ([{
+          name: "Worldwide",
+          type: "world",
+          isActive: true
+        }, {
+          name: "United States of America",
+          type: "country",
+          isActive: false
+        }, {
+          name: "California",
+          type: "division",
+          isActive: false
+        }])
+      } else {
+        let ctries;
+        let divisions;
+        if (this.country) {
+          ctries = typeof(this.country) == "string" ? [this.country] : this.country;
+          ctries = ctries.map(d => {
+            return {
+              name: d,
+              isActive: d == this.selected && this.selectedType == "country",
+              type: "country"
+            };
+          })
+        } else {
+          ctries = [];
+        }
 
-      let divisions = typeof(this.division) == "string" ? [this.division] : this.division;
-      divisions = divisions.map(d => {
-        return {
-          name: d,
-          isActive: d == this.selected && this.selectedType == "division",
-          type: "division"
-        };
-      })
+        if (this.division) {
+          divisions = typeof(this.division) == "string" ? [this.division] : this.division;
+          divisions = divisions.map(d => {
+            return {
+              name: d,
+              isActive: d == this.selected && this.selectedType == "division",
+              type: "division"
+            };
+          })
+        } else {
+          divisions = [];
+        }
 
-      // always have the world there too.
-      let allLocs = [{
-        name: "Worldwide",
-        type: "world",
-        isActive: this.selected == "Worldwide"
-      }];
+        // always have the world there too.
+        let allLocs = [{
+          name: "Worldwide",
+          type: "world",
+          isActive: this.selected == "Worldwide"
+        }];
 
-      return (allLocs.concat(ctries, divisions));
+        return (allLocs.concat(ctries, divisions));
+      }
     },
     choroplethCountries() {
-      return(this.selectedLocations.filter(d => d.type != "division"))
+      return (this.selectedLocations.filter(d => d.type != "division"))
     }
   },
   watch: {
