@@ -3,7 +3,7 @@
   <!-- Total count filter -->
   <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap}" >
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-    <svg ref="count_filter" id="count-filter" :width="240" :height="37" class="report-choropleth-legend mx-3 my-2">
+    <svg ref="count_filter" id="count-filter" :width="280" :height="37" class="report-choropleth-legend mx-3 my-2">
       <g transform="translate(1,1)">
         <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
         <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
@@ -79,7 +79,7 @@ import GradientLegend from "@/components/GradientLegend.vue";
 
 import ADMIN0 from "@/assets/geo/countries.json";
 import USADATA from "@/assets/geo/US_states.json";
-import ADMIN1 from "@/assets/geo/canada.json";
+import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
 // import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
 // import ADMIN1 from "@/assets/geo/gadm_ADMIN1_adm1.json";
 
@@ -121,7 +121,7 @@ export default {
       // map data
       baseMap: null,
       projection: null,
-      hwRatio: null,
+      hwRatio: 0.45,
       // refs
       svg: null,
       regions: null,
@@ -232,8 +232,8 @@ export default {
           .translate([this.width / 2, this.height / 2]);
 
         this.baseMap = ADMIN0;
-        this.hwRatio = 0.45;
-        this.setDims();
+        // this.hwRatio = 0.45;
+        // this.setDims();
       } else if (this.location === "United States of America") {
         this.projection = geoAlbersUsa()
           .scale(1)
@@ -241,8 +241,8 @@ export default {
 
         this.baseMap = USADATA;
         const mapBounds = geoBounds(this.baseMap)
-        this.hwRatio = 0.45;
-        this.setDims();
+        // this.hwRatio = 0.45;
+        // this.setDims();
       } else {
         this.baseMap = ADMIN1[this.location];
         const mapBounds = geoBounds(this.baseMap);
@@ -253,10 +253,9 @@ export default {
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
-
-        const mapRatio = Math.abs(mapBounds[0][1] - mapBounds[1][1]) / Math.abs(mapBounds[0][0] - mapBounds[1][0]);
-        this.hwRatio = mapRatio;
-        this.setDims();
+        // const mapRatio = Math.abs(mapBounds[0][1] - mapBounds[1][1]) / Math.abs(mapBounds[0][0] - mapBounds[1][0]);
+        // this.hwRatio = mapRatio;
+        // this.setDims();
       }
     },
     setupChoro() {
