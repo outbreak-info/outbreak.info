@@ -345,7 +345,7 @@ export default Vue.extend({
 
         const barSelector = this.bargraph
           .selectAll(".bar-group")
-          .data(this.plottedData, d => d[this.yVariable]);
+          .data(this.plottedData, d => d.location_id);
 
 
         barSelector.join(enter => {
@@ -457,7 +457,7 @@ export default Vue.extend({
         }
 
         const dotSelector = this.dotplot.selectAll(".dot-group")
-          .data(this.plottedData, d => d[this.yVariable]);
+          .data(this.plottedData, d => d.location_id);
 
         dotSelector.join(enter => {
             const grp = enter.append("g")

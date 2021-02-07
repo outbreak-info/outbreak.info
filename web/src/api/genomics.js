@@ -163,7 +163,8 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
         d["name"] = titleCase(d.name);
         d["proportion_formatted"] = formatPercent(d.proportion);
         d["dateTime"] = parseDate(d.date);
-        d["location_id"] = d.name.replace(/\s/g, "");
+        // fixes the Georgia (state) / Georgia (country) problem
+        d["location_id"] = location == "Global" ? `country_${d.name.replace(/\s/g, "")}`: d.name.replace(/\s/g, "");
       })
       return (results)
     }),

@@ -376,10 +376,9 @@ export default {
       //       .remove()
       //     )
       //   )
-
       this.regions
         .selectAll(".region")
-        .data(this.filteredData)
+        .data(this.filteredData, d => d.properties.location_id)
         .join(
           enter => {
             enter
