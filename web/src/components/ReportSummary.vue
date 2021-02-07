@@ -14,7 +14,7 @@
             <!-- sync, globe-americas, map-marked-alt -->
           </th>
           <th class="text-center">
-            sequence count
+            total {{mutationName}} found
           </th>
           <th class="text-center">
             apparent prevalence<sup>*</sup>
