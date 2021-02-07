@@ -189,8 +189,8 @@
 
     <!-- GEOGRAPHIC PREVALENCE -->
     <section class="my-4 d-flex flex-column align-items-center" id="geographic">
-      <div class="d-flex">
-        <h4 class="mb-0">Cumulative {{mutationName}} prevalence</h4>
+      <div class="d-flex align-items-center">
+        <h4 class="mb-0 mr-3">Cumulative {{mutationName}} prevalence</h4>
         <div id="location-buttons" class="d-flex flex-wrap">
         <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeChoropleth(location)">{{ location.name }}</button>
         <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
@@ -326,7 +326,11 @@ export default {
       default: () => ["California"]
     },
     muts: Array,
-    pangolin: String
+    pangolin: String,
+    selected: {
+      type: String,
+      default: "Worldwide"
+    }
   },
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
@@ -377,7 +381,7 @@ export default {
 
       // always have the world there too.
       let allLocs = [{
-        name: "Global",
+        name: "Worldwide",
         isActive: true
       }];
 
@@ -521,7 +525,7 @@ export default {
       location.isActive = true;
 
       this.choroSubscription = getLocationPrevalence(this.$genomicsurl, this.mutationName, this.mutationVar, location.name).subscribe(results => {
-        if (location.name == "Global") {
+        if (location.name == "Worldwide") {
           this.choroLocation = "country"
         } else {
           this.choroLocation = location.name;

@@ -41,7 +41,7 @@ function titleCase(value) {
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
 
-export function getReportData(apiurl, locations, mutationVar, mutationString, location = "Global", locationType = "country") {
+export function getReportData(apiurl, locations, mutationVar, mutationString, location = "Worldwide", locationType = "country") {
   store.state.admin.reportloading = true;
 
   return forkJoin([
@@ -148,7 +148,7 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
 
 export function getLocationPrevalence(apiurl, mutationString, mutationVar, location) {
   let url;
-  url = location == "Global" ?
+  url = location == "Worldwide" ?
   `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}` :
   `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}`;
   ;
@@ -164,7 +164,7 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
         d["proportion_formatted"] = formatPercent(d.proportion);
         d["dateTime"] = parseDate(d.date);
         // fixes the Georgia (state) / Georgia (country) problem
-        d["location_id"] = location == "Global" ? `country_${d.name.replace(/\s/g, "")}`: d.name.replace(/\s/g, "");
+        d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}`: d.name.replace(/\s/g, "");
       })
       return (results)
     }),
