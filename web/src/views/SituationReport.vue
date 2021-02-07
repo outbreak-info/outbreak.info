@@ -591,18 +591,6 @@ export default {
     height: 25px;
 }
 
-.bright-hyperlink a {
-    color: #70d3ff;
-}
-
-.checkbook td {
-    padding: 0.5rem;
-}
-
-.checkbook tr:nth-child(2n+1) {
-    background-color: lighten($primary-color, 7%);
-}
-
 .font-size-2 {
     font-size: 1.25rem;
 }

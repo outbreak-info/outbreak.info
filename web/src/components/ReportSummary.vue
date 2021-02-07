@@ -121,3 +121,17 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.bright-hyperlink a {
+    color: #70d3ff;
+}
+
+.checkbook td {
+    padding: 0.5rem;
+}
+
+.checkbook tr:nth-child(2n+1) {
+    background-color: lighten($primary-color, 7%);
+}
+</style>
