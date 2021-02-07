@@ -99,7 +99,7 @@
 
     <!-- REPORT -->
     <div class="row">
-      <section id="intro" class="col-sm-6 col-md-8 pr-4">
+      <section id="intro" class="col-sm-6 col-md-7 pr-4">
         <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
           <div class="d-flex flex-wrap align-items-center justify-content-end" v-if="reportMetadata">
             <small class="mx-3 text-muted" v-if="reportMetadata.location_first_identified"><em>First identified in {{ reportMetadata.location_first_identified }}</em></small>
@@ -168,7 +168,7 @@
       </section>
 
       <!-- RIGHT: SUMMARY BOX -->
-      <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
+      <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
         <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" />
       </section>
     </div>
@@ -511,7 +511,7 @@ export default {
         d.isActive = false;
       })
       location.isActive = true;
-      
+
       this.choroSubscription = getLocationPrevalence(this.$genomicsurl, this.mutationName, this.mutationVar, location.name).subscribe(results => {
         if (location.name == "Global") {
           this.choroLocation = "country"
