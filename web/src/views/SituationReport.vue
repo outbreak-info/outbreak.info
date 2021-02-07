@@ -523,7 +523,6 @@ export default {
         }
 
         this.choroData = results;
-        console.log(results)
       })
 
     },
