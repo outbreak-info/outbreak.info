@@ -1,8 +1,7 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
-  <!-- <div class="d-flex flex-column align-items-center w-100" id="report-choropleth"  :class="{'hidden': noMap}"> -->
+  <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- Total count filter -->
-  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
+  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap}" >
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
     <svg ref="count_filter" id="count-filter" :width="240" :height="37" class="report-choropleth-legend mx-3 my-2">
       <g transform="translate(1,1)">
@@ -27,7 +26,7 @@
   </div>
 
   <!-- choropleth -->
-  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title">
+  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}">
     <g ref="regions" class="region-group"></g>
   </svg>
 
@@ -234,7 +233,7 @@ export default {
 
         this.baseMap = ADMIN0;
         this.hwRatio = 0.45;
-
+        this.setDims();
       } else if (this.location === "United States of America") {
         this.projection = geoAlbersUsa()
           .scale(1)
@@ -243,6 +242,7 @@ export default {
         this.baseMap = USADATA;
         const mapBounds = geoBounds(this.baseMap)
         this.hwRatio = 0.45;
+        this.setDims();
       } else {
         this.baseMap = ADMIN1[this.location];
         const mapBounds = geoBounds(this.baseMap);
