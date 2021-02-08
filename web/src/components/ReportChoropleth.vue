@@ -1,7 +1,7 @@
 <template>
-  <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
+<div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- Total count filter -->
-  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap}" >
+  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap}">
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
     <svg ref="count_filter" id="count-filter" :width="280" :height="37" class="report-choropleth-legend mx-3 my-2">
       <g transform="translate(1,1)">
@@ -26,8 +26,10 @@
   </div>
 
   <!-- choropleth -->
-  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}">
+  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
+    <g ref="basemap" class="basemap-group"></g>
     <g ref="regions" class="region-group"></g>
+    <g ref="overlay" class="overlay-group"></g>
   </svg>
 
   <div ref="tooltip_choro" class="tooltip-basic box-shadow" id="tooltip-choro">
@@ -77,11 +79,10 @@ import {
 
 import GradientLegend from "@/components/GradientLegend.vue";
 
-import ADMIN0 from "@/assets/geo/countries.json";
+import ADMIN0_SIMPLE from "@/assets/geo/countries.json";
+import ADMIN0 from "@/assets/geo/gadm_adm0.json";
 import USADATA from "@/assets/geo/US_states.json";
 import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
-// import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
-// import ADMIN1 from "@/assets/geo/gadm_ADMIN1_adm1.json";
 
 export default {
   name: "ReportChoropleth",
@@ -119,12 +120,14 @@ export default {
       // data
       filteredData: null,
       // map data
-      baseMap: null,
+      locationMap: null,
       projection: null,
       hwRatio: 0.45,
       // refs
       svg: null,
       regions: null,
+      basemap: null,
+      overlay: null,
       ttips: null,
       // axis -- threshold filter
       xFilter: null,
@@ -231,7 +234,7 @@ export default {
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
-        this.baseMap = ADMIN0;
+        this.locationMap = ADMIN0_SIMPLE;
         // this.hwRatio = 0.45;
         // this.setDims();
       } else if (this.location === "United States of America") {
@@ -239,12 +242,12 @@ export default {
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
-        this.baseMap = USADATA;
+        this.locationMap = USADATA;
         // this.hwRatio = 0.45;
         // this.setDims();
       } else {
-        this.baseMap = ADMIN1[this.location];
-        const mapBounds = geoBounds(this.baseMap);
+        this.locationMap = ADMIN1[this.location];
+        const mapBounds = geoBounds(this.locationMap);
 
         this.projection = geoAzimuthalEqualArea()
           .center([0, 0])
@@ -259,7 +262,9 @@ export default {
     },
     setupChoro() {
       this.svg = select(this.$refs.svg);
+      this.basemap = select(this.$refs.basemap);
       this.regions = select(this.$refs.regions);
+      this.overlay = select(this.$refs.overlay);
       this.ttips = select(this.$refs.choropleth_tooltip);
     },
     updateProjection() {
@@ -270,7 +275,7 @@ export default {
       this.path = this.path.projection(this.projection);
       // calc and set scale
       // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
-      const bounds = this.path.bounds(this.baseMap),
+      const bounds = this.path.bounds(this.locationMap),
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],
         xscale = this.width / dx * 0.98,
@@ -280,10 +285,10 @@ export default {
       this.projection = this.projection
         .scale(scale);
 
-      this.filteredData = this.baseMap.features;
+      this.filteredData = this.locationMap.features;
     },
     prepData() {
-      if (this.data && this.baseMap) {
+      if (this.data && this.locationMap) {
         // Update projection / scales
         this.updateProjection();
 
@@ -342,38 +347,41 @@ export default {
     drawMap() {
       this.prepData();
 
-      // this.regions
-      //   .selectAll(".basemap")
-      //   .data(ADMIN0.features.filter(d => d.properties.NAME != "India"))
-      //   .join(
-      //     enter => {
-      //       enter
-      //         .append("path")
-      //         .attr("class", "basemap")
-      //         .attr("id", d => d.properties.location_id)
-      //         // draw each region
-      //         .attr("d", this.path
-      //           .projection(this.projection)
-      //         )
-      //         .style("fill", "#FDFDFD")
-      //         .style("stroke", this.strokeColor)
-      //         .style("stroke-width", 0.25)
-      //     },
-      //     update => update
-      //     .attr("id", d => d.properties.location_id)
-      //     // draw each region
-      //     .attr("d", this.path
-      //       .projection(this.projection)
-      //     ),
-      //     exit =>
-      //     exit.call(exit =>
-      //       exit
-      //       .transition()
-      //       .duration(10)
-      //       .style("opacity", 1e-5)
-      //       .remove()
-      //     )
-      //   )
+        const basemapData = this.location == "Worldwide" || this.location == "United States of America" ?  [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
+
+        this.basemap
+          .selectAll(".basemap")
+          .data(basemapData, d => d.properties.location_id)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "basemap")
+                .attr("id", d => d.properties.location_id)
+                // draw each region
+                .attr("d", this.path
+                  .projection(this.projection)
+                )
+                .style("fill", "#FDFDFD")
+                .style("stroke", "#444444")
+                .style("stroke-width", 0.25)
+            },
+            update => update
+            .attr("id", d => d.properties.location_id)
+            // draw each region
+            .attr("d", this.path
+              .projection(this.projection)
+            ),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+
       this.regions
         .selectAll(".region")
         .data(this.filteredData, d => d.properties.location_id)
@@ -410,39 +418,38 @@ export default {
           )
         )
 
-
-      // this.regions
-      //   .selectAll(".overlay")
-      //   .data(ADMIN0.features.filter(d => d.properties.NAME == "India"))
-      //   .join(
-      //     enter => {
-      //       enter
-      //         .append("path")
-      //         .attr("class", "overlay")
-      //         .attr("id", d => d.properties.location_id)
-      //         // draw each region
-      //         .attr("d", this.path
-      //           .projection(this.projection)
-      //         )
-      //         .style("fill", "none")
-      //         .style("stroke", this.strokeColor)
-      //         .style("stroke-width", 1.75)
-      //     },
-      //     update => update
-      //     .attr("id", d => d.properties.location_id)
-      //     // draw each region
-      //     .attr("d", this.path
-      //       .projection(this.projection)
-      //     ),
-      //     exit =>
-      //     exit.call(exit =>
-      //       exit
-      //       .transition()
-      //       .duration(10)
-      //       .style("opacity", 1e-5)
-      //       .remove()
-      //     )
-      //   )
+        this.overlay
+          .selectAll(".overlay")
+          .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States of America"), d => d.properties.location_id)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "overlay")
+                .attr("id", d => d.properties.location_id)
+                // draw each region
+                .attr("d", this.path
+                  .projection(this.projection)
+                )
+                .style("fill", "none")
+                .style("stroke", this.strokeColor)
+                .style("stroke-width", 1.25)
+            },
+            update => update
+            .attr("id", d => d.properties.location_id)
+            // draw each region
+            .attr("d", this.path
+              .projection(this.projection)
+            ),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
 
       this.regions.selectAll("path.region")
         .on("mouseenter", d => this.debounceMouseon(d))
@@ -524,6 +531,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-</style>
