@@ -1,5 +1,6 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
+  <div>
   <div class="d-flex align-items-center justify-content-end">
     sort by
     <select v-model="sortVar" class="ml-3">
@@ -63,6 +64,7 @@
         <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
       </svg>
     </div>
+  </div>
   </div>
 
   <div ref="tooltip_chart" class="tooltip-basic box-shadow" id="tooltip_chart">

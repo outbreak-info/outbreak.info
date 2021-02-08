@@ -174,7 +174,8 @@ export default Vue.extend({
       const hwRatio  = 0.55;
       const svgContainer = document.getElementById('report-prevalence');
 
-      const maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
+      maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
       const maxHeight = window.innerHeight * my;
 
       const idealHeight = hwRatio * maxWidth;
