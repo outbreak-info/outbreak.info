@@ -131,15 +131,12 @@ export default Vue.extend({
   },
   watch: {
     width() {
-      console.log(this.width)
       this.updatePlot();
     },
     data() {
-      console.log('data')
       this.updatePlot();
     },
     sortVar() {
-      console.log('sort')
       this.updatePlot();
     }
   },
