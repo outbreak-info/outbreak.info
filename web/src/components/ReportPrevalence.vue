@@ -275,8 +275,8 @@ export default Vue.extend({
       select(this.$refs.tooltip_prevalence)
         .style("display", "none");
 
-      // selectAll(".raw-counts")
-      //   .style("opacity", 1);
+      selectAll(".raw-counts")
+        .style("opacity", 1);
     },
     updatePlot() {
       const t1 = transition().duration(2500);
