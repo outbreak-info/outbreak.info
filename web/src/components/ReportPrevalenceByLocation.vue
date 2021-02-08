@@ -9,7 +9,7 @@
         <option value="country">name</option>
       </select>
     </div>
-    <div class="d-flex flex-wrap"  :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
+    <div class="d-flex flex-wrap" :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
       <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
         <h6><b>Prevalence</b></h6>
 
@@ -28,6 +28,18 @@
 
         <!-- LEFT: DOTPLOT -->
         <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
+          <defs>
+            <filter id="dropshadow" filterUnits="userSpaceOnUse">
+              <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
+              <feFlood flood-color="#222222" flood-opacity="0.5" result="offsetColor" />
+              <feGaussianBlur result="blurOut" in="offOut" stdDeviation="1.5" />
+              <feComposite in="offsetColor" in2="offsetBlur" operator="in" result="offsetBlur" />
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
           <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top" :hidden="!data.length"></g>
           <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom" :hidden="!data.length"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
@@ -504,6 +516,7 @@ export default Vue.extend({
               .attr("r", this.circleR)
               .style("stroke", "#2c3e50")
               .style("stroke-width", 0.25)
+              .style("filter", "url(#dropshadow)")
               .style("fill", d => this.colorScale(d.proportion))
               .transition(t1)
               .attr("cx", d => this.xDot(d.proportion));
