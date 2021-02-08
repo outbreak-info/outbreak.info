@@ -50,11 +50,13 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
     getCumPrevalences(apiurl, mutationString, mutationVar, locations),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "Worldwide", "country"),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "United States of America", "country"),
     getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([mostRecent, longitudinal, globalPrev, locPrev, byCountry, md, mutations]) => {
+    map(([mostRecent, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
@@ -63,6 +65,8 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
         globalPrev: globalPrev,
         locPrev: locPrev,
         byCountry: byCountry,
+        countries: countries,
+        states: states,
         md: md,
         mutations: characteristicMuts
       })
@@ -252,6 +256,19 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
   } else {
     return ( of ([]))
   }
+}
+
+export function getPositiveLocations(apiurl, mutationString, mutationVar, location, locationType) {
+  return getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType).pipe(
+      map(results => {
+        return results.map(d => titleCase(d.name))
+      }),
+      catchError(e => {
+        console.log("%c Error in getting list of positive country names!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      })
+    )
 }
 
 export function getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, indivCall = false) {

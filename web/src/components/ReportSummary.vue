@@ -97,8 +97,7 @@
   <!-- GEO SUMMARY -->
   <div id="geo-summary" v-if="countries" class="d-flex flex-column" ref="geo_summary">
     <div>
-      The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b>.
-      <!-- and <b> {{ "XXXX" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>. -->
+      The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
     </div>
     <CountryMap :countries="countries" :width="summaryWidth" :showNames="false" class="align-self-center" />
     <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
@@ -137,7 +136,8 @@ export default {
     reportType: String,
     globalPrev: Object,
     locationTotals: Array,
-    countries: Array
+    countries: Array,
+    states: Array
   },
   data() {
     return {

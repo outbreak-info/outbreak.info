@@ -169,7 +169,7 @@
 
       <!-- RIGHT: SUMMARY BOX -->
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" />
+        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" :states="states" />
       </section>
     </div>
 
@@ -441,7 +441,7 @@ export default {
       choroLocation: "country",
       choroData: null,
       countries: null,
-      states: [],
+      states: null,
       locationTotals: null,
       totalLineage: null,
       globalPrev: null,
@@ -498,7 +498,8 @@ export default {
           this.prevalence = results.longitudinal;
 
           // recent data by country & countries with that lineage.
-          this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.name);
+          this.countries = results.countries;
+          this.states = results.states;
           this.choroData = results.byCountry;
 
           this.hasData = results.longitudinal.length || results.byCountry.length;
