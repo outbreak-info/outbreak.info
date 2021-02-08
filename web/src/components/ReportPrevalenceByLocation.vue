@@ -133,9 +133,11 @@ export default Vue.extend({
       this.updatePlot();
     },
     data() {
+      console.log('data')
       this.updatePlot();
     },
     sortVar() {
+      console.log('sort')
       this.updatePlot();
     }
   },
@@ -282,12 +284,6 @@ export default Vue.extend({
       this.dotplot = select(this.$refs.dotplot);
       this.bargraph = select(this.$refs.bargraph);
 
-      this.xDot = scaleLinear()
-        .range([0, this.width - this.margin.left - this.margin.right]);
-
-      this.xBar = scaleLog()
-        .range([0, this.barWidth - this.margin.left - this.margin.rightBar]);
-
       this.y = scaleBand()
         .paddingInner(0.25)
         .paddingOuter(0.15);
@@ -296,10 +292,12 @@ export default Vue.extend({
       // resize the canvas to cover the length of the data.
       this.height = this.plottedData.length * this.bandHeight * (1 + this.y.paddingInner());
 
-      this.xDot = this.xDot
+      this.xDot = scaleLinear()
+        .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, max(this.plottedData, d => d.proportion_ci_upper)]);
 
-      this.xBar = this.xBar
+      this.xBar = scaleLog()
+        .range([0, this.barWidth - this.margin.left - this.margin.rightBar])
         .domain([1, max(this.plottedData, d => d.cum_total_count)]);
 
       this.y = this.y
@@ -493,9 +491,9 @@ export default Vue.extend({
               .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .style("stroke", "#CCCCCC")
               .style("stroke-width", this.ciStrokeWidth)
-              .style("opacity", 0)
-              .transition(t1)
-              .delay(400)
+              // .style("opacity", 0)
+              // .transition(t1)
+              // .delay(400)
               .style("opacity", 0.5);
 
             grp.append("circle")
