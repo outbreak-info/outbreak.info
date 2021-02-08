@@ -27,8 +27,14 @@
 
   <!-- choropleth -->
   <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
+    <defs>
+      <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
+      </pattern>
+    </defs>
     <g ref="basemap" class="basemap-group"></g>
     <g ref="regions" class="region-group"></g>
+    <g ref="zero_data" class="zero-group"></g>
     <g ref="overlay" class="overlay-group"></g>
   </svg>
 
@@ -126,6 +132,7 @@ export default {
       // refs
       svg: null,
       regions: null,
+      zeros: null,
       basemap: null,
       overlay: null,
       ttips: null,
@@ -264,6 +271,7 @@ export default {
       this.svg = select(this.$refs.svg);
       this.basemap = select(this.$refs.basemap);
       this.regions = select(this.$refs.regions);
+      this.zeros = select(this.$refs.zero_data);
       this.overlay = select(this.$refs.overlay);
       this.ttips = select(this.$refs.choropleth_tooltip);
     },
@@ -347,40 +355,40 @@ export default {
     drawMap() {
       this.prepData();
 
-        const basemapData = this.location == "Worldwide" || this.location == "United States of America" ?  [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
+      const basemapData = this.location == "Worldwide" || this.location == "United States of America" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
 
-        this.basemap
-          .selectAll(".basemap")
-          .data(basemapData, d => d.properties.location_id)
-          .join(
-            enter => {
-              enter
-                .append("path")
-                .attr("class", "basemap")
-                .attr("id", d => d.properties.location_id)
-                // draw each region
-                .attr("d", this.path
-                  .projection(this.projection)
-                )
-                .style("fill", "#FDFDFD")
-                .style("stroke", "#444444")
-                .style("stroke-width", 0.25)
-            },
-            update => update
-            .attr("id", d => d.properties.location_id)
-            // draw each region
-            .attr("d", this.path
-              .projection(this.projection)
-            ),
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition()
-              .duration(10)
-              .style("opacity", 1e-5)
-              .remove()
-            )
+      this.basemap
+        .selectAll(".basemap")
+        .data(basemapData, d => d.properties.location_id)
+        .join(
+          enter => {
+            enter
+              .append("path")
+              .attr("class", "basemap")
+              .attr("id", d => d.properties.location_id)
+              // draw each region
+              .attr("d", this.path
+                .projection(this.projection)
+              )
+              .style("fill", "#FDFDFD")
+              .style("stroke", "#444444")
+              .style("stroke-width", 0.25)
+          },
+          update => update
+          .attr("id", d => d.properties.location_id)
+          // draw each region
+          .attr("d", this.path
+            .projection(this.projection)
+          ),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
           )
+        )
 
       this.regions
         .selectAll(".region")
@@ -418,38 +426,72 @@ export default {
           )
         )
 
-        this.overlay
-          .selectAll(".overlay")
-          .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States of America"), d => d.properties.location_id)
-          .join(
-            enter => {
-              enter
-                .append("path")
-                .attr("class", "overlay")
-                .attr("id", d => d.properties.location_id)
-                // draw each region
-                .attr("d", this.path
-                  .projection(this.projection)
-                )
-                .style("fill", "none")
-                .style("stroke", this.strokeColor)
-                .style("stroke-width", 1.25)
-            },
-            update => update
-            .attr("id", d => d.properties.location_id)
-            // draw each region
-            .attr("d", this.path
-              .projection(this.projection)
-            ),
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition()
-              .duration(10)
-              .style("opacity", 1e-5)
-              .remove()
-            )
+// highlight where the data is 0.
+      this.regions
+        .selectAll(".zero-data")
+        .data(this.filteredData.filter(d => d.proportion === 0), d => d.properties.location_id)
+        .join(
+          enter => {
+            enter
+              .append("path")
+              .attr("class", "zero-data")
+              .attr("id", d => `${d.properties.location_id}_zero`)
+              // draw each region
+              .attr("d", this.path
+                .projection(this.projection)
+              )
+              .style("fill", "url(#diagonalHatch)")
+              .style("stroke", this.strokeColor)
+              .style("stroke-width", 0.5)
+          },
+          update => update
+          .attr("id", d => `${d.properties.location_id}_zero`)
+          // draw each region
+          .attr("d", this.path
+            .projection(this.projection)
+          ),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
           )
+        )
+
+      this.overlay
+        .selectAll(".overlay")
+        .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States of America"), d => d.properties.location_id)
+        .join(
+          enter => {
+            enter
+              .append("path")
+              .attr("class", "overlay")
+              .attr("id", d => d.properties.location_id)
+              // draw each region
+              .attr("d", this.path
+                .projection(this.projection)
+              )
+              .style("fill", "none")
+              .style("stroke", this.strokeColor)
+              .style("stroke-width", 1.25)
+          },
+          update => update
+          .attr("id", d => d.properties.location_id)
+          // draw each region
+          .attr("d", this.path
+            .projection(this.projection)
+          ),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .duration(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
 
       this.regions.selectAll("path.region")
         .on("mouseenter", d => this.debounceMouseon(d))
