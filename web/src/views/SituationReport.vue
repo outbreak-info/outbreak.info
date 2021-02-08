@@ -19,7 +19,7 @@
           <div class="mb-3 py-3 border-bottom border-secondary">
             <h6 class="text-muted text-underline m-0">Current locations</h6>
             <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
-              {{ location }}
+              {{ location.name }}
               <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
             </button>
           </div>
@@ -457,7 +457,7 @@ export default {
     }
   },
   mounted() {
-    this.currentLocs = this.selectedLocations.map(d => d.name).filter(d => d != "Worldwide");
+    this.currentLocs = this.selectedLocations.filter(d => d.name != "Worldwide");
     this.queryCountry = findCountry;
     this.queryDivision = findDivision;
     this.disclaimer =
@@ -534,41 +534,71 @@ export default {
       this.ctry2Add = [];
       this.div2Add = [];
     },
-    // changeChoropleth(location) {
-    //   this.choroplethCountries.forEach(d => {
-    //     d.isActive = false;
-    //   })
-    //   location.isActive = true;
-    //
-    //   this.choroSubscription = getLocationPrevalence(this.$genomicsurl, this.mutationName, this.mutationVar, location.name).subscribe(results => {
-    //     if (location.name == "Worldwide") {
-    //       this.choroLocation = "country"
-    //     } else {
-    //       this.choroLocation = location.name;
-    //     }
-    //
-    //     this.choroData = results;
-    //   })
-    //
-    // },
     selectNewLocations() {
-      let newCountries = this.country.concat(this.ctry2Add);
-      let newDivisions = this.div2Add;
+      // update currentLocs
+      let newCountries = this.ctry2Add.map(d => {
+        return ({
+          name: d,
+          type: "country"
+        })
+      })
+
+      let newDivisions = this.div2Add.map(d => {
+        return ({
+          name: d,
+          type: "division"
+        })
+      })
+
+      newCountries = this.currentLocs.filter(d => d.type == "country").concat(newCountries);
+
+      newDivisions = this.currentLocs.filter(d => d.type == "division").concat(newDivisions);
+
+      // update currentLocs
+      this.currentLocs = newCountries.concat(newDivisions);
+
+
+
+      newCountries = newCountries.map(d => d.name);
+      newDivisions = newDivisions.map(d => d.name);
 
       const queryParams = this.$route.query;
 
-      this.locationTotals = this.choroData.filter(d => newCountries.includes(d.name));
+      let selectedPlace;
+      let selectedType;
+      if (queryParams.selectedType == "country") {
+        if (newCountries.includes(queryParams.selected)) {
+          selectedPlace = queryParams.selected;
+          selectedType = queryParams.selectedType;
+        } else {
+          selectedPlace = "Worldwide";
+          selectedType = "country";
+        }
+      } else {
+        if (newDivisions.includes(queryParams.selected)) {
+          selectedPlace = queryParams.selected;
+          selectedType = queryParams.selectedType;
+        } else {
+          selectedPlace = "Worldwide";
+          selectedType = "country";
+        }
+      }
+
+      // reset the fields.
+      this.ctry2Add = [];
+      this.div2Add = [];
+
+      // this.locationTotals = this.choroData.filter(d => newCountries.includes(d.name));
 
       this.$router.push({
         name: "MutationReport",
-        path: "/report2.0",
         query: {
           country: newCountries,
           division: newDivisions,
           pangolin: queryParams.pangolin,
           muts: queryParams.muts,
-          selected: queryParams.selected,
-          selectedType: queryParams.selectedType
+          selected: selectedPlace,
+          selectedType: selectedType
         }
       })
     },
