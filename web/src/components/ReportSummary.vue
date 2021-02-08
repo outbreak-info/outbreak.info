@@ -7,20 +7,40 @@
     <!-- PREVALENCE SUMMARY TABLE -->
     <table class="border-bottom line-height-1 mt-2 w-100">
       <thead>
-        <tr class="border-bottom">
-          <th>
+        <tr>
+          <th rowspan="2" class="border-bottom">
             location
             <font-awesome-icon class="ml-2 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
             <!-- sync, globe-americas, map-marked-alt -->
           </th>
-          <th class="text-center">
-            total {{mutationName}} found
+          <th class="text-center padded border-bottom border-secondary" colspan="2">
+            {{mutationName}} found
           </th>
-          <th class="text-center">
+          <th>
+          </th>
+          <th class="text-center padded border-bottom border-secondary" colspan="2">
+            when found
+          </th>
+        </tr>
+        <tr class="border-bottom">
+          <th class="text-center padded">
+            total
+          </th>
+          <th class="text-center padded">
             apparent prevalence<sup>*</sup>
+          </th>
+          <th>
+
+          </th>
+          <th class="text-center padded">
+            first
+          </th>
+          <th class="text-center padded">
+            last
           </th>
         </tr>
       </thead>
+
       <tbody class="checkbook">
         <tr>
           <td>
@@ -30,18 +50,37 @@
             {{ totalLineage }}
           </td>
           <td class="text-center">
-            {{ globalPrev }}
+            {{ globalPrev.proportion_formatted }}
+          </td>
+          <td>
+
+          </td>
+          <td class="text-center">
+            {{ globalPrev.first_detected }}
+          </td>
+          <td class="text-center">
+            {{ globalPrev.last_detected }}
           </td>
         </tr>
+
         <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
           <td>
             {{ location.name }}
           </td>
           <td class="text-center">
-            {{ location.cum_lineage_count.toLocaleString() }}
+            {{ location.lineage_count_formatted }}
           </td>
           <td class="text-center">
             {{ location.proportion_formatted }}
+          </td>
+          <td>
+
+          </td>
+          <td class="text-center">
+            {{ location.first_detected }}
+          </td>
+          <td class="text-center">
+            {{ location.last_detected }}
           </td>
         </tr>
       </tbody>
@@ -96,7 +135,7 @@ export default {
     totalLineage: String,
     mutationName: String,
     reportType: String,
-    globalPrev: String,
+    globalPrev: Object,
     locationTotals: Array,
     countries: Array
   },
@@ -122,9 +161,14 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .bright-hyperlink a {
     color: #70d3ff;
+}
+
+th.padded {
+  padding: 0.25rem;
+  padding-bottom: 0.5rem;
 }
 
 .checkbook td {

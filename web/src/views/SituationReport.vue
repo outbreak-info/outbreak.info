@@ -492,11 +492,14 @@ export default {
         this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
           console.log(results)
           // worldwide stats
-          this.globalPrev = results.globalPrev.proportion_formatted;
+          this.globalPrev = results.globalPrev;
           this.totalLineage = results.globalPrev.lineage_count_formatted;
           this.newTodayGlobal = results.mostRecent;
           this.newTodayGlobal = results.mostRecent.date_count;
           this.dateUpdated = results.mostRecent.dateFormatted;
+
+          // location prevalence
+          this.locationTotals = results.locPrev;
 
           // longitudinal data: prevalence over time
           this.prevalence = results.longitudinal;
@@ -504,7 +507,6 @@ export default {
           // recent data by country & countries with that lineage.
           this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.name);
           this.choroData = results.byCountry;
-          this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(loc => loc.name).includes(d.name));
 
           this.hasData = results.longitudinal.length || results.byCountry.length;
           this.mutations = results.mutations;

@@ -20,6 +20,7 @@ import {
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
+const formatDateShort = timeFormat("%d %b %Y");
 const formatPercent = format(".0%");
 
 import store from "@/store";
@@ -48,17 +49,19 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getMostRecentSeq(apiurl, mutationString, mutationVar, null),
     getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
+    getCumPrevalences(apiurl, mutationString, mutationVar, locations),
     getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([mostRecent, longitudinal, globalPrev, byCountry, md, mutations]) => {
+    map(([mostRecent, longitudinal, globalPrev, locPrev, byCountry, md, mutations]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
         mostRecent: mostRecent,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
+        locPrev: locPrev,
         byCountry: byCountry,
         md: md,
         mutations: characteristicMuts
@@ -152,9 +155,14 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      const first = parseDate(results.first_detected);
+      const last = parseDate(results.last_detected);
+
       // results["name"] = "Worldwide";
       results["proportion_formatted"] = formatPercent(results.global_prevalence);
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
+      results["first_detected"] = formatDateShort(first);
+      results["last_detected"] = formatDateShort(last);
       // results["proportion"] = results.global_prevalence;
       // results["cum_lineage_count"] = results.lineage_count;
       // results["location_id"] = "worldwide";
@@ -162,6 +170,49 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
     }),
     catchError(e => {
       console.log("%c Error in getting recent global prevalence data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getCumPrevalences(apiurl, mutationString, mutationVar, locations) {
+  return forkJoin(...locations.filter(d => d.type != "world").map(d => getCumPrevalence(apiurl, mutationString, mutationVar, d.name, d.type))).pipe(
+    map(results => {
+      results.sort((a,b) => b.proportion - a.proportion);
+
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent local cumulative prevalence data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getCumPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
+  const url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}&cumulative=true`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      const first = parseDate(results.first_detected);
+      const last = parseDate(results.last_detected);
+
+      results["name"] = location;
+      results["type"] = locationType;
+      results["first_detected"] = formatDateShort(first);
+      results["last_detected"] = formatDateShort(last);
+      results["proportion_formatted"] = formatPercent(results.global_prevalence);
+      results["lineage_count_formatted"] = format(",")(results.lineage_count);
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent local cumulative prevalence data!", "color: red");
       console.log(e);
       return ( of ([]));
     })
