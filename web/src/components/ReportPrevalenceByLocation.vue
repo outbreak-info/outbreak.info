@@ -209,7 +209,7 @@ export default Vue.extend({
   },
   methods: {
     setDims() {
-      const mx = 0.85;
+      const mx = 0.825;
       const svgContainer = document.getElementById('report-cum-totals');
       const barRatio = 0.4;
       const minBarWidth = 450;

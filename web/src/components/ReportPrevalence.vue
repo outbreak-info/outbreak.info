@@ -169,9 +169,9 @@ export default Vue.extend({
   },
   methods: {
     setDims() {
-      const mx = 0.8;
+      const mx = 0.7;
       const my = 0.9;
-      const hwRatio = 0.55;
+      const hwRatio = 0.525;
       const svgContainer = document.getElementById('report-prevalence');
 
       let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
