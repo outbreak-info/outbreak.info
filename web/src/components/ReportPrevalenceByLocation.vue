@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex flex-column">
+<div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
   <div class="d-flex align-items-center justify-content-end">
     sort by
     <select v-model="sortVar" class="ml-3">
@@ -8,7 +8,7 @@
       <option value="country">name</option>
     </select>
   </div>
-  <div class="d-flex">
+  <div class="d-flex flex-wrap">
 
     <div class="d-flex flex-column">
       <h6><b>Prevalence</b></h6>
@@ -122,16 +122,16 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    setWidth: {
-      type: Number,
-      default: 600
-    },
     adminLevel: {
       type: String,
       default: "country"
     }
   },
   watch: {
+    width() {
+      console.log(this.width)
+      this.updatePlot();
+    },
     data() {
       this.updatePlot();
     },
@@ -140,9 +140,6 @@ export default Vue.extend({
     }
   },
   computed: {
-    width() {
-      return this.setWidth ? this.setWidth : this.maxWidth;
-    },
     title() {
       return (`${this.mutationName} prevalence by ${this.adminLevel}`)
     },
@@ -160,6 +157,8 @@ export default Vue.extend({
         bottom: 30,
         left: 270
       },
+      maxWidth: 1100,
+      width: 600,
       height: 100,
       bandHeight: 18,
       barWidth: 500,
@@ -190,7 +189,17 @@ export default Vue.extend({
       colorScale: null
     }
   },
+  created: function() {
+    this.debounceSetDims = this.debounce(this.setDims, 150);
+  },
   mounted() {
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.debounceSetDims);
+    })
+
+    // set initial dimensions for the plots.
+    this.setDims();
+
     this.setupPlot();
     this.updatePlot();
   },
@@ -199,7 +208,20 @@ export default Vue.extend({
   },
   methods: {
     setDims() {
-      this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
+      const mx = 0.85;
+      const svgContainer = document.getElementById('report-cum-totals');
+      const barRatio = 0.4;
+      const minBarWidth = 450;
+
+      this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      this.barWidth = barRatio * this.maxWidth;
+      if(this.barWidth <= minBarWidth) {
+        this.barWidth = minBarWidth;
+        this.width = minBarWidth;
+      } else {
+      this.width = this.maxWidth - this.width;
+      }
+
     },
     tooltipOn(d) {
       const ttipShift = 15;
@@ -238,11 +260,11 @@ export default Vue.extend({
       ttip.select("#sequencing-count")
         .text(`Number of total cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
 
-        // fix location
-        ttip
-          .style("left", `${event.pageX + ttipShift}px`)
-          .style("top", `${event.pageY + ttipShift}px`)
-          .style("display", "block");
+      // fix location
+      ttip
+        .style("left", `${event.pageX + ttipShift}px`)
+        .style("top", `${event.pageY + ttipShift}px`)
+        .style("display", "block");
     },
     tooltipOff() {
       select(this.$refs.tooltip_chart)
@@ -250,11 +272,11 @@ export default Vue.extend({
 
       this.dotplot
         .selectAll(".dot-group")
-        .style("opacity",1);
+        .style("opacity", 1);
 
       this.bargraph
         .selectAll(".bar-group")
-        .style("opacity",1);
+        .style("opacity", 1);
     },
     setupPlot() {
       this.dotplot = select(this.$refs.dotplot);
@@ -516,6 +538,21 @@ export default Vue.extend({
           .on("mousemove", d => this.tooltipOn(d))
           .on("mouseleave", () => this.tooltipOff());
       }
+    },
+    debounce(fn, delay) {
+      var timer = null;
+      return function() {
+        var context = this,
+          args = arguments,
+          evt = event;
+        //we get the D3 event here
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          context.event = evt;
+          //and use the reference here
+          fn.apply(context, args);
+        }, delay);
+      };
     }
   }
 })
