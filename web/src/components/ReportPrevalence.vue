@@ -1,5 +1,6 @@
 <template>
-<div class="d-flex flex-column align-items-start">
+<div class="d-flex flex-column align-items-center w-100" id="report-prevalence">
+  <div class="d-flex flex-column">
   <!-- LEGEND -->
   <div class="d-flex flex-column ml-5 mt-3" id="legend">
     <!-- legend: rolling average -->
@@ -49,6 +50,7 @@
     </svg>
     <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
   </div>
+  </div>
 
   <!-- TOOLTIPS -->
   <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
@@ -94,15 +96,7 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    location: String,
-    width: {
-      type: Number,
-      default: 800
-    },
-    height: {
-      type: Number,
-      default: 500
-    }
+    location: String
   },
   components: {
     DownloadReportData
@@ -117,6 +111,8 @@ export default Vue.extend({
   },
   data() {
     return {
+      width: 400,
+      height: 400,
       margin: {
         top: 10,
         bottom: 40,
@@ -151,15 +147,45 @@ export default Vue.extend({
     }
   },
   watch: {
+    width: function() {
+      this.updatePlot();
+    },
     data: function() {
       this.updatePlot();
     },
   },
   mounted() {
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.debounceSetDims);
+    })
+
+    // set initial dimensions for the plots.
+    this.setDims();
     this.setupPlot();
     this.updatePlot();
   },
+  created: function() {
+    this.debounceSetDims = this.debounce(this.setDims, 150);
+  },
   methods: {
+    setDims() {
+      const mx = 0.8;
+      const my = 0.9;
+      const hwRatio  = 0.55;
+      const svgContainer = document.getElementById('report-prevalence');
+
+      const maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      const maxHeight = window.innerHeight * my;
+
+      const idealHeight = hwRatio * maxWidth;
+      if (idealHeight <= maxHeight) {
+        this.height = idealHeight;
+        this.width = maxWidth;
+      } else {
+        this.height = maxHeight;
+        this.width = this.height / this.hwRatio;
+      }
+    },
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
@@ -353,6 +379,21 @@ export default Vue.extend({
           .on("mousemove", () => this.tooltipOn())
           .on("mouseleave", () => this.tooltipOff())
       }
+    },
+    debounce(fn, delay) {
+      var timer = null;
+      return function() {
+        var context = this,
+          args = arguments,
+          evt = event;
+        //we get the D3 event here
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          context.event = evt;
+          //and use the reference here
+          fn.apply(context, args);
+        }, delay);
+      };
     }
   }
 })
