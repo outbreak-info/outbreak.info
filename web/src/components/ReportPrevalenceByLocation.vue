@@ -1,6 +1,6 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
-  <div>
+  <div class="">
     <div class="d-flex align-items-center justify-content-end">
       sort by
       <select v-model="sortVar" class="ml-3">
@@ -9,9 +9,8 @@
         <option value="country">name</option>
       </select>
     </div>
-    <div class="d-flex flex-wrap">
-
-      <div class="d-flex flex-column">
+    <div class="d-flex flex-wrap"  :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
+      <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
         <h6><b>Prevalence</b></h6>
 
         <!-- LEGEND -->
@@ -37,7 +36,7 @@
       </div>
 
       <!-- RIGHT: BARPLOT -->
-      <div class="d-flex flex-column ml-5">
+      <div class="d-flex flex-column">
         <h6><b>Number of samples sequenced</b></h6>
 
         <div class="d-flex flex-column height-fixed">
@@ -167,6 +166,7 @@ export default Vue.extend({
       ciStrokeWidth: 7,
       accentColor: "#df4ab7",
       baseColor: "#f6cceb",
+      stacked: false,
       // data
       plottedData: null,
       // refs
@@ -195,7 +195,7 @@ export default Vue.extend({
   },
   mounted() {
     this.$nextTick(function() {
-      window.addEventListener("resize", this.debounceSetDims);
+      window.addEventListener("resize", this.setDims);
     })
 
     // set initial dimensions for the plots.
@@ -217,12 +217,14 @@ export default Vue.extend({
       this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       this.barWidth = barRatio * this.maxWidth;
       if (this.barWidth <= minBarWidth) {
-        this.barWidth = minBarWidth;
-        this.width = minBarWidth;
+        this.barWidth = this.maxWidth;
+        this.width = this.maxWidth;
+        this.stacked = true;
       } else {
-        this.width = this.maxWidth - this.width;
+        this.width = this.maxWidth * (1 - barRatio) * 0.9;
+        this.stacked = false;
       }
-      this.numXTicks = this.width > 450 ? 6 : 2;
+      this.numXTicks = this.width > minBarWidth ? 6 : 2;
 
     },
     tooltipOn(d) {
