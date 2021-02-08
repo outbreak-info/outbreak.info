@@ -1,70 +1,70 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
   <div>
-  <div class="d-flex align-items-center justify-content-end">
-    sort by
-    <select v-model="sortVar" class="ml-3">
-      <option value="proportion">prevalence</option>
-      <option value="cum_total_count">total sequenced</option>
-      <option value="country">name</option>
-    </select>
-  </div>
-  <div class="d-flex flex-wrap">
+    <div class="d-flex align-items-center justify-content-end">
+      sort by
+      <select v-model="sortVar" class="ml-3">
+        <option value="proportion">prevalence</option>
+        <option value="cum_total_count">total sequenced</option>
+        <option value="country">name</option>
+      </select>
+    </div>
+    <div class="d-flex flex-wrap">
 
-    <div class="d-flex flex-column">
-      <h6><b>Prevalence</b></h6>
+      <div class="d-flex flex-column">
+        <h6><b>Prevalence</b></h6>
 
-      <!-- LEGEND -->
-      <div class="d-flex align-items-center justify-content-between height-fixed">
-        <!-- scale bar with gradient -->
-        <GradientLegend :maxValue="maxEstFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
+        <!-- LEGEND -->
+        <div class="d-flex align-items-center justify-content-between height-fixed">
+          <!-- scale bar with gradient -->
+          <GradientLegend :maxValue="maxEstFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
 
-        <div class="d-flex  align-items-center">
-          <svg id="legend" width="15" height="15" class="mr-2">
-            <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
-          </svg>
-          <small class="text-muted">95% confidence interval</small>
+          <div class="d-flex  align-items-center">
+            <svg id="legend" width="15" height="15" class="mr-2">
+              <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
+            </svg>
+            <small class="text-muted">95% confidence interval</small>
+          </div>
         </div>
+
+        <!-- LEFT: DOTPLOT -->
+        <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
+          <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
+          <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
+          <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        </svg>
       </div>
 
-      <!-- LEFT: DOTPLOT -->
-      <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
-        <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
-        <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
-        <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-      </svg>
-    </div>
+      <!-- RIGHT: BARPLOT -->
+      <div class="d-flex flex-column ml-5">
+        <h6><b>Number of samples sequenced</b></h6>
 
-    <!-- RIGHT: BARPLOT -->
-    <div class="d-flex flex-column ml-5">
-      <h6><b>Number of samples sequenced</b></h6>
+        <div class="d-flex flex-column height-fixed">
+          <div class="d-flex align-items-center">
+            <div class="rect-legend mr-2" :style="{background: accentColor}">
 
-      <div class="d-flex flex-column height-fixed">
-        <div class="d-flex align-items-center">
-          <div class="rect-legend mr-2" :style="{background: accentColor}">
-
+            </div>
+            <small class="text-muted">{{ mutationName }}-positive samples</small>
           </div>
-          <small class="text-muted">{{ mutationName }}-positive samples</small>
+
+          <div class="d-flex align-items-center">
+            <div class="rect-legend mr-2" :style="{background: baseColor}">
+
+            </div>
+            <small class="text-muted">all sequenced samples</small>
+          </div>
         </div>
 
-        <div class="d-flex align-items-center">
-          <div class="rect-legend mr-2" :style="{background: baseColor}">
 
-          </div>
-          <small class="text-muted">all sequenced samples</small>
-        </div>
+        <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
+          <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
+          <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
+          <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        </svg>
       </div>
-
-
-      <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
-        <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
-        <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
-        <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-      </svg>
     </div>
-  </div>
   </div>
 
   <div ref="tooltip_chart" class="tooltip-basic box-shadow" id="tooltip_chart">
@@ -219,11 +219,11 @@ export default Vue.extend({
 
       this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       this.barWidth = barRatio * this.maxWidth;
-      if(this.barWidth <= minBarWidth) {
+      if (this.barWidth <= minBarWidth) {
         this.barWidth = minBarWidth;
         this.width = minBarWidth;
       } else {
-      this.width = this.maxWidth - this.width;
+        this.width = this.maxWidth - this.width;
       }
 
     },
