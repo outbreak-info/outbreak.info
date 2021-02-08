@@ -355,6 +355,7 @@ export default {
     drawMap() {
       this.prepData();
 
+if(this.filteredData) {
       const basemapData = this.location == "Worldwide" || this.location == "United States of America" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
 
       this.basemap
@@ -426,7 +427,7 @@ export default {
           )
         )
 
-// highlight where the data is 0.
+      // highlight where the data is 0.
       this.regions
         .selectAll(".zero-data")
         .data(this.filteredData.filter(d => d.proportion === 0), d => d.properties.location_id)
@@ -496,6 +497,7 @@ export default {
       this.regions.selectAll("path.region")
         .on("mouseenter", d => this.debounceMouseon(d))
         .on("mouseleave", this.mouseOff);
+    }
     },
     mouseOn(d) {
       const ttipShift = 15;
