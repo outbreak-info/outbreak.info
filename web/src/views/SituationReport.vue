@@ -34,7 +34,7 @@
             </div>
 
             <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
-              <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
+              <TypeaheadSelect :queryFunction="queryCountry" @selected="updateCountries" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
             </div>
           </div>
 
@@ -399,15 +399,8 @@ export default {
     }
   },
   watch: {
-    selected: function() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
-        // longitudinal data: prevalence over time
-        this.prevalence = results.longitudinal;
-
-        // recent data by country.
-        this.choroData = results.byCountry;
-
-      })
+    '$route.query': function() {
+      this.updateLocations();
     }
   },
   data() {
@@ -590,8 +583,6 @@ export default {
       this.ctry2Add = [];
       this.div2Add = [];
 
-      // this.locationTotals = this.choroData.filter(d => newCountries.includes(d.name));
-
       this.$router.push({
         name: "MutationReport",
         query: {
@@ -622,10 +613,20 @@ export default {
         }
       })
     },
-    downloadMutations() {
-      console.log("muts")
+    updateLocations() {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationVar, this.mutationName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
+        // longitudinal data: prevalence over time
+        this.prevalence = results.longitudinal;
+
+        // cumulative totals for table
+        this.locationTotals = results.locPrev;
+
+        // recent data by country.
+        this.choroData = results.byCountry;
+
+      })
     },
-    updateSelected(selected) {
+    updateCountries(selected) {
       this.ctry2Add.push(selected.name);
     },
     updateDivision(selected) {

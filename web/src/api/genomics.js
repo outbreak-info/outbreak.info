@@ -20,7 +20,7 @@ import {
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
-const formatDateShort = timeFormat("%d %b %Y");
+const formatDateShort = timeFormat("%e %b %Y");
 const formatPercent = format(".0%");
 
 import store from "@/store";
@@ -76,17 +76,19 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   )
 }
 
-export function updateLocationData(apiurl, mutationVar, mutationString, location, locationType) {
+export function updateLocationData(apiurl, mutationVar, mutationString, locations, location, locationType) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
     getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
-    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType)
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
+    getCumPrevalences(apiurl, mutationString, mutationVar, locations)
   ]).pipe(
-    map(([longitudinal, byLocation]) => {
+    map(([longitudinal, byLocation, locPrev]) => {
       return ({
         longitudinal: longitudinal,
-        byCountry: byLocation
+        byCountry: byLocation,
+        locPrev: locPrev
       })
     }),
     catchError(e => {
