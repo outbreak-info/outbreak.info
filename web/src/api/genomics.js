@@ -46,6 +46,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   store.state.admin.reportloading = true;
 
   return forkJoin([
+    getDateUpdated(apiurl),
     // getMostRecentSeq(apiurl, mutationString, mutationVar, null),
     getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
@@ -56,10 +57,11 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
+    map(([dateUpdated, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
+        dateUpdated: dateUpdated,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
         locPrev: locPrev,
@@ -456,6 +458,48 @@ export function findPangolin(apiUrl, queryString) {
       })
 
       return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting Pangolin lineage names!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getDateUpdated(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}metadata`;
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "build_date"),
+    map(result => {
+      const today = new Date();
+      let lastUpdated;
+      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
+      const dateUpdated = strictIsoParse(result); // ensure the time is parsed as PDT
+      if (dateUpdated) {
+        const updatedDiff = (today - dateUpdated) / (60 * 60 * 1000);
+
+        if (updatedDiff < 1) {
+          lastUpdated = `${Math.round(updatedDiff * 60)}m`;
+        } else if (updatedDiff <= 24) {
+          lastUpdated = `${Math.round(updatedDiff)}h`;
+        } else {
+          lastUpdated = `${Math.round(updatedDiff / 24)}d`;
+        }
+      }
+
+      return ({
+        dateUpdated: formatDate(dateUpdated),
+        lastUpdated: lastUpdated
+      })
     }),
     catchError(e => {
       console.log("%c Error in getting Pangolin lineage names!", "color: red");

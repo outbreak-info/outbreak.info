@@ -265,7 +265,7 @@
     <!-- METHODOLOGY -->
     <section class="mt-3 mb-5">
       <h4>Methodology</h4>
-      <ReportMethodology :dateUpdated="dateGenerated" />
+      <ReportMethodology :dateUpdated="dateUpdated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       <Warning class="mt-2" :text="disclaimer" />
     </section>
@@ -481,8 +481,7 @@ export default {
       mutationVar: null,
       mutations: null,
       reportType: null,
-      lastUpdated: "XX day",
-      dateGenerated: "XX XXX XXXX",
+      lastUpdated: null,
       disclaimer: null,
 
       // Changing locations
@@ -556,11 +555,16 @@ export default {
       if (this.mutationName) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
           console.log(results)
+
+          // date updated
+          this.dateUpdated = results.dateUpdated.dateUpdated;
+          this.lastUpdated = results.dateUpdated.lastUpdated;
+
           // worldwide stats
           this.globalPrev = results.globalPrev;
           this.totalLineage = results.globalPrev.lineage_count_formatted;
           // this.newTodayGlobal = results.mostRecent.date_count;
-          // this.dateUpdated = results.mostRecent.dateFormatted;
+
 
           // location prevalence
           this.locationTotals = results.locPrev;
