@@ -2,13 +2,17 @@
 <div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
   <div class="">
     <div class="d-flex align-items-center justify-content-end">
-      sort by
-      <select v-model="sortVar" class="ml-3">
-        <option value="proportion">prevalence</option>
-        <option value="cum_total_count">total sequenced</option>
-        <option value="country">name</option>
-      </select>
+      <button class="btn btn-main-outline px-2 py-1 mr-3" @click="includeNotDetected = !includeNotDetected"><small>{{includeNotDetected ? "hide" : "show"}} not detected</small></button>
+      <div class="d-flex align-items-center justify-content-end">
+        sort by
+        <select v-model="sortVar" class="ml-2">
+          <option value="proportion">prevalence</option>
+          <option value="cum_total_count">total sequenced</option>
+          <option value="country">name</option>
+        </select>
+      </div>
     </div>
+
     <div class="d-flex flex-wrap" :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
       <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
         <h6><b>Prevalence</b></h6>
@@ -149,6 +153,9 @@ export default Vue.extend({
     },
     sortVar() {
       this.updatePlot();
+    },
+    includeNotDetected() {
+      this.updatePlot();
     }
   },
   computed: {
@@ -179,6 +186,7 @@ export default Vue.extend({
       accentColor: "#df4ab7",
       baseColor: "#f6cceb",
       stacked: false,
+      includeNotDetected: false,
       // data
       plottedData: null,
       // refs
@@ -365,6 +373,11 @@ export default Vue.extend({
         // ensure the data is sorted in the proper order
         // Create a copy so Vue doesn't flip out.
         this.plottedData = cloneDeep(this.data);
+
+        if(!this.includeNotDetected) {
+          this.plottedData = this.plottedData.filter(d => d.proportion)
+        }
+
         if (this.sortVar == "country") {
           // asc
           this.plottedData.sort((a, b) => a[this.sortVar] < b[this.sortVar] ? -1 : 1);
@@ -372,6 +385,7 @@ export default Vue.extend({
           // desc
           this.plottedData.sort((a, b) => b[this.sortVar] < a[this.sortVar] ? -1 : 1);
         }
+
 
         this.updateScales();
 
