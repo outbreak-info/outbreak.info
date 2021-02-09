@@ -400,13 +400,13 @@ if(this.filteredData) {
         )
 
       this.regions
-        .selectAll(".region")
+        .selectAll(".region-fill")
         .data(this.filteredData, d => d.properties.location_id)
         .join(
           enter => {
             enter
               .append("path")
-              .attr("class", d => `${d.properties.location_id} region`)
+              .attr("class", d => `${d.properties.location_id} region region-fill`)
               .attr("id", d => d.properties.location_id)
               // draw each region
               .attr("d", this.path
@@ -417,7 +417,7 @@ if(this.filteredData) {
               .style("stroke-width", 0.5)
           },
           update => update
-          .attr("class", d => `${d.properties.location_id} region`)
+          .attr("class", d => `${d.properties.location_id} region region-fill`)
           .attr("id", d => d.properties.location_id)
           // draw each region
           .attr("d", this.path
