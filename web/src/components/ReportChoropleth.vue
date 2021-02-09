@@ -398,7 +398,7 @@ if(this.filteredData) {
           enter => {
             enter
               .append("path")
-              .attr("class", "region")
+              .attr("class", d => `${d.properties.location_id} region`)
               .attr("id", d => d.properties.location_id)
               // draw each region
               .attr("d", this.path
@@ -409,6 +409,7 @@ if(this.filteredData) {
               .style("stroke-width", 0.5)
           },
           update => update
+          .attr("class", d => `${d.properties.location_id} region`)
           .attr("id", d => d.properties.location_id)
           // draw each region
           .attr("d", this.path
@@ -435,7 +436,7 @@ if(this.filteredData) {
           enter => {
             enter
               .append("path")
-              .attr("class", "zero-data")
+              .attr("class", d => `${d.properties.location_id} region zero-data`)
               .attr("id", d => `${d.properties.location_id}_zero`)
               // draw each region
               .attr("d", this.path
@@ -446,6 +447,7 @@ if(this.filteredData) {
               .style("stroke-width", 0.5)
           },
           update => update
+          .attr("class", d => `${d.properties.location_id} region zero-data`)
           .attr("id", d => `${d.properties.location_id}_zero`)
           // draw each region
           .attr("d", this.path
@@ -497,6 +499,10 @@ if(this.filteredData) {
       this.regions.selectAll("path.region")
         .on("mouseenter", d => this.debounceMouseon(d))
         .on("mouseleave", this.mouseOff);
+
+      this.regions.selectAll("path.region")
+        .on("mouseenter", d => this.debounceMouseon(d))
+        .on("mouseleave", this.mouseOff);
     }
     },
     mouseOn(d) {
@@ -510,7 +516,7 @@ if(this.filteredData) {
 
       // turn on the location
       this.regions
-        .select(`#${d.properties.location_id}`)
+        .select(`.${d.properties.location_id}`)
         .style("opacity", 1)
         .style("stroke-opacity", 1);
 
@@ -518,7 +524,7 @@ if(this.filteredData) {
 
       // edit text
       ttip.select("h5").text(d.properties.NAME);
-      if (d.proportion) {
+      if (d.proportion || d.proportion === 0) {
         ttip.select("#no-sequencing").classed("hidden", true);
         ttip.select("#proportion")
           .text(d.proportion_formatted)
@@ -548,6 +554,10 @@ if(this.filteredData) {
     mouseOff() {
       select(this.$refs.tooltip_choro)
         .style("display", "none");
+
+        this.regions
+          .selectAll(".zero-data")
+          .style("opacity", 1);
 
       this.regions
         .selectAll(".region")
