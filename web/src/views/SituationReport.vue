@@ -167,7 +167,7 @@
                 Worldwide
               </td>
               <td>
-                {{ newTodayGlobal.toLocaleString() }}
+                {{ newTodayGlobal }}
               </td>
             </tr>
             <!-- <tr v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
@@ -502,9 +502,8 @@ export default {
           // worldwide stats
           this.globalPrev = results.globalPrev;
           this.totalLineage = results.globalPrev.lineage_count_formatted;
-          this.newTodayGlobal = results.mostRecent;
-          this.newTodayGlobal = results.mostRecent.date_count;
-          this.dateUpdated = results.mostRecent.dateFormatted;
+          // this.newTodayGlobal = results.mostRecent.date_count;
+          // this.dateUpdated = results.mostRecent.dateFormatted;
 
           // location prevalence
           this.locationTotals = results.locPrev;

@@ -46,7 +46,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   store.state.admin.reportloading = true;
 
   return forkJoin([
-    getMostRecentSeq(apiurl, mutationString, mutationVar, null),
+    // getMostRecentSeq(apiurl, mutationString, mutationVar, null),
     getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
     getCumPrevalences(apiurl, mutationString, mutationVar, locations),
@@ -56,11 +56,10 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([mostRecent, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
+    map(([longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
-        mostRecent: mostRecent,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
         locPrev: locPrev,
@@ -129,7 +128,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}most-recent-collection-date`;
+  const url = `${apiurl}most-recent-collection-date?${mutationVar}=${mutationString}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -137,10 +136,9 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      const filtered = results.filter(d => d.pangolin_lineage.toLowerCase() == mutationString.toLowerCase());
       let lineageRecent;
-      if (filtered.length == 1) {
-        lineageRecent = filtered[0];
+      if (results.length == 1) {
+        results = filtered[0];
         const dateTime = parseDate(lineageRecent.date)
         lineageRecent["dateFormatted"] = formatDate(dateTime)
       }
