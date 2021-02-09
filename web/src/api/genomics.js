@@ -20,6 +20,7 @@ import {
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
+const formatDateShort = timeFormat("%e %b %Y");
 const formatPercent = format(".0%");
 
 import store from "@/store";
@@ -41,25 +42,31 @@ function titleCase(value) {
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
 
-export function getReportData(apiurl, locations, mutationVar, mutationString, locationType = "country") {
+export function getReportData(apiurl, locations, mutationVar, mutationString, location, locationType) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
     getMostRecentSeq(apiurl, mutationString, mutationVar, null),
-    getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
+    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
-    getCountryPrevalence(apiurl, mutationString, mutationVar),
+    getCumPrevalences(apiurl, mutationString, mutationVar, locations),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "Worldwide", "country"),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "United States of America", "country"),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([mostRecent, longitudinal, globalPrev, byCountry, md, mutations]) => {
+    map(([mostRecent, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
         mostRecent: mostRecent,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
+        locPrev: locPrev,
         byCountry: byCountry,
+        countries: countries,
+        states: states,
         md: md,
         mutations: characteristicMuts
       })
@@ -73,8 +80,32 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   )
 }
 
+export function updateLocationData(apiurl, mutationVar, mutationString, locations, location, locationType) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([
+    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
+    getCumPrevalences(apiurl, mutationString, mutationVar, locations)
+  ]).pipe(
+    map(([longitudinal, byLocation, locPrev]) => {
+      return ({
+        longitudinal: longitudinal,
+        byCountry: byLocation,
+        locPrev: locPrev
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in updating report location data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = 0.97) {
-  const url = `${apiurl}lineage-mutations?lineage=${lineage}&frequency=${prevalenceThreshold}`;
+  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -84,9 +115,6 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     map(results => {
       results.forEach(d => {
         d["codon_num"] = +d.codon_num;
-        d["mutation"] = d.name;
-        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";;
-        delete d.pos;
       })
       return (results)
     }),
@@ -107,7 +135,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      const filtered = results.filter(d => d.lineage == mutationString.toLowerCase());
+      const filtered = results.filter(d => d.pangolin_lineage.toLowerCase() == mutationString.toLowerCase());
       let lineageRecent;
       if (filtered.length == 1) {
         lineageRecent = filtered[0];
@@ -125,7 +153,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
 }
 
 export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}prevalence?cumulative=true&${mutationVar}=${mutationString}`;
+  const url = `${apiurl}global-prevalence?cumulative=true&${mutationVar}=${mutationString}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -133,9 +161,14 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      const first = parseDate(results.first_detected);
+      const last = parseDate(results.last_detected);
+
       // results["name"] = "Worldwide";
       results["proportion_formatted"] = formatPercent(results.global_prevalence);
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
+      results["first_detected"] = formatDateShort(first);
+      results["last_detected"] = formatDateShort(last);
       // results["proportion"] = results.global_prevalence;
       // results["cum_lineage_count"] = results.lineage_count;
       // results["location_id"] = "worldwide";
@@ -149,8 +182,23 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   )
 }
 
-export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}`;
+export function getCumPrevalences(apiurl, mutationString, mutationVar, locations) {
+  return forkJoin(...locations.filter(d => d.type != "world").map(d => getCumPrevalence(apiurl, mutationString, mutationVar, d.name, d.type))).pipe(
+    map(results => {
+      results.sort((a,b) => b.proportion - a.proportion);
+
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent local cumulative prevalence data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getCumPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
+  const url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}&cumulative=true`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -158,29 +206,78 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      results.forEach(d => {
-        d["name"] = titleCase(d.country);
-        d["proportion_formatted"] = formatPercent(d.proportion);
-        d["dateTime"] = parseDate(d.date);
-        d["location_id"] = d.country.replace(/\s/g, "");
-      })
+      const first = parseDate(results.first_detected);
+      const last = parseDate(results.last_detected);
+
+      results["name"] = location;
+      results["type"] = locationType;
+      results["first_detected"] = formatDateShort(first);
+      results["last_detected"] = formatDateShort(last);
+      results["proportion_formatted"] = formatPercent(results.global_prevalence);
+      results["lineage_count_formatted"] = format(",")(results.lineage_count);
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting recent prevalence data by country!", "color: red");
+      console.log("%c Error in getting recent local cumulative prevalence data!", "color: red");
       console.log(e);
       return ( of ([]));
     })
   )
 }
 
-export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, indivCall = false, locationType = "country") {
+export function getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
+  if (locationType != "division") {
+    let url;
+    url = location == "Worldwide" ?
+      `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}` :
+      `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}`;;
+    return from(axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })).pipe(
+      pluck("data", "results"),
+      map(results => {
+        results.forEach(d => {
+          d["name"] = titleCase(d.name);
+          d["proportion_formatted"] = formatPercent(d.proportion);
+          d["dateTime"] = parseDate(d.date);
+          // fixes the Georgia (state) / Georgia (country) problem
+          d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
+        })
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting recent prevalence data by country!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      })
+    )
+  } else {
+    return ( of ([]))
+  }
+}
+
+export function getPositiveLocations(apiurl, mutationString, mutationVar, location, locationType) {
+  return getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType).pipe(
+      map(results => {
+        return results.filter(d => d.cum_lineage_count).map(d => titleCase(d.name))
+      }),
+      catchError(e => {
+        console.log("%c Error in getting list of positive country names!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      })
+    )
+}
+
+export function getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, indivCall = false) {
   store.state.admin.reportloading = true;
   let url;
   if (location == "Worldwide") {
-    url = `${apiurl}prevalence?${mutationVar}=${mutationString}`;
+    url = `${apiurl}global-prevalence?${mutationVar}=${mutationString}`;
   } else {
-    url = `${apiurl}prevalence-by-country?${mutationVar}=${mutationString}&${locationType}=${location}`;
+    url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}`;
   }
 
   return from(axios.get(url, {
@@ -192,7 +289,7 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
     map(results => {
       results.forEach(d => {
         d["dateTime"] = parseDate(d.date);
-        d["name"] = titleCase(d.country);
+        d["name"] = titleCase(d.name);
       })
       return (results)
     }),
@@ -273,6 +370,31 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
 
 export function findCountry(apiUrl, queryString) {
   const url = `${apiUrl}country?name=*${queryString}*`
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d.name = titleCase(d.name);
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting country names!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function findDivision(apiUrl, queryString) {
+  const url = `${apiUrl}division?name=*${queryString}*`
 
   return from(
     axios.get(url, {

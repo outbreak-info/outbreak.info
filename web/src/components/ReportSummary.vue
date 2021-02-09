@@ -7,20 +7,40 @@
     <!-- PREVALENCE SUMMARY TABLE -->
     <table class="border-bottom line-height-1 mt-2 w-100">
       <thead>
-        <tr class="border-bottom">
-          <th>
+        <tr>
+          <th rowspan="2" class="border-bottom">
             location
-            <font-awesome-icon class="ml-1 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
+            <font-awesome-icon class="ml-2 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
             <!-- sync, globe-americas, map-marked-alt -->
           </th>
-          <th class="text-center">
-            sequence count
+          <th class="text-center padded border-bottom border-secondary" colspan="2">
+            {{mutationName}} found
           </th>
-          <th class="text-center">
+          <th>
+          </th>
+          <th class="text-center padded border-bottom border-secondary" colspan="2">
+            when found
+          </th>
+        </tr>
+        <tr class="border-bottom">
+          <th class="text-center padded">
+            total
+          </th>
+          <th class="text-center padded">
             apparent prevalence<sup>*</sup>
+          </th>
+          <th>
+
+          </th>
+          <th class="text-center padded">
+            first
+          </th>
+          <th class="text-center padded">
+            last
           </th>
         </tr>
       </thead>
+
       <tbody class="checkbook">
         <tr>
           <td>
@@ -30,18 +50,37 @@
             {{ totalLineage }}
           </td>
           <td class="text-center">
-            {{ globalPrev }}
+            {{ globalPrev.proportion_formatted }}
+          </td>
+          <td>
+
+          </td>
+          <td class="text-center">
+            {{ globalPrev.first_detected }}
+          </td>
+          <td class="text-center">
+            {{ globalPrev.last_detected }}
           </td>
         </tr>
+
         <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
           <td>
             {{ location.name }}
           </td>
           <td class="text-center">
-            {{ location.cum_lineage_count.toLocaleString() }}
+            {{ location.lineage_count_formatted }}
           </td>
           <td class="text-center">
             {{ location.proportion_formatted }}
+          </td>
+          <td>
+
+          </td>
+          <td class="text-center">
+            {{ location.first_detected }}
+          </td>
+          <td class="text-center">
+            {{ location.last_detected }}
           </td>
         </tr>
       </tbody>
@@ -58,8 +97,7 @@
   <!-- GEO SUMMARY -->
   <div id="geo-summary" v-if="countries" class="d-flex flex-column" ref="geo_summary">
     <div>
-      The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b>.
-      <!-- and <b> {{ "XXXX" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>. -->
+      The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
     </div>
     <CountryMap :countries="countries" :width="summaryWidth" :showNames="false" class="align-self-center" />
     <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
@@ -96,9 +134,10 @@ export default {
     totalLineage: String,
     mutationName: String,
     reportType: String,
-    globalPrev: String,
+    globalPrev: Object,
     locationTotals: Array,
-    countries: Array
+    countries: Array,
+    states: Array
   },
   data() {
     return {
@@ -121,3 +160,22 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.bright-hyperlink a {
+    color: #70d3ff;
+}
+
+th.padded {
+  padding: 0.25rem;
+  padding-bottom: 0.5rem;
+}
+
+.checkbook td {
+    padding: 0.5rem;
+}
+
+.checkbook tr:nth-child(2n+1) {
+    background-color: lighten($primary-color, 7%);
+}
+</style>
