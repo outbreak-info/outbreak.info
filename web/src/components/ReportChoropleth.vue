@@ -3,12 +3,17 @@
   <!-- Total count filter -->
   <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap}">
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-    <svg ref="count_filter" id="count-filter" :width="280" :height="37" class="report-choropleth-legend mx-3 my-2">
+    <svg ref="count_filter" id="count-filter" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2">
       <g transform="translate(1,1)">
         <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
+        <rect x="0" y="20" width="15" height="15" :fill="zeroColor" :stroke="strokeColor" stroke-width="1"></rect>
+        <rect x="0" y="20" width="15" height="15" fill="url(#diagonalHatch)"></rect>
+        <rect x="0" y="40" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
+
         <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
-        <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing since {{mutationName}} identified</text>
-        <rect x="0" y="20" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
+        <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">{{ mutationName }} not detected</text>
+        <text x="22" y="47" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing</text>
+
       </g>
     </svg>
     <svg ref="count_filter" id="count-filter" :width="230" :height="legendHeight" class="report-choropleth-legend my-2">
@@ -122,6 +127,7 @@ export default {
       countThreshold: 25,
       filteredColor: "#A5A5A5",
       nullColor: "#EFEFEF",
+      zeroColor: "#EFEFEF",
       strokeColor: "#2c3e50",
       // data
       filteredData: null,
@@ -302,6 +308,8 @@ export default {
 
         this.colorScale = scaleSequential(interpolateYlGnBu)
           .domain([0, this.maxVal]);
+
+        this.zeroColor = this.colorScale(0);
 
         this.filteredData.forEach(d => {
           const filtered = this.data.filter(seq => seq.name == d.properties.NAME);
