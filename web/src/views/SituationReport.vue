@@ -112,9 +112,24 @@
         <div class="d-flex flex-column mb-3">
           <span v-html="reportDescription" class="font-size-2"></span>
 
-          <router-link :to='{ hash: "#resources" , query: this.$route.query }'>
-            <small>View publications, datasets, and more related to {{mutationName}}</small>
-          </router-link>
+          <div class="d-flex flex-wrap justify-content-center my-3">
+            <a href="#longitudinal">
+              <button class="btn btn-grey mr-3">
+                <small>Daily prevalence</small>
+              </button>
+            </a>
+
+            <a href="#geographic">
+              <button class="btn btn-grey mr-3">
+                <small>Geographic prevalence</small>
+              </button>
+            </a>
+            <a href="#resources">
+              <button class="btn btn-grey mr-3">
+                <small>Publications</small>
+              </button>
+            </a>
+          </div>
         </div>
 
         <!-- CHARACTERISTIC MUTATIONS -->
