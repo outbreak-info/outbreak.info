@@ -105,6 +105,7 @@ export function updateLocationData(apiurl, mutationVar, mutationString, location
 }
 
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = 0.97) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
@@ -127,6 +128,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
 }
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = `${apiurl}most-recent-collection-date`;
   return from(axios.get(url, {
     headers: {
@@ -153,7 +155,8 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
 }
 
 export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}global-prevalence?cumulative=true&${mutationVar}=${mutationString}`;
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}global-prevalence?cumulative=true&${mutationVar}=${mutationString}&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -198,7 +201,8 @@ export function getCumPrevalences(apiurl, mutationString, mutationVar, locations
 }
 
 export function getCumPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
-  const url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}&cumulative=true`;
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}&cumulative=true&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -226,11 +230,13 @@ export function getCumPrevalence(apiurl, mutationString, mutationVar, location, 
 }
 
 export function getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+
   if (locationType != "division") {
     let url;
     url = location == "Worldwide" ?
-      `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}` :
-      `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}`;;
+      `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}&timestamp=${timestamp}` :
+      `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}&timestamp=${timestamp}`;
     return from(axios.get(url, {
       headers: {
         "Content-Type": "application/json"
@@ -273,11 +279,12 @@ export function getPositiveLocations(apiurl, mutationString, mutationVar, locati
 
 export function getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, indivCall = false) {
   store.state.admin.reportloading = true;
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
   if (location == "Worldwide") {
-    url = `${apiurl}global-prevalence?${mutationVar}=${mutationString}`;
+    url = `${apiurl}global-prevalence?${mutationVar}=${mutationString}&timestamp=${timestamp}`;
   } else {
-    url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}`;
+    url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}&timestamp=${timestamp}`;
   }
 
   return from(axios.get(url, {
@@ -369,7 +376,8 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
 
 
 export function findCountry(apiUrl, queryString) {
-  const url = `${apiUrl}country?name=*${queryString}*`
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}country?name=*${queryString}*&timestamp=${timestamp}`
 
   return from(
     axios.get(url, {
@@ -394,7 +402,8 @@ export function findCountry(apiUrl, queryString) {
 }
 
 export function findDivision(apiUrl, queryString) {
-  const url = `${apiUrl}division?name=*${queryString}*`
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}division?name=*${queryString}*&timestamp=${timestamp}`
 
   return from(
     axios.get(url, {
@@ -419,7 +428,8 @@ export function findDivision(apiUrl, queryString) {
 }
 
 export function findPangolin(apiUrl, queryString) {
-  const url = `${apiUrl}lineage?name=*${queryString}*`;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}lineage?name=*${queryString}*&timestamp=${timestamp}`;
 
   return from(
     axios.get(url, {
