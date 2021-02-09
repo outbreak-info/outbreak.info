@@ -34,7 +34,7 @@
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
         <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         <g id="no-data" v-if="!data.length">
-          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No samples found</text>
+          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
         </g>
         <g id="weird-last values" :hidden="!data.length">
           <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
@@ -81,6 +81,7 @@ import {
   axisLeft,
   axisRight,
   extent,
+  event,
   max,
   format,
   line,
@@ -239,7 +240,6 @@ export default Vue.extend({
       select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
     },
     tooltipOn() {
-      if (event && event.offsetX) {
         const ttipShift = 20;
 
         // find closest date
@@ -271,7 +271,6 @@ export default Vue.extend({
 
           selectAll(`#date${selected[0].date}`)
             .style("opacity", 1);
-        }
       }
     },
     tooltipOff() {
