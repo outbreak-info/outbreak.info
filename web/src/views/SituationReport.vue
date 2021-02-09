@@ -599,6 +599,12 @@ export default {
     changeLocation(location) {
       const queryParams = this.$route.query;
 
+      this.selectedLocations.forEach(d => {
+        d.isActive = false;
+      })
+
+      location.isActive = true;
+
       this.$router.push({
         name: "MutationReport",
         query: {
