@@ -391,6 +391,7 @@ export default {
     },
     selectedLocations() {
       if (!this.country && !this.division) {
+        if(!this.selected || this.selected == "Worldwide"){
         return ([{
           name: "Worldwide",
           type: "world",
@@ -403,7 +404,17 @@ export default {
           name: "California",
           type: "division",
           isActive: false
-        }])
+        }])} else {
+          return ([{
+            name: "Worldwide",
+            type: "world",
+            isActive: false
+          }, {
+            name: this.selected,
+            type: this.selectedType,
+            isActive: true
+          }])
+        }
       } else {
         let ctries;
         let divisions;
