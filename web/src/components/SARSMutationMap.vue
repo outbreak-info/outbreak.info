@@ -155,12 +155,11 @@ export default Vue.extend({
     setupPlot() {
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
-        // set initial dimensions for the plots.
-        this.setDims();
       });
 
+      // set initial dimensions for the plots.
       this.setDims();
-
+      
       this.svg = select(this.$refs.svg);
       select(this.$refs.gene_map)
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
