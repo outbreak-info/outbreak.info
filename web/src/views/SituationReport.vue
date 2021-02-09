@@ -469,6 +469,7 @@ export default {
       this.updateLocations();
     },
     pangolin: function() {
+      this.newPangolin = null;
       this.setupReport()
     }
   },
@@ -719,7 +720,6 @@ export default {
     },
     selectNewPangolin() {
       const queryParams = this.$route.query;
-      this.newPangolin = null;
 
       this.$router.push({
         name: "MutationReport",
