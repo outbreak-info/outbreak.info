@@ -261,7 +261,7 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
 export function getPositiveLocations(apiurl, mutationString, mutationVar, location, locationType) {
   return getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType).pipe(
       map(results => {
-        return results.map(d => titleCase(d.name))
+        return results.filter(d => d.cum_lineage_count).map(d => titleCase(d.name))
       }),
       catchError(e => {
         console.log("%c Error in getting list of positive country names!", "color: red");
