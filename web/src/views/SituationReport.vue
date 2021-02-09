@@ -64,9 +64,42 @@
     </div>
   </div>
 
+  <!-- CHANGE PANGOLIN LINEAGE MODAL -->
+  <div id="change-pangolin-modal" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title" id="exampleModalLabel">Generate Pangolin Lineage Report</h5>
+          <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="py-3">
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
+              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select Pangolin lineage" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-accent" @click="selectNewPangolin" data-dismiss="modal">Generate Report</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <template v-if="hasData">
-    <!-- SOCIAL MEDIA SHARE -->
-    <ShareReport title="title" url="url" />
+    <!-- SOCIAL MEDIA SHARE, BACK BTN -->
+    <div class="d-flex align-items-center mb-2">
+      <router-link :to="{ name: 'SituationReportsDemo'}">
+        <button class="btn py-0 px-2 btn-grey-outline">back</button>
+      </router-link>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select lineage</button>
+      <ShareReport title="title" url="url" />
+    </div>
+
 
     <!-- HEADER TITLE -->
     <div class="d-flex justify-content-between align-items-center">
@@ -306,6 +339,7 @@ import {
   updateLocationData,
   findCountry,
   findDivision,
+  findPangolin,
   getLocationPrevalence
 } from "@/api/genomics.js";
 
@@ -416,6 +450,9 @@ export default {
   watch: {
     '$route.query': function() {
       this.updateLocations();
+    },
+    pangolin: function() {
+      this.setupReport()
     }
   },
   data() {
@@ -435,6 +472,8 @@ export default {
       activeLocation: "the world",
       queryCountry: null,
       queryDivision: null,
+      queryPangolin: null,
+      newPangolin: null,
       currentLocs: null, // placeholder for current locations
       ctry2Add: [], // array to store new locations to add
       div2Add: [], // array to store new locations to add
@@ -468,6 +507,7 @@ export default {
     this.currentLocs = this.selectedLocations.filter(d => d.name != "Worldwide");
     this.queryCountry = findCountry;
     this.queryDivision = findDivision;
+    this.queryPangolin = findPangolin;
     this.disclaimer =
       `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
@@ -652,6 +692,24 @@ export default {
     },
     updateDivision(selected) {
       this.div2Add.push(selected.name);
+    },
+    updatePangolin(selected) {
+      this.newPangolin = selected.name;
+    },
+    selectNewPangolin() {
+      const queryParams = this.$route.query;
+
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          country: queryParams.country,
+          division: queryParams.division,
+          pangolin: this.newPangolin,
+          muts: queryParams.muts,
+          selected: queryParams.selected,
+          selectedType: queryParams.type
+        }
+      })
     }
   },
   destroyed() {

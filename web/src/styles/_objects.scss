@@ -138,6 +138,18 @@ button.chip.to-add:hover {
     background: #AAA !important;
     color: white;
   }
+
+  &-outline{
+    background: transparent;
+    border: #AAA 2px solid !important;
+    color: #888;
+    transition: all .5s;
+    text-transform:uppercase;
+    &:hover{
+      background: #BBB !important;
+      color: white;
+    }
+  }
 }
 
 
