@@ -232,7 +232,7 @@ export default Vue.extend({
       const mx = 0.825;
       const svgContainer = document.getElementById('report-cum-totals');
       const barRatio = 0.4;
-      const minBarWidth = 450;
+      const minBarWidth = 350;
 
       this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       this.barWidth = barRatio * this.maxWidth;
@@ -390,6 +390,7 @@ export default Vue.extend({
         this.updateScales();
 
         const t1 = transition().duration(1500);
+        const annotThresh = 0.15;
 
         const barSelector = this.bargraph
           .selectAll(".bar-group")
@@ -419,13 +420,13 @@ export default Vue.extend({
             grp.append("text")
               .attr("class", "count-annotation")
               .attr("x", d => this.xBar(d.cum_total_count))
-              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
+              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? 4 : -4)
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", "#777")
               .style("font-size", "9pt")
               .style("dominant-baseline", "central")
-              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? "start" : "end")
+              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? "start" : "end")
               .text(d => `${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
           },
           update => {
@@ -448,8 +449,8 @@ export default Vue.extend({
             update
               .selectAll(".count-annotation")
               .attr("x", d => this.xBar(d.cum_total_count))
-              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
-              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? "start" : "end")
+              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? 4 : -4)
+              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? "start" : "end")
               .text(d => `${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
               .transition(t1)
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
