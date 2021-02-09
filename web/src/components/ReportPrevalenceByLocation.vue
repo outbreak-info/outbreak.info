@@ -15,7 +15,7 @@
 
     <div class="d-flex flex-wrap" :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
       <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
-        <h6><b>Prevalence</b></h6>
+        <h6><b>Cumulative Prevalence</b></h6>
 
         <!-- LEGEND -->
         <div class="d-flex align-items-center justify-content-between height-fixed">
