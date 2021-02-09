@@ -186,7 +186,7 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
 export function getCumPrevalences(apiurl, mutationString, mutationVar, locations) {
   return forkJoin(...locations.filter(d => d.type != "world").map(d => getCumPrevalence(apiurl, mutationString, mutationVar, d.name, d.type))).pipe(
     map(results => {
-      results.sort((a,b) => b.proportion - a.proportion);
+      results.sort((a, b) => b.proportion - a.proportion);
 
       return (results)
     }),
@@ -263,16 +263,29 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
 }
 
 export function getPositiveLocations(apiurl, mutationString, mutationVar, location, locationType) {
-  return getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType).pipe(
-      map(results => {
-        return results.filter(d => d.cum_lineage_count).map(d => titleCase(d.name))
-      }),
-      catchError(e => {
-        console.log("%c Error in getting list of positive country names!", "color: red");
-        console.log(e);
-        return ( of ([]));
-      })
-    )
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  let url;
+  if (location == "Worldwide") {
+    url = `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}&detected=true&timestamp=${timestamp}`;
+  } else {
+    url = `${apiurl}lineage-by-division-most-recent?${mutationVar}=${mutationString}&detected=true&country=${location}&timestamp=${timestamp}`;
+  }
+
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results", "names"),
+    map(results => {
+      return results.map(d => titleCase(d))
+    }),
+    catchError(e => {
+      console.log("%c Error in getting list of positive country names!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
 }
 
 export function getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, indivCall = false) {
