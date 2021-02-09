@@ -1,5 +1,5 @@
 <template>
-<div class="my-4 mx-4 half-page text-left" v-if="mutationName">
+<div class="my-4 mx-5 half-page text-left" v-if="mutationName">
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
