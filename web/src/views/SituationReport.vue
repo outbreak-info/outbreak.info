@@ -236,7 +236,7 @@
     </section>
 
     <!-- GEOGRAPHIC PREVALENCE -->
-    <section class="my-4 d-flex flex-column align-items-center" id="geographic" v-if="selectedType != 'division'">
+    <section class="my-4 d-flex flex-column align-items-center" id="geographic">
       <div class="d-flex align-items-center">
         <h4 class="mb-0 mr-3">Cumulative {{mutationName}} prevalence</h4>
         <div id="location-buttons" class="d-flex flex-wrap align-items-center">
@@ -246,9 +246,15 @@
           </button>
         </div>
       </div>
-      <small class="text-muted mb-3">Since first identification</small>
-      <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="selected" />
-      <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
+      <div v-if="selectedType != 'division'">
+        <small class="text-muted mb-3">Since first identification</small>
+        <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="selected" />
+        <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
+      </div>
+      <div class="text-muted my-5" v-else>
+        Maps are not available at this time for divisions. Please select worldwide or a country.
+      </div>
+
     </section>
 
     <!-- RESOURCES -->
@@ -709,6 +715,7 @@ export default {
     },
     selectNewPangolin() {
       const queryParams = this.$route.query;
+      this.newPangolin = null;
 
       this.$router.push({
         name: "MutationReport",
