@@ -296,6 +296,10 @@
 <script>
 import Vue from "vue";
 
+import {
+  uniq
+} from "lodash";
+
 import ReportLogos from "@/components/ReportLogos.vue";
 import ReportMethodology from "@/components/ReportMethodology.vue";
 import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
@@ -626,9 +630,9 @@ export default {
       this.currentLocs = newCountries.concat(newDivisions);
 
 
-
-      newCountries = newCountries.map(d => d.name);
-      newDivisions = newDivisions.map(d => d.name);
+      // de-duplicate
+      newCountries = uniq(newCountries.map(d => d.name));
+      newDivisions = uniq(newDivisions.map(d => d.name));
 
       const queryParams = this.$route.query;
 
