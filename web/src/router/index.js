@@ -247,7 +247,18 @@ const routes = [{
       import(
         /* webpackChunkName: "situation-reports" */
         "../views/SituationReportsDemo.vue"
-      )
+      ),
+      // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
+    beforeEnter(to, from, next) {
+      if (to.query && (to.query.pangolin)) {
+        // redirect to route below
+        next({
+          name: 'MutationReport',
+          query: to.query
+        })
+      } else
+        next()
+    }
   },
   {
     path: "/situation-reports",
