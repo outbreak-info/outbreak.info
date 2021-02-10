@@ -108,11 +108,17 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex flex-column align-items-start">
         <h1 class="m-0">{{ title }}</h1>
-        <small class="text-muted my-1" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
-          <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
-            <b>{{ synonym }}</b>
-            <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
-        </small>
+        <div class="d-flex my-1 align-items-center">
+          <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
+            <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
+              <b>{{ synonym }}</b>
+              <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
+          </small>
+          <small class="text-muted" v-if="pangoLink">
+            <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
+          </small>
+
+        </div>
 
         <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
@@ -393,6 +399,9 @@ export default {
     },
     genericDescription() {
       return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+    },
+    pangoLink() {
+      return this.mutationVar == "pangolin_lineage" ? `https://cov-lineages.org/lineages/lineage_${this.mutationName}.html` : null
     },
     selectedLocations() {
       if (!this.country && !this.division) {
