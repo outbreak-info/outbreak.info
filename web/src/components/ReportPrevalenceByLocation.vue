@@ -15,7 +15,7 @@
 
     <div class="d-flex flex-wrap" :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
       <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
-        <h6><b>Cumulative Prevalence</b></h6>
+        <h5><b>Cumulative Prevalence</b></h5>
 
         <!-- LEGEND -->
         <div class="d-flex align-items-center justify-content-between height-fixed">
@@ -53,7 +53,7 @@
 
       <!-- RIGHT: BARPLOT -->
       <div class="d-flex flex-column">
-        <h6><b>Number of samples sequenced</b></h6>
+        <h5><b>Number of samples sequenced</b></h5>
 
         <div class="d-flex flex-column height-fixed">
           <div class="d-flex align-items-center">
