@@ -565,7 +565,6 @@ export default {
 
       if (this.mutationName) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
-          console.log(results)
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
