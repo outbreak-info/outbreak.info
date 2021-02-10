@@ -130,6 +130,28 @@ button.chip.to-add:hover {
   }
 }
 
+.btn-grey {
+  background: #DDD !important;
+  transition: all .5s;
+  text-transform: uppercase;
+  &:hover{
+    background: #AAA !important;
+    color: white;
+  }
+
+  &-outline{
+    background: transparent;
+    border: #AAA 2px solid !important;
+    color: #888;
+    transition: all .5s;
+    text-transform:uppercase;
+    &:hover{
+      background: #BBB !important;
+      color: white;
+    }
+  }
+}
+
 
 .btn-accent{
   background: $warning-color !important;

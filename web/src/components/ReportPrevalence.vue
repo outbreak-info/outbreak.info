@@ -1,53 +1,55 @@
 <template>
-<div class="d-flex flex-column align-items-start">
-  <!-- LEGEND -->
-  <div class="d-flex flex-column ml-5 mt-3" id="legend">
-    <!-- legend: rolling average -->
-    <div class="d-flex">
-      <svg width="15" height="15" class="mr-2">
-        <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
-      </svg>
-      <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
-    </div>
-
-    <!-- legend: confidence interval -->
-    <div class="d-flex">
-      <div class="ci-legend mr-2" :style="{background: CIColor}">
-
+<div class="d-flex flex-column align-items-center w-100" id="report-prevalence">
+  <div class="d-flex flex-column">
+    <!-- LEGEND -->
+    <div class="d-flex flex-column ml-5 mt-3" id="legend">
+      <!-- legend: rolling average -->
+      <div class="d-flex">
+        <svg width="15" height="15" class="mr-2">
+          <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+        </svg>
+        <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
       </div>
-      <small class="text-muted">95% confidence interval</small>
+
+      <!-- legend: confidence interval -->
+      <div class="d-flex">
+        <div class="ci-legend mr-2" :style="{background: CIColor}">
+
+        </div>
+        <small class="text-muted">95% confidence interval</small>
+      </div>
     </div>
-  </div>
 
-  <!-- SVGs -->
-  <div class="d-flex flex-column align-items-start mt-2">
-    <!-- TIME TRACE -->
-    <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
-      <defs>
-        <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
-          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-        </marker>
-      </defs>
+    <!-- SVGs -->
+    <div class="d-flex flex-column align-items-start mt-2">
+      <!-- TIME TRACE -->
+      <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
+        <defs>
+          <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
+            <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+          </marker>
+        </defs>
 
-      <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
-      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
-      <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-      <g id="no-data" v-if="!data.length">
-        <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No samples found</text>
-      </g>
-      <g id="weird-last values" :hidden="!data.length">
-        <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
-        <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
-      </g>
-    </svg>
+        <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
+        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
+        <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        <g id="no-data" v-if="!data.length">
+          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
+        </g>
+        <g id="weird-last values" :hidden="!data.length">
+          <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
+          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
+        </g>
+      </svg>
 
-    <!-- SEQUENCING HISTOGRAM -->
-    <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="countTitle">
-      <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-      <g :transform="`translate(${margin.left - 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
-      <g :transform="`translate(${width - margin.right + 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
-    </svg>
-    <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
+      <!-- SEQUENCING HISTOGRAM -->
+      <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="countTitle">
+        <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        <g :transform="`translate(${margin.left - 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
+        <g :transform="`translate(${width - margin.right + 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
+      </svg>
+      <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
+    </div>
   </div>
 
   <!-- TOOLTIPS -->
@@ -79,6 +81,7 @@ import {
   axisLeft,
   axisRight,
   extent,
+  event,
   max,
   format,
   line,
@@ -94,15 +97,7 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    location: String,
-    width: {
-      type: Number,
-      default: 800
-    },
-    height: {
-      type: Number,
-      default: 500
-    }
+    location: String
   },
   components: {
     DownloadReportData
@@ -117,6 +112,8 @@ export default Vue.extend({
   },
   data() {
     return {
+      width: 400,
+      height: 400,
       margin: {
         top: 10,
         bottom: 40,
@@ -151,15 +148,46 @@ export default Vue.extend({
     }
   },
   watch: {
+    width: function() {
+      this.updatePlot();
+    },
     data: function() {
       this.updatePlot();
     },
   },
   mounted() {
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.debounceSetDims);
+    })
+
+    // set initial dimensions for the plots.
+    this.setDims();
     this.setupPlot();
     this.updatePlot();
   },
+  created: function() {
+    this.debounceSetDims = this.debounce(this.setDims, 150);
+  },
   methods: {
+    setDims() {
+      const mx = 0.7;
+      const my = 0.9;
+      const hwRatio = 0.525;
+      const svgContainer = document.getElementById('report-prevalence');
+
+      let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
+      maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
+      const maxHeight = window.innerHeight * my;
+
+      const idealHeight = hwRatio * maxWidth;
+      if (idealHeight <= maxHeight) {
+        this.height = idealHeight;
+        this.width = maxWidth;
+      } else {
+        this.height = maxHeight;
+        this.width = this.height / this.hwRatio;
+      }
+    },
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
@@ -212,45 +240,45 @@ export default Vue.extend({
       select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
     },
     tooltipOn() {
-      const ttipShift = 20;
+        const ttipShift = 20;
 
-      // find closest date
-      const selectedX = this.x.invert(event.offsetX - this.margin.left);
-      const selectedDate = timeDay.round(selectedX);
-      const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
+        // find closest date
+        const selectedX = this.x.invert(event.offsetX - this.margin.left);
+        const selectedDate = timeDay.round(selectedX);
+        const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
 
-      if (selected.length) {
-        // tooltip on
-        const ttip = select(this.$refs.tooltip_prevalence);
+        if (selected.length) {
+          // tooltip on
+          const ttip = select(this.$refs.tooltip_prevalence);
 
-        // edit text
-        ttip.select("h5").text(selected[0].date)
+          // edit text
+          ttip.select("h5").text(selected[0].date)
 
-        ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
-        ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
-        ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
-        ttip.select("#sequencing-count-rolling").text(`1 week average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
+          ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
+          ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
+          ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
+          ttip.select("#sequencing-count-rolling").text(`1 week average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
 
-        // fix location
-        ttip
-          .style("left", `${event.pageX + ttipShift}px`)
-          .style("top", `${event.pageY + ttipShift}px`)
-          .style("display", "block");
+          // fix location
+          ttip
+            .style("left", `${event.pageX + ttipShift}px`)
+            .style("top", `${event.pageY + ttipShift}px`)
+            .style("display", "block");
 
-        // histogram off/on
-        selectAll(".raw-counts")
-          .style("opacity", 0.3);
+          // histogram off/on
+          selectAll(".raw-counts")
+            .style("opacity", 0.3);
 
-        selectAll(`#date${selected[0].date}`)
-          .style("opacity", 1);
+          selectAll(`#date${selected[0].date}`)
+            .style("opacity", 1);
       }
     },
     tooltipOff() {
       select(this.$refs.tooltip_prevalence)
         .style("display", "none");
 
-      // selectAll(".raw-counts")
-      //   .style("opacity", 1);
+      selectAll(".raw-counts")
+        .style("opacity", 1);
     },
     updatePlot() {
       const t1 = transition().duration(2500);
@@ -353,6 +381,21 @@ export default Vue.extend({
           .on("mousemove", () => this.tooltipOn())
           .on("mouseleave", () => this.tooltipOff())
       }
+    },
+    debounce(fn, delay) {
+      var timer = null;
+      return function() {
+        var context = this,
+          args = arguments,
+          evt = event;
+        //we get the D3 event here
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          context.event = evt;
+          //and use the reference here
+          fn.apply(context, args);
+        }, delay);
+      };
     }
   }
 })

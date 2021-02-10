@@ -155,10 +155,9 @@ export default Vue.extend({
     setupPlot() {
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
-        // set initial dimensions for the plots.
-        this.setDims();
       });
 
+      // set initial dimensions for the plots.
       this.setDims();
 
       this.svg = select(this.$refs.svg);
@@ -659,13 +658,13 @@ export default Vue.extend({
               .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
-            update.selectAll(".deletion-leader")
+            update.select(".deletion-leader")
               .classed("hidden", d => !d.adjustedX)
               .transition(t1)
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`);
 
 
-            update.selectAll(".deletion-leader-terminus")
+            update.select(".deletion-leader-terminus")
               .classed("hidden", d => !d.adjustedX)
               .transition(t1)
               .attr("cx", d => d.targetX)
@@ -673,7 +672,7 @@ export default Vue.extend({
 
 
             // del rectangle
-            update.selectAll(".deletion-rect")
+            update.select(".deletion-rect")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
               .transition(t1)
