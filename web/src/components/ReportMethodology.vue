@@ -1,9 +1,10 @@
 <template>
 <div>
   <p>
-    All SARS-CoV sequences were downloaded from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> on {{ dateUpdated }}, aligned to the reference sequence <a :href="refSeq.url" target="_blank"
+    All SARS-CoV sequences were downloaded from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> on {{ updated }}, aligned to the reference sequence <a :href="refSeq.url" target="_blank"
       rel="noreferrer">{{refSeq.name}}</a> using <a href="https://github.com/lh3/minimap2/" rel="noreferrer" target="_blank">minimap2</a> and <a href="https://github.com/cov-ert/datafunk/" rel="noreferrer" target="_blank">datafunk</a>, and
-    subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer" target="_blank">Bjorn</a>. <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineage</a> classification for each individual sequence was provided by GISAID. Sequences with collection dates specifying only the year were excluded, while date specifying only the year and month were
+    subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer" target="_blank">Bjorn</a>. <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineage</a> classification for each individual
+    sequence was provided by GISAID. Sequences with collection dates specifying only the year were excluded, while date specifying only the year and month were
     assumed to have occured on the 15th of that month.
   </p>
   <p>
@@ -25,6 +26,10 @@ import {
   mapState
 } from "vuex";
 
+import {
+  getDateUpdated
+} from "@/api/genomics.js";
+
 export default {
   name: "ReportMethodology",
   props: {
@@ -35,11 +40,28 @@ export default {
   },
   data() {
     return {
-      charMutThreshold: "97%"
+      charMutThreshold: "97%",
+      updated: null,
+      updatedSubscription: null
+    }
+  },
+  mounted() {
+    if (this.dateUpdated) {
+      this.updated = this.dateUpdated;
+    } else {
+      this.updatedSubscription = getDateUpdated(this.$genomicsurl).subscribe(result => {
+        this.updated = result.dateUpdated;
+      })
+    }
+  },
+  destroyed() {
+    if (this.updatedSubscription) {
+      this.updatedSubscription.unsubscribe();
     }
   }
 }
 </script>
+
 <style lang = "scss">
 .code {
     color: $secondary-color;
