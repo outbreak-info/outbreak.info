@@ -36,7 +36,11 @@
         <g id="no-data" v-if="!data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
         </g>
-        <g id="weird-last values" :hidden="!data.length">
+        <g id="no-data" v-if="data.length < lengthThreshold">
+          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
+          <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with sequencing data</text>
+        </g>
+        <g id="weird-last values" :hidden="data.length < lengthThreshold">
           <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
@@ -45,8 +49,8 @@
       <!-- SEQUENCING HISTOGRAM -->
       <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="countTitle">
         <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        <g :transform="`translate(${margin.left - 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
-        <g :transform="`translate(${width - margin.right + 10}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
+        <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
+        <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
       </svg>
       <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
     </div>
@@ -121,6 +125,7 @@ export default Vue.extend({
         right: 70
       },
       heightCounts: 80,
+      lengthThreshold: 5,
       CIColor: "#df4ab7",
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
@@ -132,7 +137,7 @@ export default Vue.extend({
       y: scaleLinear(),
       yCounts: scaleLinear(),
       maxCounts: null,
-      xBandwith: 1,
+      xBandwidth: 1,
       xAxis: null,
       yAxis: null,
       yCountsAxisLeft: null,

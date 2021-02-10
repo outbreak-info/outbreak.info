@@ -687,6 +687,8 @@ export default {
     changeLocation(location) {
       const queryParams = this.$route.query;
 
+      this.activeLocation = location.name;
+
       this.selectedLocations.forEach(d => {
         d.isActive = false;
       })
