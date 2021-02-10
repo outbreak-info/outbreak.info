@@ -177,7 +177,7 @@ export default {
       return (Math.max(Math.abs(this.minVal), this.maxVal))
     },
     title() {
-      return (this.location == "Worldwide" ? `${this.mutationName} prevalence by country` : `${this.mutationName} prevalence in ${this.location}`)
+      return (this.location == "Worldwide" ? `${this.mutationName} cumulative prevalence by country` : `${this.mutationName} cumulative prevalence in ${this.location}`)
     },
     filterShift() {
       return (this.xFilter ? this.xFilter(this.countThreshold) : 0)
