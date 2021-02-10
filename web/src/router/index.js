@@ -246,7 +246,24 @@ const routes = [{
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */
-        "../views/SituationReports.vue"
+        "../views/SituationReportsDemo.vue"
+      )
+  },
+  {
+    path: "/situation-reports",
+    name: "MutationReport",
+    props: route => ({
+      country: route.query.country,
+      division: route.query.division,
+      muts: route.query.muts,
+      pangolin: route.query.pangolin,
+      selected: route.query.selected,
+      selectedType: route.query.selectedType
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-report" */
+        "../views/SituationReport.vue"
       )
   },
   {
@@ -277,30 +294,12 @@ const routes = [{
       )
   },
   {
-    path: "/situation-report-demo",
-    name: "MutationReport",
-    props: route => ({
-      country: route.query.country,
-      division: route.query.division,
-      muts: route.query.muts,
-      pangolin: route.query.pangolin,
-      selected: route.query.selected,
-      selectedType: route.query.selectedType
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SituationReport.vue"
-      )
+    path: "/situation-reports-demo",
+    redirect: "/situation-reports"
   },
   {
-    path: "/situation-reports-demo",
-    name: "SituationReportsDemo",
-    component: () =>
-      import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SituationReportsDemo.vue"
-      )
+    path: "/situation-report-demo",
+    redirect: "/situation-reports"
   }
 ];
 
