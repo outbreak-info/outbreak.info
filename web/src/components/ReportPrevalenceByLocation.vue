@@ -374,7 +374,7 @@ export default Vue.extend({
         // Create a copy so Vue doesn't flip out.
         this.plottedData = cloneDeep(this.data);
 
-        if(!this.includeNotDetected) {
+        if (!this.includeNotDetected) {
           this.plottedData = this.plottedData.filter(d => d.proportion)
         }
 
@@ -482,7 +482,8 @@ export default Vue.extend({
             update => update.attr("x2", this.width)
             .attr("transform", `translate(${-1*this.margin.left},${0})`)
             .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5),
+            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
           )
 
           checkbookSelector2.join(enter => {
@@ -501,8 +502,8 @@ export default Vue.extend({
             .attr("x1", 0)
             .attr("x2", this.barWidth)
             .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-          )
+            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5),
+            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()));
         }
 
         const dotSelector = this.dotplot.selectAll(".dot-group")
