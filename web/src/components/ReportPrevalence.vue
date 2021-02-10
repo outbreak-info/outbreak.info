@@ -36,7 +36,7 @@
         <g id="no-data" v-if="!data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
         </g>
-        <g id="no-data" v-if="data.length < lengthThreshold">
+        <g id="no-data" v-if="data.length < lengthThreshold && data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
           <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with sequencing data</text>
         </g>
