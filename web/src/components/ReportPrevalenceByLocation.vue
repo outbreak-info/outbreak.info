@@ -431,23 +431,23 @@ export default Vue.extend({
           },
           update => {
             update.attr("class", d => `bar-group ${d[this.yIdentifier]}`);
-
-            update.selectAll(".seq-count")
+            // !!!!! UPDATES MUST BE SELECT, NOT SELECT ALL
+            // h/t to https://observablehq.com/@thetylerwolf/day-18-join-enter-update-exit for pointing me in right direction
+            update.select(".seq-count")
               .attr("x", this.xBar(1))
               .attr("width", d => this.xBar(d.cum_total_count) - this.xBar(1))
               .attr("height", this.y.bandwidth())
               .transition(t1)
               .attr("y", d => this.y(d[this.yVariable]));
 
-            update.selectAll(".mutation-count")
+            update.select(".mutation-count")
               .attr("x", this.xBar(1))
               .attr("width", d => (this.xBar(d.cum_total_count) - this.xBar(1)) * d.proportion)
               .attr("height", this.y.bandwidth())
               .transition(t1)
               .attr("y", d => this.y(d[this.yVariable]));
 
-            update
-              .selectAll(".count-annotation")
+            update.select(".count-annotation")
               .attr("x", d => this.xBar(d.cum_total_count))
               .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? 4 : -4)
               .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? "start" : "end")
@@ -542,13 +542,13 @@ export default Vue.extend({
               .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
 
             update
-              .selectAll(".dot-circle")
+              .select(".dot-circle")
               .transition(t1)
               .attr("cx", d => this.xDot(d.proportion))
               .style("fill", d => this.colorScale(d.proportion))
               .attr("cy", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
 
-            update.selectAll(".dot-ci")
+            update.select(".dot-ci")
               .attr("x1", d => this.xDot(d.proportion_ci_lower))
               .attr("x2", d => this.xDot(d.proportion_ci_upper))
               .transition(t1)
