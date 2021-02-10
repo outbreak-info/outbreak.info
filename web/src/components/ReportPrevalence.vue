@@ -38,7 +38,8 @@
         </g>
         <g id="no-data" v-if="data.length < lengthThreshold && data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
-          <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with sequencing data</text>
+          <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
+            sequencing data</text>
         </g>
         <g id="weird-last values" :hidden="data.length < lengthThreshold">
           <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
@@ -192,6 +193,14 @@ export default Vue.extend({
         this.height = maxHeight;
         this.width = this.height / this.hwRatio;
       }
+
+      if (this.width < 600) {
+        this.numXTicks = 2;
+        this.numYTicks = 4;
+      } else {
+        this.numXTicks = 6;
+        this.numYTicks = 5;
+      }
     },
     setupPlot() {
       this.svg = select(this.$refs.svg);
@@ -245,37 +254,37 @@ export default Vue.extend({
       select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
     },
     tooltipOn() {
-        const ttipShift = 20;
+      const ttipShift = 20;
 
-        // find closest date
-        const selectedX = this.x.invert(event.offsetX - this.margin.left);
-        const selectedDate = timeDay.round(selectedX);
-        const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
+      // find closest date
+      const selectedX = this.x.invert(event.offsetX - this.margin.left);
+      const selectedDate = timeDay.round(selectedX);
+      const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
 
-        if (selected.length) {
-          // tooltip on
-          const ttip = select(this.$refs.tooltip_prevalence);
+      if (selected.length) {
+        // tooltip on
+        const ttip = select(this.$refs.tooltip_prevalence);
 
-          // edit text
-          ttip.select("h5").text(selected[0].date)
+        // edit text
+        ttip.select("h5").text(selected[0].date)
 
-          ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
-          ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
-          ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
-          ttip.select("#sequencing-count-rolling").text(`Rolling average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
+        ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
+        ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
+        ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
+        ttip.select("#sequencing-count-rolling").text(`Rolling average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
 
-          // fix location
-          ttip
-            .style("left", `${event.pageX + ttipShift}px`)
-            .style("top", `${event.pageY + ttipShift}px`)
-            .style("display", "block");
+        // fix location
+        ttip
+          .style("left", `${event.pageX + ttipShift}px`)
+          .style("top", `${event.pageY + ttipShift}px`)
+          .style("display", "block");
 
-          // histogram off/on
-          selectAll(".raw-counts")
-            .style("opacity", 0.3);
+        // histogram off/on
+        selectAll(".raw-counts")
+          .style("opacity", 0.3);
 
-          selectAll(`#date${selected[0].date}`)
-            .style("opacity", 1);
+        selectAll(`#date${selected[0].date}`)
+          .style("opacity", 1);
       }
     },
     tooltipOff() {

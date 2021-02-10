@@ -237,7 +237,7 @@ export default Vue.extend({
       const maxScreenWidth = window.innerWidth;
       this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       if(this.maxWidth > maxScreenWidth) {
-        this.maxWidth = maxScreenWidth;
+        this.maxWidth = maxScreenWidth - 20;
         this.numXTicks = 2;
       }
       this.barWidth = barRatio * this.maxWidth;
@@ -355,7 +355,7 @@ export default Vue.extend({
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
         })
-        .ticks(4)
+        .ticks(2)
         .tickSizeOuter(0);
 
       select(this.$refs.xAxisBar).call(this.xBarAxis);
