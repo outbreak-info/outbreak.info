@@ -234,7 +234,6 @@ export function getCumPrevalence(apiurl, mutationString, mutationVar, location, 
 export function getNewTodayAll(apiurl, mutationString, mutationVar, locations) {
   return forkJoin(getNewToday(apiurl, mutationString, mutationVar, "Worldwide", null), ...locations.filter(d => d.type != "world").map(d => getNewToday(apiurl, mutationString, mutationVar, d.name, d.type))).pipe(
     map(results => {
-      console.log(results)
       results.sort((a, b) => b.date_count_today - a.date_count_today);
 
       return (results)
