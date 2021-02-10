@@ -240,7 +240,7 @@
       </div>
       <div v-if="selectedType != 'division'">
         <small class="text-muted mb-3">Since first identification</small>
-        <ReportChoropleth :data="choroData" :mutationName="mutationName" :location="selected" />
+        <ReportChoropleth class="mb-5" :data="choroData" :mutationName="mutationName" :location="selected" />
         <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
       </div>
       <div class="text-muted my-5" v-else>
