@@ -257,7 +257,6 @@ export function getNewToday(apiurl, mutationString, mutationVar, location, locat
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       let result;
       if (results.length == 1) {
         result = results[0];
