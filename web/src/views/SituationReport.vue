@@ -397,20 +397,21 @@ export default {
     },
     selectedLocations() {
       if (!this.country && !this.division) {
-        if(!this.selected || this.selected == "Worldwide"){
-        return ([{
-          name: "Worldwide",
-          type: "world",
-          isActive: true
-        }, {
-          name: "United States of America",
-          type: "country",
-          isActive: false
-        }, {
-          name: "California",
-          type: "division",
-          isActive: false
-        }])} else {
+        if (!this.selected || this.selected == "Worldwide") {
+          return ([{
+            name: "Worldwide",
+            type: "world",
+            isActive: true
+          }, {
+            name: "United States of America",
+            type: "country",
+            isActive: false
+          }, {
+            name: "California",
+            type: "division",
+            isActive: false
+          }])
+        } else {
           return ([{
             name: "Worldwide",
             type: "world",
@@ -465,12 +466,13 @@ export default {
     }
   },
   watch: {
-    '$route.query': function() {
-      this.updateLocations();
-    },
-    pangolin: function() {
-      this.newPangolin = null;
-      this.setupReport()
+    '$route.query': function(newVal, oldVal) {
+      if (newVal.pangolin != oldVal.pangolin) {
+        this.newPangolin = null;
+        this.setupReport();
+      } else {
+        this.updateLocations();
+      }
     }
   },
   data() {
