@@ -206,7 +206,7 @@ export default Vue.extend({
       xBarAxis: null,
       xBarAxis2: null,
       yAxis: null,
-      numXTicks: 6,
+      numXTicks: 4,
       colorScale: null
     }
   },
@@ -244,7 +244,7 @@ export default Vue.extend({
         this.width = this.maxWidth * (1 - barRatio) * 0.9;
         this.stacked = false;
       }
-      this.numXTicks = this.width > minBarWidth ? 6 : 2;
+      this.numXTicks = this.width > minBarWidth ? 4 : 2;
 
     },
     tooltipOn(d) {
