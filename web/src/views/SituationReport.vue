@@ -69,15 +69,18 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title" id="exampleModalLabel">Generate Pangolin Lineage Report</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Generate Lineage Report</h5>
           <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <div class="py-3">
+            <p>
+              Choose a lineage designated by <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a>:
+            </p>
             <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
-              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select Pangolin lineage" />
+              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select PANGO lineage" />
             </div>
           </div>
         </div>

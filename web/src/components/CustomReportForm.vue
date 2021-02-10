@@ -5,9 +5,9 @@
   </div>
   <div id="pangolin" class="my-3">
     <h4 class="mb-0">Custom lineage</h4>
-    <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">Pangolin lineages</a></small>
+    <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
     <form class="d-flex w-400px" id="custom-pangolin" @submit.prevent="submitPangolin">
-      <TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select Pangolin lineage" />
+      <TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
 
       <div class="">
         <input class="btn btn-accent"  :disabled="!selectedLineage" type="submit" value="Create report" />

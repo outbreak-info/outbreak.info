@@ -37,7 +37,7 @@
     <!-- lineage or mutation -->
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" id="report-group">
       <h2 class="mb-0">{{ group.key | capitalize }} Reports</h2>
-      <small class="text-highlight">{{group.key.toLowerCase() == "lineage" ? "sequences classified as a particular Pangolin lineage" : "sequences with a particular mutation(s)" }}</small>
+      <small class="text-highlight" v-html="getReportType(group.key)"></small>
 
       <!-- report cards (heh) -->
       <div class="row mt-3">
@@ -128,6 +128,13 @@ export default {
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
+  },
+  methods: {
+    getReportType(group) {
+      return group.toLowerCase() == "lineage" ?
+        "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>" :
+        "sequences with a particular mutation(s)"
+    }
   },
   data() {
     return {
