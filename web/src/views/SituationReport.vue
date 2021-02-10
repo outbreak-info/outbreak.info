@@ -192,25 +192,17 @@
           <table>
             <tr class="border-bottom">
               <th colspan="2">
-                New sequences identified
+                New sequences submitted to GISAID
               </th>
             </tr>
-            <tr>
-              <td>
-                Worldwide
-              </td>
-              <td>
-                {{ newTodayGlobal }}
-              </td>
-            </tr>
-            <!-- <tr v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
+            <tr v-for="(location, lIdx2) in newToday" :key="lIdx2">
               <td>
                 {{ location.name }}
               </td>
               <td>
-                XXX
+                {{ location.date_count_today }}
               </td>
-            </tr> -->
+            </tr>
           </table>
         </div>
       </section>
@@ -518,7 +510,7 @@ export default {
       locationTotals: null,
       totalLineage: null,
       globalPrev: null,
-      newTodayGlobal: null,
+      newToday: null,
       prevalence: []
     }
   },
@@ -566,7 +558,9 @@ export default {
           // worldwide stats
           this.globalPrev = results.globalPrev;
           this.totalLineage = results.globalPrev.lineage_count_formatted;
-          // this.newTodayGlobal = results.mostRecent.date_count;
+
+          // newly added sequences
+          this.newToday = results.newToday;
 
 
           // location prevalence

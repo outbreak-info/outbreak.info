@@ -15,7 +15,8 @@ import {
 import {
   timeParse,
   timeFormat,
-  format
+  format,
+  timeDay
 } from "d3";
 
 const parseDate = timeParse("%Y-%m-%d");
@@ -47,7 +48,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
 
   return forkJoin([
     getDateUpdated(apiurl),
-    // getMostRecentSeq(apiurl, mutationString, mutationVar, null),
+    getNewTodayAll(apiurl, mutationString, mutationVar, locations),
     getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
     getCumPrevalences(apiurl, mutationString, mutationVar, locations),
@@ -57,11 +58,12 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
+    map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
         dateUpdated: dateUpdated,
+        newToday: newToday,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
         locPrev: locPrev,
@@ -220,6 +222,56 @@ export function getCumPrevalence(apiurl, mutationString, mutationVar, location, 
       results["proportion_formatted"] = formatPercent(results.global_prevalence);
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
       return (results)
+    }),
+    catchError(e => {
+      console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getNewTodayAll(apiurl, mutationString, mutationVar, locations) {
+  return forkJoin(getNewToday(apiurl, mutationString, mutationVar, "Worldwide", null), ...locations.filter(d => d.type != "world").map(d => getNewToday(apiurl, mutationString, mutationVar, d.name, d.type))).pipe(
+    map(results => {
+      console.log(results)
+      results.sort((a, b) => b.date_count_today - a.date_count_today);
+
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent local cumulative prevalence data for all locations!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getNewToday(apiurl, mutationString, mutationVar, location, locationType) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = location == "Worldwide" ? `${apiurl}most-recent-submission-date?${mutationVar}=${mutationString}&timestamp=${timestamp}` :
+    `${apiurl}most-recent-submission-date?${mutationVar}=${mutationString}&${locationType}=${location}&timestamp=${timestamp}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      let result;
+      if (results.length == 1) {
+        result = results[0];
+        result["dateTime"] = parseDate(result.date);
+        const timeDiff = timeDay.count(result.dateTime, new Date());
+        if (timeDiff < 2) {
+          return ({
+            name: location,
+            date_count_today: format(",")(result.date_count)
+          })
+        } else {
+          return ({name: location, date_count_today: 0})
+        }
+      }
     }),
     catchError(e => {
       console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
