@@ -1,7 +1,7 @@
 <template>
-<div>
+<div class="px-2">
   <h3>Summary</h3>
-  <div class="summary-counts mb-3">
+  <div class="summary-counts mb-3" style="overflow-x:auto;">
     As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the {{ mutationName }} lineage have been detected since the {{reportType}} was identified:
 
     <!-- PREVALENCE SUMMARY TABLE -->
@@ -89,8 +89,16 @@
       <small class="bright-hyperlink"><a href="#longitudinal">view change over time</a></small>
       <small class="bright-hyperlink pointer"><a data-toggle="modal" data-target="#change-locations-modal">change locations</a></small>
     </div>
-    <div class="line-height-1 my-2">
-      <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
+    <div class="d-flex align-items-center my-2">
+      <div class="line-height-1">
+        <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
+      </div>
+      <div class="bias-btn ml-2">
+        <router-link :to="{name: 'SituationReportCaveats'}" class="no-underline pointer">
+          <Warning text="Read about biases" />
+        </router-link>
+      </div>
+
     </div>
   </div>
 
@@ -109,6 +117,7 @@
 import Vue from "vue";
 
 import CountryMap from "@/components/CountryMap.vue";
+import Warning from "@/components/Warning.vue";
 
 // --- font awesome --
 import {
@@ -127,6 +136,7 @@ export default {
   name: "ReportSummary",
   components: {
     CountryMap,
+    Warning,
     FontAwesomeIcon
   },
   props: {
@@ -167,8 +177,7 @@ export default {
 }
 
 th.padded {
-  padding: 0.25rem;
-  padding-bottom: 0.5rem;
+    padding: 0.25rem 0.25rem 0.5rem;
 }
 
 .checkbook td {
@@ -177,5 +186,9 @@ th.padded {
 
 .checkbook tr:nth-child(2n+1) {
     background-color: lighten($primary-color, 7%);
+}
+
+.bias-btn {
+    min-width: 200px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div class="my-4 mx-5 half-page text-left" v-if="mutationName">
+<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-5' : 'mx-2']" v-if="mutationName">
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
@@ -218,7 +218,7 @@
 
       <!-- RIGHT: SUMMARY BOX -->
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" :states="states" />
+        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" :states="states" />
       </section>
     </div>
 
@@ -394,6 +394,9 @@ export default {
   },
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
+    smallScreen() {
+      return(window.innerSize < 500)
+    },
     title() {
       return (`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)
     },

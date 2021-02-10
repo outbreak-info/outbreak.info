@@ -1,15 +1,15 @@
 <template>
   <div
-    class="alert bg-highlight text-light p-2 row m-0 rounded-0"
+    class="alert bg-highlight text-light p-2 m-0 rounded-0 d-flex align-items-center"
     :class="{ 'scale-in-center': animate }"
   >
     <div
-      class="col-sm-1 d-flex justify-content-center align-items-center text-center"
+      class="d-flex justify-content-center align-items-center text-center ml-1"
     >
       <font-awesome-icon class="pr-2 fa-2x" :icon="['fas', 'exclamation-circle']"/>
     </div>
     <div
-      class="col-sm-11 d-flex justify-content-center align-items-center text-center"
+      class="d-flex justify-content-center align-items-center text-center"
     >
       <p class="m-0" v-html="text"></p>
     </div>

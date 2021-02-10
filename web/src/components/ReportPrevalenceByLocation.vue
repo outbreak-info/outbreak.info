@@ -234,7 +234,12 @@ export default Vue.extend({
       const barRatio = 0.4;
       const minBarWidth = 350;
 
+      const maxScreenWidth = window.innerWidth;
       this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      if(this.maxWidth > maxScreenWidth) {
+        this.maxWidth = maxScreenWidth - 20;
+        this.numXTicks = 2;
+      }
       this.barWidth = barRatio * this.maxWidth;
       if (this.barWidth <= minBarWidth) {
         this.barWidth = this.maxWidth;
@@ -244,7 +249,7 @@ export default Vue.extend({
         this.width = this.maxWidth * (1 - barRatio) * 0.9;
         this.stacked = false;
       }
-      this.numXTicks = this.width > minBarWidth ? 4 : 2;
+      // this.numXTicks = this.width > minBarWidth ? 4 : 2;
 
     },
     tooltipOn(d) {
@@ -350,7 +355,7 @@ export default Vue.extend({
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
         })
-        .ticks(4)
+        .ticks(2)
         .tickSizeOuter(0);
 
       select(this.$refs.xAxisBar).call(this.xBarAxis);

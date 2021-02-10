@@ -228,13 +228,18 @@ export default {
       const my = 0.85;
       const svgContainer = document.getElementById('report-choropleth');
 
-      const maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      const maxWidth = window.innerWidth;
       const maxHeight = window.innerHeight * my;
 
-      const idealHeight = this.hwRatio * maxWidth;
+      if(maxSvgWidth > maxWidth){
+        maxSvgWidth = maxWidth-20;
+      }
+
+      const idealHeight = this.hwRatio * maxSvgWidth;
       if (idealHeight <= maxHeight) {
         this.height = idealHeight;
-        this.width = maxWidth;
+        this.width = maxSvgWidth;
       } else {
         this.height = maxHeight;
         this.width = this.height / this.hwRatio;
