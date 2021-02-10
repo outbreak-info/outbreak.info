@@ -146,6 +146,30 @@
     </div>
   </section>
 
+<!-- GENOMICS -->
+<section id="epi-examples" class="container my-3">
+  <h3>View SARS-CoV-2 Mutation Reports</h3>
+    <div class="row">
+  <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+    <div class="w-100 p-3 card">
+      <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+        <h5 class="text-uppercase">View curated reports</h5>
+        <div class="h-100 d-flex align-items-center">
+          <img src="@/assets/home/b117_sitrep.png" alt="Outbreak.info schema" class="w-100" />
+        </div>
+      </router-link>
+    </div>
+  </div>
+
+  <div class="col-sm-12 col-md-6 mb-4 d-flex">
+    <div class="w-100 p-3 card">
+        <h5 class="text-uppercase">Create custom report</h5>
+        <CustomReportForm />
+    </div>
+  </div>
+  </div>
+</section>
+
   <!-- EPI EXAMPLES -->
   <section id="epi-examples" class="container my-3">
     <h3>Explore epidemiology data</h3>
@@ -269,6 +293,7 @@
 // @ is an alias to /src
 // import Vue from "vue";
 import SearchBar from "@/components/SearchBar.vue";
+import CustomReportForm from "@/components/CustomReportForm";
 import GlanceSummary from "@/components/GlanceSummary";
 import {
   getGlanceSummary
@@ -300,7 +325,8 @@ export default {
   components: {
     SearchBar,
     GlanceSummary,
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    CustomReportForm
   },
   data() {
     return {
