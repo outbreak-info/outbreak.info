@@ -580,7 +580,7 @@ export default {
           this.states = results.states;
           this.choroData = results.byCountry;
 
-          this.hasData = results.longitudinal.length || results.byCountry.length;
+          this.hasData = true;
           this.mutations = results.mutations;
 
           if (results.md) {

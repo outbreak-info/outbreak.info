@@ -193,7 +193,7 @@ export function getCumPrevalences(apiurl, mutationString, mutationVar, locations
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting recent local cumulative prevalence data!", "color: red");
+      console.log("%c Error in getting recent local cumulative prevalence data for all locations!", "color: red");
       console.log(e);
       return ( of ([]));
     })
@@ -222,7 +222,7 @@ export function getCumPrevalence(apiurl, mutationString, mutationVar, location, 
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting recent local cumulative prevalence data!", "color: red");
+      console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
       console.log(e);
       return ( of ([]));
     })
