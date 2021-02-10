@@ -542,8 +542,9 @@ export default Vue.extend({
 
             update
               .selectAll(".dot-circle")
-              .attr("cx", d => this.xDot(d.proportion))
               .transition(t1)
+              .attr("cx", d => this.xDot(d.proportion))
+              .style("fill", d => this.colorScale(d.proportion))
               .attr("cy", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
 
             update.selectAll(".dot-ci")
