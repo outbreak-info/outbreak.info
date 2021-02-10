@@ -695,11 +695,14 @@ export default {
 
       location.isActive = true;
 
+      const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
+      const divisions = this.selectedLocations.filter(d => d.type == "division").map(d => d.name);
+
       this.$router.push({
         name: "MutationReport",
         query: {
-          country: queryParams.country,
-          division: queryParams.division,
+          country: countries,
+          division: divisions,
           pangolin: queryParams.pangolin,
           muts: queryParams.muts,
           selected: location.name,
