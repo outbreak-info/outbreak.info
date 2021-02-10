@@ -307,7 +307,7 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
           d["name"] = titleCase(d.name);
           d["proportion_formatted"] = formatPercent(d.proportion);
           // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
-          d["date_last_found"] = d.date;
+          d["date_last_detected"] = d.date;
           delete d.date;
           // fixes the Georgia (state) / Georgia (country) problem
           d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
