@@ -537,7 +537,7 @@ export default Vue.extend({
               .attr("r", this.circleR)
               .style("stroke", "#2c3e50")
               .style("stroke-width", 0.25)
-              .style("filter", "url(#dropshadow)")
+              // .style("filter", "url(#dropshadow)")
               .style("fill", d => this.colorScale(d.proportion))
               .transition(t1)
               .attr("cx", d => this.xDot(d.proportion));
