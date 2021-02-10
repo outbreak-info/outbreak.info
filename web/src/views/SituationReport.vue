@@ -248,7 +248,10 @@
         </div>
       </div>
       <div v-if="selectedType != 'division'">
-        <small class="text-muted mb-3">Since first identification</small>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+        <small class="text-muted">Since first identification in location</small>
+          <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+          </div>
         <ReportChoropleth class="mb-5" :data="choroData" :mutationName="mutationName" :location="selected" />
         <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
       </div>
@@ -264,7 +267,7 @@
     </section>
 
     <!-- METHODOLOGY -->
-    <section class="mt-3 mb-5">
+    <section class="mt-3 mb-5" id="methods">
       <h4>Methodology</h4>
       <ReportMethodology :dateUpdated="dateUpdated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
