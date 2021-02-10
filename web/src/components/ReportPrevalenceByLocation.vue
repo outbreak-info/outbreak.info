@@ -229,7 +229,7 @@ export default Vue.extend({
   },
   methods: {
     setDims() {
-      const mx = 0.825;
+      const mx = 0.9;
       const svgContainer = document.getElementById('report-cum-totals');
       const barRatio = 0.4;
       const minBarWidth = 350;
@@ -342,7 +342,7 @@ export default Vue.extend({
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
         })
-        .ticks(4)
+        .ticks(2)
         .tickSizeOuter(0);
 
       this.xBarAxis2 = axisBottom(this.xBar)
