@@ -312,7 +312,7 @@ export default {
         this.zeroColor = this.colorScale(0);
 
         this.filteredData.forEach(d => {
-          const filtered = this.data.filter(seq => seq.name == d.properties.NAME);
+          const filtered = this.data.filter(seq => seq.name.toLowerCase() == d.properties.NAME.toLowerCase());
           if (filtered.length == 1) {
             const seq = filtered[0];
             d[this.variable] = seq[this.variable];
