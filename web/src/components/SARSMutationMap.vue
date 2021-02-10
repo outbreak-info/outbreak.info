@@ -457,14 +457,14 @@ export default Vue.extend({
             .attr("class", d => `gene gene_${d.gene}`);
 
             update
-              .selectAll("rect")
+              .select("rect")
               .transition(t1)
               .attr("x", d => this.x(d.start))
               .attr("width", d => this.x(d.end) - this.x(d.start))
               .style("fill", d => this.geneColorScale(d.gene))
 
             update
-              .selectAll("text")
+              .select("text")
               .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
               .transition(t1)
               .attr("x", d => (this.x(d.end) + this.x(d.start)) / 2)
@@ -544,13 +544,13 @@ export default Vue.extend({
 
             // leader lines
             update
-              .selectAll(".substitution-leader")
+              .select(".substitution-leader")
               .classed("hidden", d => !d.adjustedX)
               .transition(t1)
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`);
 
             update
-              .selectAll(".leader-terminus")
+              .select(".leader-terminus")
               .transition(t1)
               .attr("cx", d => d.targetX)
               .attr("cy", d => labelY)
@@ -558,7 +558,7 @@ export default Vue.extend({
 
             // circles for mutations
             update
-              .selectAll(".substitution-circle")
+              .select(".substitution-circle")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
 
@@ -569,7 +569,7 @@ export default Vue.extend({
 
             // text: mutation codon position
             update
-              .selectAll(".substitution-location")
+              .select(".substitution-location")
               .text(d => d.codon_num)
               .transition(t1)
               .attr("x", d => d.x)
@@ -578,7 +578,7 @@ export default Vue.extend({
 
             // text: amino acid change
             update
-              .selectAll(".substitution-change")
+              .select(".substitution-change")
               .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'DM Sans', Avenir, Helvetica, Arial, 'Font Awesome 5 Free', sans-serif" : "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .text(d => d.alt_aa == "_" || d.alt_aa == "*" ? "\uf28d" : d.alt_aa)
               .transition(t1)
@@ -682,7 +682,7 @@ export default Vue.extend({
 
             // del symbol
             update
-              .selectAll(".del-symbol")
+              .select(".del-symbol")
               .text(d => "\u0394")
               .transition(t1)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
@@ -690,7 +690,7 @@ export default Vue.extend({
 
             // position locations
             update
-              .selectAll(".deletion-location")
+              .select(".deletion-location")
               .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 - 1}`)
               .transition(t1)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
