@@ -1,9 +1,9 @@
 <template>
 <div>
   <div class="text-muted mb-2">
-    Choose either a <router-link :to="{ hash: '#pangolin' }">lineage</router-link> or a <router-link :to="{ hash: '#mutation-set' }">set of mutations</router-link>
+    Choose either a <router-link :to="{ hash: '#pango' }">lineage</router-link> or a <router-link :to="{ hash: '#mutation-set' }">set of mutations</router-link>
   </div>
-  <div id="pangolin" class="my-3">
+  <div id="pango" class="my-3">
     <h4 class="mb-0">Custom lineage</h4>
     <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
     <form class="d-flex w-400px" id="custom-pangolin" @submit.prevent="submitPangolin">
@@ -200,7 +200,7 @@ export default Vue.extend({
       this.$router.push({
         name: "MutationReport",
         query: {
-          pangolin: this.selectedLineage
+          pango: this.selectedLineage
         }
       })
     },

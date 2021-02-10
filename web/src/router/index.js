@@ -250,7 +250,7 @@ const routes = [{
       ),
       // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
-      if (to.query && (to.query.pangolin)) {
+      if (to.query && (to.query.pango)) {
         // redirect to route below
         next({
           name: 'MutationReport',
@@ -267,7 +267,7 @@ const routes = [{
       country: route.query.country,
       division: route.query.division,
       muts: route.query.muts,
-      pangolin: route.query.pangolin,
+      pango: route.query.pango,
       selected: route.query.selected,
       selectedType: route.query.selectedType
     }),

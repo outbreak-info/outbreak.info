@@ -45,7 +45,7 @@
           <div class="w-100 p-3 card">
             <!-- NAME -->
             <div class="d-flex justify-content-between" id="mutation-name">
-              <router-link :to="{name:'MutationReport', query:{ pangolin: report.mutation_name }}" v-if="group.key == 'lineage'">
+              <router-link :to="{name:'MutationReport', query:{ pango: report.mutation_name }}" v-if="group.key == 'lineage'">
                 <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
               </router-link>
               <router-link :to="{name:'SituationReport', params:{ mutation: report.identifier }}" v-else>

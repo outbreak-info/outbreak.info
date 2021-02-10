@@ -379,7 +379,7 @@ export default {
     country: Array,
     division: Array,
     muts: Array,
-    pangolin: String,
+    pango: String,
     selected: {
       type: String,
       default: "Worldwide"
@@ -475,7 +475,7 @@ export default {
   },
   watch: {
     '$route.query': function(newVal, oldVal) {
-      if (newVal.pangolin != oldVal.pangolin) {
+      if (newVal.pango != oldVal.pango) {
         this.newPangolin = null;
         this.setupReport();
       } else {
@@ -553,8 +553,8 @@ export default {
   },
   methods: {
     setupReport() {
-      if (this.$route.query.pangolin) {
-        this.mutationName = this.$options.filters.capitalize(this.$route.query.pangolin);
+      if (this.$route.query.pango) {
+        this.mutationName = this.$options.filters.capitalize(this.$route.query.pango);
         this.reportType = "lineage";
         this.mutationVar = "pangolin_lineage";
       } else if (this.$route.query.muts) {
@@ -676,7 +676,7 @@ export default {
         query: {
           country: newCountries,
           division: newDivisions,
-          pangolin: queryParams.pangolin,
+          pango: queryParams.pango,
           muts: queryParams.muts,
           selected: selectedPlace,
           selectedType: selectedType
@@ -702,7 +702,7 @@ export default {
         query: {
           country: countries,
           division: divisions,
-          pangolin: queryParams.pangolin,
+          pango: queryParams.pango,
           muts: queryParams.muts,
           selected: location.name,
           selectedType: location.type
@@ -742,7 +742,7 @@ export default {
         query: {
           country: queryParams.country,
           division: queryParams.division,
-          pangolin: this.newPangolin,
+          pango: this.newPangolin,
           muts: queryParams.muts,
           selected: queryParams.selected,
           selectedType: queryParams.type
