@@ -268,10 +268,16 @@ export function getNewToday(apiurl, mutationString, mutationVar, location, locat
             date_count_today: format(",")(result.date_count)
           })
         } else {
-          return ({name: location, date_count_today: 0})
+          return ({
+            name: location,
+            date_count_today: 0
+          })
         }
       } else {
-        return({name: location, date_count_today: null})
+        return ({
+          name: location,
+          date_count_today: null
+        })
       }
     }),
     catchError(e => {
@@ -300,7 +306,9 @@ export function getLocationPrevalence(apiurl, mutationString, mutationVar, locat
         results.forEach(d => {
           d["name"] = titleCase(d.name);
           d["proportion_formatted"] = formatPercent(d.proportion);
-          d["dateTime"] = parseDate(d.date);
+          // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
+          d["date_last_detected"] = d.date;
+          delete d.date;
           // fixes the Georgia (state) / Georgia (country) problem
           d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
         })

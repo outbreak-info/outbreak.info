@@ -69,15 +69,18 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title" id="exampleModalLabel">Generate Pangolin Lineage Report</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Generate Lineage Report</h5>
           <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <div class="py-3">
+            <p>
+              Choose a lineage designated by <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a>:
+            </p>
             <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
-              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select Pangolin lineage" />
+              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select PANGO lineage" />
             </div>
           </div>
         </div>
@@ -93,7 +96,7 @@
   <template v-if="hasData">
     <!-- SOCIAL MEDIA SHARE, BACK BTN -->
     <div class="d-flex align-items-center mb-2">
-      <router-link :to="{ name: 'SituationReportsDemo'}">
+      <router-link :to="{ name: 'SituationReports'}">
         <button class="btn py-0 px-2 btn-grey-outline">back</button>
       </router-link>
       <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select lineage</button>
@@ -105,11 +108,17 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex flex-column align-items-start">
         <h1 class="m-0">{{ title }}</h1>
-        <small class="text-muted my-1" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
-          <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
-            <b>{{ synonym }}</b>
-            <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
-        </small>
+        <div class="d-flex my-1 align-items-center">
+          <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
+            <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
+              <b>{{ synonym }}</b>
+              <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
+          </small>
+          <small class="text-muted" v-if="pangoLink">
+            <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
+          </small>
+
+        </div>
 
         <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
@@ -239,7 +248,10 @@
         </div>
       </div>
       <div v-if="selectedType != 'division'">
-        <small class="text-muted mb-3">Since first identification</small>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+        <small class="text-muted">Since first identification in location</small>
+          <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+          </div>
         <ReportChoropleth class="mb-5" :data="choroData" :mutationName="mutationName" :location="selected" />
         <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
       </div>
@@ -255,7 +267,7 @@
     </section>
 
     <!-- METHODOLOGY -->
-    <section class="mt-3 mb-5">
+    <section class="mt-3 mb-5" id="methods">
       <h4>Methodology</h4>
       <ReportMethodology :dateUpdated="dateUpdated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
@@ -370,7 +382,7 @@ export default {
     country: Array,
     division: Array,
     muts: Array,
-    pangolin: String,
+    pango: String,
     selected: {
       type: String,
       default: "Worldwide"
@@ -389,7 +401,10 @@ export default {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
     },
     genericDescription() {
-      return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+      return `Concerns surrounding new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+    },
+    pangoLink() {
+      return this.mutationVar == "pangolin_lineage" ? `https://cov-lineages.org/lineages/lineage_${this.mutationName}.html` : null
     },
     selectedLocations() {
       if (!this.country && !this.division) {
@@ -463,7 +478,7 @@ export default {
   },
   watch: {
     '$route.query': function(newVal, oldVal) {
-      if (newVal.pangolin != oldVal.pangolin) {
+      if (newVal.pango != oldVal.pango) {
         this.newPangolin = null;
         this.setupReport();
       } else {
@@ -541,8 +556,8 @@ export default {
   },
   methods: {
     setupReport() {
-      if (this.$route.query.pangolin) {
-        this.mutationName = this.$options.filters.capitalize(this.$route.query.pangolin);
+      if (this.$route.query.pango) {
+        this.mutationName = this.$options.filters.capitalize(this.$route.query.pango);
         this.reportType = "lineage";
         this.mutationVar = "pangolin_lineage";
       } else if (this.$route.query.muts) {
@@ -553,7 +568,6 @@ export default {
 
       if (this.mutationName) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
-          console.log(results)
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -665,7 +679,7 @@ export default {
         query: {
           country: newCountries,
           division: newDivisions,
-          pangolin: queryParams.pangolin,
+          pango: queryParams.pango,
           muts: queryParams.muts,
           selected: selectedPlace,
           selectedType: selectedType
@@ -675,18 +689,23 @@ export default {
     changeLocation(location) {
       const queryParams = this.$route.query;
 
+      this.activeLocation = location.name;
+
       this.selectedLocations.forEach(d => {
         d.isActive = false;
       })
 
       location.isActive = true;
 
+      const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
+      const divisions = this.selectedLocations.filter(d => d.type == "division").map(d => d.name);
+
       this.$router.push({
         name: "MutationReport",
         query: {
-          country: queryParams.country,
-          division: queryParams.division,
-          pangolin: queryParams.pangolin,
+          country: countries,
+          division: divisions,
+          pango: queryParams.pango,
           muts: queryParams.muts,
           selected: location.name,
           selectedType: location.type
@@ -726,7 +745,7 @@ export default {
         query: {
           country: queryParams.country,
           division: queryParams.division,
-          pangolin: this.newPangolin,
+          pango: this.newPangolin,
           muts: queryParams.muts,
           selected: queryParams.selected,
           selectedType: queryParams.type
