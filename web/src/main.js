@@ -13,8 +13,8 @@ Vue.config.productionTip = false;
 // Vue.prototype.$apiurl = "http://kenny.scripps.edu:8000/";
 Vue.prototype.$apiurl = "https://api.outbreak.info/covid19/";
 Vue.prototype.$resourceurl = "https://api.outbreak.info/resources/";
-// Vue.prototype.$genomicsurl = "http://kenny.scripps.edu:8888/api/";
-Vue.prototype.$genomicsurl = "https://dev.outbreak.info/api/";
+Vue.prototype.$genomicsurl = "https://api.outbreak.info/genomics/";
+// Vue.prototype.$genomicsurl = "https://dev.outbreak.info/api/";
 
 Vue.use(VueRx);
 Vue.use(VueCookies);

@@ -146,7 +146,6 @@ export default Vue.extend({
     })
 
     this.setupPlot();
-    this.updatePlot();
   },
   destroyed() {
     window.removeEventListener("resize", this.setDims);
@@ -155,11 +154,11 @@ export default Vue.extend({
     setupPlot() {
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
+
         // set initial dimensions for the plots.
         this.setDims();
       });
 
-      this.setDims();
 
       this.svg = select(this.$refs.svg);
       select(this.$refs.gene_map)
@@ -206,6 +205,8 @@ export default Vue.extend({
         .on("dblclick", this.resetAxis);
     },
     tooltipOn() {
+      const ttipXOffset = 35;
+      const ttipYOffset = 125;
       if (this.mutationArr) {
         // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
         // That has to have a rect on top of everything which detects the pointer events.
@@ -247,7 +248,8 @@ export default Vue.extend({
               .html(ttipText);
 
             ttip
-              .style("left", `${event.clientX}px`)
+              .style("left", `${event.offsetX + ttipXOffset}px`)
+              .style("top", `${event.offsetY + ttipYOffset}px`)
               .style("border-color", this.geneColorScale(selectedMut.gene))
               .style("background", chroma(this.geneColorScale(selectedMut.gene)).luminance(0.8))
               .style("display", "block");
@@ -328,7 +330,8 @@ export default Vue.extend({
             )
 
             ttip
-              .style("left", `${event.clientX}px`)
+              .style("left", `${event.offsetX + ttipXOffset}px`)
+              .style("top", `${event.offsetY + ttipYOffset}px`)
               .style("border-color", this.geneColorScale(selectedGene))
               .style("background", chroma(this.geneColorScale(selectedGene)).luminance(0.8))
               .style("display", "block");
@@ -454,14 +457,14 @@ export default Vue.extend({
             .attr("class", d => `gene gene_${d.gene}`);
 
             update
-              .selectAll("rect")
+              .select("rect")
               .transition(t1)
               .attr("x", d => this.x(d.start))
               .attr("width", d => this.x(d.end) - this.x(d.start))
               .style("fill", d => this.geneColorScale(d.gene))
 
             update
-              .selectAll("text")
+              .select("text")
               .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
               .transition(t1)
               .attr("x", d => (this.x(d.end) + this.x(d.start)) / 2)
@@ -541,13 +544,13 @@ export default Vue.extend({
 
             // leader lines
             update
-              .selectAll(".substitution-leader")
+              .select(".substitution-leader")
               .classed("hidden", d => !d.adjustedX)
               .transition(t1)
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`);
 
             update
-              .selectAll(".leader-terminus")
+              .select(".leader-terminus")
               .transition(t1)
               .attr("cx", d => d.targetX)
               .attr("cy", d => labelY)
@@ -555,7 +558,7 @@ export default Vue.extend({
 
             // circles for mutations
             update
-              .selectAll(".substitution-circle")
+              .select(".substitution-circle")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
 
@@ -566,7 +569,7 @@ export default Vue.extend({
 
             // text: mutation codon position
             update
-              .selectAll(".substitution-location")
+              .select(".substitution-location")
               .text(d => d.codon_num)
               .transition(t1)
               .attr("x", d => d.x)
@@ -575,7 +578,7 @@ export default Vue.extend({
 
             // text: amino acid change
             update
-              .selectAll(".substitution-change")
+              .select(".substitution-change")
               .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'DM Sans', Avenir, Helvetica, Arial, 'Font Awesome 5 Free', sans-serif" : "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .text(d => d.alt_aa == "_" || d.alt_aa == "*" ? "\uf28d" : d.alt_aa)
               .transition(t1)
@@ -645,7 +648,7 @@ export default Vue.extend({
               .attr("class", "deletion-text deletion-location")
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
-              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
+              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 - 1}`)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("font-size", "0.6rem");
           },
@@ -655,13 +658,13 @@ export default Vue.extend({
               .attr("id", d => `mutation_${d.gene}${d.codon_num}`);
 
             // leader lines
-            update.selectAll(".deletion-leader")
+            update.select(".deletion-leader")
               .classed("hidden", d => !d.adjustedX)
               .transition(t1)
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`);
 
 
-            update.selectAll(".deletion-leader-terminus")
+            update.select(".deletion-leader-terminus")
               .classed("hidden", d => !d.adjustedX)
               .transition(t1)
               .attr("cx", d => d.targetX)
@@ -669,7 +672,7 @@ export default Vue.extend({
 
 
             // del rectangle
-            update.selectAll(".deletion-rect")
+            update.select(".deletion-rect")
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
               .transition(t1)
@@ -679,7 +682,7 @@ export default Vue.extend({
 
             // del symbol
             update
-              .selectAll(".del-symbol")
+              .select(".del-symbol")
               .text(d => "\u0394")
               .transition(t1)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
@@ -687,8 +690,8 @@ export default Vue.extend({
 
             // position locations
             update
-              .selectAll(".deletion-location")
-              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3}`)
+              .select(".deletion-location")
+              .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 - 1}`)
               .transition(t1)
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .attr("y", d => d.adjustedX ? shiftedLabelY : labelY);

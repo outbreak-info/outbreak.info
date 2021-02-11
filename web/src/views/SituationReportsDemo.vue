@@ -37,7 +37,7 @@
     <!-- lineage or mutation -->
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" id="report-group">
       <h2 class="mb-0">{{ group.key | capitalize }} Reports</h2>
-      <small class="text-highlight">{{group.key.toLowerCase() == "lineage" ? "sequences classified as a particular Pangolin lineage" : "sequences with a particular mutation(s)" }}</small>
+      <small class="text-highlight" v-html="getReportType(group.key)"></small>
 
       <!-- report cards (heh) -->
       <div class="row mt-3">
@@ -45,7 +45,7 @@
           <div class="w-100 p-3 card">
             <!-- NAME -->
             <div class="d-flex justify-content-between" id="mutation-name">
-              <router-link :to="{name:'MutationReport', query:{ pangolin: report.mutation_name }}" v-if="group.key == 'lineage'">
+              <router-link :to="{name:'MutationReport', query:{ pango: report.mutation_name }}" v-if="group.key == 'lineage'">
                 <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
               </router-link>
               <router-link :to="{name:'SituationReport', params:{ mutation: report.identifier }}" v-else>
@@ -128,6 +128,13 @@ export default {
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
+  },
+  methods: {
+    getReportType(group) {
+      return group.toLowerCase() == "lineage" ?
+        "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>" :
+        "sequences with a particular mutation(s)"
+    }
   },
   data() {
     return {

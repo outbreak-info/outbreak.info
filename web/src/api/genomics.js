@@ -15,11 +15,13 @@ import {
 import {
   timeParse,
   timeFormat,
-  format
+  format,
+  timeDay
 } from "d3";
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
+const formatDateShort = timeFormat("%e %b %Y");
 const formatPercent = format(".0%");
 
 import store from "@/store";
@@ -41,25 +43,33 @@ function titleCase(value) {
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
 
-export function getReportData(apiurl, locations, mutationVar, mutationString, locationType = "country") {
+export function getReportData(apiurl, locations, mutationVar, mutationString, location, locationType) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
-    getMostRecentSeq(apiurl, mutationString, mutationVar, null),
-    getTemporalPrevalence(apiurl, "Worldwide", mutationString, mutationVar, null),
+    getDateUpdated(apiurl),
+    getNewTodayAll(apiurl, mutationString, mutationVar, locations),
+    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
     getWorldPrevalence(apiurl, mutationString, mutationVar),
-    getCountryPrevalence(apiurl, mutationString, mutationVar),
+    getCumPrevalences(apiurl, mutationString, mutationVar, locations),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "Worldwide", "country"),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "United States of America", "country"),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
-    map(([mostRecent, longitudinal, globalPrev, byCountry, md, mutations]) => {
+    map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
-        mostRecent: mostRecent,
+        dateUpdated: dateUpdated,
+        newToday: newToday,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
+        locPrev: locPrev,
         byCountry: byCountry,
+        countries: countries,
+        states: states,
         md: md,
         mutations: characteristicMuts
       })
@@ -73,8 +83,33 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
   )
 }
 
+export function updateLocationData(apiurl, mutationVar, mutationString, locations, location, locationType) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([
+    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
+    getCumPrevalences(apiurl, mutationString, mutationVar, locations)
+  ]).pipe(
+    map(([longitudinal, byLocation, locPrev]) => {
+      return ({
+        longitudinal: longitudinal,
+        byCountry: byLocation,
+        locPrev: locPrev
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in updating report location data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = 0.97) {
-  const url = `${apiurl}lineage-mutations?lineage=${lineage}&frequency=${prevalenceThreshold}`;
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -84,9 +119,6 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     map(results => {
       results.forEach(d => {
         d["codon_num"] = +d.codon_num;
-        d["mutation"] = d.name;
-        d["type"] = d.name.includes("DEL") ? "deletion" : "substitution";;
-        delete d.pos;
       })
       return (results)
     }),
@@ -99,7 +131,8 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
 }
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}most-recent-collection-date`;
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}most-recent-collection-date?${mutationVar}=${mutationString}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -107,10 +140,9 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      const filtered = results.filter(d => d.lineage == mutationString.toLowerCase());
       let lineageRecent;
-      if (filtered.length == 1) {
-        lineageRecent = filtered[0];
+      if (results.length == 1) {
+        results = filtered[0];
         const dateTime = parseDate(lineageRecent.date)
         lineageRecent["dateFormatted"] = formatDate(dateTime)
       }
@@ -125,7 +157,8 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
 }
 
 export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}prevalence?cumulative=true&${mutationVar}=${mutationString}`;
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}global-prevalence?cumulative=true&${mutationVar}=${mutationString}&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -133,9 +166,14 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      const first = parseDate(results.first_detected);
+      const last = parseDate(results.last_detected);
+
       // results["name"] = "Worldwide";
       results["proportion_formatted"] = formatPercent(results.global_prevalence);
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
+      results["first_detected"] = formatDateShort(first);
+      results["last_detected"] = formatDateShort(last);
       // results["proportion"] = results.global_prevalence;
       // results["cum_lineage_count"] = results.lineage_count;
       // results["location_id"] = "worldwide";
@@ -149,8 +187,24 @@ export function getWorldPrevalence(apiurl, mutationString, mutationVar) {
   )
 }
 
-export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
-  const url = `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}`;
+export function getCumPrevalences(apiurl, mutationString, mutationVar, locations) {
+  return forkJoin(...locations.filter(d => d.type != "world").map(d => getCumPrevalence(apiurl, mutationString, mutationVar, d.name, d.type))).pipe(
+    map(results => {
+      results.sort((a, b) => b.proportion - a.proportion);
+
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent local cumulative prevalence data for all locations!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getCumPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}&cumulative=true&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -158,29 +212,153 @@ export function getCountryPrevalence(apiurl, mutationString, mutationVar) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      results.forEach(d => {
-        d["name"] = titleCase(d.country);
-        d["proportion_formatted"] = formatPercent(d.proportion);
-        d["dateTime"] = parseDate(d.date);
-        d["location_id"] = d.country.replace(/\s/g, "");
-      })
+      const first = parseDate(results.first_detected);
+      const last = parseDate(results.last_detected);
+
+      results["name"] = location;
+      results["type"] = locationType;
+      results["first_detected"] = formatDateShort(first);
+      results["last_detected"] = formatDateShort(last);
+      results["proportion_formatted"] = formatPercent(results.global_prevalence);
+      results["lineage_count_formatted"] = format(",")(results.lineage_count);
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting recent prevalence data by country!", "color: red");
+      console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
       console.log(e);
       return ( of ([]));
     })
   )
 }
 
-export function getTemporalPrevalence(apiurl, location, mutationString, mutationVar, indivCall = false, locationType = "country") {
-  store.state.admin.reportloading = true;
+export function getNewTodayAll(apiurl, mutationString, mutationVar, locations) {
+  return forkJoin(getNewToday(apiurl, mutationString, mutationVar, "Worldwide", null), ...locations.filter(d => d.type != "world").map(d => getNewToday(apiurl, mutationString, mutationVar, d.name, d.type))).pipe(
+    map(results => {
+      results.sort((a, b) => b.date_count_today - a.date_count_today);
+
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent local cumulative prevalence data for all locations!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getNewToday(apiurl, mutationString, mutationVar, location, locationType) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = location == "Worldwide" ? `${apiurl}most-recent-submission-date?${mutationVar}=${mutationString}&timestamp=${timestamp}` :
+    `${apiurl}most-recent-submission-date?${mutationVar}=${mutationString}&${locationType}=${location}&timestamp=${timestamp}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      let result;
+      if (results.length == 1) {
+        result = results[0];
+        result["dateTime"] = parseDate(result.date);
+        const timeDiff = timeDay.count(result.dateTime, new Date());
+        if (timeDiff < 2) {
+          return ({
+            name: location,
+            date_count_today: format(",")(result.date_count)
+          })
+        } else {
+          return ({
+            name: location,
+            date_count_today: 0
+          })
+        }
+      } else {
+        return ({
+          name: location,
+          date_count_today: null
+        })
+      }
+    }),
+    catchError(e => {
+      console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+
+  if (locationType != "division") {
+    let url;
+    url = location == "Worldwide" ?
+      `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}&timestamp=${timestamp}` :
+      `${apiurl}lineage-by-division-most-recent?country=${location}&${mutationVar}=${mutationString}&timestamp=${timestamp}`;
+    return from(axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })).pipe(
+      pluck("data", "results"),
+      map(results => {
+        results.forEach(d => {
+          d["name"] = titleCase(d.name);
+          d["proportion_formatted"] = formatPercent(d.proportion);
+          // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
+          d["date_last_detected"] = d.date;
+          delete d.date;
+          // fixes the Georgia (state) / Georgia (country) problem
+          d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
+        })
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting recent prevalence data by country!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      })
+    )
+  } else {
+    return ( of ([]))
+  }
+}
+
+export function getPositiveLocations(apiurl, mutationString, mutationVar, location, locationType) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
   if (location == "Worldwide") {
-    url = `${apiurl}prevalence?${mutationVar}=${mutationString}`;
+    url = `${apiurl}lineage-by-country-most-recent?${mutationVar}=${mutationString}&detected=true&timestamp=${timestamp}`;
   } else {
-    url = `${apiurl}prevalence-by-country?${mutationVar}=${mutationString}&${locationType}=${location}`;
+    url = `${apiurl}lineage-by-division-most-recent?${mutationVar}=${mutationString}&detected=true&country=${location}&timestamp=${timestamp}`;
+  }
+
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results", "names"),
+    map(results => {
+      return results.map(d => titleCase(d))
+    }),
+    catchError(e => {
+      console.log("%c Error in getting list of positive country names!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, indivCall = false) {
+  store.state.admin.reportloading = true;
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  let url;
+  if (location == "Worldwide") {
+    url = `${apiurl}global-prevalence?${mutationVar}=${mutationString}&timestamp=${timestamp}`;
+  } else {
+    url = `${apiurl}prevalence-by-location?${mutationVar}=${mutationString}&${locationType}=${location}&timestamp=${timestamp}`;
   }
 
   return from(axios.get(url, {
@@ -192,7 +370,7 @@ export function getTemporalPrevalence(apiurl, location, mutationString, mutation
     map(results => {
       results.forEach(d => {
         d["dateTime"] = parseDate(d.date);
-        d["name"] = titleCase(d.country);
+        d["name"] = titleCase(d.name);
       })
       return (results)
     }),
@@ -272,7 +450,34 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
 
 
 export function findCountry(apiUrl, queryString) {
-  const url = `${apiUrl}country?name=*${queryString}*`
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}country?name=*${queryString}*&timestamp=${timestamp}`
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d.name = titleCase(d.name);
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting country names!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function findDivision(apiUrl, queryString) {
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}division?name=*${queryString}*&timestamp=${timestamp}`
 
   return from(
     axios.get(url, {
@@ -297,7 +502,8 @@ export function findCountry(apiUrl, queryString) {
 }
 
 export function findPangolin(apiUrl, queryString) {
-  const url = `${apiUrl}lineage?name=*${queryString}*`;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}lineage?name=*${queryString}*&timestamp=${timestamp}`;
 
   return from(
     axios.get(url, {
@@ -313,6 +519,48 @@ export function findPangolin(apiUrl, queryString) {
       })
 
       return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting Pangolin lineage names!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getDateUpdated(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiUrl}metadata`;
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "build_date"),
+    map(result => {
+      const today = new Date();
+      let lastUpdated;
+      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
+      const dateUpdated = strictIsoParse(result); // ensure the time is parsed as PDT
+      if (dateUpdated) {
+        const updatedDiff = (today - dateUpdated) / (60 * 60 * 1000);
+
+        if (updatedDiff < 1) {
+          lastUpdated = `${Math.round(updatedDiff * 60)}m`;
+        } else if (updatedDiff <= 24) {
+          lastUpdated = `${Math.round(updatedDiff)}h`;
+        } else {
+          lastUpdated = `${Math.round(updatedDiff / 24)}d`;
+        }
+      }
+
+      return ({
+        dateUpdated: formatDate(dateUpdated),
+        lastUpdated: lastUpdated
+      })
     }),
     catchError(e => {
       console.log("%c Error in getting Pangolin lineage names!", "color: red");

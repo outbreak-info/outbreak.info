@@ -1,5 +1,5 @@
 <template>
-<div class="my-4 mx-4 half-page text-left" v-if="mutationName">
+<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-5' : 'mx-2']" v-if="mutationName">
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
@@ -9,56 +9,116 @@
   <div id="change-locations-modal" class="modal fade">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header border-secondary">
           <h5 class="modal-title" id="exampleModalLabel">Select report locations</h5>
           <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
+          <div class="mb-3 py-3 border-bottom border-secondary">
             <h6 class="text-muted text-underline m-0">Current locations</h6>
             <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
-              {{ location }}
+              {{ location.name }}
               <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
             </button>
           </div>
 
-          <div>
-            <h6 class="text-sec text-underline m-0">Countries to add</h6>
-            <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
-              {{ country }}
-              <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
-            </button>
+          <div class="py-3 border-bottom">
+            <div v-if="ctry2Add.length" class="my-3">
+              <h6 class="text-sec text-underline m-0">Countries to add</h6>
+              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
+                {{ country }}
+                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+              </button>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
+              <TypeaheadSelect :queryFunction="queryCountry" @selected="updateCountries" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
+            </div>
           </div>
 
-          <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
-            <TypeaheadSelect :queryFunction="queryCountry" @selected="updateSelected" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
+          <div class="py-3">
+            <div v-if="div2Add.length" class="my-3">
+              <h6 class="text-sec text-underline m-0">Divisions (States/Provinces) to add</h6>
+              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(division, dIdx) in div2Add" :key="dIdx" id="new-divisions" @click="removeDivision2Add(cIdx)">
+                {{ division }}
+                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+              </button>
+            </div>
 
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
+              <TypeaheadSelect :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Add division" totalLabel="total sequences" />
+            </div>
           </div>
         </div>
 
-        <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
           <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGE PANGOLIN LINEAGE MODAL -->
+  <div id="change-pangolin-modal" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title" id="exampleModalLabel">Generate Lineage Report</h5>
+          <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="py-3">
+            <p>
+              Choose a lineage designated by <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a>:
+            </p>
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
+              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select PANGO lineage" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-accent" @click="selectNewPangolin" data-dismiss="modal">Generate Report</button>
         </div>
       </div>
     </div>
   </div>
 
   <template v-if="hasData">
-    <!-- SOCIAL MEDIA SHARE -->
-    <ShareReport title="title" url="url" />
+    <!-- SOCIAL MEDIA SHARE, BACK BTN -->
+    <div class="d-flex align-items-center mb-2">
+      <router-link :to="{ name: 'SituationReports'}">
+        <button class="btn py-0 px-2 btn-grey-outline">back</button>
+      </router-link>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select lineage</button>
+      <ShareReport title="title" url="url" />
+    </div>
+
 
     <!-- HEADER TITLE -->
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex flex-column align-items-start">
         <h1 class="m-0">{{ title }}</h1>
-        <small class="text-muted my-1" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
-          <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
-            <b>{{ synonym }}</b>
-            <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
-        </small>
+        <div class="d-flex my-1 align-items-center">
+          <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
+            <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
+              <b>{{ synonym }}</b>
+              <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
+          </small>
+          <small class="text-muted" v-if="pangoLink">
+            <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
+          </small>
+
+        </div>
 
         <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
@@ -81,7 +141,7 @@
 
     <!-- REPORT -->
     <div class="row">
-      <section id="intro" class="col-sm-6 col-md-8 pr-4">
+      <section id="intro" class="col-sm-6 col-md-7 pr-4">
         <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
           <div class="d-flex flex-wrap align-items-center justify-content-end" v-if="reportMetadata">
             <small class="mx-3 text-muted" v-if="reportMetadata.location_first_identified"><em>First identified in {{ reportMetadata.location_first_identified }}</em></small>
@@ -94,9 +154,24 @@
         <div class="d-flex flex-column mb-3">
           <span v-html="reportDescription" class="font-size-2"></span>
 
-          <router-link :to='{ hash: "#resources" , query: this.$route.query }'>
-            <small>View publications, datasets, and more related to {{mutationName}}</small>
-          </router-link>
+          <div class="d-flex flex-wrap justify-content-center my-3">
+            <a href="#longitudinal">
+              <button class="btn btn-grey mr-3">
+                <small>Daily prevalence</small>
+              </button>
+            </a>
+
+            <a href="#geographic">
+              <button class="btn btn-grey mr-3">
+                <small>Geographic prevalence</small>
+              </button>
+            </a>
+            <a href="#resources">
+              <button class="btn btn-grey mr-3">
+                <small>Publications</small>
+              </button>
+            </a>
+          </div>
         </div>
 
         <!-- CHARACTERISTIC MUTATIONS -->
@@ -121,98 +196,29 @@
         </div> -->
 
         <!-- NEW TODAY -->
-        <div class="mt-4">
+        <div class="my-4">
           <h4>What's new today</h4>
           <table>
             <tr class="border-bottom">
               <th colspan="2">
-                New sequences identified
+                New sequences submitted to GISAID
               </th>
             </tr>
-            <tr>
-              <td>
-                Worldwide
-              </td>
-              <td>
-                {{ newTodayGlobal.toLocaleString() }}
-              </td>
-            </tr>
-            <!-- <tr v-for="(location, lIdx2) in selectedLocations" :key="lIdx2">
+            <tr v-for="(location, lIdx2) in newToday" :key="lIdx2">
               <td>
                 {{ location.name }}
               </td>
               <td>
-                XXX
+                {{ location.date_count_today }}
               </td>
-            </tr> -->
+            </tr>
           </table>
         </div>
       </section>
 
       <!-- RIGHT: SUMMARY BOX -->
-      <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-4 p-3 pr-4 summary-box bg-main text-light">
-        <h3>Summary</h3>
-        <div class="summary-counts mb-3">
-          As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the {{ mutationName }} lineage have been detected since the {{reportType}} was identified:
-
-          <!-- PREVALENCE SUMMARY TABLE -->
-          <table class="border-bottom line-height-1 mt-2 w-100">
-            <thead>
-              <tr class="border-bottom">
-                <th>
-                  location
-                  <font-awesome-icon class="ml-1 font-size-small pointer" :icon="['fas', 'sync']" data-toggle="modal" data-target="#change-locations-modal" />
-                  <!-- sync, globe-americas, map-marked-alt -->
-                </th>
-                <th class="text-center">
-                  sequence count
-                </th>
-                <th class="text-center">
-                  apparent prevalence<sup>*</sup>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="checkbook">
-              <tr>
-                <td>
-                  Worldwide
-                </td>
-                <td class="text-center">
-                  {{ totalLineage }}
-                </td>
-                <td class="text-center">
-                  {{ globalPrev }}
-                </td>
-              </tr>
-              <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
-                <td>
-                  {{ location.name }}
-                </td>
-                <td class="text-center">
-                  {{ location.cum_lineage_count.toLocaleString() }}
-                </td>
-                <td class="text-center">
-                  {{ location.proportion_formatted }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="d-flex justify-content-between">
-            <small class="bright-hyperlink"><a href="#longitudinal">view change over time</a></small>
-            <small class="bright-hyperlink pointer"><a data-toggle="modal" data-target="#change-locations-modal">change locations</a></small>
-          </div>
-          <div class="line-height-1 my-2">
-            <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
-          </div>
-        </div>
-
-        <!-- GEO SUMMARY -->
-        <div id="geo-summary" v-if="countries">
-          The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b>.
-          <!-- and <b> {{ "XXXX" }} U.S. {{states.length === 1 ? "state" : "states"}}</b>. -->
-          <CountryMap :countries="countries" :width="400" :showNames="false" />
-          <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
-        </div>
+      <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
+        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" :states="states" />
       </section>
     </div>
 
@@ -221,10 +227,10 @@
     <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
       <h4 class="mb-0">Average daily {{mutationName}} prevalence</h4>
       <small class="text-muted mb-2">Based on reported sample collection date</small>
-      <div id="location-buttons">
-        <button class="btn btn-tab" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
-        <button class="btn btn-main-outline" data-toggle="modal" data-target="#change-locations-modal">Change locations
-          <font-awesome-icon class="ml-1 font-size-small" :icon="['fas', 'sync']" />
+      <div id="location-buttons" class="d-flex flex-wrap">
+        <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
+        <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+          <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
       <ReportPrevalence :data="prevalence" :mutationName="mutationName" :location="activeLocation" />
@@ -232,10 +238,27 @@
 
     <!-- GEOGRAPHIC PREVALENCE -->
     <section class="my-4 d-flex flex-column align-items-center" id="geographic">
-      <h4 class="mb-0">Cumulative {{mutationName}} prevalence by country</h4>
-      <small class="text-muted mb-3">Since first identification</small>
-      <ReportChoropleth :data="ctryData" :mutationName="mutationName" />
-      <ReportPrevalenceByLocation :data="ctryData" :mutationName="mutationName" class="mt-2" />
+      <div class="d-flex align-items-center">
+        <h4 class="mb-0 mr-3">Cumulative {{mutationName}} prevalence</h4>
+        <div id="location-buttons" class="d-flex flex-wrap align-items-center">
+          <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeLocation(location)">{{ location.name }}</button>
+          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+        </div>
+      </div>
+      <div v-if="selectedType != 'division'">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+        <small class="text-muted">Since first identification in location</small>
+          <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+          </div>
+        <ReportChoropleth class="mb-5" :data="choroData" :mutationName="mutationName" :location="selected" />
+        <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
+      </div>
+      <div class="text-muted my-5" v-else>
+        Maps are not available at this time for divisions. Please select worldwide or a country.
+      </div>
+
     </section>
 
     <!-- RESOURCES -->
@@ -244,9 +267,9 @@
     </section>
 
     <!-- METHODOLOGY -->
-    <section class="mt-3 mb-5">
+    <section class="mt-3 mb-5" id="methods">
       <h4>Methodology</h4>
-      <ReportMethodology :dateUpdated="dateGenerated" />
+      <ReportMethodology :dateUpdated="dateUpdated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       <Warning class="mt-2" :text="disclaimer" />
     </section>
@@ -285,10 +308,13 @@
 <script>
 import Vue from "vue";
 
+import {
+  uniq
+} from "lodash";
+
 import ReportLogos from "@/components/ReportLogos.vue";
 import ReportMethodology from "@/components/ReportMethodology.vue";
 import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
-import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import ReportPrevalence from "@/components/ReportPrevalence.vue";
@@ -297,6 +323,7 @@ import ReportChoropleth from "@/components/ReportChoropleth.vue";
 import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
+import ReportSummary from "@/components/ReportSummary.vue";
 
 // --- font awesome --
 import {
@@ -309,13 +336,12 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
 import {
-  faSync,
   faTrashAlt,
   faPlusCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 
-library.add(faClock, faSync, faTrashAlt, faPlusCircle);
+library.add(faClock, faTrashAlt, faPlusCircle);
 
 import {
   mapState
@@ -324,9 +350,11 @@ import {
 import {
   getReportData,
   getCuratedMetadata,
-  getTemporalPrevalence,
   updateLocationData,
-  findCountry
+  findCountry,
+  findDivision,
+  findPangolin,
+  getLocationPrevalence
 } from "@/api/genomics.js";
 
 import {
@@ -340,7 +368,6 @@ export default {
     ReportMethodology,
     CharacteristicMutations,
     FontAwesomeIcon,
-    CountryMap,
     Warning,
     ReportAcknowledgements,
     ReportPrevalence,
@@ -348,18 +375,28 @@ export default {
     ReportChoropleth,
     ReportResources,
     ShareReport,
+    ReportSummary,
     TypeaheadSelect
   },
   props: {
-    location: {
-      type: Array,
-      default: () => ["United States of America", "United Kingdom"]
-    },
+    country: Array,
+    division: Array,
     muts: Array,
-    pangolin: String
+    pango: String,
+    selected: {
+      type: String,
+      default: "Worldwide"
+    },
+    selectedType: {
+      type: String,
+      default: "country"
+    }
   },
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
+    smallScreen() {
+      return(window.innerSize < 500)
+    },
     title() {
       return (`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)
     },
@@ -367,22 +404,89 @@ export default {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
     },
     genericDescription() {
-      return `Concerns surrounding a new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+      return `Concerns surrounding new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+    },
+    pangoLink() {
+      return this.mutationVar == "pangolin_lineage" ? `https://cov-lineages.org/lineages/lineage_${this.mutationName}.html` : null
     },
     selectedLocations() {
-      const locations = typeof(this.location) == "string" ? [this.location] : this.location;
-      // always have the world there too.
-      const allLocs = [{
-        name: "Worldwide",
-        isActive: true
-      }];
+      if (!this.country && !this.division) {
+        if (!this.selected || this.selected == "Worldwide") {
+          return ([{
+            name: "Worldwide",
+            type: "world",
+            isActive: true
+          }, {
+            name: "United States of America",
+            type: "country",
+            isActive: false
+          }, {
+            name: "California",
+            type: "division",
+            isActive: false
+          }])
+        } else {
+          return ([{
+            name: "Worldwide",
+            type: "world",
+            isActive: false
+          }, {
+            name: this.selected,
+            type: this.selectedType,
+            isActive: true
+          }])
+        }
+      } else {
+        let ctries;
+        let divisions;
+        if (this.country) {
+          ctries = typeof(this.country) == "string" ? [this.country] : this.country;
+          ctries = ctries.map(d => {
+            return {
+              name: d,
+              isActive: d == this.selected && this.selectedType == "country",
+              type: "country"
+            };
+          })
+        } else {
+          ctries = [];
+        }
 
-      return (allLocs.concat(locations.map(d => {
-        return {
-          name: d,
-          isActive: false
-        };
-      })));
+        if (this.division) {
+          divisions = typeof(this.division) == "string" ? [this.division] : this.division;
+          divisions = divisions.map(d => {
+            return {
+              name: d,
+              isActive: d == this.selected && this.selectedType == "division",
+              type: "division"
+            };
+          })
+        } else {
+          divisions = [];
+        }
+
+        // always have the world there too.
+        let allLocs = [{
+          name: "Worldwide",
+          type: "world",
+          isActive: this.selected == "Worldwide"
+        }];
+
+        return (allLocs.concat(ctries, divisions));
+      }
+    },
+    choroplethCountries() {
+      return (this.selectedLocations.filter(d => d.type != "division"))
+    }
+  },
+  watch: {
+    '$route.query': function(newVal, oldVal) {
+      if (newVal.pango != oldVal.pango) {
+        this.newPangolin = null;
+        this.setupReport();
+      } else {
+        this.updateLocations();
+      }
     }
   },
   data() {
@@ -394,20 +498,24 @@ export default {
       mutationVar: null,
       mutations: null,
       reportType: null,
-      lastUpdated: "XX day",
-      dateGenerated: "XX XXX XXXX",
+      lastUpdated: null,
       disclaimer: null,
 
       // Changing locations
       activeLocation: "the world",
       queryCountry: null,
+      queryDivision: null,
+      queryPangolin: null,
+      newPangolin: null,
       currentLocs: null, // placeholder for current locations
       ctry2Add: [], // array to store new locations to add
+      div2Add: [], // array to store new locations to add
 
       // subscriptions
       dataSubscription: null,
       curatedSubscription: null,
-      temporalSubscription: null,
+      locationChangeSubscription: null,
+      choroSubscription: null,
       hasData: false,
 
       // curated values
@@ -417,19 +525,22 @@ export default {
       // data
       dateUpdated: null,
       reportMetadata: null,
-      ctryData: null,
+      choroLocation: "country",
+      choroData: null,
       countries: null,
-      states: [],
+      states: null,
       locationTotals: null,
       totalLineage: null,
       globalPrev: null,
-      newTodayGlobal: null,
+      newToday: null,
       prevalence: []
     }
   },
   mounted() {
-    this.currentLocs = this.selectedLocations.map(d => d.name).filter(d => d != "Worldwide");
+    this.currentLocs = this.selectedLocations.filter(d => d.name != "Worldwide");
     this.queryCountry = findCountry;
+    this.queryDivision = findDivision;
+    this.queryPangolin = findPangolin;
     this.disclaimer =
       `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
@@ -448,8 +559,8 @@ export default {
   },
   methods: {
     setupReport() {
-      if (this.$route.query.pangolin) {
-        this.mutationName = this.$options.filters.capitalize(this.$route.query.pangolin);
+      if (this.$route.query.pango) {
+        this.mutationName = this.$options.filters.capitalize(this.$route.query.pango);
         this.reportType = "lineage";
         this.mutationVar = "pangolin_lineage";
       } else if (this.$route.query.muts) {
@@ -459,23 +570,32 @@ export default {
       }
 
       if (this.mutationName) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName).subscribe(results => {
-          console.log(results)
+        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
+
+          // date updated
+          this.dateUpdated = results.dateUpdated.dateUpdated;
+          this.lastUpdated = results.dateUpdated.lastUpdated;
+
           // worldwide stats
-          this.globalPrev = results.globalPrev.proportion_formatted;
+          this.globalPrev = results.globalPrev;
           this.totalLineage = results.globalPrev.lineage_count_formatted;
-          this.newTodayGlobal = results.mostRecent.date_count;
-          this.dateUpdated = results.mostRecent.dateFormatted;
+
+          // newly added sequences
+          this.newToday = results.newToday;
+
+
+          // location prevalence
+          this.locationTotals = results.locPrev;
 
           // longitudinal data: prevalence over time
           this.prevalence = results.longitudinal;
 
           // recent data by country & countries with that lineage.
-          this.countries = results.byCountry.filter(d => d.cum_lineage_count).map(d => d.name);
-          this.ctryData = results.byCountry;
-          this.locationTotals = results.byCountry.filter(d => this.selectedLocations.map(loc => loc.name).includes(d.name));
+          this.countries = results.countries;
+          this.states = results.states;
+          this.choroData = results.byCountry;
 
-          this.hasData = results.longitudinal.length || results.byCountry.length;
+          this.hasData = true;
           this.mutations = results.mutations;
 
           if (results.md) {
@@ -490,49 +610,150 @@ export default {
         })
       }
     },
-    getTemporalData(location) {
-      this.temporalSubscription = getTemporalPrevalence(this.$genomicsurl, location, this.mutationName, this.mutationVar, true).subscribe(data => {
-        this.prevalence = data;
-      });
-    },
     removeLocation(idx) {
       this.currentLocs.splice(idx, 1);
     },
     removeCountry2Add(idx) {
       this.ctry2Add.splice(idx, 1);
     },
+    removeDivision2Add(idx) {
+      this.div2Add.splice(idx, 1);
+    },
+    clearNewLocations() {
+      this.ctry2Add = [];
+      this.div2Add = [];
+    },
     selectNewLocations() {
-      let newLocations = this.currentLocs.concat(this.ctry2Add);
+      // update currentLocs
+      let newCountries = this.ctry2Add.map(d => {
+        return ({
+          name: d,
+          type: "country"
+        })
+      })
+
+      let newDivisions = this.div2Add.map(d => {
+        return ({
+          name: d,
+          type: "division"
+        })
+      })
+
+      newCountries = this.currentLocs.filter(d => d.type == "country").concat(newCountries);
+
+      newDivisions = this.currentLocs.filter(d => d.type == "division").concat(newDivisions);
+
+      // update currentLocs
+      this.currentLocs = newCountries.concat(newDivisions);
+
+
+      // de-duplicate
+      newCountries = uniq(newCountries.map(d => d.name));
+      newDivisions = uniq(newDivisions.map(d => d.name));
 
       const queryParams = this.$route.query;
 
-      this.locationTotals = this.ctryData.filter(d => newLocations.includes(d.name));
+      let selectedPlace;
+      let selectedType;
+      if (queryParams.selectedType == "country") {
+        if (newCountries.includes(queryParams.selected)) {
+          selectedPlace = queryParams.selected;
+          selectedType = queryParams.selectedType;
+        } else {
+          selectedPlace = "Worldwide";
+          selectedType = "country";
+        }
+      } else {
+        if (newDivisions.includes(queryParams.selected)) {
+          selectedPlace = queryParams.selected;
+          selectedType = queryParams.selectedType;
+        } else {
+          selectedPlace = "Worldwide";
+          selectedType = "country";
+        }
+      }
+
+      // reset the fields.
+      this.ctry2Add = [];
+      this.div2Add = [];
 
       this.$router.push({
         name: "MutationReport",
-        path: "/report2.0",
         query: {
-          location: newLocations,
-          pangolin: queryParams.pangolin,
-          muts: queryParams.muts
+          country: newCountries,
+          division: newDivisions,
+          pango: queryParams.pango,
+          muts: queryParams.muts,
+          selected: selectedPlace,
+          selectedType: selectedType
         }
       })
     },
     changeLocation(location) {
+      const queryParams = this.$route.query;
+
+      this.activeLocation = location.name;
+
       this.selectedLocations.forEach(d => {
         d.isActive = false;
       })
 
-      location.isActive = !location.isActive;
-      this.activeLocation = location.name;
+      location.isActive = true;
 
-      this.getTemporalData(location.name);
+      const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
+      const divisions = this.selectedLocations.filter(d => d.type == "division").map(d => d.name);
+
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          country: countries,
+          division: divisions,
+          pango: queryParams.pango,
+          muts: queryParams.muts,
+          selected: location.name,
+          selectedType: location.type
+        },
+        params: {
+          disableScroll: true
+        }
+      })
     },
-    downloadMutations() {
-      console.log("muts")
+    updateLocations() {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationVar, this.mutationName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
+        // longitudinal data: prevalence over time
+        this.prevalence = results.longitudinal;
+
+        // cumulative totals for table
+        this.locationTotals = results.locPrev;
+
+        // recent data by country.
+        this.choroData = results.byCountry;
+
+      })
     },
-    updateSelected(selected) {
+    updateCountries(selected) {
       this.ctry2Add.push(selected.name);
+    },
+    updateDivision(selected) {
+      this.div2Add.push(selected.name);
+    },
+    updatePangolin(selected) {
+      this.newPangolin = selected.name;
+    },
+    selectNewPangolin() {
+      const queryParams = this.$route.query;
+
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          country: queryParams.country,
+          division: queryParams.division,
+          pango: this.newPangolin,
+          muts: queryParams.muts,
+          selected: queryParams.selected,
+          selectedType: queryParams.type
+        }
+      })
     }
   },
   destroyed() {
@@ -540,12 +761,16 @@ export default {
       this.dataSubscription.unsubscribe();
     }
 
+    if (this.choroSubscription) {
+      this.choroSubscription.unsubscribe();
+    }
+
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
     }
 
-    if (this.temporalSubscription) {
-      this.temporalSubscription.unsubscribe();
+    if (this.locationChangeSubscription) {
+      this.locationChangeSubscription.unsubscribe();
     }
   }
 }
@@ -554,18 +779,6 @@ export default {
 <style lang="scss" scoped>
 .gisaid {
     height: 25px;
-}
-
-.bright-hyperlink a {
-    color: #70d3ff;
-}
-
-.checkbook td {
-    padding: 0.5rem;
-}
-
-.checkbook tr:nth-child(2n+1) {
-    background-color: lighten($primary-color, 7%);
 }
 
 .font-size-2 {

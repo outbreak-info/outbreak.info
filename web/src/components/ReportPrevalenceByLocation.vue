@@ -1,67 +1,84 @@
 <template>
-<div class="d-flex flex-column">
-  <div class="d-flex align-items-center justify-content-end">
-    sort by
-    <select v-model="sortVar" class="ml-3">
-      <option value="proportion">prevalence</option>
-      <option value="cum_total_count">total sequenced</option>
-      <option value="country">name</option>
-    </select>
-  </div>
-  <div class="d-flex">
-
-    <div class="d-flex flex-column">
-      <h6><b>Prevalence</b></h6>
-
-      <!-- LEGEND -->
-      <div class="d-flex align-items-center justify-content-between height-fixed">
-        <!-- scale bar with gradient -->
-        <GradientLegend :maxValue="maxEstFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-
-        <div class="d-flex  align-items-center">
-          <svg id="legend" width="15" height="15" class="mr-2">
-            <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
-          </svg>
-          <small class="text-muted">95% confidence interval</small>
-        </div>
+<div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
+  <div class="">
+    <div class="d-flex align-items-center justify-content-end">
+      <button class="btn btn-main-outline px-2 py-1 mr-3" @click="includeNotDetected = !includeNotDetected"><small>{{includeNotDetected ? "hide" : "show"}} not detected</small></button>
+      <div class="d-flex align-items-center justify-content-end">
+        sort by
+        <select v-model="sortVar" class="ml-2">
+          <option value="proportion">prevalence</option>
+          <option value="cum_total_count">total sequenced</option>
+          <option value="country">name</option>
+        </select>
       </div>
-
-      <!-- LEFT: DOTPLOT -->
-      <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
-        <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top"></g>
-        <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
-        <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-      </svg>
     </div>
 
-    <!-- RIGHT: BARPLOT -->
-    <div class="d-flex flex-column ml-5">
-      <h6><b>Number of samples sequenced</b></h6>
+    <div class="d-flex flex-wrap" :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
+      <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
+        <h5><b>Cumulative Prevalence</b></h5>
 
-      <div class="d-flex flex-column height-fixed">
-        <div class="d-flex align-items-center">
-          <div class="rect-legend mr-2" :style="{background: accentColor}">
+        <!-- LEGEND -->
+        <div class="d-flex align-items-center justify-content-between height-fixed">
+          <!-- scale bar with gradient -->
+          <GradientLegend :maxValue="maxEstFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
 
+          <div class="d-flex  align-items-center">
+            <svg id="legend" width="15" height="15" class="mr-2">
+              <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
+            </svg>
+            <small class="text-muted">95% confidence interval</small>
           </div>
-          <small class="text-muted">{{ mutationName }}-positive samples</small>
         </div>
 
-        <div class="d-flex align-items-center">
-          <div class="rect-legend mr-2" :style="{background: baseColor}">
-
-          </div>
-          <small class="text-muted">all sequenced samples</small>
-        </div>
+        <!-- LEFT: DOTPLOT -->
+        <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
+          <defs>
+            <filter id="dropshadow" filterUnits="userSpaceOnUse">
+              <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
+              <feFlood flood-color="#222222" flood-opacity="0.5" result="offsetColor" />
+              <feGaussianBlur result="blurOut" in="offOut" stdDeviation="1.5" />
+              <feComposite in="offsetColor" in2="offsetBlur" operator="in" result="offsetBlur" />
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top" :hidden="!data.length"></g>
+          <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom" :hidden="!data.length"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
+          <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        </svg>
       </div>
 
+      <!-- RIGHT: BARPLOT -->
+      <div class="d-flex flex-column">
+        <h5><b>Number of samples sequenced</b></h5>
 
-      <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
-        <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top"></g>
-        <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
-        <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-      </svg>
+        <div class="d-flex flex-column height-fixed">
+          <div class="d-flex align-items-center">
+            <div class="rect-legend mr-2" :style="{background: accentColor}">
+
+            </div>
+            <small class="text-muted">{{ mutationName }}-positive samples</small>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <div class="rect-legend mr-2" :style="{background: baseColor}">
+
+            </div>
+            <small class="text-muted">all sequenced samples</small>
+          </div>
+        </div>
+
+
+        <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
+          <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top" :hidden="!data.length"></g>
+          <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top" :hidden="!data.length"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
+          <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        </svg>
+      </div>
     </div>
   </div>
 
@@ -122,27 +139,26 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    setWidth: {
-      type: Number,
-      default: 600
-    },
     adminLevel: {
       type: String,
       default: "country"
     }
   },
   watch: {
+    width() {
+      this.updatePlot();
+    },
     data() {
       this.updatePlot();
     },
     sortVar() {
       this.updatePlot();
+    },
+    includeNotDetected() {
+      this.updatePlot();
     }
   },
   computed: {
-    width() {
-      return this.setWidth ? this.setWidth : this.maxWidth;
-    },
     title() {
       return (`${this.mutationName} prevalence by ${this.adminLevel}`)
     },
@@ -160,6 +176,8 @@ export default Vue.extend({
         bottom: 30,
         left: 270
       },
+      maxWidth: 1100,
+      width: 600,
       height: 100,
       bandHeight: 18,
       barWidth: 500,
@@ -167,6 +185,8 @@ export default Vue.extend({
       ciStrokeWidth: 7,
       accentColor: "#df4ab7",
       baseColor: "#f6cceb",
+      stacked: false,
+      includeNotDetected: false,
       // data
       plottedData: null,
       // refs
@@ -186,11 +206,21 @@ export default Vue.extend({
       xBarAxis: null,
       xBarAxis2: null,
       yAxis: null,
-      numXTicks: 6,
+      numXTicks: 4,
       colorScale: null
     }
   },
+  created: function() {
+    this.debounceSetDims = this.debounce(this.setDims, 150);
+  },
   mounted() {
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.setDims);
+    })
+
+    // set initial dimensions for the plots.
+    this.setDims();
+
     this.setupPlot();
     this.updatePlot();
   },
@@ -199,7 +229,28 @@ export default Vue.extend({
   },
   methods: {
     setDims() {
-      this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
+      const mx = 0.9;
+      const svgContainer = document.getElementById('report-cum-totals');
+      const barRatio = 0.4;
+      const minBarWidth = 350;
+
+      const maxScreenWidth = window.innerWidth;
+      this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      if(this.maxWidth > maxScreenWidth) {
+        this.maxWidth = maxScreenWidth - 20;
+        this.numXTicks = 2;
+      }
+      this.barWidth = barRatio * this.maxWidth;
+      if (this.barWidth <= minBarWidth) {
+        this.barWidth = this.maxWidth;
+        this.width = this.maxWidth;
+        this.stacked = true;
+      } else {
+        this.width = this.maxWidth * (1 - barRatio) * 0.9;
+        this.stacked = false;
+      }
+      // this.numXTicks = this.width > minBarWidth ? 4 : 2;
+
     },
     tooltipOn(d) {
       const ttipShift = 15;
@@ -238,11 +289,11 @@ export default Vue.extend({
       ttip.select("#sequencing-count")
         .text(`Number of total cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
 
-        // fix location
-        ttip
-          .style("left", `${event.pageX + ttipShift}px`)
-          .style("top", `${event.pageY + ttipShift}px`)
-          .style("display", "block");
+      // fix location
+      ttip
+        .style("left", `${event.pageX + ttipShift}px`)
+        .style("top", `${event.pageY + ttipShift}px`)
+        .style("display", "block");
     },
     tooltipOff() {
       select(this.$refs.tooltip_chart)
@@ -250,21 +301,15 @@ export default Vue.extend({
 
       this.dotplot
         .selectAll(".dot-group")
-        .style("opacity",1);
+        .style("opacity", 1);
 
       this.bargraph
         .selectAll(".bar-group")
-        .style("opacity",1);
+        .style("opacity", 1);
     },
     setupPlot() {
       this.dotplot = select(this.$refs.dotplot);
       this.bargraph = select(this.$refs.bargraph);
-
-      this.xDot = scaleLinear()
-        .range([0, this.width - this.margin.left - this.margin.right]);
-
-      this.xBar = scaleLog()
-        .range([0, this.barWidth - this.margin.left - this.margin.rightBar]);
 
       this.y = scaleBand()
         .paddingInner(0.25)
@@ -274,10 +319,12 @@ export default Vue.extend({
       // resize the canvas to cover the length of the data.
       this.height = this.plottedData.length * this.bandHeight * (1 + this.y.paddingInner());
 
-      this.xDot = this.xDot
+      this.xDot = scaleLinear()
+        .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, max(this.plottedData, d => d.proportion_ci_upper)]);
 
-      this.xBar = this.xBar
+      this.xBar = scaleLog()
+        .range([0, this.barWidth - this.margin.left - this.margin.rightBar])
         .domain([1, max(this.plottedData, d => d.cum_total_count)]);
 
       this.y = this.y
@@ -300,7 +347,7 @@ export default Vue.extend({
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
         })
-        .ticks(4)
+        .ticks(2)
         .tickSizeOuter(0);
 
       this.xBarAxis2 = axisBottom(this.xBar)
@@ -308,7 +355,7 @@ export default Vue.extend({
           const log = Math.log10(d);
           return Math.abs(Math.round(log) - log) < 1e-6 ? format(".0s")(d) : ""
         })
-        .ticks(4)
+        .ticks(2)
         .tickSizeOuter(0);
 
       select(this.$refs.xAxisBar).call(this.xBarAxis);
@@ -331,6 +378,11 @@ export default Vue.extend({
         // ensure the data is sorted in the proper order
         // Create a copy so Vue doesn't flip out.
         this.plottedData = cloneDeep(this.data);
+
+        if (!this.includeNotDetected) {
+          this.plottedData = this.plottedData.filter(d => d.proportion)
+        }
+
         if (this.sortVar == "country") {
           // asc
           this.plottedData.sort((a, b) => a[this.sortVar] < b[this.sortVar] ? -1 : 1);
@@ -339,13 +391,15 @@ export default Vue.extend({
           this.plottedData.sort((a, b) => b[this.sortVar] < a[this.sortVar] ? -1 : 1);
         }
 
+
         this.updateScales();
 
         const t1 = transition().duration(1500);
+        const annotThresh = 0.15;
 
         const barSelector = this.bargraph
           .selectAll(".bar-group")
-          .data(this.plottedData, d => d[this.yVariable]);
+          .data(this.plottedData, d => d.location_id);
 
 
         barSelector.join(enter => {
@@ -371,37 +425,37 @@ export default Vue.extend({
             grp.append("text")
               .attr("class", "count-annotation")
               .attr("x", d => this.xBar(d.cum_total_count))
-              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
+              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? 4 : -4)
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", "#777")
               .style("font-size", "9pt")
               .style("dominant-baseline", "central")
-              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? "start" : "end")
+              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? "start" : "end")
               .text(d => `${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
           },
           update => {
             update.attr("class", d => `bar-group ${d[this.yIdentifier]}`);
-
-            update.selectAll(".seq-count")
+            // !!!!! UPDATES MUST BE SELECT, NOT SELECT ALL
+            // h/t to https://observablehq.com/@thetylerwolf/day-18-join-enter-update-exit for pointing me in right direction
+            update.select(".seq-count")
               .attr("x", this.xBar(1))
               .attr("width", d => this.xBar(d.cum_total_count) - this.xBar(1))
               .attr("height", this.y.bandwidth())
               .transition(t1)
               .attr("y", d => this.y(d[this.yVariable]));
 
-            update.selectAll(".mutation-count")
+            update.select(".mutation-count")
               .attr("x", this.xBar(1))
               .attr("width", d => (this.xBar(d.cum_total_count) - this.xBar(1)) * d.proportion)
               .attr("height", this.y.bandwidth())
               .transition(t1)
               .attr("y", d => this.y(d[this.yVariable]));
 
-            update
-              .selectAll(".count-annotation")
+            update.select(".count-annotation")
               .attr("x", d => this.xBar(d.cum_total_count))
-              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? 4 : -4)
-              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * 0.25 ? "start" : "end")
+              .attr("dx", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? 4 : -4)
+              .style("text-anchor", d => this.xBar(d.cum_total_count) < this.barWidth * annotThresh ? "start" : "end")
               .text(d => `${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
               .transition(t1)
               .attr("y", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
@@ -433,7 +487,8 @@ export default Vue.extend({
             update => update.attr("x2", this.width)
             .attr("transform", `translate(${-1*this.margin.left},${0})`)
             .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
+            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5),
+            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
           )
 
           checkbookSelector2.join(enter => {
@@ -452,12 +507,12 @@ export default Vue.extend({
             .attr("x1", 0)
             .attr("x2", this.barWidth)
             .attr("y1", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5)
-          )
+            .attr("y2", d => this.y(d[this.yVariable]) - this.y.paddingInner() * this.y.step() * 0.5),
+            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove()));
         }
 
         const dotSelector = this.dotplot.selectAll(".dot-group")
-          .data(this.plottedData, d => d[this.yVariable]);
+          .data(this.plottedData, d => d.location_id);
 
         dotSelector.join(enter => {
             const grp = enter.append("g")
@@ -471,9 +526,9 @@ export default Vue.extend({
               .attr("y2", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2)
               .style("stroke", "#CCCCCC")
               .style("stroke-width", this.ciStrokeWidth)
-              .style("opacity", 0)
-              .transition(t1)
-              .delay(400)
+              // .style("opacity", 0)
+              // .transition(t1)
+              // .delay(400)
               .style("opacity", 0.5);
 
             grp.append("circle")
@@ -482,6 +537,7 @@ export default Vue.extend({
               .attr("r", this.circleR)
               .style("stroke", "#2c3e50")
               .style("stroke-width", 0.25)
+              // .style("filter", "url(#dropshadow)")
               .style("fill", d => this.colorScale(d.proportion))
               .transition(t1)
               .attr("cx", d => this.xDot(d.proportion));
@@ -491,12 +547,13 @@ export default Vue.extend({
               .attr("class", d => `dot-group ${d[this.yIdentifier]}`);
 
             update
-              .selectAll(".dot-circle")
-              .attr("cx", d => this.xDot(d.proportion))
+              .select(".dot-circle")
               .transition(t1)
+              .attr("cx", d => this.xDot(d.proportion))
+              .style("fill", d => this.colorScale(d.proportion))
               .attr("cy", d => this.y(d[this.yVariable]) + this.y.bandwidth() / 2);
 
-            update.selectAll(".dot-ci")
+            update.select(".dot-ci")
               .attr("x1", d => this.xDot(d.proportion_ci_lower))
               .attr("x2", d => this.xDot(d.proportion_ci_upper))
               .transition(t1)
@@ -516,6 +573,21 @@ export default Vue.extend({
           .on("mousemove", d => this.tooltipOn(d))
           .on("mouseleave", () => this.tooltipOff());
       }
+    },
+    debounce(fn, delay) {
+      var timer = null;
+      return function() {
+        var context = this,
+          args = arguments,
+          evt = event;
+        //we get the D3 event here
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          context.event = evt;
+          //and use the reference here
+          fn.apply(context, args);
+        }, delay);
+      };
     }
   }
 })

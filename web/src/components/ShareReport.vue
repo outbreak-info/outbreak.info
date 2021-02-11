@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex w-100 justify-content-end align-items-center text-muted mb-2">
+<div class="d-flex flex-wrap w-100 justify-content-end align-items-center text-muted mb-2">
   <a :href="twitterUrl" target="_blank" rel="noreferrer" class="twitter-share-button" aria-label="twitter link">
     <font-awesome-icon class="ml-3" :icon="['fab', 'twitter']" />
   </a>

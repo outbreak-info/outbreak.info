@@ -246,7 +246,35 @@ const routes = [{
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */
-        "../views/SituationReports.vue"
+        "../views/SituationReportsDemo.vue"
+      ),
+      // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
+    beforeEnter(to, from, next) {
+      if (to.query && (to.query.pango)) {
+        // redirect to route below
+        next({
+          name: 'MutationReport',
+          query: to.query
+        })
+      } else
+        next()
+    }
+  },
+  {
+    path: "/situation-reports",
+    name: "MutationReport",
+    props: route => ({
+      country: route.query.country,
+      division: route.query.division,
+      muts: route.query.muts,
+      pango: route.query.pango,
+      selected: route.query.selected,
+      selectedType: route.query.selectedType
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-report" */
+        "../views/SituationReport.vue"
       )
   },
   {
@@ -291,27 +319,12 @@ const routes = [{
       )
   },
   {
-    path: "/situation-report-demo",
-    name: "MutationReport",
-    props: route => ({
-      location: route.query.location,
-      muts: route.query.muts,
-      pangolin: route.query.pangolin
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SituationReport.vue"
-      )
+    path: "/situation-reports-demo",
+    redirect: "/situation-reports"
   },
   {
-    path: "/situation-reports-demo",
-    name: "SituationReportsDemo",
-    component: () =>
-      import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SituationReportsDemo.vue"
-      )
+    path: "/situation-report-demo",
+    redirect: "/situation-reports"
   }
 ];
 

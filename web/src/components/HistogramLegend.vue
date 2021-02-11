@@ -29,7 +29,7 @@
         <polygon id="slider_left" :transform="`translate(${sliderLeft},0)`" ref="slider_left" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
         <polygon ref="slider_right" :transform="`translate(${sliderRight - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
       </g>
-      <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
+      <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' text-anchor="start">
         <text :x="x(selectedMin)" :y="0">{{formatLimit(selectedMin)}}</text>
         <text :x="x(selectedMax)" :y="0" text-anchor="end">{{formatLimit(selectedMax)}}</text>
       </g>
@@ -131,7 +131,7 @@ export default {
         filter = (`&le; ${this.maxVal.toLocaleString()}`)
       }
 
-      return filter ? `filtered ${filter} ${this.variableLabel}` : "";
+      return filter ? `filtered ${filter} ${this.variableLabel}` : this.variableLabel;
     }
   },
   mounted() {
