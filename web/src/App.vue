@@ -104,7 +104,7 @@
   <!-- FOOTER -->
   <footer id="outbreak-footer" class="bg-main__darker pt-4">
     <!-- sitemap -->
-    <div class="d-flex justify-content-between text-left text-muted row border-bottom navbar-dark px-3 pb-3" id="footer-sitemap">
+    <div class="w-100 d-flex justify-content-between text-left text-muted row border-bottom navbar-dark m-0 px-3 pb-3" id="footer-sitemap">
       <!-- epi group -->
       <div class="text-light px-4">
         <div>
