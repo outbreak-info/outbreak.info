@@ -53,7 +53,11 @@
         <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
         <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
       </svg>
-      <small class="text-uppercase purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
+      <div class="d-flex">
+        <small class="text-uppercase lt-purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
+        <small class="text-uppercase purple ml-3" >* {{mutationName}} detected</small>
+      </div>
+
     </div>
   </div>
 
@@ -223,10 +227,15 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.data.map(d => d[this.xVariable])));
 
+
+      const avgMax = max(this.data, d => d[this.yVariable]);
+      const CIMax = max(this.data, d => d.proportion_ci_upper);
+
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0, max(this.data, d => d.proportion_ci_upper)])
+        .domain([0, (avgMax + CIMax) * 0.5])
+      // .domain([0, max(this.data, d => d[this.yVariable])])
 
       this.maxCounts = max(this.data, d => d[this.totalVariable]);
       this.yCounts = scaleLinear()
@@ -303,7 +312,6 @@ export default Vue.extend({
         const countSelector = this.counts
           .selectAll(".raw-counts")
           .data(this.data);
-
         countSelector.join(
           enter => {
             enter.append("line")
@@ -314,7 +322,7 @@ export default Vue.extend({
               .attr("y1", d => this.yCounts(0))
               .attr("y2", d => this.yCounts(d[this.totalVariable]))
               .style("stroke-width", this.xBandwidth)
-              .style("stroke", "purple");
+              .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5");
           },
           update =>
           update
@@ -332,6 +340,41 @@ export default Vue.extend({
             .remove()
           )
         )
+
+        const detectedSelector = this.counts
+          .selectAll(".detected")
+          .data(this.data.filter(d => d.lineage_count));
+
+        detectedSelector.join(
+          enter => {
+            enter.append("text")
+              .attr("class", "detected")
+              .attr("id", d => `date${d.date}`)
+              .attr("x", d => this.x(d[this.xVariable]))
+              .attr("y", d => this.yCounts(d[this.totalVariable]))
+              .attr("dy", 3)
+              .style("dominant-baseline", "hanging")
+              .style("font-size", "hanging")
+              .style("text-anchor", "middle")
+              .text("*")
+              .style("fill", "#980072");
+          },
+          update =>
+          update
+          .attr("class", "detected")
+          .attr("id", d => `date${d.date}`)
+          .attr("x", d => this.x(d[this.xVariable]))
+          .attr("y", d => this.yCounts(d[this.totalVariable])),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
+
+
 
         const CISelector = this.chart
           .selectAll(".confidence-interval")
@@ -435,6 +478,10 @@ export default Vue.extend({
 }
 
 .purple {
-    color: purple;
+    color: #980072;
+}
+
+.lt-purple {
+    color: #af88a5;
 }
 </style>
