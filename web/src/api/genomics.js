@@ -530,7 +530,7 @@ export function findPangolin(apiUrl, queryString) {
 
 export function getDateUpdated(apiUrl) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiUrl}metadata`;
+  const url = `${apiUrl}metadata?timestamp=${timestamp}`;
 
   return from(
     axios.get(url, {
