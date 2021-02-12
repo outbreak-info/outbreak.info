@@ -132,7 +132,7 @@ export default Vue.extend({
       heightCounts: 80,
       lengthThreshold: 5,
       showDetected: null,
-      detectedDisplayThresh: 25,
+      detectedDisplayThresh: 50,
       CIColor: "#df4ab7",
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
@@ -311,41 +311,42 @@ export default Vue.extend({
       if (this.data) {
         this.updateScales();
 
-        const detected = this.data.filter(d => d.lineage_count);
+        let detected = this.data.filter(d => d.lineage_count);
         this.showDetected = detected.length < this.detectedDisplayThresh;
-        if (this.showDetected) {
-          const detectedSelector = this.counts
-            .selectAll(".detected")
-            .data(detected);
-
-          detectedSelector.join(
-            enter => {
-              enter.append("text")
-                .attr("class", "detected")
-                .attr("id", d => `date${d.date}`)
-                .attr("x", d => this.x(d[this.xVariable]))
-                .attr("y", d => this.yCounts(d[this.totalVariable]))
-                .attr("dy", 3)
-                .style("dominant-baseline", "hanging")
-                .style("text-anchor", "middle")
-                .text("*")
-                .style("fill", "#980072");
-            },
-            update =>
-            update
-            .attr("class", "detected")
-            .attr("id", d => `date${d.date}`)
-            .attr("x", d => this.x(d[this.xVariable]))
-            .attr("y", d => this.yCounts(d[this.totalVariable])),
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition(10)
-              .style("opacity", 1e-5)
-              .remove()
-            )
-          )
+        if (!this.showDetected) {
+          detected = [];
         }
+        const detectedSelector = this.counts
+          .selectAll(".detected")
+          .data(detected);
+
+        detectedSelector.join(
+          enter => {
+            enter.append("text")
+              .attr("class", "detected")
+              .attr("id", d => `date${d.date}`)
+              .attr("x", d => this.x(d[this.xVariable]))
+              .attr("y", d => this.yCounts(d[this.totalVariable]))
+              .attr("dy", 3)
+              .style("dominant-baseline", "hanging")
+              .style("text-anchor", "middle")
+              .text("*")
+              .style("fill", "#980072");
+          },
+          update =>
+          update
+          .attr("class", "detected")
+          .attr("id", d => `date${d.date}`)
+          .attr("x", d => this.x(d[this.xVariable]))
+          .attr("y", d => this.yCounts(d[this.totalVariable])),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition(10)
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
 
         const countSelector = this.counts
           .selectAll(".raw-counts")
@@ -369,6 +370,7 @@ export default Vue.extend({
           .attr("x2", d => this.x(d[this.xVariable]))
           .attr("y1", d => this.yCounts(0))
           .attr("y2", d => this.yCounts(d[this.totalVariable]))
+          .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5")
           .style("stroke-width", this.xBandwidth),
           exit =>
           exit.call(exit =>
