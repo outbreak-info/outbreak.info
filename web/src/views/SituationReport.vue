@@ -554,7 +554,6 @@ export default {
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
-
     this.setupReport();
   },
   methods: {
@@ -564,7 +563,7 @@ export default {
         this.reportType = "lineage";
         this.mutationVar = "pangolin_lineage";
       } else if (this.$route.query.muts) {
-        this.mutationName = this.$route.query.muts.join(" ");
+        this.mutationName = this.$route.query.muts.join(",");
         this.reportType = "mutation";
         this.mutationVar = "mutations";
       }
