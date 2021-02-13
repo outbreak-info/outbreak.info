@@ -1,5 +1,10 @@
 <template>
 <div class="my-5 mx-4 px-4">
+  <!-- LOADING -->
+  <div v-if="reportloading" class="loader">
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
+  </div>
+
   <h1 class="m-0">SARS-CoV-2 (hCoV-19) Mutation Situation Reports</h1>
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
@@ -13,21 +18,21 @@
       </div>
 
       <div class="w-75 mt-2 text-left">The <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen Lab</a> at Scripps Research is tracking the prevalence of several lineages or sets of mutations within the
-        SARS-CoV-2 (hCoV-19) genome.  We will regularly produce a report describing the current situation, focusing on the United States.</div>
+        SARS-CoV-2 (hCoV-19) genome. We will regularly produce a report describing the current situation, focusing on the United States.</div>
       <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
-
-      <div class="d-flex w-75 justify-content-between align-items-center">
-        <div id="date-updated">
+      <div class="d-flex align-items-center justify-content-between my-2">
+        <div id="date-updated" class="mr-5">
           <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
             <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
           </small>
         </div>
 
+        <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
       </div>
     </div>
     <ReportLogos />
 
-    <div class="d-flex flex-column justify-content-center align-items-center">
+    <div class="d-flex flex-column justify-content-center align-items-center mt-4">
       <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline">How to interpret these reports</router-link>
     </div>
 
@@ -37,7 +42,7 @@
     <!-- lineage or mutation -->
     <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" id="report-group">
       <h2 class="mb-0">{{ group.key | capitalize }} Reports</h2>
-      <small class="text-highlight">{{group.key.toLowerCase() == "lineage" ? "sequences classified as a particular PANGO lineage" : "sequences with a particular mutation(s)" }}</small>
+      <small class="text-highlight" v-html="getReportType(group.key)"></small>
 
       <!-- report cards (heh) -->
       <div class="row mt-3">
@@ -45,9 +50,13 @@
           <div class="w-100 p-3 card">
             <!-- NAME -->
             <div class="d-flex justify-content-between" id="mutation-name">
-              <router-link :to="{name:'SituationReport', params:{ mutation: report.identifier }}">
+              <router-link :to="{name:'MutationReport', query:{ pango: report.mutation_name }}" v-if="group.key == 'lineage'">
                 <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
               </router-link>
+              <router-link :to="{name:'SituationReport', params:{ mutation: report.identifier }}" v-else>
+                <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
+              </router-link>
+
               <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
               <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
             </div>
@@ -66,13 +75,18 @@
 
             <!-- MUTATION MAP / DEFINITION -->
             <div class="mutation-map flex-grow-1 px-2">
-              <SARSMutationMap :mutationArr="report.mutations" />
+              <SARSMutationMap :mutationArr="report.mutations" :mutationKey="report.mutation_name" />
             </div>
           </div>
         </div>
       </div>
 
     </div>
+  </section>
+
+  <section id="custom-report" class="text-left">
+    <h2 class="m-0 p-0">Create custom report</h2>
+    <CustomReportForm />
   </section>
 
   <ReportAcknowledgements />
@@ -84,9 +98,8 @@ import Vue from "vue";
 
 import ReportLogos from "@/components/ReportLogos.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
+import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
-
-import axios from "axios";
 
 
 // --- font awesome --
@@ -99,43 +112,57 @@ import {
 import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faClock);
+library.add(faClock, faSpinner);
 
 import {
-  nest
-} from "d3";
+  mapState
+} from "vuex";
 
 import {
-  orderBy
-} from "lodash";
+  getReportList
+} from "@/api/genomics.js";
 
 export default {
   name: "SituationReports",
   components: {
     ReportLogos,
     SARSMutationMap,
+    CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
+  },
+  computed: {
+    ...mapState("admin", ["reportloading"]),
+  },
+  methods: {
+    getReportType(group) {
+      return group.toLowerCase() == "lineage" ?
+        "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>" :
+        "sequences with a particular mutation(s)"
+    }
   },
   data() {
     return {
       // reminder: must be the raw verison of the file
-      curatedFile: "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json",
-      lastUpdated: "1 day",
+      curatedSubscription: null,
+      lastUpdated: null,
       reports: null
     }
   },
   mounted() {
-    axios.get(this.curatedFile).then(response => {
-      response.data = orderBy(response.data, ["reportType", "variantType", "mutation_name"]);
-
-      response.data = response.data.filter(d => !["B.1.351", "P.1"].includes(d.mutation_name))
-
-      this.reports = nest()
-        .key(d => d.reportType)
-        .entries(response.data);
+    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
+      this.lastUpdated = results.dateUpdated;
+      this.reports = results.md;
     })
+  },
+  beforeDestroyed() {
+    if (this.curatedSubscription) {
+      this.curatedSubscription.unsubscribe();
+    }
   }
 }
 </script>
@@ -162,5 +189,4 @@ $mutation-width: 275px;
 .mutation-map {
     min-width: 0;
 }
-
 </style>
