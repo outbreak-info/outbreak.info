@@ -1,5 +1,10 @@
 <template>
 <div class="my-5 mx-4 px-4">
+  <!-- LOADING -->
+  <div v-if="reportloading" class="loader">
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
+  </div>
+
   <h1 class="m-0">SARS-CoV-2 (hCoV-19) Mutation Situation Reports</h1>
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
@@ -96,8 +101,6 @@ import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
-import axios from "axios";
-
 
 // --- font awesome --
 import {
@@ -109,16 +112,19 @@ import {
 import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faClock);
+library.add(faClock, faSpinner);
 
 import {
-  nest
-} from "d3";
+  mapState
+} from "vuex";
 
 import {
-  orderBy
-} from "lodash";
+  getReportList
+} from "@/api/genomics.js";
 
 export default {
   name: "SituationReportsDemo",
@@ -128,6 +134,9 @@ export default {
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
+  },
+  computed: {
+    ...mapState("admin", ["reportloading"]),
   },
   methods: {
     getReportType(group) {
@@ -139,19 +148,21 @@ export default {
   data() {
     return {
       // reminder: must be the raw verison of the file
-      curatedFile: "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json",
-      lastUpdated: "1 day",
+      curatedSubscription: null,
+      lastUpdated: null,
       reports: null
     }
   },
   mounted() {
-    axios.get(this.curatedFile).then(response => {
-      response.data = orderBy(response.data, ["reportType", "variantType", "mutation_name"]);
-
-      this.reports = nest()
-        .key(d => d.reportType)
-        .entries(response.data);
+    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
+      this.lastUpdated = results.dateUpdated;
+      this.reports = results.md;
     })
+  },
+  beforeDestroyed() {
+    if (this.curatedSubscription) {
+      this.curatedSubscription.unsubscribe();
+    }
   }
 }
 </script>

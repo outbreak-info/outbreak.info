@@ -16,8 +16,13 @@ import {
   timeParse,
   timeFormat,
   format,
-  timeDay
+  timeDay, nest
 } from "d3";
+
+import {
+  orderBy
+} from "lodash";
+
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
@@ -42,6 +47,26 @@ function titleCase(value) {
 // reminder: must be the raw verison of the file
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
+
+export function getReportList(apiurl) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([getDateUpdated(apiurl), getCuratedList()]).pipe(
+    map(([dateUpdated, md]) => {
+      return ({
+        dateUpdated: dateUpdated.lastUpdated,
+        md: md
+      })
+
+    }),
+    catchError(e => {
+      console.log("%c Error in getting report list data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
 
 export function getReportData(apiurl, locations, mutationVar, mutationString, location, locationType) {
   store.state.admin.reportloading = true;
@@ -383,6 +408,8 @@ export function getTemporalPrevalence(apiurl, location, locationType, mutationSt
   )
 }
 
+
+
 export function getCuratedMetadata(id) {
   return from(
     axios.get(curatedFile, {
@@ -406,6 +433,33 @@ export function getCuratedMetadata(id) {
     //     return(resources)
     //   })
     // )),
+    catchError(e => {
+      console.log("%c Error in getting curated data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+
+export function getCuratedList() {
+  return from(
+    axios.get(curatedFile, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data"),
+    map(response => {
+      response = orderBy(response, ["reportType", "variantType", "mutation_name"]);
+
+      const reports = nest()
+        .key(d => d.reportType)
+        .entries(response);
+
+      return (reports)
+    }),
     catchError(e => {
       console.log("%c Error in getting curated data!", "color: red");
       console.log(e);
