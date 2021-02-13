@@ -246,7 +246,7 @@ const routes = [{
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */
-        "../views/SituationReportsDemo.vue"
+        "../views/SituationReports.vue"
       ),
     // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
