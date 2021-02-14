@@ -107,13 +107,13 @@ export function getReportData(apiurl, locations, queryStr, lineageString, locati
   )
 }
 
-export function updateLocationData(apiurl, mutationVar, mutationString, locations, location, locationType) {
+export function updateLocationData(apiurl, queryStr, lineageString, locations, location, locationType) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
-    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
-    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
-    getCumPrevalences(apiurl, mutationString, mutationVar, locations)
+    getTemporalPrevalence(apiurl, location, locationType, queryStr, null),
+    getLocationPrevalence(apiurl, queryStr, location, locationType),
+    getCumPrevalences(apiurl, queryStr, locations)
   ]).pipe(
     map(([longitudinal, byLocation, locPrev]) => {
       return ({
@@ -212,7 +212,7 @@ export function getWorldPrevalence(apiurl, queryStr) {
 }
 
 export function getCumPrevalences(apiurl, queryStr, locations) {
-  console.log(locations);
+  console.log(...locations);
   return forkJoin(...locations.filter(d => d.type != "world").map(d => getCumPrevalence(apiurl, queryStr, d.name, d.type))).pipe(
     map(results => {
       results.sort((a, b) => b.proportion - a.proportion);

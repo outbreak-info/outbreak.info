@@ -571,22 +571,15 @@ export default {
       }
 
       // Create query string for lineage and mutations
-      var queryStr = "";
+      this.queryStr = "";
       if (this.$route.query.pango) {
-        this.mutationName = this.$options.filters.capitalize(this.$route.query.pango);
-        this.reportType = "lineage";
-        this.mutationVar = "pangolin_lineage";
-	queryStr += "pangolin_lineage=" + this.$options.filters.capitalize(this.$route.query.pango);
+	this.queryStr += "pangolin_lineage=" + this.$options.filters.capitalize(this.$route.query.pango);
       }
       if (this.$route.query.muts) {
-        this.mutationName = this.$route.query.muts.join(",");
-        this.reportType = "mutation";
-        this.mutationVar = "mutations";
-	queryStr += "&mutations=" + this.$route.query.muts.join(",");
+	this.queryStr += "&mutations=" + this.$route.query.muts.join(",");
       }
-      console.log(queryStr);
       if (this.mutationName) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, queryStr, this.mutationName, this.selected, this.selectedType).subscribe(results => {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.queryStr, this.mutationName, this.selected, this.selectedType).subscribe(results => {
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -735,7 +728,7 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationVar, this.mutationName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.queryStr, this.lineageString, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
 
