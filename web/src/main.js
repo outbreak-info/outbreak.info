@@ -28,7 +28,6 @@ Vue.use(
     // fix via https://github.com/MatteoGabriele/vue-gtag/issues/229 to track query params in GA
     pageTrackerSkipSamePath: false,
     pageTrackerTemplate(to) {
-              console.log(to)
       return {
         page_title: to.name,
         page_path: to.fullPath,
