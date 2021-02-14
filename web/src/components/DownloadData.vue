@@ -180,13 +180,13 @@ export default {
       // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
       if (isReadme) {
         this.$gtag.event("download", {
-          'event_category': `${this.type}_${this.downloadLabel}_README`,
-          'event_label': `downloading {${this.downloadLabel} README} data from [${this.$route.fullPath}] as (${encodingFormat})`
+          'event_category': `${this.type}_${this.figureRef}_${this.downloadLabel}_README`,
+          'event_label': `downloading |${this.figureRef}| {${this.downloadLabel} README} data from [${this.$route.fullPath}] as (${encodingFormat})`
         })
       } else {
         this.$gtag.event("download", {
-          'event_category': `${this.type}_${this.downloadLabel}`,
-          'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`
+          'event_category': `${this.type}_${this.figureRef}_${this.downloadLabel}`,
+          'event_label': `downloading |${this.figureRef}| {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`
         })
       }
 
@@ -246,8 +246,8 @@ ${resourcesString}
     },
     downloadPng() {
       this.$gtag.event("download", {
-        'event_category': `${this.type}_${this.downloadLabel}`,
-        'event_label': `downloading {${this.downloadLabel}} data from [${this.$route.fullPath}] as (.png)`
+        'event_category': `${this.type}_${this.figureRef}_${this.downloadLabel}`,
+        'event_label': `downloading |${this.figureRef}| {${this.downloadLabel}} data from [${this.$route.fullPath}] as (.png)`
       });
       getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormattedLong, this.isVertical, true, `${this.filename}.png`);
       this.downloadData([this.getMetadata(this.filename)], "text/plain", `${this.filename}_README.txt`, true);
