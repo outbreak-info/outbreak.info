@@ -67,7 +67,20 @@ export function getReportList(apiurl) {
   )
 }
 
-export function getReportData(apiurl, locations, queryStr, lineageString, location, locationType) {
+export function buildQueryStr(lineageString, mutationString){
+  var queryStr = "";
+  if (lineageString) {
+    queryStr += `pangolin_lineage=${lineageString}`;
+  }
+  if (mutationString) {
+    queryStr += `&mutations=${mutationString}`;
+  }
+  console.log(queryStr);
+  return queryStr;
+}
+
+export function getReportData(apiurl, locations, mutationString, lineageString, location, locationType) {
+  var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
   return forkJoin([
@@ -107,7 +120,8 @@ export function getReportData(apiurl, locations, queryStr, lineageString, locati
   )
 }
 
-export function updateLocationData(apiurl, queryStr, lineageString, locations, location, locationType) {
+export function updateLocationData(apiurl, mutationString, lineageString, locations, location, locationType) {
+  var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
   return forkJoin([
