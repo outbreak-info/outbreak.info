@@ -93,9 +93,10 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getPositiveLocations(apiurl, queryStr, "United States of America", "country"),
     getLocationPrevalence(apiurl, queryStr, location, locationType),
     getCuratedMetadata(lineageString),
-    getCharacteristicMutations(apiurl, lineageString)
+    getCharacteristicMutations(apiurl, lineageString),
+    getMutationDetails(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations]) => {
+    map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
@@ -108,7 +109,8 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
         countries: countries,
         states: states,
         md: md,
-        mutations: characteristicMuts
+        mutations: characteristicMuts,
+	mutationDetails: mutationDetails
       })
     }),
     catchError(e => {
@@ -145,6 +147,31 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
   )
 }
 
+export function getMutationDetails(apiurl, mutationString) {
+  if(!mutationString)
+    return ( of ([]));
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}mutation-details?mutations=${mutationString}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d["codon_num"] = +d.codon_num;
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting mutation details!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = 0.97) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
@@ -167,6 +194,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     })
   )
 }
+
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
