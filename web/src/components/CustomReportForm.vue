@@ -201,7 +201,7 @@ export default Vue.extend({
         name: "MutationReport",
         query: {
           pango: this.selectedLineage,
-	  muts: this.selectedMutations.map(d => d.mutation)
+	  muts: this.selectedMutations.map(d => d.mutation.includes("&#916") ? d.mutation.replace("&#916;", "DEL") : d.mutation )
         }
       })
     },
