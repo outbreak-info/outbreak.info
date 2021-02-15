@@ -83,7 +83,12 @@ export default Vue.extend({
     width() {
       this.updatePlot();
     },
-    mutationArr() {
+    lineageMutations() {
+      this.setupMutationArr();
+      this.updatePlot();
+    },
+    additionalMutations(){
+      this.setupMutationArr();
       this.updatePlot();
     }
   },
@@ -146,20 +151,21 @@ export default Vue.extend({
       }
     })
 
-    this.setupMutationsArr();
+    this.setupMutationArr();
     this.setupPlot();
   },
   destroyed() {
     window.removeEventListener("resize", this.setDims);
   },
   methods: {
-    setupMutationsArr(){
+    setupMutationArr(){
       if(!this.lineageMutations && this.additionalMutations)
 	this.mutationArr = this.additionMutations;
       else if(this.lineageMutations && this.additionalMutations){
 	this.mutationArr = cloneDeep(this.lineageMutations);
 	this.mutationArr.push(...this.additionalMutations);
-      }
+      } else if (this.lineageMutations)
+	this.mutationArr = cloneDeep(this.lineageMutations);
     },
     setupPlot() {
       this.$nextTick(function() {
