@@ -2,7 +2,7 @@
 <div>
   <h4 class="">{{ definitionLabel }}</h4>
 
-  <SARSMutationMap :mutationKey="mutationName" :mutationArr="mutations" class="mb-3" />
+  <SARSMutationMap :mutationKey="mutationName" :mutationArr="mutations" :additionalMutations="additionalMutations" class="mb-3" />
 
   <div class="d-flex align-items-center ml-2 mr-3">
     <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#mutation-table" aria-expanded="false" aria-controls="mutation-table">

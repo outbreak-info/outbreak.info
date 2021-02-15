@@ -69,6 +69,7 @@ export default Vue.extend({
   props: {
     mutationKey: String,
     mutationArr: Array,
+    additionalMutations: Array,
     setWidth: {
       type: Number,
       default: null
@@ -119,19 +120,19 @@ export default Vue.extend({
       xAxis: null,
       geneColorScale: scaleOrdinal(
         ["#bab0ab", // lt grey -- UTRs
-          "#1f77b4", // dk blue
-          "#aec7e8", // lt blue
-          "#f28e2c", // orange
-          "#e15759", // red
-          "#9edae5", // teal
-          "#59a14f", // green
-          "#edc949", // yellow
-          "#9467bd", // purple
-          "#ff9da7", // pink
-          "#8c564b", // brown
-          "#555555", // grey
-          "#bcbd22", // puce
-          "#bab0ab"
+         "#1f77b4", // dk blue
+         "#aec7e8", // lt blue
+         "#f28e2c", // orange
+         "#e15759", // red
+         "#9edae5", // teal
+         "#59a14f", // green
+         "#edc949", // yellow
+         "#9467bd", // purple
+         "#ff9da7", // pink
+         "#8c564b", // brown
+         "#555555", // grey
+         "#bcbd22", // puce
+         "#bab0ab"
         ]),
     }
   },
@@ -145,12 +146,19 @@ export default Vue.extend({
       }
     })
 
+    this.setupMutationsArr();
     this.setupPlot();
   },
   destroyed() {
     window.removeEventListener("resize", this.setDims);
   },
   methods: {
+    setupMutationsArr(){
+      if(!this.mutationArr && this.additionalMutations)
+	this.mutationArr = this.additionMutations;
+      else if(this.mutationArr && this.additionalMutations)
+	this.mutationArr.push(...this.additionalMutations);
+    },
     setupPlot() {
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
