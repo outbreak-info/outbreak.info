@@ -176,7 +176,7 @@
 
         <!-- CHARACTERISTIC MUTATIONS -->
         <div class="mt-4" id="definition">
-          <CharacteristicMutations :mutationName="mutationName" :mutations="mutations" :definitionLabel="definitionLabel" />
+          <CharacteristicMutations :mutationName="mutationName" :mutations="mutations" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
         </div>
 
         <!-- KEY INSIGHTS -->
@@ -600,6 +600,8 @@ export default {
 
           this.hasData = true;
           this.mutations = results.mutations;
+
+	  this.additionalMutations = results.mutationDetails;
 
           if (results.md) {
             this.reportMetadata = results.md;
