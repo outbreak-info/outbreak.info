@@ -68,7 +68,7 @@ export default Vue.extend({
   name: "SARSMutationMap",
   props: {
     mutationKey: String,
-    mutationArr: Array,
+    lineageMutations: Array,
     additionalMutations: Array,
     setWidth: {
       type: Number,
@@ -154,10 +154,12 @@ export default Vue.extend({
   },
   methods: {
     setupMutationsArr(){
-      if(!this.mutationArr && this.additionalMutations)
+      if(!this.lineageMutations && this.additionalMutations)
 	this.mutationArr = this.additionMutations;
-      else if(this.mutationArr && this.additionalMutations)
+      else if(this.lineageMutations && this.additionalMutations){
+	this.mutationArr = cloneDeep(this.lineageMutations);
 	this.mutationArr.push(...this.additionalMutations);
+      }
     },
     setupPlot() {
       this.$nextTick(function() {
