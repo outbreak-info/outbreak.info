@@ -15,7 +15,14 @@
 
 
   <div class="collapse ml-2" id="mutation-table">
-    <MutationTable :mutations="mutations" />
+    <div class="row">
+      <div class="col">
+	<MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
+      </div>
+      <div class="col">
+	<MutationTable :mutations="additionalMutations" tableTitle="Additional Mutations" />
+      </div>
+    </div>
   </div>
 </div>
 </template>
@@ -32,7 +39,9 @@ export default {
   props: {
     mutations: Array,
     definitionLabel: String,
-    mutationName: String
+    mutationName: String,
+    lineageName: String,
+    additionalMutations: Array
   },
   components: {
     SARSMutationMap,
