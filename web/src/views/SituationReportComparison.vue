@@ -45,6 +45,12 @@ import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
 
 export default {
   name: "SituationReportsDemo",
+  props: {
+    pango: {
+      type: Array,
+      default: () => ["B.1.1.7","B.1.351", "B.1.429", "P.1", "B.1.525"]
+    }
+  },
   components: {
     TypeaheadSelect,
     SARSMutationMap,

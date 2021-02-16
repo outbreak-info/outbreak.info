@@ -291,8 +291,7 @@ const routes = [{
     name: "SituationReportComparison",
     props: route => ({
       location: route.query.location,
-      mutation1: route.query.mutation1,
-      mutation2: route.query.mutation2,
+      pango: route.query.pango
     }),
     component: () =>
       import(
