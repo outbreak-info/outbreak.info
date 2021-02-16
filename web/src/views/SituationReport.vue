@@ -206,6 +206,10 @@
             </tr>
           </table>
         </div>
+
+	<div class="my-4">
+	  <MutationsByLineage title="Counts per PANGO lineage" subtitle="/dev/random" :data="mutationsByLineage" />
+	</div>
       </section>
 
       <!-- RIGHT: SUMMARY BOX -->
@@ -319,6 +323,7 @@ import ShareReport from "@/components/ShareReport.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
+import MutationsByLineage from "@/components/MutationsByLineage.vue";
 
 // --- font awesome --
 import {
@@ -373,7 +378,8 @@ export default {
     ShareReport,
     ReportSummary,
     TypeaheadSelect,
-    CustomReportForm
+    CustomReportForm,
+    MutationsByLineage
   },
   props: {
     country: Array,
@@ -532,7 +538,8 @@ export default {
       totalLineage: null,
       globalPrev: null,
       newToday: null,
-      prevalence: []
+      prevalence: [],
+      mutationsByLineage: []
     }
   },
   mounted() {
@@ -598,7 +605,11 @@ export default {
           this.hasData = true;
           this.mutations = results.mutations;
 
+	  // Mutation details for queried mutations
 	  this.additionalMutations = results.mutationDetails;
+
+	  // Mutation distribution by lineage
+	  this.mutationsByLineage = results.mutationsByLineage;
 
           if (results.md) {
             this.reportMetadata = results.md;
