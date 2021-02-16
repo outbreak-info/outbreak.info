@@ -75,7 +75,6 @@ export function buildQueryStr(lineageString, mutationString){
   if (mutationString) {
     queryStr += `&mutations=${mutationString}`;
   }
-  console.log(queryStr);
   return queryStr;
 }
 
@@ -281,7 +280,6 @@ export function getWorldPrevalence(apiurl, queryStr) {
 }
 
 export function getCumPrevalences(apiurl, queryStr, locations) {
-  console.log(...locations);
   return forkJoin(...locations.filter(d => d.type != "world").map(d => getCumPrevalence(apiurl, queryStr, d.name, d.type))).pipe(
     map(results => {
       results.sort((a, b) => b.proportion - a.proportion);
