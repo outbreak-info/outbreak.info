@@ -146,7 +146,4 @@ beforeDestroy() {
 })
   </script>
 <style lang="scss">
-.font-size-2 {
-    font-size: 1.25rem;
-}
 </style>

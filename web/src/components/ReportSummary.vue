@@ -2,8 +2,9 @@
 <div class="px-2">
   <h3>Summary</h3>
   <div class="summary-counts mb-3" style="overflow-x:auto;">
-    As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the {{ mutationName }} lineage have been detected since the {{reportType}} was identified:
-
+    <span class="font-size-2">
+    As of {{ dateUpdated }}, <b>{{ totalLineage }}</b> sequences in the <b>{{ mutationName }}</b> lineage have been detected since the {{reportType}} was identified:
+</span>
     <!-- PREVALENCE SUMMARY TABLE -->
     <table class="border-bottom line-height-1 mt-2 w-100">
       <thead>
