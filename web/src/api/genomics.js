@@ -94,9 +94,10 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getLocationPrevalence(apiurl, queryStr, location, locationType),
     getCuratedMetadata(lineageString),
     getCharacteristicMutations(apiurl, lineageString),
-    getMutationDetails(apiurl, mutationString)
+    getMutationDetails(apiurl, mutationString),
+    getMutationsByLineage(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails]) => {
+    map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
@@ -110,7 +111,8 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
         states: states,
         md: md,
         mutations: characteristicMuts,
-	mutationDetails: mutationDetails
+	mutationDetails: mutationDetails,
+	mutationsByLineage: mutationsByLineage
       })
     }),
     catchError(e => {
@@ -151,7 +153,7 @@ export function getMutationDetails(apiurl, mutationString) {
   if(!mutationString)
     return ( of ([]));
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}mutation-details?mutations=${mutationString}`;
+  const url = `${apiurl}mutation-details?mutations=${mutationString}&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -166,6 +168,31 @@ export function getMutationDetails(apiurl, mutationString) {
     }),
     catchError(e => {
       console.log("%c Error in getting mutation details!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function getMutationsByLineage(apiurl, mutationString) {
+  if(!mutationString)
+    return ( of ([]));
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}mutations-by-lineage?mutations=${mutationString}&timestamp=${timestamp}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d["proportion_formatted"] = formatPercent(d["proportion"]);
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting mutations by lineage!", "color: red");
       console.log(e);
       return ( of ([]));
     })
