@@ -75,7 +75,7 @@
           </button>
         </div>
         <div class="modal-body">
-	  <CustomReportForm @exit="closeModal" />
+          <CustomReportForm @exit="closeModal" />
         </div>
 
         <div class="modal-footer border-secondary">
@@ -207,9 +207,9 @@
           </table>
         </div>
 
-	<div class="my-4" v-if="mutationsByLineage.length > 0">
-	  <MutationsByLineage title="Global prevalence per PANGO lineage" subtitle="/dev/random" :data="mutationsByLineage" />
-	</div>
+        <div class="my-4" v-if="mutationsByLineage.length > 0">
+          <MutationsByLineage title="Global prevalence per PANGO lineage" subtitle="/dev/random" :data="mutationsByLineage" />
+        </div>
       </section>
 
       <!-- RIGHT: SUMMARY BOX -->
@@ -484,10 +484,10 @@ export default {
   },
   watch: {
     '$route.query': function(newVal, oldVal) {
-      if (newVal.pango != oldVal.pango || ! isEqual(newVal.muts, oldVal.muts)) {
+      if (newVal.pango != oldVal.pango || !isEqual(newVal.muts, oldVal.muts)) {
         this.newPangolin = null;
-	this.lineageName = null;
-	this.reportMetadata = null;
+        this.lineageName = null;
+        this.reportMetadata = null;
         this.setupReport();
       } else {
         this.updateLocations();
@@ -563,19 +563,20 @@ export default {
     this.setupReport();
   },
   methods: {
-    setLineageAndMutationStr(){
+    setLineageAndMutationStr() {
       this.mutationName = "";
       if (this.$route.query.pango) {
         this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
-	this.mutationName = this.lineageName;
+        this.mutationName = this.lineageName;
       }
       if (this.$route.query.muts) {
-        this.mutationString = this.$route.query.muts.join(",");
-	this.mutationName += (this.lineageName) ? ` with ${this.mutationString}` : `${this.mutationString}`;
+        this.mutationString = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
+        this.mutationName += (this.lineageName) ? ` with ${this.mutationString}` : `${this.mutationString}`;
       }
     },
     setupReport() {
       this.setLineageAndMutationStr();
+
       if (this.lineageName || this.mutationString) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationString, this.lineageName, this.selected, this.selectedType).subscribe(results => {
 
@@ -605,11 +606,11 @@ export default {
           this.hasData = true;
           this.mutations = results.mutations;
 
-	  // Mutation details for queried mutations
-	  this.additionalMutations = results.mutationDetails;
+          // Mutation details for queried mutations
+          this.additionalMutations = results.mutationDetails;
 
-	  // Mutation distribution by lineage
-	  this.mutationsByLineage = results.mutationsByLineage;
+          // Mutation distribution by lineage
+          this.mutationsByLineage = results.mutationsByLineage;
 
           if (results.md) {
             this.reportMetadata = results.md;
@@ -768,7 +769,7 @@ export default {
         }
       })
     },
-    closeModal(){
+    closeModal() {
       console.log("hide");
       $("#change-pangolin-modal").modal("hide");
     }
