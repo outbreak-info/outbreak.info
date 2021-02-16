@@ -197,6 +197,7 @@ export default Vue.extend({
       this.selectedLineage = selected.name;
     },
     submitQuery() {
+      this.$emit("exit", true);
       var mutations = this.selectedBulkString ? this.selectedBulkString.split(",") : this.selectedMutations.map(d => d.mutation.includes("&#916") ? d.mutation.replace("&#916;", "DEL") : d.mutation );
       this.$router.push({
         name: "MutationReport",
@@ -204,7 +205,10 @@ export default Vue.extend({
           pango: this.selectedLineage,
 	  muts: mutations
         }
-      })
+      });
+      this.selectedBulkString = null;
+      this.selectedMutations = [];
+      this.selectedLineage = null;
     },
     addMutation() {
       // Add to mutation array
