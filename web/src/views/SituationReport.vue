@@ -207,7 +207,7 @@
           </table>
         </div>
 
-	<div class="my-4">
+	<div class="my-4" v-if="mutationsByLineage.length > 0">
 	  <MutationsByLineage title="Counts per PANGO lineage" subtitle="/dev/random" :data="mutationsByLineage" />
 	</div>
       </section>
