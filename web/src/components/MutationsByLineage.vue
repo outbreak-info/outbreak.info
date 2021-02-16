@@ -50,26 +50,34 @@ export default Vue.extend({
       default: 5
     }
   },
+  watch: {
+    data: function(){
+      this.setupPlot();
+      this.updatePlot();
+    }
+  },
   methods: {
     preprocessData(){
       var sortedData = this.data.sort((a, b) => {
        	return b.proportion - a.proportion;
       })
       this.processedData = sortedData.slice(0, this.n);
-      var otherData = sortedData
-	.slice(this.n, sortedData.length - 1)
-	.reduce((x, y) => {
-	  return {
-	    "lineage_count": x.lineage_count + y.lineage_count,
-	    "mutation_count": x.mutation_count + y.mutation_count
-	  }
-	});
-      this.processedData.push({
-	pangolin_lineage: "Other",
-	proportion: otherData.mutation_count/otherData.lineage_count,
-	lineage_count: otherData.lineage_count,
-	mutation_count: otherData.mutation_count
-      })
+      if(this.n < sortedData.length){
+	var otherData = sortedData
+	    .slice(this.n, sortedData.length - 1)
+	    .reduce((x, y) => {
+	      return {
+		"lineage_count": x.lineage_count + y.lineage_count,
+		"mutation_count": x.mutation_count + y.mutation_count
+	      }
+	    });
+	this.processedData.push({
+	  pangolin_lineage: "Other",
+	  proportion: otherData.mutation_count/otherData.lineage_count,
+	  lineage_count: otherData.lineage_count,
+	  mutation_count: otherData.mutation_count
+	})
+      }
     },
     setupPlot() {
       this.svg = select(this.$refs.horizontal_bargraph);
@@ -108,11 +116,24 @@ export default Vue.extend({
         enter => {
           enter.append("rect")
             .attr("x", d => 0)
-            .attr("width", d => this.x(d.proportion))
             .attr("y", d => this.y(d.pangolin_lineage))
             .attr("height", d => this.y.bandwidth())
             .style("fill", this.fill)
-        }
+	    .transition()
+	    .attr("width", d => this.x(d.proportion))
+        },
+	update => {
+	  update.attr("x", d => 0)
+            .attr("width", d => this.x(d.proportion))
+            .attr("y", d => this.y(d.pangolin_lineage))
+            .attr("height", d => this.y.bandwidth())
+	},
+	exit => {
+	  exit
+	    .transition()
+	    .attr("width", 0)
+	    .remove()
+	}
       )
     }
   },
