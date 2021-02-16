@@ -13,7 +13,7 @@
 <script>
 import Vue from "vue";
 
-import { select, selectAll, scaleLinear, scaleBand, max, axisLeft, axisBottom } from "d3";
+import { select, selectAll, scaleLinear, scaleBand, max, axisLeft, axisBottom, format, min } from "d3";
 import cloneDeep from "lodash/cloneDeep";
 
 export default Vue.extend({
@@ -26,8 +26,8 @@ export default Vue.extend({
       type: Object,
       default: function(){
 	return {
-	  left: 40,
-	  right: 20,
+	  left: 50,
+	  right: 70,
 	  top: 20,
 	  bottom: 20
 	};
@@ -35,27 +35,45 @@ export default Vue.extend({
     },
     width: {
       type: Number,
-      default: 250
+      default: 400
     },
     height: {
       type: Number,
-      default: 250
-    },
-    num2Show: {
-      type: Number,
-      default: 15
+      default: 300
     },
     fill: {
       type: String,
       default: "#cbd7e3"
+    },
+    n: {
+      type: Number,
+      default: 5
     }
   },
   methods: {
+    preprocessData(){
+      var sortedData = this.data.sort((a, b) => {
+       	return b.proportion - a.proportion;
+      })
+      this.processedData = sortedData.slice(0, this.n);
+      var otherData = sortedData
+	.slice(this.n, sortedData.length - 1)
+	.reduce((x, y) => {
+	  return {
+	    "lineage_count": x.lineage_count + y.lineage_count,
+	    "mutation_count": x.mutation_count + y.mutation_count
+	  }
+	});
+      this.processedData.push({
+	pangolin_lineage: "Other",
+	proportion: otherData.mutation_count/otherData.lineage_count,
+	lineage_count: otherData.lineage_count,
+	mutation_count: otherData.mutation_count
+      })
+    },
     setupPlot() {
       this.svg = select(this.$refs.horizontal_bargraph);
-      this.processedData = this.data.sort((a, b) => {
-       	return b.proportion - a.proportion;
-      });
+      this.preprocessData();
     },
     updatePlot: function() {
       this.updateAxes();
@@ -64,7 +82,7 @@ export default Vue.extend({
     updateAxes() {
       this.x = scaleLinear()
         .range([0, this.width - this.margin.right])
-        .domain([0, max(this.processedData.map(d => d.proportion))]);
+        .domain([0, min([max(this.processedData.map(d => d.proportion)) + 0.1, 1])]);
 
       this.y = scaleBand()
         .paddingInner(0.2)
@@ -72,10 +90,10 @@ export default Vue.extend({
         .domain(this.processedData.map(d => d.pangolin_lineage));
 
       this.yAxis = axisLeft(this.y)
-        .tickSizeOuter(0);
+      .tickFormat((d) => d.toUpperCase());
 
       this.xAxis = axisBottom(this.x)
-        .tickSizeOuter(0);
+	.tickFormat(format(".0%"));
 
       select(this.$refs.yAxis).call(this.yAxis);
       select(this.$refs.xAxis).call(this.xAxis);
