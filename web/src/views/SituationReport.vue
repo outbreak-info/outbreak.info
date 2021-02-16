@@ -66,7 +66,7 @@
 
   <!-- CHANGE PANGOLIN LINEAGE MODAL -->
   <div id="change-pangolin-modal" class="modal fade">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header border-secondary">
           <h5 class="modal-title" id="exampleModalLabel">Generate Lineage Report</h5>
@@ -75,19 +75,11 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="py-3">
-            <p>
-              Choose a lineage designated by <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a>:
-            </p>
-            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
-              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select PANGO lineage" />
-            </div>
-          </div>
+	  <CustomReportForm @exit="closeModal" />
         </div>
 
         <div class="modal-footer border-secondary">
           <button type="button" class="btn" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-accent" @click="selectNewPangolin" data-dismiss="modal">Generate Report</button>
         </div>
       </div>
     </div>
@@ -310,7 +302,8 @@
 import Vue from "vue";
 
 import {
-  uniq
+  uniq,
+  isEqual
 } from "lodash";
 
 import ReportLogos from "@/components/ReportLogos.vue";
@@ -325,6 +318,7 @@ import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
+import CustomReportForm from "@/components/CustomReportForm.vue";
 
 // --- font awesome --
 import {
@@ -378,7 +372,8 @@ export default {
     ReportResources,
     ShareReport,
     ReportSummary,
-    TypeaheadSelect
+    TypeaheadSelect,
+    CustomReportForm
   },
   props: {
     country: Array,
@@ -483,8 +478,9 @@ export default {
   },
   watch: {
     '$route.query': function(newVal, oldVal) {
-      if (newVal.pango != oldVal.pango) {
+      if (newVal.pango != oldVal.pango || ! isEqual(newVal.muts, oldVal.muts)) {
         this.newPangolin = null;
+	this.lineageName = null;
         this.setupReport();
       } else {
         this.updateLocations();
@@ -759,6 +755,10 @@ export default {
           selectedType: queryParams.type
         }
       })
+    },
+    closeModal(){
+      console.log("hide");
+      $("#change-pangolin-modal").modal("hide");
     }
   },
   destroyed() {
