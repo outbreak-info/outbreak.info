@@ -10,7 +10,7 @@
         <span class="if-not-collapsed">Hide</span>
         mutation table</small>
     </button>
-    <DownloadReportData :data="mutations" figureRef="mutation-map" />
+    <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" />
   </div>
 
 

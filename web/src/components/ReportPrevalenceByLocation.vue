@@ -92,7 +92,7 @@
     <div id="sequencing-count"></div>
   </div>
 
-  <DownloadReportData :data="data" figureRef="prevalence-by-location" class="mt-2" />
+  <DownloadReportData :data="data" figureRef="prevalence-by-location" class="mt-2" dataType="Mutation Prevelance by Location Dot Plot" />
 
 </div>
 </template>

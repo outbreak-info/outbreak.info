@@ -73,7 +73,7 @@
     <div id="sequencing-count-rolling"></div>
   </div>
 
-  <DownloadReportData :data="data" figureRef="prevalence-curve" :isVertical="true" />
+  <DownloadReportData :data="data" figureRef="prevalence-curve" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
 </div>
 </template>
