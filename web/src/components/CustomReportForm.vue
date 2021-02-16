@@ -27,7 +27,7 @@
 
           <div id="bulk-mutations" class="mr-4 w-400px">
 	    <h6 class="text-uppercase text-muted">List of mutations</h6>
-	    <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, E:484K"'></textarea>
+	    <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:E484K"'></textarea>
           </div>
 	</div>
 
