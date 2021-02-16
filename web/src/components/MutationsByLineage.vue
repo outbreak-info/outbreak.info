@@ -58,13 +58,13 @@ export default Vue.extend({
   },
   methods: {
     preprocessData(){
-      var sortedData = this.data.sort((a, b) => {
+      var sortedData = cloneDeep(this.data).sort((a, b) => {
        	return b.proportion - a.proportion;
       })
       this.processedData = sortedData.slice(0, this.n);
       if(this.n < sortedData.length){
 	var otherData = sortedData
-	    .slice(this.n, sortedData.length - 1)
+	    .slice(this.n, sortedData.length)
 	    .reduce((x, y) => {
 	      return {
 		"lineage_count": x.lineage_count + y.lineage_count,
