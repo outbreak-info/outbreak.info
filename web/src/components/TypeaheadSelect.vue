@@ -71,14 +71,20 @@ export default {
 
     //When the user changes input
     change() {
-      this.querySubscription = this.queryFunction(this.apiUrl, this.selected).subscribe(results => {
-        this.matches = results;
+      if(this.selected.length > 0){
+	this.querySubscription = this.queryFunction(this.apiUrl, this.selected).subscribe(results => {
+          this.matches = results;
 
         if (this.isOpen == false) {
           this.isOpen = true;
           this.current = 0;
         }
       })
+      } else {
+	this.matches = [];
+	this.isOpen = false;
+	this.current = 0;
+      }
 
     },
     //When one of the suggestion is clicked
