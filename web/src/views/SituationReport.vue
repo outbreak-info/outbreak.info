@@ -481,6 +481,7 @@ export default {
       if (newVal.pango != oldVal.pango || ! isEqual(newVal.muts, oldVal.muts)) {
         this.newPangolin = null;
 	this.lineageName = null;
+	this.reportMetadata = null;
         this.setupReport();
       } else {
         this.updateLocations();
