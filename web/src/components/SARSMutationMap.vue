@@ -460,12 +460,16 @@ export default Vue.extend({
               .attr("height", this.geneHeight)
               .style("fill-opacity", 0.40)
               .style("fill", d => this.geneColorScale(d.gene))
+              .style("stroke-width", 0.5)
+              .style("shape-rendering", "crispedges");
 
             geneGrp.append("text")
               .attr("x", d => (this.x(d.end) + this.x(d.start)) / 2)
               .attr("y", (this.geneHeight + 1) / 2)
               .attr("class", "gene-name")
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("dominant-baseline", "central")
+              .style("text-anchor", "middle")
               .text(d => this.x(d.end) - this.x(d.start) > this.geneDisplayThresh ? d.gene : "")
           },
           update => {
@@ -511,6 +515,10 @@ export default Vue.extend({
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`)
               .classed("hidden", d => !d.adjustedX)
               .attr("transform", "translate(0, 5)")
+              .style("stroke", "#8aa4be")
+              .style("stroke-width", 1)
+              .style("shape-rendering", "crispedged")
+              .style("fill", "none")
 
             mutGrp
               .append("circle")
@@ -520,6 +528,8 @@ export default Vue.extend({
               .attr("r", 1.8)
               .classed("hidden", d => !d.adjustedX)
               .attr("transform", "translate(0, 5)")
+              .style("fill", "#3e5871")
+              .style("stroke", "none")
 
             // circles for mutations
             mutGrp
@@ -530,6 +540,7 @@ export default Vue.extend({
               .attr("cx", d => d.x)
               .style("fill", d => this.geneColorScale(d.gene))
               .style("stroke", d => this.geneColorScale(d.gene))
+              .style("stroke-width", 0.75)
               .style("fill-opacity", 0.8);
 
             // position locations
@@ -541,7 +552,9 @@ export default Vue.extend({
               .text(d => d.codon_num)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("font-size", "0.6rem")
-
+              .style("dominant-baseline", "central")
+              .style("text-anchor", "middle");
+""
             // amino acid change text
             mutGrp
               .append("text")
@@ -552,6 +565,8 @@ export default Vue.extend({
               .style("fill", "white")
               .style("font-family", d => d.alt_aa == "_" || d.alt_aa == "*" ? "'DM Sans', Avenir, Helvetica, Arial, 'Font Awesome 5 Free', sans-serif" : "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("font-size", "0.85rem")
+              .style("dominant-baseline", "central")
+              .style("text-anchor", "middle")
               .text(d => d.alt_aa == "_" || d.alt_aa == "*" ? "\uf28d" : d.alt_aa)
           },
           update => {
@@ -625,6 +640,10 @@ export default Vue.extend({
               .attr("d", d => `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY)*0.45} H ${d.x} V ${shiftedLabelY}`)
               .classed("hidden", d => !d.adjustedX)
               .attr("transform", "translate(0, 5)")
+              .style("stroke", "#8aa4be")
+              .style("stroke-width", 1)
+              .style("shape-rendering", "crispedged")
+              .style("fill", "none")
 
             mutGrp
               .append("circle")
@@ -634,6 +653,8 @@ export default Vue.extend({
               .attr("r", 1.8)
               .classed("hidden", d => !d.adjustedX)
               .attr("transform", "translate(0, 5)")
+              .style("fill", "#3e5871")
+              .style("stroke", "none")
 
             // del rectangle
             mutGrp.append("rect")
@@ -657,6 +678,8 @@ export default Vue.extend({
               .style("fill", d => this.geneColorScale(d.gene))
               .style("font-size", "0.85rem")
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("dominant-baseline", "central")
+              .style("text-anchor", "middle")
               .text(d => "\u0394")
 
             // position locations
@@ -667,6 +690,8 @@ export default Vue.extend({
               .attr("x", d => d.adjustedX ? d.x : this.x((d.pos_nt * 2 + d.change_length_nt) / 2))
               .text(d => `${d.codon_num}:${d.codon_num + d.change_length_nt/3 - 1}`)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("dominant-baseline", "central")
+              .style("text-anchor", "middle")
               .style("font-size", "0.6rem");
           },
           update => {
@@ -725,38 +750,6 @@ export default Vue.extend({
 <style lang="scss">
 .gene rect {
     stroke: $base-grey;
-    stroke-width: 0.5;
-    shape-rendering: crispedges;
-}
-
-.deletion-leader,
-.substitution-leader {
-    stroke: $grey-60;
-    stroke-width: 1;
-    shape-rendering: crispedges;
-    fill: none;
-}
-
-.deletion-leader-terminus,
-.leader-terminus {
-    stroke: none;
-    fill: $grey-90;
-}
-
-.deletion,
-.deletion-symbol,
-.gene-name,
-.substitution-text {
-    dominant-baseline: central;
-    text-anchor: middle;
-}
-
-.substitution-circle {
-    stroke-width: 0.75;
-}
-
-.deletion-rect {
-    stroke: 1 !important;
 }
 
 #tooltip-gene,
