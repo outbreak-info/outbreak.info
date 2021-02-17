@@ -17,10 +17,10 @@
   <div class="collapse ml-2" id="mutation-table">
     <div class="row">
       <div class="col" v-if="lineageName">
-	<MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
+        <MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
       </div>
       <div class="col" v-if="additionalMutations.length > 0">
-	<MutationTable :mutations="additionalMutations" tableTitle="Mutations" />
+        <MutationTable :mutations="additionalMutations" tableTitle="Additional Mutations" />
       </div>
     </div>
   </div>

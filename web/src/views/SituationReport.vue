@@ -69,7 +69,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title" id="exampleModalLabel">Generate Lineage Report</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Generate Custom Mutation Report</h5>
           <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
