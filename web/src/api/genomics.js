@@ -236,7 +236,7 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
       if (results.length == 1) {
         results = filtered[0];
         const dateTime = parseDate(lineageRecent.date)
-        lineageRecent["dateFormatted"] = formatDate(dateTime)
+        lineageRecent["dateFormatted"] = dateTime ? formatDate(dateTime) : null;
       }
       return (lineageRecent)
     }),
@@ -264,8 +264,8 @@ export function getWorldPrevalence(apiurl, queryStr) {
       // results["name"] = "Worldwide";
       results["proportion_formatted"] = formatPercent(results.global_prevalence);
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
-      results["first_detected"] = formatDateShort(first);
-      results["last_detected"] = formatDateShort(last);
+      results["first_detected"] = first ? formatDateShort(first) : null;
+      results["last_detected"] = last ? formatDateShort(last) : null;
       // results["proportion"] = results.global_prevalence;
       // results["cum_lineage_count"] = results.lineage_count;
       // results["location_id"] = "worldwide";
@@ -309,8 +309,8 @@ export function getCumPrevalence(apiurl, queryStr, location, locationType) {
 
       results["name"] = location;
       results["type"] = locationType;
-      results["first_detected"] = formatDateShort(first);
-      results["last_detected"] = formatDateShort(last);
+      results["first_detected"] = first ? formatDateShort(first) : null;
+      results["last_detected"] = last ? formatDateShort(last) : null;
       results["proportion_formatted"] = formatPercent(results.global_prevalence);
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
       return (results)
@@ -552,7 +552,7 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
     map(results => {
       results["hits"].forEach(d => {
         const parsedDate = parseDate(d.date)
-        d["dateFormatted"] = formatDate(parsedDate);
+        d["dateFormatted"] = parsedDate ? formatDate(parsedDate) : null;
       })
 
       return ({
