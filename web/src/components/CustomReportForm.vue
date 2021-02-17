@@ -147,9 +147,9 @@ library.add(faPlus, faTimesCircle);
 export default Vue.extend({
   name: "CustomReportForm",
   components: {
-    // FontAwesomeIcon,
+    FontAwesomeIcon,
     TypeaheadSelect,
-    // SARSMutationMap
+    SARSMutationMap
   },
   computed: {
     ...mapState("genomics", ["refSeq"]),
