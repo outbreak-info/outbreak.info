@@ -186,6 +186,7 @@ export function getMutationsByLineage(apiurl, mutationString) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
+        d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
         d["proportion_formatted"] = formatPercent(d["proportion"]);
       })
       return (results)

@@ -573,7 +573,12 @@ export default {
       }
       if (this.$route.query.muts && this.$route.query.muts.length) {
         this.mutationString = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
-        this.mutationName += (this.lineageName) ? ` with ${this.$route.query.muts.join(", ")}` : `${this.$route.query.muts.join(", ")}`;
+        if(this.lineageName){
+        this.mutationName += typeof(this.$route.query.muts) == "string" ? ` with ${this.$route.query.muts}` : ` with ${this.$route.query.muts.join(", ")}`;  
+      } else {
+        this.mutationName += typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : `${this.$route.query.muts.join(", ")}`;
+      }
+
         this.reportType = "mutation";
       } else {
         this.reportType = "lineage";
