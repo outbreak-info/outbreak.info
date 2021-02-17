@@ -91,7 +91,8 @@
       <router-link :to="{ name: 'SituationReports'}">
         <button class="btn py-0 px-2 btn-grey-outline">back</button>
       </router-link>
-      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select lineage</button>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select mutation(s)</button>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-locations-modal">change locations</button>
       <ShareReport title="title" url="url" />
     </div>
 
