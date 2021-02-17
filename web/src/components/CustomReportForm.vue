@@ -8,103 +8,103 @@
     <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
     <form id="custom-pangolin" @submit.prevent="submitQuery">
       <div class="flew-row d-flex w-400px">
-	<TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
+        <TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
       </div>
       <div id="mutation-set" class="my-3">
-	<h4>Set of mutations</h4>
-	<div class="d-flex align-items-start">
+        <h4>Set of mutations</h4>
+        <div class="d-flex align-items-start">
           <!-- <div class="d-flex flex-column align-items-start mr-4 coords p-2" id="coordinate-type"> -->
-	    <!--   <h6 class="text-uppercase text-muted">coordinate system</h6> -->
-	    <!--   <div class="radio-item"> -->
-	      <!--     <input type="radio" id="aa" value="aminoacid" v-model="selectedCoordinate" class="mr-2"> -->
-	      <!--     <label for="aminoacid">amino acids</label> -->
-	      <!--   </div> -->
-	    <!--   <div class="radio-item"> -->
-	      <!--     <input type="radio" id="nuc" value="nuc" v-model="selectedCoordinate" class="mr-2"> -->
-	      <!--     <label for="nuc">nucleotides</label> -->
-	      <!--   </div> -->
-	    <!-- </div> -->
+          <!--   <h6 class="text-uppercase text-muted">coordinate system</h6> -->
+          <!--   <div class="radio-item"> -->
+          <!--     <input type="radio" id="aa" value="aminoacid" v-model="selectedCoordinate" class="mr-2"> -->
+          <!--     <label for="aminoacid">amino acids</label> -->
+          <!--   </div> -->
+          <!--   <div class="radio-item"> -->
+          <!--     <input type="radio" id="nuc" value="nuc" v-model="selectedCoordinate" class="mr-2"> -->
+          <!--     <label for="nuc">nucleotides</label> -->
+          <!--   </div> -->
+          <!-- </div> -->
 
           <div id="bulk-mutations" class="mr-4 w-400px">
-	    <h6 class="text-uppercase text-muted">List of mutations</h6>
-	    <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:E484K"'></textarea>
+            <h6 class="text-uppercase text-muted">List of mutations</h6>
+            <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:E484K"'></textarea>
           </div>
-	</div>
+        </div>
 
-	<div class="flex-row d-flex">
-	  <div class="mr-4 align-self-center">
-	    <b>or</b>
+        <div class="flex-row d-flex">
+          <div class="mr-4 align-self-center">
+            <b>or</b>
           </div>
-	</div>
+        </div>
 
-	<div class="flex-row d-flex">
+        <div class="flex-row d-flex">
 
-              <div id="gene-name" class="p-2" v-if="selectedCoordinate === 'aminoacid'">
-		<h6 class="text-uppercase text-muted">gene</h6>
-		<select v-model="selectedGene" class="select-dropdown">
-		  <option v-for="gene in genes" :value="gene" :key="gene.name">
-		    {{gene.name}}
-		  </option>
-		</select>
-              </div>
+          <div id="gene-name" class="p-2" v-if="selectedCoordinate === 'aminoacid'">
+            <h6 class="text-uppercase text-muted">gene</h6>
+            <select v-model="selectedGene" class="select-dropdown">
+              <option v-for="gene in genes" :value="gene" :key="gene.name">
+                {{gene.name}}
+              </option>
+            </select>
+          </div>
 
-              <div class="d-flex flex-column align-items-start p-2" id="mutation-type">
-		<h6 class="text-uppercase text-muted">mutation type</h6>
-		<div class="radio-item">
-		  <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
-		  <label for="substitution">substitution</label>
-		</div>
-		<div class="radio-item">
-		  <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
-		  <label for="deletion">deletion</label>
-		</div>
-              </div>
+          <div class="d-flex flex-column align-items-start p-2" id="mutation-type">
+            <h6 class="text-uppercase text-muted">mutation type</h6>
+            <div class="radio-item">
+              <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
+              <label for="substitution">substitution</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
+              <label for="deletion">deletion</label>
+            </div>
+          </div>
 
-              <div id="location" class="mr-4">
-		<h6 class="text-uppercase text-muted">location</h6>
-		<input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
-		<small>relative to <a :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a></small>
-              </div>
+          <div id="location" class="mr-4">
+            <h6 class="text-uppercase text-muted">location</h6>
+            <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
+            <small>relative to <a :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a></small>
+          </div>
 
-              <div id="ref_codon" class="mr-4" v-if="selectedRef">
-		<h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-		<div>
-		  {{ selectedRef }}
-		</div>
-              </div>
+          <div id="ref_codon" class="mr-4" v-if="selectedRef">
+            <h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+            <div>
+              {{ selectedRef }}
+            </div>
+          </div>
 
-              <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
-		<h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-		<input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
-              </div>
+          <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
+            <h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+            <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
+          </div>
 
-	      <button type="button" class="btn btn-main p-0 d-flex align-self-start align-self-center" role="button" @click="addMutation">
-		<span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
-		</span>
-		<div class="bg-sec py-2 px-2 border-theme">
-		  <font-awesome-icon :icon="['fas', 'plus']" />
-		</div>
-	      </button>
-	    </div>
+          <button type="button" class="btn btn-main p-0 d-flex align-self-start align-self-center" role="button" @click="addMutation">
+            <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
+            </span>
+            <div class="bg-sec py-2 px-2 border-theme">
+              <font-awesome-icon :icon="['fas', 'plus']" />
+            </div>
+          </button>
+        </div>
 
-	  </div>
+      </div>
 
-	  <div class="flex-row d-flex">
-	    <div id="selected-mutations" class="my-3" v-if="selectedMutations.length">
-	      <h5>Selected mutations</h5>
-	      <div class="d-flex flex-wrap">
-		<button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx" @click="deleteMutation(mIdx)">
-		  <span v-html="mutation.mutation"></span>
-		  <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-		</button>
-	      </div>
-	    </div>
+      <div class="flex-row d-flex">
+        <div id="selected-mutations" class="my-3" v-if="selectedMutations.length">
+          <h5>Selected mutations</h5>
+          <div class="d-flex flex-wrap">
+            <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx" @click="deleteMutation(mIdx)">
+              <span v-html="mutation.mutation"></span>
+              <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+            </button>
+          </div>
+        </div>
 
-            <SARSMutationMap :lineageMutations="selectedMutations" :additionalMutations="[]" mutationKey="selected_mutations" />
-	    <div class="d-flex justify-content-center w-100">
-	      <button :disabled="!selectedLineage && selectedMutations.length == 0 && !selectedBulkString" type="submit" class="btn btn-accent">Create report</button>
-	    </div>
-	  </div>
+        <SARSMutationMap :lineageMutations="selectedMutations" :additionalMutations="[]" mutationKey="selected_mutations" />
+        <div class="d-flex justify-content-center w-100">
+          <button :disabled="!selectedLineage && selectedMutations.length == 0 && !selectedBulkString" type="submit" class="btn btn-accent">Create report</button>
+        </div>
+      </div>
 
 
     </form>
@@ -121,7 +121,9 @@ import AA_MAP from "@/assets/genomics/sarscov2_aa.json";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 
-import { findPangolin } from "@/api/genomics.js";
+import {
+  findPangolin
+} from "@/api/genomics.js";
 
 // --- store / Vuex ---
 import {
@@ -198,12 +200,12 @@ export default Vue.extend({
     },
     submitQuery() {
       this.$emit("exit", true);
-      var mutations = this.selectedBulkString ? this.selectedBulkString.split(",") : this.selectedMutations.map(d => d.mutation.includes("&#916") ? d.mutation.replace("&#916;", "DEL") : d.mutation );
+      var mutations = this.selectedBulkString ? this.selectedBulkString.split(",").map(d => d.trim()) : this.selectedMutations.map(d => d.mutation.includes("&#916") ? d.mutation.replace("&#916;", "DEL") : d.mutation);
       this.$router.push({
         name: "MutationReport",
         query: {
           pango: this.selectedLineage,
-	  muts: mutations
+          muts: mutations
         }
       });
       this.selectedBulkString = null;
