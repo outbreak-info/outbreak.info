@@ -218,7 +218,8 @@
 
       <!-- RIGHT: SUMMARY BOX -->
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries" :states="states" />
+        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries"
+          :states="states" />
       </section>
     </div>
 
@@ -249,9 +250,9 @@
       </div>
       <div v-if="selectedType != 'division'">
         <div class="d-flex align-items-center justify-content-between mb-3">
-        <small class="text-muted">Since first identification in location</small>
+          <small class="text-muted">Since first identification in location</small>
           <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
-          </div>
+        </div>
         <ReportChoropleth class="mb-5" :data="choroData" :mutationName="mutationName" :location="selected" />
         <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
       </div>
@@ -337,11 +338,12 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faTrashAlt,
-  faPlusCircle
+  faPlusCircle,
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
 
-library.add(faClock, faTrashAlt, faPlusCircle);
+library.add(faClock, faTrashAlt, faPlusCircle, faSpinner);
 
 import {
   mapState
@@ -395,7 +397,7 @@ export default {
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
     smallScreen() {
-      return(window.innerSize < 500)
+      return (window.innerSize < 500)
     },
     title() {
       return (`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)

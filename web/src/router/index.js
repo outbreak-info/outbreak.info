@@ -246,9 +246,9 @@ const routes = [{
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */
-        "../views/SituationReportsDemo.vue"
+        "../views/SituationReports.vue"
       ),
-      // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
+    // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
       if (to.query && (to.query.pango)) {
         // redirect to route below
@@ -307,6 +307,43 @@ const routes = [{
         /* webpackChunkName: "situation-reports-caveats" */
         "../views/SituationReportsCaveats.vue"
       )
+  },
+  // redirect old reports
+  {
+    path: "/situation-reports/B-1-1-7",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        pango: "B.1.1.7"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/B.1.1.7",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        pango: "B.1.1.7"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/B-1-429",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        pango: "B.1.429"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/CA%20VUI1",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        pango: "B.1.429"
+      }
+    })
   },
   {
     path: "/situation-reports/:mutation",

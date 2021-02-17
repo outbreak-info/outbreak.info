@@ -54,7 +54,7 @@
   </div>
 
   <div class="w-75">
-    <DownloadReportData :data="data" figureRef="report-choropleth" />
+    <DownloadReportData :data="data" figureRef="report-choropleth" dataType="Mutation Report Choropleth" />
   </div>
 
 </div>
