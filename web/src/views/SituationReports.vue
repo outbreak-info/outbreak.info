@@ -53,7 +53,7 @@
               <router-link :to="{name:'MutationReport', query:{ pango: report.mutation_name }}" v-if="group.key == 'lineage'">
                 <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
               </router-link>
-              <router-link :to="{name:'SituationReport', params:{ mutation: report.identifier }}" v-else>
+              <router-link :to="{name:'MutationReport', query:{ muts: report.mutation_name }}" v-else>
                 <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
               </router-link>
 
@@ -69,9 +69,9 @@
             </small>
 
             <!-- LINK TO RESOURCES -->
-            <router-link :to='{name:"Resources", query:{q: `"${report.mutation_name}"`}}' v-if="report.mutation_name === 'B.1.1.7'">
+            <!-- <router-link :to='{name:"Resources", query:{q: `"${report.mutation_name}"`}}' v-if="report.mutation_name === 'B.1.1.7'">
               <small>View {{report.mutation_name}} resources</small>
-            </router-link>
+            </router-link> -->
 
             <!-- MUTATION MAP / DEFINITION -->
             <div class="mutation-map flex-grow-1 px-2">
