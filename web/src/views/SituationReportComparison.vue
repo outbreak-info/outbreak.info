@@ -12,7 +12,7 @@
         </h5>
         <SARSMutationMap :mutationArr="mutations1" :mutationKey="mutant1" class="w-600px" />
       </div>
-        <CharacteristicMutations :mutationName="mutant1" :mutations="mutations1" :definitionLabel="mutant1" class="" />
+      <CharacteristicMutations :mutationName="mutant1" :mutations="mutations1" :definitionLabel="mutant1" class="" />
     </div>
 
     <div class="d-flex align-items-end mt-3 mb-5 w-100" id="mutation-2">
@@ -25,8 +25,10 @@
         </h5>
         <SARSMutationMap :mutationArr="mutations2" :mutationKey="mutant2" class="w-600px" />
       </div>
-        <CharacteristicMutations :mutationName="mutant2" :mutations="mutations2" :definitionLabel="mutant2" class="" />
+      <CharacteristicMutations :mutationName="mutant2" :mutations="mutations2" :definitionLabel="mutant2" class="" />
     </div>
+
+<MutationHeatmap :data="mutationHeatmap"/>
   </div>
 </div>
 </template>
@@ -35,9 +37,11 @@
 import Vue from "vue";
 import {
   findPangolin,
-  getCharacteristicMutations
+  getCharacteristicMutations,
+  getLineagesComparison
 } from "@/api/genomics.js";
 
+import MutationHeatmap from "@/components/MutationHeatmap.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
@@ -46,15 +50,18 @@ import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
 export default {
   name: "SituationReportsDemo",
   props: {
-    pango: {
-      type: Array,
-      default: () => ["B.1.1.7","B.1.351", "B.1.429", "P.1", "B.1.525"]
-    }
+    pango: Array
   },
   components: {
     TypeaheadSelect,
     SARSMutationMap,
+    MutationHeatmap,
     CharacteristicMutations
+  },
+  computed: {
+    selectedPango() {
+      return (["B.1.1.7", "B.1.351", "B.1.429", "P.1", "B.1.525"])
+    }
   },
   data() {
     return {
@@ -64,10 +71,17 @@ export default {
       mutations2: null,
       queryPangolin: null,
       mutation1Subscription: null,
-      mutation2Subscription: null
+      mutation2Subscription: null,
+      mutationHeatmap: null
     }
   },
   mounted() {
+    console.log(this.$route)
+    console.log(this.pango)
+    getLineagesComparison(this.$genomicsurl, this.selectedPango).subscribe(results => {
+      this.mutationHeatmap = results;
+    })
+
     this.mutant1 = this.$route.query.mutant1;
     this.mutant2 = this.$route.query.mutant2;
 

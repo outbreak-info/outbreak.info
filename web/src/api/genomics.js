@@ -20,8 +20,10 @@ import {
 } from "d3";
 
 import {
-  orderBy
+  orderBy, uniq
 } from "lodash";
+
+import { interpolateRdPu } from "d3-scale-chromatic";
 
 
 const parseDate = timeParse("%Y-%m-%d");
@@ -620,6 +622,29 @@ export function getDateUpdated(apiUrl) {
       console.log("%c Error in getting Pangolin lineage names!", "color: red");
       console.log(e);
       return ( of ([]));
+    })
+  )
+}
+
+
+export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.95) {
+  console.log(lineages)
+  return forkJoin([... lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
+    map(results => {
+      console.log(results)
+      const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+      console.log(prevalentMutations)
+
+      const filtered = results.map(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+
+      filtered.forEach(d => {
+        d.sort((a,b) => a.codon_num < b.codon_num ? -1 : 1);
+        d.forEach(mutation => {
+          mutation["fill"] = interpolateRdPu(mutation.prevalence);
+        })
+      })
+      console.log(filtered)
+      return(filtered)
     })
   )
 }
