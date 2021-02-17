@@ -573,7 +573,7 @@ export default {
       }
       if (this.$route.query.muts && this.$route.query.muts.length) {
         this.mutationString = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
-        this.mutationName += (this.lineageName) ? ` with ${this.mutationString}` : `${this.mutationString}`;
+        this.mutationName += (this.lineageName) ? ` with ${this.$route.query.muts.join(", ")}` : `${this.$route.query.muts.join(", ")}`;
         this.reportType = "mutation";
       } else {
         this.reportType = "lineage";
