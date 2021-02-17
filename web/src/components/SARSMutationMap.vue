@@ -87,7 +87,7 @@ export default Vue.extend({
       this.setupMutationArr();
       this.updatePlot();
     },
-    additionalMutations(){
+    additionalMutations() {
       this.setupMutationArr();
       this.updatePlot();
     }
@@ -126,19 +126,19 @@ export default Vue.extend({
       xAxis: null,
       geneColorScale: scaleOrdinal(
         ["#bab0ab", // lt grey -- UTRs
-         "#1f77b4", // dk blue
-         "#aec7e8", // lt blue
-         "#f28e2c", // orange
-         "#e15759", // red
-         "#9edae5", // teal
-         "#59a14f", // green
-         "#edc949", // yellow
-         "#9467bd", // purple
-         "#ff9da7", // pink
-         "#8c564b", // brown
-         "#555555", // grey
-         "#bcbd22", // puce
-         "#bab0ab"
+          "#1f77b4", // dk blue
+          "#aec7e8", // lt blue
+          "#f28e2c", // orange
+          "#e15759", // red
+          "#9edae5", // teal
+          "#59a14f", // green
+          "#edc949", // yellow
+          "#9467bd", // purple
+          "#ff9da7", // pink
+          "#8c564b", // brown
+          "#555555", // grey
+          "#bcbd22", // puce
+          "#bab0ab"
         ]),
     }
   },
@@ -159,14 +159,14 @@ export default Vue.extend({
     window.removeEventListener("resize", this.setDims);
   },
   methods: {
-    setupMutationArr(){
-      if(!this.lineageMutations && this.additionalMutations)
-	this.mutationArr = this.additionMutations;
-      else if(this.lineageMutations && this.additionalMutations){
-	this.mutationArr = cloneDeep(this.lineageMutations);
-	this.mutationArr.push(...this.additionalMutations);
+    setupMutationArr() {
+      if (!this.lineageMutations && this.additionalMutations)
+        this.mutationArr = cloneDeep(this.additionMutations);
+      else if (this.lineageMutations && this.additionalMutations) {
+        this.mutationArr = cloneDeep(this.lineageMutations);
+        this.mutationArr.push(...this.additionalMutations);
       } else if (this.lineageMutations)
-	this.mutationArr = cloneDeep(this.lineageMutations);
+        this.mutationArr = cloneDeep(this.lineageMutations);
     },
     setupPlot() {
       this.$nextTick(function() {
@@ -470,8 +470,8 @@ export default Vue.extend({
           },
           update => {
             update
-            .attr("id", d => `gene_${d.gene}`)
-            .attr("class", d => `gene gene_${d.gene}`);
+              .attr("id", d => `gene_${d.gene}`)
+              .attr("class", d => `gene gene_${d.gene}`);
 
             update
               .select("rect")

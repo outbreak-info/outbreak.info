@@ -499,6 +499,7 @@ export default {
       // report details
       today: null,
       url: null,
+      lineageName: null,
       mutationName: null,
       mutationVar: null,
       mutations: null,
