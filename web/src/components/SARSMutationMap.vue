@@ -112,6 +112,7 @@ export default Vue.extend({
       geneDisplayThresh: 35,
       // data
       ntMapArr: null,
+      mutationArr: null,
       mutations: null,
       deletions: null,
       // refs
