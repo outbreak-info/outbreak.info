@@ -207,8 +207,8 @@
           </table>
         </div>
 
-        <div class="my-4" v-if="mutationsByLineage.length > 0">
-          <MutationsByLineage title="Global prevalence per PANGO lineage" subtitle="/dev/random" :data="mutationsByLineage" />
+        <div class="my-4" v-if="mutationsByLineage.length">
+          <MutationsByLineage title="Global prevalence per PANGO lineage" subtitle="Since first identification" :data="mutationsByLineage" />
         </div>
       </section>
 
