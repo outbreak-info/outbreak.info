@@ -1,5 +1,5 @@
 <template>
-<div class="" id="mutation-map">
+<div class="">
   <svg :width="width" :height="height" ref="svg" class="mutation-map" :name="`${mutationKey} characteristic mutations`">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
@@ -165,8 +165,11 @@ export default Vue.extend({
       else if (this.lineageMutations && this.additionalMutations) {
         this.mutationArr = cloneDeep(this.lineageMutations);
         this.mutationArr.push(...this.additionalMutations);
-      } else if (this.lineageMutations)
+      } else if (this.lineageMutations) {
         this.mutationArr = cloneDeep(this.lineageMutations);
+      } else {
+        this.mutationArr = null;
+      }
     },
     setupPlot() {
       this.$nextTick(function() {
@@ -224,7 +227,7 @@ export default Vue.extend({
     tooltipOn() {
       const ttipXOffset = 35;
       const ttipYOffset = 125;
-      if (this.mutationArr) {
+      if (this.mutationArr && this.mutationArr.length) {
         // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
         // That has to have a rect on top of everything which detects the pointer events.
         // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
@@ -388,7 +391,7 @@ export default Vue.extend({
       this.drawPlot();
     },
     prepData() {
-      if (this.mutationArr) {
+      if (this.mutationArr && this.mutationArr.length) {
         // 1) Convert amino acid coordinates into nucleotide coordinates
         // 2) Set up force direction to shift labels if they overlap
 
@@ -437,7 +440,7 @@ export default Vue.extend({
       }
     },
     drawPlot() {
-      if (this.mutationArr) {
+      if (this.mutationArr && this.mutationArr.length) {
         const t1 = transition().duration(1500);
 
         this.prepData();
@@ -554,7 +557,7 @@ export default Vue.extend({
               .style("font-size", "0.6rem")
               .style("dominant-baseline", "central")
               .style("text-anchor", "middle");
-""
+            ""
             // amino acid change text
             mutGrp
               .append("text")
