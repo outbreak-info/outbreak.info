@@ -209,7 +209,7 @@
         </div>
 
         <div class="my-4" v-if="mutationsByLineage.length">
-          <MutationsByLineage title="Global prevalence per PANGO lineage" subtitle="Since first identification" :data="mutationsByLineage" />
+          <MutationsByLineage :title="`Global prevalence of ${mutationString} per PANGO lineage`" subtitle="Since first identification" :data="mutationsByLineage" />
         </div>
       </section>
 
@@ -621,7 +621,6 @@ export default {
           this.additionalMutations = results.mutationDetails;
 
           // Mutation distribution by lineage
-          console.log(results.mutationsByLineage)
           this.mutationsByLineage = results.mutationsByLineage;
 
           if (results.md) {
