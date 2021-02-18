@@ -99,13 +99,11 @@
             </button>
           </div>
         </div>
-
-        <SARSMutationMap :lineageMutations="selectedMutations" :additionalMutations="[]" mutationKey="selected_mutations" />
-        <div class="d-flex justify-content-center w-100">
-          <button :disabled="!selectedLineage && selectedMutations.length == 0 && !selectedBulkString" type="submit" class="btn btn-accent">Create report</button>
-        </div>
       </div>
-
+      <SARSMutationMap :lineageMutations="selectedMutations" :additionalMutations="[]" mutationKey="selected_mutations" />
+      <div class="d-flex justify-content-center w-100">
+        <button :disabled="!selectedLineage && selectedMutations.length == 0 && !selectedBulkString" type="submit" class="btn btn-accent">Create report</button>
+      </div>
 
     </form>
   </div>
