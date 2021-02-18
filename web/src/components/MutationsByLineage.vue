@@ -141,7 +141,7 @@ export default Vue.extend({
       const rectSelector =
         this.svg
         .selectAll("rect")
-        .data(this.processedData);
+        .data(this.processedData, d => d.pangolin_lineage);
 
       rectSelector.join(
         enter => {
@@ -170,7 +170,7 @@ export default Vue.extend({
       const textSelector =
         this.svg
         .selectAll("text")
-        .data(this.processedData);
+        .data(this.processedData, d => d.pangolin_lineage);
 
       rectSelector.join(
         enter => {
