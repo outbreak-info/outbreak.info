@@ -26,10 +26,15 @@ ROUTES = [
  "resources",
  "resources/search",
  "schema",
+ "situation-reports",
+ "situation-reports/methods",
+ "situation-reports/caveats",
  "sources",
  "summary",
  "terms",
- "topics/definitions"]
+ "topics",
+ "topics/definitions",
+ "videos"]
 
 # Probably static
 # API url to grab all the resource IDs

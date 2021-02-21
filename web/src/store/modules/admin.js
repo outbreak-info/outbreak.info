@@ -6,21 +6,67 @@ const state = {
   outbreak: {
     authors: "Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Haag, Emily; Latif, Alaa Abdel; Mullen, Julia L.; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I.; Hughes, Laura D."
   },
-    mutationAuthors: "Alaa Abdel Latif, Karthik Gangavarapu, Emily Haag, Nate Matteson, Julia L. Mullen, Ginger Tsueng, Mark Zeller, Chunlei Wu, Andrew I. Su, Laura D. Hughes, Kristian G. Andersen, and the Center for Viral Systems Biology",
-    team: [
-      {name: "Manar Alkuzweny", img:"manar.jpg"},
-      {name: "Kristian Andersen", img:"kristian.jpg", twitter:"https://twitter.com/K_G_Andersen", linkedin:"http://www.linkedin.com/in/kga1978"},
-      {name: "Marco Cano", img:"marco.jpg"},
-      {name: "Karthik Gangavarapu", img:"karthik.jpg"},
-      {name: "Emily Haag", img:"emily.jpg"},
-      {name: "Laura Hughes", img:"laura.jpg", twitter:"https://twitter.com/flaneuseks", email:"lhughes@scripps.edu", linkedin:"https://www.linkedin.com/in/lauradhughes/"},
-      {name: "Alaa Abdel Latif", img:"alaa.jpg"},
-      {name: "Julia Mullen", img:"julia.jpg"},
-      {name: "Ginger Tsueng", img:"ginger.jpg"},
-      {name: "Andrew Su", img:"andrew.jpg", email:"asu@scripps.edu", twitter:"http://twitter.com/andrewsu", linkedin:"http://www.linkedin.com/in/andrewsu"},
-      {name: "Chunlei Wu", img:"chunlei.jpg", email:"cwu@scripps.edu", twitter:"https://twitter.com/chunleiwu", linkedin:"https://www.linkedin.com/in/chunleiwu"},
-      {name: "Jerry Zhou", img:"jerry.jpg"}
-    ],
+  mutationAuthors: "Alaa Abdel Latif, Karthik Gangavarapu, Emily Haag, Nate Matteson, Julia L. Mullen, Ginger Tsueng, Mark Zeller, Chunlei Wu, Andrew I. Su, Laura D. Hughes, Kristian G. Andersen, and the Center for Viral Systems Biology",
+  team: [{
+      name: "Manar Alkuzweny",
+      img: "manar.jpg"
+    },
+    {
+      name: "Kristian Andersen",
+      img: "kristian.jpg",
+      twitter: "https://twitter.com/K_G_Andersen",
+      linkedin: "http://www.linkedin.com/in/kga1978"
+    },
+    {
+      name: "Marco Cano",
+      img: "marco.jpg"
+    },
+    {
+      name: "Karthik Gangavarapu",
+      img: "karthik.jpg"
+    },
+    {
+      name: "Emily Haag",
+      img: "emily.jpg"
+    },
+    {
+      name: "Laura Hughes",
+      img: "laura.jpg",
+      twitter: "https://twitter.com/flaneuseks",
+      email: "lhughes@scripps.edu",
+      linkedin: "https://www.linkedin.com/in/lauradhughes/"
+    },
+    {
+      name: "Alaa Abdel Latif",
+      img: "alaa.jpg"
+    },
+    {
+      name: "Julia Mullen",
+      img: "julia.jpg"
+    },
+    {
+      name: "Ginger Tsueng",
+      img: "ginger.jpg"
+    },
+    {
+      name: "Andrew Su",
+      img: "andrew.jpg",
+      email: "asu@scripps.edu",
+      twitter: "http://twitter.com/andrewsu",
+      linkedin: "http://www.linkedin.com/in/andrewsu"
+    },
+    {
+      name: "Chunlei Wu",
+      img: "chunlei.jpg",
+      email: "cwu@scripps.edu",
+      twitter: "https://twitter.com/chunleiwu",
+      linkedin: "https://www.linkedin.com/in/chunleiwu"
+    },
+    {
+      name: "Jerry Zhou",
+      img: "jerry.jpg"
+    }
+  ],
   funding: [{
       identifier: "5 U19 AI135995-02",
       name: "CViSB",
@@ -425,6 +471,17 @@ const state = {
       description: 'Added situation reports describing the prevalence of certain sets of mutations in SARS-CoV-2 sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>.',
       route: {
         name: "SituationReports"
+      }
+    }, {
+      date: new Date("2021-02-10 0:0"),
+      category: "data",
+      title: "Released customizable, interactive SARS-CoV-2 Lineage Situation Reports",
+      description: 'Released dynamic SARS-CoV-2 Lineage Siutation Reports',
+      route: {
+        name: "SituationReports",
+        query: {
+          pango: "B.1.1.7"
+        }
       }
     }, {
       date: new Date("2020-07-06 0:1"),
