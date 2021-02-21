@@ -177,7 +177,7 @@ export default Vue.extend({
         enter => {
           enter.append("text")
             .attr("x", d => this.x(d.proportion))
-            .attr("dx", -5)
+            .attr("dx", d => this.x(d.proportion) > 30 ? -5 : 25)
             .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth()/2)
             .text(d => d.proportion_formatted)
             .style("text-anchor", "end")
@@ -187,6 +187,7 @@ export default Vue.extend({
         update => {
           update
             .attr("x", d => this.x(d.proportion))
+            .attr("dx", d => this.x(d.proportion) > 30 ? -5 : 25)
             .attr("y", d => this.y(d.pangolin_lineage))
             .text(d => d.proportion_formatted)
         },
