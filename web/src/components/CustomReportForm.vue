@@ -247,7 +247,7 @@ export default Vue.extend({
   },
   methods: {
     updatePangolin(selected) {
-      this.selectedLineage = selected.name ? selected.name : null;
+      this.selectedLineage = selected ? selected.name : null;
     },
     changeBulk() {
       const bulk = this.selectedBulkString.split(",").map(d => d.trim());

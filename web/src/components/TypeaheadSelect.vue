@@ -51,7 +51,7 @@ export default {
       this.selected = this.matches[this.current];
       this.isOpen = false;
       this.$emit("selected", this.selected);
-      if (this.removeOnSelect) {
+      if (this.removeOnSelect || !this.selected) {
         this.selected = null; // reset
       } else {
         this.selected = this.selected.name;
@@ -90,6 +90,7 @@ export default {
         this.matches = [];
         this.isOpen = false;
         this.current = 0;
+        this.$emit("selected", null);
       }
 
     },
@@ -98,7 +99,7 @@ export default {
       this.selected = this.matches[index];
       this.$emit("selected", this.selected);
       this.isOpen = false;
-      if (this.removeOnSelect) {
+      if (this.removeOnSelect || !this.selected) {
         this.selected = null; // reset
       } else {
         this.selected = this.selected.name;
