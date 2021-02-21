@@ -116,8 +116,14 @@
       </div>
     </div>
     <div class="col-sm-12 col-md-3">
-      <div class="d-flex justify-content-center w-100">
-        <button :disabled="!formValid" type="submit" class="btn btn-accent btn-lg" @click="submitQuery">Create report</button>
+      <div class="d-flex flex-column justify-content-center align-items-center w-100">
+        <p v-if="formValid" class="text-muted font-size-2">
+          Generate {{ title }} report
+        </p>
+        <div>
+          <button :disabled="!formValid" type="submit" class="btn btn-accent btn-lg" @click="submitQuery">Create report</button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -125,7 +131,7 @@
   <div class="row flex-column d-flex">
     <div class="col-sm-12 col-md-9">
       <div id="selected-mutations" class="my-0" v-if="selectedMutations.length">
-        <h5>Selected mutations</h5>
+        <h5>{{ selectedLineage ? "Selected additional mutations" : "Selected mutations"}}</h5>
         <div class="d-flex flex-wrap" @submit.prevent="submitQuery">
           <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx" @click="deleteMutation(mIdx)">
             <span v-html="mutation.mutation"></span>
@@ -193,6 +199,13 @@ export default Vue.extend({
       }
       return (`1 - ${this.nucleotideMax}`);
     },
+    title() {
+      if (this.selectedLineage) {
+        return this.selectedMutations.length ? `${this.selectedLineage} lineage with ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
+      } else {
+        return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
+      }
+    },
     mutationPlaceholder() {
       return (this.selectedCoordinate == "aminoacid" ? "new AA" : "A, T, G, C")
     },
@@ -234,7 +247,7 @@ export default Vue.extend({
   },
   methods: {
     updatePangolin(selected) {
-      this.selectedLineage = selected.name;
+      this.selectedLineage = selected.name ? selected.name : null;
     },
     changeBulk() {
       const bulk = this.selectedBulkString.split(",").map(d => d.trim());
