@@ -78,7 +78,7 @@ export function getReportData(apiurl, locations, mutationVar, mutationString, lo
     getWorldPrevalence(apiurl, mutationString, mutationVar),
     getCumPrevalences(apiurl, mutationString, mutationVar, locations),
     getPositiveLocations(apiurl, mutationString, mutationVar, "Worldwide", "country"),
-    getPositiveLocations(apiurl, mutationString, mutationVar, "United States of America", "country"),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "United States", "country"),
     getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
     getCuratedMetadata(mutationString),
     getCharacteristicMutations(apiurl, mutationString)
