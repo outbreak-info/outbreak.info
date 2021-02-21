@@ -196,16 +196,16 @@ export default Vue.extend({
 
       this.deletionRef = select(this.$refs.deletions)
         .attr("transform", `translate(0,22)`);
-
-      select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.x))
-      select(this.$refs.brush).on("mouseleave", this.tooltipOff)
     },
     setDims() {
       const wrapper = select(this.$refs.svg_wrapper).node();
       this.maxWidth = wrapper ? wrapper.offsetWidth : 1000;
+
+      select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.x))
+      select(this.$refs.brush).on("mouseleave", this.tooltipOff)
     },
     updatePlot() {
-      if(!this.width) {
+      if (!this.width) {
         this.setDims();
       }
       this.updateScales();
