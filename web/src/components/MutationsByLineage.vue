@@ -32,6 +32,7 @@ export default Vue.extend({
     data: Array,
     title: String,
     subtitle: String,
+    lineage: String,
     margin: {
       type: Object,
       default: function() {
@@ -149,7 +150,7 @@ export default Vue.extend({
             .attr("x", d => this.x(0))
             .attr("y", d => this.y(d.pangolin_lineage))
             .attr("height", d => this.y.bandwidth())
-            .style("fill", this.fill)
+            .style("fill", d => d.pangolin_lineage == this.lineage ? "#df4ab7" : this.fill)
             .attr("width", d => this.x(d.proportion) - this.x(0))
         },
         update => {
