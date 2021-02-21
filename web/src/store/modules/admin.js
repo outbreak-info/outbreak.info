@@ -476,11 +476,22 @@ const state = {
       date: new Date("2021-02-10 0:0"),
       category: "data",
       title: "Released customizable, interactive SARS-CoV-2 Lineage Situation Reports",
-      description: 'Released dynamic SARS-CoV-2 Lineage Siutation Reports',
+      description: 'Released customizable, interactive SARS-CoV-2 Lineage Situation Reports',
       route: {
         name: "SituationReports",
         query: {
           pango: "B.1.1.7"
+        }
+      }
+    }, {
+      date: new Date("2021-02-23 0:0"),
+      category: "data",
+      title: "Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports",
+      description: 'Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports',
+      route: {
+        name: "SituationReports",
+        query: {
+          muts: "S:N501Y"
         }
       }
     }, {
