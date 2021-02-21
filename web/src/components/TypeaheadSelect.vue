@@ -24,9 +24,15 @@ export default {
     apiUrl: String,
     placeholder: String,
     totalLabel: String,
+    selectedValue: String,
     removeOnSelect: {
       type: Boolean,
       default: true
+    }
+  },
+  watch: {
+    selectedValue() {
+      this.selected = this.selectedValue;
     }
   },
   created: function() {
@@ -45,7 +51,7 @@ export default {
       this.selected = this.matches[this.current];
       this.isOpen = false;
       this.$emit("selected", this.selected);
-      if(this.removeOnSelect){
+      if (this.removeOnSelect) {
         this.selected = null; // reset
       } else {
         this.selected = this.selected.name;
@@ -71,19 +77,19 @@ export default {
 
     //When the user changes input
     change() {
-      if(this.selected.length > 0){
-	this.querySubscription = this.queryFunction(this.apiUrl, this.selected).subscribe(results => {
+      if (this.selected.length > 0) {
+        this.querySubscription = this.queryFunction(this.apiUrl, this.selected).subscribe(results => {
           this.matches = results;
 
-        if (this.isOpen == false) {
-          this.isOpen = true;
-          this.current = 0;
-        }
-      })
+          if (this.isOpen == false) {
+            this.isOpen = true;
+            this.current = 0;
+          }
+        })
       } else {
-	this.matches = [];
-	this.isOpen = false;
-	this.current = 0;
+        this.matches = [];
+        this.isOpen = false;
+        this.current = 0;
       }
 
     },
@@ -92,7 +98,7 @@ export default {
       this.selected = this.matches[index];
       this.$emit("selected", this.selected);
       this.isOpen = false;
-      if(this.removeOnSelect){
+      if (this.removeOnSelect) {
         this.selected = null; // reset
       } else {
         this.selected = this.selected.name;

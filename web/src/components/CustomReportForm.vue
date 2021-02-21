@@ -8,7 +8,7 @@
     <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
     <form id="custom-pangolin" @submit.prevent="submitQuery">
       <div class="flew-row d-flex w-400px">
-        <TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
+        <TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" :selectedValue="selectedLineage" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
       </div>
       <div id="mutation-set" class="my-3">
         <h4>Set of mutations</h4>
