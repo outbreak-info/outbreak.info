@@ -585,6 +585,8 @@ export default {
           this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
           this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
           this.reportType = "lineage with added mutations";
+          this.searchTerms = `${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`
+          console.log(this.searchTerms)
           this.title = `${this.reportName} Report`;
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
@@ -597,6 +599,7 @@ export default {
           this.mutationID = null;
           this.reportType = "lineage";
           this.title = `${this.reportName} Lineage Report`;
+          this.searchTerms = this.lineageName;
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
@@ -610,6 +613,7 @@ export default {
           this.reportName = this.mutationID;
           this.mutationName = this.reportName;
           this.reportType = "mutation";
+          this.searchTerms = this.mutationName.split(":").slice(-1);
           this.title = `${this.reportName} Mutation Report`;
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
@@ -619,6 +623,7 @@ export default {
           this.lineageName = null;
           this.reportName = this.$route.query.muts.join(", ");
           this.mutationName = this.reportName;
+          this.searchTerms = this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "');
           this.mutationID = this.$route.query.muts.join(",");
           this.reportType = "variant";
           this.title = `${this.reportName} Variant Report`;
@@ -667,11 +672,11 @@ export default {
 
           if (results.md) {
             this.reportMetadata = results.md;
-            this.searchTerms = results.md.searchTerms;
+            this.searchTerms = this.reportType != "lineage with added mutations" ? results.md.searchTerms : [this.searchTerms];
             this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
             this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
           } else {
-            this.searchTerms = [this.mutationName];
+            this.searchTerms = [this.searchTerms];
             this.reportDescription = this.genericDescription;
           }
         })
