@@ -594,6 +594,7 @@ export default {
           this.lineageName = null;
           this.mutationID = this.$route.query.muts;
           this.reportName = this.mutationID;
+          this.mutationName = this.reportName;
           this.reportType = "mutation";
           this.title = `${this.reportName} Mutation Report`;
           this.disclaimer =
@@ -603,6 +604,7 @@ export default {
           // Variant (multiple mutation) report
           this.lineageName = null;
           this.reportName = this.$route.query.muts.join(", ");
+          this.mutationName = this.reportName;
           this.mutationID = this.$route.query.muts.join(",");
           this.reportType = "variant";
           this.title = `${this.reportName} Variant Report`;
