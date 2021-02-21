@@ -417,7 +417,9 @@ export default {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
     },
     genericDescription() {
-      return `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of <b>${this.reportName}</b> in the world, how it is changing over time, and how its prevalence varies across different locations.`
+      return this.reportType == "lineage with added mutations" ?
+      `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> in the world, how it is changing over time, and how its prevalence varies across different locations.`
+      : `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> ${this.reportType} in the world, how it is changing over time, and how its prevalence varies across different locations.`
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineages/lineage_${this.lineageName}.html` : null
