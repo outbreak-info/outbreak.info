@@ -288,7 +288,7 @@
     <div class="d-flex flex-column align-items-start">
       <h1 class="m-0">{{ title }}</h1>
       <p class="my-5">
-        Calculating prevalence of {{reportType}} {{reportName}}. Please be patient.
+        Calculating prevalences for {{title}}. Please be patient.
       </p>
     </div>
   </div>
@@ -296,7 +296,7 @@
     <div class="d-flex flex-column align-items-start">
       <h1 class="m-0">{{ title }}</h1>
       <p class="my-5">
-        No data found for {{reportType}} <b>{{reportName}}</b>. Please check that you have specified the {{reportType}} properly.
+        No data found for <b>{{title}}</b>. Please check that you have specified the {{reportType}} properly.
       </p>
     </div>
   </div>
