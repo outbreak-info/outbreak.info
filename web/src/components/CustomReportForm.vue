@@ -61,9 +61,15 @@
           </div>
 
           <div id="location" class="mr-4">
-            <h6 class="text-uppercase text-muted">location</h6>
+            <h6 class="text-uppercase text-muted" v-if="selectedMutationType == 'substitution'">location</h6>
+            <h6 class="text-uppercase text-muted" v-else>start location</h6>
             <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
             <small>relative to <a :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a></small>
+          </div>
+
+          <div id="del-length" class="mr-4" v-if="selectedMutationType == 'deletion'">
+            <h6 class="text-uppercase text-muted">deletion length</h6>
+            <input class="form-control border-theme" :style="{width: '135px'}" v-model="selectedDelLength" :placeholder="`in ${selectedCoordinate}s`">
           </div>
 
           <div id="ref_codon" class="mr-4" v-if="selectedRef">
@@ -183,7 +189,7 @@ export default Vue.extend({
         if (this.selectedMutationType == "substitution") {
           return (`${this.selectedGene.name}:${this.selectedRef}${this.selectedLocation}${this.selectedMutation}`)
         } else if (this.selectedMutationType == "deletion") {
-          return (`${this.selectedGene.name}:&#916;${this.selectedLocation}`)
+          return (`${this.selectedGene.name}:&#916;${this.selectedLocation}/${Number(this.selectedLocation) + Number(this.selectedDelLength) - 1}`)
         }
       }
       return (null)
@@ -214,18 +220,14 @@ export default Vue.extend({
       // Add to mutation array
       let mutationStr;
       if (this.selectedCoordinate == "aminoacid") {
-        if (this.selectedMutationType == "substitution") {
-          mutationStr = `${this.selectedGene.name}:${this.selectedRef}${this.selectedLocation}${this.selectedMutation}`;
-        } else if (this.selectedMutationType == "deletion") {
-          mutationStr = `${this.selectedGene.name}:&#916;${this.selectedLocation}`;
-        }
         this.selectedMutations.push({
           type: this.selectedMutationType,
           gene: this.selectedGene.name,
-          codon_num: this.selectedLocation,
+          codon_num: +this.selectedLocation,
           ref_aa: this.selectedRef,
           alt_aa: this.selectedMutation,
-          mutation: mutationStr
+          mutation: this.selectedLabel,
+          change_length_nt: +this.selectedDelLength*3
         });
       }
       // Clear the form
@@ -248,6 +250,7 @@ export default Vue.extend({
       selectedCoordinate: "aminoacid",
       selectedGene: null,
       selectedLocation: null,
+      selectedDelLength: 1,
       selectedMutationType: "substitution",
       selectedMutation: null,
       nucleotideMax: 30000,
