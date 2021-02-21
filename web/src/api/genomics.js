@@ -84,17 +84,15 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
 
   return forkJoin([
     getDateUpdated(apiurl),
-    getNewTodayAll(apiurl, queryStr, locations),
-    getTemporalPrevalence(apiurl, location, locationType, queryStr, null),
-    getWorldPrevalence(apiurl, queryStr),
-    getCumPrevalences(apiurl, queryStr, locations),
-    getPositiveLocations(apiurl, queryStr, "Worldwide", "country"),
-    getPositiveLocations(apiurl, queryStr, "United States of America", "country"),
-    getLocationPrevalence(apiurl, queryStr, location, locationType),
-    getCuratedMetadata(lineageString),
-    getCharacteristicMutations(apiurl, lineageString),
-    getMutationDetails(apiurl, mutationString),
-    getMutationsByLineage(apiurl, mutationString)
+    getNewTodayAll(apiurl, mutationString, mutationVar, locations),
+    getTemporalPrevalence(apiurl, location, locationType, mutationString, mutationVar, null),
+    getWorldPrevalence(apiurl, mutationString, mutationVar),
+    getCumPrevalences(apiurl, mutationString, mutationVar, locations),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "Worldwide", "country"),
+    getPositiveLocations(apiurl, mutationString, mutationVar, "United States", "country"),
+    getLocationPrevalence(apiurl, mutationString, mutationVar, location, locationType),
+    getCuratedMetadata(mutationString),
+    getCharacteristicMutations(apiurl, mutationString)
   ]).pipe(
     map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;

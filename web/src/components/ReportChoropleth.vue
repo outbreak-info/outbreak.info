@@ -90,7 +90,7 @@ import {
 
 import GradientLegend from "@/components/GradientLegend.vue";
 
-import ADMIN0_SIMPLE from "@/assets/geo/countries.json";
+import ADMIN0_SIMPLE from "@/assets/geo/gadm_adm0_simplified.json";
 import ADMIN0 from "@/assets/geo/gadm_adm0.json";
 import USADATA from "@/assets/geo/US_states.json";
 import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
@@ -255,7 +255,7 @@ export default {
         this.locationMap = ADMIN0_SIMPLE;
         // this.hwRatio = 0.45;
         // this.setDims();
-      } else if (this.location === "United States of America") {
+      } else if (this.location === "United States") {
         this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
@@ -369,7 +369,7 @@ export default {
       this.prepData();
 
 if(this.filteredData) {
-      const basemapData = this.location == "Worldwide" || this.location == "United States of America" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
+      const basemapData = this.location == "Worldwide" || this.location == "United States" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
 
       this.basemap
         .selectAll(".basemap")
@@ -478,7 +478,7 @@ if(this.filteredData) {
 
       this.overlay
         .selectAll(".overlay")
-        .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States of America"), d => d.properties.location_id)
+        .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States"), d => d.properties.location_id)
         .join(
           enter => {
             enter
