@@ -12,7 +12,7 @@
       </div>
       <div id="mutation-set" class="my-3">
         <h4>Set of mutations</h4>
-        <div class="d-flex align-items-start">
+        <div class="d-flex align-items-center">
           <!-- <div class="d-flex flex-column align-items-start mr-4 coords p-2" id="coordinate-type"> -->
           <!--   <h6 class="text-uppercase text-muted">coordinate system</h6> -->
           <!--   <div class="radio-item"> -->
@@ -28,6 +28,20 @@
           <div id="bulk-mutations" class="mr-4 w-400px">
             <h6 class="text-uppercase text-muted">List of mutations</h6>
             <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:DEL69/70"' @input='debounceBulk'></textarea>
+          </div>
+          <div class="warning" v-if="badBulkGene && selectedBulkString">
+            <p>
+              Add the gene before the mutation, like "S:N501Y"
+            </p>
+            <p>
+              Separate mutations with commas
+            </p>
+          </div>
+          <div class="warning" v-if="badBulkSubstitution">
+            Specify the mutation like "S:N501Y"
+          </div>
+          <div class="warning" v-if="badBulkDeletion">
+            Specify a deletion like "S:DEL69/70"
           </div>
         </div>
 
@@ -84,7 +98,7 @@
             <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
           </div>
 
-          <button type="button" class="btn btn-main p-0 d-flex align-self-start align-self-center" role="button" @click="addMutation">
+          <button type="button" class="btn btn-main p-0 d-flex align-self-start align-self-center" role="button" @click="addMutation" :disabled="!addValid">
             <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
             </span>
             <div class="bg-sec py-2 px-2 border-theme">
@@ -108,7 +122,7 @@
       </div>
       <SARSMutationMap :lineageMutations="selectedMutations" :additionalMutations="[]" mutationKey="selected_mutations" />
       <div class="d-flex justify-content-center w-100">
-        <button :disabled="!selectedLineage && selectedMutations.length == 0 && !selectedBulkString" type="submit" class="btn btn-accent">Create report</button>
+        <button :disabled="!formValid" type="submit" class="btn btn-accent">Create report</button>
       </div>
 
     </form>
@@ -179,6 +193,9 @@ export default Vue.extend({
       }
     },
     formValid() {
+      return (this.selectedMutations.length > 0 || this.selectedLineage)
+    },
+    addValid() {
       if (this.selectedMutationType == "substitution") {
         return (this.selectedGene && this.selectedLocation && this.selectedMutation)
       } else if (this.selectedMutationType == "deletion") {
@@ -187,7 +204,7 @@ export default Vue.extend({
       return (false);
     },
     selectedLabel() {
-      if (this.formValid) {
+      if (this.addValid) {
         if (this.selectedMutationType == "substitution") {
           return (`${this.selectedGene.name}:${this.selectedRef}${this.selectedLocation}${this.selectedMutation}`)
         } else if (this.selectedMutationType == "deletion") {
@@ -209,15 +226,18 @@ export default Vue.extend({
     },
     changeBulk() {
       const bulk = this.selectedBulkString.split(",").map(d => d.trim());
-
+      this.badBulkSubstitution = false;
+      this.badBulkDeletion = false;
+      this.badBulkGene = false;
 
       if (this.selectedCoordinate == "aminoacid") {
         this.selectedBulkMutations = bulk.map(d => {
           const splitted = d.split(":");
+          console.log(splitted)
           if (splitted.length == 2) {
             const aaChange = splitted[1];
             const mutationType = aaChange.includes("DEL") ? "deletion" : "substitution";
-            const changeSplitted = aaChange.split(/(\d+)/g);
+            const changeSplitted = aaChange.split(/(\d+)/g).filter(d => d != "");
             if (mutationType == "substitution") {
               if (changeSplitted.length == 3) {
                 return ({
@@ -228,19 +248,24 @@ export default Vue.extend({
                   codon_num: +changeSplitted[1],
                   alt_aa: changeSplitted[2]
                 })
+              } else {
+                this.badBulkSubstitution = true;
               }
-            } else if(mutationType == "deletion"){
-
-              if (changeSplitted.length == 5) {
+            } else if (mutationType == "deletion") {
+              if (changeSplitted.length == 4) {
                 return ({
                   mutation: d,
                   gene: splitted[0],
                   type: mutationType,
                   codon_num: +changeSplitted[1],
-                  change_length_nt: (Number(changeSplitted[3])- Number(changeSplitted[1]) + 1) * 3
+                  change_length_nt: (Number(changeSplitted[3]) - Number(changeSplitted[1]) + 1) * 3
                 })
+              } else {
+                this.badBulkDeletion = true;
               }
             }
+          } else {
+            this.badBulkGene = true;
           }
         })
 
@@ -294,8 +319,6 @@ export default Vue.extend({
       // Remove from bulk mutations
       this.selectedBulkMutations = this.selectedBulkMutations.filter(d => d.mutation != removed[0].mutation);
       this.selectedBulkString = this.selectedBulkMutations.map(d => d.mutation).join(",");
-
-      console.log(this.selectedMutations)
     }
   },
   data() {
@@ -306,6 +329,9 @@ export default Vue.extend({
       selectedManualMutations: [],
       selectedLineage: null,
       selectedBulkString: null,
+      badBulkGene: false,
+      badBulkSubstitution: false,
+      badBulkDeletion: false,
       selectedCoordinate: "aminoacid",
       selectedGene: null,
       selectedLocation: null,
@@ -405,5 +431,9 @@ export default Vue.extend({
 .coords {
     background: #dcf4ff;
     border-radius: 0.25rem;
+}
+.warning {
+    color: $warning-color;
+    font-weight: 700;
 }
 </style>
