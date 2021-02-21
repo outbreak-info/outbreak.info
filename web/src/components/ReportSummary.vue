@@ -5,6 +5,7 @@
     <span class="font-size-2">
       As of {{ dateUpdated }}, <b>{{ totalLineage }}</b>
       <span v-if="reportType == 'lineage'"> sequences in the <b>{{ mutationName }}</b> {{ reportType }} have been detected since the {{reportType}} was identified:</span>
+      <span v-else-if="reportType == 'lineage with added mutations'"> sequences with the <b>{{ mutationName }}</b> have been detected since the lineage was identified:</span>
       <span v-else> sequences with the <b>{{ mutationName }}</b> {{ reportType }} have been detected since the {{reportType}} was identified:</span>
     </span>
     <!-- PREVALENCE SUMMARY TABLE -->
