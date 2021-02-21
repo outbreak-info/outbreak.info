@@ -174,7 +174,6 @@ export default Vue.extend({
       } else {
         this.mutationArr = null;
       }
-          console.log(this.mutationArr)
     },
     setupPlot() {
       this.$nextTick(function() {
