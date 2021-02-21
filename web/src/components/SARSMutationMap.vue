@@ -1,5 +1,5 @@
 <template>
-<div class="">
+<div class="" id="mutation-map" ref="svg_wrapper">
   <svg :width="width" :height="height" ref="svg" class="mutation-map" :name="`${mutationKey} characteristic mutations`">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
@@ -197,9 +197,13 @@ export default Vue.extend({
       select(this.$refs.brush).on("mouseleave", this.tooltipOff)
     },
     setDims() {
-      this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
+      const wrapper = select(this.$refs.svg_wrapper).node();
+      this.maxWidth = wrapper ? wrapper.offsetWidth : 1000;
     },
     updatePlot() {
+      if(!this.width) {
+        this.setDims();
+      }
       this.updateScales();
       this.drawPlot();
     },
