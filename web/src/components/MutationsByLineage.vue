@@ -2,11 +2,12 @@
 <div class="mutations-by-lineage d-flex flex-column text-left">
   <h6 class="m-0">{{title}}</h6>
   <small class="text-muted">{{subtitle}}</small>
-  <svg :width="width" :height="height">
+  <svg :width="width" :height="height"  class="mutations_by_lineage" :name="title">
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="horizontal_bargraph"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="horizontal-bargraph-y pointer axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="horizontal-bargraph-x axis--x" ref="xAxis"></g>
   </svg>
+  <DownloadReportData :data="data" figureRef="mutations_by_lineage" dataType="Mutation by Lineage" class="mt-3" />
 </div>
 </template>
 
@@ -26,8 +27,13 @@ import {
 } from "d3";
 import cloneDeep from "lodash/cloneDeep";
 
+import DownloadReportData from "@/components/DownloadReportData.vue";
+
 export default Vue.extend({
   name: "MutationsByLineage",
+  components: {
+    DownloadReportData
+  },
   props: {
     data: Array,
     title: String,
@@ -187,6 +193,7 @@ export default Vue.extend({
             .attr("dx", d => this.x(d.proportion) > 30 ? -5 : 25)
             .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth() / 2)
             .text(d => d.proportion_formatted)
+            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("text-anchor", "end")
             .style("dominant-baseline", "central")
             .style("font-size", "12px")
