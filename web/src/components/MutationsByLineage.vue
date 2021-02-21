@@ -43,7 +43,7 @@ export default Vue.extend({
       type: Object,
       default: function() {
         return {
-          left: 70,
+          left: 80,
           right: 30,
           top: 10,
           bottom: 25
