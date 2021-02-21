@@ -27,7 +27,7 @@
 
           <div id="bulk-mutations" class="mr-4 w-400px">
             <h6 class="text-uppercase text-muted">List of mutations</h6>
-            <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:DEL69/70"'></textarea>
+            <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:DEL69/70"' @input='debounceBulk'></textarea>
           </div>
         </div>
 
@@ -98,7 +98,7 @@
       <div class="flex-row d-flex">
         <div id="selected-mutations" class="my-3" v-if="selectedMutations.length">
           <h5>Selected mutations</h5>
-          <div class="d-flex flex-wrap">
+          <div class="d-flex flex-wrap" @submit.prevent="submitQuery">
             <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in selectedMutations" :key="mIdx" @click="deleteMutation(mIdx)">
               <span v-html="mutation.mutation"></span>
               <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
@@ -150,6 +150,8 @@ import {
 
 library.add(faPlus, faTimesCircle);
 
+import debounce from "lodash/debounce";
+
 export default Vue.extend({
   name: "CustomReportForm",
   components: {
@@ -195,6 +197,9 @@ export default Vue.extend({
       return (null)
     }
   },
+  created: function() {
+    this.debounceBulk = debounce(this.changeBulk, 500);
+  },
   mounted() {
     this.queryPangolin = findPangolin;
   },
@@ -202,34 +207,78 @@ export default Vue.extend({
     updatePangolin(selected) {
       this.selectedLineage = selected.name;
     },
+    changeBulk() {
+      const bulk = this.selectedBulkString.split(",").map(d => d.trim());
+
+
+      if (this.selectedCoordinate == "aminoacid") {
+        this.selectedBulkMutations = bulk.map(d => {
+          const splitted = d.split(":");
+          if (splitted.length == 2) {
+            const aaChange = splitted[1];
+            const mutationType = aaChange.includes("DEL") ? "deletion" : "substitution";
+            const changeSplitted = aaChange.split(/(\d+)/g);
+            if (mutationType == "substitution") {
+              if (changeSplitted.length == 3) {
+                return ({
+                  mutation: d,
+                  gene: splitted[0],
+                  type: mutationType,
+                  ref_aa: changeSplitted[0],
+                  codon_num: +changeSplitted[1],
+                  alt_aa: changeSplitted[2]
+                })
+              }
+            } else if(mutationType == "deletion"){
+
+              if (changeSplitted.length == 5) {
+                return ({
+                  mutation: d,
+                  gene: splitted[0],
+                  type: mutationType,
+                  codon_num: +changeSplitted[1],
+                  change_length_nt: (Number(changeSplitted[3])- Number(changeSplitted[1]) + 1) * 3
+                })
+              }
+            }
+          }
+        })
+
+        this.selectedMutations = this.selectedManualMutations.concat(this.selectedBulkMutations.filter(d => d));
+
+      }
+
+    },
     submitQuery() {
       this.$emit("exit", true);
-      var mutations = this.selectedBulkString ? this.selectedBulkString.split(",").map(d => d.trim()) : this.selectedMutations.map(d => d.mutation.includes("&#916") ? d.mutation.replace("&#916;", "DEL") : d.mutation);
+
       this.$router.push({
         name: "MutationReport",
         query: {
           pango: this.selectedLineage,
-          muts: mutations
+          muts: this.selectedMutations.map(d => d.mutation)
         }
       });
       this.selectedBulkString = null;
       this.selectedMutations = [];
+      this.selectedManualMutations = [];
+      this.selectedBulkMutations = [];
       this.selectedLineage = null;
     },
     addMutation() {
       // Add to mutation array
-      let mutationStr;
       if (this.selectedCoordinate == "aminoacid") {
-        this.selectedMutations.push({
+        this.selectedManualMutations.push({
           type: this.selectedMutationType,
           gene: this.selectedGene.name,
           codon_num: +this.selectedLocation,
           ref_aa: this.selectedRef,
           alt_aa: this.selectedMutation,
           mutation: this.selectedLabel,
-          change_length_nt: +this.selectedDelLength*3
+          change_length_nt: +this.selectedDelLength * 3
         });
       }
+      this.selectedMutations = this.selectedManualMutations.concat(this.selectedBulkMutations);
       // Clear the form
       this.selectedMutationType = null;
       this.selectedGene = null;
@@ -237,16 +286,26 @@ export default Vue.extend({
       this.selectedMutation = null;
     },
     deleteMutation(idx) {
-      this.selectedMutations.splice(idx, 1);
+      const removed = this.selectedMutations.splice(idx, 1);
+      this.selectedMutations = this.selectedMutations.filter(d => d.mutation != removed[0].mutation);
+      // Remove from manual mutations
+      this.selectedManualMutations = this.selectedManualMutations.filter(d => d.mutation != removed[0].mutation);
+
+      // Remove from bulk mutations
+      this.selectedBulkMutations = this.selectedBulkMutations.filter(d => d.mutation != removed[0].mutation);
+      this.selectedBulkString = this.selectedBulkMutations.map(d => d.mutation).join(",");
+
+      console.log(this.selectedMutations)
     }
   },
   data() {
     return {
       queryPangolin: null,
       selectedMutations: [],
+      selectedBulkMutations: [],
+      selectedManualMutations: [],
       selectedLineage: null,
       selectedBulkString: null,
-      selectedBulkMutations: [],
       selectedCoordinate: "aminoacid",
       selectedGene: null,
       selectedLocation: null,

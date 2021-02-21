@@ -448,7 +448,7 @@ export default Vue.extend({
       }
     },
     drawPlot() {
-      if (this.mutationArr && this.mutationArr.length) {
+      if (this.mutationArr && this.mutationArr.length >= 0) {
         const t1 = transition().duration(1500);
 
         this.prepData();
