@@ -147,6 +147,7 @@ export default Vue.extend({
       rectSelector.join(
         enter => {
           enter.append("rect")
+            .attr("id", d => d.pangolin_lineage)
             .attr("x", d => this.x(0))
             .attr("y", d => this.y(d.pangolin_lineage))
             .attr("height", d => this.y.bandwidth())
@@ -155,30 +156,36 @@ export default Vue.extend({
         },
         update => {
           update.attr("x", d => this.x(0))
+            .attr("id", d => d.pangolin_lineage)
             .transition().duration(250)
             .attr("width", d => this.x(d.proportion) - this.x(0))
             .attr("y", d => this.y(d.pangolin_lineage))
             .attr("height", d => this.y.bandwidth())
         },
         exit => {
-          exit
+          exit.call(exit =>
+            exit
             .transition()
-            .attr("width", 0)
+            .duration(10)
+            .style("opacity", 1e-5)
             .remove()
+          )
         }
       );
 
       const textSelector =
         this.svg
-        .selectAll("text")
+        .selectAll(".lineage-annotation")
         .data(this.processedData, d => d.pangolin_lineage);
 
       rectSelector.join(
         enter => {
           enter.append("text")
+            .attr("class", d => "lineage-annotation")
+            .attr("id", d => d.pangolin_lineage)
             .attr("x", d => this.x(d.proportion))
             .attr("dx", d => this.x(d.proportion) > 30 ? -5 : 25)
-            .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth()/2)
+            .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth() / 2)
             .text(d => d.proportion_formatted)
             .style("text-anchor", "end")
             .style("dominant-baseline", "central")
@@ -186,16 +193,20 @@ export default Vue.extend({
         },
         update => {
           update
+            .attr("id", d => d.pangolin_lineage)
             .attr("x", d => this.x(d.proportion))
             .attr("dx", d => this.x(d.proportion) > 30 ? -5 : 25)
             .attr("y", d => this.y(d.pangolin_lineage))
             .text(d => d.proportion_formatted)
         },
         exit => {
-          exit
+          exit.call(exit =>
+            exit
             .transition()
-            .attr("width", 0)
+            .duration(10)
+            .style("opacity", 1e-5)
             .remove()
+          )
         }
       );
 
