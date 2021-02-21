@@ -209,7 +209,7 @@
         </div>
 
         <div class="my-4" v-if="mutationsByLineage.length">
-          <MutationsByLineage :title="`Global prevalence of ${mutationString} per PANGO lineage`" subtitle="Since first identification" :data="mutationsByLineage" />
+          <MutationsByLineage :title="`Global prevalence of ${mutationName} per PANGO lineage`" subtitle="Since first identification" :data="mutationsByLineage" />
         </div>
       </section>
 
@@ -569,7 +569,7 @@ export default {
         if (this.$route.query.muts && this.$route.query.muts.length) {
           // Lineage + Mutation report
           this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
-          this.mutationString = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
+          this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
           this.mutationName = typeof(this.$route.query.muts) == "string" ? `${this.lineageName} Lineage with ${this.$route.query.muts}` : `${this.lineageName} Lineage with ${this.$route.query.muts.join(", ")}`;
           this.reportType = "lineage with added mutations";
           this.title = `${this.mutationName} Report`;
@@ -581,7 +581,7 @@ export default {
           // Lineage report
           this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
           this.mutationName = this.lineageName;
-          this.mutationString = null;
+          this.mutationID = null;
           this.reportType = "lineage";
           this.title = `${this.mutationName} Lineage Report`;
           this.disclaimer =
@@ -593,8 +593,8 @@ export default {
         if (typeof(this.$route.query.muts) == "string") {
           // Single mutation report
           this.lineageName = null;
-          this.mutationString = this.$route.query.muts;
-          this.mutationName = this.mutationString;
+          this.mutationID = this.$route.query.muts;
+          this.mutationName = this.mutationID;
           this.reportType = "mutation";
           this.title = `${this.mutationName} Mutation Report`;
           this.disclaimer =
@@ -604,9 +604,9 @@ export default {
           // Variant (multiple mutation) report
           this.lineageName = null;
           this.mutationName = this.$route.query.muts.join(", ");
-          this.mutationString = this.$route.query.muts.join(",");
+          this.mutationID = this.$route.query.muts.join(",");
           this.reportType = "variant";
-          this.title = `${this.mutationString} Variant Report`;
+          this.title = `${this.mutationName} Variant Report`;
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
         }
@@ -615,8 +615,8 @@ export default {
     setupReport() {
       this.setLineageAndMutationStr();
 
-      if (this.lineageName || this.mutationString) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationString, this.lineageName, this.selected, this.selectedType).subscribe(results => {
+      if (this.lineageName || this.mutationID) {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationID, this.lineageName, this.selected, this.selectedType).subscribe(results => {
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -771,7 +771,7 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationString, this.lineageName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
 
