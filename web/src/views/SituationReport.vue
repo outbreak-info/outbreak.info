@@ -205,7 +205,7 @@
         </div>
 
         <!-- NEW TODAY -->
-        <div class="my-4">
+        <!-- <div class="my-4">
           <h4>What's new today</h4>
           <table>
             <tr class="border-bottom">
@@ -222,7 +222,7 @@
               </td>
             </tr>
           </table>
-        </div>
+        </div> -->
       </section>
 
       <!-- RIGHT: SUMMARY BOX -->
