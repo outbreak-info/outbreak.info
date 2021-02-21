@@ -188,6 +188,22 @@
           </ul>
         </div> -->
 
+
+        <!-- BREAKDOWN BY PANGO LINEAGE -->
+        <div class="my-4" v-if="mutationsByLineage.length">
+          <div v-if="reportType == 'lineage with added mutations'" class="mx-2 mb-1">
+            <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#collapsePangoBreakdown" aria-expanded="true" aria-controls="collapsePangoBreakdown">
+              <small><span class="if-collapsed">Show</span>
+                <span class="if-not-collapsed">Hide</span>
+                other lineages with {{ mutationName }}</small>
+            </button>
+          </div>
+
+          <div class="mx-3" :class="{'collapse' : reportType == 'lineage with added mutations'}" id="collapsePangoBreakdown">
+            <MutationsByLineage :title="`Global prevalence of ${mutationName} per PANGO lineage`" subtitle="Since first identification" :data="mutationsByLineage" />
+          </div>
+        </div>
+
         <!-- NEW TODAY -->
         <div class="my-4">
           <h4>What's new today</h4>
@@ -206,10 +222,6 @@
               </td>
             </tr>
           </table>
-        </div>
-
-        <div class="my-4" v-if="mutationsByLineage.length">
-          <MutationsByLineage :title="`Global prevalence of ${mutationName} per PANGO lineage`" subtitle="Since first identification" :data="mutationsByLineage" />
         </div>
       </section>
 
