@@ -685,7 +685,7 @@ export function getDateUpdated(apiUrl) {
       })
     }),
     catchError(e => {
-      console.log("%c Error in getting Pangolin lineage names!", "color: red");
+      console.log("%c Error in getting date updated!", "color: red");
       console.log(e);
       return ( of ([]));
     })
