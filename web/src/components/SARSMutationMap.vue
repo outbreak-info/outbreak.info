@@ -1,6 +1,6 @@
 <template>
 <div class="" id="mutation-map" ref="svg_wrapper">
-  <svg :width="width" :height="height" ref="svg" class="mutation-map" :name="`${mutationKey} characteristic mutations`">
+  <svg :width="width" :height="height" ref="svg" :class="[copyable ? 'mutation-map' : 'mutation_map']" :name="`${mutationKey} characteristic mutations`">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
       <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
@@ -68,6 +68,10 @@ export default Vue.extend({
   name: "SARSMutationMap",
   props: {
     mutationKey: String,
+    copyable: {
+      type: Boolean,
+      default: false
+    },
     lineageMutations: Array,
     additionalMutations: Array,
     setWidth: {
