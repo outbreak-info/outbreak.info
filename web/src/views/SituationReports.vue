@@ -48,42 +48,19 @@
       <div class="row mt-3">
         <div class="col-sm-12 col-md-6 col-lg-6 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
           <div class="w-100 p-3 card">
-            <!-- NAME -->
-            <div class="d-flex justify-content-between" id="mutation-name">
-              <router-link :to="{name:'MutationReport', query:{ pango: report.mutation_name }}" v-if="group.key == 'lineage'">
-                <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
-              </router-link>
-              <router-link :to="{name:'MutationReport', query:{ muts: report.mutation_name }}" v-else>
-                <h5 class="m-0 pb-1 mr-3"><b>{{ report.mutation_name }}</b></h5>
-              </router-link>
+            <router-link :to="{name:'MutationReport', query:{ pango: report.mutation_name }}" v-if="group.key == 'lineage'" class="no-underline">
+              <ReportCard :report="report" />
+            </router-link>
 
-              <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
-              <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
-            </div>
-            <p v-if="report.lineages && report.lineages.length">
-              prominent in
-              <router-link :to="{name:'MutationReport', query:{ pango: lineage }}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
-                <button class="btn btn-main-outline py-0 px-1"><small>{{ lineage }}</small>
-                </button>
-              </router-link>
-            </p>
-            <!-- DESCRIPTION -->
-            <small v-if="report.location_first_identified"><em>first identified in {{ report.location_first_identified }}</em></small>
-            <small v-if="report.mutation_synonyms"><span>a.k.a. </span>
-              <span v-for="(synonym, sIdx) in report.mutation_synonyms" :key="sIdx">
-                <b>{{ synonym }}</b>
-                <span v-if="sIdx < report.mutation_synonyms.length - 1">, </span></span>
-            </small>
-
-            <!-- LINK TO RESOURCES -->
-            <!-- <router-link :to='{name:"Resources", query:{q: `"${report.mutation_name}"`}}' v-if="report.mutation_name === 'B.1.1.7'">
-              <small>View {{report.mutation_name}} resources</small>
-            </router-link> -->
+            <router-link :to="{name:'MutationReport', query:{ muts: report.mutation_name }}"  class="no-underline" v-else>
+              <ReportCard :report="report" />
+            </router-link>
 
             <!-- MUTATION MAP / DEFINITION -->
             <div class="mutation-map flex-grow-1 px-2">
               <SARSMutationMap :lineageMutations="report.mutations" :mutationKey="report.mutation_name" />
             </div>
+
           </div>
         </div>
       </div>
@@ -104,10 +81,10 @@
 import Vue from "vue";
 
 import ReportLogos from "@/components/ReportLogos.vue";
-import SARSMutationMap from "@/components/SARSMutationMap.vue";
+import ReportCard from "@/components/ReportCard.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
-
+import SARSMutationMap from "@/components/SARSMutationMap.vue";
 
 // --- font awesome --
 import {
@@ -137,6 +114,7 @@ export default {
   name: "SituationReports",
   components: {
     ReportLogos,
+    ReportCard,
     SARSMutationMap,
     CustomReportForm,
     ReportAcknowledgements,
