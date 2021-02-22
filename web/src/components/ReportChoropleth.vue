@@ -560,8 +560,8 @@ if(this.filteredData) {
 
       // fix location
       ttip
-        .style("left", `${this.event.pageX + ttipShift}px`)
-        .style("top", `${this.event.pageY + ttipShift}px`)
+        .style("left", `${this.event.clientX + ttipShift}px`)
+        .style("top", `${this.event.clientY + ttipShift}px`)
         .style("display", "block");
     },
     mouseOff() {

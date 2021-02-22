@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column w-100 align-items-center mt-3">
-  <h5 class="">Characteristic mutations</h5>
+  <h5 class="">{{ tableTitle }}</h5>
 <table>
   <thead>
     <tr class="border-bottom">
@@ -37,7 +37,8 @@ import Vue from "vue";
 export default Vue.extend({
   name: "MutationTable",
   props: {
-    mutations: Array
+    mutations: Array,
+    tableTitle: String
   }
 })
 </script>

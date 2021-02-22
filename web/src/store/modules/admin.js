@@ -484,6 +484,17 @@ const state = {
         }
       }
     }, {
+      date: new Date("2021-02-23 0:0"),
+      category: "data",
+      title: "Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports",
+      description: 'Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports',
+      route: {
+        name: "SituationReports",
+        query: {
+          muts: "S:N501Y"
+        }
+      }
+    }, {
       date: new Date("2020-07-06 0:1"),
       category: "feature",
       title: "Copyable visualizations",

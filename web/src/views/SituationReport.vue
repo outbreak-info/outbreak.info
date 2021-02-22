@@ -1,5 +1,5 @@
 <template>
-<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-5' : 'mx-2']" v-if="mutationName">
+<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-5' : 'mx-2']" v-if="reportName">
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
@@ -66,28 +66,20 @@
 
   <!-- CHANGE PANGOLIN LINEAGE MODAL -->
   <div id="change-pangolin-modal" class="modal fade">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title" id="exampleModalLabel">Generate Lineage Report</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Generate Custom Mutation Report</h5>
           <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="py-3">
-            <p>
-              Choose a lineage designated by <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a>:
-            </p>
-            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
-              <TypeaheadSelect :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="select PANGO lineage" />
-            </div>
-          </div>
+          <CustomReportForm @exit="closeModal" />
         </div>
 
         <div class="modal-footer border-secondary">
           <button type="button" class="btn" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-accent" @click="selectNewPangolin" data-dismiss="modal">Generate Report</button>
         </div>
       </div>
     </div>
@@ -99,7 +91,8 @@
       <router-link :to="{ name: 'SituationReports'}">
         <button class="btn py-0 px-2 btn-grey-outline">back</button>
       </router-link>
-      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select lineage</button>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select mutation(s)</button>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-locations-modal">change locations</button>
       <ShareReport title="title" url="url" />
     </div>
 
@@ -176,7 +169,7 @@
 
         <!-- CHARACTERISTIC MUTATIONS -->
         <div class="mt-4" id="definition">
-          <CharacteristicMutations :mutationName="mutationName" :mutations="mutations" :definitionLabel="definitionLabel" />
+          <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
         </div>
 
         <!-- KEY INSIGHTS -->
@@ -184,7 +177,7 @@
           <h4>Key Insights</h4>
           <ul>
             <li>
-              XXXX {{ mutationName }} has been <b>increasing/decreasing</b> in prevalence over the past two weeks.
+              XXXX {{ reportName }} has been <b>increasing/decreasing</b> in prevalence over the past two weeks.
             </li>
             <li>
               XXXX Its apparent prevalence is higher in rest of the world compared to the United States or San Diego.
@@ -195,8 +188,24 @@
           </ul>
         </div> -->
 
+
+        <!-- BREAKDOWN BY PANGO LINEAGE -->
+        <div class="my-4" v-if="mutationsByLineage.length">
+          <div v-if="reportType == 'lineage with added mutations'" class="mx-2 mb-1">
+            <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#collapsePangoBreakdown" aria-expanded="true" aria-controls="collapsePangoBreakdown">
+              <small><span class="if-collapsed">Show</span>
+                <span class="if-not-collapsed">Hide</span>
+                other lineages with {{ mutationName }}</small>
+            </button>
+          </div>
+
+          <div class="mx-3" :class="{'collapse' : reportType == 'lineage with added mutations'}" id="collapsePangoBreakdown">
+            <MutationsByLineage :title="`Global prevalence of ${mutationName} per PANGO lineage`" subtitle="Since first identification" :lineage="lineageName" :mutationName="mutationName" :data="mutationsByLineage" />
+          </div>
+        </div>
+
         <!-- NEW TODAY -->
-        <div class="my-4">
+        <!-- <div class="my-4">
           <h4>What's new today</h4>
           <table>
             <tr class="border-bottom">
@@ -213,12 +222,12 @@
               </td>
             </tr>
           </table>
-        </div>
+        </div> -->
       </section>
 
       <!-- RIGHT: SUMMARY BOX -->
       <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="mutationName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries"
+        <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries"
           :states="states" />
       </section>
     </div>
@@ -226,7 +235,7 @@
 
     <!-- DAILY PREVALENCE -->
     <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
-      <h4 class="mb-0">Average daily {{mutationName}} prevalence</h4>
+      <h4 class="mb-0">Average daily {{reportName}} prevalence</h4>
       <small class="text-muted mb-2">Based on reported sample collection date</small>
       <div id="location-buttons" class="d-flex flex-wrap">
         <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
@@ -234,7 +243,7 @@
           <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
-      <ReportPrevalence :data="prevalence" :mutationName="mutationName" :location="activeLocation" />
+      <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="activeLocation" />
     </section>
 
     <!-- GEOGRAPHIC PREVALENCE -->
@@ -264,7 +273,7 @@
 
     <!-- RESOURCES -->
     <section id="resources">
-      <ReportResources :mutationName="mutationName" :searchTerms="searchTerms" />
+      <ReportResources :mutationName="reportName" :searchTerms="searchTerms" />
     </section>
 
     <!-- METHODOLOGY -->
@@ -279,7 +288,7 @@
     <section class="my-3">
       <h4 class="">Citing this report</h4>
       <p class="m-0">
-        <b>{{ mutationName }} {{ reportType | capitalize }} Report</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
+        <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
       </p>
       <ShareReport :title="title" :url="url" />
     </section>
@@ -291,7 +300,7 @@
     <div class="d-flex flex-column align-items-start">
       <h1 class="m-0">{{ title }}</h1>
       <p class="my-5">
-        Calculating prevalence of {{reportType}} {{mutationName}}. Please be patient.
+        Calculating prevalences for {{title}}. Please be patient.
       </p>
     </div>
   </div>
@@ -299,7 +308,7 @@
     <div class="d-flex flex-column align-items-start">
       <h1 class="m-0">{{ title }}</h1>
       <p class="my-5">
-        No data found for {{reportType}} <b>{{mutationName}}</b>. Please check that you have specified the {{reportType}} properly.
+        No data found for <b>{{title}}</b>. Please check that you have specified the {{reportType}} properly.
       </p>
     </div>
   </div>
@@ -310,7 +319,8 @@
 import Vue from "vue";
 
 import {
-  uniq
+  uniq,
+  isEqual
 } from "lodash";
 
 import ReportLogos from "@/components/ReportLogos.vue";
@@ -325,6 +335,8 @@ import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
+import CustomReportForm from "@/components/CustomReportForm.vue";
+import MutationsByLineage from "@/components/MutationsByLineage.vue";
 
 // --- font awesome --
 import {
@@ -378,7 +390,9 @@ export default {
     ReportResources,
     ShareReport,
     ReportSummary,
-    TypeaheadSelect
+    TypeaheadSelect,
+    CustomReportForm,
+    MutationsByLineage
   },
   props: {
     country: Array,
@@ -399,17 +413,16 @@ export default {
     smallScreen() {
       return (window.innerSize < 500)
     },
-    title() {
-      return (`${this.mutationName} ${this.$options.filters.capitalize(this.reportType)} Report`)
-    },
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
     },
     genericDescription() {
-      return `Concerns surrounding new strains of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of ${this.mutationName} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+      return this.reportType == "lineage with added mutations" ?
+      `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> in the world, how it is changing over time, and how its prevalence varies across different locations.`
+      : `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> ${this.reportType} in the world, how it is changing over time, and how its prevalence varies across different locations.`
     },
     pangoLink() {
-      return this.mutationVar == "pangolin_lineage" ? `https://cov-lineages.org/lineages/lineage_${this.mutationName}.html` : null
+      return this.lineageName ? `https://cov-lineages.org/lineages/lineage_${this.lineageName}.html` : null
     },
     selectedLocations() {
       if (!this.country && !this.division) {
@@ -483,8 +496,10 @@ export default {
   },
   watch: {
     '$route.query': function(newVal, oldVal) {
-      if (newVal.pango != oldVal.pango) {
+      if (newVal.pango != oldVal.pango || !isEqual(newVal.muts, oldVal.muts)) {
         this.newPangolin = null;
+        this.lineageName = null;
+        this.reportMetadata = null;
         this.setupReport();
       } else {
         this.updateLocations();
@@ -496,10 +511,13 @@ export default {
       // report details
       today: null,
       url: null,
+      lineageName: null,
       mutationName: null,
+      reportName: null,
       mutationVar: null,
       mutations: null,
       reportType: null,
+      title: null,
       lastUpdated: null,
       disclaimer: null,
 
@@ -535,7 +553,8 @@ export default {
       totalLineage: null,
       globalPrev: null,
       newToday: null,
-      prevalence: []
+      prevalence: [],
+      mutationsByLineage: []
     }
   },
   mounted() {
@@ -543,8 +562,6 @@ export default {
     this.queryCountry = findCountry;
     this.queryDivision = findDivision;
     this.queryPangolin = findPangolin;
-    this.disclaimer =
-      `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
     // Get date for the citation object
     const formatDate = timeFormat("%e %B %Y");
@@ -556,23 +573,69 @@ export default {
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
-
     this.setupReport();
   },
   methods: {
-    setupReport() {
+    setLineageAndMutationStr() {
       if (this.$route.query.pango) {
-        this.mutationName = this.$options.filters.capitalize(this.$route.query.pango);
-        this.reportType = "lineage";
-        this.mutationVar = "pangolin_lineage";
-      } else if (this.$route.query.muts) {
-        this.mutationName = this.$route.query.muts.join(" ");
-        this.reportType = "mutation";
-        this.mutationVar = "mutations";
-      }
+        if (this.$route.query.muts && this.$route.query.muts.length) {
+          // Lineage + Mutation report
+          this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
+          this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
+          this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
+          this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
+          this.reportType = "lineage with added mutations";
+          this.searchTerms = `${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`
+          this.title = `${this.reportName} Report`;
+          this.disclaimer =
+            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
-      if (this.mutationName) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationVar, this.mutationName, this.selected, this.selectedType).subscribe(results => {
+
+        } else {
+          // Lineage report
+          this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
+          this.reportName = this.lineageName;
+          this.mutationID = null;
+          this.reportType = "lineage";
+          this.title = `${this.reportName} Lineage Report`;
+          this.searchTerms = this.lineageName;
+          this.disclaimer =
+            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+
+        }
+
+      } else {
+        if (typeof(this.$route.query.muts) == "string") {
+          // Single mutation report
+          this.lineageName = null;
+          this.mutationID = this.$route.query.muts;
+          this.reportName = this.mutationID;
+          this.mutationName = this.reportName;
+          this.reportType = "mutation";
+          this.searchTerms = this.mutationName.split(":").slice(-1);
+          this.title = `${this.reportName} Mutation Report`;
+          this.disclaimer =
+            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+
+        } else {
+          // Variant (multiple mutation) report
+          this.lineageName = null;
+          this.reportName = this.$route.query.muts.join(", ");
+          this.mutationName = this.reportName;
+          this.searchTerms = this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "');
+          this.mutationID = this.$route.query.muts.join(",");
+          this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
+          this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
+          this.disclaimer =
+            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+        }
+      }
+    },
+    setupReport() {
+      this.setLineageAndMutationStr();
+
+      if (this.lineageName || this.mutationID) {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationID, this.lineageName, this.selected, this.selectedType).subscribe(results => {
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -600,13 +663,19 @@ export default {
           this.hasData = true;
           this.mutations = results.mutations;
 
+          // Mutation details for queried mutations
+          this.additionalMutations = results.mutationDetails;
+
+          // Mutation distribution by lineage
+          this.mutationsByLineage = results.mutationsByLineage;
+
           if (results.md) {
             this.reportMetadata = results.md;
-            this.searchTerms = results.md.searchTerms;
+            this.searchTerms = this.reportType != "lineage with added mutations" ? results.md.searchTerms : [this.searchTerms];
             this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
             this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
           } else {
-            this.searchTerms = [this.mutationName];
+            this.searchTerms = [this.searchTerms];
             this.reportDescription = this.genericDescription;
           }
         })
@@ -721,7 +790,7 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationVar, this.mutationName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
 
@@ -756,6 +825,9 @@ export default {
           selectedType: queryParams.type
         }
       })
+    },
+    closeModal() {
+      $("#change-pangolin-modal").modal("hide");
     }
   },
   destroyed() {
