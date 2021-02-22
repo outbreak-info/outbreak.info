@@ -52,7 +52,7 @@
               <ReportCard :report="report" />
             </router-link>
 
-            <router-link :to="{name:'MutationReport', query:{ muts: report.mutation_name }}"  class="no-underline" v-else>
+            <router-link :to="{name:'MutationReport', query:{ muts: report.mutation_name.split(' + ') }}"  class="no-underline" v-else>
               <ReportCard :report="report" />
             </router-link>
 
