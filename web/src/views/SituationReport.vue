@@ -200,7 +200,7 @@
           </div>
 
           <div class="mx-3" :class="{'collapse' : reportType == 'lineage with added mutations'}" id="collapsePangoBreakdown">
-            <MutationsByLineage :title="`Global prevalence of ${mutationName} per PANGO lineage`" subtitle="Since first identification" :lineage="lineageName" :data="mutationsByLineage" />
+            <MutationsByLineage :title="`Global prevalence of ${mutationName} per PANGO lineage`" subtitle="Since first identification" :lineage="lineageName" :mutationName="mutationName" :data="mutationsByLineage" />
           </div>
         </div>
 

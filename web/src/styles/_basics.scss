@@ -714,6 +714,7 @@ select:hover {
   border-radius: 3px;
   position: fixed;
   display: none;
+  z-index: 1000;
 }
 
 .font-size-2 {

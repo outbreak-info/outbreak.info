@@ -2,12 +2,36 @@
 <div class="mutations-by-lineage d-flex flex-column text-left">
   <h6 class="m-0">{{title}}</h6>
   <small class="text-muted">{{subtitle}}</small>
-  <svg :width="width" :height="height"  class="mutations_by_lineage" :name="title">
+  <svg :width="width" :height="height" class="mutations_by_lineage" :name="title">
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="horizontal_bargraph"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="horizontal-bargraph-y pointer axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="horizontal-bargraph-x axis--x" ref="xAxis"></g>
   </svg>
-  <DownloadReportData :data="data" figureRef="mutations_by_lineage" dataType="Mutation by Lineage" class="mt-3" />
+
+  <div class="w-50">
+    <DownloadReportData :data="data" figureRef="mutations_by_lineage" dataType="Mutation by Lineage" class="mt-3" />
+  </div>
+
+  <!-- TOOLTIPS -->
+  <div ref="tooltip_by_lineage" class="tooltip-basic box-shadow px-2" id="tooltip-by-lineage">
+    <h5 id="lineage"></h5>
+    <p id="proportion" class="font-size-2 p-0 m-0">
+    </p>
+    <p id="counts" class="text-muted p-0 m-0">
+    </p>
+
+    <div id="other_data" class="d-flex flex-wrap flex-column justify-content-between">
+      <div v-for="(other, oIdx) in otherDataArr" :key="oIdx" class="mb-1">
+        <small class="w-100 d-flex justify-content-between">
+          <span>
+            <b class="text-underline">{{ other.pangolin_lineage}}</b>: <span class="text-muted text-right">({{other.mutation_count}} / {{other.lineage_count}})</span>
+          </span>
+          <b>{{other.proportion_formatted}}</b>
+        </small>
+      </div>
+    </div>
+  </div>
+
 </div>
 </template>
 
@@ -23,7 +47,8 @@ import {
   axisLeft,
   axisBottom,
   format,
-  min
+  min,
+  event
 } from "d3";
 import cloneDeep from "lodash/cloneDeep";
 
@@ -39,6 +64,7 @@ export default Vue.extend({
     title: String,
     subtitle: String,
     lineage: String,
+    mutationName: String,
     margin: {
       type: Object,
       default: function() {
@@ -67,7 +93,8 @@ export default Vue.extend({
     return {
       numXTicks: 4,
       bandwidth: 25,
-      height: null
+      height: null,
+      otherDataArr: []
     }
   },
   watch: {
@@ -97,8 +124,10 @@ export default Vue.extend({
       })
       this.processedData = sortedData.slice(0, this.n);
       if (this.n < sortedData.length) {
-        var otherData = sortedData
-          .slice(this.n, sortedData.length)
+        this.otherDataArr = sortedData
+          .slice(this.n, sortedData.length);
+
+        const otherData = this.otherDataArr
           .reduce((x, y) => {
             return {
               "lineage_count": x.lineage_count + y.lineage_count,
@@ -144,16 +173,86 @@ export default Vue.extend({
       select(this.$refs.yAxis).call(this.yAxis);
       select(this.$refs.xAxis).call(this.xAxis);
     },
+    tooltipOn(d) {
+      const ttip = select(this.$refs.tooltip_by_lineage);
+      const ttipShift = 20;
+
+      // update text
+      ttip.select("#lineage").text(d.pangolin_lineage);
+      ttip.select("#proportion").html(`<b>${d.proportion_formatted}</b> ${this.mutationName}`);
+      ttip.select("#counts").text(`(${format(",")(d.mutation_count)} / ${format(",")(d.lineage_count)})`);
+
+
+      selectAll(".rect-by-lineage")
+        .style("opacity", 0.3);
+
+      selectAll(".lineage-annotation")
+        .style("opacity", 0.3);
+
+      selectAll(`#${d.pangolin_lineage.replace(/\./g, "_")}`)
+        .style("opacity", 1);
+
+      // fix location
+      ttip
+        .style("left", `${event.clientX + ttipShift}px`)
+        .style("top", `${event.clientY + ttipShift}px`)
+        .style("display", "block");
+    },
+    tooltipYAxisOn(value) {
+      const d = this.processedData.filter(d => d.pangolin_lineage == value)
+      console.log(d)
+      const ttip = select(this.$refs.tooltip_by_lineage);
+      const ttipShift = 20;
+
+      // update text
+      selectAll(".rect-by-lineage")
+        .style("opacity", 0.3);
+
+      selectAll(".lineage-annotation")
+        .style("opacity", 0.3);
+
+      ttip.select("#lineage").text(value);
+
+      if (d.length === 1 && value != "other") {
+        ttip.select("#other_data").classed("hidden", true);
+        ttip.select("#proportion").html(`<b>${d[0].proportion_formatted}</b> ${this.mutationName}`);
+        ttip.select("#counts").text(`(${format(",")(d[0].mutation_count)} / ${format(",")(d[0].lineage_count)})`);
+
+        selectAll(`#${d[0].pangolin_lineage.replace(/\./g, "_")}`)
+          .style("opacity", 1);
+      } else {
+        ttip.select("#other_data").classed("hidden", false);
+        ttip.select("#proportion").html("");
+        ttip.select("#counts").text("");
+      }
+
+      // fix location
+      ttip
+        .style("left", `${event.clientX + ttipShift}px`)
+        .style("top", `${event.clientY + ttipShift}px`)
+        .style("display", "block");
+    },
+    tooltipOff() {
+      select(this.$refs.tooltip_by_lineage)
+        .style("display", "none");
+
+      selectAll(".rect-by-lineage")
+        .style("opacity", 1);
+
+      selectAll(".lineage-annotation")
+        .style("opacity", 1);
+    },
     drawBars() {
       const rectSelector =
         this.svg
-        .selectAll("rect")
+        .selectAll(".rect-by-lineage")
         .data(this.processedData, d => d.pangolin_lineage);
 
       rectSelector.join(
         enter => {
           enter.append("rect")
-            .attr("id", d => d.pangolin_lineage)
+            .attr("id", d => d.pangolin_lineage.replace(/\./g, "_"))
+            .attr("class", "rect-by-lineage")
             .attr("x", d => this.x(0))
             .attr("y", d => this.y(d.pangolin_lineage))
             .attr("height", d => this.y.bandwidth())
@@ -162,7 +261,7 @@ export default Vue.extend({
         },
         update => {
           update.attr("x", d => this.x(0))
-            .attr("id", d => d.pangolin_lineage)
+            .attr("id", d => d.pangolin_lineage.replace(/\./g, "_"))
             .transition().duration(250)
             .attr("width", d => this.x(d.proportion) - this.x(0))
             .attr("y", d => this.y(d.pangolin_lineage))
@@ -184,25 +283,28 @@ export default Vue.extend({
         .selectAll(".lineage-annotation")
         .data(this.processedData, d => d.pangolin_lineage);
 
-      rectSelector.join(
+      const textThresh = 25;
+
+      textSelector.join(
         enter => {
           enter.append("text")
             .attr("class", d => "lineage-annotation")
-            .attr("id", d => d.pangolin_lineage)
+            .attr("id", d => d.pangolin_lineage.replace(/\./g, "_"))
             .attr("x", d => this.x(d.proportion))
-            .attr("dx", d => this.x(d.proportion) > 30 ? -5 : 25)
+            .attr("dx", d => this.x(d.proportion) > textThresh ? -5 : 5)
             .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth() / 2)
             .text(d => d.proportion_formatted)
             .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-            .style("text-anchor", "end")
+            .style("text-anchor", d => this.x(d.proportion) > textThresh ? "end" : "start")
             .style("dominant-baseline", "central")
             .style("font-size", "12px")
         },
         update => {
           update
-            .attr("id", d => d.pangolin_lineage)
+            .attr("id", d => d.pangolin_lineage.replace(/\./g, "_"))
             .attr("x", d => this.x(d.proportion))
-            .attr("dx", d => this.x(d.proportion) > 30 ? -5 : 25)
+            .attr("dx", d => this.x(d.proportion) > textThresh ? -5 : 5)
+            .style("text-anchor", d => this.x(d.proportion) > textThresh ? "end" : "start")
             .attr("y", d => this.y(d.pangolin_lineage))
             .text(d => d.proportion_formatted)
         },
@@ -217,8 +319,16 @@ export default Vue.extend({
         }
       );
 
+      // event listener for tooltips
+      this.svg.selectAll(".rect-by-lineage")
+        .on("mousemove", d => this.tooltipOn(d))
+        .on("mouseleave", () => this.tooltipOff())
+
+      // event listener for click event
       select(this.$refs.yAxis)
         .selectAll("text")
+        .on("mousemove", d => this.tooltipYAxisOn(d))
+        .on("mouseleave", () => this.tooltipOff())
         .on("click", d => this.handleLineageClick(d));
     }
   },

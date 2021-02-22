@@ -213,7 +213,7 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
 
       results.forEach(d => {
         d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
-        d["proportion_formatted"] = formatPercent(d["proportion"]);
+        d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
       })
       return (results)
     }),
