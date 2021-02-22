@@ -5,7 +5,7 @@
       rel="noreferrer">{{refSeq.name}}</a> using <a href="https://github.com/lh3/minimap2/" rel="noreferrer" target="_blank">minimap2</a> and <a href="https://github.com/cov-ert/datafunk/" rel="noreferrer" target="_blank">datafunk</a>, and
     subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer" target="_blank">Bjorn</a>. <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineage</a> classification for each individual
     sequence was provided by GISAID. Sequences with collection dates specifying only the year were excluded, while date specifying only the year and month were
-    assumed to have occured on the 15th of that month.
+    assumed to have occurred on the 15th of that month.
   </p>
   <p>
     Mutation prevalence was calculated as a ratio of the count of sequences containing a given set of mutations on a day at a particular location (or in all locations) (<b>x</b>) divided by the total sequences on that data in that location
@@ -13,7 +13,7 @@
     <span class="code" v-html="'2.5 quantile of	&beta;(x + 0.5, n - x + 0.5)'"></span> to <span class="code" v-html="'97.5 quantile of &beta;(x + 0.5, n - x + 0.5)'"></span>.
   </p>
   <p>
-    Characteristic mutations for a lineage were defined as nonsynonymous substitutions or deletions that occured in > {{charMutThreshold}} of sequences within that lineage.
+    Characteristic mutations for a lineage were defined as nonsynonymous substitutions or deletions that occurred in > {{charMutThreshold}} of sequences within that lineage.
   </p>
 </div>
 </template>
