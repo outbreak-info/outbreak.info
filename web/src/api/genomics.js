@@ -16,7 +16,8 @@ import {
   timeParse,
   timeFormat,
   format,
-  timeDay, nest
+  timeDay,
+  nest
 } from "d3";
 
 import {
@@ -47,10 +48,32 @@ function titleCase(value) {
 // reminder: must be the raw verison of the file
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
-export function getReportList(apiurl) {
+export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThreshold) {
+  const queryStr = mutationObj["mutations"].map(d => d.mutation).join(",");
+  return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
+    map(lineages => {
+      mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
+      return(mutationObj)
+    })
+  )
+}
+
+export function getCuratedListAndCharMuts(apiurl, prevalenceThreshold) {
+  return getCuratedList().pipe(
+    mergeMap(list => {
+      const mutations = list.filter(d => d.key == "mutation")[0]["values"];
+      return forkJoin(... mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
+      map(results => {
+        return (list)
+      })
+    )}
+  )
+  )
+}
+export function getReportList(apiurl, prevalenceThreshold = 0.85) {
   store.state.admin.reportloading = true;
 
-  return forkJoin([getDateUpdated(apiurl), getCuratedList()]).pipe(
+  return forkJoin([getDateUpdated(apiurl), getCuratedListAndCharMuts(apiurl, prevalenceThreshold)]).pipe(
     map(([dateUpdated, md]) => {
       return ({
         dateUpdated: dateUpdated.lastUpdated,
@@ -67,7 +90,7 @@ export function getReportList(apiurl) {
   )
 }
 
-export function buildQueryStr(lineageString, mutationString){
+export function buildQueryStr(lineageString, mutationString) {
   var queryStr = "";
   if (lineageString) {
     queryStr += `pangolin_lineage=${lineageString}`;
@@ -110,8 +133,8 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
         states: states,
         md: md,
         mutations: characteristicMuts,
-	mutationDetails: mutationDetails,
-	mutationsByLineage: mutationsByLineage
+        mutationDetails: mutationDetails,
+        mutationsByLineage: mutationsByLineage
       })
     }),
     catchError(e => {
@@ -149,7 +172,7 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
 }
 
 export function getMutationDetails(apiurl, mutationString) {
-  if(!mutationString)
+  if (!mutationString)
     return ( of ([]));
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = `${apiurl}mutation-details?mutations=${mutationString}&timestamp=${timestamp}`;
@@ -173,8 +196,8 @@ export function getMutationDetails(apiurl, mutationString) {
   )
 }
 
-export function getMutationsByLineage(apiurl, mutationString) {
-  if(!mutationString)
+export function getMutationsByLineage(apiurl, mutationString, proportionThreshold = 0) {
+  if (!mutationString)
     return ( of ([]));
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = `${apiurl}mutations-by-lineage?mutations=${mutationString}&timestamp=${timestamp}`;
@@ -185,6 +208,9 @@ export function getMutationsByLineage(apiurl, mutationString) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+
+      results = results.filter(d => d.proportion >= proportionThreshold);
+
       results.forEach(d => {
         d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
         d["proportion_formatted"] = formatPercent(d["proportion"]);
@@ -509,7 +535,6 @@ export function getCuratedMetadata(id) {
   )
 }
 
-
 export function getCuratedList() {
   return from(
     axios.get(curatedFile, {
@@ -535,7 +560,6 @@ export function getCuratedList() {
     })
   )
 }
-
 
 export function getLineageResources(apiUrl, queryString, size, page, sort = "-date") {
   const fields = "@type, name, author, date, journalName"

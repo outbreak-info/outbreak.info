@@ -60,6 +60,13 @@
               <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
               <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
             </div>
+            <p v-if="report.lineages && report.lineages.length">
+              prominent in
+              <router-link :to="{name:'MutationReport', query:{ pango: lineage }}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
+                <button class="btn btn-main-outline py-0 px-1"><small>{{ lineage }}</small>
+                </button>
+              </router-link>
+            </p>
             <!-- DESCRIPTION -->
             <small v-if="report.location_first_identified"><em>first identified in {{ report.location_first_identified }}</em></small>
             <small v-if="report.mutation_synonyms"><span>a.k.a. </span>
