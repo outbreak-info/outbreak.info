@@ -291,8 +291,8 @@ export default Vue.extend({
 
       // fix location
       ttip
-        .style("left", `${event.pageX + ttipShift}px`)
-        .style("top", `${event.pageY + ttipShift}px`)
+        .style("left", `${event.clientX + ttipShift}px`)
+        .style("top", `${event.clientY + ttipShift}px`)
         .style("display", "block");
     },
     tooltipOff() {
