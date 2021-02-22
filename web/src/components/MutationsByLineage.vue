@@ -192,6 +192,17 @@ export default Vue.extend({
       selectAll(`#${d.pangolin_lineage.replace(/\./g, "_")}`)
         .style("opacity", 1);
 
+        if (d.pangolin_lineage != "other") {
+          ttip.select("#other_data").classed("hidden", true);
+          ttip.select("#lineage").text(d.pangolin_lineage);
+          ttip.select("#proportion").html(`<b>${d.proportion_formatted}</b> ${this.mutationName}`);
+          ttip.select("#counts").text(`(${format(",")(d.mutation_count)} / ${format(",")(d.lineage_count)})`);
+        } else {
+          ttip.select("#other_data").classed("hidden", false);
+          ttip.select("#proportion").html("");
+          ttip.select("#counts").text("");
+        }
+
       // fix location
       ttip
         .style("left", `${event.clientX + ttipShift}px`)
@@ -200,7 +211,6 @@ export default Vue.extend({
     },
     tooltipYAxisOn(value) {
       const d = this.processedData.filter(d => d.pangolin_lineage == value)
-      console.log(d)
       const ttip = select(this.$refs.tooltip_by_lineage);
       const ttipShift = 20;
 
