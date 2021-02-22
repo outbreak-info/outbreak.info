@@ -31,7 +31,7 @@
               <!-- </div> -->
 
               <div id="bulk-mutations" class="mr-4 w-350px">
-                <h6 class="text-uppercase text-muted">List of mutations</h6>
+                <h6 class="text-uppercase text-muted" v-if="!minimalistic">List of mutations</h6>
                 <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:DEL69/70"' @input='debounceBulk'></textarea>
               </div>
               <div class="warning" v-if="badBulkGene && selectedBulkString">
