@@ -348,6 +348,21 @@ const routes = [{
   {
     path: "/situation-report-demo",
     redirect: "/situation-reports"
+  },
+  {
+    path: "/location-reports",
+    name: "LocationReport",
+    props: route => ({
+      country: route.query.country,
+      division: route.query.division,
+      muts: route.query.muts,
+      pango: route.query.pango
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-report" */
+        "../views/LocationReport.vue"
+      )
   }
 ];
 
