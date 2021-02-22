@@ -108,7 +108,7 @@
     <div>
       The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
     </div>
-    <CountryMap :countries="countries" :width="summaryWidth" :showNames="false" class="align-self-center" />
+    <CountryMap :countries="countries" :width="summaryWidth" :showNames="false" class="align-self-center" mapSource="GADM" />
     <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
   </div>
 </div>

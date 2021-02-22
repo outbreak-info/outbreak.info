@@ -419,7 +419,7 @@ export default {
             type: "world",
             isActive: true
           }, {
-            name: "United States of America",
+            name: "United States",
             type: "country",
             isActive: false
           }, {
