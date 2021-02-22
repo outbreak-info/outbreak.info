@@ -7,14 +7,16 @@
   <div class="row d-flex align-items-center">
     <div class="col-sm-12 col-md-9">
       <div id="pango" class="my-3">
-        <h4 class="mb-0">Custom lineage</h4>
+        <h6 class="mb-0" v-if="minimalistic">Custom lineage</h6>
+        <h4 class="mb-0" v-else>Custom lineage</h4>
         <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
-        <form id="custom-pangolin" @submit.prevent="submitQuery">
-          <div class="flew-row d-flex w-400px">
-            <TypeaheadSelect class="mr-4" :queryFunction="queryPangolin" :selectedValue="selectedLineage" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
+        <form id="custom-reports" @submit.prevent="submitQuery">
+          <div class="flew-row d-flex w-350px">
+            <TypeaheadSelect :queryFunction="queryPangolin" :selectedValue="selectedLineage" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
           </div>
           <div id="mutation-set" class="my-3">
-            <h4>Set of mutations</h4>
+            <h6 v-if="minimalistic">Set of mutations</h6>
+            <h4 v-else>Set of mutations</h4>
             <div class="d-flex align-items-center">
               <!-- <div class="d-flex flex-column align-items-start mr-4 coords p-2" id="coordinate-type"> -->
               <!--   <h6 class="text-uppercase text-muted">coordinate system</h6> -->
@@ -28,7 +30,7 @@
               <!--   </div> -->
               <!-- </div> -->
 
-              <div id="bulk-mutations" class="mr-4 w-400px">
+              <div id="bulk-mutations" class="mr-4 w-350px">
                 <h6 class="text-uppercase text-muted">List of mutations</h6>
                 <textarea class="form-control border-theme" v-model="selectedBulkString" placeholder='"gene:mutation": e.g. "S:N501Y, S:DEL69/70"' @input='debounceBulk'></textarea>
               </div>
@@ -47,88 +49,88 @@
                 Specify a deletion like "S:DEL69/70"
               </div>
             </div>
-
-            <div class="flex-row d-flex">
-              <div class="mr-4 align-self-center">
-                <b>or</b>
-              </div>
-            </div>
-
-            <div class="flex-row d-flex">
-
-              <div id="gene-name" class="p-2" v-if="selectedCoordinate === 'aminoacid'">
-                <h6 class="text-uppercase text-muted">gene</h6>
-                <select v-model="selectedGene" class="select-dropdown">
-                  <option v-for="gene in genes" :value="gene" :key="gene.name">
-                    {{gene.name}}
-                  </option>
-                </select>
-              </div>
-
-              <div class="d-flex flex-column align-items-start p-2" id="mutation-type">
-                <h6 class="text-uppercase text-muted">mutation type</h6>
-                <div class="radio-item">
-                  <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
-                  <label for="substitution">substitution</label>
-                </div>
-                <div class="radio-item">
-                  <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
-                  <label for="deletion">deletion</label>
+            <template v-if="!minimalistic">
+              <div class="flex-row d-flex">
+                <div class="mr-4 align-self-center">
+                  <b>or</b>
                 </div>
               </div>
 
-              <div id="location" class="mr-4">
-                <h6 class="text-uppercase text-muted" v-if="selectedMutationType == 'substitution'">location</h6>
-                <h6 class="text-uppercase text-muted" v-else>start location</h6>
-                <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
-                <small>relative to <a :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a></small>
-              </div>
-
-              <div id="del-length" class="mr-4" v-if="selectedMutationType == 'deletion'">
-                <h6 class="text-uppercase text-muted">deletion length</h6>
-                <input class="form-control border-theme" :style="{width: '135px'}" v-model="selectedDelLength" :placeholder="`in ${selectedCoordinate}s`">
-              </div>
-
-              <div id="ref_codon" class="mr-4" v-if="selectedRef">
-                <h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-                <div>
-                  {{ selectedRef }}
+              <div class="flex-row d-flex">
+                <div id="gene-name" class="p-2" v-if="selectedCoordinate === 'aminoacid'">
+                  <h6 class="text-uppercase text-muted">gene</h6>
+                  <select v-model="selectedGene" class="select-dropdown">
+                    <option v-for="gene in genes" :value="gene" :key="gene.name">
+                      {{gene.name}}
+                    </option>
+                  </select>
                 </div>
-              </div>
 
-              <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
-                <h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
-                <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
-              </div>
-
-              <button type="button" class="btn btn-main p-0 d-flex align-self-start align-self-center" role="button" @click="addMutation" :disabled="!addValid">
-                <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
-                </span>
-                <div class="bg-sec py-2 px-2 border-theme">
-                  <font-awesome-icon :icon="['fas', 'plus']" />
+                <div class="d-flex flex-column align-items-start p-2" id="mutation-type">
+                  <h6 class="text-uppercase text-muted">mutation type</h6>
+                  <div class="radio-item">
+                    <input type="radio" id="substitution" value="substitution" v-model="selectedMutationType" class="mr-2">
+                    <label for="substitution">substitution</label>
+                  </div>
+                  <div class="radio-item">
+                    <input type="radio" id="deletion" value="deletion" v-model="selectedMutationType" class="mr-2">
+                    <label for="deletion">deletion</label>
+                  </div>
                 </div>
-              </button>
-            </div>
+
+                <div id="location" class="mr-4">
+                  <h6 class="text-uppercase text-muted" v-if="selectedMutationType == 'substitution'">location</h6>
+                  <h6 class="text-uppercase text-muted" v-else>start location</h6>
+                  <input class="form-control border-theme w-110px" v-model="selectedLocation" :placeholder="selectedMax">
+                  <small>relative to <a :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a></small>
+                </div>
+
+                <div id="del-length" class="mr-4" v-if="selectedMutationType == 'deletion'">
+                  <h6 class="text-uppercase text-muted">deletion length</h6>
+                  <input class="form-control border-theme" :style="{width: '135px'}" v-model="selectedDelLength" :placeholder="`in ${selectedCoordinate}s`">
+                </div>
+
+                <div id="ref_codon" class="mr-4" v-if="selectedRef">
+                  <h6 class="text-uppercase text-muted">ref. {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+                  <div>
+                    {{ selectedRef }}
+                  </div>
+                </div>
+
+                <div id="new_codon" class="mr-4" v-if="selectedMutationType == 'substitution'">
+                  <h6 class="text-uppercase text-muted">new {{ selectedCoordinate === "aminoacid" ? "amino acid" : "nucleotide"}}</h6>
+                  <input class="form-control border-theme w-90px" v-model="selectedMutation" :placeholder="mutationPlaceholder">
+                </div>
+
+                <button type="button" class="btn btn-main p-0 d-flex align-self-start align-self-center" role="button" @click="addMutation" :disabled="!addValid">
+                  <span class="px-2 py-2">Add <b v-html="selectedLabel"></b>
+                  </span>
+                  <div class="bg-sec py-2 px-2 border-theme">
+                    <font-awesome-icon :icon="['fas', 'plus']" />
+                  </div>
+                </button>
+              </div>
+            </template>
 
           </div>
 
         </form>
       </div>
     </div>
-    <div class="col-sm-12 col-md-3">
+    <div class="col-sm-12">
       <div class="d-flex flex-column justify-content-center align-items-center w-100">
         <p v-if="formValid" class="text-muted font-size-2">
           Generate {{ title }} report
         </p>
         <div>
-          <button :disabled="!formValid" type="submit" class="btn btn-accent btn-lg" @click="submitQuery">Create report</button>
+          <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create report</button>
         </div>
 
       </div>
     </div>
   </div>
 
-  <div class="row flex-column d-flex">
+  <div class="row flex-column d-flex" v-if="!minimalistic">
     <div class="col-sm-12 col-md-9">
       <div id="selected-mutations" class="my-0" v-if="selectedMutations.length">
         <h5>{{ selectedLineage ? "Selected additional mutations" : "Selected mutations"}}</h5>
@@ -186,6 +188,12 @@ import debounce from "lodash/debounce";
 
 export default Vue.extend({
   name: "CustomReportForm",
+  props: {
+    minimalistic: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     FontAwesomeIcon,
     TypeaheadSelect,
@@ -449,8 +457,9 @@ export default Vue.extend({
     width: 200px;
 }
 
-.w-400px {
-    width: 400px;
+.w-350px {
+    max-width: 325px;
+    width: 100%;
 }
 
 .coords {
