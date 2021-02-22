@@ -143,7 +143,7 @@
       </div>
 
       <div>
-        <SARSMutationMap :lineageMutations="selectedMutations" :additionalMutations="[]" mutationKey="selected_mutations" />
+        <SARSMutationMap :lineageMutations="selectedMutations" :additionalMutations="[]" mutationKey="selected_mutations" v-if="selectedMutations.length" />
       </div>
     </div>
   </div>
@@ -266,7 +266,6 @@ export default Vue.extend({
       if (this.selectedCoordinate == "aminoacid") {
         this.selectedBulkMutations = bulk.map(d => {
           const splitted = d.split(":");
-          console.log(splitted)
           if (splitted.length == 2) {
             const aaChange = splitted[1];
             const mutationType = aaChange.includes("DEL") ? "deletion" : "substitution";
