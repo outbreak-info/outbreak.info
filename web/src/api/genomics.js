@@ -17,7 +17,9 @@ import {
   timeFormat,
   format,
   timeDay,
-  nest
+  nest,
+  mean,
+  sum
 } from "d3";
 
 import {
@@ -53,7 +55,7 @@ export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThre
   return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
     map(lineages => {
       mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
-      return(mutationObj)
+      return (mutationObj)
     })
   )
 }
@@ -62,12 +64,12 @@ export function getCuratedListAndCharMuts(apiurl, prevalenceThreshold) {
   return getCuratedList().pipe(
     mergeMap(list => {
       const mutations = list.filter(d => d.key == "mutation")[0]["values"];
-      return forkJoin(... mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
-      map(results => {
-        return (list)
-      })
-    )}
-  )
+      return forkJoin(...mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
+        map(results => {
+          return (list)
+        })
+      )
+    })
   )
 }
 export function getReportList(apiurl, prevalenceThreshold = 0.85) {
@@ -713,5 +715,94 @@ export function getDateUpdated(apiUrl) {
       console.log(e);
       return ( of ([]));
     })
+  )
+}
+
+export function getPrevalenceAllLineages(apiurl, location, locationType) {
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  let url = locationType == "division" ?
+    `https://api.outbreak.info/genomics/prevalence-by-division-all-lineages?division=${location}&country=United States` :
+    `https://api.outbreak.info/genomics/prevalence-by-country-all-lineages?country=${location}`
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d["proportion"] = d.lineage_count / d.total_count;
+      })
+      const maxFreq = nest()
+        .key(d => d.lineage)
+        .rollup(values => mean(values.sort((a, b) => b.proportion - a.proportion).slice(10), d => d.proportion))
+        .entries(results);
+
+      const lineageThresh = 0.05;
+      const lineages = maxFreq.filter(d => d.value > lineageThresh).map(d => d.key);
+
+      results.forEach(d => {
+        d["pangolin_lineage"] = lineages.includes(d.lineage) ? d.lineage : "other"
+      })
+
+      let nested = nest()
+        .key(d => d.date)
+        .key(d => d.pangolin_lineage)
+        .rollup(values => {
+          return ({
+            values: values,
+            lineage_count: sum(values, d => d.lineage_count),
+            total_count: sum(values, d => d.total_count),
+            proportion: sum(values, d => d.lineage_count) / sum(values, d => d.total_count)
+          })
+        })
+        .entries(results);
+
+      nested = nested.flatMap(d => {
+        return d.values.map(day => {
+          return ({
+            date_time: parseDate(d.key),
+            lineage_count: day.value.lineage_count,
+            total_count: day.value.total_count,
+            proportion: day.value.proportion,
+            pangolin_lineage: day.key
+          })
+        })
+      })
+
+      return (nested)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting prevalence for all lineages in a place!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+// LOCATION REPORTS
+export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([
+    getDateUpdated(apiurl),
+    getPrevalenceAllLineages(apiurl, location, locationType)
+  ]).pipe(
+    map(([dateUpdated, allLineages]) => {
+
+      return ({
+        dateUpdated: dateUpdated,
+        allLineages: allLineages
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting location report data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
   )
 }
