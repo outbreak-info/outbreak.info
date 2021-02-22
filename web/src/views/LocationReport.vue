@@ -1,19 +1,241 @@
 <template>
-<div>
-  LOCATION REPORT
+<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-5' : 'mx-2']">
+  <!-- LOADING -->
+  <div v-if="reportloading" class="loader">
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
+  </div>
+  <!-- CHANGE LOCATION MODAL -->
+  <!-- <div id="change-locations-modal" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title" id="exampleModalLabel">Select report locations</h5>
+          <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 py-3 border-bottom border-secondary">
+            <h6 class="text-muted text-underline m-0">Current locations</h6>
+            <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
+              {{ location.name }}
+              <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+            </button>
+          </div>
+
+          <div class="py-3 border-bottom">
+            <div v-if="ctry2Add.length" class="my-3">
+              <h6 class="text-sec text-underline m-0">Countries to add</h6>
+              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
+                {{ country }}
+                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+              </button>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
+              <TypeaheadSelect :queryFunction="queryCountry" @selected="updateCountries" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
+            </div>
+          </div>
+
+          <div class="py-3">
+            <div v-if="div2Add.length" class="my-3">
+              <h6 class="text-sec text-underline m-0">Divisions (States/Provinces) to add</h6>
+              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(division, dIdx) in div2Add" :key="dIdx" id="new-divisions" @click="removeDivision2Add(cIdx)">
+                {{ division }}
+                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+              </button>
+            </div>
+
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
+              <TypeaheadSelect :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Add division" totalLabel="total sequences" />
+            </div>
+          </div>
+        </div>
+
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
+          <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
+
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <!-- end change location modal -->
+
+  <template v-if="hasData">
+    <!-- SOCIAL MEDIA SHARE, BACK BTN -->
+    <div class="d-flex align-items-center mb-2">
+      <router-link :to="{ name: 'SituationReports'}">
+        <button class="btn py-0 px-2 btn-grey-outline">back</button>
+      </router-link>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select mutation(s)</button>
+      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-locations-modal">change locations</button>
+      <ShareReport title="title" url="url" />
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex flex-column align-items-start">
+        <h1 class="m-0">{{ title }}</h1>
+        <div class="d-flex my-1 align-items-center">
+          <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
+            <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
+              <b>{{ synonym }}</b>
+              <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
+          </small>
+
+        </div>
+
+        <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+          <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
+        </small>
+      </div>
+      <div class="d-flex flex-column align-items-end justify-content-between">
+        <div class="d-flex align-items-center">
+          Enabled by data from
+          <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
+            <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
+          </a>
+        </div>
+        <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline mt-3 p-0 px-1"><small>How to interpret these reports</small></router-link>
+        <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
+      </div>
+    </div>
+
+    <!-- LOGOS -->
+    <ReportLogos class="mb-4" />
+
+    <!-- REPORT -->
+    <div class="row">
+      report
+    </div>
+</template>
 </div>
 </template>
 
 <script>
 import Vue from "vue";
+import ReportLogos from "@/components/ReportLogos.vue";
+import ReportMethodology from "@/components/ReportMethodology.vue";
+import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
+import Warning from "@/components/Warning.vue";
+import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
+import ReportPrevalence from "@/components/ReportPrevalence.vue";
+import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
+import ReportChoropleth from "@/components/ReportChoropleth.vue";
+import ReportResources from "@/components/ReportResources.vue";
+import ShareReport from "@/components/ShareReport.vue";
+import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
+import ReportSummary from "@/components/ReportSummary.vue";
+import CustomReportForm from "@/components/CustomReportForm.vue";
+import MutationsByLineage from "@/components/MutationsByLineage.vue";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faClock
+} from "@fortawesome/free-regular-svg-icons";
+import {
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
+
+
+library.add(faClock, faSpinner);
+
+import {
+  mapState
+} from "vuex";
+
+import {
+  getLocationReportData
+} from "@/api/genomics.js";
 
 export default {
   name: "LocationReport",
   props: {
     country: String,
     division: String,
-    muts: Array,
+    muts: {
+      type: Array,
+      default: () => ["S:N501Y"]
+    },
     pango: Array
+  },
+  components: {
+    ReportLogos,
+    // ReportMethodology,
+    // CharacteristicMutations,
+    FontAwesomeIcon,
+    // Warning,
+    // ReportAcknowledgements,
+    // ReportPrevalence,
+    // ReportPrevalenceByLocation,
+    // ReportChoropleth,
+    // ReportResources,
+    ShareReport,
+    // ReportSummary,
+    // TypeaheadSelect,
+    // CustomReportForm,
+    // MutationsByLineage
+  },
+  computed: {
+    ...mapState("admin", ["mutationAuthors", "reportloading"]),
+    smallScreen() {
+      return (window.innerSize < 500)
+    },
+    title() {
+      return (this.division ? `${this.division} Mutation Report` : `${this.country} Mutation Report`)
+    },
+    hasData() {
+      return (true)
+    },
+    selectedLocation() {
+      return (this.division ? this.division : this.country)
+    },
+    selectedLocationType() {
+      return (this.division ? "division" : "country")
+    }
+  },
+  mounted() {
+    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango).subscribe(results => {
+      console.log(results)
+      this.dateUpdated = results.dateUpdated;
+      this.lastUpdated = results.lastUpdated;
+    })
+  },
+  data() {
+    return ({
+      reportSubscription: null,
+      // data
+      dateUpdated: null,
+      lastUpdated: null
+    })
+  },
+  destroyed() {
+    if (this.reportSubscription) {
+      this.reportSubscription.unsubscribe();
+    }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.gisaid {
+    height: 25px;
+}
+
+.font-size-small {
+    font-size: small;
+}
+
+.btn-active {
+    background-color: $primary-color;
+    color: white;
+}
+</style>
