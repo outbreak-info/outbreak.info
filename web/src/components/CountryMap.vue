@@ -14,7 +14,8 @@
 <script lang="js">
 import Vue from "vue";
 
-import GEODATA from "@/assets/geo/countries.json";
+import GEODATA from "@/assets/geo/countries_ne.json";
+import GADM from "@/assets/geo/gadm_adm0_simplified.json";
 import {
   select,
   geoPath,
@@ -26,6 +27,10 @@ export default Vue.extend({
   name: "CountryMap",
   props: {
     countries: Array,
+    mapSource: {
+      type: String,
+      default: "NE"
+    },
     width: {
       type: Number,
       default: 200
@@ -71,6 +76,8 @@ export default Vue.extend({
       this.svg = select(this.$refs.svg);
       this.regions = select(this.$refs.countries);
       this.height = this.width * 0.5;
+
+      this.baseMap = this.mapSource == "GADM" ? GADM.features : GEODATA.features;
     },
     drawMetro() {
       var path = geoPath();
@@ -82,7 +89,7 @@ export default Vue.extend({
       // regional data
       this.regions
         .selectAll("path")
-        .data(GEODATA.features)
+        .data(this.baseMap)
         .join(
           enter => {
             enter

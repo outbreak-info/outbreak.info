@@ -6,21 +6,67 @@ const state = {
   outbreak: {
     authors: "Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Haag, Emily; Latif, Alaa Abdel; Mullen, Julia L.; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I.; Hughes, Laura D."
   },
-    mutationAuthors: "Alaa Abdel Latif, Karthik Gangavarapu, Emily Haag, Nate Matteson, Julia L. Mullen, Ginger Tsueng, Mark Zeller, Chunlei Wu, Andrew I. Su, Laura D. Hughes, Kristian G. Andersen, and the Center for Viral Systems Biology",
-    team: [
-      {name: "Manar Alkuzweny", img:"manar.jpg"},
-      {name: "Kristian Andersen", img:"kristian.jpg", twitter:"https://twitter.com/K_G_Andersen", linkedin:"http://www.linkedin.com/in/kga1978"},
-      {name: "Marco Cano", img:"marco.jpg"},
-      {name: "Karthik Gangavarapu", img:"karthik.jpg"},
-      {name: "Emily Haag", img:"emily.jpg"},
-      {name: "Laura Hughes", img:"laura.jpg", twitter:"https://twitter.com/flaneuseks", email:"lhughes@scripps.edu", linkedin:"https://www.linkedin.com/in/lauradhughes/"},
-      {name: "Alaa Abdel Latif", img:"alaa.jpg"},
-      {name: "Julia Mullen", img:"julia.jpg"},
-      {name: "Ginger Tsueng", img:"ginger.jpg"},
-      {name: "Andrew Su", img:"andrew.jpg", email:"asu@scripps.edu", twitter:"http://twitter.com/andrewsu", linkedin:"http://www.linkedin.com/in/andrewsu"},
-      {name: "Chunlei Wu", img:"chunlei.jpg", email:"cwu@scripps.edu", twitter:"https://twitter.com/chunleiwu", linkedin:"https://www.linkedin.com/in/chunleiwu"},
-      {name: "Jerry Zhou", img:"jerry.jpg"}
-    ],
+  mutationAuthors: "Alaa Abdel Latif, Karthik Gangavarapu, Emily Haag, Nate Matteson, Julia L. Mullen, Ginger Tsueng, Mark Zeller, Chunlei Wu, Andrew I. Su, Laura D. Hughes, Kristian G. Andersen, and the Center for Viral Systems Biology",
+  team: [{
+      name: "Manar Alkuzweny",
+      img: "manar.jpg"
+    },
+    {
+      name: "Kristian Andersen",
+      img: "kristian.jpg",
+      twitter: "https://twitter.com/K_G_Andersen",
+      linkedin: "http://www.linkedin.com/in/kga1978"
+    },
+    {
+      name: "Marco Cano",
+      img: "marco.jpg"
+    },
+    {
+      name: "Karthik Gangavarapu",
+      img: "karthik.jpg"
+    },
+    {
+      name: "Emily Haag",
+      img: "emily.jpg"
+    },
+    {
+      name: "Laura Hughes",
+      img: "laura.jpg",
+      twitter: "https://twitter.com/flaneuseks",
+      email: "lhughes@scripps.edu",
+      linkedin: "https://www.linkedin.com/in/lauradhughes/"
+    },
+    {
+      name: "Alaa Abdel Latif",
+      img: "alaa.jpg"
+    },
+    {
+      name: "Julia Mullen",
+      img: "julia.jpg"
+    },
+    {
+      name: "Ginger Tsueng",
+      img: "ginger.jpg"
+    },
+    {
+      name: "Andrew Su",
+      img: "andrew.jpg",
+      email: "asu@scripps.edu",
+      twitter: "http://twitter.com/andrewsu",
+      linkedin: "http://www.linkedin.com/in/andrewsu"
+    },
+    {
+      name: "Chunlei Wu",
+      img: "chunlei.jpg",
+      email: "cwu@scripps.edu",
+      twitter: "https://twitter.com/chunleiwu",
+      linkedin: "https://www.linkedin.com/in/chunleiwu"
+    },
+    {
+      name: "Jerry Zhou",
+      img: "jerry.jpg"
+    }
+  ],
   funding: [{
       identifier: "5 U19 AI135995-02",
       name: "CViSB",
@@ -135,7 +181,7 @@ const state = {
         },
         {
           id: "biorxiv",
-          name: "bioRixv",
+          name: "bioRxiv",
           img: "biorxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
           description: 'bioRxiv (pronounced "bio-archive") is a free online archive and distribution service for unpublished preprints in the life sciences. It is operated by Cold Spring Harbor Laboratory, a not-for-profit research and educational institution. By posting preprints on bioRxiv, authors are able to make their findings immediately available to the scientific community and receive feedback on draft manuscripts before they are submitted to journals.',
@@ -427,6 +473,28 @@ const state = {
         name: "SituationReports"
       }
     }, {
+      date: new Date("2021-02-10 0:0"),
+      category: "data",
+      title: "Released customizable, interactive SARS-CoV-2 Lineage Situation Reports",
+      description: 'Released customizable, interactive SARS-CoV-2 Lineage Situation Reports',
+      route: {
+        name: "SituationReports",
+        query: {
+          pango: "B.1.1.7"
+        }
+      }
+    }, {
+      date: new Date("2021-02-23 0:0"),
+      category: "data",
+      title: "Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports",
+      description: 'Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports',
+      route: {
+        name: "SituationReports",
+        query: {
+          muts: "S:N501Y"
+        }
+      }
+    }, {
       date: new Date("2020-07-06 0:1"),
       category: "feature",
       title: "Copyable visualizations",
@@ -459,7 +527,7 @@ const state = {
       date: new Date("2020-05-19 0:0"),
       category: "data",
       title: "Added searchable resources",
-      description: 'Added resource metadata for publications from <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a> and <a href="https://connect.biorxiv.org/relate/content/181" target="_blank" rel="noreferrer">bioRixv and medRxiv</a>; clinical trials from <a href="https://clinicaltrials.gov/ct2/results?cond=COVID-19" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and  <a href="https://www.who.int/ictrp/en/" target="_blank" rel="noreferrer">WHO International Clinical Trials Registry Platform</a>; and datasets from <a href="https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true" target="_blank" rel="noreferrer">The Protein Data Bank</a> and <a href="https://zenodo.org/communities/covid-19/" target="_blank" rel="noreferrer">Zenodo</a>. <a href="/sources#resources">View more about sources</a>',
+      description: 'Added resource metadata for publications from <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a> and <a href="https://connect.biorxiv.org/relate/content/181" target="_blank" rel="noreferrer">bioRxiv and medRxiv</a>; clinical trials from <a href="https://clinicaltrials.gov/ct2/results?cond=COVID-19" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and  <a href="https://www.who.int/ictrp/en/" target="_blank" rel="noreferrer">WHO International Clinical Trials Registry Platform</a>; and datasets from <a href="https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true" target="_blank" rel="noreferrer">The Protein Data Bank</a> and <a href="https://zenodo.org/communities/covid-19/" target="_blank" rel="noreferrer">Zenodo</a>. <a href="/sources#resources">View more about sources</a>',
       route: {
         name: "Resource Summary",
       }

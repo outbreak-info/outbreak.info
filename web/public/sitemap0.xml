@@ -16,8 +16,13 @@
 <url><loc>https://outbreak.info/resources</loc></url>
 <url><loc>https://outbreak.info/resources/search</loc></url>
 <url><loc>https://outbreak.info/schema</loc></url>
+<url><loc>https://outbreak.info/situation-reports</loc></url>
+<url><loc>https://outbreak.info/situation-reports/methods</loc></url>
+<url><loc>https://outbreak.info/situation-reports/caveats</loc></url>
 <url><loc>https://outbreak.info/sources</loc></url>
 <url><loc>https://outbreak.info/summary</loc></url>
 <url><loc>https://outbreak.info/terms</loc></url>
+<url><loc>https://outbreak.info/topics</loc></url>
 <url><loc>https://outbreak.info/topics/definitions</loc></url>
+<url><loc>https://outbreak.info/videos</loc></url>
 </urlset>

@@ -1,6 +1,6 @@
 <template>
-<div class="" id="mutation-map">
-  <svg :width="width" :height="height" ref="svg" class="mutation-map" :name="`${mutationKey} characteristic mutations`">
+<div class="" id="mutation-map" ref="svg_wrapper">
+  <svg :width="width" :height="height" ref="svg" :class="[copyable ? 'mutation-map' : 'mutation_map']" :name="`${mutationKey} characteristic mutations`">
     <g ref="gene_map" id="gene-map-group">
       <g ref="genes" class="genes" id="gene-group"></g>
       <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
@@ -68,7 +68,12 @@ export default Vue.extend({
   name: "SARSMutationMap",
   props: {
     mutationKey: String,
-    mutationArr: Array,
+    copyable: {
+      type: Boolean,
+      default: false
+    },
+    lineageMutations: Array,
+    additionalMutations: Array,
     setWidth: {
       type: Number,
       default: null
@@ -82,7 +87,12 @@ export default Vue.extend({
     width() {
       this.updatePlot();
     },
-    mutationArr() {
+    lineageMutations() {
+      this.setupMutationArr();
+      this.updatePlot();
+    },
+    additionalMutations() {
+      this.setupMutationArr();
       this.updatePlot();
     }
   },
@@ -106,6 +116,7 @@ export default Vue.extend({
       geneDisplayThresh: 35,
       // data
       ntMapArr: null,
+      mutationArr: null,
       mutations: null,
       deletions: null,
       // refs
@@ -145,12 +156,25 @@ export default Vue.extend({
       }
     })
 
+    this.setupMutationArr();
     this.setupPlot();
   },
   destroyed() {
     window.removeEventListener("resize", this.setDims);
   },
   methods: {
+    setupMutationArr() {
+      if (!this.lineageMutations && this.additionalMutations)
+        this.mutationArr = cloneDeep(this.additionMutations);
+      else if (this.lineageMutations && this.additionalMutations) {
+        this.mutationArr = cloneDeep(this.lineageMutations);
+        this.mutationArr.push(...this.additionalMutations);
+      } else if (this.lineageMutations) {
+        this.mutationArr = cloneDeep(this.lineageMutations);
+      } else {
+        this.mutationArr = null;
+      }
+    },
     setupPlot() {
       this.$nextTick(function() {
         window.addEventListener("resize", this.setDims);
@@ -172,14 +196,18 @@ export default Vue.extend({
 
       this.deletionRef = select(this.$refs.deletions)
         .attr("transform", `translate(0,22)`);
+    },
+    setDims() {
+      const wrapper = select(this.$refs.svg_wrapper).node();
+      this.maxWidth = wrapper ? wrapper.offsetWidth : 1000;
 
       select(this.$refs.brush).on("mousemove", () => this.tooltipOn(this.x))
       select(this.$refs.brush).on("mouseleave", this.tooltipOff)
     },
-    setDims() {
-      this.maxWidth = document.getElementById('mutation-map') ? document.getElementById('mutation-map').offsetWidth : 1000;
-    },
     updatePlot() {
+      if (!this.width) {
+        this.setDims();
+      }
       this.updateScales();
       this.drawPlot();
     },
@@ -207,7 +235,7 @@ export default Vue.extend({
     tooltipOn() {
       const ttipXOffset = 35;
       const ttipYOffset = 125;
-      if (this.mutationArr) {
+      if (this.mutationArr && this.mutationArr.length) {
         // Tooltip activation is a bit complicated, since I want to be able to zoom as well into the gene map.
         // That has to have a rect on top of everything which detects the pointer events.
         // So, splitting that rect into two halves; upper half is the mutation groups; lower half is the gene itself
@@ -371,7 +399,7 @@ export default Vue.extend({
       this.drawPlot();
     },
     prepData() {
-      if (this.mutationArr) {
+      if (this.mutationArr && this.mutationArr.length) {
         // 1) Convert amino acid coordinates into nucleotide coordinates
         // 2) Set up force direction to shift labels if they overlap
 
@@ -420,7 +448,7 @@ export default Vue.extend({
       }
     },
     drawPlot() {
-      if (this.mutationArr) {
+      if (this.mutationArr && this.mutationArr.length) {
         const t1 = transition().duration(1500);
 
         this.prepData();
@@ -457,8 +485,8 @@ export default Vue.extend({
           },
           update => {
             update
-            .attr("id", d => `gene_${d.gene}`)
-            .attr("class", d => `gene gene_${d.gene}`);
+              .attr("id", d => `gene_${d.gene}`)
+              .attr("class", d => `gene gene_${d.gene}`);
 
             update
               .select("rect")
@@ -537,7 +565,7 @@ export default Vue.extend({
               .style("font-size", "0.6rem")
               .style("dominant-baseline", "central")
               .style("text-anchor", "middle");
-""
+            ""
             // amino acid change text
             mutGrp
               .append("text")
