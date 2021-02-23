@@ -79,11 +79,6 @@
       <div class="d-flex flex-column align-items-start">
         <h1 class="m-0">{{ title }}</h1>
         <div class="d-flex my-1 align-items-center">
-          <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
-            <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
-              <b>{{ synonym }}</b>
-              <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
-          </small>
 
         </div>
 
@@ -108,7 +103,9 @@
 
     <!-- REPORT -->
     <div class="row">
-      report
+      <div class="col-sm-12">
+        <LineagesByLocation :data="lineagesByDay" />
+      </div>
     </div>
 </template>
 </div>
@@ -130,6 +127,7 @@ import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import MutationsByLineage from "@/components/MutationsByLineage.vue";
+import LineagesByLocation from "@/components/LineagesByLocation.vue";
 
 // --- font awesome --
 import {
@@ -179,6 +177,7 @@ export default {
     // ReportChoropleth,
     // ReportResources,
     ShareReport,
+    LineagesByLocation
     // ReportSummary,
     // TypeaheadSelect,
     // CustomReportForm,
@@ -207,6 +206,7 @@ export default {
       console.log(results)
       this.dateUpdated = results.dateUpdated;
       this.lastUpdated = results.lastUpdated;
+      this.lineagesByDay = results.lineagesByDay;
     })
   },
   data() {
@@ -214,7 +214,8 @@ export default {
       reportSubscription: null,
       // data
       dateUpdated: null,
-      lastUpdated: null
+      lastUpdated: null,
+      lineagesByDay: null
     })
   },
   destroyed() {

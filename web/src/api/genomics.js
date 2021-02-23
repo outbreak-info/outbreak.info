@@ -773,6 +773,8 @@ export function getPrevalenceAllLineages(apiurl, location, locationType) {
         })
       })
 
+      nested.sort((a,b) => a.date_time < b.date_time ? -1 : 1);
+
       return (nested)
     }),
     catchError(e => {
@@ -791,11 +793,10 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
     getDateUpdated(apiurl),
     getPrevalenceAllLineages(apiurl, location, locationType)
   ]).pipe(
-    map(([dateUpdated, allLineages]) => {
-
+    map(([dateUpdated, lineagesByDay]) => {
       return ({
         dateUpdated: dateUpdated,
-        allLineages: allLineages
+        lineagesByDay: lineagesByDay
       })
     }),
     catchError(e => {
