@@ -292,7 +292,7 @@ const routes = [{
     props: route => ({
       location: route.query.location,
       pango: route.query.pango,
-      genes: route.query.genes
+      gene: route.query.gene
     }),
     component: () =>
       import(
