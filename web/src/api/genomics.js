@@ -234,7 +234,6 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       results.forEach(d => {
         d["codon_num"] = +d.codon_num;
         d["pangolin_lineage"] = lineage;
@@ -718,7 +717,7 @@ export function getDateUpdated(apiUrl) {
 }
 
 
-export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.95) {
+export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.85) {
   return forkJoin([... lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
@@ -730,8 +729,11 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.
         d["mutation_simplified"] = d.mutation.split(":").slice(-1)[0];
       })
 
-      console.log(filtered)
-      return(filtered)
+      const nestedByGenes = nest()
+      .key(d => d.gene)
+      .entries(filtered)
+
+      return(nestedByGenes)
     })
   )
 }

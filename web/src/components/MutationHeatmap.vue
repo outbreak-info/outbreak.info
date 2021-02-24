@@ -12,7 +12,9 @@
 <script lang="js">
 import Vue from "vue";
 
-import { cloneDeep } from "lodash";
+import {
+  cloneDeep
+} from "lodash";
 
 import {
   interpolateRdPu
@@ -54,9 +56,9 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 25,
+        top: 50,
         right: 75,
-        bottom: 25,
+        bottom: 50,
         left: 75
       },
       // UI
@@ -93,7 +95,7 @@ export default Vue.extend({
     },
     updateScales() {
       this.height = 150; //this.data.length * this.bandHeight;
-      this.width = 1400; //max(this.data.map(d => d.length), d => d) * this.bandHeight;
+      this.width = 600; //max(this.data.map(d => d.length), d => d) * this.bandHeight;
 
       this.x = scaleBand()
         .range([0, this.width])
@@ -117,7 +119,7 @@ export default Vue.extend({
     },
     prepData() {
       this.plottedData = cloneDeep(this.data);
-      this.plottedData.sort((a,b) => a.codon_num - b.codon_num)
+      this.plottedData.sort((a, b) => a.codon_num - b.codon_num)
     },
     updatePlot() {
       if (this.data) {
@@ -128,26 +130,26 @@ export default Vue.extend({
     },
     drawPlot() {
       const heatmapSelector = this.heatmap
-      .selectAll(".heatmap")
-      .data(this.plottedData, d => d.id);
+        .selectAll(".heatmap")
+        .data(this.plottedData, d => d.id);
 
       heatmapSelector.join(
         enter => {
           enter
-          .append("rect")
-          .attr("class", "heatmap")
-          .attr("id", d => d.id)
-          .attr("x", d => this.x(d[this.xVar]))
-          .attr("width", this.x.bandwidth())
-          .attr("y", d => this.y(d[this.yVar]))
-          .attr("height", this.y.bandwidth())
-          .style("fill", d => this.colorScale(d.prevalence))
-          .style("stroke", "#888")
-          .style("stroke-width", 0.5)
-          .style("rx", 5)
+            .append("rect")
+            .attr("class", "heatmap")
+            .attr("id", d => d.id)
+            .attr("x", d => this.x(d[this.xVar]))
+            .attr("width", this.x.bandwidth())
+            .attr("y", d => this.y(d[this.yVar]))
+            .attr("height", this.y.bandwidth())
+            .style("fill", d => this.colorScale(d.prevalence))
+            .style("stroke", "#888")
+            .style("stroke-width", 0.5)
+            .style("rx", 5)
         },
         update => {
-            update.attr("id", d => d.id)
+          update.attr("id", d => d.id)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
@@ -156,7 +158,30 @@ export default Vue.extend({
         }
       )
 
+      // rotate axes :(
+    select(this.$refs.xAxisTop)
+  .selectAll("text")
+    .attr("y", 0)
+    .attr("dx", 6)
+    .attr("dy", "-0.75em")
+    .attr("transform", "rotate(-25)")
+    .style("text-anchor", "start");
+
     }
   }
 })
 </script>
+
+<style lang = "scss">
+.mutation-heatmap .axis--x text {
+    font-size: 16px;
+}
+
+.mutation-heatmap .axis--y text {
+    font-size: 18px;
+}
+
+.mutation-heatmap .axis path {
+    display: none;
+}
+</style>

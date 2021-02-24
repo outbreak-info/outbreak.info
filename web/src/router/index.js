@@ -287,11 +287,12 @@ const routes = [{
       )
   },
   {
-    path: "/situation-reports/compare-lineages",
+    path: "/compare-lineages",
     name: "SituationReportComparison",
     props: route => ({
       location: route.query.location,
-      pango: route.query.pango
+      pango: route.query.pango,
+      genes: route.query.genes
     }),
     component: () =>
       import(

@@ -14,8 +14,14 @@
       </div>
 
     </div> -->
+<div id="mutation-heatmaps" class="d-flex flex-wrap">
+  <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx">
+    <h4>{{ geneData.key }}</h4>
+    <MutationHeatmap :data="geneData.values" />
+  </div>
 
-    <MutationHeatmap :data="mutationHeatmap" />
+</div>
+
   </div>
 </div>
 </template>
@@ -51,7 +57,7 @@ export default {
   },
   computed: {
     selectedPango() {
-      return (["B.1.1.7", "B.1.351", "B.1.429", "P.1", "B.1.525"])
+      return (["B.1.1.7", "B.1.351", "B.1.427", "B.1.429", "P.1", "B.1.525"])
     }
   },
   data() {
