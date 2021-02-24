@@ -244,7 +244,8 @@ export default Vue.extend({
         .range([0, this.heightCounts - this.margin.top - this.margin.top])
         .domain([0, this.maxCounts]);
 
-      this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / this.data.length;
+      const numDays = timeDay.count(...this.x.domain());
+      this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / numDays;
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks);
