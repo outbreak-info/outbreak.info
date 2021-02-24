@@ -1,6 +1,6 @@
 <template>
 <div class="d-flex flex-column">
-  <small class="text-muted">{{label}}</small>
+  <small :class="[dark? 'text-light' : 'text-muted']">{{label}}</small>
   <svg :width="legendWidth" height="30" transform="translate(0,0)">
     <defs>
       <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
@@ -8,8 +8,8 @@
       </linearGradient>
     </defs>
     <rect :width="legendWidth" height="15" fill="url(#linear-gradient)" stroke="#2c3e50" stroke-width="0.25"></rect>
-    <text x="0" y="18" fill="#555" font-size="0.85em" dominant-baseline="hanging">{{ minValue }}</text>
-    <text :x="legendWidth" y="18" dominant-baseline="hanging" text-anchor="end" fill="#555" font-size="0.85em">{{ maxValue }}</text>
+    <text x="0" y="18" :fill="legendColor" font-size="0.85em" dominant-baseline="hanging">{{ minValue }}</text>
+    <text :x="legendWidth" y="18" dominant-baseline="hanging" text-anchor="end" :fill="legendColor" font-size="0.85em">{{ maxValue }}</text>
   </svg>
 </div>
 </template>
@@ -23,6 +23,10 @@ export default Vue.extend({
   name: "ReportPrevalenceByLocation",
   props: {
     label: String,
+    dark: {
+      type: Boolean,
+      default: false
+    },
     legendWidth: {
       type: Number,
       default: 200
@@ -37,6 +41,11 @@ export default Vue.extend({
   data() {
     return {
       legendColors: []
+    }
+  },
+  computed: {
+    legendColor() {
+      return this.dark ? "#f8f9fa" : "#6c757d"
     }
   },
   watch: {
