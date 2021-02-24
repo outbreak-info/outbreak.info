@@ -337,6 +337,69 @@ const routes = [{
     })
   },
   {
+    path: "/situation-reports/S-W152C",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        muts: "S:W152C"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/S-N501Y",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        muts: "S:N501Y"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/S-S13I",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        muts: "S:S13I"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/ORF1b-D1183Y",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        muts: "ORF1b:D1183Y"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/S-L452R",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        muts: "S:L452R"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/S-P681H",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        muts: "S:P681H"
+      }
+    })
+  },
+  {
+    path: "/situation-reports/S-E484K",
+    redirect: to => ({
+      name: "MutationReport",
+      query: {
+        muts: "S:E484K"
+      }
+    })
+  },
+  {
     path: "/situation-reports/CA%20VUI1",
     redirect: to => ({
       name: "MutationReport",
