@@ -67,14 +67,13 @@ export default Vue.extend({
   data() {
     return {
       margin: {
-        top: 75,
-        right: 80,
-        bottom: 75,
-        left: 80
+        top: 72,
+        right: 85,
+        bottom: 72,
+        left: 85
       },
       // UI
-      sortVar: "average",
-      // sortVar: "codon_num",
+      sortVar: "codon_num",
       // constants
       rx: 4,
       strokeColor: "#AAA",
@@ -258,9 +257,13 @@ export default Vue.extend({
 </script>
 
 <style lang = "scss">
+.mutation-heatmap {
+  background: #343a40!important;
+}
 .mutation-heatmap .axis--x text,
 .mutation-heatmap .axis--y text {
-    fill: #555;
+    fill: #efefef;
+    /* fill: #555; */
 }
 
 .mutation-heatmap .axis--x text {
@@ -274,4 +277,12 @@ export default Vue.extend({
 .mutation-heatmap .axis path {
     display: none;
 }
+
+.mutation-heatmap .axis--y line {
+    display: none;
+}
+.mutation-heatmap .axis line {
+    stroke: #efefef;
+}
+
 </style>

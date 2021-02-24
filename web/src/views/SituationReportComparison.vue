@@ -15,16 +15,21 @@
 
     </div> -->
   </div>
-  <div id="select-genes">
-    <span v-for="(gene, idx) in geneOpts" :key="idx">
+  <div id="select-genes" class="d-flex">
+    <small class="text-muted mr-2">include genes:</small>
+    <label class="b-contain pr-3" v-for="(gene, idx) in geneOpts" :key="idx">
+      <span>{{gene}}</span>
       <input type="checkbox" :id="gene" :value="gene" v-model="selectedGenes" />
-      <label :for="gene">{{ gene }}</label>
-    </span>
+      <div class="b-input"></div>
+    </label>
    </div>
+
       <div id="mutation-heatmaps" class="d-flex flex-wrap">
-        <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx">
-          <h4>{{ geneData.key }}</h4>
+        <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4">
+          <template v-if="selectedGenes.includes(geneData.key)">
+          <h4 class="m-0">{{ geneData.key }}</h4>
           <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" />
+          </template>
         </div>
 
       </div>
