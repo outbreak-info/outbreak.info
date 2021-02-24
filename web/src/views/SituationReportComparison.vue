@@ -1,6 +1,6 @@
 <template>
 <div class="my-4 mx-4 half-page text-left">
-  <h1>Comparing two sets of mutations</h1>
+  <h1>Lineage comparison</h1>
   <div id="select-lineages">
     <!-- <div class="d-flex align-items-end mt-3 mb-5 w-100" id="mutation-1">
       <div class="w-400px mr-4">
@@ -14,16 +14,22 @@
       </div>
 
     </div> -->
-<div id="mutation-heatmaps" class="d-flex flex-wrap">
-  <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx">
-    <h4>{{ geneData.key }}</h4>
-    <MutationHeatmap :data="geneData.values" />
   </div>
+  <div id="select-genes">
+    <span v-for="(gene, idx) in geneOpts" :key="idx">
+      <input type="checkbox" :id="gene" :value="gene" v-model="selectedGenes" />
+      <label :for="gene">{{ gene }}</label>
+    </span>
+   </div>
+      <div id="mutation-heatmaps" class="d-flex flex-wrap">
+        <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx">
+          <h4>{{ geneData.key }}</h4>
+          <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" />
+        </div>
 
-</div>
+      </div>
 
   </div>
-</div>
 </template>
 
 <script>
@@ -46,7 +52,18 @@ export default {
     pango: Array,
     genes: {
       type: Array,
-      default: () => ["ORF1a", "ORF1b", "S"]
+      default: () => ["ORF1a",
+              "ORF1b",
+              "S",
+              "ORF3a",
+              "E",
+              "M",
+              "ORF6",
+              "ORF7a",
+              "ORF7b",
+              "ORF8",
+              "N",
+              "ORF10"]
     }
   },
   components: {
@@ -57,16 +74,32 @@ export default {
   },
   computed: {
     selectedPango() {
-      return (["B.1.1.7", "B.1.351", "B.1.427", "B.1.429", "P.1", "B.1.525"])
+      return (["B.1.1.7", "B.1.351", "B.1.427", "B.1.429", "P.1", "B.1.525", "B.1.526", "average"])
     }
   },
   data() {
     return {
       queryPangolin: null,
-      mutationHeatmap: null
+      mutationHeatmap: null,
+      selectedGenes: [],
+      geneOpts: [
+        "ORF1a",
+        "ORF1b",
+        "S",
+        "ORF3a",
+        "E",
+        "M",
+        "ORF6",
+        "ORF7a",
+        "ORF7b",
+        "ORF8",
+        "N",
+        "ORF10"
+      ]
     }
   },
   mounted() {
+    this.selectedGenes = this.genes;
     this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango).subscribe(results => {
       this.mutationHeatmap = results;
     })

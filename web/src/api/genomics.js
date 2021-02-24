@@ -17,11 +17,13 @@ import {
   timeFormat,
   format,
   timeDay,
-  nest
+  nest,
+  sum
 } from "d3";
 
 import {
-  orderBy, uniq
+  orderBy,
+  uniq
 } from "lodash";
 
 const parseDate = timeParse("%Y-%m-%d");
@@ -52,7 +54,7 @@ export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThre
   return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
     map(lineages => {
       mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
-      return(mutationObj)
+      return (mutationObj)
     })
   )
 }
@@ -61,12 +63,12 @@ export function getCuratedListAndCharMuts(apiurl, prevalenceThreshold) {
   return getCuratedList().pipe(
     mergeMap(list => {
       const mutations = list.filter(d => d.key == "mutation")[0]["values"];
-      return forkJoin(... mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
-      map(results => {
-        return (list)
-      })
-    )}
-  )
+      return forkJoin(...mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
+        map(results => {
+          return (list)
+        })
+      )
+    })
   )
 }
 export function getReportList(apiurl, prevalenceThreshold = 0.85) {
@@ -718,11 +720,30 @@ export function getDateUpdated(apiUrl) {
 
 
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.85) {
-  return forkJoin([... lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
+  return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
 
-      const filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+
+      const avgByMutation = nest()
+        .key(d => d.mutation)
+        .rollup(values => {
+          const mutation = values[0].mutation;
+          const mutation_count = sum(values, d => d.mutation_count);
+          const lineage_count = sum(values, d => d.lineage_count);
+          return ({
+            mutation_count: mutation_count,
+            lineage_count: lineage_count,
+            prevalence: mutation_count / lineage_count,
+            pangolin_lineage: "average",
+            mutation: mutation,
+            gene: values[0].gene
+          })
+        })
+        .entries(filtered).map(d => d.value);
+
+      filtered = filtered.concat(avgByMutation);
 
       filtered.forEach(d => {
         d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
@@ -730,10 +751,10 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.
       })
 
       const nestedByGenes = nest()
-      .key(d => d.gene)
-      .entries(filtered)
+        .key(d => d.gene)
+        .entries(filtered)
 
-      return(nestedByGenes)
+      return (nestedByGenes)
     })
   )
 }
