@@ -24,9 +24,6 @@ import {
   orderBy, uniq
 } from "lodash";
 
-import { interpolateRdPu } from "d3-scale-chromatic";
-
-
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
 const formatDateShort = timeFormat("%e %b %Y");
@@ -237,8 +234,10 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      console.log(results)
       results.forEach(d => {
         d["codon_num"] = +d.codon_num;
+        d["pangolin_lineage"] = lineage;
       })
       return (results)
     }),
@@ -720,21 +719,17 @@ export function getDateUpdated(apiUrl) {
 
 
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.95) {
-  console.log(lineages)
   return forkJoin([... lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
-    map(results => {
-      console.log(results)
+    map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-      console.log(prevalentMutations)
 
-      const filtered = results.map(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+      const filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
 
       filtered.forEach(d => {
-        d.sort((a,b) => a.codon_num < b.codon_num ? -1 : 1);
-        d.forEach(mutation => {
-          mutation["fill"] = interpolateRdPu(mutation.prevalence);
-        })
+        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+        d["mutation_simplified"] = d.mutation.split(":").slice(-1)[0];
       })
+
       console.log(filtered)
       return(filtered)
     })
