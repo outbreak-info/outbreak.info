@@ -735,7 +735,8 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.
           return ({
             mutation_count: mutation_count,
             lineage_count: lineage_count,
-            prevalence: mutation_count / lineage_count,
+            // prevalence: mutation_count / lineage_count,
+            prevalence: sum(values, d => d.prevalence) / (lineages.length),
             pangolin_lineage: "average",
             mutation: mutation,
             gene: values[0].gene
@@ -752,7 +753,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.
 
       const nestedByGenes = nest()
         .key(d => d.gene)
-        .entries(filtered)
+        .entries(filtered);
 
       return (nestedByGenes)
     })
