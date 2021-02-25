@@ -86,7 +86,10 @@ import {
 export default {
   name: "SituationReportsDemo",
   props: {
-    pango: Array,
+    pango: {
+      type: Array,
+      default: () => ["B.1.427", "B.1.429"]
+    },
     gene: {
       type: Array,
       default: () => ["ORF1a",
@@ -113,7 +116,8 @@ export default {
   },
   computed: {
     selectedPango() {
-      return (["B.1.1.7", "B.1.351", "B.1.427", "B.1.429", "P.1", "B.1.525", "B.1.526", "average"])
+      const merged = this.pango.concat(["average"]) 
+      return (merged)
     }
   },
   data() {
@@ -141,7 +145,7 @@ export default {
   mounted() {
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = this.gene;
-    this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango).subscribe(results => {
+    this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.pango).subscribe(results => {
       this.mutationHeatmap = results;
     })
 
