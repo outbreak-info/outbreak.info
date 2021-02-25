@@ -1,7 +1,8 @@
 const state = {
 press: [
   "https://www.nytimes.com/2021/02/24/health/coronavirus-variant-nyc.html",
-  "https://www.pressdemocrat.com/article/news/california-variant-of-the-coronavirus-identified-in-marin-lake-counties/"
+  "https://www.pressdemocrat.com/article/news/california-variant-of-the-coronavirus-identified-in-marin-lake-counties/",
+  "https://nymag.com/intelligencer/2021/02/new-york-city-coronavirus-variant-b-1-526-what-we-know.html"
 ]
 }
 
