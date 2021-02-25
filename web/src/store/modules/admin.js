@@ -6,7 +6,7 @@ const state = {
   outbreak: {
     authors: "Gangavarapu, Karthik; Alkuzweny, Manar; Cano, Marco; Haag, Emily; Latif, Alaa Abdel; Mullen, Julia L.; Rush, Benjamin; Tsueng, Ginger; Zhou, Jerry; Andersen, Kristian G.; Wu, Chunlei; Su, Andrew I.; Hughes, Laura D."
   },
-  mutationAuthors: "Alaa Abdel Latif, Karthik Gangavarapu, Emily Haag, Nate Matteson, Julia L. Mullen, Ginger Tsueng, Mark Zeller, Chunlei Wu, Andrew I. Su, Laura D. Hughes, Kristian G. Andersen, and the Center for Viral Systems Biology",
+  mutationAuthors: "Alaa Abdel Latif, Karthik Gangavarapu, Julia L. Mullen, Emily Haag, Ginger Tsueng, Nate Matteson, Mark Zeller, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Laura D. Hughes, and the Center for Viral Systems Biology",
   team: [{
       name: "Manar Alkuzweny",
       img: "manar.jpg"
