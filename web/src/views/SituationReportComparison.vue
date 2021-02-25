@@ -11,11 +11,14 @@
 
   </div>
   <div id="select-lineages" class="mb-3 p-2 bg-white border-top border-bottom">
-    <h5>Change lineages</h5>
+    <h5>Selected lineages</h5>
     <div class="d-flex flex-wrap">
       <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
         <span>{{lineage}}</span>
         <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+      </button>
+      <button role="button" class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1" @click="clearPango()">
+        clear lineages
       </button>
       <div style="width: 150px">
         <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
@@ -198,10 +201,10 @@ export default {
     this.queryPangolin = findPangolin;
   },
   destroyed() {
-    if(this.heatmapSubscription) {
+    if (this.heatmapSubscription) {
       this.heatmapSubscription.unsubscribe();
     }
-    if(this.lineageByMutationsSubscription) {
+    if (this.lineageByMutationsSubscription) {
       this.lineageByMutationsSubscription.unsubscribe();
     }
   },
@@ -222,7 +225,7 @@ export default {
     },
     addMutations() {
       this.lineageByMutationsSubscription = getMutationsByLineage(this.$genomicsurl, this.selectedMutationQuery, this.selectedMutationThreshold).subscribe(results => {
-        results.sort((a,b) => b.proportion - a.proportion);
+        results.sort((a, b) => b.proportion - a.proportion);
         this.pango = uniq(this.selectedPango.concat(results.map(d => d.pangolin_lineage)));
         this.$router.push({
           name: "SituationReportComparison",
