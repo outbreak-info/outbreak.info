@@ -36,7 +36,7 @@
       </ul>
     </div>
     <div class="col-sm-12 col-md-4">
-      <img class="w-100 my-3" src="https://i.postimg.cc/RFPBTHkR/tree.png" alt="mutation, variant, lineages, phylogenetic tree" />
+      <img class="w-100 my-3" src="@/assets/genomics/phylo_tree.png" alt="mutation, variant, lineages, phylogenetic tree" />
     </div>
 
   </div>
