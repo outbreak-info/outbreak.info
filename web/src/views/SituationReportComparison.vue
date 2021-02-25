@@ -1,8 +1,17 @@
 <template>
 <div class="my-4 mx-4 half-page text-left">
-  <h1>Lineage comparison</h1>
-  <div id="select-lineages" class="mb-3">
-    <h6>Selected lineages</h6>
+  <div class="d-flex flex-wrap align-items-center">
+    <h1 class="mr-3">Lineage comparison</h1>
+    <div class="d-flex flex-wrap">
+      <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
+        <span>{{lineage}}</span>
+        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+      </button>
+    </div>
+
+  </div>
+  <div id="select-lineages" class="mb-3 p-2 bg-white border-top border-bottom">
+    <h5>Change lineages</h5>
     <div class="d-flex flex-wrap">
       <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
         <span>{{lineage}}</span>
@@ -37,7 +46,6 @@
         <h3 class="m-0">Mutation prevalence across lineages</h3>
         <p class="text-muted m-0">Mutations with > {{ prevalenceThresholdFormatted }} prevalence in at least one lineage</p>
       </div>
-
 
       <!-- LEGEND -->
       <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4">
