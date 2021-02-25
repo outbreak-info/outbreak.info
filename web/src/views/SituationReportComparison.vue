@@ -1,19 +1,17 @@
 <template>
 <div class="my-4 mx-4 half-page text-left">
   <h1>Lineage comparison</h1>
-  <div id="select-lineages">
-    <!-- <div class="d-flex align-items-end mt-3 mb-5 w-100" id="mutation-1">
-      <div class="w-400px mr-4">
-        <TypeaheadSelect :queryFunction="queryPangolin" :selected="mutant1" @selected="updatePangolin1" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Add lineage" />
+  <div id="select-lineages" class="mb-3">
+    <h6>Selected lineages</h6>
+    <div class="d-flex flex-wrap">
+      <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
+        <span>{{lineage}}</span>
+        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+      </button>
+      <div style="width: 150px">
+        <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
       </div>
-      <div>
-        <h5>
-          {{ mutant1 }}
-        </h5>
-        <SARSMutationMap :mutationArr="mutations1" :mutationKey="mutant1" class="w-600px" />
-      </div>
-
-    </div> -->
+    </div>
   </div>
 
   <!-- CHECKBOX TO SELECT GENES -->
@@ -48,12 +46,18 @@
 
 
   <!-- LOOP OVER MUTATION HEATMAPS -->
-  <div id="mutation-heatmaps" class="d-flex flex-wrap">
-    <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
-      <template v-if="selectedGenes.includes(geneData.key)">
-        <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
-        <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" />
-      </template>
+  <div id="mutation-heatmaps">
+    <h3 class="m-0">Mutation prevalence across lineages</h3>
+
+    <p class="text-muted m-0">Mutations with > {{ prevalenceThresholdFormatted }} prevalence in at least one lineage</p>
+    <div class="d-flex flex-wrap">
+
+      <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
+        <template v-if="selectedGenes.includes(geneData.key)">
+          <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
+          <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" />
+        </template>
+      </div>
     </div>
 
   </div>
@@ -75,12 +79,29 @@ import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
 import GradientLegend from "@/components/GradientLegend.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faPlus
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimesCircle
+} from "@fortawesome/free-regular-svg-icons";
+
+library.add(faPlus, faTimesCircle);
+
 import {
   interpolateRdPu
 } from "d3-scale-chromatic";
 
 import {
-  scaleSequential
+  scaleSequential,
+  format
 } from "d3";
 
 export default {
@@ -108,16 +129,19 @@ export default {
     }
   },
   components: {
-    // TypeaheadSelect,
-    // SARSMutationMap,
+    FontAwesomeIcon,
+    TypeaheadSelect,
     MutationHeatmap,
     GradientLegend
     // CharacteristicMutations
   },
   computed: {
     selectedPango() {
-      const merged = this.pango.concat(["average"]) 
+      const merged = typeof(this.pango) == "string" ? [this.pango, "average"] : this.pango.concat(["average"])
       return (merged)
+    },
+    prevalenceThresholdFormatted() {
+      return (format(".0%")(this.prevalenceThreshold))
     }
   },
   data() {
@@ -126,6 +150,7 @@ export default {
       mutationHeatmap: null,
       selectedGenes: [],
       colorScale: null,
+      prevalenceThreshold: 0.85,
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -145,7 +170,7 @@ export default {
   mounted() {
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = this.gene;
-    this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.pango).subscribe(results => {
+    this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
       this.mutationHeatmap = results;
     })
 
@@ -161,16 +186,25 @@ export default {
         }
       })
     },
-    updatePangolin(selected) {
-      // this.mutant1 = selected.name;
-      // this.getMutants1();
-      // this.$router.push({
-      //   name: "SituationReportComparison",
-      //   query: {
-      //     mutant1: selected.name,
-      //     mutant2: this.mutant2
-      //   }
-      // })
+    addPango(selected) {
+      this.selectedPango.push(selected.name);
+      this.$router.push({
+        name: "SituationReportComparison",
+        query: {
+          pango: this.selectedPango,
+          gene: this.gene
+        }
+      })
+    },
+    deletePango(idx) {
+      this.selectedPango.splice(idx);
+      this.$router.push({
+        name: "SituationReportComparison",
+        query: {
+          pango: this.selectedPango,
+          gene: this.gene
+        }
+      })
     }
   }
 }

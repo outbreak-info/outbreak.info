@@ -719,10 +719,12 @@ export function getDateUpdated(apiUrl) {
 }
 
 
-export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.85) {
+export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
+      console.log(results)
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+
 
       let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
 
@@ -736,7 +738,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold = 0.
             mutation_count: mutation_count,
             lineage_count: lineage_count,
             // prevalence: mutation_count / lineage_count,
-            prevalence: sum(values, d => d.prevalence) / (lineages.length),
+            prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
             pangolin_lineage: "average",
             mutation: mutation,
             gene: values[0].gene
