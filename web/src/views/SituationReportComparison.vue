@@ -26,31 +26,37 @@
       </label>
     </div>
 
-
-    <!-- LEGEND -->
-    <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4">
-      <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
-      <div class="d-flex align-items-center">
-        <svg width="24" height="24">
-          <defs>
-            <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
-            </pattern>
-          </defs>
-          <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
-        </svg>
-        <small class="text-light ml-2">not detected</small>
-      </div>
-    </div>
   </div>
 
 
 
   <!-- LOOP OVER MUTATION HEATMAPS -->
   <div id="mutation-heatmaps">
-    <h3 class="m-0">Mutation prevalence across lineages</h3>
+    <div class="d-flex flex-wrap justify-content-between">
+      <div>
+        <h3 class="m-0">Mutation prevalence across lineages</h3>
+        <p class="text-muted m-0">Mutations with > {{ prevalenceThresholdFormatted }} prevalence in at least one lineage</p>
+      </div>
 
-    <p class="text-muted m-0">Mutations with > {{ prevalenceThresholdFormatted }} prevalence in at least one lineage</p>
+
+      <!-- LEGEND -->
+      <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4">
+        <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+        <div class="d-flex align-items-center">
+          <svg width="24" height="24">
+            <defs>
+              <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
+              </pattern>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
+          </svg>
+          <small class="text-light ml-2">not detected</small>
+        </div>
+      </div>
+    </div>
+
+
     <div class="d-flex flex-wrap">
 
       <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
