@@ -11,6 +11,7 @@
       <div style="width: 150px">
         <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
       </div>
+      <button @click="addMutations()">Add E484K</button>
     </div>
   </div>
 
@@ -70,7 +71,8 @@ import Vue from "vue";
 import {
   findPangolin,
   getCharacteristicMutations,
-  getLineagesComparison
+  getLineagesComparison,
+  getMutationsByLineage
 } from "@/api/genomics.js";
 
 import MutationHeatmap from "@/components/MutationHeatmap.vue";
@@ -103,6 +105,9 @@ import {
   scaleSequential,
   format
 } from "d3";
+import {
+  uniq
+} from "lodash";
 
 export default {
   name: "SituationReportsDemo",
@@ -150,8 +155,12 @@ export default {
       queryPangolin: null,
       mutationHeatmap: null,
       selectedGenes: [],
+      selectedMutationQuery: "S:N501Y",
+      selectedMutationThreshold: 0.5,
       colorScale: null,
       prevalenceThreshold: 0.85,
+      heatmapSubscription: null,
+      lineageByMutationsSubscription: null,
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -174,6 +183,14 @@ export default {
     this.getData();
     this.queryPangolin = findPangolin;
   },
+  destroyed() {
+    if(this.heatmapSubscription) {
+      this.heatmapSubscription.unsubscribe();
+    }
+    if(this.lineageByMutationsSubscription) {
+      this.lineageByMutationsSubscription.unsubscribe();
+    }
+  },
   methods: {
     updateGenes() {
       this.$router.push({
@@ -187,6 +204,20 @@ export default {
     getData() {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
         this.mutationHeatmap = results;
+      })
+    },
+    addMutations() {
+      this.lineageByMutationsSubscription = getMutationsByLineage(this.$genomicsurl, this.selectedMutationQuery, this.selectedMutationThreshold).subscribe(results => {
+        results.sort((a,b) => b.proportion - a.proportion);
+        this.pango = uniq(this.selectedPango.concat(results.map(d => d.pangolin_lineage)));
+        this.$router.push({
+          name: "SituationReportComparison",
+          query: {
+            pango: this.pango,
+            gene: this.selectedGenes
+          }
+        })
+        this.getData();
       })
     },
     addPango(selected) {
