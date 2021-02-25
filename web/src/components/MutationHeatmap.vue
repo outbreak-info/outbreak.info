@@ -9,6 +9,7 @@
   <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
   <g ref="yAxisLeft" class="axis axis--y" :transform="`translate(${this.margin.left - 5}, ${this.margin.top})`"></g>
   <g ref="yAxisRight" class="axis axis--y" :transform="`translate(${this.margin.left + this.width + 5}, ${this.margin.top})`"></g>
+  <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
   <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
 </svg>
 </template>
@@ -91,6 +92,7 @@ export default Vue.extend({
       // references
       svg: null,
       heatmap: null,
+      heatmapBase: null,
       // data
       base: null,
       plottedData: null,
@@ -108,6 +110,7 @@ export default Vue.extend({
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.heatmap = select(this.$refs.heatmap);
+      this.heatmapBase = select(this.$refs.heatmapBase);
     },
     updateScales() {
       this.x = scaleBand()
@@ -162,7 +165,7 @@ export default Vue.extend({
     drawPlot() {
 
       // base: no values
-      const heatmapBaseSelector = this.heatmap
+      const heatmapBaseSelector = this.heatmapBase
         .selectAll(".heatmap-base")
         .data(this.base);
 

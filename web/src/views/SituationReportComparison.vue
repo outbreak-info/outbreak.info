@@ -137,7 +137,8 @@ export default {
   },
   computed: {
     selectedPango() {
-      const merged = typeof(this.pango) == "string" ? [this.pango, "average"] : this.pango.concat(["average"])
+      const merged = typeof(this.pango) == "string" ? [this.pango] : this.pango
+      // const merged = typeof(this.pango) == "string" ? [this.pango, "average"] : this.pango.concat(["average"])
       return (merged)
     },
     prevalenceThresholdFormatted() {
@@ -170,10 +171,7 @@ export default {
   mounted() {
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = this.gene;
-    this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
-      this.mutationHeatmap = results;
-    })
-
+    this.getData();
     this.queryPangolin = findPangolin;
   },
   methods: {
@@ -186,15 +184,21 @@ export default {
         }
       })
     },
+    getData() {
+      this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
+        this.mutationHeatmap = results;
+      })
+    },
     addPango(selected) {
       this.selectedPango.push(selected.name);
       this.$router.push({
         name: "SituationReportComparison",
         query: {
           pango: this.selectedPango,
-          gene: this.gene
+          gene: this.selectedGenes
         }
       })
+      this.getData();
     },
     deletePango(idx) {
       this.selectedPango.splice(idx);
@@ -205,6 +209,7 @@ export default {
           gene: this.gene
         }
       })
+      this.getData();
     }
   }
 }

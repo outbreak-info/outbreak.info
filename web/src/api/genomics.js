@@ -746,7 +746,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
         })
         .entries(filtered).map(d => d.value);
 
-      filtered = filtered.concat(avgByMutation);
+      // filtered = filtered.concat(avgByMutation);
 
       filtered.forEach(d => {
         d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
