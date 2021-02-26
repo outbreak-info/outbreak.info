@@ -110,7 +110,7 @@
 
 
     <!-- METHODOLOGY -->
-    <section class="mt-3 mb-5" id="methods">
+    <section class="mt-3 mb-5 border-top pt-3" id="methods">
       <h4>Methodology</h4>
       <ReportMethodology :dateUpdated="dateUpdated" />
       <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
@@ -118,7 +118,7 @@
     </section>
 
     <!-- CITATION -->
-    <section class="my-3">
+    <section class="my-3 border-top pt-3">
       <h4 class="">Citing this report</h4>
       <p class="m-0">
         <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.

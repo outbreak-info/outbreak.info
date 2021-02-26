@@ -285,7 +285,7 @@
     </section>
 
     <!-- CITATION -->
-    <section class="my-3">
+    <section class="my-3 border-top pt-3">
       <h4 class="">Citing this report</h4>
       <p class="m-0">
         <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
