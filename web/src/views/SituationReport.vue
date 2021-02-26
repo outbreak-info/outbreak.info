@@ -243,7 +243,7 @@
           <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
-      <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="activeLocation" />
+      <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selected" />
     </section>
 
     <!-- GEOGRAPHIC PREVALENCE -->
@@ -522,7 +522,6 @@ export default {
       disclaimer: null,
 
       // Changing locations
-      activeLocation: "the world",
       queryCountry: null,
       queryDivision: null,
       queryPangolin: null,
@@ -762,8 +761,6 @@ export default {
     },
     changeLocation(location) {
       const queryParams = this.$route.query;
-
-      this.activeLocation = location.name;
 
       this.selectedLocations.forEach(d => {
         d.isActive = false;
