@@ -46,6 +46,7 @@ function titleCase(value) {
 }
 
 // reminder: must be the raw verison of the file
+// const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/dev/curated_mutations.json";
 const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
 export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThreshold) {
@@ -70,7 +71,7 @@ export function getCuratedListAndCharMuts(apiurl, prevalenceThreshold) {
   )
   )
 }
-export function getReportList(apiurl, prevalenceThreshold = 0.85) {
+export function getReportList(apiurl, prevalenceThreshold = 0.75) {
   store.state.admin.reportloading = true;
 
   return forkJoin([getDateUpdated(apiurl), getCuratedListAndCharMuts(apiurl, prevalenceThreshold)]).pipe(
@@ -545,7 +546,7 @@ export function getCuratedList() {
   ).pipe(
     pluck("data"),
     map(response => {
-      response = orderBy(response, ["reportType", "variantType", "mutation_name"]);
+      response = orderBy(response, ["variantType", "mutation_name"]);
 
       const reports = nest()
         .key(d => d.reportType)

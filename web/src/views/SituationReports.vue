@@ -19,7 +19,7 @@
 
       <div class="w-75 mt-2 text-left">The <a href="https://cvisb.org/" rel="noreferrer" target="_blank">CViSB Team</a> at Scripps Research is tracking the prevalence of several lineages or sets of mutations within the
         SARS-CoV-2 (hCoV-19) genome. We will regularly produce a report describing the current situation, focusing on the United States.</div>
-      <!-- <router-link :to="{name:'SituationReport'}" class="btn btn-main-outline mt-3">How to interpret these reports</router-link> -->
+
       <div class="d-flex align-items-center justify-content-between my-2">
         <div id="date-updated" class="mr-5">
           <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
@@ -48,11 +48,7 @@
       <div class="row mt-3">
         <div class="col-sm-12 col-md-6 col-lg-6 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
           <div class="w-100 p-3 card">
-            <router-link :to="{name:'MutationReport', query:{ pango: report.mutation_name }}" v-if="group.key == 'lineage'" class="no-underline">
-              <ReportCard :report="report" />
-            </router-link>
-
-            <router-link :to="{name:'MutationReport', query:{ muts: report.mutation_name.split(' + ') }}"  class="no-underline" v-else>
+            <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
               <ReportCard :report="report" />
             </router-link>
 
@@ -121,13 +117,13 @@ export default {
     FontAwesomeIcon
   },
   computed: {
-    ...mapState("admin", ["reportloading"]),
+    ...mapState("admin", ["reportloading"])
   },
   methods: {
     getReportType(group) {
-      return group.toLowerCase() == "lineage" ?
-        "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>" :
-        "sequences with a particular mutation(s)"
+      return group.toLowerCase() == "lineage" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>" :
+        (group.toLowerCase() == "lineage + mutation" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a> with added mutations" :
+          "sequences with a particular mutation(s)")
     }
   },
   data() {
