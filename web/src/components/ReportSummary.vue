@@ -23,7 +23,7 @@
           <th>
           </th>
           <th class="text-center padded border-bottom border-secondary" colspan="2">
-            when found
+            when found<sup>**</sup>
           </th>
         </tr>
         <tr class="border-bottom">
@@ -96,6 +96,7 @@
     <div class="d-flex align-items-center my-2">
       <div class="line-height-1">
         <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
+        <small class="ml-2"><em><sup>**</sup> Dates are based on the sample collection date</em> </small>
       </div>
       <div class="bias-btn ml-2">
         <router-link :to="{name: 'SituationReportCaveats'}" class="no-underline pointer">
