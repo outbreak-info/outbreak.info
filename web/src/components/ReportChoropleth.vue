@@ -2,17 +2,17 @@
 <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- Total count filter -->
   <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap}">
-    <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-    <svg ref="count_filter" id="count-filter" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2">
+    <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`"  />
+    <svg ref="count_filter" id="count-filter" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2" role="legend">
       <g transform="translate(1,1)">
         <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
         <rect x="0" y="20" width="15" height="15" :fill="zeroColor" :stroke="strokeColor" stroke-width="1"></rect>
         <rect x="0" y="20" width="15" height="15" fill="url(#diagonalHatch)"></rect>
         <rect x="0" y="40" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
 
-        <text x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
-        <text x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">{{ mutationName }} not detected</text>
-        <text x="22" y="47" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing</text>
+        <text style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
+        <text style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">{{ mutationName }} not detected</text>
+        <text style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' x="22" y="47" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing</text>
 
       </g>
     </svg>

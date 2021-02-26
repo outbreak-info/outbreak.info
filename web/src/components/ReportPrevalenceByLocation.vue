@@ -32,6 +32,7 @@
 
         <!-- LEFT: DOTPLOT -->
         <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
+        <!-- <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" :subtitle="subtitle"> -->
           <defs>
             <filter id="dropshadow" filterUnits="userSpaceOnUse">
               <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
@@ -139,10 +140,7 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    adminLevel: {
-      type: String,
-      default: "country"
-    }
+    location: String
   },
   watch: {
     width() {
@@ -160,7 +158,10 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      return (`${this.mutationName} prevalence by ${this.adminLevel}`)
+      return (this.location == "Worldwide" ? `Cumulative ${this.mutationName} prevalence by country` : `Cumulative ${this.mutationName} prevalence in ${this.location}`)
+    },
+    subtitle() {
+      return (this.location == "Worldwide" ? `Since ${this.mutationName} identification` : `Since ${this.mutationName} identification in ${this.location}`)
     },
     maxEstFormatted() {
       const formatter = format(".0%");
