@@ -341,7 +341,7 @@ export function getCumPrevalence(apiurl, queryStr, location, locationType) {
       results["type"] = locationType;
       results["first_detected"] = first ? formatDateShort(first) : null;
       results["last_detected"] = last ? formatDateShort(last) : null;
-      results["proportion_formatted"] = formatPercent(results.global_prevalence);
+      results["proportion_formatted"] = results.lineage_count ? (results.global_prevalence < 0.005 ? "< 0.5%" : formatPercent(results.global_prevalence)) : "not detected";
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
       return (results)
     }),
@@ -774,7 +774,7 @@ export function getPrevalenceAllLineages(apiurl, location, locationType) {
         })
       })
 
-      nested.sort((a,b) => a.date_time < b.date_time ? -1 : 1);
+      nested.sort((a, b) => a.date_time < b.date_time ? -1 : 1);
 
       return (nested)
     }),
@@ -792,12 +792,14 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
 
   return forkJoin([
     getDateUpdated(apiurl),
-    getPrevalenceAllLineages(apiurl, location, locationType)
+    getPrevalenceAllLineages(apiurl, location, locationType),
+    getLocationTable(apiurl, location, locationType)
   ]).pipe(
-    map(([dateUpdated, lineagesByDay]) => {
+    map(([dateUpdated, lineagesByDay, lineageTable]) => {
       return ({
         dateUpdated: dateUpdated,
-        lineagesByDay: lineagesByDay
+        lineagesByDay: lineagesByDay,
+        lineageTable: lineageTable
       })
     }),
     catchError(e => {
@@ -807,4 +809,41 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
     }),
     finalize(() => store.state.admin.reportloading = false)
   )
+}
+
+export function getLineageCumPrevalence(apiurl, lineageObj, location, locationType) {
+  const queryStr = `pangolin_lineage=${lineageObj.mutation_name}`;
+
+  return (getCumPrevalence(apiurl, queryStr, location, locationType)).pipe(
+    map(results => {
+      return ({
+        ...results,
+        ...lineageObj
+      })
+    })
+  )
+}
+
+export function getLocationTable(apiurl, location, locationType) {
+  return getCuratedList().pipe(
+    mergeMap(list => {
+      const curatedLineagesArr = list.filter(d => d.key == "lineage");
+      if (curatedLineagesArr.length === 1) {
+        const curatedLineages = curatedLineagesArr[0].values;
+        console.log(curatedLineages)
+        return forkJoin(...curatedLineages.map(lineage => getLineageCumPrevalence(apiurl, lineage, location, locationType))).pipe(
+          map(results => {
+            results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);
+
+            const nestedResults = nest()
+            .key(d => d.variantType)
+            .entries(results);
+
+            return (nestedResults)
+          })
+        )
+      }
+    })
+  )
+
 }

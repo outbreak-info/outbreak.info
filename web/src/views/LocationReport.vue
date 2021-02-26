@@ -102,10 +102,79 @@
     <ReportLogos class="mb-4" />
 
     <!-- REPORT -->
-    <div class="row">
-      <div class="col-sm-12">
-        <LineagesByLocation :data="lineagesByDay" />
-      </div>
+    <div id="location-report">
+      <section id="variants-of-concern" v-if="lineageTable">
+        <div>
+          <!-- <h6>{{lineageGroup.key}}</h6> -->
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2" class="border-bottom">
+                  lineage
+                </th>
+                <th class="text-center padded border-bottom border-secondary" colspan="2">
+                  lineage found
+                </th>
+                <th>
+                </th>
+                <th class="text-center padded border-bottom border-secondary" colspan="2">
+                  when found
+                </th>
+              </tr>
+              <tr class="border-bottom">
+                <th class="text-center padded">
+                  total
+                </th>
+                <th class="text-center padded">
+                  apparent prevalence<sup>*</sup>
+                </th>
+                <th>
+
+                </th>
+                <th class="text-center padded">
+                  first
+                </th>
+                <th class="text-center padded">
+                  last
+                </th>
+              </tr>
+            </thead>
+            <tbody class="checkbook" v-for="(lineageGroup, gIdx) in lineageTable" :key="gIdx">
+              <tr class="border-top border-bottom">
+                <td colspan="6">
+                  {{lineageGroup.key}}
+                </td>
+
+              </tr>
+              <tr v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
+                <td>
+                  {{ lineage.pangolin_lineage }}
+                </td>
+                <td>
+                  {{ lineage.lineage_count_formatted }}
+                </td>
+                <td>
+                  {{ lineage.proportion_formatted }}
+                <td class="spacer">
+
+                </td>
+                <td>
+                  {{ lineage.first_detected }}
+                </td>
+                <td>
+                  {{ lineage.last_detected }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="lineages-over-time" class="row">
+        <div class="col-sm-12">
+          <!-- <LineagesByLocation :data="lineagesByDay" /> -->
+        </div>
+      </section>
+
     </div>
 
 
@@ -202,7 +271,7 @@ export default {
     // ReportChoropleth,
     // ReportResources,
     ShareReport,
-    LineagesByLocation
+    // LineagesByLocation
     // ReportSummary,
     // TypeaheadSelect,
     // CustomReportForm,
@@ -239,9 +308,10 @@ export default {
 
     this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango).subscribe(results => {
       console.log(results)
-      this.dateUpdated = results.dateUpdated;
-      this.lastUpdated = results.lastUpdated;
+      this.dateUpdated = results.dateUpdated.dateUpdated;
+      this.lastUpdated = results.dateUpdated.lastUpdated;
       this.lineagesByDay = results.lineagesByDay;
+      this.lineageTable = results.lineageTable;
     })
   },
   data() {
@@ -254,7 +324,8 @@ export default {
       // data
       dateUpdated: null,
       lastUpdated: null,
-      lineagesByDay: null
+      lineagesByDay: null,
+      lineageTable: null
     })
   },
   destroyed() {
@@ -277,5 +348,18 @@ export default {
 .btn-active {
     background-color: $primary-color;
     color: white;
+}
+
+th.padded {
+    padding: 0.25rem 0.25rem 0.5rem;
+}
+
+.checkbook td {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.checkbook tr:nth-child(2n+1) {
+    background-color: lighten($secondary-color, 60%);
 }
 </style>
