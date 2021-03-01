@@ -164,7 +164,12 @@
               </tr>
               <tr v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
                 <td>
-                  {{ lineage.pangolin_lineage }}
+                  <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { pango: lineage.pangolin_lineage, division: [location]}}">
+                    {{ lineage.pangolin_lineage }}
+                    </router-link>
+                  <router-link v-else :to="{name: 'MutationReport', query:{ pango: lineage.pangolin_lineage, country: [location] }}">
+                    {{ lineage.pangolin_lineage }}
+                    </router-link>
                 </td>
                 <td>
                   {{ lineage.lineage_count_formatted }}
