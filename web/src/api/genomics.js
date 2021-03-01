@@ -720,7 +720,7 @@ export function getDateUpdated(apiUrl) {
   )
 }
 
-export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold = 0.1, nday_threshold = 7) {
+export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold) {
   const dateThreshold = new Date("2020-03-14");
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
@@ -780,7 +780,7 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
   )
 }
 
-export function getMostRecentLineages(apiurl, location, locationType, dateSpan = 28, other_threshold = 0.1, nday_threshold = 7) {
+export function getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, dateSpan = 28) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const today = new Date();
   const minDate = timeDay.offset(today, -1*dateSpan);
@@ -835,17 +835,19 @@ export function getMostRecentLineages(apiurl, location, locationType, dateSpan =
 }
 
 // LOCATION REPORTS
-export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages) {
+export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages, other_threshold, nday_threshold) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
     getDateUpdated(apiurl),
-    getPrevalenceAllLineages(apiurl, location, locationType),
-    getMostRecentLineages(apiurl, location, locationType),
+    getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold),
+    getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold),
     getLocationTable(apiurl, location, locationType)
   ]).pipe(
     map(([dateUpdated, lineagesByDay, mostRecentLineages, lineageTable]) => {
       let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
+
+      lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
 
       return ({
         dateUpdated: dateUpdated,

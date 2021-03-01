@@ -343,7 +343,7 @@ export default {
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
-    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango).subscribe(results => {
+    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh).subscribe(results => {
       console.log(results)
       this.dateUpdated = results.dateUpdated.dateUpdated;
       this.lastUpdated = results.dateUpdated.lastUpdated;
@@ -351,9 +351,7 @@ export default {
       this.lineageTable = results.lineageTable;
       this.mostRecentLineages = results.mostRecentLineages;
       this.lineageDomain = results.lineageDomain;
-      console.log(this.lineageDomain)
       this.colorScale = this.colorScale.domain(this.lineageDomain);
-      console.log(this.colorScale.domain())
     })
   },
   data() {
@@ -372,6 +370,8 @@ export default {
       mostRecentLineages: null,
       lineageTable: null,
       lineageDomain: [],
+      otherThresh: 0.08,
+      ndayThresh: 7,
       colorScale: scaleOrdinal(
         [ "#bab0ab", // grey (other)
           "#1f77b4", // dk blue
@@ -386,10 +386,31 @@ export default {
           "#8c564b", // brown
           "#555555", // grey
           "#bcbd22", // puce
-          "#ff0000",
-          "#00ff00",
-          "#0000ff",
-          "red"
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000",
+          "#000000"
         ])
     })
   },
