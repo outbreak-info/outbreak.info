@@ -214,8 +214,8 @@ export default Vue.extend({
             .attr("x", 0)
             .attr("y", (d, i) => i * (this.legendRectWidth + 2))
             .style("fill", d => this.colorScale(d))
-            .style("stroke", "#555")
-            .style("stroke-width", 0.25)
+            // .style("stroke", "#555")
+            // .style("stroke-width", 0.5)
 
           legendGrp.append("text")
             .attr("x", this.legendRectWidth + 4)

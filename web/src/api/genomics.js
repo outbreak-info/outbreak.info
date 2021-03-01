@@ -720,7 +720,7 @@ export function getDateUpdated(apiUrl) {
   )
 }
 
-export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold = 0.1, nday_threshold = 0.01) {
+export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold = 0.1, nday_threshold = 0.02) {
   const dateThreshold = new Date("2020-03-14");
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
