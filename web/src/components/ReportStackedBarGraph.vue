@@ -44,6 +44,7 @@ export default Vue.extend({
   props: {
     data: Array,
     location: String,
+    colorScale: Function,
     locationType: String,
     rectWidth: {
       type: Number,
@@ -84,26 +85,6 @@ export default Vue.extend({
       yAxis: null,
       numXTicks: 5,
       numYTicks: 5,
-      colorScale: scaleOrdinal(
-        [
-          "#1f77b4", // dk blue
-          "#aec7e8", // lt blue
-          "#f28e2c", // orange
-          "#e15759", // red
-          "#9edae5", // teal
-          "#59a14f", // green
-          "#edc949", // yellow
-          "#9467bd", // purple
-          "#ff9da7", // pink
-          "#8c564b", // brown
-          "#555555", // grey
-          "#bcbd22", // puce
-          "#bab0ab",
-          "#ff0000",
-          "#00ff00",
-          "#0000ff",
-          "red"
-        ]),
       // methods
       area: null,
       // data

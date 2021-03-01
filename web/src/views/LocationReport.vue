@@ -104,19 +104,23 @@
     <!-- REPORT -->
     <div id="location-report">
       <div>
+        <div>
         <h3>Lineage prevalence in {{location}}</h3>
+        <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
+        </div>
+
         <div class="row">
 
           <section id="lineages-over-time" class="col-md-8">
             <h5 class="">Lineage prevalence over time</h5>
             <div class="">
-              <LineagesByLocation :data="lineagesByDay" />
+              <LineagesByLocation :data="lineagesByDay" :colorScale="colorScale"/>
             </div>
           </section>
 
           <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
             <h5>Most commonly found lineages over the past {{dayThreshold}} days</h5>
-            <ReportStackedBarGraph :data="mostRecentLineages" :location="location" :locationType="selectedLocationType" />
+            <ReportStackedBarGraph :data="mostRecentLineages"  :colorScale="colorScale" :location="location" :locationType="selectedLocationType" />
           </section>
 
         </div>
@@ -245,6 +249,7 @@ import CustomReportForm from "@/components/CustomReportForm.vue";
 import MutationsByLineage from "@/components/MutationsByLineage.vue";
 import LineagesByLocation from "@/components/LineagesByLocation.vue";
 import ReportStackedBarGraph from "@/components/ReportStackedBarGraph.vue";
+import HorizontalCategoricalLegend from "@/components/HorizontalCategoricalLegend.vue";
 
 // --- font awesome --
 import {
@@ -268,7 +273,7 @@ import {
 } from "vuex";
 
 import {
-  timeFormat
+  timeFormat, scaleOrdinal
 } from "d3";
 
 import {
@@ -299,7 +304,8 @@ export default {
     // ReportResources,
     ShareReport,
     LineagesByLocation,
-    ReportStackedBarGraph
+    ReportStackedBarGraph,
+    HorizontalCategoricalLegend
     // ReportSummary,
     // TypeaheadSelect,
     // CustomReportForm,
@@ -344,6 +350,9 @@ export default {
       this.lineagesByDay = results.lineagesByDay;
       this.lineageTable = results.lineageTable;
       this.mostRecentLineages = results.mostRecentLineages;
+      this.lineageDomain = Object.keys(results.mostRecentLineages[0]);
+      console.log(this.lineageDomain)
+      this.colorScale = this.colorScale.domain(this.lineageDomain);
     })
   },
   data() {
@@ -360,7 +369,28 @@ export default {
       lastUpdated: null,
       lineagesByDay: null,
       mostRecentLineages: null,
-      lineageTable: null
+      lineageTable: null,
+      lineageDomain: [],
+      colorScale: scaleOrdinal(
+        [
+          "#1f77b4", // dk blue
+          "#aec7e8", // lt blue
+          "#f28e2c", // orange
+          "#e15759", // red
+          "#9edae5", // teal
+          "#59a14f", // green
+          "#edc949", // yellow
+          "#9467bd", // purple
+          "#ff9da7", // pink
+          "#8c564b", // brown
+          "#555555", // grey
+          "#bcbd22", // puce
+          "#bab0ab",
+          "#ff0000",
+          "#00ff00",
+          "#0000ff",
+          "red"
+        ])
     })
   },
   destroyed() {

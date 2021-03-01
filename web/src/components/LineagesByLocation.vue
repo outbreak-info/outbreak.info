@@ -6,8 +6,6 @@
     <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
     <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
   </svg>
-  <svg :width="width" :height="legendHeight" class="lineages-by-location lineages-by-location-legend" ref="legend">
-  </svg>
 </div>
 </template>
 
@@ -35,7 +33,6 @@ import {
   event,
   extent,
   format,
-  scaleOrdinal,
   max
 } from "d3";
 
@@ -44,7 +41,8 @@ export default Vue.extend({
   name: "LineagesByLocation",
   components: {},
   props: {
-    data: Array
+    data: Array,
+    colorScale: Function
   },
   computed: {
     title() {
@@ -81,26 +79,6 @@ export default Vue.extend({
       yAxis: null,
       numXTicks: 5,
       numYTicks: 5,
-      colorScale: scaleOrdinal(
-        [
-          "#1f77b4", // dk blue
-          "#aec7e8", // lt blue
-          "#f28e2c", // orange
-          "#e15759", // red
-          "#9edae5", // teal
-          "#59a14f", // green
-          "#edc949", // yellow
-          "#9467bd", // purple
-          "#ff9da7", // pink
-          "#8c564b", // brown
-          "#555555", // grey
-          "#bcbd22", // puce
-          "#bab0ab",
-          "#ff0000",
-          "#00ff00",
-          "#0000ff",
-          "red"
-        ]),
       // methods
       area: null,
       // data
@@ -147,7 +125,6 @@ export default Vue.extend({
         .domain([0, 1]);
 
       this.lineages = Object.keys(this.data[0]).filter(d => d != "date_time");
-      this.colorScale = this.colorScale.domain(this.lineages);
       this.legendHeight = 600; //this.lineages * (this.legendRectWidth + 4);
 
       this.xAxis = axisBottom(this.x)
