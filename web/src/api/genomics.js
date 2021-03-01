@@ -23,7 +23,8 @@ import {
 } from "d3";
 
 import {
-  orderBy
+  orderBy,
+  uniq
 } from "lodash";
 
 
@@ -719,11 +720,12 @@ export function getDateUpdated(apiUrl) {
   )
 }
 
-export function getPrevalenceAllLineages(apiurl, location, locationType) {
+export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold = 0.1, nday_threshold = 0.01) {
+  const dateThreshold = new Date("2020-03-14");
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
-    `https://api.outbreak.info/genomics/prevalence-by-division-all-lineages?division=${location}&country=United States` :
-    `https://api.outbreak.info/genomics/prevalence-by-country-all-lineages?country=${location}`
+    `${apiurl}prevalence-by-division-all-lineages?division=${location}&country=United States&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
+    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}`
 
   return from(
     axios.get(url, {
@@ -734,49 +736,41 @@ export function getPrevalenceAllLineages(apiurl, location, locationType) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
-      results.forEach(d => {
-        d["proportion"] = d.lineage_count / d.total_count;
-      })
-      const maxFreq = nest()
-        .key(d => d.lineage)
-        .rollup(values => mean(values.sort((a, b) => b.proportion - a.proportion).slice(10), d => d.proportion))
-        .entries(results);
-
-      const lineageThresh = 0.05;
-      const lineages = maxFreq.filter(d => d.value > lineageThresh).map(d => d.key);
 
       results.forEach(d => {
-        d["pangolin_lineage"] = lineages.includes(d.lineage) ? d.lineage : "other"
+        d["pangolin_lineage"] = capitalize(d.lineage);
       })
 
       let nested = nest()
         .key(d => d.date)
-        .key(d => d.pangolin_lineage)
         .rollup(values => {
           return ({
-            values: values,
-            lineage_count: sum(values, d => d.lineage_count),
-            total_count: sum(values, d => d.total_count),
-            proportion: sum(values, d => d.lineage_count) / sum(values, d => d.total_count)
+            values: values
           })
         })
         .entries(results);
 
-      nested = nested.flatMap(d => {
-        return d.values.map(day => {
-          return ({
-            date_time: parseDate(d.key),
-            lineage_count: day.value.lineage_count,
-            total_count: day.value.total_count,
-            proportion: day.value.proportion,
-            pangolin_lineage: day.key
-          })
+      let lineages = uniq(results.map(d => d.pangolin_lineage));
+
+      nested.sort((a, b) => a.key < b.key ? -1 : 1);
+
+      const nested2 = nested.map(dateObj => {
+        let obj = {}
+        obj["date_time"] = parseDate(dateObj.key);
+
+        lineages.forEach(lineage => {
+          const filtered = dateObj.value.values.filter(d => d.pangolin_lineage === lineage);
+          if (filtered.length === 1) {
+            obj[lineage] = filtered[0].prevalence_rolling;
+          } else {
+            obj[lineage] = 0
+          }
         })
+        return (obj)
       })
+      console.log(nested2)
 
-      nested.sort((a, b) => a.date_time < b.date_time ? -1 : 1);
-
-      return (nested)
+      return (nested2.filter(d => d.date_time > dateThreshold))
     }),
     catchError(e => {
       console.log("%c Error in getting prevalence for all lineages in a place!", "color: red");
@@ -836,8 +830,8 @@ export function getLocationTable(apiurl, location, locationType) {
             results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);
 
             const nestedResults = nest()
-            .key(d => d.variantType)
-            .entries(results);
+              .key(d => d.variantType)
+              .entries(results);
 
             return (nestedResults)
           })

@@ -171,7 +171,7 @@
       </section>
       <section id="lineages-over-time" class="row">
         <div class="col-sm-12">
-          <!-- <LineagesByLocation :data="lineagesByDay" /> -->
+          <LineagesByLocation :data="lineagesByDay" />
         </div>
       </section>
 
@@ -271,7 +271,7 @@ export default {
     // ReportChoropleth,
     // ReportResources,
     ShareReport,
-    // LineagesByLocation
+    LineagesByLocation
     // ReportSummary,
     // TypeaheadSelect,
     // CustomReportForm,

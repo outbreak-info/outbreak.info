@@ -5,8 +5,8 @@
     </g>
     <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
     <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
-
-    <!-- <g :transform="`translate(${margin.left},${-margin.top})`" class="legend"></g> -->
+  </svg>
+  <svg :width="width" :height="legendHeight" class="lineages-by-location lineages-by-location-legend" ref="legend">
   </svg>
 </div>
 </template>
@@ -15,7 +15,9 @@
 <script lang="js">
 import Vue from "vue";
 
-import { uniq } from "lodash";
+import {
+  uniq
+} from "lodash";
 
 import {
   select,
@@ -27,6 +29,9 @@ import {
   area,
   stack,
   stackOrderReverse,
+  stackOrderInsideOut,
+  stackOrderAscending,
+  stackOrderDescending,
   event,
   extent,
   format,
@@ -65,8 +70,10 @@ export default Vue.extend({
       },
       width: 800,
       height: 600,
+      legendHeight: null,
       // variables
       fillVar: "pangolin_lineage",
+      legendRectWidth: 15,
       // axes
       x: scaleTime(),
       y: scaleLinear(),
@@ -88,14 +95,20 @@ export default Vue.extend({
           "#8c564b", // brown
           "#555555", // grey
           "#bcbd22", // puce
-          "#bab0ab"
+          "#bab0ab",
+          "#ff0000",
+          "#00ff00",
+          "#0000ff",
+          "red"
         ]),
       // methods
       area: null,
       // data
       series: null,
+      lineages: null,
       // refs
-      chart: null
+      chart: null,
+      legend: null
     })
   },
   mounted() {
@@ -115,6 +128,7 @@ export default Vue.extend({
     setDims() {},
     setupPlot() {
       this.svg = select(this.$refs.svg);
+      this.legend = select(this.$refs.legend);
       this.chart = select(this.$refs.chart);
 
       this.area = area()
@@ -132,7 +146,10 @@ export default Vue.extend({
         .nice()
         .domain([0, 1]);
 
-      this.colorScale = this.colorScale.domain(d => d[this.fillVar]);
+      this.lineages = Object.keys(this.data[0]).filter(d => d != "date_time");
+      console.log(this.lineages)
+      this.colorScale = this.colorScale.domain(this.lineages);
+      this.legendHeight = 600; //this.lineages * (this.legendRectWidth + 4);
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks);
@@ -143,48 +160,91 @@ export default Vue.extend({
         .ticks(this.numYTicks)
         .tickFormat(format(".0%"));
 
-        // stacking
-        const keys = uniq(this.data.map(d => d[this.fillVar]));
-
-        this.series = stack()
-          .keys(keys)
-          .value(d => d.proportion)
-          // .order(stackOrderDescending)
-          // .order(stackOrderAscending)
-          // .order(stackOrderAppearance)
-          // .order(stackOrderNone)
-          .order(stackOrderReverse)(
-            // .order(stackOrderInsideOut)
-            this.data
-          );
-          console.log(this.series)
-
+      // stacking
+      this.series = stack()
+        .keys(this.lineages)
+        // .order(stackOrderDescending)
+        // .order(stackOrderAscending)
+        // .order(stackOrderAppearance)
+        // .order(stackOrderNone)
+        // .order(stackOrderReverse)
+        .order(stackOrderInsideOut)
+        (this.data)
+      console.log(this.series)
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
     updatePlot() {
       if (this.data) {
-        console.log(this.data)
         this.updateScales();
-        console.log(this.colorScale.domain())
         this.drawPlot();
-
-        const areaSelector = this.chart
-          .selectAll(".stacked-area-chart")
-          .data(this.series);
-
-        areaSelector
-          .join("path")
-          .style("fill", key => this.colorScale(key))
-          .attr("d", this.area)
-          .append("title")
-          .text(({
-            key
-          }) => key);
       }
     },
     drawPlot() {
+      const areaSelector = this.chart
+        .selectAll(".stacked-area-chart")
+        .data(this.series);
 
+      areaSelector
+        .join("path")
+        .attr("fill", ({
+          key
+        }) => this.colorScale(key))
+        .attr("id", ({
+          key
+        }) => `area_${key.replace(/\./g, "-")}`)
+        .attr("d", this.area)
+        .append("title")
+        .text(({
+          key
+        }) => key)
+
+      const legendSelector = this.legend
+        .selectAll(".legend")
+        .data(this.lineages, d => d);
+
+      legendSelector.join(enter => {
+          const legendGrp = enter
+            .append("g")
+            .attr("id", d => `legend_${d.replace(/\./g, "_")}`);
+
+          legendGrp.append("rect")
+            .attr("width", this.legendRectWidth)
+            .attr("height", this.legendRectWidth)
+            .attr("x", 0)
+            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
+            .style("fill", d => this.colorScale(d))
+            .style("stroke", "#555")
+            .style("stroke-width", 0.25)
+
+          legendGrp.append("text")
+            .attr("x", this.legendRectWidth + 4)
+            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
+            .attr("dy", this.legendRectWidth / 2)
+            .text(d => d)
+            .style("dominant-baseline", "central")
+        },
+        update => {
+          update.select("rect")
+            .attr("width", this.legendRectWidth)
+            .attr("height", this.legendRectWidth)
+            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
+            .style("fill", d => this.colorScale(d))
+
+          update.select("text")
+            .attr("x", this.legendRectWidth + 4)
+            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
+            .text(d => d)
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .duration(10)
+          .style("opacity", 1e-5)
+          .remove()
+        )
+      )
     },
     debounce(fn, delay) {
       var timer = null;
