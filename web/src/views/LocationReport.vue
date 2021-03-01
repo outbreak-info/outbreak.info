@@ -97,13 +97,34 @@
         <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       </div>
     </div>
+            <div class="d-flex flex-wrap my-3">
+              <a href="#lineages">
+                <button class="btn btn-grey mr-3">
+                  <small>Common lineages</small>
+                </button>
+              </a>
+
+              <a href="#lineages">
+                <button class="btn btn-grey mr-3">
+                  <small>Variants of Concern & Interest</small>
+                </button>
+              </a>
+
+              <a href="#geographic">
+                <button class="btn btn-grey mr-3">
+                  <small>Geographic breakdown</small>
+                </button>
+              </a>
+            </div>
 
     <!-- LOGOS -->
     <ReportLogos class="mb-4" />
 
     <!-- REPORT -->
     <div id="location-report">
-      <div>
+
+
+      <div id="lineages">
         <div>
         <h3>Lineage prevalence in {{location}}</h3>
         <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
@@ -126,7 +147,8 @@
         </div>
       </div>
 
-      <section id="variants-of-concern" v-if="lineageTable">
+      <section id="variants-of-concern" v-if="lineageTable" class="my-5">
+        <h3>Tracked lineages</h3>
         <div>
           <!-- <h6>{{lineageGroup.key}}</h6> -->
           <table>
