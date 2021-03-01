@@ -26,10 +26,9 @@ import {
   axisBottom,
   area,
   stack,
-  stackOrderReverse,
   stackOrderInsideOut,
-  stackOrderAscending,
-  stackOrderDescending,
+  // stackOrderAscending,
+  // stackOrderDescending,
   event,
   extent,
   format,
@@ -68,10 +67,8 @@ export default Vue.extend({
       },
       width: 800,
       height: 600,
-      legendHeight: null,
       // variables
       fillVar: "pangolin_lineage",
-      legendRectWidth: 15,
       // axes
       x: scaleTime(),
       y: scaleLinear(),
@@ -85,8 +82,7 @@ export default Vue.extend({
       series: null,
       lineages: null,
       // refs
-      chart: null,
-      legend: null
+      chart: null
     })
   },
   mounted() {
@@ -125,7 +121,6 @@ export default Vue.extend({
         .domain([0, 1]);
 
       this.lineages = Object.keys(this.data[0]).filter(d => d != "date_time");
-      this.legendHeight = 600; //this.lineages * (this.legendRectWidth + 4);
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks);
@@ -175,53 +170,6 @@ export default Vue.extend({
         .text(({
           key
         }) => key)
-
-      const legendSelector = this.legend
-        .selectAll(".legend")
-        .data(this.lineages, d => d);
-
-      legendSelector.join(enter => {
-          const legendGrp = enter
-            .append("g")
-            .attr("id", d => `legend_${d.replace(/\./g, "_")}`);
-
-          legendGrp.append("rect")
-            .attr("width", this.legendRectWidth)
-            .attr("height", this.legendRectWidth)
-            .attr("x", 0)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .style("fill", d => this.colorScale(d))
-            // .style("stroke", "#555")
-            // .style("stroke-width", 0.5)
-
-          legendGrp.append("text")
-            .attr("x", this.legendRectWidth + 4)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .attr("dy", this.legendRectWidth / 2)
-            .text(d => d)
-            .style("dominant-baseline", "central")
-        },
-        update => {
-          update.select("rect")
-            .attr("width", this.legendRectWidth)
-            .attr("height", this.legendRectWidth)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .style("fill", d => this.colorScale(d))
-
-          update.select("text")
-            .attr("x", this.legendRectWidth + 4)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .text(d => d)
-        },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition()
-          .duration(10)
-          .style("opacity", 1e-5)
-          .remove()
-        )
-      )
     },
     debounce(fn, delay) {
       var timer = null;
