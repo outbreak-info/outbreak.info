@@ -780,6 +780,59 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
   )
 }
 
+export function getMostRecentLineages(apiurl, location, locationType, dateSpan = 28, other_threshold = 0.1, nday_threshold = 0.02) {
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const today = new Date();
+  const minDate = timeDay.offset(today, -1*dateSpan);
+  console.log(minDate);
+  let url = locationType == "division" ?
+    `${apiurl}prevalence-by-division-all-lineages?division=${location}&country=United States&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
+    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}`
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      console.log(results)
+
+      results.forEach(d => {
+        // d["pangolin_lineage"] = capitalize(d.lineage);
+        d["date_time"] = parseDate(d.date);
+      })
+
+    let nested = nest()
+      .key(d => d.lineage)
+      .rollup(values => {
+        return({
+          values: values,
+          lineage_count: sum(values, d => d.lineage_count),
+          total_count: sum(values, d => d.total_count),
+          prevalence: sum(values, d => d.lineage_count) / sum(values, d => d.total_count)
+        })
+      })
+      .entries(results.filter(d => d.date_time >= minDate));
+
+      let obj = {};
+      nested.forEach(d => {
+        obj[capitalize(d.key)] = d.value.prevalence
+      })
+      console.log(obj)
+
+      return([obj])
+    }),
+    catchError(e => {
+      console.log("%c Error in getting prevalence of most recent lineages in a place!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
 // LOCATION REPORTS
 export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages) {
   store.state.admin.reportloading = true;
@@ -787,12 +840,14 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
   return forkJoin([
     getDateUpdated(apiurl),
     getPrevalenceAllLineages(apiurl, location, locationType),
+    getMostRecentLineages(apiurl, location, locationType),
     getLocationTable(apiurl, location, locationType)
   ]).pipe(
-    map(([dateUpdated, lineagesByDay, lineageTable]) => {
+    map(([dateUpdated, lineagesByDay, mostRecentLineages, lineageTable]) => {
       return ({
         dateUpdated: dateUpdated,
         lineagesByDay: lineagesByDay,
+        mostRecentLineages: mostRecentLineages,
         lineageTable: lineageTable
       })
     }),
@@ -824,7 +879,6 @@ export function getLocationTable(apiurl, location, locationType) {
       const curatedLineagesArr = list.filter(d => d.key == "lineage");
       if (curatedLineagesArr.length === 1) {
         const curatedLineages = curatedLineagesArr[0].values;
-        console.log(curatedLineages)
         return forkJoin(...curatedLineages.map(lineage => getLineageCumPrevalence(apiurl, lineage, location, locationType))).pipe(
           map(results => {
             results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);

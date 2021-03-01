@@ -1,12 +1,10 @@
 <template>
 <div>
-  <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
+  <svg :width="width" :height="height" class="report-stacked-bar" ref="stacked_bar" :name="title">
     <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
     </g>
-    <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
+    <!-- <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g> -->
     <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
-  </svg>
-  <svg :width="width" :height="legendHeight" class="lineages-by-location lineages-by-location-legend" ref="legend">
   </svg>
 </div>
 </template>
@@ -72,7 +70,7 @@ export default Vue.extend({
       height: 600,
       legendHeight: null,
       // variables
-      fillVar: "pangolin_lineage",
+      fillVar: "key",
       legendRectWidth: 15,
       // axes
       x: scaleTime(),
@@ -127,33 +125,16 @@ export default Vue.extend({
   methods: {
     setDims() {},
     setupPlot() {
-      this.svg = select(this.$refs.svg);
-      this.legend = select(this.$refs.legend);
       this.chart = select(this.$refs.chart);
-
-      this.area = area()
-        .x(d => this.x(d.data.date_time))
-        .y0(d => this.y(d[0]))
-        .y1(d => this.y(d[1]));
     },
     updateScales() {
-      this.x = this.x
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d.date_time)));
-
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
         .domain([0, 1]);
 
-      this.lineages = Object.keys(this.data[0]).filter(d => d != "date_time");
+      this.lineages = Object.keys(this.data[0]);
       this.colorScale = this.colorScale.domain(this.lineages);
-      this.legendHeight = 600; //this.lineages * (this.legendRectWidth + 4);
-
-      this.xAxis = axisBottom(this.x)
-        .ticks(this.numXTicks);
-
-      select(this.$refs.xAxis).call(this.xAxis);
 
       this.yAxis = axisLeft(this.y).tickSizeOuter(0)
         .ticks(this.numYTicks)
@@ -163,12 +144,13 @@ export default Vue.extend({
       this.series = stack()
         .keys(this.lineages)
         // .order(stackOrderDescending)
-        // .order(stackOrderAscending)
+        .order(stackOrderAscending)
         // .order(stackOrderAppearance)
         // .order(stackOrderNone)
         // .order(stackOrderReverse)
-        .order(stackOrderInsideOut)
+        // .order(stackOrderInsideOut)
         (this.data)
+      console.log(this.series)
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
@@ -179,69 +161,31 @@ export default Vue.extend({
       }
     },
     drawPlot() {
-      const areaSelector = this.chart
-        .selectAll(".stacked-area-chart")
+      const barSelector = this.chart
+        .selectAll(".stacked-bar-chart")
         .data(this.series);
 
-      areaSelector
-        .join("path")
-        .attr("fill", ({
-          key
-        }) => this.colorScale(key))
-        .attr("id", ({
-          key
-        }) => `area_${key.replace(/\./g, "-")}`)
-        .attr("d", this.area)
-        .append("title")
-        .text(({
-          key
-        }) => key)
+      barSelector.join(
+        enter => {
+          const barGrp = enter.append("g")
+          .attr("class", "stacked-bar-chart")
+          .attr("id", d => d.key.replace(/\./g, "-"))
 
-      const legendSelector = this.legend
-        .selectAll(".legend")
-        .data(this.lineages, d => d);
+          barGrp.append("rect")
+          .attr("x", 0)
+          .attr("width", 25)
+          .attr("y", d => this.y(d[0][1]))
+          .attr("height", d => this.y(d[0][0]) - this.y(d[0][1]))
+          .attr("fill", d => this.colorScale(d.key))
 
-      legendSelector.join(enter => {
-          const legendGrp = enter
-            .append("g")
-            .attr("id", d => `legend_${d.replace(/\./g, "_")}`);
-
-          legendGrp.append("rect")
-            .attr("width", this.legendRectWidth)
-            .attr("height", this.legendRectWidth)
-            .attr("x", 0)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .style("fill", d => this.colorScale(d))
-            // .style("stroke", "#555")
-            // .style("stroke-width", 0.5)
-
-          legendGrp.append("text")
-            .attr("x", this.legendRectWidth + 4)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .attr("dy", this.legendRectWidth / 2)
-            .text(d => d)
-            .style("dominant-baseline", "central")
-        },
-        update => {
-          update.select("rect")
-            .attr("width", this.legendRectWidth)
-            .attr("height", this.legendRectWidth)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .style("fill", d => this.colorScale(d))
-
-          update.select("text")
-            .attr("x", this.legendRectWidth + 4)
-            .attr("y", (d, i) => i * (this.legendRectWidth + 2))
-            .text(d => d)
-        },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition()
-          .duration(10)
-          .style("opacity", 1e-5)
-          .remove()
-        )
+          barGrp.append("text")
+          .attr("x", 25)
+          .attr("dx", 5)
+          .attr("y", d => this.y(d[0][1]))
+          .attr("dy", d => (this.y(d[0][0]) - this.y(d[0][1]))/2)
+          .text(d => d.key)
+          .style("dominant-baseline", "central")
+        }
       )
     },
     debounce(fn, delay) {

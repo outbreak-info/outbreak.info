@@ -103,6 +103,11 @@
 
     <!-- REPORT -->
     <div id="location-report">
+      <section id="most-recent-lineages" v-if="mostRecentLineages">
+        <ReportStackedBarGraph :data="mostRecentLineages" />
+      </section>
+
+
       <section id="variants-of-concern" v-if="lineageTable">
         <div>
           <!-- <h6>{{lineageGroup.key}}</h6> -->
@@ -218,6 +223,7 @@ import ReportSummary from "@/components/ReportSummary.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import MutationsByLineage from "@/components/MutationsByLineage.vue";
 import LineagesByLocation from "@/components/LineagesByLocation.vue";
+import ReportStackedBarGraph from "@/components/ReportStackedBarGraph.vue";
 
 // --- font awesome --
 import {
@@ -271,7 +277,8 @@ export default {
     // ReportChoropleth,
     // ReportResources,
     ShareReport,
-    LineagesByLocation
+    LineagesByLocation,
+    ReportStackedBarGraph
     // ReportSummary,
     // TypeaheadSelect,
     // CustomReportForm,
@@ -312,6 +319,7 @@ export default {
       this.lastUpdated = results.dateUpdated.lastUpdated;
       this.lineagesByDay = results.lineagesByDay;
       this.lineageTable = results.lineageTable;
+      this.mostRecentLineages = results.mostRecentLineages;
     })
   },
   data() {
@@ -325,6 +333,7 @@ export default {
       dateUpdated: null,
       lastUpdated: null,
       lineagesByDay: null,
+      mostRecentLineages: null,
       lineageTable: null
     })
   },
