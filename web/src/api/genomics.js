@@ -724,7 +724,7 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
   const dateThreshold = new Date("2020-03-14");
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
-    `${apiurl}prevalence-by-division-all-lineages?division=${location}&country=United States&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
+    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
     `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}`
 
   return from(
@@ -786,7 +786,7 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
   const minDate = timeDay.offset(today, -1*dateSpan);
   console.log(minDate);
   let url = locationType == "division" ?
-    `${apiurl}prevalence-by-division-all-lineages?division=${location}&country=United States&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
+    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
     `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}`
 
   return from(
