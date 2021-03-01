@@ -174,7 +174,31 @@ export default Vue.extend({
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
             .on("click", d => this.route2Lineage(d.key))
-        }
+        },
+        update => {
+          update
+            .attr("id", d => d.key.replace(/\./g, "-"))
+
+          update.select("rect")
+            .attr("y", d => this.y(d[0][0]))
+            .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
+            .attr("fill", d => this.colorScale(d.key))
+
+          update.select("text")
+            .attr("y", d => this.y(d[0][0]))
+            .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0])) / 2)
+            .text(d => d.key)
+            .classed("pointer", d => d.key.toLowerCase() != "other")
+            .classed("hover-underline", d => d.key.toLowerCase() != "other")
+            .on("click", d => this.route2Lineage(d.key))
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .style("opacity", 1e-5)
+          .remove()
+        )
       )
     },
     route2Lineage(pango) {
@@ -221,6 +245,6 @@ export default Vue.extend({
 
 <style lang="scss">
 .hover-underline:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 </style>
