@@ -104,20 +104,23 @@
     <!-- REPORT -->
     <div id="location-report">
       <div>
-        <h3>Lineages prevalent in {{location}}</h3>
+        <h3>Lineage prevalence in {{location}}</h3>
+        <div class="row">
 
-      <section id="most-recent-lineages" v-if="mostRecentLineages">
-        <h4>Lineage proportion over the past {{dayThreshold}} days</h4>
-        <ReportStackedBarGraph :data="mostRecentLineages" :location="location" :locationType="selectedLocationType" />
-      </section>
+          <section id="lineages-over-time" class="col-md-8">
+            <h5 class="">Lineage prevalence over time</h5>
+            <div class="">
+              <LineagesByLocation :data="lineagesByDay" />
+            </div>
+          </section>
 
-      <section id="lineages-over-time" class="row">
-          <h4 class="col-sm-12">Lineage prevalence over time</h4>
-        <div class="col-sm-12">
-          <LineagesByLocation :data="lineagesByDay" />
+          <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
+            <h5>Most commonly found lineages over the past {{dayThreshold}} days</h5>
+            <ReportStackedBarGraph :data="mostRecentLineages" :location="location" :locationType="selectedLocationType" />
+          </section>
+
         </div>
-      </section>
-</div>
+      </div>
 
       <section id="variants-of-concern" v-if="lineageTable">
         <div>
@@ -171,10 +174,10 @@
                 <td>
                   <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { pango: lineage.pangolin_lineage, division: [location]}}">
                     {{ lineage.pangolin_lineage }}
-                    </router-link>
+                  </router-link>
                   <router-link v-else :to="{name: 'MutationReport', query:{ pango: lineage.pangolin_lineage, country: [location] }}">
                     {{ lineage.pangolin_lineage }}
-                    </router-link>
+                  </router-link>
                 </td>
                 <td>
                   {{ lineage.lineage_count_formatted }}
@@ -390,12 +393,15 @@ th.padded {
     padding: 0.25rem 0.25rem 0.5rem;
 }
 
-.checkbook td, .voi, .voc, .padding {
+.checkbook td,
+.padding,
+.voc,
+.voi {
     padding: 0.5rem;
     text-align: center;
 }
 
 .checkbook:nth-child(2n+1) {
-  background: lighten($base-grey,70%);
+    background: lighten($base-grey,70%);
 }
 </style>
