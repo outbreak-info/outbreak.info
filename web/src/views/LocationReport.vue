@@ -372,46 +372,60 @@ export default {
       lineageDomain: [],
       otherThresh: 0.08,
       ndayThresh: 7,
+      // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
       colorScale: scaleOrdinal(
         [ "#bab0ab", // grey (other)
-          "#1f77b4", // dk blue
-          "#aec7e8", // lt blue
-          "#f28e2c", // orange
-          "#e15759", // red
-          "#9edae5", // teal
+          "#4E79A7", // dk blue
+          "#aecBe8", // lt blue
+          "#f28e2b", // orange
+          "#FFBE7D", // lt. orange
           "#59a14f", // green
-          "#edc949", // yellow
-          "#9467bd", // purple
-          "#ff9da7", // pink
-          "#8c564b", // brown
-          "#555555", // grey
+          "#8CD17D", // lt. green
+          "#e15759", // red
+          "#FF9D9A", // lt. red
+          "#499894", // teal
+          "#86BCB6", // lt. teal
+          "#B6992D", // dk yellow
+          "#F1CE63", // yellow
+          "#D37295", // dk pink
+          "#FABFD2", // lt. pink,
+          "#B07AA1", // dk purple
+          "#D4A6C8", // lt. purple
+          "#9D7660", // brown
+          "#D7B5A6", // lt. brown
           "#bcbd22", // puce
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000",
-          "#000000"
+          "#79706E", // grey
+          "#79706E"
         ])
+        // [ "#bab0ab", // grey (other)
+        //   "#4E79A7", // dk blue
+        //   // "#1f77b4", // dk blue
+        //   "#f28e2b", // orange
+        //   "#59a14f", // green
+        //   "#e15759", // red
+        //   // "#9edae5", // teal
+        //   "#499894", // teal
+        //   "#B6992D", // dk yellow
+        //   "#D37295", // dk pink
+        //   // "#9467bd", // purple
+        //   "#B07AA1", // dk purple
+        //   "#9D7660", // brown
+        //   // "#8c564b", // brown
+        //   "#aecBe8", // lt blue
+        //   "#FFBE7D", // lt. orange
+        //   "#8CD17D", // lt. green
+        //   "#FF9D9A", // lt. red
+        //   "#86BCB6", // lt. teal
+        //   "#F1CE63", // yellow
+        //   // "#edc949", // yellow
+        //   // "#ff9da7", // pink
+        //   "#FABFD2", // lt. pink,
+        //   "#D4A6C8", // lt. purple
+        //   "#D7B5A6", // lt. brown
+        //   "#bcbd22", // puce
+        //   "#79706E", // grey
+        //   "#79706E"
+        // ])
     })
   },
   destroyed() {
