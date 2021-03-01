@@ -19,7 +19,7 @@ import {
   timeDay,
   nest,
   mean,
-  sum
+  sum, scaleOrdinal
 } from "d3";
 
 import {
@@ -720,7 +720,7 @@ export function getDateUpdated(apiUrl) {
   )
 }
 
-export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold = 0.1, nday_threshold = 0.02) {
+export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold = 0.1, nday_threshold = 7) {
   const dateThreshold = new Date("2020-03-14");
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
@@ -780,7 +780,7 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
   )
 }
 
-export function getMostRecentLineages(apiurl, location, locationType, dateSpan = 28, other_threshold = 0.1, nday_threshold = 0.02) {
+export function getMostRecentLineages(apiurl, location, locationType, dateSpan = 28, other_threshold = 0.1, nday_threshold = 7) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const today = new Date();
   const minDate = timeDay.offset(today, -1*dateSpan);
@@ -799,7 +799,6 @@ export function getMostRecentLineages(apiurl, location, locationType, dateSpan =
     pluck("data", "results"),
     map(results => {
       console.log(results)
-
       results.forEach(d => {
         // d["pangolin_lineage"] = capitalize(d.lineage);
         d["date_time"] = parseDate(d.date);
@@ -816,6 +815,8 @@ export function getMostRecentLineages(apiurl, location, locationType, dateSpan =
         })
       })
       .entries(results.filter(d => d.date_time >= minDate));
+
+      nested.sort((a,b) => b.value.prevalence - a.value.prevalence);
 
       let obj = {};
       nested.forEach(d => {
@@ -844,11 +845,14 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
     getLocationTable(apiurl, location, locationType)
   ]).pipe(
     map(([dateUpdated, lineagesByDay, mostRecentLineages, lineageTable]) => {
+      let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
+
       return ({
         dateUpdated: dateUpdated,
         lineagesByDay: lineagesByDay,
         mostRecentLineages: mostRecentLineages,
-        lineageTable: lineageTable
+        lineageTable: lineageTable,
+        lineageDomain: lineageDomain
       })
     }),
     catchError(e => {

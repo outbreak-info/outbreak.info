@@ -350,9 +350,10 @@ export default {
       this.lineagesByDay = results.lineagesByDay;
       this.lineageTable = results.lineageTable;
       this.mostRecentLineages = results.mostRecentLineages;
-      this.lineageDomain = Object.keys(results.mostRecentLineages[0]);
+      this.lineageDomain = results.lineageDomain;
       console.log(this.lineageDomain)
       this.colorScale = this.colorScale.domain(this.lineageDomain);
+      console.log(this.colorScale.domain())
     })
   },
   data() {
@@ -372,7 +373,7 @@ export default {
       lineageTable: null,
       lineageDomain: [],
       colorScale: scaleOrdinal(
-        [
+        [ "#bab0ab", // grey (other)
           "#1f77b4", // dk blue
           "#aec7e8", // lt blue
           "#f28e2c", // orange
@@ -385,7 +386,6 @@ export default {
           "#8c564b", // brown
           "#555555", // grey
           "#bcbd22", // puce
-          "#bab0ab",
           "#ff0000",
           "#00ff00",
           "#0000ff",

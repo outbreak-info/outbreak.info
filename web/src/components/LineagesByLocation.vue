@@ -169,6 +169,8 @@ export default Vue.extend({
           key
         }) => `area_${key.replace(/\./g, "-")}`)
         .attr("d", this.area)
+        .style("stroke", "white")
+        .style("stroke-width", 0.5)
         .append("title")
         .text(({
           key
