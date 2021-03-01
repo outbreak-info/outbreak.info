@@ -224,3 +224,16 @@ button.chip.to-add:hover {
     color: $website-color;
     border-color: $website-color;
 }
+
+.voc {
+    background: lighten($publication-color, 35%);
+    color: $publication-color;
+    border-color: $publication-color;
+    text-align: center;
+}
+
+.voi {
+    background: lighten($website-color, 40%);
+    color: $website-color;
+    border-color: $website-color;
+}

@@ -155,14 +155,19 @@
                 </th>
               </tr>
             </thead>
-            <tbody class="checkbook" v-for="(lineageGroup, gIdx) in lineageTable" :key="gIdx">
-              <tr class="border-top border-bottom">
-                <td colspan="6">
+            <tbody v-for="(lineageGroup, gIdx) in lineageTable" :key="gIdx">
+              <tr class="padding" v-if="gIdx > 0">
+                <td>
+
+                </td>
+              </tr>
+              <tr class="border-top border-bottom" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
+                <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
                   {{lineageGroup.key}}
                 </td>
 
               </tr>
-              <tr v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
+              <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
                 <td>
                   <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { pango: lineage.pangolin_lineage, division: [location]}}">
                     {{ lineage.pangolin_lineage }}
@@ -381,12 +386,16 @@ th.padded {
     padding: 0.25rem 0.25rem 0.5rem;
 }
 
-.checkbook td {
+.padding td {
+    padding: 0.25rem 0.25rem 0.5rem;
+}
+
+.checkbook td, .voi, .voc, .padding {
     padding: 0.5rem;
     text-align: center;
 }
 
-.checkbook tr:nth-child(2n+1) {
-    background-color: lighten($secondary-color, 60%);
+.checkbook:nth-child(2n+1) {
+  background: lighten($base-grey,70%);
 }
 </style>
