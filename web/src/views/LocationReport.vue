@@ -108,7 +108,7 @@
 
       <section id="most-recent-lineages" v-if="mostRecentLineages">
         <h4>Lineage proportion over the past {{dayThreshold}} days</h4>
-        <ReportStackedBarGraph :data="mostRecentLineages" />
+        <ReportStackedBarGraph :data="mostRecentLineages" :location="location" :locationType="selectedLocationType" />
       </section>
 
       <section id="lineages-over-time" class="row">

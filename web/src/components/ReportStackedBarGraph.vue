@@ -43,6 +43,8 @@ export default Vue.extend({
   components: {},
   props: {
     data: Array,
+    location: String,
+    locationType: String,
     rectWidth: {
       type: Number,
       default: 25
@@ -134,7 +136,7 @@ export default Vue.extend({
       this.y = this.y
         .range([0, this.height - this.margin.top - this.margin.bottom])
         .nice()
-        .domain([0,1]);
+        .domain([0, 1]);
 
       this.lineages = Object.keys(this.data[0]);
       this.colorScale = this.colorScale.domain(this.lineages);
@@ -147,12 +149,12 @@ export default Vue.extend({
       this.series = stack()
         .keys(this.lineages)
         .order(stackOrderDescending)
-        // .order(stackOrderAscending)
-        // .order(stackOrderAppearance)
-        // .order(stackOrderNone)
-        // .order(stackOrderReverse)
-        // .order(stackOrderInsideOut)
-        (this.data)
+      // .order(stackOrderAscending)
+      // .order(stackOrderAppearance)
+      // .order(stackOrderNone)
+      // .order(stackOrderReverse)
+      // .order(stackOrderInsideOut)
+      (this.data)
       console.log(this.series)
 
       select(this.$refs.yAxis).call(this.yAxis);
@@ -171,25 +173,51 @@ export default Vue.extend({
       barSelector.join(
         enter => {
           const barGrp = enter.append("g")
-          .attr("class", "stacked-bar-chart")
-          .attr("id", d => d.key.replace(/\./g, "-"))
+            .attr("class", "stacked-bar-chart")
+            .attr("id", d => d.key.replace(/\./g, "-"))
 
           barGrp.append("rect")
-          .attr("x", 0)
-          .attr("width", this.rectWidth)
-          .attr("y", d => this.y(d[0][0]))
-          .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
-          .attr("fill", d => this.colorScale(d.key))
+            .attr("x", 0)
+            .attr("width", this.rectWidth)
+            .attr("y", d => this.y(d[0][0]))
+            .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
+            .attr("fill", d => this.colorScale(d.key))
 
           barGrp.append("text")
-          .attr("x", this.rectWidth)
-          .attr("dx", 10)
-          .attr("y", d => this.y(d[0][0]))
-          .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0]))/2)
-          .text(d => d.key)
-          .style("dominant-baseline", "central")
+            .attr("x", this.rectWidth)
+            .attr("dx", 10)
+            .attr("y", d => this.y(d[0][0]))
+            .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0])) / 2)
+            .text(d => d.key)
+            .style("dominant-baseline", "central")
+            .classed("pointer", d => d.key.toLowerCase() != "other")
+            .classed("hover-underline", d => d.key.toLowerCase() != "other")
+            .on("click", d => this.route2Lineage(d.key))
         }
       )
+    },
+    route2Lineage(pango) {
+      if (this.locationType == "country") {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            country: this.location,
+            pango: pango,
+            selected: this.location,
+            selectedType: this.locationType
+          }
+        })
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            division: this.location,
+            pango: pango,
+            selected: this.location,
+            selectedType: this.locationType
+          }
+        })
+      }
     },
     debounce(fn, delay) {
       var timer = null;
@@ -209,3 +237,9 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style lang="scss">
+.hover-underline:hover {
+  text-decoration: underline;
+}
+</style>
