@@ -156,20 +156,43 @@ export default Vue.extend({
         .data(this.series);
 
       areaSelector
-        .join("path")
-        .attr("fill", ({
-          key
-        }) => this.colorScale(key))
-        .attr("id", ({
-          key
-        }) => `area_${key.replace(/\./g, "-")}`)
-        .attr("d", this.area)
-        .style("stroke", "white")
-        .style("stroke-width", 0.5)
-        .append("title")
-        .text(({
-          key
-        }) => key)
+        .join(enter => {
+            enter.append("path")
+              .attr("fill", ({
+                key
+              }) => this.colorScale(key))
+              .attr("id", ({
+                key
+              }) => `area_${key.replace(/\./g, "-")}`)
+              .attr("d", this.area)
+              .style("stroke", "white")
+              .style("stroke-width", 0.5)
+              .append("title")
+              .text(({
+                key
+              }) => key)
+          },
+          update =>
+          update
+          .attr("fill", ({
+            key
+          }) => this.colorScale(key))
+          .attr("id", ({
+            key
+          }) => `area_${key.replace(/\./g, "-")}`)
+          .attr("d", this.area)
+          .append("title")
+          .text(({
+            key
+          }) => key),
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
     },
     debounce(fn, delay) {
       var timer = null;
