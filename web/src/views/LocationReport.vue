@@ -103,10 +103,21 @@
 
     <!-- REPORT -->
     <div id="location-report">
+      <div>
+        <h3>Lineages prevalent in {{location}}</h3>
+
       <section id="most-recent-lineages" v-if="mostRecentLineages">
+        <h4>Lineage proportion over the past {{dayThreshold}} days</h4>
         <ReportStackedBarGraph :data="mostRecentLineages" />
       </section>
 
+      <section id="lineages-over-time" class="row">
+          <h4 class="col-sm-12">Lineage prevalence over time</h4>
+        <div class="col-sm-12">
+          <LineagesByLocation :data="lineagesByDay" />
+        </div>
+      </section>
+</div>
 
       <section id="variants-of-concern" v-if="lineageTable">
         <div>
@@ -174,11 +185,8 @@
           </table>
         </div>
       </section>
-      <section id="lineages-over-time" class="row">
-        <div class="col-sm-12">
-          <LineagesByLocation :data="lineagesByDay" />
-        </div>
-      </section>
+
+
 
     </div>
 
@@ -289,8 +297,11 @@ export default {
     smallScreen() {
       return (window.innerSize < 500)
     },
+    location() {
+      return (this.division ? this.division : this.country)
+    },
     title() {
-      return (this.division ? `${this.division} Mutation Report` : `${this.country} Mutation Report`)
+      return (`${this.location} Mutation Report`)
     },
     hasData() {
       return (true)
@@ -329,6 +340,8 @@ export default {
       url: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
       reportSubscription: null,
+      // variables
+      dayThreshold: 28,
       // data
       dateUpdated: null,
       lastUpdated: null,
