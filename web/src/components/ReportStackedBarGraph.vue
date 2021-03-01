@@ -70,7 +70,7 @@ export default Vue.extend({
       margin: {
         top: 10,
         bottom: 25,
-        left: 50,
+        left: 55,
         right: 10
       },
       width: 800,
@@ -246,5 +246,11 @@ export default Vue.extend({
 <style lang="scss">
 .hover-underline:hover {
     text-decoration: underline;
+}
+
+.report-stacked-bar {
+    .axis--y text {
+        font-size: 14pt;
+    }
 }
 </style>

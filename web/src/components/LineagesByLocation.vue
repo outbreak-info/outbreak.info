@@ -3,8 +3,8 @@
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
     <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
     </g>
-    <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
-    <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
+    <g class="stream-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
+    <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
   </svg>
 </div>
 </template>
@@ -61,8 +61,8 @@ export default Vue.extend({
       // dimensions
       margin: {
         top: 10,
-        bottom: 25,
-        left: 50,
+        bottom: 30,
+        left: 55,
         right: 10
       },
       width: 800,
@@ -212,3 +212,14 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style lang="scss">
+.lineages-by-location {
+    .axis--x text {
+        font-size: 16pt;
+    }
+    .axis--y text {
+        font-size: 14pt;
+    }
+}
+</style>
