@@ -116,7 +116,7 @@ export default Vue.extend({
         .domain(extent(this.data.map(d => d.date_time)));
 
       this.y = this.y
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
+        .range([0, this.height - this.margin.top - this.margin.bottom])
         .nice()
         .domain([0, 1]);
 
