@@ -42,7 +42,11 @@ export default Vue.extend({
   name: "LineagesByLocation",
   components: {},
   props: {
-    data: Array
+    data: Array,
+    rectWidth: {
+      type: Number,
+      default: 25
+    }
   },
   computed: {
     title() {
@@ -71,7 +75,6 @@ export default Vue.extend({
       legendHeight: null,
       // variables
       fillVar: "key",
-      legendRectWidth: 15,
       // axes
       x: scaleTime(),
       y: scaleLinear(),
@@ -129,9 +132,9 @@ export default Vue.extend({
     },
     updateScales() {
       this.y = this.y
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
+        .range([0, this.height - this.margin.top - this.margin.bottom])
         .nice()
-        .domain([0, 1]);
+        .domain([0,1]);
 
       this.lineages = Object.keys(this.data[0]);
       this.colorScale = this.colorScale.domain(this.lineages);
@@ -143,8 +146,8 @@ export default Vue.extend({
       // stacking
       this.series = stack()
         .keys(this.lineages)
-        // .order(stackOrderDescending)
-        .order(stackOrderAscending)
+        .order(stackOrderDescending)
+        // .order(stackOrderAscending)
         // .order(stackOrderAppearance)
         // .order(stackOrderNone)
         // .order(stackOrderReverse)
@@ -173,16 +176,16 @@ export default Vue.extend({
 
           barGrp.append("rect")
           .attr("x", 0)
-          .attr("width", 25)
-          .attr("y", d => this.y(d[0][1]))
-          .attr("height", d => this.y(d[0][0]) - this.y(d[0][1]))
+          .attr("width", this.rectWidth)
+          .attr("y", d => this.y(d[0][0]))
+          .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
           .attr("fill", d => this.colorScale(d.key))
 
           barGrp.append("text")
-          .attr("x", 25)
-          .attr("dx", 5)
-          .attr("y", d => this.y(d[0][1]))
-          .attr("dy", d => (this.y(d[0][0]) - this.y(d[0][1]))/2)
+          .attr("x", this.rectWidth)
+          .attr("dx", 10)
+          .attr("y", d => this.y(d[0][0]))
+          .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0]))/2)
           .text(d => d.key)
           .style("dominant-baseline", "central")
         }
