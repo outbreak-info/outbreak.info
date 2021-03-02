@@ -2,7 +2,7 @@
 <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- Total count filter -->
   <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap || !showLegend }">
-    <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`"  />
+    <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
     <svg ref="count_filter" id="count-filter" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2" role="legend">
       <g transform="translate(1,1)">
         <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
@@ -81,11 +81,13 @@ import {
   select,
   selectAll,
   scaleSequential,
+  scaleQuantile,
   scaleLog
 } from "d3";
 
 import {
-  interpolateYlGnBu
+  interpolateYlGnBu,
+  schemeYlGnBu
 } from "d3-scale-chromatic";
 
 import GradientLegend from "@/components/GradientLegend.vue";
@@ -109,7 +111,10 @@ export default {
       type: Boolean,
       default: true
     },
-
+    colorDomain: {
+      type: Array,
+      default: () => [0, 0.01, 0.05, 0.1, 0.25, 0.5, 0.75]
+    }
   },
   components: {
     GradientLegend,
@@ -238,8 +243,8 @@ export default {
       const maxWidth = window.innerWidth;
       const maxHeight = window.innerHeight * my;
 
-      if(maxSvgWidth > maxWidth){
-        maxSvgWidth = maxWidth-20;
+      if (maxSvgWidth > maxWidth) {
+        maxSvgWidth = maxWidth - 20;
       }
 
       const idealHeight = this.hwRatio * maxSvgWidth;
@@ -317,8 +322,13 @@ export default {
         // Update projection / scales
         this.updateProjection();
 
-        this.colorScale = scaleSequential(interpolateYlGnBu)
-          .domain([0, this.maxVal]);
+        if (this.colorDomain) {
+          this.colorScale = scaleQuantile(schemeYlGnBu[this.colorDomain.length + 1])
+            .domain(this.colorDomain);
+        } else {
+          this.colorScale = scaleSequential(interpolateYlGnBu)
+            .domain([0, this.maxVal]);
+        }
 
         this.zeroColor = this.colorScale(0);
 
@@ -374,155 +384,155 @@ export default {
     drawMap() {
       this.prepData();
 
-if(this.filteredData) {
-      const basemapData = this.location == "Worldwide" || this.location == "United States" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
+      if (this.filteredData) {
+        const basemapData = this.location == "Worldwide" || this.location == "United States" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
 
-      this.basemap
-        .selectAll(".basemap")
-        .data(basemapData, d => d.properties.location_id)
-        .join(
-          enter => {
-            enter
-              .append("path")
-              .attr("class", "basemap")
-              .attr("id", d => d.properties.location_id)
-              // draw each region
-              .attr("d", this.path
-                .projection(this.projection)
-              )
-              .style("fill", "#FDFDFD")
-              .style("stroke", "#444444")
-              .style("stroke-width", 0.25)
-          },
-          update => update
-          .attr("id", d => d.properties.location_id)
-          // draw each region
-          .attr("d", this.path
-            .projection(this.projection)
-          ),
-          exit =>
-          exit.call(exit =>
-            exit
+        this.basemap
+          .selectAll(".basemap")
+          .data(basemapData, d => d.properties.location_id)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "basemap")
+                .attr("id", d => d.properties.location_id)
+                // draw each region
+                .attr("d", this.path
+                  .projection(this.projection)
+                )
+                .style("fill", "#FDFDFD")
+                .style("stroke", "#444444")
+                .style("stroke-width", 0.25)
+            },
+            update => update
+            .attr("id", d => d.properties.location_id)
+            // draw each region
+            .attr("d", this.path
+              .projection(this.projection)
+            ),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+
+        this.regions
+          .selectAll(".region-fill")
+          .data(this.filteredData, d => d.properties.location_id)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", d => `${d.properties.location_id} region region-fill`)
+                .attr("id", d => d.properties.location_id)
+                // draw each region
+                .attr("d", this.path
+                  .projection(this.projection)
+                )
+                .style("fill", d => d.fill ? d.fill : this.nullColor)
+                .style("stroke", this.strokeColor)
+                .style("stroke-width", 0.5)
+            },
+            update => update
+            .attr("class", d => `${d.properties.location_id} region region-fill`)
+            .attr("id", d => d.properties.location_id)
+            // draw each region
+            .attr("d", this.path
+              .projection(this.projection)
+            )
             .transition()
-            .duration(10)
-            .style("opacity", 1e-5)
-            .remove()
+            .duration(250)
+            .style("fill", d => d.fill ? d.fill : this.nullColor),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
           )
-        )
 
-      this.regions
-        .selectAll(".region-fill")
-        .data(this.filteredData, d => d.properties.location_id)
-        .join(
-          enter => {
-            enter
-              .append("path")
-              .attr("class", d => `${d.properties.location_id} region region-fill`)
-              .attr("id", d => d.properties.location_id)
-              // draw each region
-              .attr("d", this.path
-                .projection(this.projection)
-              )
-              .style("fill", d => d.fill ? d.fill : this.nullColor)
-              .style("stroke", this.strokeColor)
-              .style("stroke-width", 0.5)
-          },
-          update => update
-          .attr("class", d => `${d.properties.location_id} region region-fill`)
-          .attr("id", d => d.properties.location_id)
-          // draw each region
-          .attr("d", this.path
-            .projection(this.projection)
+        // highlight where the data is 0.
+        this.regions
+          .selectAll(".zero-data")
+          .data(this.filteredData.filter(d => d.proportion === 0), d => d.properties.location_id)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", d => `${d.properties.location_id} region zero-data`)
+                .attr("id", d => `${d.properties.location_id}_zero`)
+                // draw each region
+                .attr("d", this.path
+                  .projection(this.projection)
+                )
+                .style("fill", "url(#diagonalHatch)")
+                .style("stroke", this.strokeColor)
+                .style("stroke-width", 0.5)
+            },
+            update => update
+            .attr("class", d => `${d.properties.location_id} region zero-data`)
+            .attr("id", d => `${d.properties.location_id}_zero`)
+            // draw each region
+            .attr("d", this.path
+              .projection(this.projection)
+            ),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
           )
-          .transition()
-          .duration(250)
-          .style("fill", d => d.fill ? d.fill : this.nullColor),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .duration(10)
-            .style("opacity", 1e-5)
-            .remove()
+
+        this.overlay
+          .selectAll(".overlay")
+          .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States"), d => d.properties.location_id)
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", "overlay")
+                .attr("id", d => d.properties.location_id)
+                // draw each region
+                .attr("d", this.path
+                  .projection(this.projection)
+                )
+                .style("fill", "none")
+                .style("stroke", this.strokeColor)
+                .style("stroke-width", 1.25)
+            },
+            update => update
+            .attr("id", d => d.properties.location_id)
+            // draw each region
+            .attr("d", this.path
+              .projection(this.projection)
+            ),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
           )
-        )
 
-      // highlight where the data is 0.
-      this.regions
-        .selectAll(".zero-data")
-        .data(this.filteredData.filter(d => d.proportion === 0), d => d.properties.location_id)
-        .join(
-          enter => {
-            enter
-              .append("path")
-              .attr("class", d => `${d.properties.location_id} region zero-data`)
-              .attr("id", d => `${d.properties.location_id}_zero`)
-              // draw each region
-              .attr("d", this.path
-                .projection(this.projection)
-              )
-              .style("fill", "url(#diagonalHatch)")
-              .style("stroke", this.strokeColor)
-              .style("stroke-width", 0.5)
-          },
-          update => update
-          .attr("class", d => `${d.properties.location_id} region zero-data`)
-          .attr("id", d => `${d.properties.location_id}_zero`)
-          // draw each region
-          .attr("d", this.path
-            .projection(this.projection)
-          ),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .duration(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
+        this.regions.selectAll("path.region")
+          .on("mouseenter", d => this.debounceMouseon(d))
+          .on("mouseleave", this.mouseOff);
 
-      this.overlay
-        .selectAll(".overlay")
-        .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States"), d => d.properties.location_id)
-        .join(
-          enter => {
-            enter
-              .append("path")
-              .attr("class", "overlay")
-              .attr("id", d => d.properties.location_id)
-              // draw each region
-              .attr("d", this.path
-                .projection(this.projection)
-              )
-              .style("fill", "none")
-              .style("stroke", this.strokeColor)
-              .style("stroke-width", 1.25)
-          },
-          update => update
-          .attr("id", d => d.properties.location_id)
-          // draw each region
-          .attr("d", this.path
-            .projection(this.projection)
-          ),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .duration(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
-
-      this.regions.selectAll("path.region")
-        .on("mouseenter", d => this.debounceMouseon(d))
-        .on("mouseleave", this.mouseOff);
-
-      this.regions.selectAll("path.region")
-        .on("mouseenter", d => this.debounceMouseon(d))
-        .on("mouseleave", this.mouseOff);
-    }
+        this.regions.selectAll("path.region")
+          .on("mouseenter", d => this.debounceMouseon(d))
+          .on("mouseleave", this.mouseOff);
+      }
     },
     mouseOn(d) {
       const ttipShift = 15;
@@ -574,9 +584,9 @@ if(this.filteredData) {
       select(this.$refs.tooltip_choro)
         .style("display", "none");
 
-        this.regions
-          .selectAll(".zero-data")
-          .style("opacity", 1);
+      this.regions
+        .selectAll(".zero-data")
+        .style("opacity", 1);
 
       this.regions
         .selectAll(".region")
