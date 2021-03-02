@@ -100,6 +100,7 @@ export default {
   props: {
     data: Array,
     mutationName: String,
+    fillMax: Number,
     location: {
       type: String,
       default: "Worldwide"
@@ -108,10 +109,7 @@ export default {
       type: Boolean,
       default: true
     },
-    widthRatio: {
-      type: Number,
-      default: 1
-    }
+
   },
   components: {
     GradientLegend,
@@ -170,7 +168,7 @@ export default {
   },
   computed: {
     maxVal() {
-      return this.data ? max(this.data, d => d[this.variable]) : null;
+      return this.data ? (this.fillMax ? this.fillMax : max(this.data, d => d[this.variable])) : null;
     },
     maxFormatted() {
       return format(".0%")(this.maxVal);
@@ -236,7 +234,7 @@ export default {
       const my = 0.85;
       const svgContainer = document.getElementById('report-choropleth');
 
-      let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx * this.widthRatio : 800;
+      let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       const maxWidth = window.innerWidth;
       const maxHeight = window.innerHeight * my;
 

@@ -238,7 +238,7 @@
         <div class="d-flex flex-wrap">
           <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25">
             <h5>{{ choro.key }}</h5>
-            <ReportChoropleth :showLegend="false" :data="choro.values" :location="location" :mutationName="choro.key" :widthRatio="1" />
+            <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="location" :mutationName="choro.key" :widthRatio="1" />
           </div>
         </div>
 
@@ -425,8 +425,6 @@ export default {
       selectedMutations: [{
         pango: "B.1.1.7"
       }, {
-        pango: "B.1.429"
-      }, {
         muts: "S:E484K",
         pango: "B.1.526"
       }, {
@@ -435,30 +433,29 @@ export default {
       // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
       colorScale: null,
-      colorPalette:
-        ["#bab0ab", // grey (other)
-          "#4E79A7", // dk blue
-          "#aecBe8", // lt blue
-          "#f28e2b", // orange
-          "#FFBE7D", // lt. orange
-          "#59a14f", // green
-          "#8CD17D", // lt. green
-          "#e15759", // red
-          "#FF9D9A", // lt. red
-          "#499894", // teal
-          "#86BCB6", // lt. teal
-          "#B6992D", // dk yellow
-          "#F1CE63", // yellow
-          "#D37295", // dk pink
-          "#FABFD2", // lt. pink,
-          "#B07AA1", // dk purple
-          "#D4A6C8", // lt. purple
-          "#9D7660", // brown
-          "#D7B5A6", // lt. brown
-          "#bcbd22", // puce
-          "#79706E", // grey
-          "#79706E"
-        ]
+      colorPalette: ["#bab0ab", // grey (other)
+        "#4E79A7", // dk blue
+        "#aecBe8", // lt blue
+        "#f28e2b", // orange
+        "#FFBE7D", // lt. orange
+        "#59a14f", // green
+        "#8CD17D", // lt. green
+        "#e15759", // red
+        "#FF9D9A", // lt. red
+        "#499894", // teal
+        "#86BCB6", // lt. teal
+        "#B6992D", // dk yellow
+        "#F1CE63", // yellow
+        "#D37295", // dk pink
+        "#FABFD2", // lt. pink,
+        "#B07AA1", // dk purple
+        "#D4A6C8", // lt. purple
+        "#9D7660", // brown
+        "#D7B5A6", // lt. brown
+        "#bcbd22", // puce
+        "#79706E", // grey
+        "#79706E"
+      ]
       // [ "#bab0ab", // grey (other)
       //   "#4E79A7", // dk blue
       //   // "#1f77b4", // dk blue
