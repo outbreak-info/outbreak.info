@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- Total count filter -->
-  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap}">
+  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap || !showLegend }">
     <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`"  />
     <svg ref="count_filter" id="count-filter" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2" role="legend">
       <g transform="translate(1,1)">
@@ -103,6 +103,14 @@ export default {
     location: {
       type: String,
       default: "Worldwide"
+    },
+    showLegend: {
+      type: Boolean,
+      default: true
+    },
+    widthRatio: {
+      type: Number,
+      default: 1
     }
   },
   components: {
@@ -228,7 +236,7 @@ export default {
       const my = 0.85;
       const svgContainer = document.getElementById('report-choropleth');
 
-      let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+      let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx * this.widthRatio : 800;
       const maxWidth = window.innerWidth;
       const maxHeight = window.innerHeight * my;
 

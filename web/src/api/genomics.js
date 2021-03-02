@@ -19,7 +19,8 @@ import {
   timeDay,
   nest,
   mean,
-  sum, scaleOrdinal
+  sum,
+  scaleOrdinal
 } from "d3";
 
 import {
@@ -411,7 +412,18 @@ export function getNewToday(apiurl, queryStr, location, locationType) {
   )
 }
 
-export function getLocationPrevalence(apiurl, queryStr, location, locationType) {
+export function getAllLocationPrevalence(apiurl, queryStr, location, locationType, ndays = null) {
+  return (getLocationPrevalence(apiurl, queryStr, location, locationType, ndays).pipe(
+    map(results => {
+      return ({
+        key: queryStr,
+        values: results
+      })
+    })
+  ))
+}
+
+export function getLocationPrevalence(apiurl, queryStr, location, locationType, ndays = null) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
 
   if (locationType != "division") {
@@ -419,6 +431,10 @@ export function getLocationPrevalence(apiurl, queryStr, location, locationType) 
     url = location == "Worldwide" ?
       `${apiurl}lineage-by-country-most-recent?${queryStr}&timestamp=${timestamp}` :
       `${apiurl}lineage-by-division-most-recent?country=${location}&${queryStr}&timestamp=${timestamp}`;
+
+    if (ndays) {
+      url += `&ndays=${ndays}`;
+    }
     return from(axios.get(url, {
       headers: {
         "Content-Type": "application/json"
@@ -720,12 +736,12 @@ export function getDateUpdated(apiUrl) {
   )
 }
 
-export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold) {
+export function getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays) {
   const dateThreshold = new Date("2020-03-14");
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
-    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
-    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}`
+    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}` :
+    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}`
 
   return from(
     axios.get(url, {
@@ -780,14 +796,14 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
   )
 }
 
-export function getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, dateSpan = 28) {
+export function getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays, dateSpan = 28) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const today = new Date();
-  const minDate = timeDay.offset(today, -1*dateSpan);
+  const minDate = timeDay.offset(today, -1 * dateSpan);
   console.log(minDate);
   let url = locationType == "division" ?
-    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}` :
-    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}`
+    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}` :
+    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}`
 
   return from(
     axios.get(url, {
@@ -804,19 +820,19 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
         d["date_time"] = parseDate(d.date);
       })
 
-    let nested = nest()
-      .key(d => d.lineage)
-      .rollup(values => {
-        return({
-          values: values,
-          lineage_count: sum(values, d => d.lineage_count),
-          total_count: sum(values, d => d.total_count),
-          prevalence: sum(values, d => d.lineage_count) / sum(values, d => d.total_count)
+      let nested = nest()
+        .key(d => d.lineage)
+        .rollup(values => {
+          return ({
+            values: values,
+            lineage_count: sum(values, d => d.lineage_count),
+            total_count: sum(values, d => d.total_count),
+            prevalence: sum(values, d => d.lineage_count) / sum(values, d => d.total_count)
+          })
         })
-      })
-      .entries(results.filter(d => d.date_time >= minDate));
+        .entries(results.filter(d => d.date_time >= minDate));
 
-      nested.sort((a,b) => b.value.prevalence - a.value.prevalence);
+      nested.sort((a, b) => b.value.prevalence - a.value.prevalence);
 
       let obj = {};
       nested.forEach(d => {
@@ -824,7 +840,7 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
       })
       console.log(obj)
 
-      return([obj])
+      return ([obj])
     }),
     catchError(e => {
       console.log("%c Error in getting prevalence of most recent lineages in a place!", "color: red");
@@ -835,13 +851,13 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
 }
 
 // LOCATION REPORTS
-export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages, other_threshold, nday_threshold) {
+export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages, other_threshold, nday_threshold, ndays) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
     getDateUpdated(apiurl),
-    getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold),
-    getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold),
+    getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
+    getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
     getLocationTable(apiurl, location, locationType)
   ]).pipe(
     map(([dateUpdated, lineagesByDay, mostRecentLineages, lineageTable]) => {
@@ -859,6 +875,24 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
     }),
     catchError(e => {
       console.log("%c Error in getting location report data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function getLocationMaps(apiurl, location, locationType, mutations, ndays) {
+  store.state.admin.reportloading = true;
+  mutations = ["pangolin_lineage=B.1.1.7", "pangolin_lineage=B.1.429", "pangolin_lineage=B.1.526", "mutations=S:E484K"];
+
+  return forkJoin(... mutations.map(queryStr => getAllLocationPrevalence(apiurl, queryStr, location, locationType, ndays))).pipe(
+    map(results => {
+      console.log(results)
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting location mapping data!", "color: orange");
       console.log(e);
       return ( of ([]));
     }),

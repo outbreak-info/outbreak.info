@@ -77,9 +77,12 @@
 
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex flex-column align-items-start">
-        <h1 class="m-0">{{ title }}</h1>
-        <div class="d-flex my-1 align-items-center">
 
+        <div class="d-flex align-items-end">
+          <h1 class="m-0">{{ title }}</h1>
+          <div class="text-highlight font-size-2 ml-5">
+            {{totalSequences}} sequences
+          </div>
         </div>
 
         <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
@@ -97,56 +100,59 @@
         <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       </div>
     </div>
-            <div class="d-flex flex-wrap my-3">
-              <a href="#lineages">
-                <button class="btn btn-grey mr-3">
-                  <small>Common lineages</small>
-                </button>
-              </a>
 
-              <a href="#lineages">
-                <button class="btn btn-grey mr-3">
-                  <small>Variants of Concern & Interest</small>
-                </button>
-              </a>
+    <!-- MINI-NAV -->
+    <div class="d-flex flex-wrap my-3">
+      <a href="#lineages">
+        <button class="btn btn-grey mr-3">
+          <small>Common lineages</small>
+        </button>
+      </a>
 
-              <a href="#geographic">
-                <button class="btn btn-grey mr-3">
-                  <small>Geographic breakdown</small>
-                </button>
-              </a>
-            </div>
+      <a href="#variants-of-concern">
+        <button class="btn btn-grey mr-3">
+          <small>Variants of Concern & Interest</small>
+        </button>
+      </a>
+
+      <a href="#geographic">
+        <button class="btn btn-grey mr-3">
+          <small>Geographic breakdown</small>
+        </button>
+      </a>
+    </div>
 
     <!-- LOGOS -->
     <ReportLogos class="mb-4" />
 
     <!-- REPORT -->
     <div id="location-report">
-
-
+      <!-- STREAM GRAPHS -->
       <div id="lineages">
         <div>
-        <h3>Lineage prevalence in {{location}}</h3>
-        <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
+          <h3>Lineage prevalence in {{location}}</h3>
+          <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
         </div>
 
         <div class="row">
 
-          <section id="lineages-over-time" class="col-md-8">
+          <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
             <h5 class="">Lineage prevalence over time</h5>
             <div class="">
-              <LineagesByLocation :data="lineagesByDay" :colorScale="colorScale"/>
+              <LineagesByLocation :data="lineagesByDay" :colorScale="colorScale" />
             </div>
           </section>
 
+          <!-- STACKED BAR / MOST RECENT -->
           <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
-            <h5>Most commonly found lineages over the past {{dayThreshold}} days</h5>
-            <ReportStackedBarGraph :data="mostRecentLineages"  :colorScale="colorScale" :location="location" :locationType="selectedLocationType" />
+            <h5>Most commonly found lineages over the past {{recentThreshold}} days</h5>
+            <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :location="location" :locationType="selectedLocationType" />
           </section>
 
         </div>
       </div>
 
+      <!-- TRACKED LINEAGES TABLE -->
       <section id="variants-of-concern" v-if="lineageTable" class="my-5">
         <h3>Tracked lineages</h3>
         <div>
@@ -225,6 +231,18 @@
         </div>
       </section>
 
+      <!-- GEOGRAPHIC CHOROPLETHS -->
+      <section id="geographic">
+        <h3>Geographic prevalence of tracked lineages & mutations</h3>
+        <div class="d-flex flex-wrap">
+          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25">
+            <h5>{{ choro.key }}</h5>
+            <ReportChoropleth :showLegend="false" :data="choro.values" :location="location" :mutationName="choro.key" :widthRatio="1" />
+          </div>
+        </div>
+
+      </section>
+
 
 
     </div>
@@ -295,11 +313,13 @@ import {
 } from "vuex";
 
 import {
-  timeFormat, scaleOrdinal
+  timeFormat,
+  scaleOrdinal
 } from "d3";
 
 import {
-  getLocationReportData
+  getLocationReportData,
+  getLocationMaps
 } from "@/api/genomics.js";
 
 export default {
@@ -322,7 +342,7 @@ export default {
     ReportAcknowledgements,
     // ReportPrevalence,
     // ReportPrevalenceByLocation,
-    // ReportChoropleth,
+    ReportChoropleth,
     // ReportResources,
     ShareReport,
     LineagesByLocation,
@@ -365,7 +385,7 @@ export default {
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
-    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh).subscribe(results => {
+    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
       console.log(results)
       this.dateUpdated = results.dateUpdated.dateUpdated;
       this.lastUpdated = results.dateUpdated.lastUpdated;
@@ -375,6 +395,10 @@ export default {
       this.lineageDomain = results.lineageDomain;
       this.colorScale = this.colorScale.domain(this.lineageDomain);
     })
+
+    this.choroSubscription = getLocationMaps(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations, this.recentThresh).subscribe(results => {
+      this.geoData = results;
+    })
   },
   data() {
     return ({
@@ -383,8 +407,12 @@ export default {
       url: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
       reportSubscription: null,
+      choroSubscription: null,
       // variables
-      dayThreshold: 28,
+      recentThreshold: 28,
+      otherThresh: 0.02,
+      ndayThresh: 5,
+      dayThresh: 60,
       // data
       dateUpdated: null,
       lastUpdated: null,
@@ -392,11 +420,23 @@ export default {
       mostRecentLineages: null,
       lineageTable: null,
       lineageDomain: [],
-      otherThresh: 0.08,
-      ndayThresh: 7,
+      totalSequences: "XXX,XXX",
+      geoData: [],
+      // selections
+      selectedMutations: [{
+        pango: "B.1.1.7"
+      }, {
+        pango: "B.1.429"
+      }, {
+        muts: "S:E484K",
+        pango: "B.1.526"
+      }, {
+        muts: "S:S13I,S:L452R"
+      }],
+      // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
       colorScale: scaleOrdinal(
-        [ "#bab0ab", // grey (other)
+        ["#bab0ab", // grey (other)
           "#4E79A7", // dk blue
           "#aecBe8", // lt blue
           "#f28e2b", // orange
@@ -419,40 +459,44 @@ export default {
           "#79706E", // grey
           "#79706E"
         ])
-        // [ "#bab0ab", // grey (other)
-        //   "#4E79A7", // dk blue
-        //   // "#1f77b4", // dk blue
-        //   "#f28e2b", // orange
-        //   "#59a14f", // green
-        //   "#e15759", // red
-        //   // "#9edae5", // teal
-        //   "#499894", // teal
-        //   "#B6992D", // dk yellow
-        //   "#D37295", // dk pink
-        //   // "#9467bd", // purple
-        //   "#B07AA1", // dk purple
-        //   "#9D7660", // brown
-        //   // "#8c564b", // brown
-        //   "#aecBe8", // lt blue
-        //   "#FFBE7D", // lt. orange
-        //   "#8CD17D", // lt. green
-        //   "#FF9D9A", // lt. red
-        //   "#86BCB6", // lt. teal
-        //   "#F1CE63", // yellow
-        //   // "#edc949", // yellow
-        //   // "#ff9da7", // pink
-        //   "#FABFD2", // lt. pink,
-        //   "#D4A6C8", // lt. purple
-        //   "#D7B5A6", // lt. brown
-        //   "#bcbd22", // puce
-        //   "#79706E", // grey
-        //   "#79706E"
-        // ])
+      // [ "#bab0ab", // grey (other)
+      //   "#4E79A7", // dk blue
+      //   // "#1f77b4", // dk blue
+      //   "#f28e2b", // orange
+      //   "#59a14f", // green
+      //   "#e15759", // red
+      //   // "#9edae5", // teal
+      //   "#499894", // teal
+      //   "#B6992D", // dk yellow
+      //   "#D37295", // dk pink
+      //   // "#9467bd", // purple
+      //   "#B07AA1", // dk purple
+      //   "#9D7660", // brown
+      //   // "#8c564b", // brown
+      //   "#aecBe8", // lt blue
+      //   "#FFBE7D", // lt. orange
+      //   "#8CD17D", // lt. green
+      //   "#FF9D9A", // lt. red
+      //   "#86BCB6", // lt. teal
+      //   "#F1CE63", // yellow
+      //   // "#edc949", // yellow
+      //   // "#ff9da7", // pink
+      //   "#FABFD2", // lt. pink,
+      //   "#D4A6C8", // lt. purple
+      //   "#D7B5A6", // lt. brown
+      //   "#bcbd22", // puce
+      //   "#79706E", // grey
+      //   "#79706E"
+      // ])
     })
   },
   destroyed() {
     if (this.reportSubscription) {
       this.reportSubscription.unsubscribe();
+    }
+
+    if (this.choroSubscription) {
+      this.choroSubscription.unsubscribe();
     }
   }
 }
