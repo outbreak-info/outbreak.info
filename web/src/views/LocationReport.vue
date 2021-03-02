@@ -243,9 +243,6 @@
         </div>
 
       </section>
-
-
-
     </div>
 
 
@@ -327,11 +324,9 @@ export default {
   props: {
     country: String,
     division: String,
-    muts: {
-      type: Array,
-      default: () => ["S:N501Y"]
-    },
-    pango: Array
+    muts: Array,
+    pango: Array,
+    variant: Array
   },
   components: {
     ReportLogos,
@@ -371,6 +366,62 @@ export default {
     },
     selectedLocationType() {
       return (this.division ? "division" : "country")
+    },
+    selectedMutations() {
+      let tracked = [];
+      if (this.pango) {
+        if (typeof(this.pango) == "string") {
+          tracked.push({
+            label: `${this.pango} lineage`,
+            query: `pangolin_lineage=${this.pango}`
+          })
+        } else {
+          tracked = tracked.concat(this.pango.map(d => {
+            return ({
+              label: `${d} lineage`,
+              query: `pangolin_lineage=${d}`
+            })
+          }))
+        }
+      }
+      if (this.muts) {
+        if (typeof(this.muts) == "string") {
+          tracked.push({
+            label: `${this.muts} mutation`,
+            query: `mutations=${this.muts}`
+          })
+        } else {
+          tracked = tracked.concat(this.muts.map(d => {
+            return ({
+              label: `${d} mutation`,
+              query: `mutations=${d}`
+            })
+          }))
+        }
+      }
+      if (this.variant) {
+        if (typeof(this.variant) == "string") {
+          const variant = this.variant.split("|");
+          if (variant.length == 2) {
+            tracked.push({
+              label: `${variant[0]} lineage with ${variant[1]}`,
+              query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`
+            })
+          }
+        } else {
+          tracked = tracked.concat(this.variant.map(d => {
+            const variant = d.split("|");
+            if (variant.length == 2) {
+              tracked.push({
+                label: `${variant[0]} lineage with ${variant[1]}`,
+                query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`
+              })
+            }
+          }))
+        }
+      }
+      console.log(tracked)
+      return (tracked.filter(d => d))
     }
   },
   mounted() {
@@ -395,9 +446,14 @@ export default {
       this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
     })
 
-    this.choroSubscription = getLocationMaps(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations, this.recentThresh).subscribe(results => {
-      this.geoData = results;
-    })
+    this.updateMaps();
+  },
+  methods: {
+    updateMaps() {
+      this.choroSubscription = getLocationMaps(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations, this.recentThresh).subscribe(results => {
+        this.geoData = results;
+      })
+    }
   },
   data() {
     return ({
@@ -409,7 +465,7 @@ export default {
       choroSubscription: null,
       // variables
       recentThreshold: 28,
-      otherThresh: 0.04,
+      otherThresh: 0.03,
       ndayThresh: 5,
       dayThresh: 60,
       // data
@@ -422,14 +478,6 @@ export default {
       totalSequences: "XXX,XXX",
       geoData: [],
       // selections
-      selectedMutations: [{
-        pango: "B.1.1.7"
-      }, {
-        muts: "S:E484K",
-        pango: "B.1.526"
-      }, {
-        muts: "S:S13I,S:L452R"
-      }],
       // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
       colorScale: null,

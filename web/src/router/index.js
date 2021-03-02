@@ -419,7 +419,8 @@ const routes = [{
       country: route.query.country,
       division: route.query.division,
       muts: route.query.muts,
-      pango: route.query.pango
+      pango: route.query.pango,
+      variant: route.query.variant
     }),
     component: () =>
       import(

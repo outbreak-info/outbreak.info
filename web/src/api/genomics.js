@@ -412,11 +412,12 @@ export function getNewToday(apiurl, queryStr, location, locationType) {
   )
 }
 
-export function getAllLocationPrevalence(apiurl, queryStr, location, locationType, ndays = null) {
-  return (getLocationPrevalence(apiurl, queryStr, location, locationType, ndays).pipe(
+export function getAllLocationPrevalence(apiurl, mutation, location, locationType, ndays = null) {
+  console.log(mutation)
+  return (getLocationPrevalence(apiurl, mutation.query, location, locationType, ndays).pipe(
     map(results => {
       return ({
-        key: queryStr,
+        key: mutation.label,
         values: results
       })
     })
@@ -884,9 +885,8 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
 
 export function getLocationMaps(apiurl, location, locationType, mutations, ndays) {
   store.state.admin.reportloading = true;
-  mutations = ["pangolin_lineage=B.1.1.7", "pangolin_lineage=B.1.429", "pangolin_lineage=B.1.526", "mutations=S:E484K"];
 
-  return forkJoin(... mutations.map(queryStr => getAllLocationPrevalence(apiurl, queryStr, location, locationType, ndays))).pipe(
+  return forkJoin(... mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, locationType, ndays))).pipe(
     map(results => {
       console.log(results)
       return (results)
