@@ -1,6 +1,6 @@
 <template>
 <div class="d-flex flex-wrap">
-  <svg :width="75" :height="legendRectWidth + 2" class="categorical-legend mr-2 mb-2" v-for="(value, vIdx) in legendValues" :key="vIdx">
+  <svg :width="80" :height="legendRectWidth + 2" class="categorical-legend mr-2 mb-2" v-for="(value, vIdx) in legendValues" :key="vIdx">
     <rect :width="legendRectWidth" :height="legendRectWidth" :fill="value.fill"></rect>
     <text x="0" :y="legendRectWidth / 2" :dx="legendRectWidth + 5" style="dominant-baseline: central;">{{ value.label }}</text>
   </svg>
