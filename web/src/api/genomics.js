@@ -859,19 +859,22 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
     getDateUpdated(apiurl),
     getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
     getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
-    getLocationTable(apiurl, location, locationType)
+    getLocationTable(apiurl, location, locationType),
+    getSequenceCount(apiurl, location, locationType)
   ]).pipe(
-    map(([dateUpdated, lineagesByDay, mostRecentLineages, lineageTable]) => {
+    map(([dateUpdated, lineagesByDay, mostRecentLineages, lineageTable, total]) => {
       let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
 
       lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
 
       return ({
+
         dateUpdated: dateUpdated,
         lineagesByDay: lineagesByDay,
         mostRecentLineages: mostRecentLineages,
         lineageTable: lineageTable,
-        lineageDomain: lineageDomain
+        lineageDomain: lineageDomain,
+        total: total
       })
     }),
     catchError(e => {
@@ -934,4 +937,28 @@ export function getLocationTable(apiurl, location, locationType) {
     })
   )
 
+}
+
+export function getSequenceCount(apiurl, location = null, locationType = null) {
+  let url = `${apiurl}sequence-count`;
+  if(location && location) {
+    url += `?${locationType}=${location}`
+  }
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      console.log(results)
+      return (results[0].total_count.toLocaleString())
+    }),
+    catchError(e => {
+      console.log("%c Error in getting total sequences for the location!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
 }

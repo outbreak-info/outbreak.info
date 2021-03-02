@@ -80,7 +80,7 @@
 
         <div class="d-flex align-items-end">
           <h1 class="m-0">{{ title }}</h1>
-          <div class="text-highlight font-size-2 ml-5">
+          <div class="text-highlight font-size-2 ml-5" v-if="totalSequences">
             {{totalSequences}} sequences
           </div>
         </div>
@@ -444,6 +444,7 @@ export default {
       this.mostRecentLineages = results.mostRecentLineages;
       this.lineageDomain = results.lineageDomain;
       this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
+      this.totalSequences = results.total;
     })
 
     this.updateMaps();
@@ -475,7 +476,7 @@ export default {
       mostRecentLineages: null,
       lineageTable: null,
       lineageDomain: [],
-      totalSequences: "XXX,XXX",
+      totalSequences: null,
       geoData: [],
       // selections
       // scales
