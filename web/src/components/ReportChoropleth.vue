@@ -258,7 +258,7 @@ export default {
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
-        this.locationMap = ADMIN0_SIMPLE;
+        this.locationMap = cloneDeep(ADMIN0_SIMPLE);
         // this.hwRatio = 0.45;
         // this.setDims();
       } else if (this.location === "United States") {
@@ -266,11 +266,11 @@ export default {
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
 
-        this.locationMap = USADATA;
+        this.locationMap = cloneDeep(USADATA);
         // this.hwRatio = 0.45;
         // this.setDims();
       } else {
-        this.locationMap = ADMIN1[this.location];
+        this.locationMap = cloneDeep(ADMIN1[this.location]);
         const mapBounds = geoBounds(this.locationMap);
 
         this.projection = geoAzimuthalEqualArea()
