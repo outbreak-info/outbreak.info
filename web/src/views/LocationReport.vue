@@ -316,7 +316,8 @@ import {
 
 import {
   getLocationReportData,
-  getLocationMaps
+  getLocationMaps,
+  getBasicLocationReportData
 } from "@/api/genomics.js";
 
 export default {
@@ -347,6 +348,12 @@ export default {
     // CustomReportForm,
     // MutationsByLineage
   },
+  watch: {
+    selectedMutations() {
+      console.log("MAPS")
+      this.updateMaps();
+    }
+  },
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
     smallScreen() {
@@ -368,18 +375,20 @@ export default {
       return (this.division ? "division" : "country")
     },
     selectedMutations() {
-      let tracked = [];
+      let tracked = this.curatedLineages;
       if (this.pango) {
         if (typeof(this.pango) == "string") {
           tracked.push({
             label: `${this.pango} lineage`,
-            query: `pangolin_lineage=${this.pango}`
+            query: `pangolin_lineage=${this.pango}`,
+            variantType: "Custom Lineages & Mutations"
           })
         } else {
           tracked = tracked.concat(this.pango.map(d => {
             return ({
               label: `${d} lineage`,
-              query: `pangolin_lineage=${d}`
+              query: `pangolin_lineage=${d}`,
+              variantType: "Custom Lineages & Mutations"
             })
           }))
         }
@@ -388,17 +397,20 @@ export default {
         if (typeof(this.muts) == "string") {
           tracked.push({
             label: `${this.muts} mutation`,
-            query: `mutations=${this.muts}`
+            query: `mutations=${this.muts}`,
+            variantType: "Custom Lineages & Mutations"
           })
         } else {
           tracked = tracked.concat(this.muts.map(d => {
             return ({
               label: `${d} mutation`,
-              query: `mutations=${d}`
+              query: `mutations=${d}`,
+              variantType: "Custom Lineages & Mutations"
             })
           }))
         }
       }
+      //
       if (this.variant) {
         if (typeof(this.variant) == "string") {
           const variant = this.variant.split("|");
@@ -409,7 +421,7 @@ export default {
             })
           }
         } else {
-          tracked = tracked.concat(this.variant.map(d => {
+          this.variant.map(d => {
             const variant = d.split("|");
             if (variant.length == 2) {
               tracked.push({
@@ -417,11 +429,11 @@ export default {
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`
               })
             }
-          }))
+          })
         }
       }
       console.log(tracked)
-      return (tracked.filter(d => d))
+      return (tracked)
     }
   },
   mounted() {
@@ -435,19 +447,22 @@ export default {
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
-    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
+    this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType).subscribe(results => {
       console.log(results)
       this.dateUpdated = results.dateUpdated.dateUpdated;
       this.lastUpdated = results.dateUpdated.lastUpdated;
+      this.totalSequences = results.total;
+      this.curatedLineages = results.curated;
+    })
+
+    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
+      console.log(results)
       this.lineagesByDay = results.lineagesByDay;
       this.lineageTable = results.lineageTable;
       this.mostRecentLineages = results.mostRecentLineages;
       this.lineageDomain = results.lineageDomain;
       this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
-      this.totalSequences = results.total;
     })
-
-    this.updateMaps();
   },
   methods: {
     updateMaps() {
@@ -462,6 +477,7 @@ export default {
       today: null,
       url: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+      basicSubscription: null,
       reportSubscription: null,
       choroSubscription: null,
       // variables
@@ -477,6 +493,7 @@ export default {
       lineageTable: null,
       lineageDomain: [],
       totalSequences: null,
+      curatedLineages: [],
       geoData: [],
       // selections
       // scales
@@ -537,6 +554,10 @@ export default {
     })
   },
   destroyed() {
+    if (this.basicSubscription) {
+      this.basicSubscription.unsubscribe();
+    }
+
     if (this.reportSubscription) {
       this.reportSubscription.unsubscribe();
     }

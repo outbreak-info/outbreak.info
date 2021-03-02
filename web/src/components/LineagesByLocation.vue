@@ -150,8 +150,6 @@ export default Vue.extend({
         .selectAll(".stacked-area-chart")
         .data(this.series);
 
-        console.log(this.colorScale.domain())
-
       areaSelector
         .join(enter => {
             enter.append("path")

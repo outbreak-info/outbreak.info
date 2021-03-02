@@ -413,7 +413,6 @@ export function getNewToday(apiurl, queryStr, location, locationType) {
 }
 
 export function getAllLocationPrevalence(apiurl, mutation, location, locationType, ndays = null) {
-  console.log(mutation)
   return (getLocationPrevalence(apiurl, mutation.query, location, locationType, ndays).pipe(
     map(results => {
       return ({
@@ -785,7 +784,6 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
         })
         return (obj)
       })
-      console.log(nested2)
 
       return (nested2.filter(d => d.date_time > dateThreshold))
     }),
@@ -801,7 +799,7 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const today = new Date();
   const minDate = timeDay.offset(today, -1 * dateSpan);
-  console.log(minDate);
+
   let url = locationType == "division" ?
     `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}` :
     `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}`
@@ -815,7 +813,6 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
   ).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       results.forEach(d => {
         // d["pangolin_lineage"] = capitalize(d.lineage);
         d["date_time"] = parseDate(d.date);
@@ -839,7 +836,6 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
       nested.forEach(d => {
         obj[capitalize(d.key)] = d.value.prevalence
       })
-      console.log(obj)
 
       return ([obj])
     }),
@@ -852,29 +848,56 @@ export function getMostRecentLineages(apiurl, location, locationType, other_thre
 }
 
 // LOCATION REPORTS
+export function getBasicLocationReportData(apiurl, location, locationType) {
+  return forkJoin([
+    getDateUpdated(apiurl),
+    getCuratedList(),
+    getSequenceCount(apiurl, location, locationType)
+  ]).pipe(
+    map(([dateUpdated, curated, total]) => {
+      const filtered = curated.filter(d => d.key == "lineage");
+      let curatedLineages;
+      if(filtered.length === 1){
+        curatedLineages = filtered[0].values.map(d => {
+          return({
+            label: d.mutation_name,
+            query: `pangolin_lineage=${d.mutation_name}`,
+            variantType: d.variantType
+          })
+        })
+      }
+      return ({
+        dateUpdated: dateUpdated,
+        curated: curatedLineages,
+        total: total
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting basic location report data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
 export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages, other_threshold, nday_threshold, ndays) {
   store.state.admin.reportloading = true;
 
   return forkJoin([
-    getDateUpdated(apiurl),
     getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
     getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
-    getLocationTable(apiurl, location, locationType),
-    getSequenceCount(apiurl, location, locationType)
+    getLocationTable(apiurl, location, locationType)
   ]).pipe(
-    map(([dateUpdated, lineagesByDay, mostRecentLineages, lineageTable, total]) => {
+    map(([lineagesByDay, mostRecentLineages, lineageTable]) => {
       let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
 
       lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
 
       return ({
-
-        dateUpdated: dateUpdated,
         lineagesByDay: lineagesByDay,
         mostRecentLineages: mostRecentLineages,
         lineageTable: lineageTable,
-        lineageDomain: lineageDomain,
-        total: total
+        lineageDomain: lineageDomain
       })
     }),
     catchError(e => {
@@ -891,7 +914,6 @@ export function getLocationMaps(apiurl, location, locationType, mutations, ndays
 
   return forkJoin(... mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, locationType, ndays))).pipe(
     map(results => {
-      console.log(results)
       return (results)
     }),
     catchError(e => {
@@ -952,7 +974,6 @@ export function getSequenceCount(apiurl, location = null, locationType = null) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       return (results[0].total_count.toLocaleString())
     }),
     catchError(e => {
