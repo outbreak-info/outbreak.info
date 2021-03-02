@@ -214,7 +214,7 @@
                 <td>
                   {{ lineage.lineage_count_formatted }}
                 </td>
-                <td>
+                <td :class="{'text-muted' : lineage.proportion_formatted == 'not detected'}">
                   {{ lineage.proportion_formatted }}
                 <td class="spacer">
 
@@ -232,8 +232,9 @@
       </section>
 
       <!-- GEOGRAPHIC CHOROPLETHS -->
-      <section id="geographic">
-        <h3>Geographic prevalence of tracked lineages & mutations</h3>
+      <section id="geographic" class="my-5">
+        <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
+        <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
         <div class="d-flex flex-wrap">
           <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25">
             <h5>{{ choro.key }}</h5>
@@ -279,7 +280,6 @@ import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
 import Warning from "@/components/Warning.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import ReportPrevalence from "@/components/ReportPrevalence.vue";
-import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
 import ReportChoropleth from "@/components/ReportChoropleth.vue";
 import ReportResources from "@/components/ReportResources.vue";
 import ShareReport from "@/components/ShareReport.vue";
@@ -341,7 +341,6 @@ export default {
     Warning,
     ReportAcknowledgements,
     // ReportPrevalence,
-    // ReportPrevalenceByLocation,
     ReportChoropleth,
     // ReportResources,
     ShareReport,
@@ -410,7 +409,7 @@ export default {
       choroSubscription: null,
       // variables
       recentThreshold: 28,
-      otherThresh: 0.02,
+      otherThresh: 0.04,
       ndayThresh: 5,
       dayThresh: 60,
       // data
