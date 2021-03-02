@@ -134,18 +134,13 @@ export default Vue.extend({
       // stacking
       this.series = stack()
         .keys(this.lineages)
-        // .order(stackOrderDescending)
-        // .order(stackOrderAscending)
-        // .order(stackOrderAppearance)
-        // .order(stackOrderNone)
-        // .order(stackOrderReverse)
         .order(stackOrderInsideOut)
         (this.data)
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
     updatePlot() {
-      if (this.data) {
+      if (this.data && this.colorScale) {
         this.updateScales();
         this.drawPlot();
       }
@@ -154,6 +149,8 @@ export default Vue.extend({
       const areaSelector = this.chart
         .selectAll(".stacked-area-chart")
         .data(this.series);
+
+        console.log(this.colorScale.domain())
 
       areaSelector
         .join(enter => {

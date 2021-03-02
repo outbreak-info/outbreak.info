@@ -392,7 +392,7 @@ export default {
       this.lineageTable = results.lineageTable;
       this.mostRecentLineages = results.mostRecentLineages;
       this.lineageDomain = results.lineageDomain;
-      this.colorScale = this.colorScale.domain(this.lineageDomain);
+      this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
     })
 
     this.choroSubscription = getLocationMaps(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations, this.recentThresh).subscribe(results => {
@@ -434,7 +434,8 @@ export default {
       }],
       // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
-      colorScale: scaleOrdinal(
+      colorScale: null,
+      colorPalette:
         ["#bab0ab", // grey (other)
           "#4E79A7", // dk blue
           "#aecBe8", // lt blue
@@ -457,7 +458,7 @@ export default {
           "#bcbd22", // puce
           "#79706E", // grey
           "#79706E"
-        ])
+        ]
       // [ "#bab0ab", // grey (other)
       //   "#4E79A7", // dk blue
       //   // "#1f77b4", // dk blue

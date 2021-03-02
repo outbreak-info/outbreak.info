@@ -26,9 +26,6 @@ import {
   axisBottom,
   area,
   stack,
-  stackOrderReverse,
-  stackOrderInsideOut,
-  stackOrderAscending,
   stackOrderDescending,
   event,
   extent,
@@ -120,7 +117,6 @@ export default Vue.extend({
         .domain([0, 1]);
 
       this.lineages = Object.keys(this.data[0]);
-      this.colorScale = this.colorScale.domain(this.lineages);
 
       this.yAxis = axisLeft(this.y).tickSizeOuter(0)
         .ticks(this.numYTicks)
@@ -136,7 +132,6 @@ export default Vue.extend({
       // .order(stackOrderReverse)
       // .order(stackOrderInsideOut)
       (this.data)
-      console.log(this.series)
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
