@@ -155,85 +155,7 @@
       <!-- TRACKED LINEAGES TABLE -->
       <section id="variants-of-concern" v-if="lineageTable" class="my-5">
         <h3>Tracked lineages</h3>
-        <div>
-          <!-- <h6>{{lineageGroup.key}}</h6> -->
-          <table>
-            <thead>
-              <tr>
-                <th rowspan="2" class="border-bottom">
-                  lineage
-                </th>
-                <th class="text-center padded border-bottom border-secondary" colspan="2">
-                  lineage found
-                </th>
-                <th>
-                </th>
-                <th class="text-center padded border-bottom border-secondary" colspan="2">
-                  when found<sup>**</sup>
-                </th>
-              </tr>
-              <tr class="border-bottom">
-                <th class="text-center padded">
-                  total
-                </th>
-                <th class="text-center padded">
-                  cumulative prevalence<sup>*</sup>
-                </th>
-                <th>
-
-                </th>
-                <th class="text-center padded">
-                  first
-                </th>
-                <th class="text-center padded">
-                  last
-                </th>
-              </tr>
-            </thead>
-            <tbody v-for="(lineageGroup, gIdx) in lineageTable" :key="gIdx">
-              <tr class="padding" v-if="gIdx > 0">
-                <td>
-
-                </td>
-              </tr>
-              <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
-                <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
-                  {{lineageGroup.key}}
-                </td>
-
-              </tr>
-              <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
-                <td>
-                  <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { pango: lineage.pangolin_lineage, division: [location]}}">
-                    {{ lineage.label }}
-                  </router-link>
-                  <router-link v-else :to="{name: 'MutationReport', query:{ pango: lineage.pangolin_lineage, country: [location] }}">
-                    {{ lineage.label }}
-                  </router-link>
-                </td>
-                <td>
-                  {{ lineage.lineage_count_formatted }}
-                </td>
-                <td :class="{'text-muted' : lineage.proportion_formatted == 'not detected'}">
-                  {{ lineage.proportion_formatted }}
-                <td class="spacer">
-
-                </td>
-                <td>
-                  {{ lineage.first_detected }}
-                </td>
-                <td>
-                  {{ lineage.last_detected }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="line-height-1">
-            <small><em><sup>*</sup> Apparent cumulative prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
-            <small class="ml-2"><em><sup>**</sup> Dates are based on the sample collection date</em> </small>
-          </div>
-        </div>
+        <LocationTable :data="lineageTable"/>
       </section>
 
       <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -241,7 +163,7 @@
         <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
         <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
         <div class="d-flex flex-wrap">
-          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-2">
+          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3">
             <div class="d-flex justify-content-between align-items-center mx-4">
               <h5>{{ choro.key }}</h5>
               <small v-if="choro.variantType.includes('Variant')"   :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
@@ -296,6 +218,7 @@ import MutationsByLineage from "@/components/MutationsByLineage.vue";
 import LineagesByLocation from "@/components/LineagesByLocation.vue";
 import ReportStackedBarGraph from "@/components/ReportStackedBarGraph.vue";
 import HorizontalCategoricalLegend from "@/components/HorizontalCategoricalLegend.vue";
+import LocationTable from "@/components/LocationTable.vue";
 
 // --- font awesome --
 import {
@@ -352,11 +275,10 @@ export default {
     ShareReport,
     LineagesByLocation,
     ReportStackedBarGraph,
-    HorizontalCategoricalLegend
-    // ReportSummary,
+    HorizontalCategoricalLegend,
+    LocationTable
     // TypeaheadSelect,
     // CustomReportForm,
-    // MutationsByLineage
   },
   watch: {
     selectedMutations() {
@@ -601,26 +523,5 @@ export default {
 .btn-active {
     background-color: $primary-color;
     color: white;
-}
-
-th.padded {
-    padding: 0.25rem 0.25rem 0.5rem;
-}
-
-.padding td {
-    padding: 0.25rem 0.25rem 0.5rem;
-}
-
-.checkbook td,
-.custom td,
-.padding,
-.voc,
-.voi {
-    padding: 0.5rem;
-    text-align: center;
-}
-
-.checkbook:nth-child(2n+1) {
-    background: lighten($base-grey,70%);
 }
 </style>
