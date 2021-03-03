@@ -1,7 +1,7 @@
 <template>
 <div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
   <!-- LOADING -->
-  <div v-if="reportloading" class="loader">
+  <div v-if="loading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
   <!-- CHANGE LOCATION MODAL -->
@@ -64,7 +64,7 @@
   </div> -->
   <!-- end change location modal -->
 
-  <template v-if="hasData">
+  <template>
     <!-- SOCIAL MEDIA SHARE, BACK BTN -->
     <div class="d-flex align-items-center mb-2">
       <router-link :to="{ name: 'SituationReports'}">
@@ -130,7 +130,7 @@
       <!-- STREAM GRAPHS -->
       <div id="lineages">
         <div>
-          <h3>Lineage prevalence in {{location}}</h3>
+          <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence in {{location}}</h3>
           <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
         </div>
 
@@ -163,7 +163,7 @@
         <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
       </section>
 
-      <section id="lineages-over-time" class="my-5">
+      <section id="lineages-over-time" class="my-5" v-if="longitudinalPrevalence">
         <div class="d-flex align-items-center justify-content-center">
           <h3 class="mr-5">Tracked lineages over time</h3>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
@@ -173,7 +173,7 @@
       </section>
 
       <!-- GEOGRAPHIC CHOROPLETHS -->
-      <section id="geographic" class="my-5 py-3 border-top">
+      <section id="geographic" class="my-5 py-3 border-top" v-if="geoData">
         <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
         <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
         <div class="d-flex flex-wrap">
@@ -222,23 +222,6 @@
 
 <script>
 import Vue from "vue";
-import ReportLogos from "@/components/ReportLogos.vue";
-import ReportMethodology from "@/components/ReportMethodology.vue";
-import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
-import Warning from "@/components/Warning.vue";
-import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
-import ReportPrevalence from "@/components/ReportPrevalence.vue";
-import ReportChoropleth from "@/components/ReportChoropleth.vue";
-import ReportResources from "@/components/ReportResources.vue";
-import ShareReport from "@/components/ShareReport.vue";
-import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
-import ReportSummary from "@/components/ReportSummary.vue";
-import CustomReportForm from "@/components/CustomReportForm.vue";
-import MutationsByLineage from "@/components/MutationsByLineage.vue";
-import LineagesByLocation from "@/components/LineagesByLocation.vue";
-import ReportStackedBarGraph from "@/components/ReportStackedBarGraph.vue";
-import HorizontalCategoricalLegend from "@/components/HorizontalCategoricalLegend.vue";
-import LocationTable from "@/components/LocationTable.vue";
 
 // --- font awesome --
 import {
@@ -283,22 +266,17 @@ export default {
     variant: Array
   },
   components: {
-    ReportLogos,
-    ReportMethodology,
-    // CharacteristicMutations,
-    FontAwesomeIcon,
-    Warning,
-    ReportAcknowledgements,
-    // ReportPrevalence,
-    ReportChoropleth,
-    // ReportResources,
-    ShareReport,
-    LineagesByLocation,
-    ReportStackedBarGraph,
-    HorizontalCategoricalLegend,
-    LocationTable
-    // TypeaheadSelect,
-    // CustomReportForm,
+    ReportLogos: () => import("@/components/ReportLogos.vue"),
+    ReportMethodology: () => import("@/components/ReportMethodology.vue"),
+    Warning: () => import("@/components/Warning.vue"),
+    ReportAcknowledgements: () => import("@/components/ReportAcknowledgements.vue"),
+    ShareReport: () => import("@/components/ShareReport.vue"),
+    ReportChoropleth: () => import("@/components/ReportChoropleth.vue"),
+    LineagesByLocation: () => import("@/components/LineagesByLocation.vue"),
+    ReportStackedBarGraph: () => import("@/components/ReportStackedBarGraph.vue"),
+    HorizontalCategoricalLegend: () => import("@/components/HorizontalCategoricalLegend.vue"),
+    LocationTable: () => import("@/components/LocationTable.vue"),
+    FontAwesomeIcon
   },
   watch: {
     selectedMutations() {
@@ -316,9 +294,6 @@ export default {
     },
     title() {
       return (`${this.location} Mutation Report`)
-    },
-    hasData() {
-      return (true)
     },
     selectedLocation() {
       return (this.division ? this.division : this.country)
