@@ -155,7 +155,7 @@
       <!-- TRACKED LINEAGES TABLE -->
       <section id="variants-of-concern" v-if="lineageTable" class="my-5">
         <h3>Tracked lineages</h3>
-        <LocationTable :data="lineageTable"/>
+        <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
       </section>
 
       <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -165,7 +165,13 @@
         <div class="d-flex flex-wrap">
           <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3">
             <div class="d-flex justify-content-between align-items-center mx-4">
-              <h5>{{ choro.key }}</h5>
+              <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { ... choro.route, division: [location], selected: location, selectedType: 'division' }}">
+                <h5>{{ choro.key }}</h5>
+              </router-link>
+              <router-link v-else :to="{name: 'MutationReport', query: { ... choro.route, country: [location], selected: location, selectedType: 'country' }}">
+                <h5>{{ choro.key }}</h5>
+              </router-link>
+
               <small v-if="choro.variantType.includes('Variant')"   :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
                 {{ choro.variantType }}
               </small>
@@ -313,14 +319,16 @@ export default {
           tracked.push({
             label: `${this.pango} lineage`,
             query: `pangolin_lineage=${this.pango}`,
-            variantType: "Custom Lineages & Mutations"
+            variantType: "Custom Lineages & Mutations",
+            route: { pango: this.pango }
           })
         } else {
           tracked = tracked.concat(this.pango.map(d => {
             return ({
               label: `${d} lineage`,
               query: `pangolin_lineage=${d}`,
-              variantType: "Custom Lineages & Mutations"
+              variantType: "Custom Lineages & Mutations",
+              route: { pango: d }
             })
           }))
         }
@@ -330,14 +338,16 @@ export default {
           tracked.push({
             label: `${this.muts} mutation`,
             query: `mutations=${this.muts}`,
-            variantType: "Custom Lineages & Mutations"
+            variantType: "Custom Lineages & Mutations",
+            route: { muts: this.muts.split(",") }
           })
         } else {
           tracked = tracked.concat(this.muts.map(d => {
             return ({
               label: `${d} mutation`,
               query: `mutations=${d}`,
-              variantType: "Custom Lineages & Mutations"
+              variantType: "Custom Lineages & Mutations",
+              route: { muts: d.split(",") }
             })
           }))
         }
@@ -350,7 +360,8 @@ export default {
             tracked.push({
               label: `${variant[0]} lineage with ${variant[1]}`,
               query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
-              variantType: "Custom Lineages & Mutations"
+              variantType: "Custom Lineages & Mutations",
+              route: { pango: variant[0], muts: variant[1]}
             })
           }
         } else {
@@ -360,7 +371,8 @@ export default {
               tracked.push({
                 label: `${variant[0]} lineage with ${variant[1]}`,
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
-                variantType: "Custom Lineages & Mutations"
+                variantType: "Custom Lineages & Mutations",
+                route: { pango: variant[0], muts: variant[1] }
               })
             }
           })

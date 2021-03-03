@@ -418,6 +418,7 @@ export function getAllLocationPrevalence(apiurl, mutation, location, locationTyp
       return ({
         key: mutation.label,
         variantType: mutation.variantType,
+        route: mutation.route,
         values: results
       })
     })
@@ -863,7 +864,10 @@ export function getBasicLocationReportData(apiurl, location, locationType) {
           return ({
             label: d.mutation_name,
             query: `pangolin_lineage=${d.mutation_name}`,
-            variantType: d.variantType
+            variantType: d.variantType,
+            route: {
+              pango: d.mutation_name
+            }
           })
         })
       }
@@ -936,7 +940,7 @@ export function getMutationCumPrevalence(apiurl, mutationObj, location, location
 }
 
 export function getLocationTable(apiurl, location, locationType, mutations) {
-  return forkJoin(... mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location, locationType))).pipe(
+  return forkJoin(...mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location, locationType))).pipe(
     map(results => {
       console.log(results)
       results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);

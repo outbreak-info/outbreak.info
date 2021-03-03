@@ -47,10 +47,10 @@
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
         <td>
-          <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { pango: lineage.pangolin_lineage, division: [location]}}">
+          <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { ... lineage.route, division: [location], selected: location, selectedType: 'division' }}">
             {{ lineage.label }}
           </router-link>
-          <router-link v-else :to="{name: 'MutationReport', query:{ pango: lineage.pangolin_lineage, country: [location] }}">
+          <router-link v-else :to="{name: 'MutationReport', query: { ... lineage.route, country: [location], selected: location, selectedType: 'country' }}">
             {{ lineage.label }}
           </router-link>
         </td>
@@ -73,7 +73,7 @@
   </table>
 
   <div class="line-height-1">
-    <small><em><sup>*</sup> Apparent cumulative prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
+    <small><em><sup>*</sup> Apparent cumulative prevalence is the ratio of the sequences containing the lineage or mutation(s) to all sequences collected since the identification of lineage or mutation(s) in that location.</em> </small>
     <small class="ml-2"><em><sup>**</sup> Dates are based on the sample collection date</em> </small>
   </div>
 </div>
@@ -103,7 +103,9 @@ export default {
     // FontAwesomeIcon
   },
   props: {
-    data: Array
+    data: Array,
+    location: String,
+    selectedLocationType: String
   }
 }
 </script>
