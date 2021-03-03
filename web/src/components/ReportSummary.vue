@@ -31,7 +31,7 @@
             total
           </th>
           <th class="text-center padded">
-            apparent prevalence<sup>*</sup>
+            cumulative prevalence<sup>*</sup>
           </th>
           <th>
 
