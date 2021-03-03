@@ -237,7 +237,12 @@
         <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
         <div class="d-flex flex-wrap">
           <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25">
-            <h5>{{ choro.key }}</h5>
+            <div class="d-flex justify-content-between align-items-center mx-4">
+              <h5>{{ choro.key }}</h5>
+              <small v-if="choro.variantType.includes('Variant')"   :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
+                {{ choro.variantType }}
+              </small>
+            </div>
             <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="location" :mutationName="choro.key" :widthRatio="1" />
           </div>
         </div>
@@ -250,7 +255,6 @@
     <section class="mt-3 mb-5 border-top pt-3" id="methods">
       <h4>Methodology</h4>
       <ReportMethodology :dateUpdated="dateUpdated" />
-      <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
       <Warning class="mt-2" :text="disclaimer" />
     </section>
 

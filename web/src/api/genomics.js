@@ -417,6 +417,7 @@ export function getAllLocationPrevalence(apiurl, mutation, location, locationTyp
     map(results => {
       return ({
         key: mutation.label,
+        variantType: mutation.variantType,
         values: results
       })
     })
