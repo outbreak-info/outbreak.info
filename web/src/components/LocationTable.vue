@@ -42,6 +42,7 @@
       <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
         <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
           {{lineageGroup.key}}
+          <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" />
         </td>
 
       </tr>
@@ -100,7 +101,7 @@ library.add(faSync);
 export default {
   name: "LocationTable",
   components: {
-    // FontAwesomeIcon
+    FontAwesomeIcon
   },
   props: {
     data: Array,

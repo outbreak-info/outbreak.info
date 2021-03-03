@@ -153,18 +153,27 @@
       </div>
 
       <!-- TRACKED LINEAGES TABLE -->
-      <section id="variants-of-concern" v-if="lineageTable" class="my-5">
-        <h3 class="text-center">Tracked lineages</h3>
+      <section id="variants-of-concern" v-if="lineageTable" class="my-5 py-3 border-top">
+        <div class="d-flex align-items-center justify-content-center">
+          <h3 class="mr-5">Tracked lineages</h3>
+          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+        </div>
         <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
       </section>
 
       <section id="lineages-over-time" class="my-5">
-        <h3 class="mx-auto d-block">Tracked lineages over time</h3>
-        <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" class="d-block mx-auto" />
+        <div class="d-flex align-items-center justify-content-center">
+          <h3 class="mr-5">Tracked lineages over time</h3>
+          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+        </div>
       </section>
 
       <!-- GEOGRAPHIC CHOROPLETHS -->
-      <section id="geographic" class="my-5">
+      <section id="geographic" class="my-5 py-3 border-top">
         <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
         <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
         <div class="d-flex flex-wrap">
