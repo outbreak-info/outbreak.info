@@ -1,5 +1,5 @@
 <template>
-<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-5' : 'mx-2']" v-if="reportName">
+<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']" v-if="reportName">
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
