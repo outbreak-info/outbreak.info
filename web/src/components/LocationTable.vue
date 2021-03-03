@@ -1,6 +1,6 @@
 <template>
 <div>
-  <table>
+  <table class="mx-auto">
     <thead>
       <tr>
         <th rowspan="2" class="border-bottom">
@@ -72,7 +72,7 @@
     </tbody>
   </table>
 
-  <div class="line-height-1">
+  <div class="line-height-1 w-50 mx-auto my-1">
     <small><em><sup>*</sup> Apparent cumulative prevalence is the ratio of the sequences containing the lineage or mutation(s) to all sequences collected since the identification of lineage or mutation(s) in that location.</em> </small>
     <small class="ml-2"><em><sup>**</sup> Dates are based on the sample collection date</em> </small>
   </div>

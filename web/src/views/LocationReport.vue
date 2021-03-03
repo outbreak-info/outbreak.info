@@ -154,8 +154,13 @@
 
       <!-- TRACKED LINEAGES TABLE -->
       <section id="variants-of-concern" v-if="lineageTable" class="my-5">
-        <h3>Tracked lineages</h3>
+        <h3 class="text-center">Tracked lineages</h3>
         <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
+      </section>
+
+      <section id="lineages-over-time" class="my-5">
+        <h3 class="mx-auto d-block">Tracked lineages over time</h3>
+        <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" class="d-block mx-auto" />
       </section>
 
       <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -378,7 +383,6 @@ export default {
           })
         }
       }
-      console.log(tracked)
       return (tracked)
     }
   },
