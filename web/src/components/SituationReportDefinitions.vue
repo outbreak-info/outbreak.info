@@ -47,12 +47,37 @@
           <b>Variant:</b> A genome that contains a particular set of <a href="#mutation">mutations</a>
           <ul>
             <li>
-              <b>Variant of Concern (VOC)</b>: variants which have evidence in the literature of increased transmissibility, worse outcomes, and/or
-              decreased vaccine efficacy
+              <b>Variant of Concern (VOC)</b>: (Source: <a href="https://www.who.int/publications/m/item/covid-19-weekly-epidemiological-update" target="_blank">WHO</a>) A variant which has been associated with at least one of the following:
+              <ul>
+                <li>
+                  Increase in transmissibility or detrimental change in COVID-19 epidemiology
+                </li>
+                <li>
+                  Increase in virulence or change in clinical disease presentation
+                </li>
+                <li>
+                  Decrease in effectiveness of public health and social measures or available diagnostics, vaccines,
+  therapeutics
+                </li>
+              </ul>
             </li>
             <li>
-              <b>Variant of Interest (VOI)</b>: variants of increasing prevalence with mutations in biologically important regions but lacking evidence for
-              increased transmissibility, virulence, and/or immune evasion, also called <b>Variant Under Investigation (VUI)</b>
+              <b>Variant of Interest (VOI)</b>:  (Source: <a href="https://www.who.int/publications/m/item/covid-19-weekly-epidemiological-update" target="_blank">WHO</a>) A variant which is both:
+              <ul>
+                <li>
+                  Phenotypically changed compared to a reference isolate or has a genome with mutations that lead to amino acid changes associated with established or suspected phenotypic implications (including epidemiology, antigenicity, or virulence or changes that have or potentially have a negative
+impact on available diagnostics, vaccines, therapeutics or public health and social measures)
+                </li>
+                <li>
+                  Has been identified to cause community transmission/multiple COVID-19 cases/clusters, or has been detected in multiple countries
+                </li>
+                <li>
+                  Also called <b>Variant Under Investigation (VUI)</b>
+                </li>
+              </ul>
+            </li>
+            <li>
+              We follow Public Health Agencies in designating Variants of Concern and Interest, including the <a href="https://www.who.int/csr/don/31-december-2020-sars-cov2-variants/en/" target="_blank">World Health Organization</a>, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">Centers for Disease Control and Prevention</a>, and <a href="https://www.gov.uk/government/publications/investigation-of-novel-sars-cov-2-variant-variant-of-concern-20201201" target="_blank">Public Health England</a>.
             </li>
             <li>
               When the same mutations show up in two variants, this can mean two things:
