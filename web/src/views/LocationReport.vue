@@ -232,10 +232,10 @@ import {
 } from "@fortawesome/fontawesome-svg-core";
 import {
   faClock
-} from "@fortawesome/free-regular-svg-icons";
+} from "@fortawesome/free-regular-svg-icons/faClock";
 import {
   faSpinner
-} from "@fortawesome/free-solid-svg-icons";
+} from "@fortawesome/free-solid-svg-icons/faSpinner";
 
 
 library.add(faClock, faSpinner);

@@ -94,7 +94,7 @@ import {
 } from "@fortawesome/fontawesome-svg-core";
 import {
   faSync
-} from "@fortawesome/free-solid-svg-icons";
+} from "@fortawesome/free-solid-svg-icons/faSync";
 
 library.add(faSync);
 
