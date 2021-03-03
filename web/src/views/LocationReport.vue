@@ -4,6 +4,9 @@
   <div v-if="loading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
+
+  <OverlayLineagePrevalence :options="selectedMutations" :location="location" :locationType="selectedLocationType"/>
+
   <!-- CHANGE LOCATION MODAL -->
   <!-- <div id="change-locations-modal" class="modal fade">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -163,7 +166,8 @@
         <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
       </section>
 
-      <section id="lineages-over-time" class="my-5" v-if="longitudinalPrevalence">
+      <!-- TRACKED LINEAGES PREVALENCE -->
+      <section id="lineages-over-time" class="my-5">
         <div class="d-flex align-items-center justify-content-center">
           <h3 class="mr-5">Tracked lineages over time</h3>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
@@ -186,7 +190,7 @@
                 <h5>{{ choro.key }}</h5>
               </router-link>
 
-              <small v-if="choro.variantType.includes('Variant')"   :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
+              <small v-if="choro.variantType.includes('Variant')" :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
                 {{ choro.variantType }}
               </small>
             </div>
@@ -236,9 +240,12 @@ import {
 import {
   faSpinner
 } from "@fortawesome/free-solid-svg-icons/faSpinner";
+import {
+  faSync
+} from "@fortawesome/free-solid-svg-icons/faSync";
 
 
-library.add(faClock, faSpinner);
+library.add(faClock, faSpinner, faSync);
 
 import {
   mapState
@@ -266,16 +273,17 @@ export default {
     variant: Array
   },
   components: {
-    ReportLogos: () => import(/* webpackPrefetch: true */ "@/components/ReportLogos.vue"),
-    ReportMethodology: () => import(/* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
-    Warning: () => import(/* webpackPrefetch: true */ "@/components/Warning.vue"),
-    ReportAcknowledgements: () => import(/* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
-    ShareReport: () => import(/* webpackPrefetch: true */ "@/components/ShareReport.vue"),
-    ReportChoropleth: () => import(/* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
-    LineagesByLocation: () => import(/* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
-    ReportStackedBarGraph: () => import(/* webpackPrefetch: true */ "@/components/ReportStackedBarGraph.vue"),
-    HorizontalCategoricalLegend: () => import(/* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
-    LocationTable: () => import(/* webpackPrefetch: true */ "@/components/LocationTable.vue"),
+    ReportLogos: () => import( /* webpackPrefetch: true */ "@/components/ReportLogos.vue"),
+    ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
+    Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
+    ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
+    ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
+    ReportChoropleth: () => import( /* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
+    LineagesByLocation: () => import( /* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
+    ReportStackedBarGraph: () => import( /* webpackPrefetch: true */ "@/components/ReportStackedBarGraph.vue"),
+    HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
+    LocationTable: () => import( /* webpackPrefetch: true */ "@/components/LocationTable.vue"),
+    OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
     FontAwesomeIcon
   },
   watch: {
@@ -313,7 +321,9 @@ export default {
             label: `${this.pango} lineage`,
             query: `pangolin_lineage=${this.pango}`,
             variantType: "Custom Lineages & Mutations",
-            route: { pango: this.pango }
+            route: {
+              pango: this.pango
+            }
           })
         } else {
           tracked = tracked.concat(this.pango.map(d => {
@@ -321,7 +331,9 @@ export default {
               label: `${d} lineage`,
               query: `pangolin_lineage=${d}`,
               variantType: "Custom Lineages & Mutations",
-              route: { pango: d }
+              route: {
+                pango: d
+              }
             })
           }))
         }
@@ -332,7 +344,9 @@ export default {
             label: `${this.muts} mutation`,
             query: `mutations=${this.muts}`,
             variantType: "Custom Lineages & Mutations",
-            route: { muts: this.muts.split(",") }
+            route: {
+              muts: this.muts.split(",")
+            }
           })
         } else {
           tracked = tracked.concat(this.muts.map(d => {
@@ -340,7 +354,9 @@ export default {
               label: `${d} mutation`,
               query: `mutations=${d}`,
               variantType: "Custom Lineages & Mutations",
-              route: { muts: d.split(",") }
+              route: {
+                muts: d.split(",")
+              }
             })
           }))
         }
@@ -354,7 +370,10 @@ export default {
               label: `${variant[0]} lineage with ${variant[1]}`,
               query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
               variantType: "Custom Lineages & Mutations",
-              route: { pango: variant[0], muts: variant[1]}
+              route: {
+                pango: variant[0],
+                muts: variant[1]
+              }
             })
           }
         } else {
@@ -365,7 +384,10 @@ export default {
                 label: `${variant[0]} lineage with ${variant[1]}`,
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
                 variantType: "Custom Lineages & Mutations",
-                route: { pango: variant[0], muts: variant[1] }
+                route: {
+                  pango: variant[0],
+                  muts: variant[1]
+                }
               })
             }
           })
@@ -393,7 +415,7 @@ export default {
     })
 
     this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
-      console.log(results)
+      // console.log(results)
       this.lineagesByDay = results.lineagesByDay;
       this.mostRecentLineages = results.mostRecentLineages;
       this.lineageDomain = results.lineageDomain;

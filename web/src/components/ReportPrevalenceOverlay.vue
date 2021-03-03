@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="report-prevalence">
+<div class="d-flex flex-column align-items-center w-100" id="location-report-prevalence">
   <div class="d-flex flex-column">
     <!-- LEGEND -->
     <div class="d-flex flex-column ml-5 mt-3" id="legend">
@@ -22,6 +22,13 @@
 
     <!-- SVGs -->
     <div class="d-flex flex-column align-items-start mt-2">
+      <!-- EPI TRACE -->
+      <svg :width="width" :height="height" class="epi-curve" ref="epi" name="title">
+        <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
+        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
+        <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+      </svg>
+
       <!-- TIME TRACE -->
       <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
         <defs>
@@ -49,7 +56,7 @@
 
       <!-- SEQUENCING HISTOGRAM -->
       <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="title">
-      <!-- <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :subtitle="countTitle"> -->
+        <!-- <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :subtitle="countTitle"> -->
         <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
         <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
@@ -106,6 +113,7 @@ export default Vue.extend({
   name: "ReportPrevalence",
   props: {
     data: Array,
+    epi: Array,
     mutationName: String,
     location: String
   },
@@ -127,36 +135,41 @@ export default Vue.extend({
       margin: {
         top: 10,
         bottom: 40,
-        left: 70,
+        left: 85,
         right: 70
       },
       heightCounts: 80,
-      lengthThreshold: 5,
+      lengthThreshold: 1,
       showDetected: null,
       detectedDisplayThresh: 50,
       CIColor: "#df4ab7",
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
-      xVariable: "dateTime",
+      xVariable: "date",
       yVariable: "proportion",
+      yEpiVariable: "confirmed_rolling",
       totalVariable: "total_count",
       // axes
       x: scaleTime(),
       y: scaleLinear(),
+      yEpi: scaleLinear(),
       yCounts: scaleLinear(),
       maxCounts: null,
       xBandwidth: 1,
       xAxis: null,
       yAxis: null,
+      yEpiAxis: null,
       yCountsAxisLeft: null,
       yCountsAxisRight: null,
       numXTicks: 5,
       numYTicks: 6,
       // methods
       line: null,
+      epiLine: null,
       area: null,
       // refs
       chart: null,
+      epiChart: null,
       counts: null
     }
   },
@@ -202,7 +215,7 @@ export default Vue.extend({
       }
 
       if (this.width < 600) {
-        this.numXTicks = 2;
+        this.numXTicks = 5;
         this.numYTicks = 4;
       } else {
         this.numXTicks = 6;
@@ -213,11 +226,17 @@ export default Vue.extend({
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.counts = select(this.$refs.counts);
+      this.epiChart = select(this.$refs.epiChart);
 
       // estimate
       this.line = line()
         .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.yVariable]));
+
+      // epi trace
+      this.epiLine = line()
+        .x(d => this.x(d[this.xVariable]))
+        .y(d => this.yEpi(d[this.yEpiVariable]));
 
       // confidence interval area method
       this.area = area()
@@ -228,8 +247,7 @@ export default Vue.extend({
     updateScales() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d[this.xVariable])));
-
+        .domain(extent(this.epi.map(d => d[this.xVariable])));
 
       const avgMax = max(this.data, d => d[this.yVariable]);
       const CIMax = max(this.data, d => d.proportion_ci_upper);
@@ -237,8 +255,13 @@ export default Vue.extend({
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0, (avgMax + CIMax) * 0.5])
+      // .domain([0, (avgMax + CIMax) * 0.5])
       // .domain([0, max(this.data, d => d[this.yVariable])])
+
+      this.yEpi = scaleLinear()
+        .range([this.height - this.margin.top - this.margin.bottom, 0])
+        .domain([0, max(this.epi, d => d[this.yEpiVariable])])
+        .nice();
 
       this.maxCounts = max(this.data, d => d[this.totalVariable]);
       this.yCounts = scaleLinear()
@@ -249,12 +272,19 @@ export default Vue.extend({
       this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / numDays;
 
       this.xAxis = axisBottom(this.x)
-        .ticks(this.numXTicks);
+        .ticks(this.numXTicks)
+        .tickSize(-this.height)
+        .tickSizeOuter(0);
+
       select(this.$refs.xAxis).call(this.xAxis);
+      select(this.$refs.xEpiAxis).call(this.xAxis);
 
       this.yAxis = axisLeft(this.y).tickSizeOuter(0)
         .ticks(this.numYTicks)
         .tickFormat(format(".0%"));
+
+      this.yEpiAxis = axisLeft(this.yEpi).tickSizeOuter(0)
+        .ticks(this.numYTicks);
 
       this.yCountsAxisLeft = axisLeft(this.yCounts).tickSizeOuter(0)
         .tickValues([0, this.maxCounts]);
@@ -263,42 +293,43 @@ export default Vue.extend({
         .tickValues([0, this.maxCounts]);
 
       select(this.$refs.yAxis).call(this.yAxis);
+      select(this.$refs.yEpiAxis).call(this.yEpiAxis);
       select(this.$refs.yCountsAxisLeft).call(this.yCountsAxisLeft);
       select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
     },
     tooltipOn() {
-      const ttipShift = 20;
-
-      // find closest date
-      const selectedX = this.x.invert(event.offsetX - this.margin.left);
-      const selectedDate = timeDay.round(selectedX);
-      const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
-
-      if (selected.length) {
-        // tooltip on
-        const ttip = select(this.$refs.tooltip_prevalence);
-
-        // edit text
-        ttip.select("h5").text(selected[0].date)
-
-        ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
-        ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
-        ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
-        ttip.select("#sequencing-count-rolling").text(`Rolling average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
-
-        // fix location
-        ttip
-          .style("left", `${event.clientX + ttipShift}px`)
-          .style("top", `${event.clientY + ttipShift}px`)
-          .style("display", "block");
-
-        // histogram off/on
-        selectAll(".raw-counts")
-          .style("opacity", 0.3);
-
-        selectAll(`#date${selected[0].date}`)
-          .style("opacity", 1);
-      }
+      // const ttipShift = 20;
+      //
+      // // find closest date
+      // const selectedX = this.x.invert(event.offsetX - this.margin.left);
+      // const selectedDate = timeDay.round(selectedX);
+      // const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
+      //
+      // if (selected.length) {
+      //   // tooltip on
+      //   const ttip = select(this.$refs.tooltip_prevalence);
+      //
+      //   // edit text
+      //   ttip.select("h5").text(selected[0].date)
+      //
+      //   ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
+      //   ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
+      //   ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
+      //   ttip.select("#sequencing-count-rolling").text(`Rolling average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
+      //
+      //   // fix location
+      //   ttip
+      //     .style("left", `${event.clientX + ttipShift}px`)
+      //     .style("top", `${event.clientY + ttipShift}px`)
+      //     .style("display", "block");
+      //
+      //   // histogram off/on
+      //   selectAll(".raw-counts")
+      //     .style("opacity", 0.3);
+      //
+      //   selectAll(`#date${selected[0].date}`)
+      //     .style("opacity", 1);
+      // }
     },
     tooltipOff() {
       select(this.$refs.tooltip_prevalence)
@@ -310,84 +341,109 @@ export default Vue.extend({
     updatePlot() {
       const t1 = transition().duration(2500);
 
-      if (this.data) {
+      if (this.data && this.epi) {
         this.updateScales();
 
-        let detected = this.data.filter(d => d.lineage_count);
-        this.showDetected = detected.length < this.detectedDisplayThresh;
-        if (!this.showDetected) {
-          detected = [];
-        }
-        const detectedSelector = this.counts
-          .selectAll(".detected")
-          .data(detected);
+        // let detected = this.data.filter(d => d.lineage_count);
+        // this.showDetected = detected.length < this.detectedDisplayThresh;
+        // if (!this.showDetected) {
+        //   detected = [];
+        // }
+        // const detectedSelector = this.counts
+        //   .selectAll(".detected")
+        //   .data(detected);
+        //
+        // detectedSelector.join(
+        //   enter => {
+        //     enter.append("text")
+        //       .attr("class", "detected")
+        //       .attr("id", d => `date${d.date}`)
+        //       .attr("x", d => this.x(d[this.xVariable]))
+        //       .attr("y", d => this.yCounts(d[this.totalVariable]))
+        //       .attr("dy", 3)
+        //       .style("dominant-baseline", "hanging")
+        //       .style("text-anchor", "middle")
+        //       .text("*")
+        //       .style("fill", "#980072");
+        //   },
+        //   update =>
+        //   update
+        //   .attr("class", "detected")
+        //   .attr("id", d => `date${d.date}`)
+        //   .attr("x", d => this.x(d[this.xVariable]))
+        //   .attr("y", d => this.yCounts(d[this.totalVariable])),
+        //   exit =>
+        //   exit.call(exit =>
+        //     exit
+        //     .transition(10)
+        //     .style("opacity", 1e-5)
+        //     .remove()
+        //   )
+        // )
+        //
+        // const countSelector = this.counts
+        //   .selectAll(".raw-counts")
+        //   .data(this.data);
+        // countSelector.join(
+        //   enter => {
+        //     enter.append("line")
+        //       .attr("class", "raw-counts")
+        //       .attr("id", d => `date${d.date}`)
+        //       .attr("x1", d => this.x(d[this.xVariable]))
+        //       .attr("x2", d => this.x(d[this.xVariable]))
+        //       .attr("y1", d => this.yCounts(0))
+        //       .attr("y2", d => this.yCounts(d[this.totalVariable]))
+        //       .style("stroke-width", this.xBandwidth)
+        //       .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5");
+        //   },
+        //   update =>
+        //   update
+        //   .attr("id", d => `date${d.date}`)
+        //   .attr("x1", d => this.x(d[this.xVariable]))
+        //   .attr("x2", d => this.x(d[this.xVariable]))
+        //   .attr("y1", d => this.yCounts(0))
+        //   .attr("y2", d => this.yCounts(d[this.totalVariable]))
+        //   .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5")
+        //   .style("stroke-width", this.xBandwidth),
+        //   exit =>
+        //   exit.call(exit =>
+        //     exit
+        //     .transition(10)
+        //     .style("opacity", 1e-5)
+        //     .remove()
+        //   )
+        // )
 
-        detectedSelector.join(
-          enter => {
-            enter.append("text")
-              .attr("class", "detected")
-              .attr("id", d => `date${d.date}`)
-              .attr("x", d => this.x(d[this.xVariable]))
-              .attr("y", d => this.yCounts(d[this.totalVariable]))
-              .attr("dy", 3)
-              .style("dominant-baseline", "hanging")
-              .style("text-anchor", "middle")
-              .text("*")
-              .style("fill", "#980072");
-          },
-          update =>
+        const epiSelector = this.epiChart
+          .selectAll(".epi-curve")
+          .data([this.epi]);
+
+        epiSelector.join(enter => {
+          enter.append("path")
+            .attr("class", "epi-curve")
+            .attr("d", this.epiLine)
+            .style("fill", "none")
+            .style("stroke", "#333333")
+            .style("stroke-width", 1.75);
+        },
+        update => {
           update
-          .attr("class", "detected")
-          .attr("id", d => `date${d.date}`)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.yCounts(d[this.totalVariable])),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
+          .transition()
+          .duration(750)
+          .attr("d", this.epiLine)
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .style("opacity", 1e-5)
+          .remove()
         )
-
-        const countSelector = this.counts
-          .selectAll(".raw-counts")
-          .data(this.data);
-        countSelector.join(
-          enter => {
-            enter.append("line")
-              .attr("class", "raw-counts")
-              .attr("id", d => `date${d.date}`)
-              .attr("x1", d => this.x(d[this.xVariable]))
-              .attr("x2", d => this.x(d[this.xVariable]))
-              .attr("y1", d => this.yCounts(0))
-              .attr("y2", d => this.yCounts(d[this.totalVariable]))
-              .style("stroke-width", this.xBandwidth)
-              .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5");
-          },
-          update =>
-          update
-          .attr("id", d => `date${d.date}`)
-          .attr("x1", d => this.x(d[this.xVariable]))
-          .attr("x2", d => this.x(d[this.xVariable]))
-          .attr("y1", d => this.yCounts(0))
-          .attr("y2", d => this.yCounts(d[this.totalVariable]))
-          .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5")
-          .style("stroke-width", this.xBandwidth),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
-
-
+      )
 
         const CISelector = this.chart
           .selectAll(".confidence-interval")
-          .data([this.data]);
+          .data(this.data);
 
         CISelector.join(
           enter => {
@@ -408,11 +464,10 @@ export default Vue.extend({
             .remove()
           )
         )
-        console.log(this.data)
 
         const pathSelector = this.chart
           .selectAll(".prevalence-line")
-          .data([this.data]);
+          .data(this.data);
 
         pathSelector.join(
           enter => {
@@ -469,29 +524,18 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.count-axis,
-.prevalence-axis {
-    font-size: 16px;
-    text {
-        fill: $grey-90;
+#location-report-prevalence {
+    & .count-axis,
+    & .prevalence-axis {
+        font-size: 16px;
+        text {
+            fill: $grey-90;
+        }
     }
 
-}
-.ci-legend {
-    width: 15px;
-    height: 15px;
-    opacity: 0.3;
-}
-.trace-legend {
-    stroke: $base-grey;
-    stroke-width: 2.5;
-}
-
-.purple {
-    color: #980072;
-}
-
-.lt-purple {
-    color: #af88a5;
+    & .axis--x line {
+        stroke: #555;
+        stroke-width: 0.25;
+    }
 }
 </style>

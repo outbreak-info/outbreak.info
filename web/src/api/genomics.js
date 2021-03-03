@@ -23,6 +23,8 @@ import {
   scaleOrdinal
 } from "d3";
 
+import { getEpiTraces } from "@/api/epi-traces.js";
+
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
 
@@ -523,7 +525,6 @@ export function getTemporalPrevalence(apiurl, location, locationType, queryStr, 
 }
 
 
-
 export function getCuratedMetadata(id) {
   return from(
     axios.get(curatedFile, {
@@ -917,6 +918,16 @@ export function getMutationCumPrevalence(apiurl, mutationObj, location, location
   )
 }
 
+export function getAllTemporalPrevalence(apiurl, mutationObj, location, locationType) {
+  return (getTemporalPrevalence(apiurl, location, locationType, mutationObj.query)).pipe(
+    map(results => {
+      console.log(results)
+      mutationObj["data"] = results;
+      return (mutationObj)
+    })
+  )
+}
+
 export function getLocationTable(apiurl, location, locationType, mutations) {
   store.state.genomics.locationLoading3 = true;
 
@@ -937,6 +948,23 @@ export function getLocationTable(apiurl, location, locationType, mutations) {
       return ( of ([]));
     }),
     finalize(() => store.state.genomics.locationLoading3 = false)
+  )
+}
+
+export function getAllTemporalPrevalences(apiurl, location, locationType, mutations) {
+  store.state.genomics.locationLoading4 = true;
+
+  return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, mutation, location, locationType))).pipe(
+    map(results => {
+      console.log(results)
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting location mapping data!", "color: orange");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading4 = false)
   )
 }
 
