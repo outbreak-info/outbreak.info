@@ -40,15 +40,15 @@
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
         <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        <g id="no-data" v-if="!data.length">
+        <!-- <g id="no-data" v-if="!data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
         </g>
         <g id="no-data" v-if="data.length < lengthThreshold && data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
           <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
             sequencing data</text>
-        </g>
-        <g id="weird-last values" :hidden="data.length < lengthThreshold">
+        </g> -->
+        <g id="weird-last values" :hidden="data && data.length < lengthThreshold">
           <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
@@ -145,9 +145,9 @@ export default Vue.extend({
       CIColor: "#df4ab7",
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
-      xVariable: "date",
+      xVariable: "dateTime",
       yVariable: "proportion",
-      yEpiVariable: "confirmed_rolling",
+      yEpiVariable: "dead_rolling",
       totalVariable: "total_count",
       // axes
       x: scaleTime(),
@@ -197,7 +197,7 @@ export default Vue.extend({
   methods: {
     setDims() {
       const mx = 0.7;
-      const my = 0.9;
+      const my = 0.4;
       const hwRatio = 0.525;
       const svgContainer = document.getElementById('report-prevalence');
 
@@ -215,7 +215,7 @@ export default Vue.extend({
       }
 
       if (this.width < 600) {
-        this.numXTicks = 5;
+        this.numXTicks = 6;
         this.numYTicks = 4;
       } else {
         this.numXTicks = 6;
@@ -235,7 +235,7 @@ export default Vue.extend({
 
       // epi trace
       this.epiLine = line()
-        .x(d => this.x(d[this.xVariable]))
+        .x(d => this.x(d["date"]))
         .y(d => this.yEpi(d[this.yEpiVariable]));
 
       // confidence interval area method
@@ -247,7 +247,8 @@ export default Vue.extend({
     updateScales() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.epi.map(d => d[this.xVariable])));
+        .domain(extent(this.epi.map(d => d["date"])));
+        // .domain(extent(this.epi.map(d => d[this.xVariable])));
 
       const avgMax = max(this.data, d => d[this.yVariable]);
       const CIMax = max(this.data, d => d.proportion_ci_upper);
@@ -255,8 +256,9 @@ export default Vue.extend({
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
+        .domain([0,0.7])
       // .domain([0, (avgMax + CIMax) * 0.5])
-      // .domain([0, max(this.data, d => d[this.yVariable])])
+      // .domain([0, max(this.data.flatMap(d => d[this.yVariable]), d=>d)])
 
       this.yEpi = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -340,6 +342,7 @@ export default Vue.extend({
     },
     updatePlot() {
       const t1 = transition().duration(2500);
+      console.log(this.data)
 
       if (this.data && this.epi) {
         this.updateScales();

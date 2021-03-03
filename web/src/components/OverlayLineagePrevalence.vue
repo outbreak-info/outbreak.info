@@ -31,7 +31,7 @@ export default {
   },
   data() {
     return({
-      selectedMutations: [{"label":"B.1.526","query":"pangolin_lineage=B.1.526","variantType":"Variant of Interest","route":{"pango":"B.1.526"}},{"label":"B.1.429","query":"pangolin_lineage=B.1.429","variantType":"Variant of Interest","route":{"pango":"B.1.429"}},{"label":"B.1.1.7","query":"pangolin_lineage=B.1.1.7","variantType":"Variant of Concern","route":{"pango":"B.1.1.7"}}],
+      selectedMutations: [{"query":"mutations=S:S13I,S:L452R"}],
       prevalences: null,
       epi: null
     })
@@ -45,7 +45,7 @@ export default {
       // console.log(this.selectedMutations);
     },
     updateEpiData() {
-      this.epiSubscription = getEpiTraces(this.$apiurl, ["USA"], "location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling").subscribe(epi => {
+      this.epiSubscription = getEpiTraces(this.$apiurl, ["USA_US-CA"], "location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling").subscribe(epi => {
         console.log(epi)
         this.epi = epi[0].value;
       })
