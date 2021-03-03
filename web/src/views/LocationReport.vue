@@ -266,16 +266,16 @@ export default {
     variant: Array
   },
   components: {
-    ReportLogos: () => import("@/components/ReportLogos.vue"),
-    ReportMethodology: () => import("@/components/ReportMethodology.vue"),
-    Warning: () => import("@/components/Warning.vue"),
-    ReportAcknowledgements: () => import("@/components/ReportAcknowledgements.vue"),
-    ShareReport: () => import("@/components/ShareReport.vue"),
-    ReportChoropleth: () => import("@/components/ReportChoropleth.vue"),
-    LineagesByLocation: () => import("@/components/LineagesByLocation.vue"),
-    ReportStackedBarGraph: () => import("@/components/ReportStackedBarGraph.vue"),
-    HorizontalCategoricalLegend: () => import("@/components/HorizontalCategoricalLegend.vue"),
-    LocationTable: () => import("@/components/LocationTable.vue"),
+    ReportLogos: () => import(/* webpackPrefetch: true */ "@/components/ReportLogos.vue"),
+    ReportMethodology: () => import(/* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
+    Warning: () => import(/* webpackPrefetch: true */ "@/components/Warning.vue"),
+    ReportAcknowledgements: () => import(/* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
+    ShareReport: () => import(/* webpackPrefetch: true */ "@/components/ShareReport.vue"),
+    ReportChoropleth: () => import(/* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
+    LineagesByLocation: () => import(/* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
+    ReportStackedBarGraph: () => import(/* webpackPrefetch: true */ "@/components/ReportStackedBarGraph.vue"),
+    HorizontalCategoricalLegend: () => import(/* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
+    LocationTable: () => import(/* webpackPrefetch: true */ "@/components/LocationTable.vue"),
     FontAwesomeIcon
   },
   watch: {
