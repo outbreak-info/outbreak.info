@@ -23,10 +23,8 @@ import {
   scaleOrdinal
 } from "d3";
 
-import {
-  orderBy,
-  uniq
-} from "lodash";
+import orderBy from "lodash/orderBy";
+import uniq from "lodash/uniq";
 
 
 const parseDate = timeParse("%Y-%m-%d");

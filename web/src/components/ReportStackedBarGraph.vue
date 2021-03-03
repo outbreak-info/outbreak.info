@@ -13,9 +13,7 @@
 <script lang="js">
 import Vue from "vue";
 
-import {
-  uniq
-} from "lodash";
+import uniq from "lodash/uniq";
 
 import {
   select,

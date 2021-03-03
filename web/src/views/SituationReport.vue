@@ -318,10 +318,8 @@
 <script>
 import Vue from "vue";
 
-import {
-  uniq,
-  isEqual
-} from "lodash";
+import uniq from "lodash/uniq";
+import isEqual from "lodash/isEqual";
 
 import ReportLogos from "@/components/ReportLogos.vue";
 import ReportMethodology from "@/components/ReportMethodology.vue";

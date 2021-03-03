@@ -121,9 +121,8 @@ import {
 } from "d3";
 
 import chroma from "chroma-js";
-import {
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+
 
 import {
   interpolateYlGnBu
