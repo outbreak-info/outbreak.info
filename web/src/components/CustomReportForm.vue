@@ -258,7 +258,7 @@ export default Vue.extend({
       this.selectedLineage = selected ? selected.name : null;
     },
     changeBulk() {
-      const bulk = this.selectedBulkString.split(",").map(d => d.toUpperCase().trim());
+      const bulk = this.selectedBulkString.split(",").map(d => d.trim());
       this.badBulkSubstitution = false;
       this.badBulkDeletion = false;
       this.badBulkGene = false;
