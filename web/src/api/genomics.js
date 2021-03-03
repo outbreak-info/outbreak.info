@@ -751,6 +751,8 @@ export function getCumPrevalenceAllLineages(apiurl, location, locationType, othe
     pluck("data", "results"),
     map(results => {
       let wideData = {};
+      results.sort((a,b) => b.prevalence - a.prevalence);
+      
       results.forEach(d => {
         wideData[capitalize(d.lineage)] = d.prevalence
       })
