@@ -169,7 +169,7 @@
                 <th>
                 </th>
                 <th class="text-center padded border-bottom border-secondary" colspan="2">
-                  when found
+                  when found<sup>**</sup>
                 </th>
               </tr>
               <tr class="border-bottom">
@@ -228,6 +228,11 @@
               </tr>
             </tbody>
           </table>
+
+          <div class="line-height-1">
+            <small><em><sup>*</sup> Apparent cumulative prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
+            <small class="ml-2"><em><sup>**</sup> Dates are based on the sample collection date</em> </small>
+          </div>
         </div>
       </section>
 
@@ -236,7 +241,7 @@
         <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
         <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
         <div class="d-flex flex-wrap">
-          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25">
+          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-2">
             <div class="d-flex justify-content-between align-items-center mx-4">
               <h5>{{ choro.key }}</h5>
               <small v-if="choro.variantType.includes('Variant')"   :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
