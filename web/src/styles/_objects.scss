@@ -237,3 +237,8 @@ button.chip.to-add:hover {
     color: $website-color;
     border-color: $website-color;
 }
+
+.custom {
+    background: lighten($primary-color, 70%);
+    color: $secondary-color;
+}

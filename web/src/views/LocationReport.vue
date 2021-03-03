@@ -177,7 +177,7 @@
                   total
                 </th>
                 <th class="text-center padded">
-                  apparent prevalence<sup>*</sup>
+                  cumulative prevalence<sup>*</sup>
                 </th>
                 <th>
 
@@ -196,7 +196,7 @@
 
                 </td>
               </tr>
-              <tr class="border-top border-bottom" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
+              <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
                 <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
                   {{lineageGroup.key}}
                 </td>
@@ -205,10 +205,10 @@
               <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
                 <td>
                   <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { pango: lineage.pangolin_lineage, division: [location]}}">
-                    {{ lineage.pangolin_lineage }}
+                    {{ lineage.label }}
                   </router-link>
                   <router-link v-else :to="{name: 'MutationReport', query:{ pango: lineage.pangolin_lineage, country: [location] }}">
-                    {{ lineage.pangolin_lineage }}
+                    {{ lineage.label }}
                   </router-link>
                 </td>
                 <td>
@@ -317,7 +317,8 @@ import {
 import {
   getLocationReportData,
   getLocationMaps,
-  getBasicLocationReportData
+  getBasicLocationReportData,
+  getLocationTable
 } from "@/api/genomics.js";
 
 export default {
@@ -350,8 +351,8 @@ export default {
   },
   watch: {
     selectedMutations() {
-      console.log("MAPS")
       this.updateMaps();
+      this.updateTable();
     }
   },
   computed: {
@@ -417,7 +418,8 @@ export default {
           if (variant.length == 2) {
             tracked.push({
               label: `${variant[0]} lineage with ${variant[1]}`,
-              query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`
+              query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
+              variantType: "Custom Lineages & Mutations"
             })
           }
         } else {
@@ -426,7 +428,8 @@ export default {
             if (variant.length == 2) {
               tracked.push({
                 label: `${variant[0]} lineage with ${variant[1]}`,
-                query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`
+                query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
+                variantType: "Custom Lineages & Mutations"
               })
             }
           })
@@ -448,7 +451,6 @@ export default {
     })
 
     this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType).subscribe(results => {
-      console.log(results)
       this.dateUpdated = results.dateUpdated.dateUpdated;
       this.lastUpdated = results.dateUpdated.lastUpdated;
       this.totalSequences = results.total;
@@ -458,7 +460,6 @@ export default {
     this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
       console.log(results)
       this.lineagesByDay = results.lineagesByDay;
-      this.lineageTable = results.lineageTable;
       this.mostRecentLineages = results.mostRecentLineages;
       this.lineageDomain = results.lineageDomain;
       this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
@@ -468,6 +469,11 @@ export default {
     updateMaps() {
       this.choroSubscription = getLocationMaps(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations, this.recentThresh).subscribe(results => {
         this.geoData = results;
+      })
+    },
+    updateTable() {
+      this.tableSubscription = getLocationTable(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations).subscribe(results => {
+        this.lineageTable = results;
       })
     }
   },
@@ -480,6 +486,7 @@ export default {
       basicSubscription: null,
       reportSubscription: null,
       choroSubscription: null,
+      tableSubscription: null,
       // variables
       recentThreshold: 28,
       otherThresh: 0.03,
@@ -565,6 +572,10 @@ export default {
     if (this.choroSubscription) {
       this.choroSubscription.unsubscribe();
     }
+
+    if (this.tableSubscription) {
+      this.tableSubscription.unsubscribe();
+    }
   }
 }
 </script>
@@ -592,6 +603,7 @@ th.padded {
 }
 
 .checkbook td,
+.custom td,
 .padding,
 .voc,
 .voi {

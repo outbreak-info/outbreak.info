@@ -857,9 +857,9 @@ export function getBasicLocationReportData(apiurl, location, locationType) {
     map(([dateUpdated, curated, total]) => {
       const filtered = curated.filter(d => d.key == "lineage");
       let curatedLineages;
-      if(filtered.length === 1){
+      if (filtered.length === 1) {
         curatedLineages = filtered[0].values.map(d => {
-          return({
+          return ({
             label: d.mutation_name,
             query: `pangolin_lineage=${d.mutation_name}`,
             variantType: d.variantType
@@ -885,8 +885,7 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
 
   return forkJoin([
     getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
-    getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
-    getLocationTable(apiurl, location, locationType)
+    getMostRecentLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays)
   ]).pipe(
     map(([lineagesByDay, mostRecentLineages, lineageTable]) => {
       let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
@@ -896,7 +895,6 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
       return ({
         lineagesByDay: lineagesByDay,
         mostRecentLineages: mostRecentLineages,
-        lineageTable: lineageTable,
         lineageDomain: lineageDomain
       })
     }),
@@ -912,7 +910,7 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
 export function getLocationMaps(apiurl, location, locationType, mutations, ndays) {
   store.state.admin.reportloading = true;
 
-  return forkJoin(... mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, locationType, ndays))).pipe(
+  return forkJoin(...mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, locationType, ndays))).pipe(
     map(results => {
       return (results)
     }),
@@ -925,45 +923,35 @@ export function getLocationMaps(apiurl, location, locationType, mutations, ndays
   )
 }
 
-export function getLineageCumPrevalence(apiurl, lineageObj, location, locationType) {
-  const queryStr = `pangolin_lineage=${lineageObj.mutation_name}`;
-
-  return (getCumPrevalence(apiurl, queryStr, location, locationType)).pipe(
+export function getMutationCumPrevalence(apiurl, mutationObj, location, locationType) {
+  return (getCumPrevalence(apiurl, mutationObj.query, location, locationType)).pipe(
     map(results => {
       return ({
         ...results,
-        ...lineageObj
+        ...mutationObj
       })
     })
   )
 }
 
-export function getLocationTable(apiurl, location, locationType) {
-  return getCuratedList().pipe(
-    mergeMap(list => {
-      const curatedLineagesArr = list.filter(d => d.key == "lineage");
-      if (curatedLineagesArr.length === 1) {
-        const curatedLineages = curatedLineagesArr[0].values;
-        return forkJoin(...curatedLineages.map(lineage => getLineageCumPrevalence(apiurl, lineage, location, locationType))).pipe(
-          map(results => {
-            results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);
+export function getLocationTable(apiurl, location, locationType, mutations) {
+  return forkJoin(... mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location, locationType))).pipe(
+    map(results => {
+      console.log(results)
+      results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);
 
-            const nestedResults = nest()
-              .key(d => d.variantType)
-              .entries(results);
+      const nestedResults = nest()
+        .key(d => d.variantType)
+        .entries(results);
 
-            return (nestedResults)
-          })
-        )
-      }
+      return (nestedResults)
     })
   )
-
 }
 
 export function getSequenceCount(apiurl, location = null, locationType = null) {
   let url = `${apiurl}sequence-count`;
-  if(location && location) {
+  if (location && location) {
     url += `?${locationType}=${location}`
   }
   const timestamp = Math.round(new Date().getTime() / 36e5);
