@@ -285,7 +285,11 @@ export default {
     }
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors", "reportloading"]),
+    ...mapState("admin", ["mutationAuthors"]),
+    ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5"]),
+    loading() {
+      return (this.locationLoading1 || this.locationLoading2 || this.locationLoading3 || this.locationLoading4 || this.locationLoading5)
+    },
     smallScreen() {
       return (window.innerSize < 500)
     },
@@ -432,7 +436,7 @@ export default {
       lineageDomain: [],
       totalSequences: null,
       curatedLineages: [],
-      geoData: [],
+      geoData: null,
       // selections
       // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html

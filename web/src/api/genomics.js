@@ -752,7 +752,7 @@ export function getCumPrevalenceAllLineages(apiurl, location, locationType, othe
     map(results => {
       let wideData = {};
       results.sort((a,b) => b.prevalence - a.prevalence);
-      
+
       results.forEach(d => {
         wideData[capitalize(d.lineage)] = d.prevalence
       })
@@ -828,6 +828,7 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
 
 // LOCATION REPORTS
 export function getBasicLocationReportData(apiurl, location, locationType) {
+   store.state.genomics.locationLoading1 = true
   return forkJoin([
     getDateUpdated(apiurl),
     getCuratedList(),
@@ -859,11 +860,11 @@ export function getBasicLocationReportData(apiurl, location, locationType) {
       console.log(e);
       return ( of ([]));
     }),
-    finalize(() => store.state.admin.reportloading = false)
+    finalize(() => store.state.genomics.locationLoading1 = false)
   )
 }
 export function getLocationReportData(apiurl, location, locationType, mutations, pango_lineages, other_threshold, nday_threshold, ndays) {
-  store.state.admin.reportloading = true;
+  store.state.genomics.locationLoading2 = true;
 
   return forkJoin([
     getPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays),
@@ -885,12 +886,12 @@ export function getLocationReportData(apiurl, location, locationType, mutations,
       console.log(e);
       return ( of ([]));
     }),
-    finalize(() => store.state.admin.reportloading = false)
+    finalize(() => store.state.genomics.locationLoading2 = false)
   )
 }
 
 export function getLocationMaps(apiurl, location, locationType, mutations, ndays) {
-  store.state.admin.reportloading = true;
+  store.state.genomics.locationLoading5 = true;
 
   return forkJoin(...mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, locationType, ndays))).pipe(
     map(results => {
@@ -901,7 +902,7 @@ export function getLocationMaps(apiurl, location, locationType, mutations, ndays
       console.log(e);
       return ( of ([]));
     }),
-    finalize(() => store.state.admin.reportloading = false)
+    finalize(() => store.state.genomics.locationLoading5 = false)
   )
 }
 
@@ -917,6 +918,8 @@ export function getMutationCumPrevalence(apiurl, mutationObj, location, location
 }
 
 export function getLocationTable(apiurl, location, locationType, mutations) {
+  store.state.genomics.locationLoading3 = true;
+
   return forkJoin(...mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location, locationType))).pipe(
     map(results => {
       console.log(results)
@@ -927,7 +930,13 @@ export function getLocationTable(apiurl, location, locationType, mutations) {
         .entries(results);
 
       return (nestedResults)
-    })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting location mapping data!", "color: orange");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading3 = false)
   )
 }
 
