@@ -147,7 +147,7 @@ export default Vue.extend({
       // variables
       xVariable: "dateTime",
       yVariable: "proportion",
-      yEpiVariable: "dead_rolling",
+      yEpiVariable: "confirmed_rolling",
       totalVariable: "total_count",
       // axes
       x: scaleTime(),
@@ -256,7 +256,7 @@ export default Vue.extend({
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0,0.7])
+        .domain([0,0.9])
       // .domain([0, (avgMax + CIMax) * 0.5])
       // .domain([0, max(this.data.flatMap(d => d[this.yVariable]), d=>d)])
 

@@ -31,7 +31,7 @@ export default {
   },
   data() {
     return({
-      selectedMutations: [{"query":"mutations=S:S13I,S:L452R"}],
+      selectedMutations: [{"query":"pangolin_lineage=B.1.1.7"}],
       prevalences: null,
       epi: null
     })
@@ -45,7 +45,7 @@ export default {
       // console.log(this.selectedMutations);
     },
     updateEpiData() {
-      this.epiSubscription = getEpiTraces(this.$apiurl, ["USA_US-CA"], "location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling").subscribe(epi => {
+      this.epiSubscription = getEpiTraces(this.$apiurl, ["GBR"], "location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling").subscribe(epi => {
         console.log(epi)
         this.epi = epi[0].value;
       })
