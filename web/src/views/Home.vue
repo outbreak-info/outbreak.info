@@ -46,12 +46,17 @@
   <!-- SEARCH  -->
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
     <div class="row m-0 w-100 d-flex justify-content-center">
-      <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
-        <h3 class="my-3">
-          Resources</h3>
+      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
+        <div class="mb-3">
+          <router-link :to="{name: 'Resource Summary'}" class="text-light">
+            <h3 class="my-3">
+              Resources</h3>
+          </router-link>
 
-        <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
-        <div class="mb-4">
+          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
+        </div>
+
+        <div>
           <form autocomplete="off" class="w-100">
             <div class="input-group">
               <div class="input-group-prepend">
@@ -77,15 +82,59 @@
         </div>
       </div>
 
+      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro">
+        <div  class="mb-3">
+          <router-link :to="{name: 'SituationReports'}" class="text-light">
+            <h3 class="my-3">Variants</h3>
+          </router-link>
+
+          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Explore SARS-CoV-2 lineage, variant, and mutation situation reports</div>
+        </div>
+
+        <div class="">
+          <form autocomplete="off" class="w-100">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
+              </div>
+              <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Search PANGO lineage" />
+            </div>
+          </form>
+          <small id="sBar-example" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
+            <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'United Kingdom', selectedType: 'country'}} " class="text-light">B.1.1.7
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.526', muts: 'S:E484K', selected:'New York', selectedType: 'division'}} " class="text-light">B.1.526 with S:E484K
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', query: { muts: ['S:S13I','S:L452R'], selected:'California', selectedType: 'division'}} " class="text-light">S:S13I & S:L452R
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+          </small>
+        </div>
+      </div>
+
 
       <!-- EPI INTRO -->
-      <div class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column  justify-content-between epi-intro">
-        <h3 class="my-3">Epidemiology</h3>
+      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro">
+        <div class="mb-3">
+          <router-link :to="{name: 'Epidemiology'}" class="text-light">
+            <h3 class="my-3">Epidemiology</h3>
+          </router-link>
 
-        <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
-          metropolitan area, or U.S. county</div>
+          <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
+            metropolitan area, or U.S. county</div>
+        </div>
 
-        <div class="mb-4">
+        <div>
           <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
           <small id="sBar-example" class="form-text d-block text-left ml-5">
             <span class="mr-2">Try:</span>
@@ -146,31 +195,31 @@
     </div>
   </section>
 
-<!-- GENOMICS -->
-<section id="epi-examples" class="container my-3">
-  <h3>View SARS-CoV-2 Mutation Reports</h3>
+  <!-- GENOMICS -->
+  <section id="epi-examples" class="container my-3">
+    <h3>View SARS-CoV-2 Mutation Reports</h3>
     <div class="row">
-  <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-    <div class="w-100 p-3 card">
-      <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-        <h5 class="text-uppercase">View curated reports</h5>
-        <div class="h-100 d-flex align-items-center">
-          <img src="@/assets/home/b117_sitrep.png" alt="Outbreak.info schema" class="w-100" />
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">View curated reports</h5>
+            <div class="h-100 d-flex align-items-center">
+              <img src="@/assets/home/b117_sitrep.png" alt="Outbreak.info schema" class="w-100" />
+            </div>
+          </router-link>
         </div>
-      </router-link>
-    </div>
-  </div>
+      </div>
 
-  <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-    <div class="w-100 p-3 card">
-        <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-        <h5 class="text-uppercase">Create custom report</h5>
-      </router-link>
-        <CustomReportForm :minimalistic="true"/>
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Create custom report</h5>
+          </router-link>
+          <CustomReportForm :minimalistic="true" />
+        </div>
+      </div>
     </div>
-  </div>
-  </div>
-</section>
+  </section>
 
   <!-- EPI EXAMPLES -->
   <section id="epi-examples" class="container my-3">
@@ -296,6 +345,7 @@
 // import Vue from "vue";
 import SearchBar from "@/components/SearchBar.vue";
 import CustomReportForm from "@/components/CustomReportForm";
+import TypeaheadSelect from "@/components/TypeaheadSelect";
 import GlanceSummary from "@/components/GlanceSummary";
 import {
   getGlanceSummary
@@ -322,13 +372,18 @@ import {
 
 library.add(faSpinner, faAngleDoubleRight, faSearch);
 
+import {
+  findPangolin
+} from "@/api/genomics.js";
+
 export default {
   name: "Home",
   components: {
     SearchBar,
     GlanceSummary,
     FontAwesomeIcon,
-    CustomReportForm
+    CustomReportForm,
+    TypeaheadSelect
   },
   data() {
     return {
@@ -336,7 +391,8 @@ export default {
       glanceLocations: [],
       glanceSummaries: [],
       summaryDeletable: false,
-      dataSubscription: null
+      dataSubscription: null,
+      queryPangolin: null,
     };
   },
   computed: {
@@ -348,6 +404,14 @@ export default {
         name: "Resources",
         query: {
           q: this.searchQuery
+        }
+      });
+    },
+    updatePangolin(selected) {
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          pango: selected.name
         }
       });
     },
@@ -396,6 +460,8 @@ export default {
     const locations = Vue.$cookies.get("custom_locations");
     this.glanceLocations = locations ? locations.split(",") : [];
 
+    this.queryPangolin = findPangolin;
+
     this.dataSubscription = getGlanceSummary(
       this.$apiurl,
       this.glanceLocations
@@ -413,13 +479,21 @@ export default {
     background: $primary-color;
 }
 
-.epi-intro {
+.variants-intro {
     background: $secondary-color;
+    border-left: 3px solid white;
+}
+
+.epi-intro {
+    background: #507192;
     border-left: 3px solid white;
 }
 
 @media (max-width:767px) {
     .epi-intro {
+        border: none !important;
+    }
+    .variants-intro {
         border: none !important;
     }
 }
