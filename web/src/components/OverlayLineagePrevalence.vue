@@ -7,7 +7,7 @@
         <div class="b-input"></div>
       </label>
     </div>
-    <ReportPrevalenceOverlay :data="prevalences" :epi="epi"/>
+    <ReportPrevalenceOverlay :data="prevalences" :epi="epi" v-if="prevalences && epi"/>
 
   </div>
 </template>
