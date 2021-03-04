@@ -342,7 +342,6 @@ export default Vue.extend({
     },
     updatePlot() {
       const t1 = transition().duration(2500);
-      console.log(this.data)
 
       if (this.data && this.epi) {
         this.updateScales();
