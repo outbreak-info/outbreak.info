@@ -968,8 +968,11 @@ export function getAllTemporalPrevalences(apiurl, location, locationType, mutati
   )
 }
 
-export function getSequenceCount(apiurl, location = null, locationType = null) {
+export function getSequenceCount(apiurl, location = null, locationType = null, global = false) {
   let url = `${apiurl}sequence-count`;
+  if(global) {
+    url += "?cumulative=true";
+  }
   if (location && location) {
     url += `?${locationType}=${location}`
   }
@@ -981,7 +984,11 @@ export function getSequenceCount(apiurl, location = null, locationType = null) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      return (results[0].total_count.toLocaleString())
+      if(results.length == 1) {
+       return (results[0].total_count.toLocaleString())
+     } else if(typeof(results) == "object") {
+       return(results.total_count.toLocaleString())
+     }
     }),
     catchError(e => {
       console.log("%c Error in getting total sequences for the location!", "color: red");

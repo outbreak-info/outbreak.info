@@ -144,7 +144,7 @@ export default {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
     })
-    this.totalSubscription = getSequenceCount(this.$genomicsurl).subscribe(total => {
+    this.totalSubscription = getSequenceCount(this.$genomicsurl, null, null, true).subscribe(total => {
       this.total = total;
     })
   },
