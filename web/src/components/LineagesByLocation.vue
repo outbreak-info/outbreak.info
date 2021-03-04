@@ -231,9 +231,8 @@ export default Vue.extend({
         const newMin = this.x.invert(selection[0]);
         const newMax = this.x.invert(selection[1]);
         this.x = this.x
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax])
-          .clamp(true);
+          .domain([newMin, newMax]);
+          
         // reset the axis
         this.xAxis = axisBottom(this.x)
           .ticks(this.numXTicks);
