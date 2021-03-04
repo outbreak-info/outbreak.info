@@ -1,7 +1,7 @@
 <template>
 <div class="w-100">
   <div class="dropdown">
-    <input :class="{ 'form-control': isStandalone }" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
+    <input :class="{ 'form-control': isStandalone }" :disabled="disabled" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
     <div class="dropdown-menu" :class="{'show':isOpen}" style="width:100%">
       <a v-for="(suggestion, idx) in matches" :key="idx" class="dropdown-item" :class="{'active': isActive(idx)}" @click="suggestionClick(idx)">
         {{ suggestion.name }} ({{ suggestion.total_count.toLocaleString() }} {{ totalLabel }})</a>
@@ -32,6 +32,10 @@ export default {
     isStandalone: {
       type: Boolean,
       default: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
