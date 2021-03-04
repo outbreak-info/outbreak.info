@@ -12,14 +12,14 @@
         <div class="text-left d-flex align-items-center my-3 border-top border-bottom py-2 px-2">
           Enabled by data from
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-            <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
+            <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
           </a>
         </div>
       </div>
 
-      <div class="w-75 mt-2 text-left">The <a href="https://cvisb.org/" rel="noreferrer" target="_blank">CViSB Team</a> at Scripps Research is tracking the prevalence of several lineages or sets of mutations within the
-        SARS-CoV-2 (hCoV-19) genome. We will regularly produce a report describing the current situation, focusing on the United States.</div>
-
+      <div class="w-75 mt-2 text-left">The <a href="https://cvisb.org/" rel="noreferrer" target="_blank">CViSB Team</a> at Scripps Research is tracking the prevalence of SARS-CoV-2 (hCoV-19) variants with lineage and mutation reports, updated daily.
+        Access curated reports below, or create your own <a href="#custom-report">custom reports</a> with any combination of lineages and/or mutations.
+      </div>
       <div class="d-flex align-items-center justify-content-between my-2">
         <div id="date-updated" class="mr-2">
           <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
@@ -43,7 +43,7 @@
   </div>
   <section id="report-list" class="text-left">
     <!-- lineage or mutation -->
-    <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" id="report-group">
+    <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" :id="group.key.replace(' + ', '_')">
       <h2 class="mb-0">{{ group.key | capitalize }} Reports</h2>
       <small class="text-highlight" v-html="getReportType(group.key)"></small>
 
