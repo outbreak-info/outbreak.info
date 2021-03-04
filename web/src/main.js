@@ -29,7 +29,7 @@ Vue.use(
     pageTrackerSkipSamePath: false,
     pageTrackerTemplate(to) {
       return {
-        page_title: to.name,
+        page_title: document.title ? document.title : to.name,
         page_path: to.fullPath,
         page_location: window.location.href,
       };

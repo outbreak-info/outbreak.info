@@ -274,6 +274,11 @@ export default {
   components: {
     Logos
   },
+  metaInfo() {
+    return {
+      title: "outbreak.info",
+    }
+  },
   data() {
     return {
       year: ""

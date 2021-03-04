@@ -408,6 +408,11 @@ export default {
       default: "country"
     }
   },
+  metaInfo() {
+    return {
+      title: this.title,
+    }
+  },
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
     smallScreen() {
