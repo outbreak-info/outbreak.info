@@ -21,10 +21,13 @@
         SARS-CoV-2 (hCoV-19) genome. We will regularly produce a report describing the current situation, focusing on the United States.</div>
 
       <div class="d-flex align-items-center justify-content-between my-2">
-        <div id="date-updated" class="mr-5">
+        <div id="date-updated" class="mr-2">
           <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
             <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
           </small>
+        </div>
+        <div id="sequence-count" class="ml-2 mr-5 text-highlight" v-if="total">
+          {{total}} sequences
         </div>
 
         <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
@@ -103,7 +106,7 @@ import {
 } from "vuex";
 
 import {
-  getReportList
+  getReportList, getSequenceCount
 } from "@/api/genomics.js";
 
 export default {
@@ -130,7 +133,9 @@ export default {
     return {
       // reminder: must be the raw verison of the file
       curatedSubscription: null,
+      totalSubscription: null,
       lastUpdated: null,
+      total: null,
       reports: null
     }
   },
@@ -139,10 +144,17 @@ export default {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
     })
+    this.totalSubscription = getSequenceCount(this.$genomicsurl).subscribe(total => {
+      this.total = total;
+    })
   },
   beforeDestroyed() {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
+    }
+
+    if (this.totalSubscription) {
+      this.totalSubscription.unsubscribe();
     }
   }
 }
