@@ -5,8 +5,6 @@
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
-  <OverlayLineagePrevalence :options="selectedMutations" :location="location" :locationType="selectedLocationType"/>
-
   <!-- CHANGE LOCATION MODAL -->
   <!-- <div id="change-locations-modal" class="modal fade">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -167,13 +165,14 @@
       </section>
 
       <!-- TRACKED LINEAGES PREVALENCE -->
-      <section id="lineages-over-time" class="my-5">
+      <section id="lineages-over-time" class="my-5" py-3 border-top>
         <div class="d-flex align-items-center justify-content-center">
           <h3 class="mr-5">Tracked lineages over time</h3>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
+        <OverlayLineagePrevalence :options="selectedMutations" :location="location" :locationType="selectedLocationType"/>
       </section>
 
       <!-- GEOGRAPHIC CHOROPLETHS -->
