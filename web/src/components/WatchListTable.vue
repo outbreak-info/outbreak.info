@@ -40,7 +40,7 @@
             <router-link :to="{name: 'MutationReport', query: {muts: row.mutation_str}}">{{row.mutation_str}}
               </router-link>
           </td>
-          <td class="d-flex flex-wrap">
+          <td class="d-flex flex-wrap no-underline">
             <router-link :to="{name: 'MutationReport', query: {pango: lineage}}" v-for="(lineage, lIdx) in row.lineages" :key="lIdx">
               <button class="btn chip btn-outline-secondary bg-white">{{lineage}}</button>
             </router-link>
