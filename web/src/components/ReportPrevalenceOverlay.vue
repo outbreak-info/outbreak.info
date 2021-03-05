@@ -8,20 +8,15 @@
         <svg width="15" height="15" class="mr-2">
           <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
         </svg>
-        <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
+
       </div>
 
-      <!-- legend: confidence interval -->
-      <div class="d-flex">
-        <div class="ci-legend mr-2" :style="{background: CIColor}">
 
-        </div>
-        <small class="text-muted">95% confidence interval</small>
-      </div>
     </div>
 
     <!-- SVGs -->
     <div class="d-flex flex-column align-items-start mt-2">
+      <h5>Cases over time</h5>
       <!-- EPI TRACE -->
       <svg :width="width" :height="height" class="epi-curve" ref="epi" name="title">
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
@@ -30,6 +25,15 @@
       </svg>
 
       <!-- TIME TRACE -->
+      <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
+      <!-- legend: confidence interval -->
+      <div class="d-flex">
+        <div class="ci-legend mr-2" :style="{background: CIColor}">
+
+        </div>
+        <small class="text-muted">95% confidence interval</small>
+      </div>
+
       <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
         <defs>
           <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
@@ -256,7 +260,7 @@ export default Vue.extend({
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0,0.9])
+        .domain([0,0.55])
       // .domain([0, (avgMax + CIMax) * 0.5])
       // .domain([0, max(this.data.flatMap(d => d[this.yVariable]), d=>d)])
 
