@@ -11,7 +11,7 @@
     </div>
 
     <div class="my-2">
-      <img src="@/assets/map_stylized.svg" alt="map" class="bg-image" />
+      <img src="@/assets/growth-fit.svg" alt="growth curve" class="bg-image" />
       <div class="d-flex flex-column justify-content-center align-items-center">
         <div class="d-flex w-75 justify-content-around align-items-center">
           <div class="text-left d-flex align-items-center my-4 border-top border-bottom py-2 px-2">
@@ -23,7 +23,7 @@
         </div>
 
         <div class="w-75 mt-2 text-left">The <a href="https://cvisb.org/" rel="noreferrer" target="_blank">CViSB Team</a> at Scripps Research is estimating the growth rate of SARS-CoV-2 (hCoV-19) mutants to flag mutations worth watching.
-          Unlike the <router-link :to="{name: SituationReports}">Variant & Mutant Tracker</router-link> or  <router-link :to="{name: LocationReports}">Location Tracker</router-link>, these reports are updated <b>weekly</b>.
+          Unlike the <router-link :to="{name: 'SituationReports'}">Variant & Mutant Tracker</router-link> or  <router-link :to="{name: 'LocationReports'}">Location Tracker</router-link>, these reports are updated <b>weekly</b>.
           Choose a country or division (state) to create a custom report.
         </div>
         <div class="d-flex align-items-center justify-content-between my-3">
@@ -48,8 +48,9 @@
 
     </div>
     <section id="report-list" class="text-left">
-      <CustomLocationForm :curated="curated" :includeMutations="false" />
-      <WatchListTable :location="location"/>
+      <CustomLocationForm :includeMutations="false" />
+        <WatchListTable :location="location"/>
+
     </section>
 
     <ReportAcknowledgements />
@@ -108,37 +109,21 @@ export default {
   data() {
     return {
       // reminder: must be the raw verison of the file
-      curatedSubscription: null,
       totalSubscription: null,
       lastUpdated: null,
       total: null,
-      location: "the world"
+      location: "New York"
     }
   },
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"])
   },
   mounted() {
-    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
-      this.lastUpdated = results.dateUpdated;
-      const lineages = results.md.filter(d => d.key == "lineage");
-      if (lineages.length == 1) {
-        this.curated = nest()
-          .key(d => d.variantType)
-          .rollup(values => values.map(d => `${d.mutation_name} lineage`))
-          .entries(lineages[0].values)
-      }
-
-      console.log(this.curated)
-    })
     this.totalSubscription = getSequenceCount(this.$genomicsurl, null, null, true).subscribe(total => {
       this.total = total;
     })
   },
   beforeDestroyed() {
-    if (this.curatedSubscription) {
-      this.curatedSubscription.unsubscribe();
-    }
 
     if (this.totalSubscription) {
       this.totalSubscription.unsubscribe();
@@ -169,10 +154,10 @@ $location-color: #8CD17D;
     color: lighten($location-color, 12%);
 }
 .bg-image {
-    width: 45%;
+    width: 25%;
     position: absolute;
     left: 0;
-    opacity: 0.7;
+    opacity: 0.55;
     z-index: 0;
 }
 </style>

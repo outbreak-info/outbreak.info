@@ -63,6 +63,15 @@ export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThre
   )
 }
 
+export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
+  return getMutationsByLineage(apiurl, mutation.mutation_str, prevalenceThreshold).pipe(
+    map(lineages => {
+      mutation["lineages"] = lineages.map(d => d.pangolin_lineage);
+      return (mutation)
+    })
+  )
+}
+
 export function getCuratedListAndCharMuts(apiurl, prevalenceThreshold) {
   return getCuratedList().pipe(
     mergeMap(list => {
@@ -75,6 +84,20 @@ export function getCuratedListAndCharMuts(apiurl, prevalenceThreshold) {
     })
   )
 }
+
+export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshold) {
+  return forkJoin(...mutations.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
+    map(results => {
+      mutations.forEach((d, i) => {
+        d["gene"] = d.mutation_str.split(":")[0];
+
+      });
+
+      return (mutations)
+    })
+  )
+}
+
 export function getReportList(apiurl, prevalenceThreshold = 0.75) {
   store.state.admin.reportloading = true;
 
