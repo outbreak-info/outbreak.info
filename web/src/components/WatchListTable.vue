@@ -13,7 +13,7 @@
       </div>
 
     </div>
-<div class="d-flex align-items-start" v-if="tableData">
+<div class="d-flex align-items-start" v-if="selectedTableData">
     <table class="mx-auto">
       <thead>
         <tr>
@@ -35,7 +35,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="checkbook" v-for="(row, rIdx) in tableData" :key="rIdx">
+        <tr class="checkbook" v-for="(row, rIdx) in selectedTableData" :key="rIdx">
           <td class="font-weight-bold">
             <router-link :to="{name: 'MutationReport', query: {muts: row.mutation_str}}">{{row.mutation_str}}
               </router-link>
@@ -74,12 +74,19 @@ export default {
   },
   mounted() {
     getAllLineagesForMutations(this.$genomicsurl, this.data, 0.75).subscribe(results => {
-      this.tableData = results.filter(d => this.selectedGenes.includes(d.gene));
+      this.tableData = results;
+      this.selectedTableData = this.tableData.filter(d => this.selectedGenes.includes(d.gene));
     })
+  },
+  methods: {
+    updateGenes() {
+      this.selectedTableData = this.tableData.filter(d => this.selectedGenes.includes(d.gene));
+    }
   },
   data() {
     return({
       tableData: null,
+      selectedTableData: null,
       geneOpts: [
         "ORF1a",
         "ORF1b",
