@@ -2,7 +2,7 @@
 <div>
   <div class="bg-main__darker mutation-banner border-top py-4">
     <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
-    <h1 class="m-0 mutation-header font-weight-bold">Lineage &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp; &nbsp; Mutation Tracker</h1>
+    <h1 class="m-0 mutation-header font-weight-bold">Lineage <span class="mx-2">|</span> Mutation Tracker</h1>
   </div>
 
   <div class="my-2 mx-4 px-4">
@@ -12,6 +12,7 @@
     </div>
 
     <div class="mb-1">
+      <img src="@/assets/sars-virus.svg" alt="map" class="bg-image" />
       <div class="d-flex flex-column justify-content-center align-items-center">
         <div class="d-flex w-75 justify-content-around align-items-center">
           <div class="text-left d-flex align-items-center my-3 border-top border-bottom py-2 px-2">
@@ -205,5 +206,13 @@ $mutation-color: #f28e2c;
 
 .mutation-header {
     color: lighten($mutation-color, 15%);
+}
+
+.bg-image {
+  width: 16%;
+    position: absolute;
+    left: 0;
+    opacity: 0.55;
+    z-index: -1;
 }
 </style>
