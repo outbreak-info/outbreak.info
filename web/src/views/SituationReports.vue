@@ -5,7 +5,11 @@
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
-  <h1 class="m-0">SARS-CoV-2 (hCoV-19) Mutation Situation Reports</h1>
+  <div :style="{ backgroundImage: 'url(' + require('@/assets/covid-19-coronavirus-backgroundcopy.png') + ')' }" class="bg-image py-5">
+    <h2 class="m-0 location-banner">SARS-CoV-2 (hCoV-19) Mutation Reports</h2>
+    <h1 class="m-0 location-banner font-weight-bold">Lineage / Mutation Tracker</h1>
+  </div>
+
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
       <div class="d-flex w-75 justify-content-around align-items-center">
@@ -33,11 +37,13 @@
         <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main">Create custom report</button></router-link>
       </div>
     </div>
-    <ReportLogos />
 
-    <div class="d-flex flex-column justify-content-center align-items-center mt-4">
+    <div class="d-flex flex-column justify-content-center align-items-center my-3">
       <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline">How to interpret these reports</router-link>
     </div>
+
+    <ReportLogos class="my-4"/>
+
 
 
   </div>
@@ -182,4 +188,11 @@ $mutation-width: 275px;
 .mutation-map {
     min-width: 0;
 }
+
+.bg-image {
+  // background-repeat: space;
+  background-size: contain;
+  // opacity: 0.5;
+}
+
 </style>

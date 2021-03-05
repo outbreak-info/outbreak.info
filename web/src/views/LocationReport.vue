@@ -68,7 +68,7 @@
   <template>
     <!-- SOCIAL MEDIA SHARE, BACK BTN -->
     <div class="d-flex align-items-center mb-2">
-      <router-link :to="{ name: 'SituationReports'}">
+      <router-link :to="{ name: 'LocationReports'}">
         <button class="btn py-0 px-2 btn-grey-outline">back</button>
       </router-link>
       <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select mutation(s)</button>
