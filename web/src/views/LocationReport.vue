@@ -97,8 +97,10 @@
             <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
           </a>
         </div>
-        <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline mt-3 p-0 px-1"><small>How to interpret these reports</small></router-link>
-        <!-- <small class="mr-1"><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
+        <div class="d-flex align-items-center text-sec my-1">
+          <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+          <router-link :to="{name:'SituationReportCaveats'}" class="text-sec">How to interpret these reports</router-link>
+        </div>
       </div>
     </div>
 
@@ -237,6 +239,9 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons/faClock";
 import {
+  faInfoCircle
+} from "@fortawesome/free-solid-svg-icons/faInfoCircle";
+import {
   faSpinner
 } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import {
@@ -244,7 +249,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons/faSync";
 
 
-library.add(faClock, faSpinner, faSync);
+library.add(faClock, faSpinner, faSync, faInfoCircle);
 
 import {
   mapState

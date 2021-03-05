@@ -1,14 +1,14 @@
 <template>
-<div class="my-5 mx-4 px-4">
+  <div>
+  <div class="bg-sec__darker py-4 text-light border-top location-banner">
+    <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
+    <h1 class="m-0 font-weight-bold location-header">Location Tracker</h1>
+  </div>
+<div class="my-2 mx-4 px-4">
   <!-- LOADING -->
   <div v-if="reportloading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
-
-<div :style="{ backgroundImage: 'url(' + require('@/assets/map-background.png') + ')' }" class="bg-image py-5">
-  <h2 class="m-0 location-banner">SARS-CoV-2 (hCoV-19) Mutation Reports</h2>
-  <h1 class="m-0 font-weight-bold location-banner">Location Tracker</h1>
-</div>
 
   <div class="mb-1">
     <div class="d-flex flex-column justify-content-center align-items-center">
@@ -36,11 +36,12 @@
         </div>
       </div>
     </div>
-    <div class="d-flex flex-column justify-content-center align-items-center my-3">
-      <router-link :to="{name:'SituationReportCaveats'}" class="btn btn-main-outline">How to interpret these reports</router-link>
+    <div class="d-flex align-items-center justify-content-end text-sec my-1">
+      <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+      <router-link :to="{name:'SituationReportCaveats'}" class="text-sec">How to interpret these reports</router-link>
     </div>
 
-    <ReportLogos class="my-4"/>
+    <!-- <ReportLogos class="my-4"/> -->
 
 
 
@@ -51,12 +52,13 @@
 
   <ReportAcknowledgements />
 </div>
+</div>
 </template>
 
 <script>
 import Vue from "vue";
 
-import ReportLogos from "@/components/ReportLogos.vue";
+// import ReportLogos from "@/components/ReportLogos.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 import CustomLocationForm from "@/components/CustomLocationForm.vue";
@@ -74,10 +76,10 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
 import {
-  faSpinner
+  faSpinner, faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faClock, faSpinner);
+library.add(faClock, faSpinner, faInfoCircle);
 
 import {
   getReportList,
@@ -91,7 +93,7 @@ import {
 export default {
   name: "LocationReports",
   components: {
-    ReportLogos,
+    // ReportLogos,
     ReportAcknowledgements,
     CustomLocationForm,
     FontAwesomeIcon
@@ -147,9 +149,16 @@ export default {
     height: 25px;
 }
 
-.bg-image {
-  background-repeat: space;
-  background-size: contain;
-  // opacity: 0.75;
+$location-color: #fc6189;
+.location-banner {
+    border-width: 0;
+    border-style: solid;
+    background: linear-gradient(to left, $primary-color 0%, $location-color 50%, $primary-color 100%) left bottom darken($primary-color,10%) no-repeat;
+    background-size: 100% 7px;
+    /* if linear-gradient, we need to resize it */
+}
+
+.location-header {
+    color: lighten($location-color, 12%);
 }
 </style>

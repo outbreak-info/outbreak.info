@@ -46,6 +46,9 @@
     <b class="text-muted m-0 p-0">
       Custom additions:
     </b>
+    <div>
+<CustomReportForm />
+    </div>
 
   </div>
 </form>
@@ -55,6 +58,7 @@
 import Vue from "vue";
 
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
+import CustomReportForm from "@/components/CustomReportForm.vue";
 import {
   getReportList,
   getSequenceCount,
@@ -79,6 +83,7 @@ export default {
   name: "CustomLocationForm",
   components: {
     TypeaheadSelect,
+    CustomReportForm,
     FontAwesomeIcon
   },
   props: {
