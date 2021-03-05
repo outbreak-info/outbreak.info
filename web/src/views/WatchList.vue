@@ -89,7 +89,7 @@ import {
 library.add(faClock, faSpinner, faInfoCircle);
 
 import {
-  getReportList,
+  getDateUpdated,
   getSequenceCount
 } from "@/api/genomics.js";
 
@@ -109,6 +109,7 @@ export default {
   data() {
     return {
       // reminder: must be the raw verison of the file
+      updatedSubscription: null,
       totalSubscription: null,
       lastUpdated: null,
       total: null,
@@ -119,11 +120,18 @@ export default {
     ...mapState("admin", ["mutationAuthors", "reportloading"])
   },
   mounted() {
+    this.updatedSubscription = getDateUpdated(this.$genomicsurl).subscribe(results => {
+      this.lastUpdated = results.lastUpdated;
+    })
+
     this.totalSubscription = getSequenceCount(this.$genomicsurl, null, null, true).subscribe(total => {
       this.total = total;
     })
   },
   beforeDestroyed() {
+    if (this.updatedSubscription) {
+      this.updatedSubscription.unsubscribe();
+    }
 
     if (this.totalSubscription) {
       this.totalSubscription.unsubscribe();
