@@ -182,7 +182,8 @@
         <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
         <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
         <div class="d-flex flex-wrap">
-          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3" v-if="geoData.values.length">
+          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3" >
+            <div v-if="geoData.values.length">
             <div class="d-flex justify-content-between align-items-center mx-4">
               <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { ... choro.route, division: [location], selected: location, selectedType: 'division' }}">
                 <h5>{{ choro.key }}</h5>
@@ -196,6 +197,7 @@
               </small>
             </div>
             <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="location" :mutationName="choro.key" :widthRatio="1" />
+          </div>
           </div>
         </div>
 
