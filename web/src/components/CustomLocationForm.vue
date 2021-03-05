@@ -29,7 +29,7 @@
     <button :disabled="!location" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create {{location}} report</button>
   </div>
 
-  <div class="my-5">
+  <div class="my-5" v-if="includeMutations">
     <h3>Add lineages & mutations to track<span v-if="location"> in {{location}}</span></h3>
     <h6 class="text-muted">Optional: specify lineages and mutations to track in addition to the Variants of Concern and Interest we're tracking</h6>
     <b class="text-muted m-0 p-0">
@@ -90,6 +90,10 @@ export default {
     minimalistic: {
       type: Boolean,
       default: false
+    },
+    includeMutations: {
+      type: Boolean,
+      default: true
     },
     curated: Array
   },

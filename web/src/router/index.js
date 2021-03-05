@@ -417,7 +417,7 @@ const routes = [{
     name: "LocationReports",
     component: () =>
       import(
-        /* webpackChunkName: "situation-reports" */
+        /* webpackChunkName: "location-reports" */
         "../views/LocationReports.vue"
       ),
     // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
@@ -444,8 +444,21 @@ const routes = [{
     }),
     component: () =>
       import(
-        /* webpackChunkName: "situation-report" */
+        /* webpackChunkName: "location-report" */
         "../views/LocationReport.vue"
+      )
+  },
+  {
+    path: "/watch-list",
+    name: "WatchList",
+    props: route => ({
+      country: route.query.country,
+      division: route.query.division
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "watch-list" */
+        "../views/WatchList.vue"
       )
   }
 ];
