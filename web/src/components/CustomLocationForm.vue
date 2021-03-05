@@ -23,13 +23,30 @@
       <TypeaheadSelect class="form-control" :isStandalone="false" :disabled="countrySelected" :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Select division (state)" totalLabel="total sequences"
         :removeOnSelect="false" />
     </div>
-
-    <h3>Select lineages & mutations to track</h3>
-
   </div>
 
-  <div class="d-flex flex-column justify-content-center align-items-center w-100 my-5">
+  <div class="d-flex flex-column justify-content-center align-items-center w-100 mt-5">
     <button :disabled="!location" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create {{location}} report</button>
+  </div>
+
+  <div class="my-5">
+    <h3>Select lineages & mutations to track</h3>
+    <h6 class="text-muted">Optional: specify lineages and mutations to track in addition to the Variants of Concern and Interest we're tracking</h6>
+    <b class="text-muted m-0 p-0">
+      Default:
+    </b>
+    <div v-for="(type, tIdx) in curated" :key="tIdx" class="d-flex mb-3 align-items-center">
+      <div class="mr-3">
+        <small :class="{ 'VOC': type.key == 'Variant of Concern',  'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
+      </div>
+
+      <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip btn-outline-secondary bg-white">{{variant}}</button>
+    </div>
+
+    <b class="text-muted m-0 p-0">
+      Custom additions:
+    </b>
+
   </div>
 </form>
 </template>
@@ -68,7 +85,8 @@ export default {
     minimalistic: {
       type: Boolean,
       default: false
-    }
+    },
+    curated: Array
   },
   methods: {
     submitQuery() {

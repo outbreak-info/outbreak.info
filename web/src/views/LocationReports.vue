@@ -41,7 +41,7 @@
 
   </div>
   <section id="report-list" class="text-left">
-<CustomLocationForm/>
+    <CustomLocationForm :curated="curated" />
   </section>
 
   <ReportAcknowledgements />
@@ -55,6 +55,8 @@ import ReportLogos from "@/components/ReportLogos.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
 import CustomLocationForm from "@/components/CustomLocationForm.vue";
+
+import { nest } from "d3";
 
 // --- font awesome --
 import {
@@ -96,7 +98,7 @@ export default {
       totalSubscription: null,
       lastUpdated: null,
       total: null,
-      reports: null
+      curated: null
     }
   },
   computed: {
@@ -105,7 +107,15 @@ export default {
   mounted() {
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
-      this.reports = results.md;
+      const lineages = results.md.filter(d => d.key == "lineage");
+      if(lineages.length == 1){
+        this.curated = nest()
+        .key(d => d.variantType)
+        .rollup(values => values.map(d => `${d.mutation_name} lineage`))
+        .entries(lineages[0].values)
+      }
+
+      console.log(this.curated)
     })
     this.totalSubscription = getSequenceCount(this.$genomicsurl, null, null, true).subscribe(total => {
       this.total = total;
