@@ -974,7 +974,6 @@ export function getLocationTable(apiurl, location, locationType, mutations) {
 
 export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, epiFields="location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling") {
   store.state.genomics.locationLoading4 = true;
-  console.log(mutations)
 
   return forkJoin([getEpiTraces(epiurl, [locationID], epiFields), getAllTemporalPrevalences(apiurl, locationID, mutations)]).pipe(
     map(([epi, mutationTraces]) => {

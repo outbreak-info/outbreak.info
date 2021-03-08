@@ -155,7 +155,7 @@ export default Vue.extend({
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
       xVariable: "dateTime",
-      fillVariable: "query",
+      fillVariable: "label",
       xEpiVariable: "date",
       yVariable: "proportion",
       yEpiVariable: "confirmed_rolling",
@@ -537,6 +537,7 @@ export default Vue.extend({
             update
               .attr("x", this.width - this.margin.left - this.margin.right)
               .attr("y", d => d.y)
+              .style("fill", d => this.colorScale(d.label))
               .text(d => d.label)
           },
           exit =>
