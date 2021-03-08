@@ -193,7 +193,7 @@ export default Vue.extend({
             .attr("width", this.rectWidth)
             .attr("y", d => this.y(d[0][0]))
             .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
-            .attr("fill", d => this.colorScale(d.key))
+            .style("fill", d => this.colorScale(d.key))
 
           barGrp.append("text")
             .attr("x", this.rectWidth)
@@ -218,6 +218,7 @@ export default Vue.extend({
           update.select("text")
             .attr("y", d => d.y)
             .text(d => `${d.key} (${format(".0%")(d[0].data[d.key])})`)
+            .style("fill", d => this.colorScale(d.key))
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
             .on("click", d => this.route2Lineage(d.key))
