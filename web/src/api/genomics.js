@@ -351,7 +351,7 @@ export function getCumPrevalences(apiurl, queryStr, locations) {
 
 export function getCumPrevalence(apiurl, queryStr, location, locationType) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}prevalence-by-location?${queryStr}&${locationType}=${location}&cumulative=true&timestamp=${timestamp}`;
+  const url = `${apiurl}prevalence-by-${locationType}?${queryStr}&name=${location}&cumulative=true&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -396,7 +396,7 @@ export function getNewTodayAll(apiurl, queryStr, locations) {
 export function getNewToday(apiurl, queryStr, location, locationType) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = location == "Worldwide" ? `${apiurl}most-recent-submission-date?${queryStr}&timestamp=${timestamp}` :
-    `${apiurl}most-recent-submission-date?${queryStr}&${locationType}=${location}&timestamp=${timestamp}`;
+    `${apiurl}most-recent-submission-date-by-${locationType}?${queryStr}&name=${location}&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -522,7 +522,7 @@ export function getTemporalPrevalence(apiurl, location, locationType, queryStr, 
   if (location == "Worldwide") {
     url = `${apiurl}global-prevalence?${queryStr}&timestamp=${timestamp}`;
   } else {
-    url = `${apiurl}prevalence-by-location?${queryStr}&${locationType}=${location}&timestamp=${timestamp}`;
+    url = `${apiurl}prevalence-by-${locationType}?${queryStr}&name=${location}&timestamp=${timestamp}`;
   }
 
   return from(axios.get(url, {
