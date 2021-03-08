@@ -455,7 +455,7 @@ export function getLocationPrevalence(apiurl, queryStr, location, locationType, 
     let url;
     url = location == "Worldwide" ?
       `${apiurl}lineage-by-country-most-recent?${queryStr}&timestamp=${timestamp}` :
-      `${apiurl}lineage-by-division-most-recent?country=${location}&${queryStr}&timestamp=${timestamp}`;
+      `${apiurl}lineage-by-division-most-recent?name=${location}&${queryStr}&timestamp=${timestamp}`;
 
     if (ndays) {
       url += `&ndays=${ndays}`;
@@ -495,7 +495,7 @@ export function getPositiveLocations(apiurl, queryStr, location, locationType) {
   if (location == "Worldwide") {
     url = `${apiurl}lineage-by-country-most-recent?${queryStr}&detected=true&timestamp=${timestamp}`;
   } else {
-    url = `${apiurl}lineage-by-division-most-recent?${queryStr}&detected=true&country=${location}&timestamp=${timestamp}`;
+    url = `${apiurl}lineage-by-division-most-recent?${queryStr}&detected=true&name=${location}&timestamp=${timestamp}`;
   }
 
   return from(axios.get(url, {
