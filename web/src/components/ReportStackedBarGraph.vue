@@ -71,7 +71,7 @@ export default Vue.extend({
         left: 55,
         right: 10
       },
-      width: 185,
+      width: 190,
       height: 600,
       legendHeight: null,
       // variables
@@ -195,16 +195,26 @@ export default Vue.extend({
             .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
             .style("fill", d => this.colorScale(d.key))
 
-          barGrp.append("text")
+          const tspan = barGrp.append("text")
+            .attr("class", "lineage_name")
             .attr("x", this.rectWidth)
             .attr("dx", 10)
             .attr("y", d => d.y)
-            .text(d => `${d.key} (${format(".0%")(d[0].data[d.key])})`)
             .style("fill", d => this.colorScale(d.key))
             .style("dominant-baseline", "central")
+
+          tspan.append("tspan")
+            .attr("class", "lineage")
+            .text(d => d.key)
+            .style("font-weight", "700")
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
             .on("click", d => this.route2Lineage(d.key))
+
+          tspan.append("tspan")
+            .attr("class", "percent")
+            .attr("dx", 5)
+            .text(d => `(${format(".0%")(d[0].data[d.key])})`)
         },
         update => {
           update
@@ -216,12 +226,15 @@ export default Vue.extend({
             .attr("fill", d => this.colorScale(d.key))
 
           update.select("text")
-            .attr("y", d => d.y)
-            .text(d => `${d.key} (${format(".0%")(d[0].data[d.key])})`)
-            .style("fill", d => this.colorScale(d.key))
+            .select(".lineage")
+            .text(d => d.key)
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
             .on("click", d => this.route2Lineage(d.key))
+
+          update.select("text")
+            .select(".percent")
+            .text(d => `(${format(".0%")(d[0].data[d.key])})`)
         },
         exit =>
         exit.call(exit =>
@@ -233,26 +246,28 @@ export default Vue.extend({
       )
     },
     route2Lineage(pango) {
-      if (this.locationType == "country") {
-        this.$router.push({
-          name: "MutationReport",
-          query: {
-            country: this.location,
-            pango: pango,
-            selected: this.location,
-            selectedType: this.locationType
-          }
-        })
-      } else {
-        this.$router.push({
-          name: "MutationReport",
-          query: {
-            division: this.location,
-            pango: pango,
-            selected: this.location,
-            selectedType: this.locationType
-          }
-        })
+      if (pango.toLowerCase() != "other") {
+        if (this.locationType == "country") {
+          this.$router.push({
+            name: "MutationReport",
+            query: {
+              country: this.location,
+              pango: pango,
+              selected: this.location,
+              selectedType: this.locationType
+            }
+          })
+        } else {
+          this.$router.push({
+            name: "MutationReport",
+            query: {
+              division: this.location,
+              pango: pango,
+              selected: this.location,
+              selectedType: this.locationType
+            }
+          })
+        }
       }
     },
     debounce(fn, delay) {
