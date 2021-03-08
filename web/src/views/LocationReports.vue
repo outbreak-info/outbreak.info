@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="bg-sec__darker py-4 text-light border-top location-banner">
+  <div class="py-4 border-top location-banner">
     <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
     <h1 class="m-0 font-weight-bold location-header">Location Tracker</h1>
   </div>
@@ -153,18 +153,6 @@ export default {
     height: 25px;
 }
 
-$location-color: #fc6189;
-.location-banner {
-    border-width: 0;
-    border-style: solid;
-    background: linear-gradient(to left, $primary-color 0%, $location-color 50%, $primary-color 100%) left bottom darken($primary-color,10%) no-repeat;
-    background-size: 100% 7px;
-    /* if linear-gradient, we need to resize it */
-}
-
-.location-header {
-    color: lighten($location-color, 12%);
-}
 .bg-image {
     width: 45%;
     position: absolute;
