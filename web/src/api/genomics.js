@@ -944,7 +944,6 @@ export function getMutationCumPrevalence(apiurl, mutationObj, location, location
 export function getAllTemporalPrevalence(apiurl, mutationObj, location, locationType) {
   return (getTemporalPrevalence(apiurl, location, locationType, mutationObj.query)).pipe(
     map(results => {
-      console.log(results)
       mutationObj["data"] = results;
       return (mutationObj)
     })
@@ -956,7 +955,6 @@ export function getLocationTable(apiurl, location, locationType, mutations) {
 
   return forkJoin(...mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location, locationType))).pipe(
     map(results => {
-      console.log(results)
       results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);
 
       const nestedResults = nest()
@@ -979,7 +977,6 @@ export function getAllTemporalPrevalences(apiurl, location, locationType, mutati
 
   return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, mutation, location, locationType))).pipe(
     map(results => {
-      console.log(results)
       return (results)
     }),
     catchError(e => {
