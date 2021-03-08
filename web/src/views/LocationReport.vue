@@ -431,7 +431,6 @@ export default {
   methods: {
     updateMaps() {
       this.choroSubscription = getLocationMaps(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations, this.recentThresh).subscribe(results => {
-        console.log(results)
         this.geoData = results;
       })
     },
