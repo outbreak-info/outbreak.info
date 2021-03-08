@@ -762,8 +762,8 @@ export function getDateUpdated(apiUrl) {
 export function getCumPrevalenceAllLineages(apiurl, location, locationType, other_threshold, nday_threshold, ndays) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
-    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&cumulative=true&timestamp=${timestamp}` :
-    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&cumulative=true&timestamp=${timestamp}`
+    `${apiurl}prevalence-by-division-all-lineages?name=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&cumulative=true&timestamp=${timestamp}` :
+    `${apiurl}prevalence-by-country-all-lineages?name=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&cumulative=true&timestamp=${timestamp}`
 
   return from(
     axios.get(url, {
@@ -795,8 +795,8 @@ export function getPrevalenceAllLineages(apiurl, location, locationType, other_t
   const dateThreshold = new Date("2020-03-14");
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   let url = locationType == "division" ?
-    `${apiurl}prevalence-by-division-all-lineages?division=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&timestamp=${timestamp}` :
-    `${apiurl}prevalence-by-country-all-lineages?country=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&timestamp=${timestamp}`
+    `${apiurl}prevalence-by-division-all-lineages?name=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&timestamp=${timestamp}` :
+    `${apiurl}prevalence-by-country-all-lineages?name=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&timestamp=${timestamp}`
 
   return from(
     axios.get(url, {
