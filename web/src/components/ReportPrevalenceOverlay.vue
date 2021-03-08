@@ -1,8 +1,16 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="location-report-prevalence">
+  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+    </button>
+    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+    </button>
+  </div>
   <div class="d-flex flex-column">
     <!-- SVGs -->
-    <div class="d-flex flex-column align-items-start mt-2">
+    <div class="d-flex flex-column align-items-start">
       <h5 class="">Daily COVID-19 cases in {{ locationName }}</h5>
       <div class="d-flex">
         <svg width="15" height="15" class="mr-2">
@@ -11,10 +19,11 @@
         <small class="text-muted">7 day rolling average of confirmed cases</small>
       </div>
       <!-- EPI TRACE -->
-      <svg :width="width" :height="height" class="epi-curve" ref="epi" name="title">
+      <svg :width="width" :height="height" class="prevalence-curve" ref="epi" name="title">
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
         <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
       </svg>
 
       <!-- TIME TRACE -->
@@ -57,19 +66,6 @@
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
       </svg>
-
-      <!-- SEQUENCING HISTOGRAM -->
-      <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="title">
-        <!-- <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :subtitle="countTitle"> -->
-        <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
-        <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
-      </svg>
-      <!-- <div class="d-flex">
-        <small class="text-uppercase lt-purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
-        <small class="text-uppercase purple ml-3"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
-      </div> -->
-
     </div>
   </div>
 
@@ -104,6 +100,7 @@ import {
   axisRight,
   extent,
   map,
+  brushX,
   forceCollide,
   forceY,
   forceSimulation,
@@ -118,6 +115,20 @@ import {
 
 import DownloadReportData from "@/components/DownloadReportData.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSearchPlus,
+  faCompressArrowsAlt
+} from "@fortawesome/free-solid-svg-icons/";
+
+library.add(faSearchPlus, faCompressArrowsAlt);
+
 export default Vue.extend({
   name: "ReportPrevalence",
   props: {
@@ -127,7 +138,8 @@ export default Vue.extend({
     location: String
   },
   components: {
-    DownloadReportData
+    DownloadReportData,
+    FontAwesomeIcon
   },
   computed: {
     title() {
@@ -139,7 +151,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      width: 400,
+      width: 800,
       height: 400,
       margin: {
         top: 10,
@@ -195,14 +207,17 @@ export default Vue.extend({
       yCountsAxisRight: null,
       numXTicks: 5,
       numYTicks: 6,
+      zoomAllowed: true,
       // methods
       line: null,
       epiLine: null,
       area: null,
+      brush: null,
       // refs
       chart: null,
       epiChart: null,
-      counts: null
+      counts: null,
+      brushRef: null
     }
   },
   watch: {
@@ -210,12 +225,25 @@ export default Vue.extend({
       this.updatePlot();
     },
     data: function() {
+      this.setXScale();
       this.updatePlot();
     },
   },
   mounted() {
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
+
+      // Update brush so it spans the whole of the area
+      this.brush = brushX()
+        .extent([
+          [0, 0],
+          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+        ])
+        .on("end", () => this.debounceZoom(event));
+
+      this.brushRef
+        .call(this.brush)
+        .on("dblclick", this.resetZoom);
     })
 
     // set initial dimensions for the plots.
@@ -225,13 +253,14 @@ export default Vue.extend({
   },
   created: function() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceZoom = this.debounce(this.zoom, 150);
   },
   methods: {
     setDims() {
       const mx = 0.7;
       const my = 0.4;
       const hwRatio = 0.525;
-      const svgContainer = document.getElementById('report-prevalence');
+      const svgContainer = document.getElementById('location-report-prevalence');
 
       let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
       maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
@@ -254,11 +283,49 @@ export default Vue.extend({
         this.numYTicks = 5;
       }
     },
+    zoom(evt, ref) {
+      // reset domain to new coords
+      const selection = this.event.selection;
+
+      if (selection) {
+        const newMin = this.x.invert(selection[0]);
+        const newMax = this.x.invert(selection[1]);
+
+        this.x = this.x
+          .domain([newMin, newMax]);
+        //
+        //   console.log(this.x.domain())
+        //
+        // // reset the axis
+        // this.xAxis = axisBottom(this.x)
+        //   .ticks(this.numXTicks)
+        //   .tickSize(-this.height)
+        //   .tickSizeOuter(0);
+        //
+        //   select(this.$refs.xAxis).call(this.xAxis);
+        //   select(this.$refs.xEpiAxis).call(this.xAxis);
+
+        // move the brush
+        this.brushRef.call(this.brush.move, null);
+        this.zoomAllowed = false;
+        this.updatePlot();
+      }
+
+    },
+    resetZoom() {
+      this.setXScale();
+      this.brushRef.call(this.brush.move, null);
+      this.updatePlot();
+    },
+    enableZoom() {
+      this.zoomAllowed = true;
+    },
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.counts = select(this.$refs.counts);
       this.epiChart = select(this.$refs.epiChart);
+      this.brushRef = select(this.$refs.brush);
 
       // estimate
       this.line = line()
@@ -275,16 +342,19 @@ export default Vue.extend({
         .x(d => this.x(d[this.xVariable]))
         .y0(d => this.y(d.proportion_ci_lower))
         .y1(d => this.y(d.proportion_ci_upper));
+
+        this.setXScale();
     },
-    updateScales() {
-      console.log(this.data)
+    setXScale() {
       const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
       const mutExtent = extent(this.data.flatMap(d => d.data).map(d => d[this.xVariable]));
       const xDomain = extent(epiExtent.concat(mutExtent));
+
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
-
+    },
+    updateScales() {
       const avgMax = max(this.data.flatMap(d => d.data), d => d[this.yVariable]);
       const CIMax = max(this.data.flatMap(d => d.data), d => d.proportion_ci_upper);
 
