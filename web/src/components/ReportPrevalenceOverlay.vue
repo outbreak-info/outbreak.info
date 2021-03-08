@@ -53,6 +53,7 @@
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
         <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+        <g ref="brush2" class="brush" id="brush2-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
         <!-- <g id="no-data" v-if="!data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
         </g>
@@ -220,7 +221,8 @@ export default Vue.extend({
       chart: null,
       epiChart: null,
       counts: null,
-      brushRef: null
+      brushRef: null,
+      brush2Ref: null
     }
   },
   watch: {
@@ -245,6 +247,10 @@ export default Vue.extend({
         .on("end", () => this.debounceZoom(event));
 
       this.brushRef
+        .call(this.brush)
+        .on("dblclick", this.resetZoom);
+
+      this.brushRef2
         .call(this.brush)
         .on("dblclick", this.resetZoom);
     })
@@ -304,10 +310,10 @@ export default Vue.extend({
         });
 
         this.plottedData = this.plottedData.filter(d => d.data.length);
-        console.log(this.plottedData)
         this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > newMin && d[this.xEpiVariable] < newMax);;
         // move the brush
         this.brushRef.call(this.brush.move, null);
+        this.brushRef2.call(this.brush.move, null);
         this.zoomAllowed = false;
         this.updatePlot();
       }
@@ -316,6 +322,7 @@ export default Vue.extend({
     resetZoom() {
       this.setXScale();
       this.brushRef.call(this.brush.move, null);
+      this.brushRef2.call(this.brush.move, null);
       this.updatePlot();
     },
     enableZoom() {
@@ -327,6 +334,7 @@ export default Vue.extend({
       this.counts = select(this.$refs.counts);
       this.epiChart = select(this.$refs.epiChart);
       this.brushRef = select(this.$refs.brush);
+      this.brushRef2 = select(this.$refs.brush2);
 
       // estimate
       this.line = line()
