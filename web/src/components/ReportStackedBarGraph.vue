@@ -68,7 +68,7 @@ export default Vue.extend({
         left: 55,
         right: 10
       },
-      width: 150,
+      width: 185,
       height: 600,
       legendHeight: null,
       // variables
@@ -143,6 +143,7 @@ export default Vue.extend({
       const barSelector = this.chart
         .selectAll(".stacked-bar-chart")
         .data(this.series);
+        console.log(this.series)
 
       barSelector.join(
         enter => {
@@ -162,7 +163,7 @@ export default Vue.extend({
             .attr("dx", 10)
             .attr("y", d => this.y(d[0][0]))
             .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0])) / 2)
-            .text(d => d.key)
+            .text(d => `${d.key} (${format(".0%")(d[0].data[d.key])})`)
             .style("dominant-baseline", "central")
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
@@ -180,7 +181,7 @@ export default Vue.extend({
           update.select("text")
             .attr("y", d => this.y(d[0][0]))
             .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0])) / 2)
-            .text(d => d.key)
+            .text(d => `${d.key} (${format(".0%")(d[0].data[d.key])})`)
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
             .on("click", d => this.route2Lineage(d.key))
