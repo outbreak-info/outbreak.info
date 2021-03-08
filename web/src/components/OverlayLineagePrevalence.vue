@@ -49,8 +49,6 @@ export default {
     } else {
       this.selectedMutations = this.options.slice(0, this.numPreselected);
     }
-    console.log("MOUNTED")
-    console.log(this.options)
 
     this.updateData();
   },

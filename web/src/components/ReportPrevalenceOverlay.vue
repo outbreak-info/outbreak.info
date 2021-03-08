@@ -86,7 +86,6 @@
 </div>
 </template>
 
-
 <script lang="js">
 import Vue from "vue";
 import {
@@ -112,6 +111,8 @@ import {
   transition,
   timeDay
 } from "d3";
+
+import cloneDeep from "lodash/cloneDeep";
 
 import DownloadReportData from "@/components/DownloadReportData.vue";
 
@@ -208,6 +209,8 @@ export default Vue.extend({
       numXTicks: 5,
       numYTicks: 6,
       zoomAllowed: true,
+      plottedData: null,
+      plottedEpi: null,
       // methods
       line: null,
       epiLine: null,
@@ -293,18 +296,16 @@ export default Vue.extend({
 
         this.x = this.x
           .domain([newMin, newMax]);
-        //
-        //   console.log(this.x.domain())
-        //
-        // // reset the axis
-        // this.xAxis = axisBottom(this.x)
-        //   .ticks(this.numXTicks)
-        //   .tickSize(-this.height)
-        //   .tickSizeOuter(0);
-        //
-        //   select(this.$refs.xAxis).call(this.xAxis);
-        //   select(this.$refs.xEpiAxis).call(this.xAxis);
 
+        // update plotted data
+        this.plottedData = cloneDeep(this.data);
+        this.plottedData.forEach(mutation => {
+          mutation.data = mutation.data.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
+        });
+
+        this.plottedData = this.plottedData.filter(d => d.data.length);
+        console.log(this.plottedData)
+        this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > newMin && d[this.xEpiVariable] < newMax);;
         // move the brush
         this.brushRef.call(this.brush.move, null);
         this.zoomAllowed = false;
@@ -343,7 +344,7 @@ export default Vue.extend({
         .y0(d => this.y(d.proportion_ci_lower))
         .y1(d => this.y(d.proportion_ci_upper));
 
-        this.setXScale();
+      this.setXScale();
     },
     setXScale() {
       const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
@@ -353,10 +354,14 @@ export default Vue.extend({
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
+
+      this.plottedData = this.data;
+      this.plottedEpi = this.epi;
+      this.colorScale = this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },
     updateScales() {
-      const avgMax = max(this.data.flatMap(d => d.data), d => d[this.yVariable]);
-      const CIMax = max(this.data.flatMap(d => d.data), d => d.proportion_ci_upper);
+      const avgMax = max(this.plottedData.flatMap(d => d.data), d => d[this.yVariable]);
+      const CIMax = max(this.plottedData.flatMap(d => d.data), d => d.proportion_ci_upper);
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -365,16 +370,8 @@ export default Vue.extend({
 
       this.yEpi = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, max(this.epi, d => d[this.yEpiVariable])])
+        .domain([0, max(this.plottedEpi, d => d[this.yEpiVariable])])
         .nice();
-
-      this.maxCounts = max(this.data, d => d[this.totalVariable]);
-      this.yCounts = scaleLinear()
-        .range([0, this.heightCounts - this.margin.top - this.margin.top])
-        .domain([0, this.maxCounts]);
-
-      const numDays = timeDay.count(...this.x.domain());
-      this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / numDays;
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
@@ -391,18 +388,8 @@ export default Vue.extend({
       this.yEpiAxis = axisLeft(this.yEpi).tickSizeOuter(0)
         .ticks(this.numYTicks);
 
-      this.yCountsAxisLeft = axisLeft(this.yCounts).tickSizeOuter(0)
-        .tickValues([0, this.maxCounts]);
-
-      this.yCountsAxisRight = axisRight(this.yCounts).tickSizeOuter(0)
-        .tickValues([0, this.maxCounts]);
-
       select(this.$refs.yAxis).call(this.yAxis);
       select(this.$refs.yEpiAxis).call(this.yEpiAxis);
-      select(this.$refs.yCountsAxisLeft).call(this.yCountsAxisLeft);
-      select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
-
-      this.colorScale = this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },
     tooltipOn() {
       // const ttipShift = 20;
@@ -446,85 +433,15 @@ export default Vue.extend({
         .style("opacity", 1);
     },
     updatePlot() {
-      const t1 = transition().duration(2500);
+      const t1 = transition().duration(1500);
 
-      if (this.data && this.epi) {
+      if (this.plottedData && this.plottedEpi) {
         this.updateScales();
-
-        // let detected = this.data.filter(d => d.lineage_count);
-        // this.showDetected = detected.length < this.detectedDisplayThresh;
-        // if (!this.showDetected) {
-        //   detected = [];
-        // }
-        // const detectedSelector = this.counts
-        //   .selectAll(".detected")
-        //   .data(detected);
-        //
-        // detectedSelector.join(
-        //   enter => {
-        //     enter.append("text")
-        //       .attr("class", "detected")
-        //       .attr("id", d => `date${d.date}`)
-        //       .attr("x", d => this.x(d[this.xVariable]))
-        //       .attr("y", d => this.yCounts(d[this.totalVariable]))
-        //       .attr("dy", 3)
-        //       .style("dominant-baseline", "hanging")
-        //       .style("text-anchor", "middle")
-        //       .text("*")
-        //       .style("fill", "#980072");
-        //   },
-        //   update =>
-        //   update
-        //   .attr("class", "detected")
-        //   .attr("id", d => `date${d.date}`)
-        //   .attr("x", d => this.x(d[this.xVariable]))
-        //   .attr("y", d => this.yCounts(d[this.totalVariable])),
-        //   exit =>
-        //   exit.call(exit =>
-        //     exit
-        //     .transition(10)
-        //     .style("opacity", 1e-5)
-        //     .remove()
-        //   )
-        // )
-        //
-        // const countSelector = this.counts
-        //   .selectAll(".raw-counts")
-        //   .data(this.data);
-        // countSelector.join(
-        //   enter => {
-        //     enter.append("line")
-        //       .attr("class", "raw-counts")
-        //       .attr("id", d => `date${d.date}`)
-        //       .attr("x1", d => this.x(d[this.xVariable]))
-        //       .attr("x2", d => this.x(d[this.xVariable]))
-        //       .attr("y1", d => this.yCounts(0))
-        //       .attr("y2", d => this.yCounts(d[this.totalVariable]))
-        //       .style("stroke-width", this.xBandwidth)
-        //       .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5");
-        //   },
-        //   update =>
-        //   update
-        //   .attr("id", d => `date${d.date}`)
-        //   .attr("x1", d => this.x(d[this.xVariable]))
-        //   .attr("x2", d => this.x(d[this.xVariable]))
-        //   .attr("y1", d => this.yCounts(0))
-        //   .attr("y2", d => this.yCounts(d[this.totalVariable]))
-        //   .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5")
-        //   .style("stroke-width", this.xBandwidth),
-        //   exit =>
-        //   exit.call(exit =>
-        //     exit
-        //     .transition(10)
-        //     .style("opacity", 1e-5)
-        //     .remove()
-        //   )
-        // )
 
         // EPI DATA
         const epiSelector = this.epiChart
           .selectAll(".epi-curve")
-          .data([this.epi]);
+          .data([this.plottedEpi]);
 
         epiSelector.join(enter => {
             enter.append("path")
@@ -536,8 +453,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .transition()
-              .duration(750)
+              .transition(t1)
               .attr("d", this.epiLine)
           },
           exit =>
@@ -553,7 +469,7 @@ export default Vue.extend({
         // calculate the end point labels
         // Create nodes of the text labels for force direction
         const labelHeight = 18;
-        const endLabels = this.data.map(d => {
+        const endLabels = this.plottedData.map(d => {
           return ({
             label: d[this.fillVariable],
             fx: 0,
@@ -577,7 +493,7 @@ export default Vue.extend({
         // Set up the force simulation
         const force = forceSimulation()
           .nodes(endLabels)
-          .force("collide", forceCollide(labelHeight/2).strength(1))
+          .force("collide", forceCollide(labelHeight / 2).strength(1))
           .force("y", forceY(d => d.targetY).strength(1))
           .force(
             "clamp",
@@ -587,7 +503,6 @@ export default Vue.extend({
 
         // Execute the simulation
         for (let i = 0; i < 300; i++) force.tick();
-        console.log(endLabels)
 
         const labelSelector = this.chart.selectAll(".mutation-label")
           .data(endLabels);
@@ -622,7 +537,7 @@ export default Vue.extend({
 
         const mutSelector = this.chart
           .selectAll(".mutation-trace")
-          .data(this.data);
+          .data(this.plottedData);
 
 
         mutSelector.join(
