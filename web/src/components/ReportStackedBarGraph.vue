@@ -25,6 +25,9 @@ import {
   area,
   stack,
   stackOrderDescending,
+  forceCollide,
+  forceY,
+  forceSimulation,
   event,
   extent,
   format,
@@ -143,7 +146,41 @@ export default Vue.extend({
       const barSelector = this.chart
         .selectAll(".stacked-bar-chart")
         .data(this.series);
-        console.log(this.series)
+
+      // calculate label positions so they don't overlap
+      const labelHeight = 18;
+      this.series.forEach(d => {
+        d["fx"] = 0;
+        d["targetY"] = this.y(d[0][0]) + (this.y(d[0][1]) - this.y(d[0][0])) / 2;
+      })
+
+      // Define a custom force
+      const forceClamp = (min, max) => {
+        let nodes;
+        const force = () => {
+          nodes.forEach(n => {
+            if (n.y > max) n.y = max;
+            if (n.y < min) n.y = min;
+          });
+        };
+        force.initialize = _ => (nodes = _);
+        return force;
+      };
+
+      // Set up the force simulation
+      const force = forceSimulation()
+        .nodes(this.series)
+        .force("collide", forceCollide(labelHeight / 2).strength(1))
+        .force("y", forceY(d => d.targetY).strength(1))
+        .force(
+          "clamp",
+          forceClamp(0, this.height - this.margin.top - this.margin.bottom)
+        )
+        .stop();
+
+      // Execute the simulation
+      for (let i = 0; i < 300; i++) force.tick();
+
 
       barSelector.join(
         enter => {
@@ -161,9 +198,9 @@ export default Vue.extend({
           barGrp.append("text")
             .attr("x", this.rectWidth)
             .attr("dx", 10)
-            .attr("y", d => this.y(d[0][0]))
-            .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0])) / 2)
+            .attr("y", d => d.y)
             .text(d => `${d.key} (${format(".0%")(d[0].data[d.key])})`)
+            .style("fill", d => this.colorScale(d.key))
             .style("dominant-baseline", "central")
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
@@ -179,8 +216,7 @@ export default Vue.extend({
             .attr("fill", d => this.colorScale(d.key))
 
           update.select("text")
-            .attr("y", d => this.y(d[0][0]))
-            .attr("dy", d => (this.y(d[0][1]) - this.y(d[0][0])) / 2)
+            .attr("y", d => d.y)
             .text(d => `${d.key} (${format(".0%")(d[0].data[d.key])})`)
             .classed("pointer", d => d.key.toLowerCase() != "other")
             .classed("hover-underline", d => d.key.toLowerCase() != "other")
