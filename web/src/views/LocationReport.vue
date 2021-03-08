@@ -1,59 +1,39 @@
 <template>
-<div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
-  <!-- LOADING -->
-  <div v-if="loading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
-  </div>
+<div>
+  <!-- <div class="p-2 border-top location-banner d-flex justify-content-between">
+    <p class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</p>
+    <b class="m-0 font-weight-bold location-header">Location Tracker</b>
+  </div> -->
 
-  <!-- CHANGE LOCATION MODAL -->
-  <!-- <div id="change-locations-modal" class="modal fade">
+  <div class="mb-4 mt-3 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
+    <!-- LOADING -->
+    <div v-if="loading" class="loader">
+      <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
+    </div>
+
+    <!-- CHANGE LOCATION MODAL -->
+    <!-- <div id="change-locations-modal" class="modal fade">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title" id="exampleModalLabel">Select report locations</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Select report location</h5>
           <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="mb-3 py-3 border-bottom border-secondary">
-            <h6 class="text-muted text-underline m-0">Current locations</h6>
-            <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
-              {{ location.name }}
-              <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
-            </button>
-          </div>
-
           <div class="py-3 border-bottom">
-            <div v-if="ctry2Add.length" class="my-3">
-              <h6 class="text-sec text-underline m-0">Countries to add</h6>
-              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
-                {{ country }}
-                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
-              </button>
-            </div>
-
             <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
               <TypeaheadSelect :queryFunction="queryCountry" @selected="updateCountries" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
             </div>
           </div>
 
           <div class="py-3">
-            <div v-if="div2Add.length" class="my-3">
-              <h6 class="text-sec text-underline m-0">Divisions (States/Provinces) to add</h6>
-              <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(division, dIdx) in div2Add" :key="dIdx" id="new-divisions" @click="removeDivision2Add(cIdx)">
-                {{ division }}
-                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
-              </button>
-            </div>
-
-
             <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
               <TypeaheadSelect :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Add division" totalLabel="total sequences" />
             </div>
           </div>
         </div>
-
 
         <div class="modal-footer border-secondary">
           <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
@@ -63,167 +43,183 @@
       </div>
     </div>
   </div> -->
-  <!-- end change location modal -->
+    <!-- end change location modal -->
 
-  <template>
-    <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-    <div class="d-flex align-items-center mb-2">
-      <router-link :to="{ name: 'LocationReports'}">
-        <button class="btn py-0 px-2 btn-grey-outline">back</button>
-      </router-link>
-      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">select mutation(s)</button>
-      <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-locations-modal">change locations</button>
-      <ShareReport title="title" url="url" />
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="d-flex flex-column align-items-start">
-
-        <div class="d-flex align-items-end">
-          <h1 class="m-0">{{ title }}</h1>
-          <div class="text-highlight font-size-2 ml-5" v-if="totalSequences">
-            {{totalSequences}} sequences
-          </div>
-        </div>
-
-        <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
-          <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
-        </small>
+    <template>
+      <!-- SOCIAL MEDIA SHARE, BACK BTN -->
+      <div class="d-flex align-items-center mb-2">
+        <router-link :to="{ name: 'LocationReports'}">
+          <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
+            <font-awesome-icon class="mr-2" :icon="['fas', 'arrow-left']" />
+            back
+          </button>
+        </router-link>
+        <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">
+          <font-awesome-icon class="mr-1" :icon="['fas', 'plus']" />
+          add mutations</button>
+        <ShareReport title="title" url="url" />
       </div>
-      <div class="d-flex flex-column align-items-end justify-content-between">
-        <div class="d-flex align-items-center">
-          Enabled by data from
-          <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-            <img src="@/assets/resources/gisaid.png" class="gisaid ml-1" alt="GISAID Initiative" />
-          </a>
-        </div>
-        <div class="d-flex align-items-center text-sec my-1">
-          <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
-          <router-link :to="{name:'SituationReportCaveats'}" class="text-sec">How to interpret these reports</router-link>
-        </div>
-      </div>
-    </div>
 
-    <!-- MINI-NAV -->
-    <div class="d-flex flex-wrap my-3">
-      <a href="#lineages">
-        <button class="btn btn-grey mr-3">
-          <small>Common lineages</small>
-        </button>
-      </a>
+      <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
+        <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-start">
 
-      <a href="#variants-of-concern">
-        <button class="btn btn-grey mr-3">
-          <small>Variants of Concern & Interest</small>
-        </button>
-      </a>
-
-      <a href="#geographic">
-        <button class="btn btn-grey mr-3">
-          <small>Geographic breakdown</small>
-        </button>
-      </a>
-    </div>
-
-    <!-- LOGOS -->
-    <ReportLogos class="mb-4" />
-
-    <!-- REPORT -->
-    <div id="location-report">
-      <!-- STREAM GRAPHS -->
-      <div id="lineages">
-        <div>
-          <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence in {{location}}</h3>
-          <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
-        </div>
-
-        <div class="row">
-
-          <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
-            <h5 class="">Lineage prevalence over time</h5>
-            <div class="">
-              <LineagesByLocation :data="lineagesByDay" :colorScale="colorScale" />
+            <div class="d-flex align-items-end">
+              <div class="d-flex align-items-center">
+                <h1 class="m-0 font-weight-bold location-header">{{ title }}</h1>
+                <button class="btn py-1 px-2 ml-4 btn-grey" data-toggle="modal" data-target="#change-locations-modal">
+                  <font-awesome-icon class="mr-2 font-size-small" :icon="['fas', 'sync']" />change location
+                </button>
+              </div>
             </div>
-          </section>
-
-          <!-- STACKED BAR / MOST RECENT -->
-          <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
-            <h5>Most commonly found lineages over the past {{recentThreshold}} days</h5>
-            <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :location="location" :locationType="selectedLocationType" />
-          </section>
-
-        </div>
-      </div>
-
-      <!-- TRACKED LINEAGES TABLE -->
-      <section id="variants-of-concern" v-if="lineageTable" class="my-5 py-3 border-top">
-        <div class="d-flex align-items-center justify-content-center">
-          <h3 class="mr-5">Tracked lineages</h3>
-          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
-            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-          </button>
-        </div>
-        <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
-      </section>
-
-      <!-- TRACKED LINEAGES PREVALENCE -->
-      <section id="lineages-over-time" class="my-5" py-3 border-top>
-        <div class="d-flex align-items-center justify-content-center">
-          <h3 class="mr-5">Tracked lineages over time</h3>
-          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
-            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-          </button>
-        </div>
-        <OverlayLineagePrevalence :options="selectedMutations" :location="location" :locationType="selectedLocationType"/>
-      </section>
-
-      <!-- GEOGRAPHIC CHOROPLETHS -->
-      <section id="geographic" class="my-5 py-3 border-top" v-if="geoData">
-        <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
-        <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
-        <div class="d-flex flex-wrap">
-          <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3" >
-            <div v-if="geoData.values.length">
-            <div class="d-flex justify-content-between align-items-center mx-4">
-              <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { ... choro.route, division: [location], selected: location, selectedType: 'division' }}">
-                <h5>{{ choro.key }}</h5>
-              </router-link>
-              <router-link v-else :to="{name: 'MutationReport', query: { ... choro.route, country: [location], selected: location, selectedType: 'country' }}">
-                <h5>{{ choro.key }}</h5>
-              </router-link>
-
-              <small v-if="choro.variantType.includes('Variant')" :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
-                {{ choro.variantType }}
+            <div class="d-flex align-items-center">
+              <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+                <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
               </small>
+              <div class="text-light font-size-2 ml-5" v-if="totalSequences">
+                {{totalSequences}} sequences
+              </div>
             </div>
-            <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="location" :mutationName="choro.key" :widthRatio="1" />
+
+
           </div>
+          <div class="d-flex flex-column align-items-end justify-content-between">
+            <div class="d-flex align-items-center mb-1">
+              Enabled by data from
+              <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
+                <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
+              </a>
+            </div>
+            <div class="d-flex align-items-center bright-hyperlink my-1">
+              <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+              <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MINI-NAV -->
+      <div class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center border-top border-bottom">
+        <a href="#lineages">
+          <button class="btn btn-grey-flat mx-3 py-2">
+            <span>Common lineages</span>
+          </button>
+        </a>
+
+        <a href="#variants-of-concern">
+          <button class="btn btn-grey-flat mx-3 py-2">
+            <span>Variants of Concern & Interest</span>
+          </button>
+        </a>
+
+        <a href="#geographic">
+          <button class="btn btn-grey-flat mx-3 py-2">
+            <span>Geographic breakdown</span>
+          </button>
+        </a>
+      </div>
+
+      <!-- LOGOS -->
+      <!-- <ReportLogos class="mb-4" /> -->
+
+      <!-- REPORT -->
+      <div id="location-report">
+        <!-- STREAM GRAPHS -->
+        <div id="lineages">
+          <div>
+            <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence in {{location}}</h3>
+            <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
+          </div>
+
+          <div class="row">
+
+            <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
+              <h5 class="">Lineage prevalence over time</h5>
+              <div class="">
+                <LineagesByLocation :data="lineagesByDay" :colorScale="colorScale" />
+              </div>
+            </section>
+
+            <!-- STACKED BAR / MOST RECENT -->
+            <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
+              <h5>Most commonly found lineages over the past {{recentThreshold}} days</h5>
+              <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :location="location" :locationType="selectedLocationType" />
+            </section>
+
           </div>
         </div>
 
+        <!-- TRACKED LINEAGES TABLE -->
+        <section id="variants-of-concern" v-if="lineageTable" class="my-5 py-3 border-top">
+          <div class="d-flex align-items-center justify-content-center">
+            <h3 class="mr-5">Tracked lineages</h3>
+            <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+            </button>
+          </div>
+          <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
+        </section>
+
+        <!-- TRACKED LINEAGES PREVALENCE -->
+        <section id="lineages-over-time" class="my-5" py-3 border-top>
+          <div class="d-flex align-items-center justify-content-center">
+            <h3 class="mr-5">Tracked lineages over time</h3>
+            <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+            </button>
+          </div>
+          <OverlayLineagePrevalence :options="selectedMutations" :location="id" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
+        </section>
+
+        <!-- GEOGRAPHIC CHOROPLETHS -->
+        <section id="geographic" class="my-5 py-3 border-top" v-if="geoData">
+          <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
+          <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
+          <div class="d-flex flex-wrap">
+            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3">
+              <div v-if="geoData.values.length">
+                <div class="d-flex justify-content-between align-items-center mx-4">
+                  <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { ... choro.route, division: [location], selected: location, selectedType: 'division' }}">
+                    <h5>{{ choro.key }}</h5>
+                  </router-link>
+                  <router-link v-else :to="{name: 'MutationReport', query: { ... choro.route, country: [location], selected: location, selectedType: 'country' }}">
+                    <h5>{{ choro.key }}</h5>
+                  </router-link>
+
+                  <small v-if="choro.variantType.includes('Variant')" :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest'}">
+                    {{ choro.variantType }}
+                  </small>
+                </div>
+                <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="location" :mutationName="choro.key" :widthRatio="1" />
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </div>
+
+
+      <!-- METHODOLOGY -->
+      <section class="mt-3 mb-5 border-top pt-3" id="methods">
+        <h4>Methodology</h4>
+        <ReportMethodology :dateUpdated="dateUpdated" />
+        <Warning class="mt-2" :text="disclaimer" />
       </section>
-    </div>
 
+      <!-- CITATION -->
+      <section class="my-3 border-top pt-3">
+        <h4 class="">Citing this report</h4>
+        <p class="m-0">
+          <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
+        </p>
+        <ShareReport :title="title" :url="url" />
+      </section>
 
-    <!-- METHODOLOGY -->
-    <section class="mt-3 mb-5 border-top pt-3" id="methods">
-      <h4>Methodology</h4>
-      <ReportMethodology :dateUpdated="dateUpdated" />
-      <Warning class="mt-2" :text="disclaimer" />
-    </section>
-
-    <!-- CITATION -->
-    <section class="my-3 border-top pt-3">
-      <h4 class="">Citing this report</h4>
-      <p class="m-0">
-        <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
-      </p>
-      <ShareReport :title="title" :url="url" />
-    </section>
-
-    <!-- ACKNOWLEDGEMENTS -->
-    <ReportAcknowledgements class="border-top pt-3" />
+      <!-- ACKNOWLEDGEMENTS -->
+      <ReportAcknowledgements class="border-top pt-3" />
 </template>
+</div>
 </div>
 </template>
 
@@ -244,6 +240,12 @@ import {
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import {
+  faPlus
+} from "@fortawesome/free-solid-svg-icons/faPlus";
+import {
+  faArrowLeft
+} from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+import {
   faSpinner
 } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import {
@@ -251,7 +253,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons/faSync";
 
 
-library.add(faClock, faSpinner, faSync, faInfoCircle);
+library.add(faClock, faSpinner, faSync, faInfoCircle, faArrowLeft, faPlus);
 
 import {
   mapState
@@ -266,7 +268,9 @@ import {
   getLocationReportData,
   getLocationMaps,
   getBasicLocationReportData,
-  getLocationTable
+  getLocationTable,
+  findCountry,
+  findDivision
 } from "@/api/genomics.js";
 
 export default {
@@ -274,12 +278,13 @@ export default {
   props: {
     country: String,
     division: String,
+    id: String,
     muts: Array,
     pango: Array,
-    variant: Array
+    variant: Array,
+    selected: Array
   },
   components: {
-    ReportLogos: () => import( /* webpackPrefetch: true */ "@/components/ReportLogos.vue"),
     ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
     Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
     ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
@@ -450,6 +455,7 @@ export default {
       reportSubscription: null,
       choroSubscription: null,
       tableSubscription: null,
+      // methods
       // variables
       recentThreshold: 28,
       otherThresh: 0.03,
