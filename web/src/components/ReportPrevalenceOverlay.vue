@@ -1,22 +1,15 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="location-report-prevalence">
   <div class="d-flex flex-column">
-    <!-- LEGEND -->
-    <div class="d-flex flex-column ml-5 mt-3" id="legend">
-      <!-- legend: rolling average -->
+    <!-- SVGs -->
+    <div class="d-flex flex-column align-items-start mt-2">
+      <h5 class="">Daily COVID-19 cases in {{ locationName }}</h5>
       <div class="d-flex">
         <svg width="15" height="15" class="mr-2">
           <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
         </svg>
-
+        <small class="text-muted">7 day rolling average of confirmed cases</small>
       </div>
-
-
-    </div>
-
-    <!-- SVGs -->
-    <div class="d-flex flex-column align-items-start mt-2">
-      <h5>Cases over time</h5>
       <!-- EPI TRACE -->
       <svg :width="width" :height="height" class="epi-curve" ref="epi" name="title">
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
@@ -25,10 +18,17 @@
       </svg>
 
       <!-- TIME TRACE -->
-      <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
+      <h5 class="p-0 m-0">{{title}}</h5>
+      <div class="d-flex">
+        <svg width="15" height="15" class="mr-2">
+          <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+        </svg>
+        <small class="text-muted">7 day rolling average of percent sequences with mutation(s)</small>
+      </div>
+
       <!-- legend: confidence interval -->
       <div class="d-flex">
-        <div class="ci-legend mr-2" :style="{background: CIColor}">
+        <div class="ci-legend mr-2" :style="{background: '#999'}">
 
         </div>
         <small class="text-muted">95% confidence interval</small>
@@ -65,10 +65,10 @@
         <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
         <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
       </svg>
-      <div class="d-flex">
+      <!-- <div class="d-flex">
         <small class="text-uppercase lt-purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
         <small class="text-uppercase purple ml-3"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
-      </div>
+      </div> -->
 
     </div>
   </div>
@@ -98,10 +98,15 @@ import {
   selectAll,
   scaleLinear,
   scaleTime,
+  scaleOrdinal,
   axisBottom,
   axisLeft,
   axisRight,
   extent,
+  map,
+  forceCollide,
+  forceY,
+  forceSimulation,
   event,
   max,
   format,
@@ -118,7 +123,7 @@ export default Vue.extend({
   props: {
     data: Array,
     epi: Array,
-    mutationName: String,
+    locationName: String,
     location: String
   },
   components: {
@@ -126,7 +131,7 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      return (this.location == "Worldwide" ? `${this.mutationName} prevalence over time worldwide` : `${this.mutationName} prevalence over time in ${this.location}`)
+      return (this.locationName == "Worldwide" ? `Mutation prevalence over time worldwide` : `Mutation prevalence over time in ${this.locationName}`)
     },
     countTitle() {
       return (`Total samples sequenced by collection date in ${this.location}`)
@@ -150,6 +155,8 @@ export default Vue.extend({
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
       xVariable: "dateTime",
+      fillVariable: "query",
+      xEpiVariable: "date",
       yVariable: "proportion",
       yEpiVariable: "confirmed_rolling",
       totalVariable: "total_count",
@@ -158,6 +165,27 @@ export default Vue.extend({
       y: scaleLinear(),
       yEpi: scaleLinear(),
       yCounts: scaleLinear(),
+      colorScale: scaleOrdinal(["#4E79A7", // dk blue
+        "#f28e2b", // orange
+        "#59a14f", // green
+        "#e15759", // red
+        "#499894", // teal
+        "#F1CE63", // yellow
+        "#D37295", // dk pink
+        "#B07AA1", // dk purple
+        "#9D7660", // brown
+        "#bcbd22", // puce,
+        "#79706E",
+        "#aecBe8", // lt blue
+        "#FFBE7D", // lt. orange
+        "#8CD17D", // lt. green
+        "#FF9D9A", // lt. red
+        "#86BCB6", // lt. teal
+        "#B6992D", // dk yellow
+        "#FABFD2", // lt. pink,
+        "#D4A6C8", // lt. purple
+        "#D7B5A6" // lt. brown
+      ]),
       maxCounts: null,
       xBandwidth: 1,
       xAxis: null,
@@ -249,20 +277,21 @@ export default Vue.extend({
         .y1(d => this.y(d.proportion_ci_upper));
     },
     updateScales() {
+      console.log(this.data)
+      const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
+      const mutExtent = extent(this.data.flatMap(d => d.data).map(d => d[this.xVariable]));
+      const xDomain = extent(epiExtent.concat(mutExtent));
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.epi.map(d => d["date"])));
-        // .domain(extent(this.epi.map(d => d[this.xVariable])));
+        .domain(xDomain);
 
-      const avgMax = max(this.data, d => d[this.yVariable]);
-      const CIMax = max(this.data, d => d.proportion_ci_upper);
+      const avgMax = max(this.data.flatMap(d => d.data), d => d[this.yVariable]);
+      const CIMax = max(this.data.flatMap(d => d.data), d => d.proportion_ci_upper);
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0,0.55])
-      // .domain([0, (avgMax + CIMax) * 0.5])
-      // .domain([0, max(this.data.flatMap(d => d[this.yVariable]), d=>d)])
+        .domain([0, (avgMax + CIMax) * 0.5]);
 
       this.yEpi = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -302,6 +331,8 @@ export default Vue.extend({
       select(this.$refs.yEpiAxis).call(this.yEpiAxis);
       select(this.$refs.yCountsAxisLeft).call(this.yCountsAxisLeft);
       select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
+
+      this.colorScale = this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },
     tooltipOn() {
       // const ttipShift = 20;
@@ -420,48 +451,25 @@ export default Vue.extend({
         //   )
         // )
 
+        // EPI DATA
         const epiSelector = this.epiChart
           .selectAll(".epi-curve")
           .data([this.epi]);
 
         epiSelector.join(enter => {
-          enter.append("path")
-            .attr("class", "epi-curve")
-            .attr("d", this.epiLine)
-            .style("fill", "none")
-            .style("stroke", "#333333")
-            .style("stroke-width", 1.75);
-        },
-        update => {
-          update
-          .transition()
-          .duration(750)
-          .attr("d", this.epiLine)
-        },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition()
-          .style("opacity", 1e-5)
-          .remove()
-        )
-      )
-
-        const CISelector = this.chart
-          .selectAll(".confidence-interval")
-          .data(this.data);
-
-        CISelector.join(
-          enter => {
             enter.append("path")
-              .attr("class", "confidence-interval")
-              .style("fill", this.CIColor)
-              .style("fill-opacity", 0.3)
-              .attr("d", this.area)
+              .attr("class", "epi-curve")
+              .attr("d", this.epiLine)
+              .style("fill", "none")
+              .style("stroke", "#333333")
+              .style("stroke-width", 1.75);
           },
-          update => update
-          // .transition(t1)
-          .attr("d", this.area),
+          update => {
+            update
+              .transition()
+              .duration(750)
+              .attr("d", this.epiLine)
+          },
           exit =>
           exit.call(exit =>
             exit
@@ -471,27 +479,115 @@ export default Vue.extend({
           )
         )
 
-        const pathSelector = this.chart
-          .selectAll(".prevalence-line")
+        // MUTATION TRACES
+        // calculate the end point labels
+        // Create nodes of the text labels for force direction
+        const labelHeight = 18;
+        const endLabels = this.data.map(d => {
+          return ({
+            label: d[this.fillVariable],
+            fx: 0,
+            targetY: this.y(d.data.slice(-1)[0][this.yVariable])
+          })
+        })
+
+        // Define a custom force
+        const forceClamp = (min, max) => {
+          let nodes;
+          const force = () => {
+            nodes.forEach(n => {
+              if (n.y > max) n.y = max;
+              if (n.y < min) n.y = min;
+            });
+          };
+          force.initialize = _ => (nodes = _);
+          return force;
+        };
+
+        // Set up the force simulation
+        const force = forceSimulation()
+          .nodes(endLabels)
+          .force("collide", forceCollide(labelHeight/2).strength(1))
+          .force("y", forceY(d => d.targetY).strength(1))
+          .force(
+            "clamp",
+            forceClamp(0, this.height - this.margin.top - this.margin.bottom)
+          )
+          .stop();
+
+        // Execute the simulation
+        for (let i = 0; i < 300; i++) force.tick();
+        console.log(endLabels)
+
+        const labelSelector = this.chart.selectAll(".mutation-label")
+          .data(endLabels);
+
+        labelSelector.join(
+          enter => {
+            enter
+              .append("text")
+              .attr("class", "mutation-label")
+              .attr("x", this.width - this.margin.left - this.margin.right)
+              .attr("dx", 5)
+              .attr("y", d => d.y)
+              .style("fill", d => this.colorScale(d.label))
+              .text(d => d.label);
+          },
+          update => {
+            update
+              .attr("x", this.width - this.margin.left - this.margin.right)
+              .attr("y", d => d.y)
+              .text(d => d.label)
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
+
+
+        const mutSelector = this.chart
+          .selectAll(".mutation-trace")
           .data(this.data);
 
-        pathSelector.join(
+
+        mutSelector.join(
           enter => {
-            enter.append("path")
+            const mutGrp = enter.append("g")
+              .attr("class", "mutation-trace")
+              .attr("id", d => d[this.fillVariable.replace(/\./g, "_")]);
+
+            mutGrp.append("path")
+              .attr("class", "confidence-interval")
+              .style("fill", d => this.colorScale(d[this.fillVariable]))
+              .style("fill-opacity", 0.3)
+              .attr("d", d => this.area(d.data));
+
+            mutGrp.append("path")
               .attr("class", "prevalence-line")
-              .style("stroke", "#2c3e50")
+              .style("stroke", d => this.colorScale(d[this.fillVariable]))
               .style("fill", "none")
               .style("stroke-width", "2.5")
-              .datum(d => d)
-              .attr("d", this.line)
+              .attr("d", d => this.line(d.data))
           },
-          // update
-          update => update
-          .datum(d => d)
-          // .transition(t1)
-          .attr("d", this.line),
+          update => {
+            update
+              .attr("id", d => d[this.fillVariable.replace(/\./g, "_")]);
 
-          // exit
+            update.select(".confidence-interval")
+              .style("fill", d => this.colorScale(d[this.fillVariable]))
+              .style("fill-opacity", 0.3)
+              .attr("d", d => this.area(d.data));
+
+            update.select(".prevalence-line")
+              .style("stroke", d => this.colorScale(d[this.fillVariable]))
+              .style("fill", "none")
+              .style("stroke-width", "2.5")
+              .attr("d", d => this.line(d.data))
+          },
           exit =>
           exit.call(exit =>
             exit
@@ -543,5 +639,16 @@ export default Vue.extend({
         stroke: #555;
         stroke-width: 0.25;
     }
+}
+
+.ci-legend {
+    width: 15px;
+    height: 15px;
+    opacity: 0.3;
+}
+
+.trace-legend {
+    stroke: #777;
+    stroke-width: 2.5;
 }
 </style>

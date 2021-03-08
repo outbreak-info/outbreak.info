@@ -15,7 +15,7 @@
 <script>
 import Vue from "vue";
 
-import { getAllTemporalPrevalences } from "@/api/genomics.js";
+import { getEpiMutationPrevalence } from "@/api/genomics.js";
 import { getEpiTraces } from "@/api/epi-traces.js";
 import ReportPrevalenceOverlay from "@/components/ReportPrevalenceOverlay.vue";
 
@@ -23,37 +23,30 @@ export default {
   name: "LocationReport",
   props: {
     options: Array,
-    location: String,
-    locationType: String
+    location: String
   },
   components: {
     ReportPrevalenceOverlay
   },
   data() {
     return({
-      selectedMutations: [{"query":"pangolin_lineage=B.1.429"}],
+      selectedMutations: [{"query":"pangolin_lineage=B.1.1.7"}, {"query":"pangolin_lineage=B.1"}],
       prevalences: null,
       epi: null
     })
   },
   mounted() {
-    this.updateMutations();
-    this.updateEpiData();
+    this.updateData();
   },
   methods: {
     selectMutation() {
       // console.log(this.selectedMutations);
     },
-    updateEpiData() {
-      this.epiSubscription = getEpiTraces(this.$apiurl, ["USA_US-CA"], "location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling").subscribe(epi => {
-        console.log(epi)
-        this.epi = epi[0].value;
-      })
-    },
-    updateMutations() {
-      this.prevalenceSubscription = getAllTemporalPrevalences(this.$genomicsurl, this.location, this.locationType, this.selectedMutations).subscribe(results => {
-        // console.log(results)
-        this.prevalences = results.map(d => d.data);
+    updateData() {
+      this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl,this.$apiurl, this.location, this.selectedMutations).subscribe(results => {
+        console.log(results)
+        this.epi = results.epi;
+        this.prevalences = results.mutations;
       })
     }
   }

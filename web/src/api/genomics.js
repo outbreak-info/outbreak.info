@@ -972,15 +972,35 @@ export function getLocationTable(apiurl, location, locationType, mutations) {
   )
 }
 
-export function getAllTemporalPrevalences(apiurl, location, locationType, mutations) {
+export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, epiFields="location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling") {
   store.state.genomics.locationLoading4 = true;
+  console.log(mutations)
+
+  return forkJoin([getEpiTraces(epiurl, [locationID], epiFields), getAllTemporalPrevalences(apiurl, locationID, mutations)]).pipe(
+    map(([epi, mutationTraces]) => {
+      console.log(epi)
+      console.log(mutationTraces)
+      return ({epi: epi[0].value, mutations: mutationTraces})
+    }),
+    catchError(e => {
+      console.log("%c Error in getting location mapping data!", "color: orange");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading4 = false)
+  )
+}
+
+export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
+  const location = "United States";
+  const locationType = "country";
 
   return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, mutation, location, locationType))).pipe(
     map(results => {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting location mapping data!", "color: orange");
+      console.log("%c Error in getting mutations over time data!", "color: orange");
       console.log(e);
       return ( of ([]));
     }),
