@@ -291,6 +291,7 @@ export default Vue.extend({
         this.numXTicks = 6;
         this.numYTicks = 5;
       }
+      this.width = 1000;
     },
     zoom(evt, ref) {
       // reset domain to new coords
