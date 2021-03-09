@@ -110,7 +110,7 @@
   <!-- GEO SUMMARY -->
   <div id="geo-summary" v-if="countries" class="d-flex flex-column" ref="geo_summary">
     <div>
-      The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
+      The {{reportType == "mutation" ? "mutation has" : reportType == "variant" ? "mutations have" : "strain has" }} been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
     </div>
     <CountryMap :countries="countries" :width="summaryWidth" :showNames="false" class="align-self-center" mapSource="GADM" />
     <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
