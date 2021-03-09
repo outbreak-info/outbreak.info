@@ -471,7 +471,6 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null) 
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d["name"] = titleCase(d.name);
         d["proportion_formatted"] = formatPercent(d.proportion);
         // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
         d["date_last_detected"] = d.date;
@@ -508,7 +507,7 @@ export function getPositiveLocations(apiurl, queryStr, location) {
   })).pipe(
     pluck("data", "results", "names"),
     map(results => {
-      return results.map(d => titleCase(d))
+      return results
     }),
     catchError(e => {
       console.log("%c Error in getting list of positive country names!", "color: red");
@@ -537,7 +536,6 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
     map(results => {
       results.forEach(d => {
         d["dateTime"] = parseDate(d.date);
-        d["name"] = titleCase(d.name);
       })
       return (results)
     }),
@@ -694,9 +692,6 @@ export function findLocation(apiurl, queryString) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
-      results.forEach(d => {
-        d.name = titleCase(d.name);
-      })
       return (results)
     }),
     catchError(e => {
