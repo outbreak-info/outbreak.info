@@ -23,7 +23,9 @@ import {
   scaleOrdinal
 } from "d3";
 
-import { getEpiTraces } from "@/api/epi-traces.js";
+import {
+  getEpiTraces
+} from "@/api/epi-traces.js";
 
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
@@ -129,12 +131,14 @@ export function buildQueryStr(lineageString, mutationString) {
   return queryStr;
 }
 
+
 export function getReportData(apiurl, locations, mutationString, lineageString, location) {
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
   return forkJoin([
     getDateUpdated(apiurl),
+    findAllLocationMetadata(apiurl, locations, location),
     getNewTodayAll(apiurl, queryStr, locations),
     getTemporalPrevalence(apiurl, location, queryStr, null),
     getWorldPrevalence(apiurl, queryStr),
@@ -147,11 +151,12 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getMutationDetails(apiurl, mutationString),
     getMutationsByLineage(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
+    map(([dateUpdated, locations, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       return ({
         dateUpdated: dateUpdated,
+        locations: locations,
         newToday: newToday,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
@@ -451,38 +456,38 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null) 
   const timestamp = Math.round(new Date().getTime() / 36e5);
 
   // if (locationType != "division") {
-    let url;
-    url = location == "Worldwide" ?
-      `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&timestamp=${timestamp}` :
-      `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}&timestamp=${timestamp}`;
+  let url;
+  url = location == "Worldwide" ?
+    `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&timestamp=${timestamp}` :
+    `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}&timestamp=${timestamp}`;
 
-    if (ndays) {
-      url += `&ndays=${ndays}`;
+  if (ndays) {
+    url += `&ndays=${ndays}`;
+  }
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
     }
-    return from(axios.get(url, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })).pipe(
-      pluck("data", "results"),
-      map(results => {
-        results.forEach(d => {
-          d["name"] = titleCase(d.name);
-          d["proportion_formatted"] = formatPercent(d.proportion);
-          // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
-          d["date_last_detected"] = d.date;
-          delete d.date;
-          // fixes the Georgia (state) / Georgia (country) problem
-          d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
-        })
-        return (results)
-      }),
-      catchError(e => {
-        console.log("%c Error in getting recent prevalence data by country!", "color: red");
-        console.log(e);
-        return ( of ([]));
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d["name"] = titleCase(d.name);
+        d["proportion_formatted"] = formatPercent(d.proportion);
+        // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
+        d["date_last_detected"] = d.date;
+        delete d.date;
+        // fixes the Georgia (state) / Georgia (country) problem
+        d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
       })
-    )
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting recent prevalence data by country!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
   // } else {
   //   return ( of ([]))
   // }
@@ -564,7 +569,7 @@ export function getCuratedMetadata(id) {
         console.log("No reports or more than one report metadata found!")
       }
     }),
-    // mergeMap(md => getLineageResources(apiUrl, md, 10, 1).pipe(
+    // mergeMap(md => getLineageResources(apiurl, md, 10, 1).pipe(
     //   map(resources => {
     //     resources["md"] = md;
     //     return(resources)
@@ -604,13 +609,13 @@ export function getCuratedList() {
   )
 }
 
-export function getLineageResources(apiUrl, queryString, size, page, sort = "-date") {
+export function getLineageResources(apiurl, queryString, size, page, sort = "-date") {
   const fields = "@type, name, author, date, journalName"
   const timestamp = Math.round(new Date().getTime() / 36e5);
 
 
   return from(
-    axios.get(`${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=${fields}&timestamp=${timestamp}`, {
+    axios.get(`${apiurl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=${fields}&timestamp=${timestamp}`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -637,9 +642,49 @@ export function getLineageResources(apiUrl, queryString, size, page, sort = "-da
 
 }
 
-export function findLocation(apiUrl, queryString) {
+export function findLocationMetadata(apiurl, location) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiUrl}location?name=*${queryString}*&timestamp=${timestamp}`
+  const url = `${apiurl}location-lookup?id=${location}&timestamp=${timestamp}`
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results["id"] = location;
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting location metadata!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function findAllLocationMetadata(apiurl, locations, selected) {
+  return forkJoin(... locations.map(location => findLocationMetadata(apiurl, location))).pipe(
+    map(results => {
+      results.forEach(d => {
+        d["isActive"] = d.id === selected;
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting all location metadata!", "color: orange");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+export function findLocation(apiurl, queryString) {
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiurl}location?name=*${queryString}*&timestamp=${timestamp}`
 
   return from(
     axios.get(url, {
@@ -656,16 +701,16 @@ export function findLocation(apiUrl, queryString) {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting country names!", "color: red");
+      console.log("%c Error in getting location names!", "color: red");
       console.log(e);
       return ( of ([]));
     })
   )
 }
 
-export function findPangolin(apiUrl, queryString) {
+export function findPangolin(apiurl, queryString) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiUrl}lineage?name=*${queryString}*&timestamp=${timestamp}`;
+  const url = `${apiurl}lineage?name=*${queryString}*&timestamp=${timestamp}`;
 
   return from(
     axios.get(url, {
@@ -690,9 +735,9 @@ export function findPangolin(apiUrl, queryString) {
   )
 }
 
-export function getDateUpdated(apiUrl) {
+export function getDateUpdated(apiurl) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiUrl}metadata?timestamp=${timestamp}`;
+  const url = `${apiurl}metadata?timestamp=${timestamp}`;
 
   return from(
     axios.get(url, {
@@ -745,13 +790,13 @@ export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, n
     pluck("data", "results"),
     map(results => {
       let wideData = {};
-      results.sort((a,b) => b.prevalence - a.prevalence);
+      results.sort((a, b) => b.prevalence - a.prevalence);
 
       results.forEach(d => {
         wideData[capitalize(d.lineage)] = d.prevalence
       })
 
-      return([wideData])
+      return ([wideData])
     }),
     catchError(e => {
       console.log("%c Error in getting cumulative prevalence for all lineages in a place!", "color: yellow");
@@ -820,7 +865,7 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
 
 // LOCATION REPORTS
 export function getBasicLocationReportData(apiurl, location) {
-   store.state.genomics.locationLoading1 = true
+  store.state.genomics.locationLoading1 = true
   return forkJoin([
     getDateUpdated(apiurl),
     getCuratedList(),
@@ -940,14 +985,17 @@ export function getLocationTable(apiurl, location, mutations) {
   )
 }
 
-export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, epiFields="location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling") {
+export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, epiFields = "location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling") {
   store.state.genomics.locationLoading4 = true;
 
   return forkJoin([getEpiTraces(epiurl, [locationID], epiFields), getAllTemporalPrevalences(apiurl, locationID, mutations)]).pipe(
     map(([epi, mutationTraces]) => {
       console.log(epi)
       console.log(mutationTraces)
-      return ({epi: epi[0].value, mutations: mutationTraces})
+      return ({
+        epi: epi[0].value,
+        mutations: mutationTraces
+      })
     }),
     catchError(e => {
       console.log("%c Error in getting location mapping data!", "color: orange");
@@ -976,7 +1024,7 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
 
 export function getSequenceCount(apiurl, location = null, global = false) {
   let url = `${apiurl}sequence-count`;
-  if(global) {
+  if (global) {
     url += "?cumulative=true";
   }
   if (location) {
@@ -990,11 +1038,11 @@ export function getSequenceCount(apiurl, location = null, global = false) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      if(results.length == 1) {
-       return (results[0].total_count.toLocaleString())
-     } else if(typeof(results) == "object") {
-       return(results.total_count.toLocaleString())
-     }
+      if (results.length == 1) {
+        return (results[0].total_count.toLocaleString())
+      } else if (typeof(results) == "object") {
+        return (results.total_count.toLocaleString())
+      }
     }),
     catchError(e => {
       console.log("%c Error in getting total sequences for the location!", "color: red");

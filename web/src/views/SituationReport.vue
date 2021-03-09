@@ -244,7 +244,7 @@
         <h4 class="mb-0">Average daily {{reportName}} prevalence</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
         <div id="location-buttons" class="d-flex flex-wrap">
-          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.name }}</button>
+          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.label }}</button>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
@@ -426,84 +426,8 @@ export default {
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineages/lineage_${this.lineageName}.html` : null
     },
-    selectedLocations() {
-      if(!this.loc){
-        return({
-          name: "Worldwide",
-          id: "Worldwide",
-          isActive: true
-        })
-      } else{
-      return ([this.loc])
-      }
-
-      // if (!this.country && !this.division) {
-      //   if (!this.selected || this.selected == "Worldwide") {
-      //     return ([{
-      //       name: "Worldwide",
-      //       type: "world",
-      //       isActive: true
-      //     }, {
-      //       name: "United States",
-      //       type: "country",
-      //       isActive: false
-      //     }, {
-      //       name: "California",
-      //       type: "division",
-      //       isActive: false
-      //     }])
-      //   } else {
-      //     return ([{
-      //       name: "Worldwide",
-      //       type: "world",
-      //       isActive: false
-      //     }, {
-      //       name: this.selected,
-      //       type: this.selectedType,
-      //       isActive: true
-      //     }])
-      //   }
-      // } else {
-      //   let ctries;
-      //   let divisions;
-      //   if (this.country) {
-      //     ctries = typeof(this.country) == "string" ? [this.country] : this.country;
-      //     ctries = ctries.map(d => {
-      //       return {
-      //         name: d,
-      //         isActive: d == this.selected && this.selectedType == "country",
-      //         type: "country"
-      //       };
-      //     })
-      //   } else {
-      //     ctries = [];
-      //   }
-      //
-      //   if (this.division) {
-      //     divisions = typeof(this.division) == "string" ? [this.division] : this.division;
-      //     divisions = divisions.map(d => {
-      //       return {
-      //         name: d,
-      //         isActive: d == this.selected && this.selectedType == "division",
-      //         type: "division"
-      //       };
-      //     })
-      //   } else {
-      //     divisions = [];
-      //   }
-      //
-      //   // always have the world there too.
-      //   let allLocs = [{
-      //     name: "Worldwide",
-      //     type: "world",
-      //     isActive: this.selected == "Worldwide"
-      //   }];
-      //
-      //   return (allLocs.concat(ctries, divisions));
-      // }
-    },
     choroplethCountries() {
-      return (this.selectedLocations.filter(d => d.type != "division"))
+      return (this.selectedLocations.filter(d => d.admin_level < 2))
     }
   },
   watch: {
@@ -552,6 +476,7 @@ export default {
       reportDescription: null,
 
       // data
+      selectedLocations: null,
       dateUpdated: null,
       reportMetadata: null,
       choroLocation: "country",
@@ -567,7 +492,7 @@ export default {
     }
   },
   mounted() {
-    this.currentLocs = this.selectedLocations.filter(d => d.name != "Worldwide");
+    // this.currentLocs = this.selectedLocations.filter(d => d.name != "Worldwide");
     this.queryLocation = findLocation;
     this.queryPangolin = findPangolin;
 
@@ -643,7 +568,12 @@ export default {
       this.setLineageAndMutationStr();
 
       if (this.lineageName || this.mutationID) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationID, this.lineageName, this.selected).subscribe(results => {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.loc, this.mutationID, this.lineageName, this.selected).subscribe(results => {
+          console.log(results)
+
+          // selected locations
+          this.selectedLocations = results.locations;
+          this.currentLocs = results.locations;
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
