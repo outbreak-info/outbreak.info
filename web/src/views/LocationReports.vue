@@ -24,7 +24,7 @@
 
         <div class="w-75 mt-2 text-left">The <a href="https://cvisb.org/" rel="noreferrer" target="_blank">CViSB Team</a> at Scripps Research is tracking the prevalence of SARS-CoV-2 (hCoV-19) variants in locations with lineage and mutation reports,
           updated daily.
-          Choose a country or division (state) to create a custom report.
+          Choose a country, division (state), or U.S. county to create a custom report.
         </div>
         <div class="d-flex align-items-center justify-content-between my-3">
           <div id="date-updated" class="mr-2">

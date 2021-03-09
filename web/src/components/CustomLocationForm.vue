@@ -2,35 +2,23 @@
 <form class="mx-4" @submit.prevent="submitQuery">
   <h3>Select location</h3>
   <div class="d-flex align-items-center my-3">
-    <div class="input-group">
+    <div class="input-group w-50">
       <div class="input-group-prepend">
         <span class="input-group-text bg-grey text-muted border-0" id="sb">
           <font-awesome-icon :icon="['fas', 'search']" />
         </span>
       </div>
-      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :disabled="divisionSelected" :queryFunction="queryLocation" @selected="updateCountry" :apiUrl="this.$genomicsurl" placeholder="Select country" totalLabel="total sequences"
-        :removeOnSelect="false" />
+      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" placeholder="Select location" totalLabel="total sequences" :removeOnSelect="false" />
     </div>
 
-    <!-- <p class="p-0 m-0 text-muted">or</p> -->
-
-    <!-- <div class="input-group ml-4"> -->
-    <!--   <div class="input-group-prepend"> -->
-    <!--     <span class="input-group-text bg-grey text-muted border-0" id="sb"> -->
-    <!--       <font-awesome-icon :icon="['fas', 'search']" /> -->
-    <!--     </span> -->
-    <!--   </div> -->
-    <!--   <TypeaheadSelect class="form-control" :isStandalone="false" :disabled="countrySelected" :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Select division (state)" totalLabel="total sequences" -->
-    <!--     :removeOnSelect="false" /> -->
-    <!-- </div> -->
   </div>
 
   <div class="d-flex flex-column justify-content-center align-items-center w-100 mt-5">
-    <button :disabled="!location" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create {{location}} report</button>
+    <button :disabled="!location" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create {{ location.label }} report</button>
   </div>
 
   <div class="my-5" v-if="includeMutations">
-    <h3>Add lineages & mutations to track<span v-if="location"> in {{location}}</span></h3>
+    <h3>Add lineages & mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
     <h6 class="text-muted">Optional: specify lineages and mutations to track in addition to the Variants of Concern and Interest we're tracking</h6>
     <b class="text-muted m-0 p-0">
       Default:
@@ -47,7 +35,7 @@
       Custom additions:
     </b>
     <div>
-<CustomReportForm />
+      <CustomReportForm />
     </div>
 
   </div>
@@ -98,47 +86,23 @@ export default {
   },
   methods: {
     submitQuery() {
-      if (this.countrySelected) {
-        this.$router.push({
-          name: "LocationReport",
-          query: {
-            country: this.location
-          }
-        })
-      } else if (this.divisionSelected) {
-        this.$router.push({
-          name: "LocationReport",
-          query: {
-            division: this.location
-          }
-        })
-      }
+      this.$router.push({
+        name: "LocationReport",
+        query: {
+          loc: this.location.id
+        }
+      })
     },
-    updateCountry(country) {
-      if (country && country.name) {
-        this.location = country.name;
-        this.countrySelected = true;
-      } else {
-        this.countrySelected = false;
-        this.location = null;
-      }
-    },
-    updateDivision(division) {
-      if (division && division.name) {
-        this.location = division.name;
-        this.divisionSelected = true;
-      } else {
-        this.divisionSelected = false;
-        this.location = null;
+    updateLocation(location) {
+      if (location && location.id) {
+        this.location = location;
       }
     }
   },
   data() {
     return {
       queryLocation: null,
-      location: null,
-      countrySelected: false,
-      divisionSelected: false
+      location: null
     }
   },
   mounted() {
@@ -146,3 +110,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.max-width-400 {
+    max-width: 400px !important;
+}
+</style>
