@@ -177,7 +177,7 @@
         <!-- GEOGRAPHIC CHOROPLETHS -->
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData">
           <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
-          <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
+          <p class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</p>
           <div class="d-flex flex-wrap">
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3">
               <div v-if="choro.values.length">
