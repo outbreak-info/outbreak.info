@@ -264,12 +264,10 @@ const routes = [{
     path: "/situation-reports",
     name: "MutationReport",
     props: route => ({
-      country: route.query.country,
-      division: route.query.division,
+      location: route.query.location,
       muts: route.query.muts,
       pango: route.query.pango,
-      selected: route.query.selected,
-      selectedType: route.query.selectedType
+      selected: route.query.selected
     }),
     component: () =>
       import(
