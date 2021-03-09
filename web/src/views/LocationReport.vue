@@ -13,30 +13,30 @@
 
     <!-- CHANGE LOCATION MODAL -->
     <div id="change-locations-modal" class="modal fade">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header border-secondary">
-          <h5 class="modal-title" id="exampleModalLabel">Select report location</h5>
-          <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="py-3 border-bottom">
-            <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-              <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocations" :apiUrl="this.$genomicsurl" placeholder="Select location" totalLabel="total sequences" />
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="exampleModalLabel">Select report location</h5>
+            <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="py-3 border-bottom">
+              <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
+                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocations" :apiUrl="this.$genomicsurl" placeholder="Select location" totalLabel="total sequences" />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="modal-footer border-secondary">
-          <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
-          <button type="button" class="btn btn-primary" @click="submitNewLocation" data-dismiss="modal">Create report</button>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
+            <button type="button" class="btn btn-primary" @click="submitNewLocation" data-dismiss="modal">Create report</button>
 
+          </div>
         </div>
       </div>
     </div>
-  </div>
     <!-- end change location modal -->
 
     <template>
@@ -124,7 +124,7 @@
         <!-- STREAM GRAPHS -->
         <div id="lineages">
           <div>
-            <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence in {{ selectedLocation.label }}</h3>
+            <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
           </div>
 
@@ -158,7 +158,7 @@
         </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
-        <section id="lineages-over-time" class="my-5" py-3 border-top>
+        <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
           <div class="d-flex align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
@@ -169,11 +169,11 @@
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
-        <section id="geographic" class="my-5 py-3 border-top" v-if="geoData">
+        <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
           <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
           <p class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</p>
           <div class="d-flex flex-wrap">
-            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3">
+            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-33 my-3">
               <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
                   <router-link :to="{name: 'MutationReport', query: { ... choro.route, loc: [loc], selected: loc }}">
@@ -292,6 +292,12 @@ export default {
     selectedMutations() {
       this.updateMaps();
       this.updateTable();
+    },
+    '$route.query': function(newVal, oldVal) {
+      if (newVal.loc != oldVal.loc) {
+        this.newLocation = null;
+        this.createReport();
+      }
     }
   },
   computed: {
@@ -402,26 +408,35 @@ export default {
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
-    this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.loc).subscribe(results => {
-      this.dateUpdated = results.dateUpdated.dateUpdated;
-      this.lastUpdated = results.dateUpdated.lastUpdated;
-      this.totalSequences = results.total;
-      this.curatedLineages = results.curated;
-      this.selectedLocation = results.location;
-    })
-
-    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentThreshold).subscribe(results => {
-      // console.log(results)
-      this.lineagesByDay = results.lineagesByDay;
-      this.mostRecentLineages = results.mostRecentLineages;
-      this.lineageDomain = results.lineageDomain;
-      this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
-    })
+    this.setupReport();
   },
   methods: {
+    setupReport() {
+      this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.loc).subscribe(results => {
+        this.dateUpdated = results.dateUpdated.dateUpdated;
+        this.lastUpdated = results.dateUpdated.lastUpdated;
+        this.totalSequences = results.total;
+        this.curatedLineages = results.curated;
+        this.selectedLocation = results.location;
+        console.log(this.selectedLocation)
+      })
+
+      this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentThreshold).subscribe(results => {
+        // console.log(results)
+        this.lineagesByDay = results.lineagesByDay;
+        this.mostRecentLineages = results.mostRecentLineages;
+        this.lineageDomain = results.lineageDomain;
+        this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
+      })
+    },
+    createReport() {
+      this.setupReport();
+      this.updateTable();
+      this.updateMaps();
+    },
     updateLocations(selected) {
       console.log(selected)
-      if(selected){
+      if (selected) {
         this.newLocation = selected;
       }
     },
@@ -572,5 +587,9 @@ export default {
 .btn-active {
     background-color: $primary-color;
     color: white;
+}
+
+.w-33 {
+    width: 33% !important;
 }
 </style>

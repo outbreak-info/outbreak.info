@@ -931,7 +931,6 @@ export function getLocationMaps(apiurl, location, mutations, ndays) {
 
   return forkJoin(...mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, ndays))).pipe(
     map(results => {
-      console.log(results)
       return (results)
     }),
     catchError(e => {
