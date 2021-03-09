@@ -264,7 +264,7 @@ const routes = [{
     path: "/situation-reports",
     name: "MutationReport",
     props: route => ({
-      location: route.query.location,
+      loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
       selected: route.query.selected

@@ -4,7 +4,7 @@
     <input :class="{ 'form-control': isStandalone }" :disabled="disabled" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
     <div class="dropdown-menu" :class="{'show':isOpen}" style="width:100%">
       <a v-for="(suggestion, idx) in matches" :key="idx" class="dropdown-item" :class="{'active': isActive(idx)}" @click="suggestionClick(idx)">
-        {{ suggestion.name }} ({{ suggestion.total_count.toLocaleString() }} {{ totalLabel }})</a>
+        {{ suggestion.label }} <span v-if="suggestion.total">({{ suggestion.total_count.toLocaleString() }} {{ totalLabel }})</span></a>
     </div>
   </div>
 
@@ -62,7 +62,7 @@ export default {
       if (this.removeOnSelect || !this.selected) {
         this.selected = null; // reset
       } else {
-        this.selected = this.selected.name;
+        // this.selected = this.selected;
       }
     },
 
@@ -110,7 +110,7 @@ export default {
       if (this.removeOnSelect || !this.selected) {
         this.selected = null; // reset
       } else {
-        this.selected = this.selected.name;
+        // this.selected = this.selected;
       }
     }
   }
