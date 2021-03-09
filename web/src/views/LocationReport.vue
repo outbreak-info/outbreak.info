@@ -48,18 +48,20 @@
     <template>
       <!-- SOCIAL MEDIA SHARE, BACK BTN -->
       <div class="d-flex align-items-center mb-2">
-        <router-link :to="{ name: 'LocationReports'}">
+        <router-link :to="{ name: 'LocationReports'}"  class="no-underline">
           <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
-            <font-awesome-icon class="mr-2" :icon="['fas', 'arrow-left']" />
+            <font-awesome-icon class="mr-2 fa-sm" :icon="['fas', 'arrow-left']" />
             back
           </button>
         </router-link>
-        <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline" data-toggle="modal" data-target="#change-pangolin-modal">
-          <font-awesome-icon class="mr-1" :icon="['fas', 'plus']" />
-          add mutations</button>
+        <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-pangolin-modal">
+          <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
+          add mutations
+        </button>
         <ShareReport title="title" url="url" />
       </div>
 
+      <!-- REPORT HEADER -->
       <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
         <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
         <div class="d-flex justify-content-between align-items-center">
@@ -102,20 +104,20 @@
       <!-- MINI-NAV -->
       <div class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center border-top border-bottom">
         <a href="#lineages">
-          <button class="btn btn-grey-flat mx-3 py-2">
-            <span>Common lineages</span>
+          <button class="btn btn-grey mx-3 py-2">
+            <small>Common lineages</small>
           </button>
         </a>
 
         <a href="#variants-of-concern">
-          <button class="btn btn-grey-flat mx-3 py-2">
-            <span>Variants of Concern & Interest</span>
+          <button class="btn btn-grey mx-3 py-2">
+            <small>Variants of Concern & Interest</small>
           </button>
         </a>
 
         <a href="#geographic">
-          <button class="btn btn-grey-flat mx-3 py-2">
-            <span>Geographic breakdown</span>
+          <button class="btn btn-grey mx-3 py-2">
+            <small>Geographic breakdown</small>
           </button>
         </a>
       </div>

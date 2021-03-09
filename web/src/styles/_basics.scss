@@ -753,6 +753,10 @@ $mutation-color: #f28e2c;
     color: lighten($mutation-color, 15%);
 }
 
+.mutation-hyperlink a {
+    color: lighten($mutation-color, 30%);
+}
+
 
 .bright-hyperlink,
 .bright-hyperlink a {

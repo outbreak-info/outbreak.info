@@ -195,19 +195,6 @@ $mutation-width: 275px;
     min-width: 0;
 }
 
-$mutation-color: #f28e2c;
-.mutation-banner {
-    border-width: 0;
-    border-style: solid;
-    background: linear-gradient(to left, $primary-color 0%, $mutation-color 50%, $primary-color 100%) left bottom darken($primary-color,10%) no-repeat;
-    background-size: 100% 7px;
-    /* if linear-gradient, we need to resize it */
-}
-
-.mutation-header {
-    color: lighten($mutation-color, 15%);
-}
-
 .bg-image {
   width: 16%;
     position: absolute;
