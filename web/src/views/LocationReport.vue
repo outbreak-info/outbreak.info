@@ -482,7 +482,7 @@ export default {
       // methods
       queryLocation: null,
       // variables
-      recentThreshold: 28,
+      recentThreshold: 60,
       otherThresh: 0.03,
       ndayThresh: 5,
       dayThresh: 60,
