@@ -166,12 +166,12 @@
         <!-- TRACKED LINEAGES PREVALENCE -->
         <section id="lineages-over-time" class="my-5" py-3 border-top>
           <div class="d-flex align-items-center justify-content-center">
-            <h3 class="mr-5">Tracked lineages over time</h3>
+            <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
           </div>
-          <OverlayLineagePrevalence :options="selectedMutations" :location="loc" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
+          <OverlayLineagePrevalence :options="selectedMutations" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -180,12 +180,9 @@
           <small class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</small>
           <div class="d-flex flex-wrap">
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-25 my-3">
-              <div v-if="geoData.values.length">
+              <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
-                  <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { ... choro.route, division: [location], selected: location, selectedType: 'division' }}">
-                    <h5>{{ choro.key }}</h5>
-                  </router-link>
-                  <router-link v-else :to="{name: 'MutationReport', query: { ... choro.route, country: [location], selected: location, selectedType: 'country' }}">
+                  <router-link :to="{name: 'MutationReport', query: { ... choro.route, loc: [loc], selected: loc }}">
                     <h5>{{ choro.key }}</h5>
                   </router-link>
 
@@ -193,7 +190,7 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="location" :mutationName="choro.key" :widthRatio="1" />
+                <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="selectedLocation.label" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
           </div>

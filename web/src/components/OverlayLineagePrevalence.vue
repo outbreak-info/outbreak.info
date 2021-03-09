@@ -7,7 +7,7 @@
       <div class="b-input"></div>
     </label>
   </div>
-  <ReportPrevalenceOverlay :data="prevalences" :epi="epi" v-if="prevalences && epi" />
+  <ReportPrevalenceOverlay :data="prevalences" :epi="epi" v-if="prevalences && epi" :locationName="locationName" />
 
 </div>
 </template>
@@ -27,7 +27,8 @@ export default {
   name: "LocationReport",
   props: {
     options: Array,
-    location: String,
+    locationID: String,
+    locationName: String,
     selected: Array
   },
   components: {
@@ -62,15 +63,17 @@ export default {
           disableScroll: true
         },
         query: {
-          division: queryParams.division,
-          id: queryParams.id,
+          loc: this.locationID,
+          muts: queryParams.muts,
+          pango: queryParams.pango,
+          variant: queryParams.variant,
           selected: this.selectedMutations.map(d => d.label)
         }
       })
       this.updateData();
     },
     updateData() {
-      this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl, this.$apiurl, this.location, this.selectedMutations).subscribe(results => {
+      this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl, this.$apiurl, this.locationID, this.selectedMutations).subscribe(results => {
         this.epi = results.epi;
         this.prevalences = results.mutations;
       })

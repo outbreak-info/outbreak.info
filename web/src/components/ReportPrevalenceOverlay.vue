@@ -136,8 +136,7 @@ export default Vue.extend({
   props: {
     data: Array,
     epi: Array,
-    locationName: String,
-    location: String
+    locationName: String
   },
   components: {
     DownloadReportData,

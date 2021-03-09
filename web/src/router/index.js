@@ -437,7 +437,8 @@ const routes = [{
       loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
-      variant: route.query.variant
+      variant: route.query.variant,
+      selected: route.query.selected
     }),
     component: () =>
       import(

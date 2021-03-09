@@ -931,6 +931,7 @@ export function getLocationMaps(apiurl, location, mutations, ndays) {
 
   return forkJoin(...mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, ndays))).pipe(
     map(results => {
+      console.log(results)
       return (results)
     }),
     catchError(e => {
@@ -953,7 +954,7 @@ export function getMutationCumPrevalence(apiurl, mutationObj, location) {
   )
 }
 
-export function getAllTemporalPrevalence(apiurl, mutationObj, location) {
+export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
   return (getTemporalPrevalence(apiurl, location, mutationObj.query)).pipe(
     map(results => {
       mutationObj["data"] = results;
@@ -989,8 +990,6 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
 
   return forkJoin([getEpiTraces(epiurl, [locationID], epiFields), getAllTemporalPrevalences(apiurl, locationID, mutations)]).pipe(
     map(([epi, mutationTraces]) => {
-      console.log(epi)
-      console.log(mutationTraces)
       return ({
         epi: epi[0].value,
         mutations: mutationTraces
@@ -1006,9 +1005,8 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
 }
 
 export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
-  const location = "United States";
 
-  return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, mutation, location))).pipe(
+  return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, locationID, mutation))).pipe(
     map(results => {
       return (results)
     }),
