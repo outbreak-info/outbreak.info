@@ -20,7 +20,7 @@
             <div class="mb-3 py-3 border-bottom border-secondary">
               <h6 class="text-muted text-underline m-0">Current locations</h6>
               <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
-                {{ location.name }}
+                {{ location.label }}
                 <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
               </button>
             </div>

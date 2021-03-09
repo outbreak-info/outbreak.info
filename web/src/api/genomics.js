@@ -455,7 +455,6 @@ export function getAllLocationPrevalence(apiurl, mutation, location, ndays = nul
 export function getLocationPrevalence(apiurl, queryStr, location, ndays = null) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
 
-  // if (locationType != "division") {
   let url;
   url = location == "Worldwide" ?
     `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&timestamp=${timestamp}` :
