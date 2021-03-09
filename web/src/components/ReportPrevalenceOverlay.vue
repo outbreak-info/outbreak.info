@@ -11,20 +11,22 @@
   <div class="d-flex flex-column">
     <!-- SVGs -->
     <div class="d-flex flex-column align-items-start">
-      <h5 class="">Daily COVID-19 cases in {{ locationName }}</h5>
-      <div class="d-flex">
-        <svg width="15" height="15" class="mr-2">
-          <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+      <div :class="{'hidden' : !epi.length}">
+        <h5 class="">Daily COVID-19 cases in {{ locationName }}</h5>
+        <div class="d-flex">
+          <svg width="15" height="15" class="mr-2">
+            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+          </svg>
+          <small class="text-muted">7 day rolling average of confirmed cases</small>
+        </div>
+        <!-- EPI TRACE -->
+        <svg :width="width" :height="height" class="prevalence-curve" ref="epi" name="title">
+          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
+          <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+          <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
         </svg>
-        <small class="text-muted">7 day rolling average of confirmed cases</small>
       </div>
-      <!-- EPI TRACE -->
-      <svg :width="width" :height="height" class="prevalence-curve" ref="epi" name="title">
-        <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
-        <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-      </svg>
 
       <!-- TIME TRACE -->
       <h5 class="p-0 m-0">{{title}}</h5>
