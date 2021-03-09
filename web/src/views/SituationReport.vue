@@ -74,7 +74,7 @@
     <template v-if="hasData">
       <!-- SOCIAL MEDIA SHARE, BACK BTN -->
       <div class="d-flex align-items-center mb-2">
-        <router-link :to="{ name: 'LocationReports'}" class="no-underline">
+        <router-link :to="{ name: 'SituationReports'}" class="no-underline">
           <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
             <font-awesome-icon class="mr-2 fa-sm" :icon="['fas', 'arrow-left']" />
             back
@@ -427,10 +427,16 @@ export default {
       return this.lineageName ? `https://cov-lineages.org/lineages/lineage_${this.lineageName}.html` : null
     },
     selectedLocations() {
-      return ([{
-        name: "USA_US-NY",
-        isActive: true
-      }])
+      if(!this.loc){
+        return({
+          name: "Worldwide",
+          id: "Worldwide",
+          isActive: true
+        })
+      } else{
+      return ([this.loc])
+      }
+
       // if (!this.country && !this.division) {
       //   if (!this.selected || this.selected == "Worldwide") {
       //     return ([{
