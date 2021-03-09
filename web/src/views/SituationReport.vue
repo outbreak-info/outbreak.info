@@ -263,7 +263,8 @@
             </button>
           </div>
         </div>
-        <div v-if="selectedType != 'division'">
+
+        <div v-if="selectedAdmin < 2">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <small class="text-muted">Since first identification in location</small>
             <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -271,8 +272,9 @@
           <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selected" />
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" />
         </div>
+
         <div class="text-muted my-5" v-else>
-          Maps are not available at this time for divisions. Please select worldwide or a country.
+          Geographic breakdowns are not available for counties. Please select worldwide, a country, or a division/state.
         </div>
 
       </section>
@@ -477,6 +479,7 @@ export default {
 
       // data
       selectedLocations: null,
+      selectedAdmin: null,
       dateUpdated: null,
       reportMetadata: null,
       choroLocation: "country",
@@ -574,6 +577,8 @@ export default {
           // selected locations
           this.selectedLocations = results.locations;
           this.currentLocs = results.locations;
+          const selected = results.locations.filter(d => d.isActive);
+          this.selectedAdmin = selected.length === 1 ? selected[0].admin_level : null;
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
