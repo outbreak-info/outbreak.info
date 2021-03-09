@@ -48,7 +48,7 @@
     <template>
       <!-- SOCIAL MEDIA SHARE, BACK BTN -->
       <div class="d-flex align-items-center mb-2">
-        <router-link :to="{ name: 'LocationReports'}"  class="no-underline">
+        <router-link :to="{ name: 'LocationReports'}" class="no-underline">
           <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
             <font-awesome-icon class="mr-2 fa-sm" :icon="['fas', 'arrow-left']" />
             back
@@ -130,7 +130,7 @@
         <!-- STREAM GRAPHS -->
         <div id="lineages">
           <div>
-            <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence in {{location}}</h3>
+            <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence in {{ selectedLocation.label }}</h3>
             <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
           </div>
 
@@ -146,7 +146,7 @@
             <!-- STACKED BAR / MOST RECENT -->
             <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
               <h5>Most commonly found lineages over the past {{recentThreshold}} days</h5>
-              <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :location="location" :locationType="selectedLocationType" />
+              <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :locationID="selectedLocation.id" />
             </section>
 
           </div>
@@ -155,12 +155,12 @@
         <!-- TRACKED LINEAGES TABLE -->
         <section id="variants-of-concern" v-if="lineageTable" class="my-5 py-3 border-top">
           <div class="d-flex align-items-center justify-content-center">
-            <h3 class="mr-5">Tracked lineages</h3>
+            <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
           </div>
-          <LocationTable :data="lineageTable" :selectedLocationType="selectedLocationType" :location="location" />
+          <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
         </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
@@ -171,7 +171,7 @@
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
           </div>
-          <OverlayLineagePrevalence :options="selectedMutations" :location="id" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
+          <OverlayLineagePrevalence :options="selectedMutations" :location="loc" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -271,16 +271,13 @@ import {
   getLocationMaps,
   getBasicLocationReportData,
   getLocationTable,
-  findCountry,
-  findDivision
+  findLocation
 } from "@/api/genomics.js";
 
 export default {
   name: "LocationReport",
   props: {
-    country: String,
-    division: String,
-    id: String,
+    loc: String,
     muts: Array,
     pango: Array,
     variant: Array,
@@ -314,17 +311,8 @@ export default {
     smallScreen() {
       return (window.innerSize < 500)
     },
-    location() {
-      return (this.division ? this.division : this.country)
-    },
     title() {
-      return (`${this.location} Mutation Report`)
-    },
-    selectedLocation() {
-      return (this.division ? this.division : this.country)
-    },
-    selectedLocationType() {
-      return (this.division ? "division" : "country")
+      return (this.selectedLocation ? `${this.selectedLocation.label} Mutation Report` : null)
     },
     selectedMutations() {
       let tracked = this.curatedLineages;
@@ -420,14 +408,15 @@ export default {
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
-    this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType).subscribe(results => {
+    this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.loc).subscribe(results => {
       this.dateUpdated = results.dateUpdated.dateUpdated;
       this.lastUpdated = results.dateUpdated.lastUpdated;
       this.totalSequences = results.total;
       this.curatedLineages = results.curated;
+      this.selectedLocation = results.location;
     })
 
-    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
+    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
       // console.log(results)
       this.lineagesByDay = results.lineagesByDay;
       this.mostRecentLineages = results.mostRecentLineages;
@@ -437,12 +426,12 @@ export default {
   },
   methods: {
     updateMaps() {
-      this.choroSubscription = getLocationMaps(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations, this.recentThresh).subscribe(results => {
+      this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentThresh).subscribe(results => {
         this.geoData = results;
       })
     },
     updateTable() {
-      this.tableSubscription = getLocationTable(this.$genomicsurl, this.selectedLocation, this.selectedLocationType, this.selectedMutations).subscribe(results => {
+      this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations).subscribe(results => {
         this.lineageTable = results;
       })
     }
@@ -463,6 +452,8 @@ export default {
       otherThresh: 0.03,
       ndayThresh: 5,
       dayThresh: 60,
+      // location info
+      selectedLocation: null,
       // data
       dateUpdated: null,
       lastUpdated: null,

@@ -41,9 +41,9 @@ export default Vue.extend({
   components: {},
   props: {
     data: Array,
-    location: String,
+    locationID: String,
+    locationName: String,
     colorScale: Function,
-    locationType: String,
     rectWidth: {
       type: Number,
       default: 25
@@ -51,7 +51,7 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      return ("Lineage prevalence over time")
+      return (this.locationName ? `Lineage prevalence over time in ${this.locationName}` : "Lineage prevalence over time")
     }
   },
   watch: {
@@ -247,27 +247,14 @@ export default Vue.extend({
     },
     route2Lineage(pango) {
       if (pango.toLowerCase() != "other") {
-        if (this.locationType == "country") {
-          this.$router.push({
-            name: "MutationReport",
-            query: {
-              country: this.location,
-              pango: pango,
-              selected: this.location,
-              selectedType: this.locationType
-            }
-          })
-        } else {
-          this.$router.push({
-            name: "MutationReport",
-            query: {
-              division: this.location,
-              pango: pango,
-              selected: this.location,
-              selectedType: this.locationType
-            }
-          })
-        }
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            loc: this.locationID,
+            pango: pango,
+            selected: this.locationID
+          }
+        })
       }
     },
     debounce(fn, delay) {

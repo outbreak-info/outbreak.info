@@ -48,10 +48,7 @@
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
         <td>
-          <router-link v-if="selectedLocationType == 'division'" :to="{name: 'MutationReport', query: { ... lineage.route, division: [location], selected: location, selectedType: 'division' }}">
-            {{ lineage.label }}
-          </router-link>
-          <router-link v-else :to="{name: 'MutationReport', query: { ... lineage.route, country: [location], selected: location, selectedType: 'country' }}">
+          <router-link :to="{name: 'MutationReport', query: { ... lineage.route, loc: [locationID], selected: locationID }}">
             {{ lineage.label }}
           </router-link>
         </td>
@@ -105,8 +102,7 @@ export default {
   },
   props: {
     data: Array,
-    location: String,
-    selectedLocationType: String
+    locationID: String
   }
 }
 </script>

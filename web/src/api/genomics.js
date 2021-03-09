@@ -864,11 +864,12 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
 export function getBasicLocationReportData(apiurl, location) {
   store.state.genomics.locationLoading1 = true
   return forkJoin([
+    findLocationMetadata(apiurl, location),
     getDateUpdated(apiurl),
     getCuratedList(),
     getSequenceCount(apiurl, location)
   ]).pipe(
-    map(([dateUpdated, curated, total]) => {
+    map(([location, dateUpdated, curated, total]) => {
       const filtered = curated.filter(d => d.key == "lineage");
       let curatedLineages;
       if (filtered.length === 1) {
@@ -884,6 +885,7 @@ export function getBasicLocationReportData(apiurl, location) {
         })
       }
       return ({
+        location: location,
         dateUpdated: dateUpdated,
         curated: curatedLineages,
         total: total
