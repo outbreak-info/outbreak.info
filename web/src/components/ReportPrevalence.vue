@@ -408,7 +408,6 @@ export default Vue.extend({
             .remove()
           )
         )
-        console.log(this.data)
 
         const pathSelector = this.chart
           .selectAll(".prevalence-line")
