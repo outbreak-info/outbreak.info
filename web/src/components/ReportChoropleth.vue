@@ -53,7 +53,7 @@
     <div id="sequencing-count"></div>
   </div>
 
-  <div class="w-75">
+  <div class="w-75" v-if="showCopy">
     <DownloadReportData :data="data" figureRef="report-choropleth" dataType="Mutation Report Choropleth" />
   </div>
 
@@ -108,6 +108,10 @@ export default {
       default: "Worldwide"
     },
     showLegend: {
+      type: Boolean,
+      default: true
+    },
+    showCopy: {
       type: Boolean,
       default: true
     },
