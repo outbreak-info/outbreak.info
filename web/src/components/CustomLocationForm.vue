@@ -8,21 +8,21 @@
           <font-awesome-icon :icon="['fas', 'search']" />
         </span>
       </div>
-      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :disabled="divisionSelected" :queryFunction="queryCountry" @selected="updateCountry" :apiUrl="this.$genomicsurl" placeholder="Select country" totalLabel="total sequences"
+      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :disabled="divisionSelected" :queryFunction="queryLocation" @selected="updateCountry" :apiUrl="this.$genomicsurl" placeholder="Select country" totalLabel="total sequences"
         :removeOnSelect="false" />
     </div>
 
-    <p class="p-0 m-0 text-muted">or</p>
+    <!-- <p class="p-0 m-0 text-muted">or</p> -->
 
-    <div class="input-group ml-4">
-      <div class="input-group-prepend">
-        <span class="input-group-text bg-grey text-muted border-0" id="sb">
-          <font-awesome-icon :icon="['fas', 'search']" />
-        </span>
-      </div>
-      <TypeaheadSelect class="form-control" :isStandalone="false" :disabled="countrySelected" :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Select division (state)" totalLabel="total sequences"
-        :removeOnSelect="false" />
-    </div>
+    <!-- <div class="input-group ml-4"> -->
+    <!--   <div class="input-group-prepend"> -->
+    <!--     <span class="input-group-text bg-grey text-muted border-0" id="sb"> -->
+    <!--       <font-awesome-icon :icon="['fas', 'search']" /> -->
+    <!--     </span> -->
+    <!--   </div> -->
+    <!--   <TypeaheadSelect class="form-control" :isStandalone="false" :disabled="countrySelected" :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Select division (state)" totalLabel="total sequences" -->
+    <!--     :removeOnSelect="false" /> -->
+    <!-- </div> -->
   </div>
 
   <div class="d-flex flex-column justify-content-center align-items-center w-100 mt-5">
@@ -62,8 +62,7 @@ import CustomReportForm from "@/components/CustomReportForm.vue";
 import {
   getReportList,
   getSequenceCount,
-  findCountry,
-  findDivision
+  findLocation,
 } from "@/api/genomics.js";
 
 // --- font awesome --
@@ -136,16 +135,14 @@ export default {
   },
   data() {
     return {
-      queryCountry: null,
-      queryDivision: null,
+      queryLocation: null,
       location: null,
       countrySelected: false,
       divisionSelected: false
     }
   },
   mounted() {
-    this.queryCountry = findCountry;
-    this.queryDivision = findDivision;
+    this.queryLocation = findLocation;
   }
 }
 </script>
