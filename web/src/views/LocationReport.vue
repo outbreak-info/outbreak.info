@@ -457,9 +457,11 @@ export default {
       console.log("selected")
     },
     updateMaps() {
-      this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentThreshold).subscribe(results => {
-        this.geoData = results;
-      })
+      if (this.selectedLocation.adminLevel === 0) {
+        this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentThreshold).subscribe(results => {
+          this.geoData = results;
+        })
+      }
     },
     updateTable() {
       this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations).subscribe(results => {

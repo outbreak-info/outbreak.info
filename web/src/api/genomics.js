@@ -989,13 +989,14 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
 
   return forkJoin([getEpiTraces(epiurl, [locationID], epiFields), getAllTemporalPrevalences(apiurl, locationID, mutations)]).pipe(
     map(([epi, mutationTraces]) => {
+      epi = epi.length ? epi[0].value : [];
       return ({
-        epi: epi[0].value,
+        epi: epi,
         mutations: mutationTraces
       })
     }),
     catchError(e => {
-      console.log("%c Error in getting location mapping data!", "color: orange");
+      console.log("%c Error in getting epi/mutation prevalence data!", "color: orange");
       console.log(e);
       return ( of ([]));
     }),
