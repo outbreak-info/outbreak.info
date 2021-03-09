@@ -363,7 +363,7 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
 
-      this.plottedData = this.data;
+      this.plottedData = this.data.filter(d => d.data.length);
       this.plottedEpi = this.epi;
       this.colorScale = this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },
