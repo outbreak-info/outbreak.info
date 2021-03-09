@@ -158,7 +158,7 @@ export default Vue.extend({
         top: 10,
         bottom: 40,
         left: 85,
-        right: 70
+        right: 110
       },
       heightCounts: 80,
       lengthThreshold: 1,
