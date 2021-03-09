@@ -12,7 +12,7 @@
     </div>
 
     <!-- CHANGE LOCATION MODAL -->
-    <!-- <div id="change-locations-modal" class="modal fade">
+    <div id="change-locations-modal" class="modal fade">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header border-secondary">
@@ -23,26 +23,20 @@
         </div>
         <div class="modal-body">
           <div class="py-3 border-bottom">
-            <div class="d-flex align-items-center justify-content-center my-3" id="select-country">
-              <TypeaheadSelect :queryFunction="queryCountry" @selected="updateCountries" :apiUrl="this.$genomicsurl" placeholder="Add country" totalLabel="total sequences" />
-            </div>
-          </div>
-
-          <div class="py-3">
-            <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
-              <TypeaheadSelect :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Add division" totalLabel="total sequences" />
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
+              <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocations" :apiUrl="this.$genomicsurl" placeholder="Select location" totalLabel="total sequences" />
             </div>
           </div>
         </div>
 
         <div class="modal-footer border-secondary">
           <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
-          <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
+          <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Create report</button>
 
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
     <!-- end change location modal -->
 
     <template>
@@ -190,7 +184,7 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showLegend="false" :data="choro.values" :fillMax="1" :location="selectedLocation.label" :mutationName="choro.key" :widthRatio="1" />
+                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :fillMax="1" :location="selectedLocation.label" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
           </div>
@@ -281,6 +275,7 @@ export default {
     selected: Array
   },
   components: {
+    TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
     ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
     Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
     ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
@@ -395,6 +390,8 @@ export default {
     }
   },
   mounted() {
+    this.queryLocation = findLocation;
+
     const formatDate = timeFormat("%e %B %Y");
     var currentTime = new Date();
     this.today = formatDate(currentTime);
@@ -413,7 +410,7 @@ export default {
       this.selectedLocation = results.location;
     })
 
-    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh).subscribe(results => {
+    this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentThreshold).subscribe(results => {
       // console.log(results)
       this.lineagesByDay = results.lineagesByDay;
       this.mostRecentLineages = results.mostRecentLineages;
@@ -422,6 +419,28 @@ export default {
     })
   },
   methods: {
+    updateLocations(selected) {
+      console.log(selected)
+      if(selected){
+        this.newLocation = selected;
+      }
+    },
+    selectNewLocations() {
+      this.$router.push({
+        name: "LocationReport",
+        query: {
+          loc: this.newLocation.id,
+          pango: this.pango,
+          variant: this.variant,
+          muts: this.muts,
+          selected: this.selected
+        }
+      })
+      this.newLocation = null;
+    },
+    clearNewLocations() {
+      console.log("selected")
+    },
     updateMaps() {
       this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentThreshold).subscribe(results => {
         this.geoData = results;
@@ -444,6 +463,7 @@ export default {
       choroSubscription: null,
       tableSubscription: null,
       // methods
+      queryLocation: null,
       // variables
       recentThreshold: 28,
       otherThresh: 0.03,
@@ -451,6 +471,7 @@ export default {
       dayThresh: 60,
       // location info
       selectedLocation: null,
+      newLocation: null,
       // data
       dateUpdated: null,
       lastUpdated: null,

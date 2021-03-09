@@ -773,9 +773,9 @@ export function getDateUpdated(apiurl) {
     })
   )
 }
-export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays) {
+export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays, window) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&cumulative=true&timestamp=${timestamp}`;
+  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&window=${window}&ndays=${ndays}&cumulative=true&timestamp=${timestamp}`;
 
   return from(
     axios.get(url, {
@@ -899,12 +899,12 @@ export function getBasicLocationReportData(apiurl, location) {
     finalize(() => store.state.genomics.locationLoading1 = false)
   )
 }
-export function getLocationReportData(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays) {
+export function getLocationReportData(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window) {
   store.state.genomics.locationLoading2 = true;
 
   return forkJoin([
     getPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays),
-    getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays)
+    getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays, window)
   ]).pipe(
     map(([lineagesByDay, mostRecentLineages, lineageTable]) => {
       let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
