@@ -31,7 +31,7 @@
 
         <div class="modal-footer border-secondary">
           <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
-          <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Create report</button>
+          <button type="button" class="btn btn-primary" @click="submitNewLocation" data-dismiss="modal">Create report</button>
 
         </div>
       </div>
@@ -64,7 +64,7 @@
             <div class="d-flex align-items-end">
               <div class="d-flex align-items-center">
                 <h1 class="m-0 font-weight-bold location-header">{{ title }}</h1>
-                <button class="btn py-1 px-2 ml-4 btn-grey" data-toggle="modal" data-target="#change-locations-modal">
+                <button class="btn py-1 px-2 mx-4 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-locations-modal">
                   <font-awesome-icon class="mr-2 font-size-small" :icon="['fas', 'sync']" />change location
                 </button>
               </div>
@@ -80,7 +80,7 @@
 
 
           </div>
-          <div class="d-flex flex-column align-items-end justify-content-between">
+          <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
             <div class="d-flex align-items-center mb-1">
               Enabled by data from
               <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
@@ -425,7 +425,7 @@ export default {
         this.newLocation = selected;
       }
     },
-    selectNewLocations() {
+    submitNewLocation() {
       this.$router.push({
         name: "LocationReport",
         query: {
