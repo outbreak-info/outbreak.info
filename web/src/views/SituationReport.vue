@@ -274,7 +274,7 @@
         </div>
 
         <div class="text-muted my-5" v-else>
-          Geographic breakdowns are not available for counties. Please select worldwide, a country, or a division/state.
+          Geographic prevalence is not available for counties. Please select worldwide, a country, or a division/state.
         </div>
 
       </section>
