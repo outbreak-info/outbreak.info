@@ -26,9 +26,9 @@
             </div>
 
             <div class="py-3 border-bottom">
-              <div v-if="ctry2Add.length" class="my-3">
-                <h6 class="text-sec text-underline m-0">Countries to add</h6>
-                <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in ctry2Add" :key="cIdx" id="new-countries" @click="removeCountry2Add(cIdx)">
+              <div v-if="loc2Add.length" class="my-3">
+                <h6 class="text-sec text-underline m-0">Locations to add</h6>
+                <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(country, cIdx) in loc2Add" :key="cIdx" id="new-countries" @click="removeLocation2Add(cIdx)">
                   {{ country }}
                   <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
                 </button>
@@ -39,20 +39,20 @@
               </div>
             </div>
 
-            <div class="py-3">
-              <div v-if="div2Add.length" class="my-3">
-                <h6 class="text-sec text-underline m-0">Divisions (States/Provinces) to add</h6>
-                <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(division, dIdx) in div2Add" :key="dIdx" id="new-divisions" @click="removeDivision2Add(cIdx)">
-                  {{ division }}
-                  <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
-                </button>
-              </div>
+          <!--   <div class="py-3"> -->
+          <!--     <div v-if="div2Add.length" class="my-3"> -->
+          <!--       <h6 class="text-sec text-underline m-0">Divisions (States/Provinces) to add</h6> -->
+          <!--       <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(division, dIdx) in div2Add" :key="dIdx" id="new-divisions" @click="removeDivision2Add(cIdx)"> -->
+          <!--         {{ division }} -->
+          <!--         <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" /> -->
+          <!--       </button> -->
+          <!--     </div> -->
 
 
-              <div class="d-flex align-items-center justify-content-center my-3" id="select-division">
-                <TypeaheadSelect :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Add division" totalLabel="total sequences" />
-              </div>
-            </div>
+          <!--     <div class="d-flex align-items-center justify-content-center my-3" id="select-division"> -->
+          <!--       <TypeaheadSelect :queryFunction="queryDivision" @selected="updateDivision" :apiUrl="this.$genomicsurl" placeholder="Add division" totalLabel="total sequences" /> -->
+          <!--     </div> -->
+          <!--   </div> -->
           </div>
 
 
@@ -389,8 +389,7 @@ import {
   getReportData,
   getCuratedMetadata,
   updateLocationData,
-  findCountry,
-  findDivision,
+  findLocation,
   findPangolin,
   getLocationPrevalence
 } from "@/api/genomics.js";
@@ -448,18 +447,20 @@ export default {
       return this.lineageName ? `https://cov-lineages.org/lineages/lineage_${this.lineageName}.html` : null
     },
     selectedLocations() {
-      if (!this.country && !this.division) {
+      if (!this.location) {
         if (!this.selected || this.selected == "Worldwide") {
           return ([{
             name: "Worldwide",
             type: "world",
             isActive: true
           }, {
-            name: "United States",
+	    name: "United States",
+            id: "USA",
             type: "country",
             isActive: false
           }, {
-            name: "California",
+	    name: "California",
+            id: "USA_US-CA",
             type: "division",
             isActive: false
           }])
@@ -475,32 +476,17 @@ export default {
           }])
         }
       } else {
-        let ctries;
-        let divisions;
-        if (this.country) {
-          ctries = typeof(this.country) == "string" ? [this.country] : this.country;
-          ctries = ctries.map(d => {
+        let locations;
+        if (this.location) {
+          locations = typeof(this.location) == "string" ? [this.location] : this.location;
+          locations = ctries.map(d => {
             return {
-              name: d,
-              isActive: d == this.selected && this.selectedType == "country",
-              type: "country"
+              id: d,
+              isActive: d == this.selected
             };
           })
         } else {
-          ctries = [];
-        }
-
-        if (this.division) {
-          divisions = typeof(this.division) == "string" ? [this.division] : this.division;
-          divisions = divisions.map(d => {
-            return {
-              name: d,
-              isActive: d == this.selected && this.selectedType == "division",
-              type: "division"
-            };
-          })
-        } else {
-          divisions = [];
+          locations = [];
         }
 
         // always have the world there too.
@@ -510,7 +496,7 @@ export default {
           isActive: this.selected == "Worldwide"
         }];
 
-        return (allLocs.concat(ctries, divisions));
+        return (allLocs.concat(locations));
       }
     },
     choroplethCountries() {
@@ -550,8 +536,7 @@ export default {
       queryPangolin: null,
       newPangolin: null,
       currentLocs: null, // placeholder for current locations
-      ctry2Add: [], // array to store new locations to add
-      div2Add: [], // array to store new locations to add
+      loc2Add: [], // array to store new locations to add
 
       // subscriptions
       dataSubscription: null,
@@ -569,8 +554,7 @@ export default {
       reportMetadata: null,
       choroLocation: "country",
       choroData: null,
-      countries: null,
-      states: null,
+      locations: null,
       locationTotals: null,
       totalLineage: null,
       globalPrev: null,
@@ -581,8 +565,8 @@ export default {
   },
   mounted() {
     this.currentLocs = this.selectedLocations.filter(d => d.name != "Worldwide");
-    this.queryCountry = findCountry;
-    this.queryDivision = findDivision;
+    this.queryCountry = findLocation;
+    this.queryDivision = findLocation;
     this.queryPangolin = findPangolin;
 
     // Get date for the citation object
@@ -657,7 +641,7 @@ export default {
       this.setLineageAndMutationStr();
 
       if (this.lineageName || this.mutationID) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationID, this.lineageName, this.selected, this.selectedType).subscribe(results => {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.selectedLocations, this.mutationID, this.lineageName, this.selected).subscribe(results => {
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -706,79 +690,47 @@ export default {
     removeLocation(idx) {
       this.currentLocs.splice(idx, 1);
     },
-    removeCountry2Add(idx) {
-      this.ctry2Add.splice(idx, 1);
-    },
-    removeDivision2Add(idx) {
-      this.div2Add.splice(idx, 1);
+    removeLocation2Add(idx) {
+      this.loc2Add.splice(idx, 1);
     },
     clearNewLocations() {
-      this.ctry2Add = [];
-      this.div2Add = [];
+      this.loc2Add = [];
     },
     selectNewLocations() {
       // update currentLocs
-      let newCountries = this.ctry2Add.map(d => {
+      let newLocations = this.loc2Add.map(d => {
         return ({
-          name: d,
-          type: "country"
+          id: d
         })
       })
-
-      let newDivisions = this.div2Add.map(d => {
-        return ({
-          name: d,
-          type: "division"
-        })
-      })
-
-      newCountries = this.currentLocs.filter(d => d.type == "country").concat(newCountries);
-
-      newDivisions = this.currentLocs.filter(d => d.type == "division").concat(newDivisions);
 
       // update currentLocs
-      this.currentLocs = newCountries.concat(newDivisions);
+      this.currentLocs = newCountries.concat(newLocations);
 
 
       // de-duplicate
-      newCountries = uniq(newCountries.map(d => d.name));
-      newDivisions = uniq(newDivisions.map(d => d.name));
+      newLocations = uniq(newCountries.map(d => d.id));
 
       const queryParams = this.$route.query;
 
       let selectedPlace;
-      let selectedType;
-      if (queryParams.selectedType == "country") {
-        if (newCountries.includes(queryParams.selected)) {
-          selectedPlace = queryParams.selected;
-          selectedType = queryParams.selectedType;
-        } else {
-          selectedPlace = "Worldwide";
-          selectedType = "country";
-        }
+
+      if (newLocations.includes(queryParams.selected)) {
+        selectedPlace = queryParams.selected;
       } else {
-        if (newDivisions.includes(queryParams.selected)) {
-          selectedPlace = queryParams.selected;
-          selectedType = queryParams.selectedType;
-        } else {
-          selectedPlace = "Worldwide";
-          selectedType = "country";
-        }
+        selectedPlace = "Worldwide";
       }
 
       // reset the fields.
-      this.ctry2Add = [];
-      this.div2Add = [];
+      this.loc2Add = [];
 
       this.$router.push({
         name: "MutationReport",
         query: {
-          country: newCountries,
-          division: newDivisions,
+          location: newLocations,
           pango: queryParams.pango,
           muts: queryParams.muts,
-          selected: selectedPlace,
-          selectedType: selectedType
+          selected: selectedPlace
         }
       })
     },
@@ -791,18 +743,15 @@ export default {
 
       location.isActive = true;
 
-      const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
-      const divisions = this.selectedLocations.filter(d => d.type == "division").map(d => d.name);
+      const locations = this.selectedLocations.map(d => d.id);
 
       this.$router.push({
         name: "MutationReport",
         query: {
-          country: countries,
-          division: divisions,
+          location: locations,
           pango: queryParams.pango,
           muts: queryParams.muts,
-          selected: location.name,
-          selectedType: location.type
+          selected: location.id
         },
         params: {
           disableScroll: true
@@ -810,7 +759,7 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.selectedLocations, this.selected, this.selectedType).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.selectedLocations, this.selected).subscribe(results => {
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
 
@@ -823,10 +772,7 @@ export default {
       })
     },
     updateCountries(selected) {
-      this.ctry2Add.push(selected.name);
-    },
-    updateDivision(selected) {
-      this.div2Add.push(selected.name);
+      this.loc2Add.push(selected.id);
     },
     updatePangolin(selected) {
       this.newPangolin = selected.name;
@@ -841,8 +787,7 @@ export default {
           division: queryParams.division,
           pango: this.newPangolin,
           muts: queryParams.muts,
-          selected: queryParams.selected,
-          selectedType: queryParams.type
+          selected: queryParams.selected
         }
       })
     },
