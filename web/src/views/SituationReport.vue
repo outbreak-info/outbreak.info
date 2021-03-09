@@ -244,7 +244,7 @@
         <h4 class="mb-0">Average daily {{reportName}} prevalence</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
         <div id="location-buttons" class="d-flex flex-wrap">
-          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="changeLocation(location)">{{ location.label }}</button>
+          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
@@ -257,19 +257,19 @@
         <div class="d-flex align-items-center">
           <h4 class="mb-0 mr-3">Cumulative {{reportName}} prevalence</h4>
           <div id="location-buttons" class="d-flex flex-wrap align-items-center">
-            <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeLocation(location)">{{ location.name }}</button>
+            <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethLocations" :key="cIdx" @click="switchLocation(location)">{{ location.label }}</button>
             <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
           </div>
         </div>
 
-        <div v-if="selectedAdmin < 2">
+        <div v-if="selectedLocation && selectedLocation.admin_level < 2">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <small class="text-muted">Since first identification in location</small>
             <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
-          <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selected" />
+          <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" />
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" />
         </div>
 
@@ -428,7 +428,7 @@ export default {
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineages/lineage_${this.lineageName}.html` : null
     },
-    choroplethCountries() {
+    choroplethLocations() {
       return (this.selectedLocations.filter(d => d.admin_level < 2))
     }
   },
@@ -479,7 +479,7 @@ export default {
 
       // data
       selectedLocations: null,
-      selectedAdmin: null,
+      selectedLocation: null,
       dateUpdated: null,
       reportMetadata: null,
       choroLocation: "country",
@@ -578,7 +578,7 @@ export default {
           this.selectedLocations = results.locations;
           this.currentLocs = results.locations;
           const selected = results.locations.filter(d => d.isActive);
-          this.selectedAdmin = selected.length === 1 ? selected[0].admin_level : null;
+          this.selectedLocation = selected.length === 1 ? selected[0] : null;
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -656,15 +656,14 @@ export default {
         }
       })
     },
-    changeLocation(location) {
-      console.log("CHANGE")
-      // const queryParams = this.$route.query;
-
+    switchLocation(location) {
       this.selectedLocations.forEach(d => {
         d.isActive = false;
       })
 
       location.isActive = true;
+
+      this.selectedLocation = location;
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations.map(d => d.id);
@@ -684,6 +683,12 @@ export default {
     },
     updateLocations() {
       this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.selectedLocations, this.selected).subscribe(results => {
+        // selected locations
+        this.selectedLocations = results.locations;
+        this.currentLocs = results.locations;
+        const selected = results.locations.filter(d => d.isActive);
+        this.selectedLocation = selected.length === 1 ? selected[0] : null;
+        
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
 
@@ -696,7 +701,6 @@ export default {
       })
     },
     updateLocationList(selected) {
-      console.log(selected)
       this.loc2Add.push(selected);
     },
     updatePangolin(selected) {

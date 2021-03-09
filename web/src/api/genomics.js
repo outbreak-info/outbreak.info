@@ -133,6 +133,7 @@ export function buildQueryStr(lineageString, mutationString) {
 
 
 export function getReportData(apiurl, locations, mutationString, lineageString, location) {
+  locations = typeof(locations) == "string" ? [locations] : locations;
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
@@ -184,12 +185,14 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
   store.state.admin.reportloading = true;
 
   return forkJoin([
+    findAllLocationMetadata(apiurl, locations, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
     getLocationPrevalence(apiurl, queryStr, location),
     getCumPrevalences(apiurl, queryStr, locations)
   ]).pipe(
-    map(([longitudinal, byLocation, locPrev]) => {
+    map(([locations, longitudinal, byLocation, locPrev]) => {
       return ({
+        locations: locations,
         longitudinal: longitudinal,
         byCountry: byLocation,
         locPrev: locPrev
