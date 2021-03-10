@@ -757,6 +757,19 @@ $mutation-color: #f28e2c;
     color: lighten($mutation-color, 30%);
 }
 
+$comparison-color: #edc949;
+.comparison-banner {
+    border-width: 0;
+    border-style: solid;
+    background: linear-gradient(to left, $primary-color 0%, $comparison-color 50%, $primary-color 100%) left bottom darken($primary-color,10%) no-repeat;
+    background-size: 100% 7px;
+    /* if linear-gradient, we need to resize it */
+}
+
+.comparison-header {
+    color: lighten($comparison-color, 15%);
+}
+
 
 .bright-hyperlink,
 .bright-hyperlink a {
