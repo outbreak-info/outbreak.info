@@ -127,7 +127,7 @@ import {
 } from "lodash";
 
 export default {
-  name: "SituationReportsDemo",
+  name: "SituationReportComparison",
   props: {
     pango: {
       type: Array,
