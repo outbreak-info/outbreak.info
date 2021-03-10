@@ -30,7 +30,6 @@ import {
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
 
-
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
 const formatDateShort = timeFormat("%e %b %Y");
@@ -273,6 +272,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     map(results => {
       results.forEach(d => {
         d["codon_num"] = +d.codon_num;
+        d["pangolin_lineage"] = lineage;
       })
       return (results)
     }),

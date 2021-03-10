@@ -280,8 +280,22 @@ const routes = [{
     name: "SituationReportMethodology",
     component: () =>
       import(
-        /* webpackChunkName: "situation-reports-caveats" */
+        /* webpackChunkName: "situation-reports-methods" */
         "../views/SituationReportMethodology.vue"
+      )
+  },
+  {
+    path: "/compare-lineages",
+    name: "SituationReportComparison",
+    props: route => ({
+      location: route.query.location,
+      pango: route.query.pango,
+      gene: route.query.gene
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports-comparison" */
+        "../views/SituationReportComparison.vue"
       )
   },
   {
