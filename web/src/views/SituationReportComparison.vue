@@ -335,12 +335,12 @@ export default {
       this.getData();
     },
     deletePango(idx) {
-      this.selectedPango.splice(idx);
+      this.selectedPango.splice(idx, 1);
       this.$router.push({
         name: "SituationReportComparison",
         query: {
           pango: this.selectedPango,
-          gene: this.gene
+          gene: this.selectedGenes
         }
       })
       this.getData();
