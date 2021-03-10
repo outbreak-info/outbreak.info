@@ -30,7 +30,6 @@
           </div>
 
           <div class="modal-footer border-secondary">
-            <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
             <button type="button" class="btn btn-primary" @click="submitNewLocation" data-dismiss="modal">Create report</button>
 
           </div>
@@ -435,7 +434,6 @@ export default {
       this.updateMaps();
     },
     updateLocations(selected) {
-      console.log(selected)
       if (selected) {
         this.newLocation = selected;
       }
@@ -453,10 +451,8 @@ export default {
       })
       this.newLocation = null;
     },
-    clearNewLocations() {
-      console.log("selected")
-    },
     updateMaps() {
+      console.log(this.selectedLocation)
       if (this.selectedLocation.adminLevel === 0) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentThreshold).subscribe(results => {
           this.geoData = results;
