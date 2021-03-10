@@ -32,7 +32,13 @@
 
   <!-- choropleth -->
   <div v-if="colorScale" class="d-flex">
-    <svg :width="i*2+30" :height="35" v-for="(color, i) in colorDomain" :key="i" class="mx-2">
+    <svg :width="18" :height="35" class="mx-2">
+      <g transform="translate(2,0)">
+      <rect width="15" height="15" :fill="colorScale(0)" stroke="#222" stroke-width="0.25"></rect>
+      <text x="7" y="20" dominant-baseline="hanging" text-anchor="middle" fill="#222" font-size="10px">0-{{colorDomain[0]*100}}</text>
+      </g>
+    </svg>
+    <svg :width="i*2+35" :height="35" v-for="(color, i) in colorDomain" :key="i" class="mx-2">
       <g transform="translate(15,0)">
       <rect width="15" height="15" :fill="colorScale(color)" stroke="#222" stroke-width="0.25"></rect>
       <text x="7" y="20" dominant-baseline="hanging" text-anchor="middle" fill="#222" font-size="10px" v-if="i < colorDomain.length - 1">{{color*100}}-{{colorDomain[i+1]*100}}</text>
@@ -91,7 +97,7 @@ import {
   select,
   selectAll,
   scaleSequential,
-  scaleQuantile,
+  scaleThreshold,
   scaleLog
 } from "d3";
 
@@ -127,7 +133,7 @@ export default {
     },
     colorDomain: {
       type: Array,
-      default: () => [0, 0.01, 0.05, 0.1, 0.25, 0.5, 0.75]
+      default: () => [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75]
     }
   },
   components: {
@@ -340,7 +346,7 @@ export default {
         this.updateProjection();
 
         if (this.colorDomain) {
-          this.colorScale = scaleQuantile(schemeYlGnBu[this.colorDomain.length + 2])
+          this.colorScale = scaleThreshold(schemeYlGnBu[this.colorDomain.length+2])
             .domain(this.colorDomain);
             console.log(this.colorScale)
         } else {
