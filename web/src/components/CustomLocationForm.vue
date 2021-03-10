@@ -8,13 +8,13 @@
           <font-awesome-icon :icon="['fas', 'search']" />
         </span>
       </div>
-      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" placeholder="Select location" totalLabel="total sequences" :removeOnSelect="false" />
+      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Select location" totalLabel="total sequences" :removeOnSelect="false" />
     </div>
 
   </div>
 
   <div class="d-flex flex-column justify-content-center align-items-center w-100 mt-5">
-    <button :disabled="!location" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create {{ location.label }} report</button>
+    <button :disabled="!location" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create {{ location ? location.label : null }} report</button>
   </div>
 
   <div class="my-5" v-if="includeMutations">

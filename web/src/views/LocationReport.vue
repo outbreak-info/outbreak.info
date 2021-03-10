@@ -24,7 +24,7 @@
           <div class="modal-body">
             <div class="py-3 border-bottom">
               <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocations" :apiUrl="this.$genomicsurl" placeholder="Select location" totalLabel="total sequences" />
+                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocations" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
               </div>
             </div>
           </div>
