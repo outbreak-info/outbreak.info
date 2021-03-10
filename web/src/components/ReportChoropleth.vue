@@ -31,6 +31,16 @@
   </div>
 
   <!-- choropleth -->
+  <div v-if="colorScale" class="d-flex">
+    <svg :width="i*2+30" :height="35" v-for="(color, i) in colorDomain" :key="i" class="mx-2">
+      <g transform="translate(15,0)">
+      <rect width="15" height="15" :fill="colorScale(color)" stroke="#222" stroke-width="0.25"></rect>
+      <text x="7" y="20" dominant-baseline="hanging" text-anchor="middle" fill="#222" font-size="10px" v-if="i < colorDomain.length - 1">{{color*100}}-{{colorDomain[i+1]*100}}</text>
+      <text x="7" y="20" dominant-baseline="hanging" text-anchor="middle" fill="#222" font-size="10px" v-if="i == colorDomain.length - 1">{{color*100}}-100%</text>
+      </g>
+    </svg>
+  </div>
+
   <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
     <defs>
       <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
@@ -301,6 +311,9 @@ export default {
       this.overlay = select(this.$refs.overlay);
       this.ttips = select(this.$refs.choropleth_tooltip);
     },
+    formatPct(pct) {
+      return(format(".0%")(pct))
+    },
     updateProjection() {
       this.projection = this.projection
         .scale(1)
@@ -327,8 +340,9 @@ export default {
         this.updateProjection();
 
         if (this.colorDomain) {
-          this.colorScale = scaleQuantile(schemeYlGnBu[this.colorDomain.length + 1])
+          this.colorScale = scaleQuantile(schemeYlGnBu[this.colorDomain.length + 2])
             .domain(this.colorDomain);
+            console.log(this.colorScale)
         } else {
           this.colorScale = scaleSequential(interpolateYlGnBu)
             .domain([0, this.maxVal]);
