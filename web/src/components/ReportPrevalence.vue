@@ -48,7 +48,8 @@
       </svg>
 
       <!-- SEQUENCING HISTOGRAM -->
-      <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="countTitle">
+      <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="title">
+      <!-- <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :subtitle="countTitle"> -->
         <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
         <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
@@ -113,7 +114,7 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      return (`${this.mutationName} prevalence over time in ${this.location}`)
+      return (this.location == "Worldwide" ? `${this.mutationName} prevalence over time worldwide` : `${this.mutationName} prevalence over time in ${this.location}`)
     },
     countTitle() {
       return (`Total samples sequenced by collection date in ${this.location}`)

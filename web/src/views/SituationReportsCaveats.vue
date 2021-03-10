@@ -13,7 +13,7 @@
     <p class="w-75">
       Additionally, sequencing techniques can heavily bias this sampling. For instance, the majority of <router-link :to="{ name:'SituationReport', params: { mutation: 'B.1.1.7'} }">B.1.1.7 genomes</router-link> identified in the United States to date were
       identified by S-gene target failures (SGTF)
-      in community-based diagnostic PCR testing. 
+      in community-based diagnostic PCR testing.
       SGTF indicates a deletion mutation that is one of several mutations able to distinguish the B.1.1.7 from other SARS-CoV-2 strains.
       Estimates of true prevalence in the U.S. are discussed in the <a href="https://blog.helix.com/b117-variant-updated-data/ target='_blank'">Helix Research blog</a>.
     </p>
@@ -25,5 +25,23 @@
   <section id="methods" class="d-flex w-75 justify-content-center my-5">
     <router-link :to="{name: 'SituationReportMethodology'}"><button class="btn btn-main">View methods</button></router-link>
   </section>
+
+  <section id="definitions">
+    <SituationReportDefinitions/>
+  </section>
 </div>
 </template>
+
+
+<script lang="js">
+import Vue from "vue";
+
+import SituationReportDefinitions from "@/components/SituationReportDefinitions.vue";
+
+export default Vue.extend({
+  name: "SituationReportsCaveats",
+  components: {
+    SituationReportDefinitions
+  }
+})
+</script>

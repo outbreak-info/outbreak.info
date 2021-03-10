@@ -63,7 +63,7 @@
           <!-- Genomics -->
           <li class="dropdown px-3 nav-link">
             <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Genomics
+              Variants
             </div>
             <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
               <!-- <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Mutations'}" :class="{ active: $route.name == 'Mutations' }">Search SARS-CoV-2 mutations
@@ -170,7 +170,7 @@
       <!-- genomics group -->
       <div class="text-light px-4">
         <div>
-          Genomics
+          Variants
         </div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">

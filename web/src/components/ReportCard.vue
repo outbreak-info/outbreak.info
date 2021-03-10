@@ -16,7 +16,7 @@
   <!-- DESCRIPTION -->
   <div class="d-flex flex-column text-dark">
     <small v-if="report.location_first_identified"><em>first identified in {{ report.location_first_identified }}</em></small>
-    <small v-if="report.mutation_synonyms"><span>a.k.a. </span>
+    <small v-if="report.mutation_synonyms && report.mutation_synonyms.length"><span>a.k.a. </span>
       <span v-for="(synonym, sIdx) in report.mutation_synonyms" :key="sIdx">
         <b>{{ synonym }}</b>
         <span v-if="sIdx < report.mutation_synonyms.length - 1">, </span></span>

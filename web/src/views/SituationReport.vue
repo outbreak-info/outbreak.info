@@ -243,13 +243,13 @@
           <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
         </button>
       </div>
-      <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="activeLocation" />
+      <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selected" />
     </section>
 
     <!-- GEOGRAPHIC PREVALENCE -->
     <section class="my-4 d-flex flex-column align-items-center" id="geographic">
       <div class="d-flex align-items-center">
-        <h4 class="mb-0 mr-3">Cumulative {{mutationName}} prevalence</h4>
+        <h4 class="mb-0 mr-3">Cumulative {{reportName}} prevalence</h4>
         <div id="location-buttons" class="d-flex flex-wrap align-items-center">
           <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethCountries" :key="cIdx" @click="changeLocation(location)">{{ location.name }}</button>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
@@ -262,8 +262,8 @@
           <small class="text-muted">Since first identification in location</small>
           <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
         </div>
-        <ReportChoropleth class="mb-5" :data="choroData" :mutationName="mutationName" :location="selected" />
-        <ReportPrevalenceByLocation :data="choroData" :mutationName="mutationName" class="mt-2" />
+        <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selected" />
+        <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" />
       </div>
       <div class="text-muted my-5" v-else>
         Maps are not available at this time for divisions. Please select worldwide or a country.
@@ -522,7 +522,6 @@ export default {
       disclaimer: null,
 
       // Changing locations
-      activeLocation: "the world",
       queryCountry: null,
       queryDivision: null,
       queryPangolin: null,
@@ -762,8 +761,6 @@ export default {
     },
     changeLocation(location) {
       const queryParams = this.$route.query;
-
-      this.activeLocation = location.name;
 
       this.selectedLocations.forEach(d => {
         d.isActive = false;
