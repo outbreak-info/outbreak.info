@@ -899,6 +899,7 @@ export function getBasicLocationReportData(apiurl, location) {
     finalize(() => store.state.genomics.locationLoading1 = false)
   )
 }
+
 export function getLocationReportData(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window) {
   store.state.genomics.locationLoading2 = true;
 
@@ -1049,10 +1050,32 @@ export function getSequenceCount(apiurl, location = null, global = false) {
   )
 }
 
+// COMPARISON REPORTS
+export function getBasicComparisonReportData(apiurl) {
+  store.state.genomics.locationLoading1 = true
+  return forkJoin([
+    getDateUpdated(apiurl),
+    getSequenceCount(apiurl)
+  ]).pipe(
+    map(([dateUpdated, total]) => {
+      return ({
+        dateUpdated: dateUpdated,
+        total: total
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting basic comparison report data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading1 = false)
+  )
+}
+
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
+  store.state.genomics.locationLoading2 = true
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
-      console.log(results)
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
 
 
@@ -1089,5 +1112,12 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 
       return (nestedByGenes)
     })
+    ,
+    catchError(e => {
+      console.log("%c Error in getting comparison report data!", "color: pink");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading2 = false)
   )
 }

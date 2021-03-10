@@ -757,7 +757,9 @@ $mutation-color: #f28e2c;
     color: lighten($mutation-color, 30%);
 }
 
-$comparison-color: #edc949;
+// $comparison-color: lighten(#49016a, 45%);
+$comparison-color: #edc949; // yellow
+$comparison-color: #499894; //teal
 .comparison-banner {
     border-width: 0;
     border-style: solid;

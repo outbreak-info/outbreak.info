@@ -1,6 +1,11 @@
 <template>
 <div>
   <div class="my-2 mx-4 half-page text-left">
+    <!-- LOADING -->
+    <div v-if="loading" class="loader">
+      <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
+    </div>
+
     <!-- SOCIAL MEDIA SHARE, BACK BTN -->
     <div class="d-flex align-items-center">
       <ShareReport title="title" url="url" />
@@ -131,7 +136,7 @@
 import Vue from "vue";
 import {
   findPangolin,
-  getCharacteristicMutations,
+  getBasicComparisonReportData,
   getLineagesComparison,
   getMutationsByLineage
 } from "@/api/genomics.js";
@@ -173,6 +178,10 @@ import {
 } from "d3-scale-chromatic";
 
 import {
+  mapState
+} from "vuex";
+
+import {
   scaleSequential,
   format
 } from "d3";
@@ -205,6 +214,13 @@ export default {
     FontAwesomeIcon
   },
   computed: {
+    ...mapState("genomics", ["locationLoading1", "locationLoading2"]),
+    loading() {
+      return (this.locationLoading1 || this.locationLoading2)
+    },
+    smallScreen() {
+      return (window.innerSize < 500)
+    },
     selectedPango() {
       const merged = typeof(this.pango) == "string" ? [this.pango] : this.pango
       // const merged = typeof(this.pango) == "string" ? [this.pango, "average"] : this.pango.concat(["average"])
@@ -224,7 +240,10 @@ export default {
       colorScale: null,
       prevalenceThreshold: 0.85,
       heatmapSubscription: null,
+      basicSubscription: null,
       lineageByMutationsSubscription: null,
+      totalSequences: null,
+      lastUpdated: null,
       geneOpts: [
         "orf1a",
         "orf1b",
@@ -258,8 +277,16 @@ export default {
     this.selectedGenes = this.gene;
     this.getData();
     this.queryPangolin = findPangolin;
+
+    this.basicSubscription = getBasicComparisonReportData(this.$genomicsurl).subscribe(results => {
+      this.totalSequences = results.total;
+      this.lastUpdated = results.dateUpdated.lastUpdated;
+    })
   },
   destroyed() {
+    if (this.basicSubscription) {
+      this.basicSubscription.unsubscribe();
+    }
     if (this.heatmapSubscription) {
       this.heatmapSubscription.unsubscribe();
     }
@@ -279,7 +306,6 @@ export default {
     },
     getData() {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
-        console.log(results)
         this.mutationHeatmap = results;
       })
     },
