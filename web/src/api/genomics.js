@@ -1048,3 +1048,46 @@ export function getSequenceCount(apiurl, location = null, global = false) {
     })
   )
 }
+
+export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
+  return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
+    map((results, idx) => {
+      console.log(results)
+      const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+
+
+      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+
+      const avgByMutation = nest()
+        .key(d => d.mutation)
+        .rollup(values => {
+          const mutation = values[0].mutation;
+          const mutation_count = sum(values, d => d.mutation_count);
+          const lineage_count = sum(values, d => d.lineage_count);
+          return ({
+            mutation_count: mutation_count,
+            lineage_count: lineage_count,
+            // prevalence: mutation_count / lineage_count,
+            prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
+            pangolin_lineage: "average",
+            mutation: mutation,
+            gene: values[0].gene
+          })
+        })
+        .entries(filtered).map(d => d.value);
+
+      // filtered = filtered.concat(avgByMutation);
+
+      filtered.forEach(d => {
+        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+        d["mutation_simplified"] = d.mutation.split(":").slice(-1)[0];
+      })
+
+      const nestedByGenes = nest()
+        .key(d => d.gene)
+        .entries(filtered);
+
+      return (nestedByGenes)
+    })
+  )
+}

@@ -131,7 +131,7 @@ export default {
   props: {
     pango: {
       type: Array,
-      default: () => ["B.1.427", "B.1.429"]
+      default: () => []
     },
     gene: {
       type: Array,
@@ -172,7 +172,7 @@ export default {
       queryPangolin: null,
       mutationHeatmap: null,
       selectedGenes: [],
-      selectedMutationQuery: "S:N501Y",
+      selectedMutationQuery: "S:E484K",
       selectedMutationThreshold: 0.5,
       colorScale: null,
       prevalenceThreshold: 0.85,
