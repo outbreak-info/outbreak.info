@@ -96,7 +96,7 @@
             <div class="d-flex align-items-end">
               <div class="d-flex align-items-center">
                 <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
-                <button class="btn py-1 px-2 ml-4 btn-grey" data-toggle="modal" data-target="#change-pangolin-modal">
+                <button class="btn py-1 px-2 ml-4 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-pangolin-modal">
                   <font-awesome-icon class="mr-2 font-size-small" :icon="['fas', 'sync']" />change mutation(s)
                 </button>
               </div>
@@ -122,7 +122,7 @@
 
 
           </div>
-          <div class="d-flex flex-column align-items-end justify-content-between">
+          <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
             <div class="d-flex align-items-center mb-1">
               Enabled by data from
               <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
@@ -688,7 +688,7 @@ export default {
         this.currentLocs = results.locations;
         const selected = results.locations.filter(d => d.isActive);
         this.selectedLocation = selected.length === 1 ? selected[0] : null;
-        
+
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
 
