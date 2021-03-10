@@ -417,7 +417,6 @@ export default {
         this.totalSequences = results.total;
         this.curatedLineages = results.curated;
         this.selectedLocation = results.location;
-        console.log(this.selectedLocation)
       })
 
       this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentThreshold).subscribe(results => {
@@ -452,8 +451,7 @@ export default {
       this.newLocation = null;
     },
     updateMaps() {
-      console.log(this.selectedLocation)
-      if (this.selectedLocation.adminLevel === 0) {
+      if (this.selectedLocation.admin_level === 0) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentThreshold).subscribe(results => {
           this.geoData = results;
         })
