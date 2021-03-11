@@ -1,5 +1,6 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="location-report-prevalence">
+  <!-- zoom btns -->
   <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
     <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
       <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
@@ -8,6 +9,7 @@
       <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
     </button>
   </div>
+
   <div class="d-flex flex-column">
     <!-- SVGs -->
     <div class="d-flex flex-column align-items-start">
@@ -26,6 +28,16 @@
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
           <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
         </svg>
+      </div>
+
+      <!-- zoom btns -->
+      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+          <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+        </button>
+        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+          <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+        </button>
       </div>
 
       <!-- TIME TRACE -->
@@ -210,7 +222,7 @@ export default Vue.extend({
       yCountsAxisRight: null,
       numXTicks: 5,
       numYTicks: 6,
-      zoomAllowed: true,
+      zoomAllowed: false,
       plottedData: null,
       plottedEpi: null,
       // methods
