@@ -128,7 +128,7 @@ export default {
 
       console.log(this.curated)
     })
-    this.totalSubscription = getSequenceCount(this.$genomicsurl, null, null, true).subscribe(total => {
+    this.totalSubscription = getSequenceCount(this.$genomicsurl, null, true).subscribe(total => {
       this.total = total;
     })
   },

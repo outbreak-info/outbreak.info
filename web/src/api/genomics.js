@@ -867,7 +867,7 @@ export function getBasicLocationReportData(apiurl, location) {
     findLocationMetadata(apiurl, location),
     getDateUpdated(apiurl),
     getCuratedList(),
-    getSequenceCount(apiurl, location)
+    getSequenceCount(apiurl, location, true)
   ]).pipe(
     map(([location, dateUpdated, curated, total]) => {
       const filtered = curated.filter(d => d.key == "lineage");
@@ -1020,13 +1020,14 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   )
 }
 
-export function getSequenceCount(apiurl, location = null, global = false) {
+export function getSequenceCount(apiurl, location = null, cumulative = true) {
   let url = `${apiurl}sequence-count`;
-  if (global) {
-    url += "?cumulative=true";
-  }
-  if (location) {
+  if (cumulative && location) {
+    url += `?location_id=${location}&cumulative=true`;
+  } else if (location) {
     url += `?location_id=${location}`
+  } else if (cumulative) {
+    url += "?cumulative=true";
   }
   const timestamp = Math.round(new Date().getTime() / 36e5);
   return from(axios.get(url, {
@@ -1036,10 +1037,14 @@ export function getSequenceCount(apiurl, location = null, global = false) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      if (results.length == 1) {
-        return (results[0].total_count.toLocaleString())
-      } else if (typeof(results) == "object") {
+      console.log(results)
+      if (cumulative) {
         return (results.total_count.toLocaleString())
+      } else {
+        results.forEach(d => {
+          d["dateTime"] = parseDate(d.date);
+        })
+        return (results)
       }
     }),
     catchError(e => {
