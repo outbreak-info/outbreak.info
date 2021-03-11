@@ -993,6 +993,8 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
   return forkJoin([getEpiTraces(epiurl, [locationID], epiFields), getAllTemporalPrevalences(apiurl, locationID, mutations)]).pipe(
     map(([epi, mutationTraces]) => {
       epi = epi.length ? epi[0].value : [];
+      // weird trailing undefined sometimes?
+      epi = epi.filter(d => d.date);
       return ({
         epi: epi,
         mutations: mutationTraces
