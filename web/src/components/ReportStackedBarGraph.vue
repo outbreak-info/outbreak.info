@@ -223,7 +223,13 @@ export default Vue.extend({
           update.select("rect")
             .attr("y", d => this.y(d[0][0]))
             .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
-            .attr("fill", d => this.colorScale(d.key))
+            .style("fill", d => this.colorScale(d.key))
+
+
+          update.select("text")
+            .attr("y", d => d.y)
+            .style("fill", d => this.colorScale(d.key))
+
 
           update.select("text")
             .select(".lineage")
