@@ -348,7 +348,6 @@ export default {
         if (this.colorDomain) {
           this.colorScale = scaleThreshold(schemeYlGnBu[this.colorDomain.length+2])
             .domain(this.colorDomain);
-            console.log(this.colorScale)
         } else {
           this.colorScale = scaleSequential(interpolateYlGnBu)
             .domain([0, this.maxVal]);
