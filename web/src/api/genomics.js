@@ -1037,7 +1037,6 @@ export function getSequenceCount(apiurl, location = null, cumulative = true) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       if (cumulative) {
         return (results.total_count.toLocaleString())
       } else {
