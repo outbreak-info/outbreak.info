@@ -13,33 +13,6 @@
   <div class="d-flex flex-column">
     <!-- SVGs -->
     <div class="d-flex flex-column align-items-start">
-      <div :class="{'hidden' : !epi.length}">
-        <h5 class="">Daily COVID-19 cases in {{ locationName }}</h5>
-        <div class="d-flex">
-          <svg width="15" height="15" class="mr-2">
-            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
-          </svg>
-          <small class="text-muted">7 day rolling average of confirmed cases</small>
-        </div>
-        <!-- EPI TRACE -->
-        <svg :width="width" :height="height" class="prevalence-curve" ref="epi" name="title">
-          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
-          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
-          <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-          <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-        </svg>
-      </div>
-
-      <!-- zoom btns -->
-      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
-        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-          <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-        </button>
-        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-          <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-        </button>
-      </div>
-
       <!-- TIME TRACE -->
       <h5 class="p-0 m-0">{{title}}</h5>
       <div class="d-flex">
@@ -52,7 +25,6 @@
       <!-- legend: confidence interval -->
       <div class="d-flex">
         <div class="ci-legend mr-2" :style="{background: '#999'}">
-
         </div>
         <small class="text-muted">95% confidence interval</small>
       </div>
@@ -81,6 +53,35 @@
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
       </svg>
+
+      <!-- zoom btns -->
+      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+          <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+        </button>
+        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+          <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+        </button>
+      </div>
+
+      <!-- EPI TRACE -->
+      <div :class="{'hidden' : !epi.length}">
+        <h5 class="">Daily COVID-19 cases in {{ locationName }}</h5>
+        <div class="d-flex">
+          <svg width="15" height="15" class="mr-2">
+            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+          </svg>
+          <small class="text-muted">7 day rolling average of confirmed cases</small>
+        </div>
+
+        <svg :width="width" :height="height" class="prevalence-curve" ref="epi" name="title">
+          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
+          <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+          <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
+        </svg>
+      </div>
+
     </div>
   </div>
 
