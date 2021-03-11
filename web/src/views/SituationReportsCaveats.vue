@@ -7,7 +7,7 @@
     <h3>Caveats &amp; Limitations</h3>
     <p class="mt-3">
       To describe the prevalence of sets of mutations in our <router-link :to="{name: 'SituationReports'}">Mutation Situation Reports</router-link>, we rely on shared virus sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID
-        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata, as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences and sample metadata deposited in GISAID.
+        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences and sample metadata deposited in GISAID.
     </p>
 
     <p>

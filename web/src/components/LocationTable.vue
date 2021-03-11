@@ -42,7 +42,7 @@
       <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
         <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
           {{lineageGroup.key}}
-          <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" />
+          <!-- <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" /> -->
         </td>
 
       </tr>
@@ -82,23 +82,23 @@ import Vue from "vue";
 
 import Warning from "@/components/Warning.vue";
 
-// --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faSync
-} from "@fortawesome/free-solid-svg-icons/faSync";
-
-library.add(faSync);
+// // --- font awesome --
+// import {
+//   FontAwesomeIcon
+// } from "@fortawesome/vue-fontawesome";
+// import {
+//   library
+// } from "@fortawesome/fontawesome-svg-core";
+// import {
+//   faSync
+// } from "@fortawesome/free-solid-svg-icons/faSync";
+//
+// library.add(faSync);
 
 export default {
   name: "LocationTable",
   components: {
-    FontAwesomeIcon
+    // FontAwesomeIcon
   },
   props: {
     data: Array,

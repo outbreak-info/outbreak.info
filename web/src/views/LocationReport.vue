@@ -38,6 +38,41 @@
     </div>
     <!-- end change location modal -->
 
+    <!-- CHANGE MUTATIONS MODAL -->
+    <div id="change-mutations-modal" class="modal fade">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="exampleModalLabel">Add custom mutations</h5>
+            <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="mx-4 border-bottom pb-3">
+              <h6 class="font-weight-bold text-muted">
+                Current additions:
+              </h6>
+              <div class="d-flex flex-wrap">
+                <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in customMutations" :key="mIdx" @click="deleteMutation(mIdx)">
+                  {{mutation.label}}
+                  <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+                </button>
+              </div>
+            </div>
+
+            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" />
+          </div>
+
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-primary" @click="submitNewMutations" data-dismiss="modal">Create report</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end change mutations modal -->
+
     <template>
       <!-- SOCIAL MEDIA SHARE, BACK BTN -->
       <div class="d-flex align-items-center mb-2">
@@ -47,7 +82,7 @@
             back
           </button>
         </router-link>
-        <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-pangolin-modal">
+        <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-mutations-modal">
           <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
           add mutations
         </button>
@@ -229,6 +264,9 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons/faClock";
 import {
+  faTimesCircle
+} from "@fortawesome/free-regular-svg-icons/faTimesCircle";
+import {
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import {
@@ -245,7 +283,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons/faSync";
 
 
-library.add(faClock, faSpinner, faSync, faInfoCircle, faArrowLeft, faPlus);
+library.add(faClock, faSpinner, faSync, faInfoCircle, faArrowLeft, faPlus, faTimesCircle);
 
 import {
   mapState
@@ -263,6 +301,9 @@ import {
   getLocationTable,
   findLocation
 } from "@/api/genomics.js";
+
+import cloneDeep from "lodash/cloneDeep";
+import uniq from "lodash/uniq";
 
 export default {
   name: "LocationReport",
@@ -285,17 +326,19 @@ export default {
     HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
     LocationTable: () => import( /* webpackPrefetch: true */ "@/components/LocationTable.vue"),
     OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
+    CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
     FontAwesomeIcon
   },
   watch: {
-    selectedMutations() {
-      this.updateMaps();
-      this.updateTable();
-    },
     '$route.query': function(newVal, oldVal) {
       if (newVal.loc != oldVal.loc) {
         this.newLocation = null;
         this.createReport();
+        this.customMutations = this.grabCustomMutations();
+      } else if(newVal.pango != oldVal.pango || newVal.muts != oldVal.muts || newVal.variant != oldVal.variant) {
+        this.customMutations = this.grabCustomMutations();
+        this.updateMaps();
+        this.updateTable();
       }
     }
   },
@@ -316,7 +359,9 @@ export default {
       if (this.pango) {
         if (typeof(this.pango) == "string") {
           tracked.push({
-            label: `${this.pango} lineage`,
+            type: "pango",
+            label: this.pango,
+            qParam: this.pango,
             query: `pangolin_lineage=${this.pango}`,
             variantType: "Custom Lineages & Mutations",
             route: {
@@ -326,7 +371,9 @@ export default {
         } else {
           tracked = tracked.concat(this.pango.map(d => {
             return ({
-              label: `${d} lineage`,
+              type: "pango",
+              label: d,
+              qParam: d,
               query: `pangolin_lineage=${d}`,
               variantType: "Custom Lineages & Mutations",
               route: {
@@ -338,18 +385,23 @@ export default {
       }
       if (this.muts) {
         if (typeof(this.muts) == "string") {
+          const mutations = this.muts.split(",");
           tracked.push({
-            label: `${this.muts} mutation`,
+            type: "mutation",
+            label: mutations.length === 1 ? `${this.muts} mutation` : `${mutations.join(", ")} variant`,
+            qParam: this.muts,
             query: `mutations=${this.muts}`,
             variantType: "Custom Lineages & Mutations",
             route: {
-              muts: this.muts.split(",")
+              muts: mutations
             }
           })
         } else {
           tracked = tracked.concat(this.muts.map(d => {
             return ({
-              label: `${d} mutation`,
+              type: "mutation",
+              label: d.length === 1 ? `${d} mutation` : `${d.join(", ")} variant`,
+              qParam: d,
               query: `mutations=${d}`,
               variantType: "Custom Lineages & Mutations",
               route: {
@@ -365,7 +417,9 @@ export default {
           const variant = this.variant.split("|");
           if (variant.length == 2) {
             tracked.push({
+              type: "variant",
               label: `${variant[0]} lineage with ${variant[1]}`,
+              qParam: this.variant,
               query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
               variantType: "Custom Lineages & Mutations",
               route: {
@@ -379,7 +433,9 @@ export default {
             const variant = d.split("|");
             if (variant.length == 2) {
               tracked.push({
+                type: "variant",
                 label: `${variant[0]} lineage with ${variant[1]}`,
+                qParam: d,
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
                 variantType: "Custom Lineages & Mutations",
                 route: {
@@ -396,6 +452,8 @@ export default {
   },
   mounted() {
     this.queryLocation = findLocation;
+
+    this.customMutations = this.grabCustomMutations();
 
     const formatDate = timeFormat("%e %B %Y");
     var currentTime = new Date();
@@ -450,6 +508,44 @@ export default {
       })
       this.newLocation = null;
     },
+    grabCustomMutations(){
+      const pango = typeof(this.pango) == "string" ? [{type: "pango", qParam: this.pango}] : this.pango.map(d => ({type: "pango", qParam: d}))
+      const variant = typeof(this.variant) == "string" ? [{type: "variant", qParam: this.variant}] : this.variant.map(d => ({type: "variant", qParam: d}))
+      const mutation = typeof(this.muts) == "string" ? [{type: "mutation", qParam: this.mutation}] : this.muts.map(d => ({type: "mutation", qParam: d}))
+      return(pango.concat(variant, mutation))
+    },
+    deleteMutation(idx) {
+      this.customMutations.splice(idx, 1);
+    },
+    submitNewMutations() {
+      let selected = this.selected ? this.selected : [];
+
+      let pango = this.newPango.map(d => d.route);
+      selected = selected.concat(pango);
+      pango = pango.concat(this.customMutations.filter(d => d.type == "pango").map(d => d.qParam));
+
+      let mutation = this.newMuts.map(d => d.route);
+      selected = selected.concat(mutation);
+      mutation = mutation.concat(this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam));
+
+      let variant = this.newVariants.map(d => d.route);
+      selected = selected.concat(variant);
+      variant = variant.concat(this.customMutations.filter(d => d.type == "variant").map(d => d.qParam));
+
+      this.$router.push({
+        name: "LocationReport",
+        query: {
+          loc: this.loc,
+          pango: uniq(pango),
+          variant: uniq(variant),
+          muts: uniq(mutation),
+          selected: uniq(selected)
+        }
+      })
+      this.newPango = null;
+      this.newMuts = null;
+      this.newVariants = null;
+    },
     updateMaps() {
       if (this.selectedLocation.admin_level === 0) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
@@ -483,6 +579,11 @@ export default {
       // location info
       selectedLocation: null,
       newLocation: null,
+      // update mutations
+      newMuts: [],
+      newPango: [],
+      newVariants: [],
+      customMutations: [],
       // data
       dateUpdated: null,
       lastUpdated: null,

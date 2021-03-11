@@ -58,6 +58,7 @@ export default {
   },
   methods: {
     selectMutation() {
+      const queryParams = this.$route.query;
 
       this.$router.push({
         name: "LocationReport",
@@ -66,9 +67,9 @@ export default {
         },
         query: {
           loc: this.locationID,
-          muts: this.muts,
-          pango: this.pango,
-          variant: this.variant,
+          muts: queryParams.muts,
+          pango: queryParams.pango,
+          variant: queryParams.variant,
           selected: this.selectedMutations.map(d => d.label)
         }
       })
