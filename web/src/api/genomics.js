@@ -51,8 +51,8 @@ function titleCase(value) {
 }
 
 // reminder: must be the raw verison of the file
-// const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/dev/curated_mutations.json";
-const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
+const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/dev/curated_mutations.json";
+// const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
 
 export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThreshold) {
   const queryStr = mutationObj["mutations"].map(d => d.mutation).join(",");
