@@ -1,14 +1,15 @@
 <template>
 <div>
   <div class="text-muted">
-    Choose a <router-link :to="{ hash: '#pango' }">lineage</router-link> and/or a <router-link :to="{ hash: '#mutation-set' }">set of mutations</router-link>
+    <em>Choose a <router-link :to="{ hash: '#pango' }">lineage</router-link> and/or a <router-link :to="{ hash: '#mutation-set' }">set of mutations</router-link>
+    </em>
   </div>
 
   <div class="row d-flex align-items-center">
     <div class="col-sm-12 col-md-9">
-      <div id="pango" class="my-3">
+      <div id="pango" class="mt-1 mb-3">
         <h6 class="mb-0" v-if="minimalistic">Custom lineage</h6>
-        <h4 class="mb-0" v-else>Custom lineage</h4>
+        <h4 class="m-0" v-else>Custom lineage</h4>
         <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
         <form id="custom-reports" @submit.prevent="submitQuery">
           <div class="flew-row d-flex w-350px">
@@ -238,8 +239,8 @@ export default Vue.extend({
   methods: {
     updatePangolin(selected) {
       selected ?
-      this.$emit("update:selectedLineage", selected.name) :
-      this.$emit("update:selectedLineage", null);
+        this.$emit("update:selectedLineage", selected.name) :
+        this.$emit("update:selectedLineage", null);
     },
     changeBulk() {
       const bulk = this.selectedBulkString.split(",").map(d => d.trim());
