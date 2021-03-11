@@ -138,7 +138,7 @@
 
             <!-- STACKED BAR / MOST RECENT -->
             <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
-              <h5>Most commonly found lineages over the past {{recentThreshold}} days</h5>
+              <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
               <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :locationID="selectedLocation.id" />
             </section>
 
@@ -170,7 +170,7 @@
         <!-- GEOGRAPHIC CHOROPLETHS -->
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
           <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
-          <p class="text-muted m-0">Cumulative prevelence over the last {{ recentThreshold }} days</p>
+          <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>
           <div class="d-flex flex-wrap">
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-33 my-3">
               <div v-if="choro.values.length">
@@ -419,7 +419,7 @@ export default {
         this.selectedLocation = results.location;
       })
 
-      this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentThreshold).subscribe(results => {
+      this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentWindow).subscribe(results => {
         // console.log(results)
         this.lineagesByDay = results.lineagesByDay;
         this.mostRecentLineages = results.mostRecentLineages;
@@ -452,7 +452,7 @@ export default {
     },
     updateMaps() {
       if (this.selectedLocation.admin_level === 0) {
-        this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentThreshold).subscribe(results => {
+        this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
         })
       }
@@ -476,7 +476,7 @@ export default {
       // methods
       queryLocation: null,
       // variables
-      recentThreshold: 60,
+      recentWindow: 60,
       otherThresh: 0.03,
       ndayThresh: 5,
       dayThresh: 60,
