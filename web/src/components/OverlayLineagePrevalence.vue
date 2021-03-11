@@ -23,6 +23,8 @@ import {
 } from "@/api/epi-traces.js";
 import ReportPrevalenceOverlay from "@/components/ReportPrevalenceOverlay.vue";
 
+import uniq from "lodash/uniq";
+
 export default {
   name: "LocationReport",
   props: {
@@ -33,6 +35,12 @@ export default {
   },
   components: {
     ReportPrevalenceOverlay
+  },
+  watch: {
+    locationID() {
+      this.setMutations();
+      this.updateData();
+    }
   },
   data() {
     return ({
@@ -45,17 +53,11 @@ export default {
     })
   },
   mounted() {
-    if (this.selected) {
-      this.selectedMutations = this.options.filter(d => this.selected.includes(d.label));
-    } else {
-      this.selectedMutations = this.options.slice(0, this.numPreselected);
-    }
-
+    this.setMutations();
     this.updateData();
   },
   methods: {
     selectMutation() {
-      const queryParams = this.$route.query;
 
       this.$router.push({
         name: "LocationReport",
@@ -64,13 +66,20 @@ export default {
         },
         query: {
           loc: this.locationID,
-          muts: queryParams.muts,
-          pango: queryParams.pango,
-          variant: queryParams.variant,
+          muts: this.muts,
+          pango: this.pango,
+          variant: this.variant,
           selected: this.selectedMutations.map(d => d.label)
         }
       })
       this.updateData();
+    },
+    setMutations() {
+      if (this.selected) {
+        this.selectedMutations = this.options.filter(d => uniq(this.selected).includes(d.label));
+      } else {
+        this.selectedMutations = this.options.slice(0, this.numPreselected);
+      }
     },
     updateData() {
       this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl, this.$apiurl, this.locationID, this.selectedMutations).subscribe(results => {

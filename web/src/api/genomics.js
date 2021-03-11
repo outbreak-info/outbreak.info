@@ -29,6 +29,7 @@ import {
 
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
+import cloneDeep from "lodash/cloneDeep";
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
@@ -957,8 +958,9 @@ export function getMutationCumPrevalence(apiurl, mutationObj, location) {
 export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
   return (getTemporalPrevalence(apiurl, location, mutationObj.query)).pipe(
     map(results => {
-      mutationObj["data"] = results;
-      return (mutationObj)
+      let data = cloneDeep(mutationObj)
+      data["data"] = results;
+      return (data)
     })
   )
 }
