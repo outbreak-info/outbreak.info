@@ -17,7 +17,7 @@
 
       </div>
 
-      <form id="custom-reports" @submit.prevent="submitQuery" class="my-3">
+      <form id="custom-reports" @submit.prevent="submitQuery" :class="[minimalistic ? 'mt-2 mb-0' : 'my-3']">
         <div class="d-flex align-items-center circle-header">
           <div class="circle mr-3">2</div>
           <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
@@ -26,7 +26,7 @@
         </div>
 
         <!-- PANGO Lineage -->
-        <div id="pango" class="ml-5 mb-4" v-if="selectedType.id == 'pango' || selectedType.id == 'variant'">
+        <div id="pango" class="ml-5" :class="[minimalistic ? 'mb-2' : 'mb-4']" v-if="selectedType.id == 'pango' || selectedType.id == 'variant'">
           <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
 
           <div class="flew-row d-flex w-350px">
