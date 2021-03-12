@@ -35,7 +35,7 @@
               </div>
 
               <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocationList" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
+                <TypeaheadSelect :queryFunction="queryLocation" @selected="addLoc2Add" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
               </div>
             </div>
           </div>
@@ -494,7 +494,6 @@ export default {
     }
   },
   mounted() {
-    // this.currentLocs = this.selectedLocations.filter(d => d.name != "Worldwide");
     this.queryLocation = findLocation;
     this.queryPangolin = findPangolin;
 
@@ -575,7 +574,7 @@ export default {
 
           // selected locations
           this.selectedLocations = results.locations;
-          this.currentLocs = results.locations;
+          this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
           const selected = results.locations.filter(d => d.isActive);
           this.selectedLocation = selected.length === 1 ? selected[0] : null;
 
@@ -625,6 +624,10 @@ export default {
     },
     removeLocation(idx) {
       this.currentLocs.splice(idx, 1);
+      console.log(this.currentLocs)
+    },
+    addLoc2Add(selected) {
+      this.loc2Add.push(selected);
     },
     removeLoc2Add(idx) {
       this.loc2Add.splice(idx, 1);
@@ -632,15 +635,12 @@ export default {
     clearNewLocations() {
       this.loc2Add = [];
     },
+    // Add new locations
     selectNewLocations() {
-      // de-duplicate
-      // const newCountries = uniq(newCountries.map(d => d.name));
-      // const newDivisions = uniq(newDivisions.map(d => d.name));
-
-      const locationIDs = this.loc2Add.map(d => d.id).filter(d => d != "Worldwide");
-      console.log(this.loc2Add)
-      console.log(locationIDs)
+      let locationIDs = this.loc2Add.map(d => d.id);
       const newSelected = locationIDs[0];
+      // de-duplicate
+      locationIDs = uniq(this.currentLocs.map(d => d.id).concat(locationIDs).filter(d => d != "Worldwide"));
 
       // reset the fields.
       this.loc2Add = [];
@@ -655,6 +655,7 @@ export default {
         }
       })
     },
+    // Select a location button on the longitudinal traces or choropleths
     switchLocation(location) {
       this.selectedLocations.forEach(d => {
         d.isActive = false;
@@ -681,11 +682,10 @@ export default {
       })
     },
     updateLocations() {
-      const ids = this.selectedLocations.map(d => d.id);
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, ids, this.selected).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.loc, this.selected).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
-        this.currentLocs = results.locations;
+        this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
         const selected = results.locations.filter(d => d.isActive);
         this.selectedLocation = selected.length === 1 ? selected[0] : null;
 
@@ -699,9 +699,6 @@ export default {
         this.choroData = results.byCountry;
 
       })
-    },
-    updateLocationList(selected) {
-      this.loc2Add.push(selected);
     },
     updatePangolin(selected) {
       this.newPangolin = selected.name;
