@@ -308,7 +308,7 @@
     <div v-else-if="reportloading" class="half-page" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
       <div class="mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
         <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
-        <h1 class="m-0 mutation-header">{{ title }}</h1>
+        <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
       </div>
       <p class="my-5">
         Calculating prevalences for {{title}}. Please be patient.
@@ -318,7 +318,7 @@
     <div v-else>
       <div class="d-flex flex-column align-items-start text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
         <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
-        <h1 class="m-0 mutation-header">{{ title }}</h1>
+        <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
       </div>
       <p class="my-5">
         No data found for <b>{{title}}</b>. Please check that you have specified the {{reportType}} properly.
