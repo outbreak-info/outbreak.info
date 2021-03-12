@@ -3,7 +3,7 @@
   <div class="d-flex justify-content-center mt-2">
     <label class="b-contain m-0 mr-3" v-for="option in options" :key="option.label">
       <small>{{option.label}}</small>
-      <input type="checkbox" :value="option" v-model.lazy="selectedMutations" @change="selectMutation" />
+      <input type="checkbox" :value="option" v-model.lazy="selectedMutations" @change="debounceSelectMutation" />
       <div class="b-input"></div>
     </label>
   </div>
@@ -24,6 +24,7 @@ import {
 import ReportPrevalenceOverlay from "@/components/ReportPrevalenceOverlay.vue";
 
 import uniq from "lodash/uniq";
+import debounce from "lodash/debounce";
 
 export default {
   name: "LocationReport",
@@ -51,6 +52,9 @@ export default {
       prevalences: null,
       epi: null
     })
+  },
+  created: function() {
+    this.debounceSelectMutation = debounce(this.selectMutation, 250);
   },
   mounted() {
     this.setMutations();

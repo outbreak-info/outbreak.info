@@ -593,7 +593,6 @@ export default {
       this.newVariants = [];
     },
     updateMaps() {
-      console.log("MAPS")
       if (this.selectedLocation.admin_level === 0) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;

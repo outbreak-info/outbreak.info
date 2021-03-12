@@ -1016,7 +1016,7 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
 }
 
 export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
-
+if(mutations.length) {
   return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, locationID, mutation))).pipe(
     map(results => {
       return (results)
@@ -1028,6 +1028,9 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
     }),
     finalize(() => store.state.genomics.locationLoading4 = false)
   )
+} else {
+  return of ([]);
+}
 }
 
 export function getSequenceCount(apiurl, location = null, cumulative = true) {
