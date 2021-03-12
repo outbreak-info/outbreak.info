@@ -247,9 +247,6 @@ export function getMutationDetails(apiurl, mutationString) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      results.forEach(d => {
-        d["codon_num"] = +d.codon_num;
-      })
       return (results)
     }),
     catchError(e => {
@@ -300,7 +297,6 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d["codon_num"] = +d.codon_num;
         d["pangolin_lineage"] = lineage;
       })
       return (results)
