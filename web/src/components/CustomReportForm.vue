@@ -2,13 +2,13 @@
 <div>
   <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" />
 
-  <div class="col-sm-12">
-    <div class="d-flex flex-column justify-content-center align-items-center w-100">
-      <p v-if="formValid" class="text-muted font-size-2">
-        Generate {{ title }} report
-      </p>
+  <div>
+    <div class="d-flex align-items-center my-4 w-100">
+      <div class="d-flex align-items-center circle-header" v-if="formValid">
+        <div class="circle mr-3">{{selectedType == 'variant' ? 5 : 4}}</div>
+      </div>
       <div>
-        <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Create report</button>
+        <button :disabled="!formValid" type="submit" class="btn btn-accent"  @click="submitQuery">Create report</button>
       </div>
 
     </div>
@@ -34,13 +34,6 @@ export default Vue.extend({
     VariantForm
   },
   computed: {
-    title() {
-      if (this.selectedLineage) {
-        return this.selectedMutations.length ? `${this.selectedLineage} lineage with ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
-      } else {
-        return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
-      }
-    },
     formValid() {
       return (this.selectedMutations.length > 0 || this.selectedLineage)
     }
