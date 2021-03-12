@@ -65,7 +65,7 @@
           </div>
 
           <div class="modal-footer border-secondary">
-            <button type="button" class="btn btn-primary" @click="submitNewMutations" data-dismiss="modal">Create report</button>
+            <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Create report</button>
 
           </div>
         </div>

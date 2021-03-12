@@ -38,8 +38,8 @@
     <b class="text-muted m-0 p-0">
       Custom additions:
     </b>
-    <div class="d-flex flex-wrap align-items-center">
-      <button v-for="(lineage, lIdx) in pango" :key="'pango'+lIdx" class="btn chip btn-outline-secondary bg-white" @click="deleteVariant(lIdx, pango)">
+    <div class="d-flex flex-wrap align-items-center mb-3">
+      <button v-for="(lineage, lIdx) in pango" :key="'pango'+lIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(lIdx, pango)">
         {{ lineage.label }}
         <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
       </button>

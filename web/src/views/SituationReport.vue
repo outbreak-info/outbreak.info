@@ -43,7 +43,7 @@
 
           <div class="modal-footer border-secondary">
             <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
-            <button type="button" class="btn btn-primary" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
+            <button type="button" class="btn btn-accent" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
 
           </div>
         </div>
