@@ -335,14 +335,15 @@ export default {
         this.newLocation = null;
         this.createReport();
         this.customMutations = this.grabCustomMutations();
-      } else if(newVal.pango != oldVal.pango || newVal.muts != oldVal.muts || newVal.variant != oldVal.variant) {
-        this.customMutations = this.grabCustomMutations();
-        this.updateMaps();
-        this.updateTable();
       }
+    },
+    selectedMutations() {
+      this.customMutations = this.grabCustomMutations();
+      this.updateMaps();
+      this.updateTable();
     }
-  },
-  computed: {
+},
+computed: {
     ...mapState("admin", ["mutationAuthors"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5"]),
     loading() {
@@ -486,6 +487,7 @@ export default {
       })
     },
     createReport() {
+      console.log("CREATE")
       this.setupReport();
       this.updateTable();
       this.updateMaps();
@@ -508,11 +510,45 @@ export default {
       })
       this.newLocation = null;
     },
-    grabCustomMutations(){
-      const pango = typeof(this.pango) == "string" ? [{type: "pango", qParam: this.pango}] : this.pango.map(d => ({type: "pango", qParam: d}))
-      const variant = typeof(this.variant) == "string" ? [{type: "variant", qParam: this.variant}] : this.variant.map(d => ({type: "variant", qParam: d}))
-      const mutation = typeof(this.muts) == "string" ? [{type: "mutation", qParam: this.mutation}] : this.muts.map(d => ({type: "mutation", qParam: d}))
-      return(pango.concat(variant, mutation))
+    grabCustomMutations() {
+      let custom = []
+      if (this.pango) {
+        const pango = typeof(this.pango) == "string" ? [{
+          type: "pango",
+          label: this.pango,
+          qParam: this.pango
+        }] : this.pango.map(d => ({
+          type: "pango",
+          label: d,
+          qParam: d
+        }))
+        custom = custom.concat(pango);
+      }
+      if (this.variant) {
+        const variant = typeof(this.variant) == "string" ? [{
+          type: "variant",
+          label: this.variant,
+          qParam: this.variant
+        }] : this.variant.map(d => ({
+          type: "variant",
+          label: d,
+          qParam: d
+        }))
+        custom = custom.concat(variant);
+      }
+      if (this.mutation) {
+        const mutation = typeof(this.muts) == "string" ? [{
+          type: "mutation",
+          label: this.mutation,
+          qParam: this.mutation
+        }] : this.muts.map(d => ({
+          type: "mutation",
+          label: d,
+          qParam: d
+        }))
+        custom = custom.concat(pango);
+      }
+      return (custom)
     },
     deleteMutation(idx) {
       this.customMutations.splice(idx, 1);
@@ -542,11 +578,12 @@ export default {
           selected: uniq(selected)
         }
       })
-      this.newPango = null;
-      this.newMuts = null;
-      this.newVariants = null;
+      this.newPango = [];
+      this.newMuts = [];
+      this.newVariants = [];
     },
     updateMaps() {
+      console.log("MAPS")
       if (this.selectedLocation.admin_level === 0) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
