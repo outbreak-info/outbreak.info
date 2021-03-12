@@ -31,7 +31,7 @@
         <small :class="{ 'VOC': type.key == 'Variant of Concern',  'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
       </div>
 
-      <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip btn-outline-secondary bg-white">{{variant}}</button>
+      <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip bg-white text-muted btn-outline-secondary-no-hover">{{variant}}</button>
     </div>
   </template>
 
@@ -43,11 +43,11 @@
         {{ lineage.label }}
         <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
       </button>
-      <button v-for="(variant, vIdx) in variant" :key="'variant' + vIdx" class="btn chip btn-outline-secondary bg-white" @click="deleteVariant(vIdx, variant)">
+      <button v-for="(variant, vIdx) in variant" :key="'variant' + vIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(vIdx, variant)">
         {{ variant.label }}
         <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
       </button>
-      <button v-for="(mutation, mIdx) in muts" :key="'mutation' + mIdx" class="btn chip btn-outline-secondary bg-white" @click="deleteVariant(mIdx, muts)">
+      <button v-for="(mutation, mIdx) in muts" :key="'mutation' + mIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(mIdx, muts)">
         {{ mutation.label }}
         <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
       </button>

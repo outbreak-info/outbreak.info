@@ -23,17 +23,6 @@ button {
     outline: none !important;
   }
 
-  &.chip {
-    border-radius: 1em;
-    display: flex;
-    align-items: center;
-    padding: 2px 8px;
-    cursor: pointer;
-
-    &:focus {
-      outline: none !important;
-    }
-
     &.chip {
       border-radius: 1em;
       display: flex;
@@ -46,7 +35,6 @@ button {
         margin-left: 0.25em;
         font-size: 0.75em;
       }
-    }
   }
 }
 
@@ -224,6 +212,12 @@ button.chip.to-add:hover {
 .btn-outline-secondary:hover {
   background: #6c757d !important;
   color: white;
+}
+
+.chip.btn-outline-secondary-no-hover:hover {
+  background: white !important;
+  color: inherit !important;
+  cursor: default;
 }
 
 .VOC,
