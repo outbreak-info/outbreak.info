@@ -204,7 +204,11 @@
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
-          <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
+          <div class="d-flex justify-content-between">
+            <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
+            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="25" :mutationName="null" nullColor="#CCC" filteredColor="#AAA" strokeColor="#555" maxCount="10000" />
+          </div>
+
           <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>
           <div class="d-flex flex-wrap">
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-33 my-3">
@@ -291,8 +295,12 @@ import {
 
 import {
   timeFormat,
-  scaleOrdinal
+  scaleOrdinal, scaleThreshold
 } from "d3";
+
+import {
+  schemeYlGnBu
+} from "d3-scale-chromatic";
 
 import {
   getLocationReportData,
@@ -327,6 +335,7 @@ export default {
     LocationTable: () => import( /* webpackPrefetch: true */ "@/components/LocationTable.vue"),
     OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
     CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
     FontAwesomeIcon
   },
   watch: {
@@ -342,8 +351,8 @@ export default {
       this.updateMaps();
       this.updateTable();
     }
-},
-computed: {
+  },
+  computed: {
     ...mapState("admin", ["mutationAuthors"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5"]),
     loading() {
@@ -453,6 +462,8 @@ computed: {
   },
   mounted() {
     this.queryLocation = findLocation;
+    this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length+2])
+      .domain(this.choroColorDomain);
 
     this.customMutations = this.grabCustomMutations();
 
@@ -487,7 +498,6 @@ computed: {
       })
     },
     createReport() {
-      console.log("CREATE")
       this.setupReport();
       this.updateTable();
       this.updateMaps();
@@ -635,6 +645,8 @@ computed: {
       // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
       colorScale: null,
+      choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
+      choroColorScale: null,
       colorPalette: ["#bab0ab", // grey (other)
         "#4E79A7", // dk blue
         "#aecBe8", // lt blue

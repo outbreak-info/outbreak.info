@@ -2,51 +2,10 @@
 <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- Total count filter -->
   <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap || !showLegend }">
-    <GradientLegend class="mr-4 my-2" :maxValue="maxFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
-    <svg ref="count_filter" id="count-filter" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2" role="legend">
-      <g transform="translate(1,1)">
-        <rect x="0" y="0" width="15" height="15" :fill="filteredColor" :stroke="strokeColor" stroke-width="1"></rect>
-        <rect x="0" y="20" width="15" height="15" :fill="zeroColor" :stroke="strokeColor" stroke-width="1"></rect>
-        <rect x="0" y="20" width="15" height="15" fill="url(#diagonalHatch)"></rect>
-        <rect x="0" y="40" width="15" height="15" :fill="nullColor" :stroke="strokeColor" stroke-width="1"></rect>
-
-        <text style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' x="22" y="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">sequenced &lt; {{countThreshold}} samples</text>
-        <text style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' x="22" y="27" dominant-baseline="central" :fill="strokeColor" font-size="14px">{{ mutationName }} not detected</text>
-        <text style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' x="22" y="47" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing</text>
-
-      </g>
-    </svg>
-    <svg ref="count_filter" id="count-filter" :width="230" :height="legendHeight" class="report-choropleth-legend my-2">
-      <g transform="translate(10,8)" id="threshold-slider">
-        <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of total samples</text>
-        <g transform="translate(0,18)">
-          <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
-          <line ref="selected_threshold" :x1="filterShift" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
-          <circle ref="threshold_slider" :transform="`translate(${filterShift}, 0)`" cx="0" cy="0" r="8" fill="#df4ab7" class="pointer" />
-          <text ref="threshold_label" :transform="`translate(${filterShift}, 0)`" x="0" y="0" dy="12" font-size="14px" font-weight="700" fill="#df4ab7" text-anchor="middle" dominant-baseline="hanging">{{countThreshold}}</text>
-          <text :x="filterWidth" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="end" dominant-baseline="hanging">{{maxCount}}</text>
-        </g>
-      </g>
-    </svg>
+    <ClassedLegend :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" :countThreshold="countThreshold" :mutationName="mutationName" :nullColor="nullColor" :filteredColor="filteredColor" :strokeColor="strokeColor" :maxCount="maxCount" />
   </div>
 
   <!-- choropleth -->
-  <div v-if="colorScale" class="d-flex">
-    <svg :width="18" :height="35" class="mx-2">
-      <g transform="translate(2,0)">
-      <rect width="15" height="15" :fill="colorScale(0)" stroke="#222" stroke-width="0.25"></rect>
-      <text x="7" y="20" dominant-baseline="hanging" text-anchor="middle" fill="#222" font-size="10px">0-{{colorDomain[0]*100}}</text>
-      </g>
-    </svg>
-    <svg :width="i*2+35" :height="35" v-for="(color, i) in colorDomain" :key="i" class="mx-2">
-      <g transform="translate(15,0)">
-      <rect width="15" height="15" :fill="colorScale(color)" stroke="#222" stroke-width="0.25"></rect>
-      <text x="7" y="20" dominant-baseline="hanging" text-anchor="middle" fill="#222" font-size="10px" v-if="i < colorDomain.length - 1">{{color*100}}-{{colorDomain[i+1]*100}}</text>
-      <text x="7" y="20" dominant-baseline="hanging" text-anchor="middle" fill="#222" font-size="10px" v-if="i == colorDomain.length - 1">{{color*100}}-100%</text>
-      </g>
-    </svg>
-  </div>
-
   <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
     <defs>
       <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
@@ -102,11 +61,10 @@ import {
 } from "d3";
 
 import {
-  interpolateYlGnBu,
   schemeYlGnBu
 } from "d3-scale-chromatic";
 
-import GradientLegend from "@/components/GradientLegend.vue";
+import ClassedLegend from "@/components/ClassedLegend.vue";
 
 import ADMIN0_SIMPLE from "@/assets/geo/gadm_adm0_simplified.json";
 import ADMIN0 from "@/assets/geo/gadm_adm0.json";
@@ -137,7 +95,7 @@ export default {
     }
   },
   components: {
-    GradientLegend,
+    ClassedLegend,
     DownloadReportData
   },
   data() {
@@ -145,7 +103,6 @@ export default {
       width: 800,
       height: 400,
       legendHeight: 50,
-      filterWidth: 200,
       margin: {
         top: 2,
         right: 2,
@@ -158,7 +115,6 @@ export default {
       countThreshold: 25,
       filteredColor: "#A5A5A5",
       nullColor: "#EFEFEF",
-      zeroColor: "#EFEFEF",
       strokeColor: "#2c3e50",
       // data
       filteredData: null,
@@ -352,8 +308,6 @@ export default {
           this.colorScale = scaleSequential(interpolateYlGnBu)
             .domain([0, this.maxVal]);
         }
-
-        this.zeroColor = this.colorScale(0);
 
         this.filteredData.forEach(d => {
           const filtered = this.data.filter(seq => seq.name.toLowerCase() == d.properties.NAME.toLowerCase());
