@@ -132,8 +132,24 @@ export function buildQueryStr(lineageString, mutationString) {
 }
 
 
-export function getReportData(apiurl, locations, mutationString, lineageString, location) {
+export function getReportData(apiurl, locations, mutationString, lineageString, location, defaultLocations = ["USA", "USA_US-CA"]) {
+  // clean up the locations data
+  // ensure it's an array
   locations = typeof(locations) == "string" ? [locations] : locations;
+  // if not specified, use the default
+  if (!locations) {
+    locations = defaultLocations;
+  }
+  // if "selected" isn't included in the locations, add it.
+  if (!locations.includes(location)) {
+    locations.push(location);
+  }
+  // add the world
+  locations.push("Worldwide");
+
+  // ensure locations are unique
+  locations = uniq(locations);
+
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
@@ -141,7 +157,6 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
-    getWorldPrevalence(apiurl, queryStr),
     getCumPrevalences(apiurl, queryStr, locations),
     getPositiveLocations(apiurl, queryStr, "Worldwide"),
     getPositiveLocations(apiurl, queryStr, "USA"),
@@ -151,7 +166,7 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getMutationDetails(apiurl, mutationString),
     getMutationsByLineage(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, locations, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
+    map(([dateUpdated, locations, longitudinal, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       // attach names to cum prevalences
@@ -166,7 +181,6 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
         dateUpdated: dateUpdated,
         locations: locations,
         longitudinal: longitudinal,
-        globalPrev: globalPrev,
         locPrev: locPrev,
         byCountry: byCountry,
         countries: countries,
@@ -326,41 +340,10 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   )
 }
 
-export function getWorldPrevalence(apiurl, queryStr) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}`;
-  return from(axios.get(url, {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })).pipe(
-    pluck("data", "results"),
-    map(results => {
-      const first = parseDate(results.first_detected);
-      const last = parseDate(results.last_detected);
-
-      // results["name"] = "Worldwide";
-      results["proportion_formatted"] = formatPercent(results.global_prevalence);
-      results["lineage_count_formatted"] = format(",")(results.lineage_count);
-      results["first_detected"] = first ? formatDateShort(first) : null;
-      results["last_detected"] = last ? formatDateShort(last) : null;
-      // results["proportion"] = results.global_prevalence;
-      // results["cum_lineage_count"] = results.lineage_count;
-      // results["location_id"] = "worldwide";
-      return (results)
-    }),
-    catchError(e => {
-      console.log("%c Error in getting recent global prevalence data!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
-}
-
 export function getCumPrevalences(apiurl, queryStr, locations) {
-  return forkJoin(...locations.filter(d => d != "world").map(d => getCumPrevalence(apiurl, queryStr, d))).pipe(
+  return forkJoin(...locations.map(d => getCumPrevalence(apiurl, queryStr, d))).pipe(
     map(results => {
-      results.sort((a, b) => b.proportion - a.proportion);
+      results.sort((a, b) => b.global_prevalence - a.global_prevalence);
 
       return (results)
     }),
@@ -374,7 +357,9 @@ export function getCumPrevalences(apiurl, queryStr, locations) {
 
 export function getCumPrevalence(apiurl, queryStr, location) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&timestamp=${timestamp}`;
+  const url = location == "Worldwide" ?
+  `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}` :
+  `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -682,8 +667,19 @@ export function findLocationMetadata(apiurl, location) {
 }
 
 export function findAllLocationMetadata(apiurl, locations, selected) {
+  locations = locations.filter(d => d != "Worldwide");
+
   return forkJoin(...locations.map(location => findLocationMetadata(apiurl, location))).pipe(
     map(results => {
+      // add in a Worldwide default location
+      results = [{
+        id: "Worldwide",
+        label: "Worldwide",
+        admin_level: -1,
+        query_id: "Worldwide"
+      }].concat(results)
+
+      // set the active place
       results.forEach(d => {
         d["isActive"] = d.id === selected;
       })

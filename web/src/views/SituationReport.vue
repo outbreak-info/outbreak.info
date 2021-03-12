@@ -233,7 +233,7 @@
 
         <!-- RIGHT: SUMMARY BOX -->
         <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :reportType="reportType" :globalPrev="globalPrev" :locationTotals="locationTotals" :countries="countries"
+          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :reportType="reportType" :locationTotals="locationTotals" :countries="countries"
             :states="states" />
         </section>
       </div>
@@ -488,7 +488,6 @@ export default {
       states: null,
       locationTotals: null,
       totalLineage: null,
-      globalPrev: null,
       newToday: null,
       prevalence: [],
       mutationsByLineage: []
@@ -585,8 +584,8 @@ export default {
           this.lastUpdated = results.dateUpdated.lastUpdated;
 
           // worldwide stats
-          this.globalPrev = results.globalPrev;
-          this.totalLineage = results.globalPrev.lineage_count_formatted;
+          const global = results.locPrev.filter(d => d.id == "Worldwide")
+          this.totalLineage = global.length === 1 ? global[0].lineage_count_formatted : null;
 
           // newly added sequences
           this.newToday = results.newToday;
@@ -638,7 +637,7 @@ export default {
       // const newCountries = uniq(newCountries.map(d => d.name));
       // const newDivisions = uniq(newDivisions.map(d => d.name));
 
-      const locationIDs = this.loc2Add.map(d => d.id);
+      const locationIDs = this.loc2Add.map(d => d.id).filter(d => d != "Worldwide");
       console.log(this.loc2Add)
       console.log(locationIDs)
       const newSelected = locationIDs[0];
@@ -666,7 +665,7 @@ export default {
       this.selectedLocation = location.id;
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
-      const ids = this.selectedLocations.map(d => d.id);
+      const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
 
       this.$router.push({
         name: "MutationReport",

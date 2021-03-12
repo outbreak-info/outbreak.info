@@ -46,27 +46,6 @@
       </thead>
 
       <tbody class="checkbook">
-        <tr>
-          <td>
-            Worldwide
-          </td>
-          <td class="text-center">
-            {{ totalLineage }}
-          </td>
-          <td class="text-center">
-            {{ globalPrev.proportion_formatted }}
-          </td>
-          <td>
-
-          </td>
-          <td class="text-center">
-            {{ globalPrev.first_detected }}
-          </td>
-          <td class="text-center">
-            {{ globalPrev.last_detected }}
-          </td>
-        </tr>
-
         <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
           <td>
             {{ location.name }}
@@ -149,7 +128,6 @@ export default {
     totalLineage: String,
     mutationName: String,
     reportType: String,
-    globalPrev: Object,
     locationTotals: Array,
     countries: Array,
     states: Array
