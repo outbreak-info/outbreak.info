@@ -140,7 +140,6 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
-    getNewTodayAll(apiurl, queryStr, locations),
     getTemporalPrevalence(apiurl, location, queryStr, null),
     getWorldPrevalence(apiurl, queryStr),
     getCumPrevalences(apiurl, queryStr, locations),
@@ -152,13 +151,20 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getMutationDetails(apiurl, mutationString),
     getMutationsByLineage(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, locations, newToday, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
+    map(([dateUpdated, locations, longitudinal, globalPrev, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
+
+      // attach names to cum prevalences
+      locPrev.forEach(d => {
+        const filtered = locations.filter(loc => loc.id === d.id);
+        if (filtered.length === 1) {
+          d["name"] = filtered[0].label;
+        }
+      })
 
       return ({
         dateUpdated: dateUpdated,
         locations: locations,
-        newToday: newToday,
         longitudinal: longitudinal,
         globalPrev: globalPrev,
         locPrev: locPrev,
@@ -191,6 +197,14 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
     getCumPrevalences(apiurl, queryStr, locations)
   ]).pipe(
     map(([locations, longitudinal, byLocation, locPrev]) => {
+      // attach names to cum prevalences
+      locPrev.forEach(d => {
+        const filtered = locations.filter(loc => loc.id === d.id);
+        if (filtered.length === 1) {
+          d["name"] = filtered[0].label;
+        }
+      })
+
       return ({
         locations: locations,
         longitudinal: longitudinal,
@@ -344,7 +358,7 @@ export function getWorldPrevalence(apiurl, queryStr) {
 }
 
 export function getCumPrevalences(apiurl, queryStr, locations) {
-  return forkJoin(...locations.filter(d => d.type != "world").map(d => getCumPrevalence(apiurl, queryStr, d.id, d.type))).pipe(
+  return forkJoin(...locations.filter(d => d != "world").map(d => getCumPrevalence(apiurl, queryStr, d))).pipe(
     map(results => {
       results.sort((a, b) => b.proportion - a.proportion);
 
@@ -371,7 +385,7 @@ export function getCumPrevalence(apiurl, queryStr, location) {
       const first = parseDate(results.first_detected);
       const last = parseDate(results.last_detected);
 
-      results["name"] = location;
+      results["id"] = location;
       results["first_detected"] = first ? formatDateShort(first) : null;
       results["last_detected"] = last ? formatDateShort(last) : null;
       results["proportion_formatted"] = results.lineage_count ? (results.global_prevalence < 0.005 ? "< 0.5%" : formatPercent(results.global_prevalence)) : "not detected";
@@ -394,7 +408,7 @@ export function getNewTodayAll(apiurl, queryStr, locations) {
       return (results)
     }),
     catchError(e => {
-      console.log("%c Error in getting recent local cumulative prevalence data for all locations!", "color: red");
+      console.log("%c Error in getting new today data for all locations!", "color: red");
       console.log(e);
       return ( of ([]));
     })
@@ -436,7 +450,7 @@ export function getNewToday(apiurl, queryStr, location) {
       }
     }),
     catchError(e => {
-      console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
+      console.log(`%c Error in getting new today data for location ${location}!`, "color: red");
       console.log(e);
       return ( of ([]));
     })
@@ -668,7 +682,7 @@ export function findLocationMetadata(apiurl, location) {
 }
 
 export function findAllLocationMetadata(apiurl, locations, selected) {
-  return forkJoin(... locations.map(location => findLocationMetadata(apiurl, location))).pipe(
+  return forkJoin(...locations.map(location => findLocationMetadata(apiurl, location))).pipe(
     map(results => {
       results.forEach(d => {
         d["isActive"] = d.id === selected;
@@ -1119,8 +1133,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
         .entries(filtered);
 
       return (nestedByGenes)
-    })
-    ,
+    }),
     catchError(e => {
       console.log("%c Error in getting comparison report data!", "color: pink");
       console.log(e);
