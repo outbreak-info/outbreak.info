@@ -46,7 +46,7 @@
       </thead>
 
       <tbody class="checkbook">
-        <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
+        <tr v-for="(location, lIdx) in locationTotals" :key="lIdx" :class="{'font-weight-bold' : location.id == selected}">
           <td>
             {{ location.name }}
           </td>
@@ -124,6 +124,7 @@ export default {
     FontAwesomeIcon
   },
   props: {
+    selected: String,
     dateUpdated: String,
     totalLineage: String,
     mutationName: String,
