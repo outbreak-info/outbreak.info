@@ -3,7 +3,7 @@
   <div class="row d-flex align-items-center">
     <div class="col-sm-12 col-md-9 mt-1 mb-4">
       <div class="d-flex align-items-center mb-1 circle-header">
-        <div class="circle mr-3">1</div>
+        <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">1</div>
         <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
           Choose variant type
         </div>
@@ -19,7 +19,7 @@
 
       <form id="custom-reports" @submit.prevent="submitQuery" :class="[minimalistic ? 'mt-2 mb-0' : 'my-3']">
         <div class="d-flex align-items-center circle-header">
-          <div class="circle mr-3">2</div>
+          <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">2</div>
           <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
             Select {{selectedType.id == 'pango' || selectedType.id == 'variant' ? "PANGO lineage" : "mutation(s)"}}
           </div>
@@ -37,7 +37,7 @@
 
         <!-- MUTATIONS -->
         <div class="d-flex align-items-center mb-1 circle-header" v-if="selectedType.id == 'variant'">
-          <div class="circle mr-3">3</div>
+          <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">3</div>
           <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
             Select mutation(s)
           </div>
@@ -146,7 +146,7 @@
   </div>
 
   <div class="d-flex align-items-center circle-header" v-if="formValid">
-    <div class="circle mr-3">{{selectedType.id == 'variant' ? 4 : 3}}</div>
+    <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType.id == 'variant' ? 4 : 3}}</div>
     <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
       Review selections: <span class="text-highlight">{{title}}</span>
     </div>
@@ -515,6 +515,7 @@ export default Vue.extend({
 }
 
 $circle-width: 1.35em;
+$circle-width-sm: 1.1em;
 .circle {
     justify-content: center;
     align-items: center;
@@ -522,10 +523,26 @@ $circle-width: 1.35em;
     text-align: center;
     display: flex;
     flex-shrink: 0 !important;
-    font-size: 1.25em;
     color: white;
     background: $secondary-color;
+    font-size: calc(#{$circle-width} * 0.9);
     width: $circle-width;
     height: $circle-width;
+}
+
+
+.circle-sm {
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    flex-shrink: 0 !important;
+    color: white;
+
+    font-size: calc(#{$circle-width} * 0.9);
+    background: $secondary-color;
+    width: $circle-width-sm;
+    height: $circle-width-sm;
 }
 </style>

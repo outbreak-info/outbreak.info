@@ -5,7 +5,7 @@
   <div>
     <div class="d-flex align-items-center my-4 w-100">
       <div class="d-flex align-items-center circle-header" v-if="formValid">
-        <div class="circle mr-3">{{selectedType == 'variant' ? 5 : 4}}</div>
+        <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType == 'variant' ? 5 : 4}}</div>
       </div>
       <div>
         <button :disabled="!formValid" type="submit" class="btn btn-accent"  @click="submitQuery">Create report</button>
