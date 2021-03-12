@@ -35,7 +35,7 @@
               </div>
 
               <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocationList" :apiUrl="this.$genomicsurl" placeholder="Add location" totalLabel="total sequences" />
+                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocationList" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
               </div>
             </div>
           </div>
@@ -663,7 +663,7 @@ export default {
 
       location.isActive = true;
 
-      this.selectedLocation = location;
+      this.selectedLocation = location.id;
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations.map(d => d.id);
@@ -682,7 +682,8 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.selectedLocations, this.selected).subscribe(results => {
+      const ids = this.selectedLocations.map(d => d.id);
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, ids, this.selected).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations;
