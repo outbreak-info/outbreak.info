@@ -49,7 +49,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <div class="mx-4 border-bottom pb-3">
+            <div class="mx-4 border-bottom pb-3" v-if="customMutations.length">
               <h6 class="font-weight-bold text-muted">
                 Current additions:
               </h6>
@@ -206,7 +206,8 @@
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
           <div class="d-flex justify-content-between">
             <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
-            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="25" :mutationName="null" nullColor="#CCC" filteredColor="#AAA" strokeColor="#555" maxCount="10000" />
+            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="25" :mutationName="null" nullColor="#CCC" filteredColor="#AAA" strokeColor="#555"
+              maxCount="10000" />
           </div>
 
           <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>
@@ -295,7 +296,8 @@ import {
 
 import {
   timeFormat,
-  scaleOrdinal, scaleThreshold
+  scaleOrdinal,
+  scaleThreshold
 } from "d3";
 
 import {
@@ -463,7 +465,7 @@ export default {
   },
   mounted() {
     this.queryLocation = findLocation;
-    this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length+2])
+    this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
       .domain(this.choroColorDomain);
 
     this.customMutations = this.grabCustomMutations();
@@ -536,28 +538,37 @@ export default {
         custom = custom.concat(pango);
       }
       if (this.variant) {
-        const variant = typeof(this.variant) == "string" ? [{
-          type: "variant",
-          label: this.variant,
-          qParam: this.variant
-        }] : this.variant.map(d => ({
-          type: "variant",
-          label: d,
-          qParam: d
-        }))
+        let variant;
+        if (typeof(this.variant) == "string") {
+          const label = this.variant.split("|");
+          variant = [{
+            type: "variant",
+            label: `${label[0]} with ${label[1]}`,
+            qParam: this.variant
+          }]
+        } else {
+          variant = this.variant.map(d => {
+            const label = d.split("|");
+            return ({
+              type: "variant",
+              label: `${label[0]} with ${label[1]}`,
+              qParam: d
+            })
+          })
+        }
         custom = custom.concat(variant);
       }
-      if (this.mutation) {
+      if (this.muts) {
         const mutation = typeof(this.muts) == "string" ? [{
           type: "mutation",
-          label: this.mutation,
-          qParam: this.mutation
+          label: this.muts,
+          qParam: this.muts
         }] : this.muts.map(d => ({
           type: "mutation",
           label: d,
           qParam: d
         }))
-        custom = custom.concat(pango);
+        custom = custom.concat(mutation);
       }
       return (custom)
     },
