@@ -953,7 +953,7 @@ export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
 
 function locationTableSorter(a) {
   const sortingArr = ["Variant of Concern", "Variant of Interest", "Custom Lineages & Mutations"];
-  return sortingArr.indexOf(a.variantType)
+  return sortingArr.indexOf(a.variantType);
 }
 
 export function getLocationTable(apiurl, location, mutations) {
