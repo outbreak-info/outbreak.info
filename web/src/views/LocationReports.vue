@@ -119,15 +119,13 @@ export default {
       this.lastUpdated = results.dateUpdated;
       this.curated = results.curated;
       this.total = results.total;
-
-      console.log(this.curated)
     })
   },
   beforeDestroyed() {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
     }
-}
+  }
 }
 </script>
 
