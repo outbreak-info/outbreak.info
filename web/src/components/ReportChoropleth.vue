@@ -56,13 +56,8 @@ import {
   select,
   selectAll,
   scaleSequential,
-  scaleThreshold,
   scaleLog
 } from "d3";
-
-import {
-  schemeYlGnBu
-} from "d3-scale-chromatic";
 
 import ClassedLegend from "@/components/ClassedLegend.vue";
 
@@ -89,10 +84,7 @@ export default {
       type: Boolean,
       default: true
     },
-    colorDomain: {
-      type: Array,
-      default: () => [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75]
-    }
+    colorScale: Function
   },
   components: {
     ClassedLegend,
@@ -132,7 +124,6 @@ export default {
       // axis -- threshold filter
       xFilter: null,
       // methods
-      colorScale: null,
       path: geoPath(),
       transition1: 500,
       noMap: true
@@ -300,14 +291,6 @@ export default {
       if (this.data && this.locationMap) {
         // Update projection / scales
         this.updateProjection();
-
-        if (this.colorDomain) {
-          this.colorScale = scaleThreshold(schemeYlGnBu[this.colorDomain.length+2])
-            .domain(this.colorDomain);
-        } else {
-          this.colorScale = scaleSequential(interpolateYlGnBu)
-            .domain([0, this.maxVal]);
-        }
 
         this.filteredData.forEach(d => {
           const filtered = this.data.filter(seq => seq.name.toLowerCase() == d.properties.NAME.toLowerCase());

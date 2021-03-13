@@ -20,7 +20,8 @@
         <!-- LEGEND -->
         <div class="d-flex align-items-center justify-content-between height-fixed">
           <!-- scale bar with gradient -->
-          <GradientLegend :maxValue="maxEstFormatted" :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" />
+          <ClassedLegend :colorScale="colorScale" :horizontal="false" :includeNulls="false" :label="`Est. ${ mutationName } prevalence since identification`" :countThreshold="25" :mutationName="mutationName" nullColor="#EFEFEF" filteredColor="#A5A5A5" strokeColor="#2c3e50"
+            maxCount="maxEstFormatted" />
 
           <div class="d-flex  align-items-center">
             <svg id="legend" width="15" height="15" class="mr-2">
@@ -109,7 +110,6 @@ import {
   scaleLinear,
   scaleLog,
   scaleBand,
-  scaleSequential,
   range,
   axisTop,
   axisBottom,
@@ -120,26 +120,21 @@ import {
   event
 } from "d3";
 
-import chroma from "chroma-js";
 import cloneDeep from "lodash/cloneDeep";
 
-
-import {
-  interpolateYlGnBu
-} from "d3-scale-chromatic";
-
-import GradientLegend from "@/components/GradientLegend.vue";
+import ClassedLegend from "@/components/ClassedLegend.vue";
 
 export default Vue.extend({
   name: "ReportPrevalenceByLocation",
   components: {
-    GradientLegend,
+    ClassedLegend,
     DownloadReportData
   },
   props: {
     data: Array,
     mutationName: String,
-    location: String
+    location: String,
+    colorScale: Function
   },
   watch: {
     width() {
@@ -206,8 +201,7 @@ export default Vue.extend({
       xBarAxis: null,
       xBarAxis2: null,
       yAxis: null,
-      numXTicks: 4,
-      colorScale: null
+      numXTicks: 4
     }
   },
   created: function() {
@@ -368,10 +362,6 @@ export default Vue.extend({
 
       // color scale
       this.maxEst = max(this.plottedData, d => d.proportion);
-      this.colorScale = scaleSequential(interpolateYlGnBu)
-        .domain([0, this.maxEst]);
-
-
     },
     updatePlot() {
       if (this.data) {

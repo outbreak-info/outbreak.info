@@ -5,7 +5,7 @@
     <div class="text-muted">
       {{label}}
     </div>
-    <div class="d-flex flex-wrap" v-if="colorScale">
+    <div class="d-flex flex-wrap mt-n2" v-if="colorScale">
       <svg :width="35" :height="rectWidth + 15" class="categorical-rect my-1" style="margin-right: 15px;">
         <g transform="translate(2,2)">
           <rect :width="rectWidth" :height="rectWidth" x="0" y="0" :fill="colorScale(0)" :stroke="strokeColor" stroke-width="1"></rect>

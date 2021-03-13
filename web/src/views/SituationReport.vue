@@ -269,8 +269,8 @@
             <small class="text-muted">Since first identification in location</small>
             <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
-          <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" />
-          <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" />
+          <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" />
+          <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" :colorScale="choroColorScale" />
         </div>
 
         <div class="text-muted my-5" v-else>
@@ -382,8 +382,13 @@ import {
 } from "@/api/genomics.js";
 
 import {
-  timeFormat
+  timeFormat,
+  scaleThreshold
 } from "d3";
+
+import {
+  schemeYlGnBu
+} from "d3-scale-chromatic";
 
 export default {
   name: "SituationReport",
@@ -477,6 +482,10 @@ export default {
       searchTerms: null,
       reportDescription: null,
 
+      // methods
+      choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
+      choroColorScale: null,
+
       // data
       selectedLocations: null,
       selectedLocation: null,
@@ -496,6 +505,10 @@ export default {
   mounted() {
     this.queryLocation = findLocation;
     this.queryPangolin = findPangolin;
+
+    // common color scale for choropleth
+    this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
+      .domain(this.choroColorDomain);
 
     // Get date for the citation object
     const formatDate = timeFormat("%e %B %Y");

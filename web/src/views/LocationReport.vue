@@ -206,7 +206,7 @@
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
           <div class="d-flex justify-content-between">
             <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
-            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="25" :mutationName="null" nullColor="#CCC" filteredColor="#AAA" strokeColor="#555"
+            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="25" :mutationName="null" nullColor="#EFEFEF" filteredColor="#A5A5A5" strokeColor="#2c3e50"
               maxCount="10000" />
           </div>
 
