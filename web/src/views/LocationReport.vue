@@ -408,9 +408,10 @@ export default {
           })
         } else {
           tracked = tracked.concat(this.muts.map(d => {
+            const mutations = d.split(",");
             return ({
               type: "mutation",
-              label: d.length === 1 ? `${d} mutation` : `${d.join(", ")} variant`,
+              label: mutations.length === 1 ? `${d} mutation` : `${mutations.join(", ")} variant`,
               qParam: d,
               query: `mutations=${d}`,
               variantType: "Custom Lineages & Mutations",
