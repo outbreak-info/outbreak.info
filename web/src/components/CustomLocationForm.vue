@@ -54,12 +54,13 @@
     </div>
 
     <div>
-      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="formCount" />
-      <div class="col-sm-12">
-        <div>
+      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="formCount" :submitLabel.sync="submitLabel" />
+        <div class="d-flex align-items-center my-4 w-100">
+          <div class="d-flex align-items-center circle-header" v-if="formValid">
+            <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{ submitLabel }}</div>
+          </div>
           <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="addVariant">Add {{ title }}</button>
         </div>
-      </div>
 
     </div>
 
@@ -188,7 +189,8 @@ export default {
       location: null,
       selectedLineage: null,
       selectedMutations: [],
-      formCount: 0
+      formCount: 0,
+      submitLabel: null
     }
   },
   mounted() {

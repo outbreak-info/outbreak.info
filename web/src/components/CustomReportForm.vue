@@ -1,11 +1,11 @@
 <template>
 <div>
-  <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="submitCount" />
+  <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :submitLabel.sync="submitLabel" :selectedMutations.sync="selectedMutations" :submitted="submitCount" />
 
   <div>
     <div class="d-flex align-items-center my-4 w-100">
       <div class="d-flex align-items-center circle-header" v-if="formValid">
-        <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType == 'variant' ? 5 : 4}}</div>
+        <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{ submitLabel }}</div>
       </div>
       <div>
         <button :disabled="!formValid" type="submit" class="btn btn-accent"  @click="submitQuery">Create report</button>
@@ -57,7 +57,8 @@ export default Vue.extend({
     return {
       selectedMutations: [],
       selectedLineage: null,
-      submitCount: 0
+      submitCount: 0,
+      submitLabel: null
     }
   }
 })

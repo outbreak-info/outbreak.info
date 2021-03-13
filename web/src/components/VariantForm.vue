@@ -231,6 +231,16 @@ export default Vue.extend({
   watch: {
     submitted(newVal, oldVal) {
       this.clearForm();
+    },
+    selectedType: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if (this.selectedType.id == "variant") {
+          this.$emit("update:submitLabel", 5);
+        } else {
+          this.$emit("update:submitLabel", 4);
+        }
+      }
     }
   },
   computed: {
@@ -535,7 +545,6 @@ $circle-width-sm: 1.1em;
     width: $circle-width;
     height: $circle-width;
 }
-
 
 .circle-sm {
     justify-content: center;
