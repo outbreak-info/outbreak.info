@@ -233,6 +233,11 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
+  locations.push("Worldwide");
+
+  // ensure locations are unique
+  locations = uniq(locations);
+
   return forkJoin([
     findAllLocationMetadata(apiurl, locations, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
