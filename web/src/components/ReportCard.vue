@@ -35,10 +35,6 @@
 <script>
 import Vue from "vue";
 
-import {
-  getReportList
-} from "@/api/genomics.js";
-
 export default {
   name: "ReportCard",
   props: {

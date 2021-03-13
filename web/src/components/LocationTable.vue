@@ -48,7 +48,7 @@
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
         <td>
-          <router-link :to="{name: 'MutationReport', query: { ... lineage.route, loc: [locationID], selected: locationID }}">
+          <router-link :to="{name: 'MutationReport', query: lineage.route }">
             {{ lineage.label }}
           </router-link>
         </td>

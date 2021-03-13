@@ -86,7 +86,7 @@ import {
 library.add(faClock, faSpinner, faInfoCircle);
 
 import {
-  getReportList,
+  getLocationBasics,
   getSequenceCount
 } from "@/api/genomics.js";
 
@@ -106,7 +106,6 @@ export default {
     return {
       // reminder: must be the raw verison of the file
       curatedSubscription: null,
-      totalSubscription: null,
       lastUpdated: null,
       total: null,
       curated: null
@@ -116,31 +115,19 @@ export default {
     ...mapState("admin", ["mutationAuthors", "reportloading"])
   },
   mounted() {
-    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
+    this.curatedSubscription = getLocationBasics(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
-      const lineages = results.md.filter(d => d.key == "lineage");
-      if (lineages.length == 1) {
-        this.curated = nest()
-          .key(d => d.variantType)
-          .rollup(values => values.map(d => `${d.mutation_name} lineage`))
-          .entries(lineages[0].values)
-      }
+      this.curated = results.curated;
+      this.total = results.total;
 
       console.log(this.curated)
-    })
-    this.totalSubscription = getSequenceCount(this.$genomicsurl, null, true).subscribe(total => {
-      this.total = total;
     })
   },
   beforeDestroyed() {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
     }
-
-    if (this.totalSubscription) {
-      this.totalSubscription.unsubscribe();
-    }
-  }
+}
 }
 </script>
 

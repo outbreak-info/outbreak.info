@@ -27,6 +27,8 @@ import {
   getEpiTraces
 } from "@/api/epi-traces.js";
 
+import CURATED from "@/assets/genomics/curated_mutations.json";
+
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
 import cloneDeep from "lodash/cloneDeep";
@@ -51,10 +53,6 @@ function titleCase(value) {
   }
 }
 
-// reminder: must be the raw verison of the file
-const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/dev/curated_mutations.json";
-// const curatedFile = "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json";
-
 export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThreshold) {
   const queryStr = mutationObj["mutations"].map(d => d.mutation).join(",");
   return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
@@ -74,17 +72,20 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
   )
 }
 
-export function getCuratedListAndCharMuts(apiurl, prevalenceThreshold) {
-  return getCuratedList().pipe(
-    mergeMap(list => {
-      const mutations = list.filter(d => d.key == "mutation")[0]["values"];
+export function getCuratedList(apiurl, prevalenceThreshold) {
+  const mutations = CURATED.filter(d => d.reportType.toLowerCase() == "mutation");
+
       return forkJoin(...mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
         map(results => {
-          return (list)
+          let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
+
+          curated = nest()
+            .key(d => d.reportType)
+            .entries(curated);
+
+          return (curated)
         })
       )
-    })
-  )
 }
 
 export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshold) {
@@ -103,11 +104,38 @@ export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshol
 export function getReportList(apiurl, prevalenceThreshold = 0.75) {
   store.state.admin.reportloading = true;
 
-  return forkJoin([getDateUpdated(apiurl), getCuratedListAndCharMuts(apiurl, prevalenceThreshold)]).pipe(
+  return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold)]).pipe(
     map(([dateUpdated, md]) => {
       return ({
         dateUpdated: dateUpdated.lastUpdated,
         md: md
+      })
+
+    }),
+    catchError(e => {
+      console.log("%c Error in getting report list data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function getLocationBasics(apiurl) {
+  store.state.admin.reportloading = true;
+  const ofInterest = CURATED.filter(d => d.variantType).filter(d => d.variantType.includes("Concern") || d.variantType.includes("Interest"));
+
+  const curated = nest()
+  .key(d => d.variantType)
+  .rollup(values => values.map(d => d.mutation_name))
+  .entries(ofInterest);
+
+  return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl)]).pipe(
+    map(([total, dateUpdated]) => {
+      return ({
+        dateUpdated: dateUpdated.lastUpdated,
+        total: total,
+        curated: curated
       })
 
     }),
@@ -152,6 +180,7 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
 
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
+  const md = getCuratedMetadata(lineageString);
 
   return forkJoin([
     getDateUpdated(apiurl),
@@ -161,12 +190,11 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getPositiveLocations(apiurl, queryStr, "Worldwide"),
     getPositiveLocations(apiurl, queryStr, "USA"),
     getLocationPrevalence(apiurl, queryStr, location),
-    getCuratedMetadata(lineageString),
     getCharacteristicMutations(apiurl, lineageString),
     getMutationDetails(apiurl, mutationString),
     getMutationsByLineage(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, locations, longitudinal, locPrev, countries, states, byCountry, md, mutations, mutationDetails, mutationsByLineage]) => {
+    map(([dateUpdated, locations, longitudinal, locPrev, countries, states, byCountry, mutations, mutationDetails, mutationsByLineage]) => {
       const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       // attach names to cum prevalences
@@ -354,8 +382,8 @@ export function getCumPrevalences(apiurl, queryStr, locations) {
 export function getCumPrevalence(apiurl, queryStr, location) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = location == "Worldwide" ?
-  `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}` :
-  `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&timestamp=${timestamp}`;
+    `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}` :
+    `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -549,60 +577,10 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
 
 
 export function getCuratedMetadata(id) {
-  return from(
-    axios.get(curatedFile, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-  ).pipe(
-    pluck("data"),
-    map(results => {
-      const curated = results.filter(d => d.mutation_name == id);
-      if (curated.length === 1) {
-        return (curated[0])
-      } else {
-        console.log("No reports or more than one report metadata found!")
-      }
-    }),
-    // mergeMap(md => getLineageResources(apiurl, md, 10, 1).pipe(
-    //   map(resources => {
-    //     resources["md"] = md;
-    //     return(resources)
-    //   })
-    // )),
-    catchError(e => {
-      console.log("%c Error in getting curated data!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
-}
-
-export function getCuratedList() {
-  return from(
-    axios.get(curatedFile, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-  ).pipe(
-    pluck("data"),
-    map(response => {
-      response = orderBy(response, ["variantType", "mutation_name"]);
-
-      const reports = nest()
-        .key(d => d.reportType)
-        .entries(response);
-
-      return (reports)
-    }),
-    catchError(e => {
-      console.log("%c Error in getting curated data!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
+  const curated = CURATED.filter(d => d.mutation_name == id);
+  if (curated.length === 1) {
+    return (curated[0])
+  }
 }
 
 export function getLineageResources(apiurl, queryString, size, page, sort = "-date") {
@@ -869,28 +847,28 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
 
 // LOCATION REPORTS
 export function getBasicLocationReportData(apiurl, location) {
-  store.state.genomics.locationLoading1 = true
+  store.state.genomics.locationLoading1 = true;
+  let filtered = CURATED.filter(d => d.variantType).filter(d => d.variantType.includes("Concern") || d.variantType.includes("Interest"));
+
+  const curatedLineages = filtered.map(d => {
+    let reportQuery = d.reportQuery;
+    reportQuery.loc = reportQuery.loc ? uniq(reportQuery.loc.push(location)) : [location];
+    reportQuery.selected = location;
+
+    return ({
+      label: d.mutation_name,
+      query: buildQueryStr(reportQuery.pango, reportQuery.muts),
+      variantType: d.variantType,
+      route: reportQuery
+    })
+  })
+
   return forkJoin([
     findLocationMetadata(apiurl, location),
     getDateUpdated(apiurl),
-    getCuratedList(),
     getSequenceCount(apiurl, location, true)
   ]).pipe(
-    map(([location, dateUpdated, curated, total]) => {
-      const filtered = curated.filter(d => d.key == "lineage");
-      let curatedLineages;
-      if (filtered.length === 1) {
-        curatedLineages = filtered[0].values.map(d => {
-          return ({
-            label: d.mutation_name,
-            query: `pangolin_lineage=${d.mutation_name}`,
-            variantType: d.variantType,
-            route: {
-              pango: d.mutation_name
-            }
-          })
-        })
-      }
+    map(([location, dateUpdated, total]) => {
       return ({
         location: location,
         dateUpdated: dateUpdated,
@@ -1016,21 +994,21 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
 }
 
 export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
-if(mutations.length) {
-  return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, locationID, mutation))).pipe(
-    map(results => {
-      return (results)
-    }),
-    catchError(e => {
-      console.log("%c Error in getting mutations over time data!", "color: orange");
-      console.log(e);
-      return ( of ([]));
-    }),
-    finalize(() => store.state.genomics.locationLoading4 = false)
-  )
-} else {
-  return of ([]);
-}
+  if (mutations.length) {
+    return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, locationID, mutation))).pipe(
+      map(results => {
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting mutations over time data!", "color: orange");
+        console.log(e);
+        return ( of ([]));
+      }),
+      finalize(() => store.state.genomics.locationLoading4 = false)
+    )
+  } else {
+    return of([]);
+  }
 }
 
 export function getSequenceCount(apiurl, location = null, cumulative = true) {

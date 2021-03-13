@@ -76,9 +76,7 @@ import VariantForm from "@/components/VariantForm.vue";
 import debounce from "lodash/debounce";
 
 import {
-  getReportList,
-  getSequenceCount,
-  findLocation,
+  findLocation
 } from "@/api/genomics.js";
 
 // --- font awesome --

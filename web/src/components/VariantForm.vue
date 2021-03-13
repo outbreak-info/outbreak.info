@@ -17,7 +17,7 @@
 
       </div>
 
-      <form id="custom-reports" @submit.prevent="submitQuery" :class="[minimalistic ? 'mt-2 mb-0' : 'my-3']">
+      <form id="custom-variants" @submit.prevent="submitQuery" :class="[minimalistic ? 'mt-2 mb-0' : 'my-3']">
         <div class="d-flex align-items-center circle-header">
           <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">2</div>
           <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
