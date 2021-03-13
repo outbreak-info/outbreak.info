@@ -123,7 +123,8 @@ export function getReportList(apiurl, prevalenceThreshold = 0.75) {
 
 export function getLocationBasics(apiurl) {
   store.state.admin.reportloading = true;
-  const ofInterest = CURATED.filter(d => d.variantType).filter(d => d.variantType.includes("Concern") || d.variantType.includes("Interest"));
+  let ofInterest = CURATED.filter(d => d.variantType).filter(d => d.variantType.includes("Concern") || d.variantType.includes("Interest"));
+  ofInterest = orderBy(ofInterest, ["variantType", "mutation_name"]);
 
   const curated = nest()
   .key(d => d.variantType)
@@ -849,6 +850,7 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
 export function getBasicLocationReportData(apiurl, location) {
   store.state.genomics.locationLoading1 = true;
   let filtered = CURATED.filter(d => d.variantType).filter(d => d.variantType.includes("Concern") || d.variantType.includes("Interest"));
+  filtered = orderBy(filtered, ["variantType", "mutation_name"]);
 
   const curatedLineages = filtered.map(d => {
     let reportQuery = d.reportQuery;
@@ -949,12 +951,17 @@ export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
   )
 }
 
+function locationTableSorter(a) {
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Custom Lineages & Mutations"];
+  return sortingArr.indexOf(a.variantType)
+}
+
 export function getLocationTable(apiurl, location, mutations) {
   store.state.genomics.locationLoading3 = true;
 
   return forkJoin(...mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location))).pipe(
     map(results => {
-      results = orderBy(results, ["variantType", "global_prevalence"], ["asc", "desc"]);
+      results = orderBy(results, [locationTableSorter, "global_prevalence"], ["asc", "desc"]);
 
       const nestedResults = nest()
         .key(d => d.variantType)

@@ -97,9 +97,6 @@ import Warning from "@/components/Warning.vue";
 
 export default {
   name: "LocationTable",
-  components: {
-    // FontAwesomeIcon
-  },
   props: {
     data: Array,
     locationID: String
