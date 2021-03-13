@@ -223,7 +223,7 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :fillMax="1" :location="selectedLocation.label" :mutationName="choro.key" :widthRatio="1" />
+                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :fillMax="1" :location="selectedLocation.label" :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
           </div>
