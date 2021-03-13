@@ -217,6 +217,7 @@ export default Vue.extend({
   props: {
     selectedLineage: String,
     selectedMutations: Array,
+    submitted: Number,
     minimalistic: {
       type: Boolean,
       default: false
@@ -226,6 +227,11 @@ export default Vue.extend({
     FontAwesomeIcon,
     TypeaheadSelect,
     SARSMutationMap
+  },
+  watch: {
+    submitted(newVal, oldVal) {
+      this.clearForm();
+    }
   },
   computed: {
     ...mapState("genomics", ["refSeq"]),

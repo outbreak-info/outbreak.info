@@ -54,7 +54,7 @@
     </div>
 
     <div>
-      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" />
+      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="formCount" />
       <div class="col-sm-12">
         <div>
           <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="addVariant">Add {{ title }}</button>
@@ -158,6 +158,7 @@ export default {
         })
       }
 
+      this.formCount += 1;
       this.selectedLineage = null;
       this.selectedMutations = [];
     },
@@ -186,7 +187,8 @@ export default {
       queryLocation: null,
       location: null,
       selectedLineage: null,
-      selectedMutations: []
+      selectedMutations: [],
+      formCount: 0
     }
   },
   mounted() {

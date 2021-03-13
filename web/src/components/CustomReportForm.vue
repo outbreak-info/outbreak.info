@@ -1,6 +1,6 @@
 <template>
 <div>
-  <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" />
+  <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="submitCount" />
 
   <div>
     <div class="d-flex align-items-center my-4 w-100">
@@ -42,6 +42,8 @@ export default Vue.extend({
     submitQuery() {
       this.$emit("exit", true);
 
+      this.submitCount += 1;
+
       this.$router.push({
         name: "MutationReport",
         query: {
@@ -54,7 +56,8 @@ export default Vue.extend({
   data() {
     return {
       selectedMutations: [],
-      selectedLineage: null
+      selectedLineage: null,
+      submitCount: 0
     }
   }
 })
