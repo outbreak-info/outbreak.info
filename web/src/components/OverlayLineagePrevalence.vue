@@ -1,7 +1,7 @@
 <template>
 <div>
-  <div class="d-flex justify-content-center mt-2">
-    <label class="b-contain m-0 mr-3" v-for="option in options" :key="option.label">
+  <div class="d-flex flex-wrap justify-content-center mt-2">
+    <label class="b-contain m-0 mr-3 mb-2" v-for="option in options" :key="option.label">
       <small>{{option.label}}</small>
       <input type="checkbox" :value="option" v-model.lazy="selectedMutations" @change="debounceSelectMutation" />
       <div class="b-input"></div>
