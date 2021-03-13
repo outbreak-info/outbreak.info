@@ -314,7 +314,7 @@ export default Vue.extend({
           const splitted = d.split(":");
           if (splitted.length == 2) {
             const aaChange = splitted[1];
-            const mutationType = aaChange.includes("DEL") ? "deletion" : "substitution";
+            const mutationType = aaChange.toLowerCase().includes("del") ? "deletion" : "substitution";
             const changeSplitted = aaChange.split(/(\d+)/g).filter(d => d != "");
             if (mutationType == "substitution") {
               if (changeSplitted.length == 3) {
