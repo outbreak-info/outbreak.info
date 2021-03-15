@@ -21,10 +21,10 @@
       <p>
         Sequencing rates between locations are highly variable, complicating comparisons between places. Wherever possible, we have added confidence intervals to estimate the uncertainty due to different sampling rates.
       </p>
-      <p>
+      <!-- <p>
         View how sequencing rates differ by country or division:
       </p>
-      <div class="text-highlight">&lt; changable choropleth showing total number of sequences and % of total cases sequencing by global/country/state &gt;</div>
+      <div class="text-highlight">&lt; changable choropleth showing total number of sequences and % of total cases sequencing by global/country/state &gt;</div> -->
     </div>
 
     <div class="border-bottom py-2">
@@ -32,10 +32,10 @@
       <p>
         For all sequencing data, there is a lag between when the sample was acquired from the patient, when the sample was processed and sequenced, and when the data is released to the public. This gap means that the most recent data often contains very few samples, severely limiting its reliability.
       </p>
-      <p>
+      <!-- <p>
         View the lag between sample collection date and sequence submission date:
       </p>
-      <div class="text-highlight">&lt; changable plot showing the distribution of sequencing gaps by global/country/state &gt;</div>
+      <div class="text-highlight">&lt; changable plot showing the distribution of sequencing gaps by global/country/state &gt;</div> -->
     </div>
 
     <div class="border-bottom py-2">
