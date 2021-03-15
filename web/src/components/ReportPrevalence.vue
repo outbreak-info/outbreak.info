@@ -47,17 +47,7 @@
         </g>
       </svg>
 
-      <!-- SEQUENCING HISTOGRAM -->
-      <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :name="title">
-      <!-- <svg :width="width" :height="heightCounts" class="prevalence-curve prevalence-curve-counts" ref="svg-counts" :subtitle="countTitle"> -->
-        <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
-        <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
-      </svg>
-      <div class="d-flex">
-        <small class="text-uppercase lt-purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
-        <small class="text-uppercase purple ml-3"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
-      </div>
+      <SequencingHistogram :data="data" :x="x" :width="width" :title="title" :margin="margin" :mutationName="mutationName" className="prevalence-curve prevalence-curve-counts" />
 
     </div>
   </div>
@@ -101,6 +91,7 @@ import {
 } from "d3";
 
 import DownloadReportData from "@/components/DownloadReportData.vue";
+import SequencingHistogram from "@/components/SequencingHistogram.vue";
 
 export default Vue.extend({
   name: "ReportPrevalence",
@@ -110,6 +101,7 @@ export default Vue.extend({
     location: String
   },
   components: {
+    SequencingHistogram,
     DownloadReportData
   },
   computed: {
@@ -130,34 +122,24 @@ export default Vue.extend({
         left: 70,
         right: 70
       },
-      heightCounts: 80,
       lengthThreshold: 5,
-      showDetected: null,
-      detectedDisplayThresh: 50,
       CIColor: "#df4ab7",
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
       xVariable: "dateTime",
       yVariable: "proportion",
-      totalVariable: "total_count",
       // axes
       x: scaleTime(),
       y: scaleLinear(),
-      yCounts: scaleLinear(),
-      maxCounts: null,
-      xBandwidth: 1,
       xAxis: null,
       yAxis: null,
-      yCountsAxisLeft: null,
-      yCountsAxisRight: null,
       numXTicks: 5,
       numYTicks: 6,
       // methods
       line: null,
       area: null,
       // refs
-      chart: null,
-      counts: null
+      chart: null
     }
   },
   watch: {
@@ -212,7 +194,6 @@ export default Vue.extend({
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
-      this.counts = select(this.$refs.counts);
 
       // estimate
       this.line = line()
@@ -240,14 +221,6 @@ export default Vue.extend({
         .domain([0, (avgMax + CIMax) * 0.5])
       // .domain([0, max(this.data, d => d[this.yVariable])])
 
-      this.maxCounts = max(this.data, d => d[this.totalVariable]);
-      this.yCounts = scaleLinear()
-        .range([0, this.heightCounts - this.margin.top - this.margin.top])
-        .domain([0, this.maxCounts]);
-
-      const numDays = timeDay.count(...this.x.domain());
-      this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / numDays;
-
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks);
       select(this.$refs.xAxis).call(this.xAxis);
@@ -256,15 +229,7 @@ export default Vue.extend({
         .ticks(this.numYTicks)
         .tickFormat(format(".0%"));
 
-      this.yCountsAxisLeft = axisLeft(this.yCounts).tickSizeOuter(0)
-        .tickValues([0, this.maxCounts]);
-
-      this.yCountsAxisRight = axisRight(this.yCounts).tickSizeOuter(0)
-        .tickValues([0, this.maxCounts]);
-
       select(this.$refs.yAxis).call(this.yAxis);
-      select(this.$refs.yCountsAxisLeft).call(this.yCountsAxisLeft);
-      select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
     },
     tooltipOn() {
       const ttipShift = 20;
@@ -312,77 +277,6 @@ export default Vue.extend({
 
       if (this.data) {
         this.updateScales();
-
-        let detected = this.data.filter(d => d.lineage_count);
-        this.showDetected = detected.length < this.detectedDisplayThresh;
-        if (!this.showDetected) {
-          detected = [];
-        }
-        const detectedSelector = this.counts
-          .selectAll(".detected")
-          .data(detected);
-
-        detectedSelector.join(
-          enter => {
-            enter.append("text")
-              .attr("class", "detected")
-              .attr("id", d => `date${d.date}`)
-              .attr("x", d => this.x(d[this.xVariable]))
-              .attr("y", d => this.yCounts(d[this.totalVariable]))
-              .attr("dy", 3)
-              .style("dominant-baseline", "hanging")
-              .style("text-anchor", "middle")
-              .text("*")
-              .style("fill", "#980072");
-          },
-          update =>
-          update
-          .attr("class", "detected")
-          .attr("id", d => `date${d.date}`)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.yCounts(d[this.totalVariable])),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
-
-        const countSelector = this.counts
-          .selectAll(".raw-counts")
-          .data(this.data);
-        countSelector.join(
-          enter => {
-            enter.append("line")
-              .attr("class", "raw-counts")
-              .attr("id", d => `date${d.date}`)
-              .attr("x1", d => this.x(d[this.xVariable]))
-              .attr("x2", d => this.x(d[this.xVariable]))
-              .attr("y1", d => this.yCounts(0))
-              .attr("y2", d => this.yCounts(d[this.totalVariable]))
-              .style("stroke-width", this.xBandwidth)
-              .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5");
-          },
-          update =>
-          update
-          .attr("id", d => `date${d.date}`)
-          .attr("x1", d => this.x(d[this.xVariable]))
-          .attr("x2", d => this.x(d[this.xVariable]))
-          .attr("y1", d => this.yCounts(0))
-          .attr("y2", d => this.yCounts(d[this.totalVariable]))
-          .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5")
-          .style("stroke-width", this.xBandwidth),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
-
 
 
         const CISelector = this.chart
@@ -441,9 +335,6 @@ export default Vue.extend({
 
         // event listener for tooltips
         this.chart.selectAll(".confidence-interval")
-          .on("mousemove", () => this.tooltipOn())
-          .on("mouseleave", () => this.tooltipOff())
-        this.counts.selectAll(".raw-counts")
           .on("mousemove", () => this.tooltipOn())
           .on("mouseleave", () => this.tooltipOff())
       }
