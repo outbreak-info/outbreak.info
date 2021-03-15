@@ -205,12 +205,15 @@
         <!-- GEOGRAPHIC CHOROPLETHS -->
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
           <div class="d-flex justify-content-between">
-            <h3 class="m-0">Geographic prevalence of tracked lineages & mutations</h3>
+            <div>
+              <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
+              <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>  
+            </div>
+
             <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="25" :mutationName="null" nullColor="#EFEFEF" filteredColor="#A5A5A5" strokeColor="#2c3e50"
               maxCount="10000" />
           </div>
 
-          <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>
           <div class="d-flex flex-wrap">
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-33 my-3">
               <div v-if="choro.values.length">
