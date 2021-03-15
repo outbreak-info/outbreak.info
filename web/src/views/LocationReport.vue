@@ -158,7 +158,11 @@
         <!-- STREAM GRAPHS -->
         <div id="lineages">
           <div>
-            <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+            <div class="d-flex arrange-items-center justify-content-between">
+              <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+              <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            </div>
+
             <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
           </div>
 
@@ -184,27 +188,38 @@
         <section id="variants-of-concern" v-if="lineageTable" class="my-5 py-3 border-top">
           <div class="d-flex align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
+            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
           <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
         </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
-          <div class="d-flex align-items-center justify-content-center">
+          <div class="d-flex align-items-center justify-content-center mb-3">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
+            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
           <OverlayLineagePrevalence :options="selectedMutations" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
-          <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
+          <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
+            <div class="d-flex">
+            <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+            </button>
+            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+          </div>
+          </div>
+
           <div class="d-flex flex-wrap justify-content-center">
             <div class="d-flex flex-wrap align-items-center border-top border-bottom bg-white pt-1 px-2 mt-1">
               <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="choroCountThreshold" :mutationName="null" />
