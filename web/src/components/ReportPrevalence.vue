@@ -47,7 +47,7 @@
         </g>
       </svg>
 
-      <SequencingHistogram :data="data" :x="x" :width="width" :title="title" :margin="margin" :mutationName="mutationName" className="prevalence-curve prevalence-curve-counts" />
+      <SequencingHistogram :data="data" :x="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="mutationName" className="prevalence-curve prevalence-curve-counts" />
 
     </div>
   </div>

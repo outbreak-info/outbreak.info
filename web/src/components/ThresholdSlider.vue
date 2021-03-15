@@ -28,7 +28,7 @@ export default {
   props: {
     width: {
       type: Number,
-      default: 230
+      default: 235
     },
     filterWidth: {
       type: Number,

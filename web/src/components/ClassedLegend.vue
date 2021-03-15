@@ -24,7 +24,7 @@
   </div>
 
   <!-- WEIRDO LEGEND -->
-  <svg ref="manual-legend" id="manual-legend" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2" role="legend" v-if="includeNulls">
+  <svg ref="manual-legend" id="manual-legend" :width="280" :height="58" class="report-choropleth-legend my-2" role="legend" v-if="includeNulls">
     <defs>
       <pattern id="diagonalHatchLegend" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:1.75`" />

@@ -158,7 +158,11 @@
         <!-- STREAM GRAPHS -->
         <div id="lineages">
           <div>
-            <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+            <div class="d-flex arrange-items-center justify-content-between">
+              <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+              <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            </div>
+
             <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
           </div>
 
@@ -184,34 +188,55 @@
         <section id="variants-of-concern" v-if="lineageTable" class="my-5 py-3 border-top">
           <div class="d-flex align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
+            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
           <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
         </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
-          <div class="d-flex align-items-center justify-content-center">
+          <div class="d-flex align-items-center justify-content-center mb-3">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
+            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
           <OverlayLineagePrevalence :options="selectedMutations" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
-          <div class="d-flex justify-content-between">
-            <div>
-              <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
-              <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>
-              <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
+          <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
+            <div class="d-flex align-items-center">
+              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+                <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+              </button>
+              <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
             </div>
+          </div>
 
-            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="choroCountThreshold" :mutationName="null" />
+          <div class="d-flex flex-wrap justify-content-center">
+            <div class="d-flex flex-wrap align-items-center border-top border-bottom bg-white pt-1 px-2 mt-1">
+              <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="choroCountThreshold" :mutationName="null" />
+              <div class="d-flex flex-column">
+                <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" class="mr-3" />
+                <div class="d-flex align-items-center">
+                  <small>Change time window: last</small>
+                  <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
+                  <small>days</small>
+                </div>
+              </div>
+
+              <!-- Histogram of sequencing counts -->
+              <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :margin="marginHist" :mutationName="null" className="sequencing-histogram" :title="`Samples sequenced per day over last ${recentWindow} days`"
+                :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" />
+
+            </div>
           </div>
 
           <div class="d-flex flex-wrap">
@@ -294,6 +319,8 @@ import {
 
 library.add(faClock, faSpinner, faSync, faInfoCircle, faArrowLeft, faPlus, faTimesCircle);
 
+import debounce from "lodash/debounce";
+
 import {
   mapState
 } from "vuex";
@@ -302,7 +329,10 @@ import {
   max,
   timeFormat,
   scaleOrdinal,
-  scaleThreshold
+  scaleThreshold,
+  scaleTime,
+  timeDay,
+  extent
 } from "d3";
 
 import {
@@ -344,6 +374,7 @@ export default {
     OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
     CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
+    SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     FontAwesomeIcon
   },
@@ -353,6 +384,11 @@ export default {
         this.newLocation = null;
         this.createReport();
         this.customMutations = this.grabCustomMutations();
+      }
+    },
+    recentWindow() {
+      if (this.recentWindow) {
+        this.debounceWindowChange();
       }
     },
     selectedMutations() {
@@ -470,6 +506,9 @@ export default {
       return (tracked)
     }
   },
+  created() {
+    this.debounceWindowChange = debounce(this.updateWindow, 500);
+  },
   mounted() {
     this.queryLocation = findLocation;
     this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
@@ -478,8 +517,8 @@ export default {
     this.customMutations = this.grabCustomMutations();
 
     const formatDate = timeFormat("%e %B %Y");
-    var currentTime = new Date();
-    this.today = formatDate(currentTime);
+    this.currentTime = new Date();
+    this.today = formatDate(this.currentTime);
 
     // set URL for sharing, etc.
     this.$nextTick(function() {
@@ -613,9 +652,15 @@ export default {
       this.newMuts = [];
       this.newVariants = [];
     },
+    updateWindow() {
+      this.setupReport();
+      this.updateMaps();
+    },
     updateSequenceCount() {
       this.countSubscription = getSequenceCount(this.$genomicsurl, this.loc, false).subscribe(results => {
         this.seqCounts = results;
+        const minDate = timeDay.offset(this.currentTime, -1 * this.recentWindow)
+        this.seqCountsWindowed = results.filter(d => d.dateTime >= minDate);
       })
     },
     updateMaps() {
@@ -635,7 +680,7 @@ export default {
   },
   data() {
     return ({
-
+      currentTime: null,
       today: null,
       url: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
@@ -670,6 +715,14 @@ export default {
       curatedLineages: [],
       geoData: null,
       seqCounts: null,
+      seqCountsWindowed: null,
+      widthHist: 300,
+      marginHist: {
+        left: 55,
+        right: 55,
+        top: 5,
+        bottom: 5
+      },
       // selections
       // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html

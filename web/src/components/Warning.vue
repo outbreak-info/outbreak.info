@@ -1,6 +1,6 @@
 <template>
   <div
-    class="alert bg-highlight text-light p-2 m-0 rounded-0 d-flex align-items-center"
+    class="alert bg-highlight text-light px-2 py-1 m-0 rounded-0 d-flex align-items-center"
     :class="{ 'scale-in-center': animate }"
   >
     <div
