@@ -212,12 +212,12 @@
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
           <div class="d-flex flex-wrap justify-content-between align-items-center">
             <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
-            <div class="d-flex">
-            <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
-              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-            </button>
-            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
-          </div>
+            <div class="d-flex align-items-center">
+              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+                <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+              </button>
+              <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            </div>
           </div>
 
           <div class="d-flex flex-wrap justify-content-center">
