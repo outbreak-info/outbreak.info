@@ -239,6 +239,9 @@ export default Vue.extend({
       if (recentPrev) {
         ttip.select("#proportion")
           .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+      } else {
+        ttip.select("#proportion")
+          .text('Grouped into "other" category')
       }
 
       // fix location
@@ -256,7 +259,7 @@ export default Vue.extend({
       selectAll(".stacked-bar-chart")
         .style("stroke", "#555")
         .style("fill-opacity", 1);
-      
+
       select(this.$refs.tooltip_streamgraph)
         .style("display", "none");
     },
