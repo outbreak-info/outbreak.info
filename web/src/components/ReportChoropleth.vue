@@ -28,7 +28,7 @@
     <div id="sequencing-count"></div>
   </div>
 
-  <div class="w-75" v-if="showCopy">
+  <div class="w-75" v-if="showCopy && !noMap">
     <DownloadReportData :data="data" figureRef="report-choropleth" dataType="Mutation Report Choropleth" />
   </div>
 
