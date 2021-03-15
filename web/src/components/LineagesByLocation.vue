@@ -22,9 +22,13 @@
 
   <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
-  <div ref="tooltip_streamgraph" class="tooltip-basic box-shadow" id="tooltip-mutation">
-    <h5 class="my-1">
-    </h5>
+  <div ref="tooltip_streamgraph" class="tooltip-basic box-shadow" id="tooltip-streamgraph">
+    <h5 id="lineage" class="my-1"></h5>
+    <div class="d-flex align-items-center">
+      Prevalence in the last {{ recentWindow }} days:
+      <b id="proportion" class="ml-1"></b>
+    </div>
+
   </div>
 </div>
 </template>
@@ -81,7 +85,9 @@ export default Vue.extend({
   },
   props: {
     data: Array,
+    recentData: Object,
     seqCounts: Array,
+    recentWindow: Number,
     colorScale: Function
   },
   computed: {
@@ -212,14 +218,29 @@ export default Vue.extend({
         .selectAll(".stacked-area-chart")
         .style("stroke", "#BBB")
         .style("fill-opacity", 0.2);
+
+      selectAll(".stacked-bar-chart")
+        .style("stroke", "#BBB")
+        .style("fill-opacity", 0.2);
+
       // turn on the selected region
-      this.chart
-        .select(`#area_${key.replace(/\./g, "-")}`)
+      this.chart.select(`#area_${key.replace(/\./g, "-")}`)
         .style("fill-opacity", 1);
+
+      select(`#${key.replace(/\./g, "-")}`)
+        .style("fill-opacity", 1);
+
       const ttip = select(this.$refs.tooltip_streamgraph);
 
-      ttip.select("h5")
+      ttip.select("#lineage")
         .text(key)
+
+      const recentPrev = this.recentData[key];
+      if (recentPrev) {
+        ttip.select("#proportion")
+          .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+      }
+
       // fix location
       ttip
         .style("left", `${event.clientX + ttipShift}px`)
@@ -232,6 +253,10 @@ export default Vue.extend({
         .style("stroke", "#555")
         .style("fill-opacity", 1);
 
+      selectAll(".stacked-bar-chart")
+        .style("stroke", "#555")
+        .style("fill-opacity", 1);
+      
       select(this.$refs.tooltip_streamgraph)
         .style("display", "none");
     },
@@ -306,7 +331,7 @@ export default Vue.extend({
 
       this.chart
         .selectAll(".stacked-area-chart")
-        .on("mouseenter", ({
+        .on("mousemove", ({
           key
         }) => this.tooltipOn(key))
         .on("mouseleave", this.tooltipOff)

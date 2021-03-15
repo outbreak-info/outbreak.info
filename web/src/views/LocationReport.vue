@@ -171,7 +171,7 @@
             <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
               <div class="">
-                <LineagesByLocation :data="lineagesByDay" :seqCounts="seqCounts" :colorScale="colorScale" />
+                <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :seqCounts="seqCounts" :colorScale="colorScale" />
               </div>
             </section>
 

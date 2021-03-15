@@ -71,7 +71,7 @@ export default Vue.extend({
         left: 55,
         right: 10
       },
-      width: 190,
+      width: 200,
       height: 600,
       legendHeight: null,
       // variables
