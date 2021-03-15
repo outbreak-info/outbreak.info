@@ -29,7 +29,7 @@
         <small class="text-muted">95% confidence interval</small>
       </div>
 
-      <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
+      <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="svg" :name="title">
         <defs>
           <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
             <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
@@ -54,6 +54,9 @@
         </g>
       </svg>
 
+      <!-- Histogram of sequencing counts -->
+      <SequencingHistogram :data="seqCounts" :x="x" :width="width" :title="title" :margin="margin" :mutationName="null" :onlyTotals="true" notDetectedColor="#79706E" className="mutation-epi-prevalence" v-if="seqCounts" />
+
       <!-- zoom btns -->
       <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
         <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
@@ -74,7 +77,7 @@
           <small class="text-muted">7 day rolling average of confirmed cases</small>
         </div>
 
-        <svg :width="width" :height="height" class="prevalence-curve" ref="epi" name="title">
+        <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" name="title">
           <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
@@ -97,7 +100,7 @@
     <div id="sequencing-count-rolling"></div>
   </div>
 
-  <DownloadReportData :data="data" figureRef="prevalence-curve" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
+  <DownloadReportData :data="data" figureRef="mutation-epi-prevalence" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
 </div>
 </template>
@@ -131,6 +134,7 @@ import {
 import cloneDeep from "lodash/cloneDeep";
 
 import DownloadReportData from "@/components/DownloadReportData.vue";
+import SequencingHistogram from "@/components/SequencingHistogram.vue";
 
 // --- font awesome --
 import {
@@ -150,11 +154,13 @@ export default Vue.extend({
   name: "ReportPrevalence",
   props: {
     data: Array,
+    seqCounts: Array,
     epi: Array,
     locationName: String
   },
   components: {
     DownloadReportData,
+    SequencingHistogram,
     FontAwesomeIcon
   },
   computed: {
@@ -171,7 +177,7 @@ export default Vue.extend({
       height: 400,
       margin: {
         top: 10,
-        bottom: 40,
+        bottom: 25,
         left: 85,
         right: 110
       },
@@ -638,7 +644,7 @@ export default Vue.extend({
 #location-report-prevalence {
     & .count-axis,
     & .prevalence-axis {
-        font-size: 16px;
+        font-size: 16pt;
         text {
             fill: $grey-90;
         }

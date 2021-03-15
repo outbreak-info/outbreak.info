@@ -167,7 +167,7 @@
             <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
               <div class="">
-                <LineagesByLocation :data="lineagesByDay" :colorScale="colorScale" />
+                <LineagesByLocation :data="lineagesByDay" :seqCounts="seqCounts" :colorScale="colorScale" />
               </div>
             </section>
 
@@ -199,7 +199,7 @@
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
           </div>
-          <OverlayLineagePrevalence :options="selectedMutations" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
+          <OverlayLineagePrevalence :options="selectedMutations" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -211,7 +211,7 @@
               <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
             </div>
 
-            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="choroCountThreshold" :mutationName="null"  />
+            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="choroCountThreshold" :mutationName="null" />
           </div>
 
           <div class="d-flex flex-wrap">
@@ -226,7 +226,8 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label" :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
+                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label" :colorScale="choroColorScale" :mutationName="choro.key"
+                  :widthRatio="1" />
               </div>
             </div>
           </div>
@@ -310,6 +311,7 @@ import {
 
 import {
   getLocationReportData,
+  getSequenceCount,
   getLocationMaps,
   getBasicLocationReportData,
   getLocationTable,
@@ -504,6 +506,8 @@ export default {
         this.lineageDomain = results.lineageDomain;
         this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
       })
+
+      this.updateSequenceCount();
     },
     createReport() {
       this.setupReport();
@@ -609,6 +613,11 @@ export default {
       this.newMuts = [];
       this.newVariants = [];
     },
+    updateSequenceCount() {
+      this.countSubscription = getSequenceCount(this.$genomicsurl, this.loc, false).subscribe(results => {
+        this.seqCounts = results;
+      })
+    },
     updateMaps() {
       if (this.selectedLocation.admin_level === 0) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
@@ -634,6 +643,7 @@ export default {
       reportSubscription: null,
       choroSubscription: null,
       tableSubscription: null,
+      countSubscription: null,
       // methods
       queryLocation: null,
       // variables
@@ -659,6 +669,7 @@ export default {
       totalSequences: null,
       curatedLineages: [],
       geoData: null,
+      seqCounts: null,
       // selections
       // scales
       // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
@@ -736,6 +747,10 @@ export default {
 
     if (this.tableSubscription) {
       this.tableSubscription.unsubscribe();
+    }
+
+    if (this.countSubscription) {
+      this.countSubscription.unsubscribe();
     }
   }
 }

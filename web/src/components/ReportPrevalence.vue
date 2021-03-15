@@ -376,12 +376,4 @@ export default Vue.extend({
     stroke: $base-grey;
     stroke-width: 2.5;
 }
-
-.purple {
-    color: #980072;
-}
-
-.lt-purple {
-    color: #af88a5;
-}
 </style>

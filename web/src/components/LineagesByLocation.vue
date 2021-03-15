@@ -16,6 +16,12 @@
     <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
   </svg>
+
+  <!-- Histogram of sequencing counts -->
+  <SequencingHistogram :data="seqCounts" :x="x" :width="width" :title="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#79706E" v-if="seqCounts" />
+
+  <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
+
   <div ref="tooltip_streamgraph" class="tooltip-basic box-shadow" id="tooltip-mutation">
     <h5 class="my-1">
     </h5>
@@ -43,6 +49,9 @@ import {
 
 library.add(faSearchPlus, faCompressArrowsAlt);
 
+import SequencingHistogram from "@/components/SequencingHistogram.vue";
+import DownloadReportData from "@/components/DownloadReportData.vue";
+
 import {
   select,
   selectAll,
@@ -66,10 +75,13 @@ import {
 export default Vue.extend({
   name: "LineagesByLocation",
   components: {
+    SequencingHistogram,
+    DownloadReportData,
     FontAwesomeIcon
   },
   props: {
     data: Array,
+    seqCounts: Array,
     colorScale: Function
   },
   computed: {
@@ -91,8 +103,8 @@ export default Vue.extend({
       margin: {
         top: 8,
         bottom: 30,
-        left: 55,
-        right: 10
+        left: 75,
+        right: 75
       },
       width: 800,
       height: 600,
@@ -232,7 +244,7 @@ export default Vue.extend({
         const newMax = this.x.invert(selection[1]);
         this.x = this.x
           .domain([newMin, newMax]);
-          
+
         // reset the axis
         this.xAxis = axisBottom(this.x)
           .ticks(this.numXTicks);

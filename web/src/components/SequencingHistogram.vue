@@ -7,12 +7,17 @@
     <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
   </svg>
   <div class="d-flex">
-    <small class="text-uppercase lt-purple" :style="{'margin-left' : this.margin.left + 'px'}">Total samples sequenced per day</small>
-    <small class="text-uppercase purple ml-3"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
+    <small class="text-uppercase" :style="{'margin-left' : this.margin.left + 'px', 'color': notDetectedColor}">Total samples sequenced per day</small>
+    <small class="text-uppercase ml-3" :style="{'color': detectedColor}" v-if="!onlyTotals"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
   </div>
 
   <!-- TOOLTIPS -->
-  <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
+  <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence" v-if="onlyTotals">
+    <h5 id="date"></h5>
+    <b id="sequencing-count" class="font-size-2"></b>
+  </div>
+
+  <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence" v-else>
     <h5 id="date"></h5>
     <div class="d-flex align-items-center">
       <b id="proportion" class="font-size-2"></b>
@@ -58,7 +63,23 @@ export default Vue.extend({
       default: "sequencing-histogram"
     },
     width: Number,
-    margin: Object
+    margin: Object,
+    notDetectedColor: {
+      type: String,
+      default: "#af88a5"
+    },
+    detectedColor: {
+      type: String,
+      default: "#980072"
+    },
+    downward: {
+      type: Boolean,
+      default: true
+    },
+    onlyTotals: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return ({
@@ -91,6 +112,7 @@ export default Vue.extend({
     },
   },
   mounted() {
+    console.log(this.data)
     this.setupPlot();
     this.updatePlot();
   },
@@ -142,11 +164,14 @@ export default Vue.extend({
         // edit text
         ttip.select("h5").text(selected[0].date)
 
-        ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
-        ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
-        ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
-        ttip.select("#sequencing-count-rolling").text(`Rolling average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
-
+        if (this.onlyTotals) {
+          ttip.select("#sequencing-count").text(`Samples sequenced: ${format(",")(selected[0].total_count)}`)
+        } else {
+          ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
+          ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
+          ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
+          ttip.select("#sequencing-count-rolling").text(`Rolling average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
+        }
         // fix location
         ttip
           .style("left", `${event.clientX + ttipShift}px`)
@@ -194,7 +219,7 @@ export default Vue.extend({
               .style("dominant-baseline", "hanging")
               .style("text-anchor", "middle")
               .text("*")
-              .style("fill", "#980072");
+              .style("fill", this.detectedColor);
           },
           update =>
           update
@@ -224,7 +249,7 @@ export default Vue.extend({
               .attr("y1", d => this.yCounts(0))
               .attr("y2", d => this.yCounts(d[this.totalVariable]))
               .style("stroke-width", this.xBandwidth)
-              .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5");
+              .style("stroke", d => d.lineage_count ? this.detectedColor : this.notDetectedColor);
           },
           update =>
           update
@@ -233,7 +258,7 @@ export default Vue.extend({
           .attr("x2", d => this.x(d[this.xVariable]))
           .attr("y1", d => this.yCounts(0))
           .attr("y2", d => this.yCounts(d[this.totalVariable]))
-          .style("stroke", d => d.lineage_count ? "#980072" : "#af88a5")
+          .style("stroke", d => d.lineage_count ? this.detectedColor : this.notDetectedColor)
           .style("stroke-width", this.xBandwidth),
           exit =>
           exit.call(exit =>
@@ -244,7 +269,7 @@ export default Vue.extend({
           )
         )
 
-// tooltip event listener
+        // tooltip event listener
         this.counts.selectAll(".raw-counts")
           .on("mousemove", () => this.tooltipOn())
           .on("mouseleave", () => this.tooltipOff())
