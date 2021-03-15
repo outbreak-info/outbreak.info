@@ -262,6 +262,7 @@
   {
     "mutation_name": "S:E484K",
     "reportType": "mutation",
+    "variantType": "Mutation of Concern",
     "reportQuery": {
       "muts": ["S:E484K"]
     },

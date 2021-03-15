@@ -164,10 +164,12 @@
       <div class="row">
         <section id="intro" class="col-sm-6 col-md-7 pr-4">
           <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
-            <div class="d-flex flex-wrap align-items-center justify-content-end" v-if="reportMetadata">
+            <div class="d-flex flex-wrap align-items-center justify-content-end">
               <small class="mx-3 text-muted" v-if="reportMetadata.location_first_identified"><em>First identified in {{ reportMetadata.location_first_identified }}</em></small>
               <div class="VOC" v-if="reportMetadata.variantType == 'Variant of Concern'">Variant of Concern</div>
               <div class="VOI" v-if="reportMetadata.variantType == 'Variant of Interest'">Variant of Interest</div>
+              <div class="MOC" v-if="reportMetadata.variantType == 'Mutation of Concern'">Mutation of Concern</div>
+              <div class="MOI" v-if="reportMetadata.variantType == 'Mutation of Interest'">Mutation of Interest</div>
             </div>
 
           </div>
@@ -643,7 +645,7 @@ export default {
 
           if (results.md) {
             this.reportMetadata = results.md;
-            this.searchTerms = this.reportType != "lineage with added mutations" ? results.md.searchTerms : [this.searchTerms];
+            this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
             this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
             this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
           } else {
@@ -655,7 +657,6 @@ export default {
     },
     removeLocation(idx) {
       this.currentLocs.splice(idx, 1);
-      console.log(this.currentLocs)
     },
     addLoc2Add(selected) {
       this.loc2Add.push(selected);

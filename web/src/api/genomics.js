@@ -83,6 +83,8 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
             .key(d => d.reportType)
             .entries(curated);
 
+            curated = orderBy(curated, [reportTypeSorter], ["asc"])
+
           return (curated)
         })
       )
@@ -121,10 +123,14 @@ export function getReportList(apiurl, prevalenceThreshold = 0.75) {
   )
 }
 
+function filterCuratedTypes(d) {
+  return((d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest" || d.variantType == "Mutation of Concern") && d.reportType != "Lineage + Mutation");
+}
+
 export function getLocationBasics(apiurl) {
   store.state.admin.reportloading = true;
-  let ofInterest = CURATED.filter(d => d.variantType).filter(d => d.variantType.includes("Concern") || d.variantType.includes("Interest"));
-  ofInterest = orderBy(ofInterest, ["variantType", "mutation_name"]);
+  let ofInterest = CURATED.filter(d => d.variantType).filter(d => filterCuratedTypes(d));
+  ofInterest = orderBy(ofInterest, [locationTableSorter, "mutation_name"]);
 
   const curated = nest()
   .key(d => d.variantType)
@@ -181,7 +187,7 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
 
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
-  const md = getCuratedMetadata(lineageString);
+  const md = lineageString ? getCuratedMetadata(lineageString) : getCuratedMetadata(mutationString);
 
   return forkJoin([
     getDateUpdated(apiurl),
@@ -854,7 +860,7 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
 // LOCATION REPORTS
 export function getBasicLocationReportData(apiurl, location) {
   store.state.genomics.locationLoading1 = true;
-  let filtered = CURATED.filter(d => d.variantType).filter(d => d.variantType.includes("Concern") || d.variantType.includes("Interest"));
+  let filtered = CURATED.filter(d => d.variantType).filter(d => filterCuratedTypes(d));
   filtered = orderBy(filtered, ["variantType", "mutation_name"]);
 
   const curatedLineages = filtered.map(d => {
@@ -924,6 +930,8 @@ export function getLocationMaps(apiurl, location, mutations, ndays) {
 
   return forkJoin(...mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, ndays))).pipe(
     map(results => {
+      results = orderBy(results, [locationTableSorter, "key"], ["asc", "asc"]);
+
       return (results)
     }),
     catchError(e => {
@@ -957,8 +965,13 @@ export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
 }
 
 function locationTableSorter(a) {
-  const sortingArr = ["Variant of Concern", "Variant of Interest", "Custom Lineages & Mutations"];
+  const sortingArr = ["Variant of Concern", "Mutation of Concern", "Variant of Interest", "Custom Lineages & Mutations"];
   return sortingArr.indexOf(a.variantType);
+}
+
+function reportTypeSorter(a) {
+  const sortingArr = ["lineage", "lineage + mutation", "mutation"];
+  return sortingArr.indexOf(a.key.toLowerCase());
 }
 
 export function getLocationTable(apiurl, location, mutations) {

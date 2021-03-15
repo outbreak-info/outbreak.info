@@ -39,8 +39,8 @@
 
         </td>
       </tr>
-      <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
-        <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'voi': lineageGroup.key == 'Variant of Interest'}">
+      <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
+        <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'voi': lineageGroup.key == 'Variant of Interest'}">
           {{lineageGroup.key}}
           <!-- <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" /> -->
         </td>
@@ -118,7 +118,7 @@ th.padded {
 .custom td,
 .padding,
 .voc,
-.voi {
+.voi, .moc, .moi {
     padding: 0.5rem;
     text-align: center;
 }

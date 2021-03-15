@@ -221,7 +221,7 @@ button.chip.to-add:hover {
 }
 
 .VOC,
-.VOI {
+.VOI, .MOC, .MOI {
   padding: 0.35rem;
   border-radius: 0.25rem;
   border-style: solid;
@@ -235,26 +235,26 @@ button.chip.to-add:hover {
   // font-weight: 700;
 }
 
-.VOC {
+.VOC, .MOC {
   background: lighten($publication-color, 35%);
   color: $publication-color;
   border-color: $publication-color;
 }
 
-.VOI {
+.VOI, .MOI {
   background: lighten($website-color, 40%);
   color: $website-color;
   border-color: $website-color;
 }
 
-.voc {
+.voc, .moc {
   background: lighten($publication-color, 35%);
   color: $publication-color;
   border-color: $publication-color;
   text-align: center;
 }
 
-.voi {
+.voi, .moi {
   background: lighten($website-color, 40%);
   color: $website-color;
   border-color: $website-color;
