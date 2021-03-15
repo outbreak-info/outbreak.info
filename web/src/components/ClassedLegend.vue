@@ -24,7 +24,7 @@
   </div>
 
   <!-- WEIRDO LEGEND -->
-  <svg ref="count_filter" id="count-filter" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2" role="legend" v-if="includeNulls">
+  <svg ref="manual-legend" id="manual-legend" :width="280" :height="67" class="report-choropleth-legend mx-3 my-2" role="legend" v-if="includeNulls">
     <defs>
       <pattern id="diagonalHatchLegend" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:1.75`" />
@@ -41,20 +41,6 @@
       <text style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;' x="22" y="0" dy="7" dominant-baseline="central" :fill="strokeColor" font-size="14px">no sequencing</text>
     </g>
   </svg>
-
-  <!-- MINIMUM THRESHOLD SLIDER -->
-  <!-- <svg ref="count_filter" id="count-filter" :width="230" :height="legendHeight" class="report-choropleth-legend my-2">
-    <g transform="translate(10,8)" id="threshold-slider">
-      <text x="0" y="0" dominant-baseline="central" :fill="strokeColor" font-size="14px">minimum number of total samples</text>
-      <g transform="translate(0,18)">
-        <line x1="0" :x2="filterWidth" y1="0" y2="0" stroke="#CCCCCC" stroke-linecap="round" stroke-width="8" />
-        <line ref="selected_threshold" :x1="filterShift" :x2="filterWidth" y1="0" y2="0" stroke="#df4ab7" stroke-linecap="round" stroke-width="8" />
-        <circle ref="threshold_slider" :transform="`translate(${filterShift}, 0)`" cx="0" cy="0" r="8" fill="#df4ab7" class="pointer" />
-        <text ref="threshold_label" :transform="`translate(${filterShift}, 0)`" x="0" y="0" dy="12" font-size="14px" font-weight="700" fill="#df4ab7" text-anchor="middle" dominant-baseline="hanging">{{countThreshold}}</text>
-        <text :x="filterWidth" y="0" dy="12" font-size="12px" :fill="filteredColor" text-anchor="end" dominant-baseline="hanging">{{maxCount}}</text>
-      </g>
-    </g>
-  </svg> -->
 </div>
 </template>
 
@@ -68,12 +54,20 @@ export default {
   name: "ClassedLegend",
   props: {
     colorScale: Function,
-    strokeColor: String,
-    filteredColor: String,
-    nullColor: String,
+    strokeColor: {
+      type: String,
+      default: "#2c3e50"
+    },
+    filteredColor: {
+      type: String,
+      default: "#A5A5A5"
+    },
+    nullColor: {
+      type: String,
+      default: "#EFEFEF"
+    },
     label: String,
     mutationName: String,
-    maxCount: String,
     countThreshold: Number,
     horizontal: {
       type: Boolean,

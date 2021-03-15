@@ -1,10 +1,5 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
-  <!-- Total count filter -->
-  <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend" :class="{'hidden': noMap || !showLegend }">
-    <ClassedLegend :colorScale="colorScale" :label="`Est. ${ mutationName } prevalence since identification`" :countThreshold="countThreshold" :mutationName="mutationName" :nullColor="nullColor" :filteredColor="filteredColor" :strokeColor="strokeColor" :maxCount="maxCount" />
-  </div>
-
   <!-- choropleth -->
   <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
     <defs>
@@ -52,14 +47,9 @@ import {
   format,
   event,
   transition,
-  drag,
   select,
-  selectAll,
-  scaleSequential,
-  scaleLog
+  selectAll
 } from "d3";
-
-import ClassedLegend from "@/components/ClassedLegend.vue";
 
 import ADMIN0_SIMPLE from "@/assets/geo/gadm_adm0_simplified.json";
 import ADMIN0 from "@/assets/geo/gadm_adm0.json";
@@ -84,17 +74,16 @@ export default {
       type: Boolean,
       default: true
     },
+    countThreshold: Number,
     colorScale: Function
   },
   components: {
-    ClassedLegend,
     DownloadReportData
   },
   data() {
     return {
       width: 800,
       height: 400,
-      legendHeight: 50,
       margin: {
         top: 2,
         right: 2,
@@ -104,7 +93,6 @@ export default {
       // variables
       variable: "proportion",
       thresholdVar: "cum_total_count",
-      countThreshold: 25,
       filteredColor: "#A5A5A5",
       nullColor: "#EFEFEF",
       strokeColor: "#2c3e50",
@@ -121,8 +109,6 @@ export default {
       basemap: null,
       overlay: null,
       ttips: null,
-      // axis -- threshold filter
-      xFilter: null,
       // methods
       path: geoPath(),
       transition1: 500,
@@ -132,6 +118,9 @@ export default {
   watch: {
     data: function() {
       this.chooseMap();
+      this.drawMap();
+    },
+    countThreshold: function() {
       this.drawMap();
     },
     width: function() {
@@ -145,9 +134,6 @@ export default {
     maxFormatted() {
       return format(".0%")(this.maxVal);
     },
-    maxCount() {
-      return this.data ? format(",")(max(this.data, d => d[this.thresholdVar])) : null;
-    },
     minVal() {
       return this.data ? min(this.data, d => d[this.variable]) : null;
     },
@@ -156,9 +142,6 @@ export default {
     },
     title() {
       return (this.location == "Worldwide" ? `${this.mutationName} cumulative prevalence by country` : `${this.mutationName} cumulative prevalence in ${this.location}`)
-    },
-    filterShift() {
-      return (this.xFilter ? this.xFilter(this.countThreshold) : 0)
     }
   },
   created: function() {
@@ -169,8 +152,10 @@ export default {
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
 
-      // set up drag for threshold filter
-      this.setupDrag();
+      this.$root.$on("update:countThreshold", newThreshold => {
+        // this.countThreshold = newThreshold;
+        // this.drawMap();
+      });
 
       // event listener to hide tooltips
       document.addEventListener(
@@ -314,32 +299,11 @@ export default {
           }
         });
 
-        this.xFilter = scaleLog()
-          .range([0, this.filterWidth])
-          .domain([1, max(this.data, d => d[this.thresholdVar])])
-          .clamp(true);
-
         this.noMap = false;
       } else {
         this.filteredData = null;
         this.noMap = true;
       }
-    },
-    setupDrag() {
-      // draggable filters
-      select(this.$refs.threshold_slider)
-        .call(drag()
-          .on("drag", () => this.updateDrag())
-          .on("end", () => this.changeFilters())
-        )
-    },
-    updateDrag() {
-      this.countThreshold = Math.round(this.xFilter.invert(event.x));
-      select(this.$refs.threshold_label)
-        .text(format(",")(this.countThreshold));
-    },
-    changeFilters() {
-      this.drawMap();
     },
     drawMap() {
       this.prepData();

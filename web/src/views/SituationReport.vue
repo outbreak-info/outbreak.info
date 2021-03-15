@@ -269,7 +269,18 @@
             <small class="text-muted" v-if="selectedLocation.admin_level < 1">Since first identification in location</small>
             <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
-          <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" />
+          <div class="d-flex flex-wrap">
+            <!-- Legend -->
+            <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
+              <ClassedLegend :colorScale="choroColorScale" :label="`Est. ${ mutationName } prevalence since identification`" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
+            </div>
+            <!-- Total count filter -->
+            <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
+          </div>
+
+          <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" />
+
+
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" :colorScale="choroColorScale" />
         </div>
 
@@ -347,6 +358,8 @@ import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import MutationsByLineage from "@/components/MutationsByLineage.vue";
+import ClassedLegend from "@/components/ClassedLegend.vue";
+import ThresholdSlider from "@/components/ThresholdSlider.vue";
 
 // --- font awesome --
 import {
@@ -383,6 +396,7 @@ import {
 
 import {
   timeFormat,
+  max,
   scaleThreshold
 } from "d3";
 
@@ -406,7 +420,9 @@ export default {
     ReportSummary,
     TypeaheadSelect,
     CustomReportForm,
-    MutationsByLineage
+    MutationsByLineage,
+    ClassedLegend,
+    ThresholdSlider
   },
   props: {
     loc: Array,
@@ -485,6 +501,7 @@ export default {
       // methods
       choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
       choroColorScale: null,
+      choroCountThreshold: 25,
 
       // data
       selectedLocations: null,
@@ -613,6 +630,7 @@ export default {
           this.countries = results.countries;
           this.states = results.states;
           this.choroData = results.byCountry;
+          this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
 
           this.hasData = true;
           this.mutations = results.mutations;

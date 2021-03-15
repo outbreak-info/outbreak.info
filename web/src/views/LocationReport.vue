@@ -207,11 +207,11 @@
           <div class="d-flex justify-content-between">
             <div>
               <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
-              <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>  
+              <p class="text-muted m-0">Cumulative prevelence over the last {{ recentWindow }} days</p>
+              <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
             </div>
 
-            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="25" :mutationName="null" nullColor="#EFEFEF" filteredColor="#A5A5A5" strokeColor="#2c3e50"
-              maxCount="10000" />
+            <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="choroCountThreshold" :mutationName="null"  />
           </div>
 
           <div class="d-flex flex-wrap">
@@ -226,7 +226,7 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :fillMax="1" :location="selectedLocation.label" :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
+                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label" :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
           </div>
@@ -298,6 +298,7 @@ import {
 } from "vuex";
 
 import {
+  max,
   timeFormat,
   scaleOrdinal,
   scaleThreshold
@@ -341,6 +342,7 @@ export default {
     OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
     CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
+    ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     FontAwesomeIcon
   },
   watch: {
@@ -611,6 +613,8 @@ export default {
       if (this.selectedLocation.admin_level === 0) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
+
+          this.choroMaxCount = max(results.flatMap(d => d.values), d => d.cum_total_count);
         })
       }
     },
@@ -661,6 +665,8 @@ export default {
       colorScale: null,
       choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
       choroColorScale: null,
+      choroCountThreshold: 25,
+      choroMaxCount: null,
       colorPalette: ["#bab0ab", // grey (other)
         "#4E79A7", // dk blue
         "#aecBe8", // lt blue
