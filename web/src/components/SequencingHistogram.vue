@@ -1,13 +1,21 @@
 <template>
 <div>
+  <!-- LEGEND -->
+  <div class="d-flex" v-if="!downward">
+    <small class="text-uppercase" :style="{'color': notDetectedColor}">{{title}}</small>
+    <small class="text-uppercase ml-3" :style="{'color': detectedColor}" v-if="!onlyTotals"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
+  </div>
+
   <!-- SEQUENCING HISTOGRAM -->
-  <svg :width="width" :height="heightCounts" :class="className" ref="svg-counts" :name="title">
+  <svg :width="width" :height="height" :class="className" ref="svg-counts" :name="svgTitle">
     <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-    <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisLeft" :hidden="!data.length"></g>
-    <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yCountsAxisRight" :hidden="!data.length"></g>
+    <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft" :hidden="!data.length"></g>
+    <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisRight" :hidden="!data.length"></g>
   </svg>
-  <div class="d-flex">
-    <small class="text-uppercase" :style="{'margin-left' : this.margin.left + 'px', 'color': notDetectedColor}">Total samples sequenced per day</small>
+
+  <!-- LEGEND -->
+  <div class="d-flex" v-if="downward">
+    <small class="text-uppercase" :style="{'margin-left' : this.margin.left + 'px', 'color': notDetectedColor}">{{title}}</small>
     <small class="text-uppercase ml-3" :style="{'color': detectedColor}" v-if="!onlyTotals"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
   </div>
 
@@ -56,7 +64,11 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    title: String,
+    svgTitle: String,
+    title: {
+      type: String,
+      default: "Total samples sequenced per day"
+    },
     x: Function,
     className: {
       type: String,
@@ -83,7 +95,7 @@ export default Vue.extend({
   },
   data() {
     return ({
-      heightCounts: 80,
+      height: 80,
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
 
       showDetected: null,
@@ -92,12 +104,12 @@ export default Vue.extend({
       xVariable: "dateTime",
       totalVariable: "total_count",
       // axes
-      yCounts: scaleLinear(),
+      y: scaleLinear(),
       maxCounts: null,
       xBandwidth: 1,
       xAxis: null,
-      yCountsAxisLeft: null,
-      yCountsAxisRight: null,
+      yAxisLeft: null,
+      yAxisRight: null,
       numXTicks: 5,
       // refs
       counts: null
@@ -112,7 +124,6 @@ export default Vue.extend({
     },
   },
   mounted() {
-    console.log(this.data)
     this.setupPlot();
     this.updatePlot();
   },
@@ -122,15 +133,21 @@ export default Vue.extend({
     },
     updateScales() {
       if (!this.x) {
-        this.x = this.x
+        this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain(extent(this.data.map(d => d[this.xVariable])));
       }
 
       this.maxCounts = max(this.data, d => d[this.totalVariable]);
-      this.yCounts = scaleLinear()
-        .range([0, this.heightCounts - this.margin.top - this.margin.top])
-        .domain([0, this.maxCounts]);
+      if (this.downward) {
+        this.y = scaleLinear()
+          .range([0, this.height - this.margin.top - this.margin.top])
+          .domain([0, this.maxCounts]);
+      } else {
+        this.y = scaleLinear()
+          .range([this.height - this.margin.top - this.margin.top, 0])
+          .domain([0, this.maxCounts]);
+      }
 
       const numDays = timeDay.count(...this.x.domain());
       this.xBandwidth = (0.65) * (this.width - this.margin.left - this.margin.right) / numDays;
@@ -140,14 +157,14 @@ export default Vue.extend({
         .ticks(this.numXTicks);
       select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yCountsAxisLeft = axisLeft(this.yCounts).tickSizeOuter(0)
+      this.yAxisLeft = axisLeft(this.y).tickSizeOuter(0)
         .tickValues([0, this.maxCounts]);
 
-      this.yCountsAxisRight = axisRight(this.yCounts).tickSizeOuter(0)
+      this.yAxisRight = axisRight(this.y).tickSizeOuter(0)
         .tickValues([0, this.maxCounts]);
 
-      select(this.$refs.yCountsAxisLeft).call(this.yCountsAxisLeft);
-      select(this.$refs.yCountsAxisRight).call(this.yCountsAxisRight);
+      select(this.$refs.yAxisLeft).call(this.yAxisLeft);
+      select(this.$refs.yAxisRight).call(this.yAxisRight);
     },
     tooltipOn() {
       const ttipShift = 20;
@@ -155,7 +172,7 @@ export default Vue.extend({
       // find closest date
       const selectedX = this.x.invert(event.offsetX - this.margin.left);
       const selectedDate = timeDay.round(selectedX);
-      const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
+      const selected = this.data.filter(d => Math.abs(d[this.xVariable] - selectedDate) < 1e-12);
 
       if (selected.length) {
         // tooltip on
@@ -214,7 +231,7 @@ export default Vue.extend({
               .attr("class", "detected")
               .attr("id", d => `date${d.date}`)
               .attr("x", d => this.x(d[this.xVariable]))
-              .attr("y", d => this.yCounts(d[this.totalVariable]))
+              .attr("y", d => this.y(d[this.totalVariable]))
               .attr("dy", 3)
               .style("dominant-baseline", "hanging")
               .style("text-anchor", "middle")
@@ -226,7 +243,7 @@ export default Vue.extend({
           .attr("class", "detected")
           .attr("id", d => `date${d.date}`)
           .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.yCounts(d[this.totalVariable])),
+          .attr("y", d => this.y(d[this.totalVariable])),
           exit =>
           exit.call(exit =>
             exit
@@ -246,8 +263,8 @@ export default Vue.extend({
               .attr("id", d => `date${d.date}`)
               .attr("x1", d => this.x(d[this.xVariable]))
               .attr("x2", d => this.x(d[this.xVariable]))
-              .attr("y1", d => this.yCounts(0))
-              .attr("y2", d => this.yCounts(d[this.totalVariable]))
+              .attr("y1", d => this.y(0))
+              .attr("y2", d => this.y(d[this.totalVariable]))
               .style("stroke-width", this.xBandwidth)
               .style("stroke", d => d.lineage_count ? this.detectedColor : this.notDetectedColor);
           },
@@ -256,8 +273,8 @@ export default Vue.extend({
           .attr("id", d => `date${d.date}`)
           .attr("x1", d => this.x(d[this.xVariable]))
           .attr("x2", d => this.x(d[this.xVariable]))
-          .attr("y1", d => this.yCounts(0))
-          .attr("y2", d => this.yCounts(d[this.totalVariable]))
+          .attr("y1", d => this.y(0))
+          .attr("y2", d => this.y(d[this.totalVariable]))
           .style("stroke", d => d.lineage_count ? this.detectedColor : this.notDetectedColor)
           .style("stroke-width", this.xBandwidth),
           exit =>
