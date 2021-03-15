@@ -143,7 +143,7 @@
           </button>
         </a>
 
-        <a href="#geographic">
+        <a href="#geographic" v-if="geoData && selectedLocation.admin_level === 0">
           <button class="btn btn-grey mx-3 py-2">
             <small>Geographic breakdown</small>
           </button>
