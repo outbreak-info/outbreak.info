@@ -15,7 +15,8 @@
 
   <!-- LEGEND -->
   <div class="d-flex" v-if="downward">
-    <small class="text-uppercase" :style="{'margin-left' : this.margin.left + 'px', 'color': notDetectedColor}">{{title}}</small>
+    <small class="text-uppercase" :style="{'margin-left' : this.margin.left + 'px', 'color': notDetectedColor}" v-if="width > 250">{{title}}</small>
+    <small class="text-uppercase" :style="{'color': notDetectedColor}" v-else>{{title}}</small>
     <small class="text-uppercase ml-3" :style="{'color': detectedColor}" v-if="!onlyTotals"><span v-if="showDetected">* </span>{{mutationName}} detected</small>
   </div>
 

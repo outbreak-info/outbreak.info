@@ -68,6 +68,7 @@ import {
   stackOrderInsideOut,
   // stackOrderAscending,
   // stackOrderDescending,
+  transition,
   event,
   brushX,
   extent,
@@ -108,10 +109,10 @@ export default Vue.extend({
     return ({
       // dimensions
       margin: {
-        top: 8,
+        top: 18,
         bottom: 30,
         left: 75,
-        right: 10
+        right: 75
       },
       width: 800,
       height: 600,
@@ -336,26 +337,58 @@ export default Vue.extend({
         .selectAll(".recent-date-annotation")
         .data([this.recentMin]);
 
+const t1 = transition().duration(500);
 
         recentSelector.join(
           enter => {
-            enter.append("line")
-            .attr("class", "recent-date-annotation")
+            const grp = enter.append("g")
+            .attr("class", "recent-date-annotation");
+
+            grp.append("line")
+            .attr("class", "annotation-line")
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
             .attr("y1", 0)
             .attr("y2", this.height)
             .style("stroke", "white")
             .style("stroke-dasharray", "6,6");
+
+            grp.append("line")
+            .attr("class", "text-line")
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d))
+            .attr("y1", 0)
+            .attr("y2", -5)
+            .style("stroke", "#2c3e50")
+
+            grp.append("text")
+            .attr("x", d => this.x(d))
+            .attr("y", 0)
+            .attr("dy", -8)
+            .text(`${this.recentWindow} days`)
+            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+            .style("dominant-baseline", "text-top")
+            .style("font-size", "9pt");
           },
           update => {
-            update
+            update.select(".annotation-line")
             .attr("y1", 0)
             .attr("y2", this.height)
-            .transition()
-            .duration(500)
+            .transition(t1)
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d));
+
+            update.select(".text-line")
+            .transition(t1)
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d))
+
+            update.select("text")
+            .text(`${this.recentWindow} days`)
+            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+            .transition(t1)
+            .attr("x", d => this.x(d));
           },
           exit =>
           exit.call(exit =>

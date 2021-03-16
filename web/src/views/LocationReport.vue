@@ -182,10 +182,10 @@
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
-            <section class="ml-5" id="most-recent-lineages" v-if="mostRecentLineages">
+            <section id="most-recent-lineages" v-if="mostRecentLineages">
               <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
               <div class="d-flex align-items-start">
-              <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" />
+              <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
               <div class="d-flex flex-column ml-3 mt-2">
                 <h6>Characteristic S-gene mutations in common lineages</h6>
               <MutationHeatmap :data="recentHeatmap" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
