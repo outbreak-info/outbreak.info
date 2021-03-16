@@ -9,6 +9,7 @@
   <!-- SEQUENCING HISTOGRAM -->
   <svg :width="width" :height="height" :class="className" ref="svg-counts" :name="svgTitle">
     <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis" :hidden="!includeXAxis"></g>
     <g :transform="`translate(${margin.left - xBandwidth/2 - 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft" :hidden="!data.length"></g>
     <g :transform="`translate(${width - margin.right + xBandwidth/2 + 5}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisRight" :hidden="!data.length"></g>
   </svg>
@@ -70,7 +71,7 @@ export default Vue.extend({
       type: String,
       default: "Total samples sequenced per day"
     },
-    x: Function,
+    xInput: Function,
     className: {
       type: String,
       default: "sequencing-histogram"
@@ -89,6 +90,10 @@ export default Vue.extend({
       type: Boolean,
       default: true
     },
+    includeXAxis: {
+      type: Boolean,
+      default: false
+    },
     onlyTotals: {
       type: Boolean,
       default: false
@@ -105,13 +110,14 @@ export default Vue.extend({
       xVariable: "dateTime",
       totalVariable: "total_count",
       // axes
+      x: null,
       y: scaleLinear(),
       maxCounts: null,
       xBandwidth: 1,
       xAxis: null,
       yAxisLeft: null,
       yAxisRight: null,
-      numXTicks: 5,
+      numXTicks: 2,
       // refs
       counts: null
     })
@@ -133,20 +139,22 @@ export default Vue.extend({
       this.counts = select(this.$refs.counts);
     },
     updateScales() {
-      if (!this.x) {
+      if (!this.xInput) {
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain(extent(this.data.map(d => d[this.xVariable])));
+      } else {
+        this.x = this.xInput;
       }
 
       this.maxCounts = max(this.data, d => d[this.totalVariable]);
       if (this.downward) {
         this.y = scaleLinear()
-          .range([0, this.height - this.margin.top - this.margin.top])
+          .range([0, this.height - this.margin.top - this.margin.bottom])
           .domain([0, this.maxCounts]);
       } else {
         this.y = scaleLinear()
-          .range([this.height - this.margin.top - this.margin.top, 0])
+          .range([this.height - this.margin.top - this.margin.bottom, 0])
           .domain([0, this.maxCounts]);
       }
 
@@ -163,6 +171,10 @@ export default Vue.extend({
 
       this.yAxisRight = axisRight(this.y).tickSizeOuter(0)
         .tickValues([0, this.maxCounts]);
+
+      if (this.includeXAxis) {
+        select(this.$refs.xAxis).call(this.xAxis);
+      }
 
       select(this.$refs.yAxisLeft).call(this.yAxisLeft);
       select(this.$refs.yAxisRight).call(this.yAxisRight);

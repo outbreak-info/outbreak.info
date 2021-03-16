@@ -18,7 +18,7 @@
   </svg>
 
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :x="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" />
+  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" />
 
   <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 

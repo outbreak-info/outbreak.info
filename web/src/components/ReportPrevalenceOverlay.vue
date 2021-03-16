@@ -55,7 +55,7 @@
       </svg>
 
       <!-- Histogram of sequencing counts -->
-      <SequencingHistogram :data="seqCounts" :x="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts" />
+      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts" />
 
       <!-- zoom btns -->
       <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">

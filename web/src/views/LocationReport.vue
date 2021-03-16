@@ -170,7 +170,7 @@
               </div>
 
               <!-- Histogram of sequencing counts -->
-              <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :margin="marginHist" :mutationName="null" className="sequencing-histogram" :title="`Samples sequenced per day over last ${recentWindow} days`"
+              <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram" :title="`Samples sequenced per day over last ${recentWindow} days`"
                 :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed" />
             </div>
           </div>
@@ -245,7 +245,7 @@
               </div>
 
               <!-- Histogram of sequencing counts -->
-              <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :margin="marginHist" :mutationName="null" className="sequencing-histogram" :title="`Samples sequenced per day over last ${recentWindow} days`"
+              <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram" :title="`Samples sequenced per day over last ${recentWindow} days`"
                 :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed" />
 
             </div>
@@ -743,7 +743,7 @@ export default {
         left: 55,
         right: 55,
         top: 7,
-        bottom: 5
+        bottom: 25
       },
       // selections
       // scales
