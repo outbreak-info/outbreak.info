@@ -148,7 +148,7 @@
   <div class="d-flex align-items-center circle-header" v-if="formValid">
     <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType.id == 'variant' ? 4 : 3}}</div>
     <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
-      Review selections: <span class="text-highlight">{{title}}</span>
+      Review selections: <span class="text-highlight" v-html="title"></span>
     </div>
     <button role="button" class="btn chip btn-outline-secondary d-flex align-items-center py-1 px-2 ml-3 line-height-1" @click="clearForm()" v-if="formValid">
       clear form
@@ -285,7 +285,7 @@ export default Vue.extend({
         if (this.selectedMutationType == "substitution") {
           return (`${this.selectedGene.name}:${this.selectedRef}${this.selectedPosition}${this.selectedMutation}`)
         } else if (this.selectedMutationType == "deletion") {
-          return (`${this.selectedGene.name}:&#916;${this.selectedPosition}/${Number(this.selectedPosition) + Number(this.selectedDelLength) - 1}`)
+          return (`${this.selectedGene.name}:DEL${this.selectedPosition}/${Number(this.selectedPosition) + Number(this.selectedDelLength) - 1}`)
         }
       }
       return (null)
@@ -366,7 +366,8 @@ export default Vue.extend({
           change_length_nt: +this.selectedDelLength * 3
         });
       }
-      const newMutations = this.selectedManualMutations.concat(this.selectedBulkMutations);
+      const newMutations = this.selectedManualMutations.concat(this.selectedBulkMutations)
+
       this.$emit("update:selectedMutations", newMutations);
       // Clear the form
       this.selectedMutationType = null;
