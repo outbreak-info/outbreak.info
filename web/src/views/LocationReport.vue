@@ -156,14 +156,14 @@
       <!-- REPORT -->
       <div id="location-report">
         <!-- STREAM GRAPHS -->
-        <div id="lineages">
+        <div id="lineages" v-if="lineageDomain">
           <div>
             <div class="d-flex arrange-items-center justify-content-between">
-              <h3 v-if="lineagesByDay || mostRecentLineages">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+              <h3>Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
               <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
             </div>
 
-            <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" v-if="lineageDomain" />
+            <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" />
           </div>
 
           <div class="row">
@@ -185,7 +185,7 @@
         </div>
 
         <!-- TRACKED LINEAGES TABLE -->
-        <section id="variants-of-concern" v-if="lineageTable" class="my-5 py-3 border-top">
+        <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
           <div class="d-flex align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
@@ -247,7 +247,8 @@
                     <h5>{{ choro.key }}</h5>
                   </router-link>
 
-                  <small v-if="choro.variantType.includes('of')" :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
+                  <small v-if="choro.variantType.includes('of')"
+                    :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
                     {{ choro.variantType }}
                   </small>
                 </div>
