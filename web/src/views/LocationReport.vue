@@ -749,7 +749,7 @@ export default {
       newVariants: [],
       customMutations: [],
       // data
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P"],
+      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
       moc: ["E484K"],
       dateUpdated: null,
       lastUpdated: null,

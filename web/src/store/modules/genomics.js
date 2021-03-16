@@ -3,6 +3,7 @@ const state = {
     url: "https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2/",
     name: "NC_045512"
   },
+  characteristicThreshold: 0.75,
   // loading indicators
   locationLoading1: false,
   locationLoading2: false,

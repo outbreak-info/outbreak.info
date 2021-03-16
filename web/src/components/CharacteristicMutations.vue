@@ -1,7 +1,7 @@
 <template>
 <div>
   <h4 class="mb-0">{{ definitionLabel }}</h4>
-  <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank"><small>How we define characteristic mutations</small></router-link>
+  <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">Read more</router-link></small>
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
@@ -30,6 +30,12 @@
 
 <script>
 import Vue from "vue";
+// --- store / Vuex ---
+import {
+  mapState
+} from "vuex";
+
+import { format } from "d3";
 
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import MutationTable from "@/components/MutationTable.vue";
@@ -37,6 +43,12 @@ import DownloadReportData from "@/components/DownloadReportData.vue";
 
 export default {
   name: "CharacteristicMutations",
+  computed: {
+    ...mapState("genomics", ["characteristicThreshold"]),
+    charMutThreshold() {
+      return(format(".0%")(this.characteristicThreshold))
+    }
+  },
   props: {
     mutations: Array,
     definitionLabel: String,

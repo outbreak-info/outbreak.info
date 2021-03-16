@@ -36,6 +36,9 @@
         <li>
           Sequences with lengths &le; 20,000 base pairs were removed from the analysis.
         </li>
+        <li>
+          Sequences with a contiguous deletion spanning > 500 base pairs were removed from the analysis.
+        </li>
       </ul>
 
 
@@ -90,6 +93,8 @@ import {
 
 library.add(faClock);
 
+import Warning from "@/components/Warning.vue";
+
 // --- store / Vuex ---
 import {
   mapState
@@ -98,6 +103,8 @@ import {
 import {
   getDateUpdated
 } from "@/api/genomics.js";
+
+import {format} from "d3";
 
 export default {
   name: "ReportMethodology",
@@ -109,15 +116,18 @@ export default {
     }
   },
   components: {
+    Warning,
     FontAwesomeIcon
   },
   computed: {
-    ...mapState("genomics", ["refSeq"])
+    ...mapState("genomics", ["refSeq", "characteristicThreshold"]),
+    charMutThreshold() {
+      return(format(".0%")(this.characteristicThreshold))
+    }
   },
   data() {
     return {
       lastUpdated: "15 March 2021",
-      charMutThreshold: "97%",
       disclaimer: "SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
       updated: null,
       updatedSubscription: null

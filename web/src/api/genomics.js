@@ -103,7 +103,7 @@ export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshol
   )
 }
 
-export function getReportList(apiurl, prevalenceThreshold = 0.75) {
+export function getReportList(apiurl, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   store.state.admin.reportloading = true;
 
   return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold)]).pipe(
@@ -326,7 +326,7 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   )
 }
 
-export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = 0.97) {
+export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
@@ -1110,7 +1110,7 @@ export function getBasicComparisonReportData(apiurl) {
   )
 }
 
-export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = 0.75) {
+export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p"];
   const mutationsOfConcern = ["s:e484k"];
 
