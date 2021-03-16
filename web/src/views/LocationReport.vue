@@ -187,7 +187,8 @@
               <div class="d-flex align-items-start">
               <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
               <div class="d-flex flex-column ml-3 mt-2">
-                <h6>Characteristic S-gene mutations in common lineages</h6>
+                <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
+                <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
                 <!-- LEGEND -->
                 <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
                   <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
@@ -202,10 +203,10 @@
                     </svg>
                     <small class="text-light ml-2">not detected</small>
                   </div>
-                  <span class="mx-1 line-height-1 fa-sm flex-shrink-1" style="color: #fb5759">
+                  <span class="mx-1 line-height-1 fa-sm flex-shrink-1 w-75px" style="color: #fb5759">
                     Mutation of Concern
                   </span>
-                  <span class="mx-1 line-height-1 fa-sm  flex-shrink-1" style="color: #fd9b3a">
+                  <span class="mx-1 line-height-1 fa-sm  flex-shrink-1 w-75px" style="color: #feb56c">
                     Mutation of Interest
                   </span>
                 </div>
@@ -350,8 +351,8 @@ import {
   faSync
 } from "@fortawesome/free-solid-svg-icons/faSync";
 
-
 library.add(faClock, faSpinner, faSync, faInfoCircle, faArrowLeft, faPlus, faTimesCircle);
+
 
 import debounce from "lodash/debounce";
 
@@ -367,7 +368,7 @@ import {
   scaleSequential,
   scaleTime,
   timeDay,
-  extent
+  extent, format
 } from "d3";
 
 import {
@@ -437,12 +438,15 @@ export default {
   },
   computed: {
     ...mapState("admin", ["mutationAuthors"]),
-    ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5"]),
+    ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5", "characteristicThreshold"]),
     loading() {
       return (this.locationLoading1 || this.locationLoading2 || this.locationLoading3 || this.locationLoading4 || this.locationLoading5)
     },
     smallScreen() {
       return (window.innerSize < 500)
+    },
+    charMutThreshold() {
+      return(format(".0%")(this.characteristicThreshold))
     },
     title() {
       return (this.selectedLocation ? `${this.selectedLocation.label} Mutation Report` : null)
@@ -873,5 +877,9 @@ export default {
 
 .w-33 {
     width: 33% !important;
+}
+
+.w-75px {
+    width: 75px !important;
 }
 </style>

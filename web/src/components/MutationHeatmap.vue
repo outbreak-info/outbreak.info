@@ -87,7 +87,7 @@ export default Vue.extend({
       rx: 4,
       strokeColor: "#AAA",
       mocColor: "#fb5759",
-      moiColor: "#fd9b3a",
+      moiColor: "#feb56c",
       defaultColor: "#efefef",
       // scales
       x: scaleBand(),
