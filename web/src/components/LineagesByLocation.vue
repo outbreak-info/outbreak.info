@@ -18,7 +18,7 @@
   </svg>
 
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" />
+  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts && x" />
 
   <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
@@ -119,7 +119,7 @@ export default Vue.extend({
       // variables
       fillVar: "pangolin_lineage",
       // axes
-      x: scaleTime(),
+      x: null,
       y: scaleLinear(),
       xAxis: null,
       yAxis: null,
@@ -178,7 +178,7 @@ export default Vue.extend({
         .y1(d => this.y(d[1]));
     },
     updateScales() {
-      this.x = this.x
+      this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.data.map(d => d.date_time)))
         .clamp(true);
