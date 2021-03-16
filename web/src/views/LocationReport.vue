@@ -158,7 +158,7 @@
         <!-- STREAM GRAPHS -->
         <div id="lineages" v-if="lineageDomain">
           <div>
-            <div class="d-flex arrange-items-center justify-content-between">
+            <div class="d-flex arrange-items-center justify-content-between mb-2">
               <h3>Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
               <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
             </div>
@@ -171,7 +171,7 @@
             <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
               <div class="">
-                <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :seqCounts="seqCounts" :colorScale="colorScale" />
+                <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
               </div>
             </section>
 
@@ -226,7 +226,7 @@
               <div class="d-flex flex-column">
                 <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" class="mr-3" />
                 <div class="d-flex align-items-center">
-                  <small>Change time window: last</small>
+                  <small>Show data from last</small>
                   <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
                   <small>days</small>
                 </div>
@@ -518,8 +518,9 @@ export default {
     this.customMutations = this.grabCustomMutations();
 
     const formatDate = timeFormat("%e %B %Y");
-    this.currentTime = new Date();
-    this.today = formatDate(this.currentTime);
+    const currentTime = new Date();
+    this.today = formatDate(currentTime);
+    this.recentMin = timeDay.offset(currentTime, -1 * this.recentWindow);
 
     // set URL for sharing, etc.
     this.$nextTick(function() {
@@ -660,8 +661,10 @@ export default {
     updateSequenceCount() {
       this.countSubscription = getSequenceCount(this.$genomicsurl, this.loc, false).subscribe(results => {
         this.seqCounts = results;
-        const minDate = timeDay.offset(this.currentTime, -1 * this.recentWindow)
-        this.seqCountsWindowed = results.filter(d => d.dateTime >= minDate);
+
+        if (this.recentMin) {
+          this.seqCountsWindowed = results.filter(d => d.dateTime >= this.recentMin);
+        }
       })
     },
     updateMaps() {
@@ -681,7 +684,6 @@ export default {
   },
   data() {
     return ({
-      currentTime: null,
       today: null,
       url: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
@@ -694,6 +696,7 @@ export default {
       queryLocation: null,
       // variables
       recentWindow: 60,
+      recentMin: null,
       otherThresh: 0.03,
       ndayThresh: 5,
       dayThresh: 60,

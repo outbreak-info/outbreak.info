@@ -88,6 +88,7 @@ export default Vue.extend({
     recentData: Object,
     seqCounts: Array,
     recentWindow: Number,
+    recentMin: Date,
     colorScale: Function
   },
   computed: {
@@ -322,6 +323,32 @@ export default Vue.extend({
                 key
               }) => `area_${key.replace(/\./g, "-")}`)
               .attr("d", this.area);
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
+
+        // annotation for the most recent date
+        const recentSelector = this.chart
+        .selectAll(".recent-date-annotation")
+        .data([this.recentMin]);
+
+
+        recentSelector.join(
+          enter => {
+            enter.append("line")
+            .attr("class", "recent-date-annotation")
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d))
+            .attr("y1", 0)
+            .attr("y2", this.height)
+            .style("stroke", "white")
+            .style("stroke-dasharray", "6,6");
           },
           exit =>
           exit.call(exit =>
