@@ -204,10 +204,10 @@
                     </svg>
                     <small class="text-light ml-2">not detected</small>
                   </div>
-                  <span class="mx-1 line-height-1 fa-sm flex-shrink-1 w-75px" style="color: #fb5759">
+                  <span class="mx-1 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
                     Mutation of Concern
                   </span>
-                  <span class="mx-1 line-height-1 fa-sm  flex-shrink-1 w-75px" style="color: #feb56c">
+                  <span class="mx-1 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
                     Mutation of Interest
                   </span>
                 </div>
