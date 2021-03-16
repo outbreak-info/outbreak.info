@@ -906,7 +906,7 @@ export function getLocationReportData(apiurl, location, mutations, pango_lineage
       mergeMap(results => getMutationsOfInterestPrevalence(apiurl, results.lineageDomain).pipe(
         map(heatmap => {
           results["heatmap"] = heatmap;
-          results["heatmapDomain"] = uniq(heatmap.map(d => d.pangolin_lineage));
+          results["heatmapDomain"] = uniq(heatmap.characteristic.map(d => d.pangolin_lineage));
           return (results)
         })
       )),
@@ -1111,22 +1111,33 @@ export function getBasicComparisonReportData(apiurl) {
 }
 
 export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = 0.75) {
-  console.log(lineages)
-  const mutationsOfInterest = ["s:e484k", "s:s477n", "s:n501Y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p"];
-
+  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p"];
+  const mutationsOfConcern = ["s:e484k"];
 
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.gene === "S").filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-      // let filtered = results.flatMap(d => d.filter(x => mutationsOfInterest.includes(x.mutation)));
-      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+      let moi = results.flatMap(d => d.filter(x => mutationsOfInterest.includes(x.mutation) || mutationsOfConcern.includes(x.mutation)));
+      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)));
+
 
       filtered.forEach(d => {
         d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
-        d["mutation_simplified"] = d.mutation.split(":").slice(-1)[0];
+        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
+        d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
+        d["isMOI"] = mutationsOfInterest.includes(d.mutation);
+        d["isMOC"] = mutationsOfConcern.includes(d.mutation);
       })
 
-      return (filtered)
+      moi.forEach(d => {
+        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
+        d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
+        d["isMOI"] = mutationsOfInterest.includes(d.mutation);
+        d["isMOC"] = mutationsOfConcern.includes(d.mutation);
+      })
+
+      return ({characteristic : filtered, moi: moi})
     }),
     catchError(e => {
       console.log("%c Error in getting mutation prevalence by lineage!", "color: teal");

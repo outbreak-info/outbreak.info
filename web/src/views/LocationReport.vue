@@ -175,23 +175,23 @@
             </div>
           </div>
 
-          <div class="d-flex justify-content-between">
+          <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
                 <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
-
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
-            <section class="" id="most-recent-lineages" v-if="mostRecentLineages">
+            <section class="ml-5" id="most-recent-lineages" v-if="mostRecentLineages">
               <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
               <div class="d-flex align-items-center">
               <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :locationID="selectedLocation.id" />
+              <div class="d-flex flex-column ml-3">
+                <h6>Characteristic S-gene mutations in common lineages</h6>
               <MutationHeatmap :data="recentHeatmap" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
               </div>
-
+              </div>
             </section>
-
           </div>
         </div>
 
@@ -562,7 +562,7 @@ export default {
         this.lineageDomain = results.lineageDomain;
         this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
         this.recentMin = timeDay.offset(this.currentTime, -1 * this.recentWindow);
-        this.recentHeatmap = results.heatmap;
+        this.recentHeatmap = results.heatmap.characteristic;
         this.mostRecentDomain = results.heatmapDomain;
       })
 

@@ -6,6 +6,10 @@
     <!-- <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g> -->
     <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
   </svg>
+  <!-- Histogram of sequencing counts -->
+  <SequencingHistogram :data="seqCounts" :x="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" />
+
+  <DownloadReportData :data="data" figureRef="report-stacked-bar" dataType="Mutation Report Prevalence over Time" />
 </div>
 </template>
 
@@ -35,10 +39,15 @@ import {
   max
 } from "d3";
 
+import SequencingHistogram from "@/components/SequencingHistogram.vue";
+import DownloadReportData from "@/components/DownloadReportData.vue";
 
 export default Vue.extend({
   name: "LineagesByLocation",
-  components: {},
+  components: {
+    SequencingHistogram,
+    DownloadReportData
+  },
   props: {
     data: Array,
     locationID: String,
@@ -66,8 +75,8 @@ export default Vue.extend({
     return ({
       // dimensions
       margin: {
-        top: 10,
-        bottom: 25,
+        top: 8,
+        bottom: 30,
         left: 55,
         right: 10
       },

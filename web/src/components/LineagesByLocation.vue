@@ -111,7 +111,7 @@ export default Vue.extend({
         top: 8,
         bottom: 30,
         left: 75,
-        right: 75
+        right: 10
       },
       width: 800,
       height: 600,
