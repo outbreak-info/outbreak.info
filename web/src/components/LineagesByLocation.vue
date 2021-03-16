@@ -87,7 +87,7 @@ export default Vue.extend({
     data: Array,
     recentData: Object,
     seqCounts: Array,
-    recentWindow: Number,
+    recentWindow: String,
     recentMin: Date,
     colorScale: Function
   },
@@ -349,6 +349,15 @@ export default Vue.extend({
             .attr("y2", this.height)
             .style("stroke", "white")
             .style("stroke-dasharray", "6,6");
+          },
+          update => {
+            update
+            .attr("y1", 0)
+            .attr("y2", this.height)
+            .transition()
+            .duration(500)
+            .attr("x1", d => this.x(d))
+            .attr("x2", d => this.x(d));
           },
           exit =>
           exit.call(exit =>
