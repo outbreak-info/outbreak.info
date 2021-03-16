@@ -183,9 +183,20 @@
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
-            <template v-if="noRecentData">
+            <div v-if="noRecentData" class="align-self-center text-muted">
               <h4>No recent sequences found over the past {{recentWindow}} days</h4>
-            </template>
+              <p class="text-muted mb-0">
+                Try adjusting the most recent data window:
+              </p>
+              <div class="d-flex">
+                <div class="px-3 py-2 my-2 bg-white border-top border-bottom">
+                  <small>Show data from last</small>
+                  <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
+                  <small>days</small>
+                </div>
+              </div>
+
+            </div>
             <template v-else>
               <section id="most-recent-lineages" v-if="mostRecentLineages">
                 <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
@@ -279,7 +290,7 @@
 
               <!-- Histogram of sequencing counts -->
               <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram"
-                :title="`Samples sequenced per day over last ${recentWindow} days`" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed" />
+                :title="`Samples sequenced per day over last ${recentWindow} days`" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed && !noRecentData" />
 
             </div>
           </div>
@@ -301,7 +312,22 @@
                   :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
-            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" />
+            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData"/>
+          </div>
+
+          <!-- no recent geo data -->
+          <div v-if="noRecentData" class="align-self-center text-muted">
+            <h4>No recent sequences found over the past {{recentWindow}} days</h4>
+            <p class="text-muted mb-0">
+              Try adjusting the most recent data window:
+            </p>
+            <div class="d-flex">
+              <div class="px-3 py-2 my-2 bg-white border-top border-bottom">
+                <small>Show data from last</small>
+                <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
+                <small>days</small>
+              </div>
+            </div>
           </div>
 
         </section>

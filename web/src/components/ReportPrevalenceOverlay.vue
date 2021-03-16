@@ -40,10 +40,10 @@
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
         <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         <g ref="brush2" class="brush" id="brush2-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-        <!-- <g id="no-data" v-if="!data.length">
+        <g id="no-data" v-if="noData">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
         </g>
-        <g id="no-data" v-if="data.length < lengthThreshold && data.length">
+        <!-- <g id="no-data" v-if="data.length < lengthThreshold && data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
           <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
             sequencing data</text>
@@ -166,6 +166,9 @@ export default Vue.extend({
     FontAwesomeIcon
   },
   computed: {
+    noData() {
+      return(this.data.flatMap(d => d.data).length === 0)
+    },
     title() {
       return (this.locationName == "Worldwide" ? `Mutation and case prevalence over time worldwide` : `Mutation and case prevalence over time in ${this.locationName}`)
     },
