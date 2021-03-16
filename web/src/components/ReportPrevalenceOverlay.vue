@@ -330,7 +330,8 @@ export default Vue.extend({
         const newMin = this.x.invert(selection[0]);
         const newMax = this.x.invert(selection[1]);
 
-        this.x = this.x
+        this.x = scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
           .domain([newMin, newMax]);
 
         // update plotted data
@@ -444,10 +445,9 @@ export default Vue.extend({
         }
       }
 
-      this.x = this.x
+      this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(xDomain)
-        .clamp(true);
+        .domain(xDomain);
 
       this.plottedData = cloneDeep(this.data);
       this.plottedEpi = this.epi;
