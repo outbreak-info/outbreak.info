@@ -732,7 +732,7 @@ export default {
       marginHist: {
         left: 55,
         right: 55,
-        top: 5,
+        top: 7,
         bottom: 5
       },
       // selections
