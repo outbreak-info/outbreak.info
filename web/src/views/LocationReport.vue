@@ -150,24 +150,32 @@
         </a>
       </div>
 
-      <!-- LOGOS -->
-      <!-- <ReportLogos class="mb-4" /> -->
 
       <!-- REPORT -->
       <div id="location-report">
         <!-- STREAM GRAPHS -->
         <div id="lineages" v-if="lineageDomain">
-          <div>
-            <div class="d-flex arrange-items-center justify-content-between mb-2">
-              <h3>Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-              <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+          <div class="d-flex justify-content-between bg-white p-2 border-bottom mb-2">
+            <div class="d-flex flex-column align-items-start">
+              <h3 class="m-0">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+              <Warning class="fa-sm mt-2 mb-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+              <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" />
             </div>
 
-            <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" />
+            <div class="d-flex flex-wrap align-items-center">
+              <div class="d-flex align-items-center flex-shrink-0">
+                <small>Show data from last</small>
+                <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
+                <small>days</small>
+              </div>
+
+              <!-- Histogram of sequencing counts -->
+              <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :margin="marginHist" :mutationName="null" className="sequencing-histogram" :title="`Samples sequenced per day over last ${recentWindow} days`"
+                :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed" />
+            </div>
           </div>
 
           <div class="row">
-
             <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
               <div class="">
@@ -234,7 +242,7 @@
 
               <!-- Histogram of sequencing counts -->
               <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :margin="marginHist" :mutationName="null" className="sequencing-histogram" :title="`Samples sequenced per day over last ${recentWindow} days`"
-                :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" />
+                :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed" />
 
             </div>
           </div>
@@ -410,6 +418,10 @@ export default {
     title() {
       return (this.selectedLocation ? `${this.selectedLocation.label} Mutation Report` : null)
     },
+    seqCountsWindowed() {
+      return this.recentMin && this.seqCounts ?
+        this.seqCounts.filter(d => d.dateTime >= this.recentMin) : null;
+    },
     selectedMutations() {
       let tracked = this.curatedLineages;
       if (this.pango) {
@@ -518,9 +530,8 @@ export default {
     this.customMutations = this.grabCustomMutations();
 
     const formatDate = timeFormat("%e %B %Y");
-    const currentTime = new Date();
-    this.today = formatDate(currentTime);
-    this.recentMin = timeDay.offset(currentTime, -1 * this.recentWindow);
+    this.currentTime = new Date();
+    this.today = formatDate(this.currentTime);
 
     // set URL for sharing, etc.
     this.$nextTick(function() {
@@ -546,6 +557,7 @@ export default {
         this.mostRecentLineages = results.mostRecentLineages;
         this.lineageDomain = results.lineageDomain;
         this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
+        this.recentMin = timeDay.offset(this.currentTime, -1 * this.recentWindow);
       })
 
       this.updateSequenceCount();
@@ -661,10 +673,6 @@ export default {
     updateSequenceCount() {
       this.countSubscription = getSequenceCount(this.$genomicsurl, this.loc, false).subscribe(results => {
         this.seqCounts = results;
-
-        if (this.recentMin) {
-          this.seqCountsWindowed = results.filter(d => d.dateTime >= this.recentMin);
-        }
       })
     },
     updateMaps() {
@@ -684,6 +692,7 @@ export default {
   },
   data() {
     return ({
+      currentTime: null,
       today: null,
       url: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
@@ -695,7 +704,7 @@ export default {
       // methods
       queryLocation: null,
       // variables
-      recentWindow: 60,
+      recentWindow: "60",
       recentMin: null,
       otherThresh: 0.03,
       ndayThresh: 5,
@@ -719,7 +728,6 @@ export default {
       curatedLineages: [],
       geoData: null,
       seqCounts: null,
-      seqCountsWindowed: null,
       widthHist: 300,
       marginHist: {
         left: 55,
