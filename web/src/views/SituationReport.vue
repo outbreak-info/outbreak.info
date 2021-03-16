@@ -177,7 +177,7 @@
           <span v-html="reportDescription" class="font-size-2"></span>
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
+            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
           </div>
 
           <!-- KEY INSIGHTS -->
@@ -300,7 +300,7 @@
       <!-- METHODOLOGY -->
       <section class="mt-3 mb-5" id="methods">
         <h4>Methodology</h4>
-        <ReportMethodology :dateUpdated="dateUpdated" />
+        <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
         <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
         <Warning class="mt-2" :text="disclaimer" />
       </section>
@@ -441,7 +441,8 @@ export default {
       return (window.innerSize < 500)
     },
     definitionLabel() {
-      return this.reportType == "lineage" ? "Characteristic mutations in lineage" : "List of mutations";
+      return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
+      this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
     },
     genericDescription() {
       return this.reportType == "lineage with added mutations" ?

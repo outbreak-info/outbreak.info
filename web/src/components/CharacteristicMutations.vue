@@ -1,6 +1,7 @@
 <template>
 <div>
-  <h4 class="">{{ definitionLabel }}</h4>
+  <h4 class="mb-0">{{ definitionLabel }}</h4>
+  <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank"><small>How we define characteristic mutations</small></router-link>
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
@@ -41,6 +42,7 @@ export default {
     definitionLabel: String,
     mutationName: String,
     lineageName: String,
+    reportType: String,
     additionalMutations: Array
   },
   components: {
