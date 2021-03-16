@@ -267,21 +267,21 @@
         </div>
 
         <div v-if="selectedLocation && selectedLocation.admin_level < 2">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <small class="text-muted" v-if="selectedLocation.admin_level < 1">Since first identification in location</small>
-            <Warning class="mt-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
-          </div>
-          <div class="d-flex flex-wrap">
-            <!-- Legend -->
-            <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
-              <ClassedLegend :colorScale="choroColorScale" :label="`Est. ${ mutationName } prevalence since identification`" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
+          <template v-if="selectedLocation.admin_level < 1">
+            <div class="d-flex align-items-center justify-content-end mb-3">
+              <Warning class="mt-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
             </div>
-            <!-- Total count filter -->
-            <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
-          </div>
+            <div class="d-flex flex-wrap">
+              <!-- Legend -->
+              <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
+                <ClassedLegend :colorScale="choroColorScale" :label="`Est. ${ reportName } prevalence since identification`" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
+              </div>
+              <!-- Total count filter -->
+              <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
+            </div>
 
-          <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" />
-
+            <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" />
+          </template>
 
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" :colorScale="choroColorScale" />
         </div>
@@ -442,7 +442,7 @@ export default {
     },
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
-      this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
+        this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
     },
     genericDescription() {
       return this.reportType == "lineage with added mutations" ?
