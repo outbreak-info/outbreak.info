@@ -443,6 +443,58 @@ const state = {
       }
     },
     {
+      date: new Date("2021-03-16 0:0"),
+      category: "data",
+      title: "Released U.S. county-level Lineage | Mutation Reports",
+      description: 'Added county-level data to SARS-CoV-2 Mutation & Variant Situation reports and migrated to location id-based reports.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.526",
+          selected: "USA_US-NY_36005"
+        }
+      }
+    },
+    {
+      date: new Date("2021-03-16 0:0"),
+      category: "data",
+      title: "Reclassified B.1.427 and B.1.429 as Variants of Concern",
+      description: 'Based on the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification, lineages B.1.427 and B.1.429 have been upgraded from <b>Variants of Interest</b> to <b>Variants of Concern</b>.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.429",
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-03-16 0:0"),
+      category: "data",
+      title: "Redefined characteristic mutations of a lineage",
+      description: 'Redefined the characteristic mutations of a lineage to be any mutation occurring in at least 75% of all known sequences of that lineage.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "P.2",
+          selected: "BRA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-03-16 0:0"),
+      category: "data",
+      title: "Refined color scale for Situation Report maps",
+      description: 'Chnaged the color scale for all choropleth maps for Situation Reports from a continuous scale to a classified one.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "P.2",
+          selected: "BRA"
+        }
+      }
+    },
+    {
       date: new Date("2020-06-12 0:0"),
       category: "data",
       title: "Added Harvard Dataverse",
