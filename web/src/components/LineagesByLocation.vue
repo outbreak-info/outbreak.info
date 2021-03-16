@@ -221,7 +221,6 @@ export default Vue.extend({
         .style("fill-opacity", 0.2);
 
       selectAll(".stacked-bar-chart")
-        .style("stroke", "#BBB")
         .style("fill-opacity", 0.2);
 
       // turn on the selected region
@@ -258,7 +257,6 @@ export default Vue.extend({
         .style("fill-opacity", 1);
 
       selectAll(".stacked-bar-chart")
-        .style("stroke", "#555")
         .style("fill-opacity", 1);
 
       select(this.$refs.tooltip_streamgraph)
