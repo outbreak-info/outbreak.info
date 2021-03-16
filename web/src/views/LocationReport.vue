@@ -158,7 +158,8 @@
           <div class="d-flex justify-content-between bg-white p-2 border-bottom mb-2">
             <div class="d-flex flex-column align-items-start">
               <h3 class="m-0">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-              <Warning class="fa-sm mt-2 mb-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+              <Warning class="fa-sm my-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+              <small class="text-muted my-1">Lineages without daily prevalence &gt; {{otherThreshFormatted}} on at least {{ndayThresh}} days in the last {{dayThresh}} are grouped into "Other"</small>
               <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" />
             </div>
 
@@ -450,6 +451,9 @@ export default {
     },
     charMutThreshold() {
       return(format(".0%")(this.characteristicThreshold))
+    },
+    otherThreshFormatted() {
+      return(format(".0%")(this.otherThresh))
     },
     title() {
       return (this.selectedLocation ? `${this.selectedLocation.label} Mutation Report` : null)
