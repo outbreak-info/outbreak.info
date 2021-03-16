@@ -188,7 +188,7 @@
               <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
               <div class="d-flex flex-column ml-3 mt-2">
                 <h6>Characteristic S-gene mutations in common lineages</h6>
-              <MutationHeatmap :data="recentHeatmap" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
+              <MutationHeatmap :data="recentHeatmap" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
               <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
               </div>
               </div>
@@ -726,6 +726,8 @@ export default {
       newVariants: [],
       customMutations: [],
       // data
+      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P"],
+      moc: ["E484K"],
       dateUpdated: null,
       lastUpdated: null,
       lineagesByDay: null,

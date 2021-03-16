@@ -46,6 +46,14 @@ export default Vue.extend({
   name: "MutationHeatmap",
   props: {
     data: Array,
+    moc: {
+      type: Array,
+      default: () => []
+    },
+    moi: {
+      type: Array,
+      default: () => []
+    },
     bandWidth: {
       type: Number,
       default: 25
@@ -78,6 +86,9 @@ export default Vue.extend({
       // constants
       rx: 4,
       strokeColor: "#AAA",
+      mocColor: "#fb5759",
+      moiColor: "#fd9b3a",
+      defaultColor: "#efefef",
       // scales
       x: scaleBand(),
       y: scaleBand(),
@@ -244,7 +255,8 @@ export default Vue.extend({
         .attr("dx", 6)
         .attr("dy", "-0.75em")
         .attr("transform", "rotate(-35)")
-        .style("text-anchor", "start");
+        .style("text-anchor", "start")
+        .style("fill", d => this.moc.includes(d) ? this.mocColor : this.moi.includes(d) ? this.moiColor : this.defaultColor);
 
       select(this.$refs.xAxisBottom)
         .selectAll("text")
@@ -252,7 +264,8 @@ export default Vue.extend({
         .attr("dx", 6)
         .attr("dy", "1.25em")
         .attr("transform", "rotate(35)")
-        .style("text-anchor", "start");
+        .style("text-anchor", "start")
+        .style("fill", d => this.moc.includes(d) ? this.mocColor : this.moi.includes(d) ? this.moiColor : this.defaultColor);
 
     }
   }
@@ -261,7 +274,7 @@ export default Vue.extend({
 
 <style lang = "scss">
 .mutation-heatmap {
-  background: #343a40!important;
+    background: #343a40!important;
 }
 .mutation-heatmap .axis--x text,
 .mutation-heatmap .axis--y text {
@@ -287,5 +300,4 @@ export default Vue.extend({
 .mutation-heatmap .axis line {
     stroke: #efefef;
 }
-
 </style>
