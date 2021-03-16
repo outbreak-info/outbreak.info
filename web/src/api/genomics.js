@@ -924,17 +924,30 @@ export function getLocationLineagePrevalences(apiurl, location, mutations, pango
     getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays, window)
   ]).pipe(
     map(([lineagesByDay, mostRecentLineages]) => {
-      let recentDomain = Object.keys(mostRecentLineages[0]).filter(d => d != "Other");
-      let lineageDomain = ["Other"].concat(recentDomain);
+      if (mostRecentLineages && mostRecentLineages.length) {
+        let recentDomain = Object.keys(mostRecentLineages[0]).filter(d => d != "Other");
+        let lineageDomain = ["Other"].concat(recentDomain);
 
-      lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
+        lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
 
-      return ({
-        lineagesByDay: lineagesByDay,
-        mostRecentLineages: mostRecentLineages,
-        lineageDomain: lineageDomain,
-        recentDomain: recentDomain
-      })
+        return ({
+          lineagesByDay: lineagesByDay,
+          mostRecentLineages: mostRecentLineages,
+          lineageDomain: lineageDomain,
+          recentDomain: recentDomain
+        })
+      } else {
+        let lineageDomain = ["Other"];
+
+        lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
+
+        return ({
+          lineagesByDay: lineagesByDay,
+          mostRecentLineages: mostRecentLineages,
+          lineageDomain: lineageDomain,
+          recentDomain: null
+        })
+      }
     }),
     catchError(e => {
       console.log("%c Error in getting location report data!", "color: red");
@@ -1115,7 +1128,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
   const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
   const mutationsOfConcern = ["s:e484k"];
 
-  if (lineages.length) {
+  if (lineages && lineages.length) {
     return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
       map((results, idx) => {
         const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.gene === "S").filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));

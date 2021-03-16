@@ -172,55 +172,60 @@
 
               <!-- Histogram of sequencing counts -->
               <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram"
-                :title="`Samples sequenced per day over last ${recentWindow} days`" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed" />
+                :title="`Samples sequenced per day over last ${recentWindow} days`" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed && !noRecentData" />
             </div>
           </div>
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
-              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
+              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
-            <section id="most-recent-lineages" v-if="mostRecentLineages">
-              <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
-              <div class="d-flex align-items-start">
-                <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
+            <template v-if="noRecentData">
+              <h4>No recent sequences found over the past {{recentWindow}} days</h4>
+            </template>
+            <template v-else>
+              <section id="most-recent-lineages" v-if="mostRecentLineages">
+                <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
+                <div class="d-flex align-items-start">
+                  <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
 
-                <!-- HEATMAP + LEGEND -->
-                <div class="d-flex flex-column ml-3 mt-2" v-if="recentHeatmap && recentHeatmap.length">
-                  <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
-                  <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of sequences globally <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-                  <div class="d-flex flex-column align-items-center bg-dark">
+                  <!-- HEATMAP + LEGEND -->
+                  <div class="d-flex flex-column ml-3 mt-2" v-if="recentHeatmap && recentHeatmap.length">
+                    <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
+                    <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of sequences globally <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+                    <div class="d-flex flex-column align-items-center bg-dark">
 
-                    <!-- HEATMAP LEGEND -->
-                    <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
-                      <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
-                      <div class="d-flex align-items-center">
-                        <svg width="24" height="24">
-                          <defs>
-                            <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                              <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
-                            </pattern>
-                          </defs>
-                          <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
-                        </svg>
-                        <small class="text-light ml-2">not detected</small>
+                      <!-- HEATMAP LEGEND -->
+                      <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
+                        <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+                        <div class="d-flex align-items-center">
+                          <svg width="24" height="24">
+                            <defs>
+                              <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
+                              </pattern>
+                            </defs>
+                            <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
+                          </svg>
+                          <small class="text-light ml-2">not detected</small>
+                        </div>
+                        <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+                          Mutation of Concern
+                        </span>
+                        <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
+                          Mutation of Interest
+                        </span>
                       </div>
-                      <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
-                        Mutation of Concern
-                      </span>
-                      <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
-                        Mutation of Interest
-                      </span>
+                      <MutationHeatmap :data="recentHeatmap" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
-                    <MutationHeatmap :data="recentHeatmap" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+                    <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
                   </div>
-                  <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
                 </div>
-              </div>
-            </section>
+              </section>
+            </template>
           </div>
         </div>
 
@@ -599,6 +604,8 @@ export default {
       this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentWindow).subscribe(results => {
         // console.log(results)
         this.lineagesByDay = results.lineagesByDay;
+        this.noRecentData = results.mostRecentLineages && results.mostRecentLineages.length ? false : true;
+
         this.mostRecentLineages = results.mostRecentLineages;
         this.lineageDomain = results.lineageDomain;
         this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
@@ -771,6 +778,7 @@ export default {
       lastUpdated: null,
       lineagesByDay: null,
       mostRecentLineages: null,
+      noRecentData: false,
       lineageTable: null,
       lineageDomain: [],
       totalSequences: null,
