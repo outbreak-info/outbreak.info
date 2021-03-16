@@ -184,11 +184,12 @@
             <!-- STACKED BAR / MOST RECENT -->
             <section class="ml-5" id="most-recent-lineages" v-if="mostRecentLineages">
               <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
-              <div class="d-flex align-items-center">
-              <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :locationID="selectedLocation.id" />
-              <div class="d-flex flex-column ml-3">
+              <div class="d-flex align-items-start">
+              <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" />
+              <div class="d-flex flex-column ml-3 mt-2">
                 <h6>Characteristic S-gene mutations in common lineages</h6>
               <MutationHeatmap :data="recentHeatmap" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
+              <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
               </div>
               </div>
             </section>
@@ -389,6 +390,7 @@ export default {
     SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
+    DownloadReportData: () => import( /* webpackPrefetch: true */ "@/components/DownloadReportData.vue"),
     FontAwesomeIcon
   },
   watch: {

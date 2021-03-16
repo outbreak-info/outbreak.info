@@ -7,7 +7,7 @@
     <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
   </svg>
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :x="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" />
+  <SequencingHistogram :data="seqCounts" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" />
 
   <DownloadReportData :data="data" figureRef="report-stacked-bar" dataType="Mutation Report Prevalence over Time" />
 </div>
@@ -50,6 +50,7 @@ export default Vue.extend({
   },
   props: {
     data: Array,
+    seqCounts: Array,
     locationID: String,
     locationName: String,
     colorScale: Function,
