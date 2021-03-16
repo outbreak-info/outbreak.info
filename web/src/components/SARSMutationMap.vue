@@ -59,6 +59,7 @@ import {
 } from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
+import uniqBy from "lodash/uniqBy";
 
 import chroma from "chroma-js";
 
@@ -161,6 +162,9 @@ export default Vue.extend({
     window.removeEventListener("resize", this.setDims);
   },
   methods: {
+    getMutation(mut) {
+      return (mut.mutation.toLowerCase())
+    },
     setupMutationArr() {
       if (!this.lineageMutations && this.additionalMutations)
         this.mutationArr = cloneDeep(this.additionMutations);
@@ -172,6 +176,8 @@ export default Vue.extend({
       } else {
         this.mutationArr = null;
       }
+      // remove duplicates, introduced by custom mutations on top of a lineage
+      this.mutationArr = uniqBy(this.mutationArr, this.getMutation);
     },
     setupPlot() {
       this.$nextTick(function() {

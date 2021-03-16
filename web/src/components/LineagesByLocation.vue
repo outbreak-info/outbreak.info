@@ -89,12 +89,13 @@ export default Vue.extend({
     recentData: Object,
     seqCounts: Array,
     recentWindow: String,
+    location: String,
     recentMin: Date,
     colorScale: Function
   },
   computed: {
     title() {
-      return ("Lineage prevalence over time")
+      return (`Lineage prevalence over time in ${this.location}`)
     }
   },
   watch: {
@@ -180,8 +181,7 @@ export default Vue.extend({
     updateScales() {
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d.date_time)))
-        .clamp(true);
+        .domain(extent(this.data.map(d => d.date_time)));
 
       this.y = this.y
         .range([0, this.height - this.margin.top - this.margin.bottom])
@@ -270,7 +270,9 @@ export default Vue.extend({
       if (selection) {
         const newMin = this.x.invert(selection[0]);
         const newMax = this.x.invert(selection[1]);
-        this.x = this.x
+
+        this.x = scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
           .domain([newMin, newMax]);
 
         // reset the axis

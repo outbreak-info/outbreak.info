@@ -903,10 +903,9 @@ export function getLocationReportData(apiurl, location, mutations, pango_lineage
 
   return getLocationLineagePrevalences(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window)
     .pipe(
-      mergeMap(results => getMutationsOfInterestPrevalence(apiurl, results.lineageDomain).pipe(
+      mergeMap(results => getMutationsOfInterestPrevalence(apiurl, results.recentDomain).pipe(
         map(heatmap => {
           results["heatmap"] = heatmap;
-          results["heatmapDomain"] = uniq(heatmap.characteristic.map(d => d.pangolin_lineage));
           return (results)
         })
       )),
@@ -925,15 +924,30 @@ export function getLocationLineagePrevalences(apiurl, location, mutations, pango
     getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays, window)
   ]).pipe(
     map(([lineagesByDay, mostRecentLineages]) => {
-      let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
+      if (mostRecentLineages && mostRecentLineages.length) {
+        let recentDomain = Object.keys(mostRecentLineages[0]).filter(d => d != "Other");
+        let lineageDomain = ["Other"].concat(recentDomain);
 
-      lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
+        lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
 
-      return ({
-        lineagesByDay: lineagesByDay,
-        mostRecentLineages: mostRecentLineages,
-        lineageDomain: lineageDomain
-      })
+        return ({
+          lineagesByDay: lineagesByDay,
+          mostRecentLineages: mostRecentLineages,
+          lineageDomain: lineageDomain,
+          recentDomain: recentDomain
+        })
+      } else {
+        let lineageDomain = ["Other"];
+
+        lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
+
+        return ({
+          lineagesByDay: lineagesByDay,
+          mostRecentLineages: mostRecentLineages,
+          lineageDomain: lineageDomain,
+          recentDomain: null
+        })
+      }
     }),
     catchError(e => {
       console.log("%c Error in getting location report data!", "color: red");
@@ -1111,40 +1125,74 @@ export function getBasicComparisonReportData(apiurl) {
 }
 
 export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
-  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p"];
+  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
   const mutationsOfConcern = ["s:e484k"];
 
-  return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
-    map((results, idx) => {
-      const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.gene === "S").filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-      let moi = results.flatMap(d => d.filter(x => mutationsOfInterest.includes(x.mutation) || mutationsOfConcern.includes(x.mutation)));
-      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)));
+  if (lineages && lineages.length) {
+    return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
+      map((results, idx) => {
+        const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.gene === "S").filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+        let moi = results.flatMap(d => d.filter(x => mutationsOfInterest.includes(x.mutation) || mutationsOfConcern.includes(x.mutation)));
+        let characteristic = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)));
 
 
-      filtered.forEach(d => {
-        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
-        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
-        d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
-        d["isMOI"] = mutationsOfInterest.includes(d.mutation);
-        d["isMOC"] = mutationsOfConcern.includes(d.mutation);
+        characteristic.forEach(d => {
+          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+          d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
+            d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
+          d["isMOI"] = mutationsOfInterest.includes(d.mutation);
+          d["isMOC"] = mutationsOfConcern.includes(d.mutation);
+        })
+
+        moi.forEach(d => {
+          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+          d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
+            d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
+          d["isMOI"] = mutationsOfInterest.includes(d.mutation);
+          d["isMOC"] = mutationsOfConcern.includes(d.mutation);
+        })
+
+        const charDomain = uniq(characteristic.map(d => d.pangolin_lineage));
+        const moiDomain = uniq(moi.map(d => d.pangolin_lineage));
+
+        return ({
+          characteristic: {
+            data: characteristic,
+            yDomain: charDomain
+          },
+          moi: {
+            data: moi,
+            yDomain: moiDomain
+          }
+        })
+      }),
+      catchError(e => {
+        console.log("%c Error in getting mutation prevalence by lineage!", "color: teal");
+        console.log(e);
+        return ( of ({
+          characteristic: {
+            data: [],
+            yDomain: []
+          },
+          moi: {
+            data: [],
+            yDomain: []
+          }
+        }));
       })
-
-      moi.forEach(d => {
-        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
-        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
-        d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
-        d["isMOI"] = mutationsOfInterest.includes(d.mutation);
-        d["isMOC"] = mutationsOfConcern.includes(d.mutation);
-      })
-
-      return ({characteristic : filtered, moi: moi})
-    }),
-    catchError(e => {
-      console.log("%c Error in getting mutation prevalence by lineage!", "color: teal");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
+    )
+  } else {
+    return ( of ({
+      characteristic: {
+        data: [],
+        yDomain: []
+      },
+      moi: {
+        data: [],
+        yDomain: []
+      }
+    }))
+  }
 }
 
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {

@@ -1,7 +1,7 @@
 <template>
 <div>
   <h4 class="mb-0">{{ definitionLabel }}</h4>
-  <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">Read more</router-link></small>
+  <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 

@@ -28,7 +28,7 @@
     </b>
     <div v-for="(type, tIdx) in curated" :key="tIdx" class="d-flex mb-3 align-items-center">
       <div class="mr-3">
-        <small :class="{ 'VOC': type.key == 'Variant of Concern',  'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
+        <small :class="{ 'VOC': type.key == 'Variant of Concern', 'MOC': type.key == 'Mutation of Concern', 'MOI': type.key == 'Mutation of Interest', 'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
       </div>
 
       <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip bg-white text-muted btn-outline-secondary-no-hover">{{variant}}</button>

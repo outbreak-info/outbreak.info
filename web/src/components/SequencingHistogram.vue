@@ -123,6 +123,9 @@ export default Vue.extend({
     })
   },
   watch: {
+    xInput() {
+      this.updatePlot();
+    },
     width: function() {
       this.updatePlot();
     },
@@ -278,6 +281,7 @@ export default Vue.extend({
               .attr("x2", d => this.x(d[this.xVariable]))
               .attr("y1", d => this.y(0))
               .attr("y2", d => this.y(d[this.totalVariable]))
+              .classed("hidden",  d => this.x(d[this.xVariable]) < 0 ||  this.x(d[this.xVariable]) > this.width - this.margin.left - this.margin.right)
               .style("stroke-width", this.xBandwidth)
               .style("stroke", d => d.lineage_count ? this.detectedColor : this.notDetectedColor);
           },
@@ -288,6 +292,7 @@ export default Vue.extend({
           .attr("x2", d => this.x(d[this.xVariable]))
           .attr("y1", d => this.y(0))
           .attr("y2", d => this.y(d[this.totalVariable]))
+          .classed("hidden",  d => this.x(d[this.xVariable]) < 0 ||  this.x(d[this.xVariable]) > this.width - this.margin.left - this.margin.right)
           .style("stroke", d => d.lineage_count ? this.detectedColor : this.notDetectedColor)
           .style("stroke-width", this.xBandwidth),
           exit =>

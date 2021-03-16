@@ -40,10 +40,10 @@
         <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
         <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         <g ref="brush2" class="brush" id="brush2-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-        <!-- <g id="no-data" v-if="!data.length">
+        <g id="no-data" v-if="noData">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
         </g>
-        <g id="no-data" v-if="data.length < lengthThreshold && data.length">
+        <!-- <g id="no-data" v-if="data.length < lengthThreshold && data.length">
           <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
           <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
             sequencing data</text>
@@ -77,9 +77,9 @@
           <small class="text-muted">7 day rolling average of confirmed cases</small>
         </div>
 
-        <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" name="title">
+        <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
           <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
-          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yEpiAxis"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis epi-y axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
           <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
         </svg>
@@ -125,6 +125,8 @@ import {
   event,
   max,
   format,
+  timeFormat,
+  timeParse,
   line,
   area,
   transition,
@@ -164,8 +166,11 @@ export default Vue.extend({
     FontAwesomeIcon
   },
   computed: {
+    noData() {
+      return(this.data.flatMap(d => d.data).length === 0)
+    },
     title() {
-      return (this.locationName == "Worldwide" ? `Mutation prevalence over time worldwide` : `Mutation prevalence over time in ${this.locationName}`)
+      return (this.locationName == "Worldwide" ? `Mutation and case prevalence over time worldwide` : `Mutation and case prevalence over time in ${this.locationName}`)
     },
     countTitle() {
       return (`Total samples sequenced by collection date in ${this.location}`)
@@ -222,6 +227,8 @@ export default Vue.extend({
       ]),
       maxCounts: null,
       xBandwidth: 1,
+      xMin: null,
+      xMax: null,
       xAxis: null,
       yAxis: null,
       yEpiAxis: null,
@@ -250,6 +257,8 @@ export default Vue.extend({
       this.updatePlot();
     },
     data: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
       this.setXScale();
       this.updatePlot();
     },
@@ -321,7 +330,8 @@ export default Vue.extend({
         const newMin = this.x.invert(selection[0]);
         const newMax = this.x.invert(selection[1]);
 
-        this.x = this.x
+        this.x = scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
           .domain([newMin, newMax]);
 
         // update plotted data
@@ -331,25 +341,66 @@ export default Vue.extend({
         });
 
         this.plottedData = this.plottedData.filter(d => d.data.length);
-        this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > newMin && d[this.xEpiVariable] < newMax);;
+        this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > newMin && d[this.xEpiVariable] < newMax);
         // move the brush
         this.brushRef.call(this.brush.move, null);
         this.brushRef2.call(this.brush.move, null);
         this.zoomAllowed = false;
         this.updatePlot();
+
+
+        // update route
+        const queryParams = this.$route.query;
+
+        this.$router.push({
+          name: "LocationReport",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected,
+            xmin: timeFormat("%Y-%m-%d")(newMin),
+            xmax: timeFormat("%Y-%m-%d")(newMax)
+          }
+        })
       }
 
     },
     resetZoom() {
-      this.setXScale();
       this.brushRef.call(this.brush.move, null);
       this.brushRef2.call(this.brush.move, null);
+      const queryParams = this.$route.query;
+
+      this.xMin = null;
+      this.xMax = null;
+      this.setXScale();
+
+      this.$router.push({
+        name: "LocationReport",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          loc: queryParams.loc,
+          muts: queryParams.muts,
+          pango: queryParams.pango,
+          variant: queryParams.variant,
+          selected: queryParams.selected
+        }
+      })
+
       this.updatePlot();
     },
     enableZoom() {
       this.zoomAllowed = true;
     },
     setupPlot() {
+      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.counts = select(this.$refs.counts);
@@ -376,16 +427,37 @@ export default Vue.extend({
       this.setXScale();
     },
     setXScale() {
-      const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
-      const mutExtent = extent(this.data.flatMap(d => d.data).map(d => d[this.xVariable]));
-      const xDomain = extent(epiExtent.concat(mutExtent));
+      let xDomain;
 
-      this.x = this.x
+      if (this.xMin && this.xMax && this.xMin < this.xMax) {
+        xDomain = [this.xMin, this.xMax];
+      } else {
+        const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
+        const mutExtent = extent(this.data.flatMap(d => d.data).map(d => d[this.xVariable]));
+        xDomain = extent(epiExtent.concat(mutExtent));
+
+        if (this.xMin && this.xMin < xDomain[1]) {
+          xDomain[0] = this.xMin;
+        }
+
+        if (this.xMax && this.xMax > xDomain[0]) {
+          xDomain[1] = this.xMax;
+        }
+      }
+
+      this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
 
-      this.plottedData = this.data.filter(d => d.data.length);
+      this.plottedData = cloneDeep(this.data);
       this.plottedEpi = this.epi;
+      this.plottedData.forEach(mutation => {
+        mutation.data = mutation.data.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
+      });
+
+      this.plottedData = this.plottedData.filter(d => d.data.length);
+      this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > xDomain[0] && d[this.xEpiVariable] < xDomain[1]);
+
       this.colorScale = this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },
     updateScales() {
@@ -544,6 +616,7 @@ export default Vue.extend({
               .attr("x", this.width - this.margin.left - this.margin.right)
               .attr("dx", 5)
               .attr("y", d => d.y)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", d => this.colorScale(d.label))
               .text(d => d.label);
           },
@@ -648,6 +721,10 @@ export default Vue.extend({
         text {
             fill: $grey-90;
         }
+    }
+
+    & .epi-y {
+        font-size: 14pt;
     }
 
     & .axis--x line {

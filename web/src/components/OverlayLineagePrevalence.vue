@@ -72,6 +72,8 @@ export default {
         },
         query: {
           loc: this.locationID,
+          xmin: queryParams.xmin,
+          xmax: queryParams.xmax,
           muts: queryParams.muts,
           pango: queryParams.pango,
           variant: queryParams.variant,

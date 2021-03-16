@@ -7,7 +7,7 @@
     <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
   </svg>
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" :title="`Sequences over last ${recentWindow} days`" />
+  <SequencingHistogram :data="seqCounts" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="stacked-seq-histogram" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" :title="`Sequences over last ${recentWindow} days`" />
 
   <DownloadReportData :data="data" figureRef="report-stacked-bar" dataType="Mutation Report Prevalence over Time" />
 </div>
@@ -217,6 +217,7 @@ export default Vue.extend({
             .attr("x", this.rectWidth)
             .attr("dx", 10)
             .attr("y", d => d.y)
+            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("fill", d => this.colorScale(d.key))
             .style("dominant-baseline", "central")
 
