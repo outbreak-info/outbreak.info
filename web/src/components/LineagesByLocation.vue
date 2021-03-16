@@ -89,12 +89,13 @@ export default Vue.extend({
     recentData: Object,
     seqCounts: Array,
     recentWindow: String,
+    location: String,
     recentMin: Date,
     colorScale: Function
   },
   computed: {
     title() {
-      return ("Lineage prevalence over time")
+      return (`Lineage prevalence over time in ${this.location}`)
     }
   },
   watch: {
