@@ -186,7 +186,11 @@
             <!-- STACKED BAR / MOST RECENT -->
             <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
               <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
+              <div class="d-flex flex-column">
               <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :locationID="selectedLocation.id" />
+
+              </div>
+
             </section>
 
           </div>
@@ -273,7 +277,7 @@
       <!-- METHODOLOGY -->
       <section class="mt-3 mb-5 border-top pt-3" id="methods">
         <h4>Methodology</h4>
-        <ReportMethodology :dateUpdated="dateUpdated" />
+        <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
         <Warning class="mt-2" :text="disclaimer" />
       </section>
 
