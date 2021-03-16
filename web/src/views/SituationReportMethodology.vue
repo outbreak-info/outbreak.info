@@ -3,7 +3,7 @@
   <h1 class="m-0">
     SARS-CoV-2 (hCov-19) Mutation Situation Methodology
   </h1>
-  <section id="methodology" class="my-4">
+  <section id="methodology" class="">
     <ReportMethodology class="w-75" />
   </section>
 </div>

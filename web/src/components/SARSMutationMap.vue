@@ -58,9 +58,7 @@ import {
   forceX
 } from "d3";
 
-import {
-  cloneDeep
-} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import chroma from "chroma-js";
 

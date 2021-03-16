@@ -31,7 +31,7 @@
             total
           </th>
           <th class="text-center padded">
-            apparent prevalence<sup>*</sup>
+            cumulative prevalence<sup>*</sup>
           </th>
           <th>
 
@@ -46,28 +46,7 @@
       </thead>
 
       <tbody class="checkbook">
-        <tr>
-          <td>
-            Worldwide
-          </td>
-          <td class="text-center">
-            {{ totalLineage }}
-          </td>
-          <td class="text-center">
-            {{ globalPrev.proportion_formatted }}
-          </td>
-          <td>
-
-          </td>
-          <td class="text-center">
-            {{ globalPrev.first_detected }}
-          </td>
-          <td class="text-center">
-            {{ globalPrev.last_detected }}
-          </td>
-        </tr>
-
-        <tr v-for="(location, lIdx) in locationTotals" :key="lIdx">
+        <tr v-for="(location, lIdx) in locationTotals" :key="lIdx" :class="{'font-weight-bold' : location.id == selected}">
           <td>
             {{ location.name }}
           </td>
@@ -95,7 +74,7 @@
     </div>
     <div class="d-flex align-items-center my-2">
       <div class="line-height-1">
-        <small><em><sup>*</sup> Apparent prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
+        <small><em><sup>*</sup> Apparent cumulative prevalence is the ratio of the sequences containing {{mutationName}} to all sequences collected since the identification of {{mutationName}} in that location.</em> </small>
         <small class="ml-2"><em><sup>**</sup> Dates are based on the sample collection date</em> </small>
       </div>
       <div class="bias-btn ml-2">
@@ -110,7 +89,7 @@
   <!-- GEO SUMMARY -->
   <div id="geo-summary" v-if="countries" class="d-flex flex-column" ref="geo_summary">
     <div>
-      The strain has been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
+      The {{reportType == "mutation" ? "mutation has" : reportType == "variant" ? "mutations have" : "strain has" }} been detected in at least <b>{{ countries.length }} {{countries.length === 1 ? "country" : "countries"}}</b> and <b> {{ states.length }} U.S. {{states.length === 1 ? "state" : "states"}}</b>.
     </div>
     <CountryMap :countries="countries" :width="summaryWidth" :showNames="false" class="align-self-center" mapSource="GADM" />
     <small class="bright-hyperlink"><a href="#geographic">view geographic prevalence</a></small>
@@ -145,11 +124,11 @@ export default {
     FontAwesomeIcon
   },
   props: {
+    selected: String,
     dateUpdated: String,
     totalLineage: String,
     mutationName: String,
     reportType: String,
-    globalPrev: Object,
     locationTotals: Array,
     countries: Array,
     states: Array

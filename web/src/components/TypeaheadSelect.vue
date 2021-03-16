@@ -1,10 +1,10 @@
 <template>
 <div class="w-100">
   <div class="dropdown">
-    <input :class="{ 'form-control': isStandalone }" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
-    <div class="dropdown-menu" :class="{'show':isOpen}" style="width:100%">
+    <input :class="{ 'form-control': isStandalone }" :disabled="disabled" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
+    <div class="dropdown-menu overflow-auto" :class="{'show':isOpen}" style="width:100%">
       <a v-for="(suggestion, idx) in matches" :key="idx" class="dropdown-item" :class="{'active': isActive(idx)}" @click="suggestionClick(idx)">
-        {{ suggestion.name }} ({{ suggestion.total_count.toLocaleString() }} {{ totalLabel }})</a>
+        {{ suggestion[labelVariable] }} <span v-if="suggestion.total_count">({{ suggestion.total_count.toLocaleString() }}<span v-if="totalLabel"> {{ totalLabel }}</span>)</span></a>
     </div>
   </div>
 
@@ -25,6 +25,10 @@ export default {
     placeholder: String,
     totalLabel: String,
     selectedValue: String,
+    labelVariable: {
+      type: String,
+      default: "name"
+    },
     removeOnSelect: {
       type: Boolean,
       default: true
@@ -32,6 +36,10 @@ export default {
     isStandalone: {
       type: Boolean,
       default: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -58,7 +66,7 @@ export default {
       if (this.removeOnSelect || !this.selected) {
         this.selected = null; // reset
       } else {
-        this.selected = this.selected.name;
+        this.selected = this.selected[this.labelVariable];
       }
     },
 
@@ -106,7 +114,7 @@ export default {
       if (this.removeOnSelect || !this.selected) {
         this.selected = null; // reset
       } else {
-        this.selected = this.selected.name;
+        this.selected = this.selected[this.labelVariable];
       }
     }
   }

@@ -227,19 +227,6 @@ const routes = [{
         "../views/DoublingRates.vue"
       )
   },
-  // {
-  //   path: "/sarscov2-mutations",
-  //   name: "Mutations",
-  //   props: route => ({
-  //     location: route.query.location,
-  //     variable: route.query.variable
-  //   }),
-  //   component: () =>
-  //     import(
-  //       /* webpackChunkName: "mutations" */
-  //       "../views/Mutations.vue"
-  //     )
-  // },
   {
     path: "/situation-reports",
     name: "SituationReports",
@@ -264,12 +251,10 @@ const routes = [{
     path: "/situation-reports",
     name: "MutationReport",
     props: route => ({
-      country: route.query.country,
-      division: route.query.division,
+      loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
-      selected: route.query.selected,
-      selectedType: route.query.selectedType
+      selected: route.query.selected
     }),
     component: () =>
       import(
@@ -282,8 +267,22 @@ const routes = [{
     name: "SituationReportMethodology",
     component: () =>
       import(
-        /* webpackChunkName: "situation-reports-caveats" */
+        /* webpackChunkName: "situation-reports-methods" */
         "../views/SituationReportMethodology.vue"
+      )
+  },
+  {
+    path: "/compare-lineages",
+    name: "SituationReportComparison",
+    props: route => ({
+      location: route.query.location,
+      pango: route.query.pango,
+      gene: route.query.gene
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports-comparison" */
+        "../views/SituationReportComparison.vue"
       )
   },
   {
@@ -411,6 +410,55 @@ const routes = [{
   {
     path: "/situation-report-demo",
     redirect: "/situation-reports"
+  },
+  {
+    path: "/location-reports",
+    name: "LocationReports",
+    component: () =>
+      import(
+        /* webpackChunkName: "location-reports" */
+        "../views/LocationReports.vue"
+      ),
+    // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
+    beforeEnter(to, from, next) {
+      if (to.query && to.query.loc) {
+        // redirect to route below
+        next({
+          name: 'LocationReport',
+          query: to.query
+        })
+      } else
+        next()
+    }
+  },
+  {
+    path: "/location-reports",
+    name: "LocationReport",
+    props: route => ({
+      loc: route.query.loc,
+      muts: route.query.muts,
+      pango: route.query.pango,
+      variant: route.query.variant,
+      selected: route.query.selected
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "location-report" */
+        "../views/LocationReport.vue"
+      )
+  },
+  {
+    path: "/watch-list",
+    name: "WatchList",
+    props: route => ({
+      country: route.query.country,
+      division: route.query.division
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "watch-list" */
+        "../views/WatchList.vue"
+      )
   }
 ];
 
@@ -442,5 +490,19 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   store.commit("admin/setLoading", false);
 })
+
+router.onError((error) => {
+  const pattern = /Loading chunk (\d) failed/g;
+  const isChunkLoadFailed = error.message.match(pattern);
+  const targetPath = router.history.pending.fullPath;
+
+  if (isChunkLoadFailed) {
+    console.log("Router detected error!");
+    console.error(error);
+    // history.replaceState("", "", targetPath);
+  } else {
+    throw error;
+  }
+});
 
 export default router;

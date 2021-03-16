@@ -287,7 +287,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@import "./styles/global.scss";
+
 .navbar-collapse.collapsing {
     -webkit-transition: height 0s;
     -moz-transition: height 0s;

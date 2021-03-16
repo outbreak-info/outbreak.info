@@ -7,6 +7,7 @@
   left: calc(50vw - 50px) !important;
 }
 // --- buttons ---
+
 button {
   line-height: 1.5em;
   font-size: 1em;
@@ -22,50 +23,41 @@ button {
     outline: none !important;
   }
 
-  &.chip {
-    border-radius: 1em;
-    display: flex;
-    align-items: center;
-    padding: 2px 8px;
-    cursor: pointer;
-    &:focus {
-        outline: none !important;
-    }
     &.chip {
-        border-radius: 1em;
-        display: flex;
-        align-items: center;
-        padding: 2px 8px;
-        white-space: nowrap;
-        cursor: pointer;
-        & .remove-btn {
-            margin-left: 0.25em;
-            font-size: 0.75em;
-        }
-    }
+      border-radius: 1em;
+      display: flex;
+      align-items: center;
+      padding: 2px 8px;
+      white-space: nowrap;
+      cursor: pointer;
+
+      & .remove-btn {
+        margin-left: 0.25em;
+        font-size: 0.75em;
+      }
   }
 }
 
-
 .btn-main-outline a {
-    color: $primary-color;
-    &:hover {
-        color: white !important;
-    }
+  color: $primary-color;
+
+  &:hover {
+    color: white !important;
+  }
 }
 
 .btn-no-outline {
   color: $secondary-color;
-  transition: all .5s;
+  transition: all 0.5s;
   // padding: 0.5rem;
   text-transform: uppercase;
-  &:hover{
+
+  &:hover {
     background: $primary-color !important;
     color: white;
     text-decoration: none;
   }
 }
-
 
 .all-selected,
 .to-add.all-selected,
@@ -91,39 +83,42 @@ button.chip.to-add:hover {
   color: $base-grey;
   cursor: default;
   // background: $primary-color !important;
-
   & .add-btn {
     color: white !important;
   }
 }
 
-.btn-main{
+.btn-main {
   background: $primary-color !important;
   color: white;
-  transition: all .5s;
+  transition: all 0.5s;
   text-transform: uppercase;
-  &:hover{
+
+  &:hover {
     background: $secondary-color !important;
     color: white;
   }
-  &-outline{
+
+  &-outline {
     background: transparent;
     border: $primary-color 2px solid !important;
     color: $secondary-color;
-    transition: all .5s;
-    text-transform:uppercase;
-    &:hover{
+    transition: all 0.5s;
+    text-transform: uppercase;
+
+    &:hover {
       background: $primary-color !important;
       color: white;
     }
   }
-  &-flat{
+
+  &-flat {
     background: transparent;
     border: none !important;
     color: $secondary-color;
-    transition: all .5s;
+    transition: all 0.5s;
     // text-transform:uppercase;
-    &:hover{
+    &:hover {
       background: $primary-color !important;
       color: white !important;
     }
@@ -132,54 +127,76 @@ button.chip.to-add:hover {
 
 .btn-grey {
   background: #DDD !important;
-  transition: all .5s;
+  border: #AAA 1px solid !important;
+  color: #888;
+  transition: all 0.5s;
   text-transform: uppercase;
-  &:hover{
+
+  &:hover {
     background: #AAA !important;
     color: white;
+    text-decoration: none !important;
   }
 
-  &-outline{
+  &-flat {
+    border: none !important;
+    background: #DDD !important;
+    color: #666;
+    transition: all 0.5s;
+    text-transform: uppercase;
+
+    &:hover {
+      background: #AAA !important;
+      color: white;
+      text-decoration: none !important;
+    }
+  }
+
+  &-outline {
     background: transparent;
-    border: #AAA 2px solid !important;
+    border: #AAA 1px solid !important;
     color: #888;
-    transition: all .5s;
-    text-transform:uppercase;
-    &:hover{
+    transition: all 0.5s;
+    text-transform: uppercase;
+
+    &:hover {
       background: #BBB !important;
       color: white;
     }
   }
 }
 
-
-.btn-accent{
+.btn-accent {
   background: $warning-color !important;
   color: white;
-  transition: all .5s;
+  transition: all 0.5s;
   text-transform: uppercase;
-  &:hover{
+
+  &:hover {
     background: darken($warning-color, 20%) !important;
     color: white;
   }
-  &-outline{
+
+  &-outline {
     background: transparent;
     border: darken($warning-color, 5%) 2px solid !important;
     color: $warning-color;
-    transition: all .5s;
-    text-transform:uppercase;
-    &:hover{
+    transition: all 0.5s;
+    text-transform: uppercase;
+
+    &:hover {
       background: $warning-color !important;
       color: white;
     }
   }
-  &-flat{
+
+  &-flat {
     background: transparent;
     border: none !important;
     // color: $warning-color;
-    transition: all .5s;
+    transition: all 0.5s;
     // text-transform:uppercase;
-    &:hover{
+    &:hover {
       background: $warning-color !important;
       color: white !important;
     }
@@ -187,40 +204,63 @@ button.chip.to-add:hover {
 }
 
 .btn-accent:disabled {
-    background: #CCC !important;
-    color: #444 !important;
-    cursor: default !important;
+  background: #CCC !important;
+  color: #444 !important;
+  cursor: default !important;
 }
 
 .btn-outline-secondary:hover {
-    background: #6c757d !important;
-    color: white;
+  background: #6c757d !important;
+  color: white;
 }
 
+.chip.btn-outline-secondary-no-hover:hover {
+  background: white !important;
+  color: inherit !important;
+  cursor: default;
+}
 
 .VOC,
-.VOI {
-    padding: 0.35rem;
-    border-radius: 0.25rem;
-    border-style: solid;
-    border-width: 1px;
-    line-height: 1;
-    flex-shrink: 0;
-    font-size: small;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    // font-weight: 700;
+.VOI, .MOC, .MOI {
+  padding: 0.35rem;
+  border-radius: 0.25rem;
+  border-style: solid;
+  border-width: 1px;
+  line-height: 1;
+  flex-shrink: 0;
+  font-size: small;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  // font-weight: 700;
 }
 
-.VOC {
-    background: lighten($publication-color, 35%);
-    color: $publication-color;
-    border-color: $publication-color;
+.VOC, .MOC {
+  background: lighten($publication-color, 35%);
+  color: $publication-color;
+  border-color: $publication-color;
 }
 
-.VOI {
-    background: lighten($website-color, 40%);
-    color: $website-color;
-    border-color: $website-color;
+.VOI, .MOI {
+  background: lighten($website-color, 40%);
+  color: $website-color;
+  border-color: $website-color;
+}
+
+.voc, .moc {
+  background: lighten($publication-color, 35%);
+  color: $publication-color;
+  border-color: $publication-color;
+  text-align: center;
+}
+
+.voi, .moi {
+  background: lighten($website-color, 40%);
+  color: $website-color;
+  border-color: $website-color;
+}
+
+.custom {
+  background: lighten($primary-color, 70%);
+  color: $secondary-color;
 }

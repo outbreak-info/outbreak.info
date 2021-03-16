@@ -2,10 +2,12 @@
 <div>
   <!-- NAME -->
   <div class="d-flex justify-content-between" id="mutation-name">
-    <h5 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h5>
+    <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
 
     <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
     <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
+    <div class="MOC" v-if="report.variantType == 'Mutation of Concern'">Mutation of Concern</div>
+    <div class="MOI" v-if="report.variantType == 'Mutation of Interest'">Mutation of Interest</div>
   </div>
   <p v-if="report.lineages && report.lineages.length" class="text-muted">
     prominent in<router-link :to="{name:'MutationReport', query:{ pango: lineage }}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
@@ -22,10 +24,6 @@
         <span v-if="sIdx < report.mutation_synonyms.length - 1">, </span></span>
     </small>
   </div>
-  <!-- LINK TO RESOURCES -->
-  <!-- <router-link :to='{name:"Resources", query:{q: `"${report.mutation_name}"`}}' v-if="report.mutation_name === 'B.1.1.7'">
-  <small>View {{report.mutation_name}} resources</small>
-</router-link> -->
 
 
 </div>
@@ -34,10 +32,6 @@
 
 <script>
 import Vue from "vue";
-
-import {
-  getReportList
-} from "@/api/genomics.js";
 
 export default {
   name: "ReportCard",
