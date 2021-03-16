@@ -269,7 +269,7 @@
         <div v-if="selectedLocation && selectedLocation.admin_level < 2">
           <div class="d-flex align-items-center justify-content-between mb-3">
             <small class="text-muted" v-if="selectedLocation.admin_level < 1">Since first identification in location</small>
-            <Warning class="mt-2" text="Prevalence estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            <Warning class="mt-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
           <div class="d-flex flex-wrap">
             <!-- Legend -->
