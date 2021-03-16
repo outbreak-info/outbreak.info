@@ -188,6 +188,27 @@
               <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
               <div class="d-flex flex-column ml-3 mt-2">
                 <h6>Characteristic S-gene mutations in common lineages</h6>
+                <!-- LEGEND -->
+                <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
+                  <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+                  <div class="d-flex align-items-center">
+                    <svg width="24" height="24">
+                      <defs>
+                        <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                          <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
+                        </pattern>
+                      </defs>
+                      <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
+                    </svg>
+                    <small class="text-light ml-2">not detected</small>
+                  </div>
+                  <span class="mx-1 line-height-1 fa-sm flex-shrink-1" style="color: #fb5759">
+                    Mutation of Concern
+                  </span>
+                  <span class="mx-1 line-height-1 fa-sm  flex-shrink-1" style="color: #fd9b3a">
+                    Mutation of Interest
+                  </span>
+                </div>
               <MutationHeatmap :data="recentHeatmap" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
               <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
               </div>
@@ -343,13 +364,14 @@ import {
   timeFormat,
   scaleOrdinal,
   scaleThreshold,
+  scaleSequential,
   scaleTime,
   timeDay,
   extent
 } from "d3";
 
 import {
-  schemeYlGnBu
+  schemeYlGnBu, interpolateRdPu
 } from "d3-scale-chromatic";
 
 import {
@@ -391,6 +413,7 @@ export default {
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     DownloadReportData: () => import( /* webpackPrefetch: true */ "@/components/DownloadReportData.vue"),
+    GradientLegend: () => import( /* webpackPrefetch: true */ "@/components/GradientLegend.vue"),
     FontAwesomeIcon
   },
   watch: {
@@ -737,6 +760,7 @@ export default {
       totalSequences: null,
       curatedLineages: [],
       recentHeatmap: null,
+      heatmapColorScale: scaleSequential(interpolateRdPu),
       mostRecentDomain: null,
       geoData: null,
       seqCounts: null,
