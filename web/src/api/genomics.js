@@ -905,7 +905,6 @@ export function getLocationReportData(apiurl, location, mutations, pango_lineage
     .pipe(
       mergeMap(results => getMutationsOfInterestPrevalence(apiurl, results.recentDomain).pipe(
         map(heatmap => {
-          console.log(heatmap)
           results["heatmap"] = heatmap;
           return (results)
         })
@@ -1113,10 +1112,9 @@ export function getBasicComparisonReportData(apiurl) {
 }
 
 export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
-  const mutationsOfInterest = ["s:s477n", "S:N501Y", "S:K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "S:Y453F", "S:N439K"];
+  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
   const mutationsOfConcern = ["s:e484k"];
 
-  console.log(lineages);
   if (lineages.length) {
     return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
       map((results, idx) => {
