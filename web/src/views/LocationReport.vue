@@ -189,6 +189,7 @@
               <div class="d-flex flex-column ml-3 mt-2">
                 <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
                 <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+                <div class="d-flex flex-column align-items-center bg-dark">
                 <!-- LEGEND -->
                 <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
                   <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
@@ -211,6 +212,7 @@
                   </span>
                 </div>
               <MutationHeatmap :data="recentHeatmap" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
+            </div>
               <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
               </div>
               </div>
