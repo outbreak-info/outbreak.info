@@ -188,7 +188,7 @@
               <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
               <div class="d-flex flex-column ml-3 mt-2">
                 <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
-                <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+                <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of sequences globally <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
                 <div class="d-flex flex-column align-items-center bg-dark">
                 <!-- LEGEND -->
                 <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
