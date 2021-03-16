@@ -77,7 +77,7 @@
           <small class="text-muted">7 day rolling average of confirmed cases</small>
         </div>
 
-        <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" name="title">
+        <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
           <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis epi-y axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
@@ -167,7 +167,7 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      return (this.locationName == "Worldwide" ? `Mutation prevalence over time worldwide` : `Mutation prevalence over time in ${this.locationName}`)
+      return (this.locationName == "Worldwide" ? `Mutation and case prevalence over time worldwide` : `Mutation and case prevalence over time in ${this.locationName}`)
     },
     countTitle() {
       return (`Total samples sequenced by collection date in ${this.location}`)
@@ -613,6 +613,7 @@ export default Vue.extend({
               .attr("x", this.width - this.margin.left - this.margin.right)
               .attr("dx", 5)
               .attr("y", d => d.y)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", d => this.colorScale(d.label))
               .text(d => d.label);
           },

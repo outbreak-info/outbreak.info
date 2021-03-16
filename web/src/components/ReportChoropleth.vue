@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="report-choropleth">
   <!-- choropleth -->
-  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
+  <svg :width="width" :height="height" ref="choropleth" class="report-choropleth mt-3" :subtitle="subtitle" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
     <defs>
       <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
@@ -74,7 +74,12 @@ export default {
       type: Boolean,
       default: true
     },
+    smallMultiples: {
+      type: Boolean,
+      default: false
+    },
     countThreshold: Number,
+    recentWindow: String,
     colorScale: Function
   },
   components: {
@@ -141,7 +146,16 @@ export default {
       return (Math.max(Math.abs(this.minVal), this.maxVal))
     },
     title() {
+      if (this.smallMultiples) {
+        return (this.recentWindow ? `Prevalence over the last ${this.recentWindow} days in ${this.location}` : "Estimated prevalence")
+      }
       return (this.location == "Worldwide" ? `${this.mutationName} cumulative prevalence by country` : `${this.mutationName} cumulative prevalence in ${this.location}`)
+    },
+    subtitle() {
+      if (this.smallMultiples) {
+        return (this.mutationName)
+      }
+      return (null)
     }
   },
   created: function() {
@@ -250,7 +264,7 @@ export default {
       this.ttips = select(this.$refs.choropleth_tooltip);
     },
     formatPct(pct) {
-      return(format(".0%")(pct))
+      return (format(".0%")(pct))
     },
     updateProjection() {
       this.projection = this.projection

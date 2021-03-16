@@ -217,6 +217,7 @@ export default Vue.extend({
             .attr("x", this.rectWidth)
             .attr("dx", 10)
             .attr("y", d => d.y)
+            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("fill", d => this.colorScale(d.key))
             .style("dominant-baseline", "central")
 

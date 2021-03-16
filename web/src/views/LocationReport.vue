@@ -204,10 +204,10 @@
                     </svg>
                     <small class="text-light ml-2">not detected</small>
                   </div>
-                  <span class="mx-1 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+                  <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
                     Mutation of Concern
                   </span>
-                  <span class="mx-1 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
+                  <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
                     Mutation of Interest
                   </span>
                 </div>
@@ -275,7 +275,7 @@
             </div>
           </div>
 
-          <div class="d-flex flex-wrap">
+          <div class="d-flex flex-wrap" v-if="geoData">
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-33 my-3">
               <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
@@ -288,10 +288,11 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showCopy="false" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label" :colorScale="choroColorScale" :mutationName="choro.key"
+                <ReportChoropleth :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label" :colorScale="choroColorScale" :mutationName="choro.key"
                   :widthRatio="1" />
               </div>
             </div>
+            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" />
           </div>
 
         </section>
