@@ -75,19 +75,19 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
 export function getCuratedList(apiurl, prevalenceThreshold) {
   const mutations = CURATED.filter(d => d.reportType.toLowerCase() == "mutation");
 
-      return forkJoin(...mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
-        map(results => {
-          let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
+  return forkJoin(...mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
+    map(results => {
+      let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
 
-          curated = nest()
-            .key(d => d.reportType)
-            .entries(curated);
+      curated = nest()
+        .key(d => d.reportType)
+        .entries(curated);
 
-            curated = orderBy(curated, [reportTypeSorter], ["asc"])
+      curated = orderBy(curated, [reportTypeSorter], ["asc"])
 
-          return (curated)
-        })
-      )
+      return (curated)
+    })
+  )
 }
 
 export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshold) {
@@ -124,7 +124,7 @@ export function getReportList(apiurl, prevalenceThreshold = 0.75) {
 }
 
 function filterCuratedTypes(d) {
-  return((d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest" || d.variantType == "Mutation of Concern") && d.reportType != "Lineage + Mutation");
+  return ((d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest" || d.variantType == "Mutation of Concern") && d.reportType != "Lineage + Mutation");
 }
 
 export function getLocationBasics(apiurl) {
@@ -133,9 +133,9 @@ export function getLocationBasics(apiurl) {
   ofInterest = orderBy(ofInterest, [locationTableSorter, "mutation_name"]);
 
   const curated = nest()
-  .key(d => d.variantType)
-  .rollup(values => values.map(d => d.mutation_name))
-  .entries(ofInterest);
+    .key(d => d.variantType)
+    .rollup(values => values.map(d => d.mutation_name))
+    .entries(ofInterest);
 
   return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl)]).pipe(
     map(([total, dateUpdated]) => {
@@ -901,11 +901,30 @@ export function getBasicLocationReportData(apiurl, location) {
 export function getLocationReportData(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window) {
   store.state.genomics.locationLoading2 = true;
 
+  return getLocationLineagePrevalences(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window)
+    .pipe(
+      mergeMap(results => getMutationsOfInterestPrevalence(apiurl, results.lineageDomain).pipe(
+        map(heatmap => {
+          results["heatmap"] = heatmap;
+          results["heatmapDomain"] = uniq(heatmap.map(d => d.pangolin_lineage));
+          return (results)
+        })
+      )),
+      catchError(e => {
+        console.log("%c Error in getting location report data!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      }),
+      finalize(() => store.state.genomics.locationLoading2 = false)
+    )
+}
+
+export function getLocationLineagePrevalences(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window) {
   return forkJoin([
     getPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays),
     getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays, window)
   ]).pipe(
-    map(([lineagesByDay, mostRecentLineages, lineageTable]) => {
+    map(([lineagesByDay, mostRecentLineages]) => {
       let lineageDomain = ["Other"].concat(Object.keys(mostRecentLineages[0]).filter(d => d != "Other"));
 
       lineageDomain = uniq(lineageDomain.concat(Object.keys(lineagesByDay[0]).filter(d => d != "Other" && d != "date_time")));
@@ -920,8 +939,7 @@ export function getLocationReportData(apiurl, location, mutations, pango_lineage
       console.log("%c Error in getting location report data!", "color: red");
       console.log(e);
       return ( of ([]));
-    }),
-    finalize(() => store.state.genomics.locationLoading2 = false)
+    })
   )
 }
 
@@ -1089,6 +1107,32 @@ export function getBasicComparisonReportData(apiurl) {
       return ( of ([]));
     }),
     finalize(() => store.state.genomics.locationLoading1 = false)
+  )
+}
+
+export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = 0.75) {
+  console.log(lineages)
+  const mutationsOfInterest = ["s:e484k", "s:s477n", "s:n501Y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p"];
+
+
+  return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
+    map((results, idx) => {
+      const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.gene === "S").filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+      // let filtered = results.flatMap(d => d.filter(x => mutationsOfInterest.includes(x.mutation)));
+      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+
+      filtered.forEach(d => {
+        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+        d["mutation_simplified"] = d.mutation.split(":").slice(-1)[0];
+      })
+
+      return (filtered)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting mutation prevalence by lineage!", "color: teal");
+      console.log(e);
+      return ( of ([]));
+    })
   )
 }
 

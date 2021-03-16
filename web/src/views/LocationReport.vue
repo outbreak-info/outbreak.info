@@ -175,20 +175,19 @@
             </div>
           </div>
 
-          <div class="row">
-            <section id="lineages-over-time" class="col-md-8" v-if="lineagesByDay">
+          <div class="d-flex justify-content-between">
+            <section id="lineages-over-time" class="" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
-              <div class="">
                 <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
-              </div>
+
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
-            <section class="col-md-4" id="most-recent-lineages" v-if="mostRecentLineages">
+            <section class="" id="most-recent-lineages" v-if="mostRecentLineages">
               <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
-              <div class="d-flex flex-column">
+              <div class="d-flex align-items-center">
               <ReportStackedBarGraph :data="mostRecentLineages" :colorScale="colorScale" :locationID="selectedLocation.id" />
-
+              <MutationHeatmap :data="recentHeatmap" :yDomain="mostRecentDomain" v-if="recentHeatmap" />
               </div>
 
             </section>
@@ -389,6 +388,7 @@ export default {
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
     SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
+    MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     FontAwesomeIcon
   },
   watch: {
@@ -562,6 +562,8 @@ export default {
         this.lineageDomain = results.lineageDomain;
         this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
         this.recentMin = timeDay.offset(this.currentTime, -1 * this.recentWindow);
+        this.recentHeatmap = results.heatmap;
+        this.mostRecentDomain = results.heatmapDomain;
       })
 
       this.updateSequenceCount();
@@ -730,6 +732,8 @@ export default {
       lineageDomain: [],
       totalSequences: null,
       curatedLineages: [],
+      recentHeatmap: null,
+      mostRecentDomain: null,
       geoData: null,
       seqCounts: null,
       widthHist: 300,
