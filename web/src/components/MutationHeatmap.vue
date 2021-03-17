@@ -196,7 +196,7 @@ export default Vue.extend({
           const obj = {};
           obj[this.xVar] = x;
           obj[this.yVar] = y;
-          obj["id"] = `base_${x}-${y.replace(/\./g, "_")}`;
+          obj["id"] = `base_${x.replace(/\//g, "_")}-${y.replace(/\./g, "_")}`;
           return (obj)
         })
       }).flatMap(d => d)
