@@ -19,7 +19,7 @@
         <div>
           <label class="b-contain m-auto pr-3">
             <small>show confidence intervals</small>
-            <input type="checkbox" v-model="showCI" :value="showCI" @change="hideCIs"/>
+            <input type="checkbox" v-model="showCI" :value="showCI" @change="hideCIs" />
             <div class="b-input"></div>
           </label>
         </div>
@@ -268,6 +268,7 @@ export default Vue.extend({
   watch: {
     width: function() {
       this.setXScale();
+      this.updateBrush();
       this.updatePlot();
     },
     data: function() {
@@ -281,6 +282,20 @@ export default Vue.extend({
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
 
+      this.updateBrush();
+    })
+
+    // set initial dimensions for the plots.
+    this.setDims();
+    this.setupPlot();
+    this.updatePlot();
+  },
+  created: function() {
+    this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceZoom = this.debounce(this.zoom, 150);
+  },
+  methods: {
+    updateBrush() {
       // Update brush so it spans the whole of the area
       this.brush = brushX()
         .extent([
@@ -296,18 +311,7 @@ export default Vue.extend({
       this.brushRef2
         .call(this.brush)
         .on("dblclick", this.resetZoom);
-    })
-
-    // set initial dimensions for the plots.
-    this.setDims();
-    this.setupPlot();
-    this.updatePlot();
-  },
-  created: function() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
-    this.debounceZoom = this.debounce(this.zoom, 150);
-  },
-  methods: {
+    },
     setDims() {
       const mx = 0.85;
       const my = 0.4;
@@ -558,26 +562,26 @@ export default Vue.extend({
 
       // dim all
       this.chart.selectAll(".mutation-trace")
-      .style("opacity", 0.3);
+        .style("opacity", 0.3);
 
       this.chart.select(`#${d.label.replace(/:/g, "_").replace(/\./g, "_")}`)
-      .style("opacity", 1);
+        .style("opacity", 1);
 
 
-        // edit text
-        ttip.select("h5")
+      // edit text
+      ttip.select("h5")
         .text(d.label)
         .style("color", this.colorScale(d.label))
 
-        // fix location
-        ttip
-          .style("left", `${event.clientX + ttipShift}px`)
-          .style("top", `${event.clientY + ttipShift}px`)
-          .style("display", "block");
+      // fix location
+      ttip
+        .style("left", `${event.clientX + ttipShift}px`)
+        .style("top", `${event.clientY + ttipShift}px`)
+        .style("display", "block");
     },
     tooltipOffMutation() {
       this.chart.selectAll(".mutation-trace")
-      .style("opacity", 1);
+        .style("opacity", 1);
 
       select(this.$refs.tooltip_mutations)
         .style("display", "none");
@@ -686,9 +690,9 @@ export default Vue.extend({
         )
 
         this.chart
-        .selectAll(".mutation-label")
-        .on("mouseover", d => this.tooltipOnMutation(d))
-        .on("mouseout", () => this.tooltipOffMutation())
+          .selectAll(".mutation-label")
+          .on("mouseover", d => this.tooltipOnMutation(d))
+          .on("mouseout", () => this.tooltipOffMutation())
 
         const mutSelector = this.chart
           .selectAll(".mutation-trace")

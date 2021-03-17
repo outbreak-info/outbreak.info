@@ -100,6 +100,7 @@ export default Vue.extend({
   },
   watch: {
     width: function() {
+      this.updateBrush();
       this.updatePlot();
     },
     data: function() {
@@ -144,17 +145,7 @@ export default Vue.extend({
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
 
-      // Update brush so it spans the whole of the area
-      this.brush = brushX()
-        .extent([
-          [0, 0],
-          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
-        ])
-        .on("end", () => this.debounceZoom(event));
-
-      this.brushRef
-        .call(this.brush)
-        .on("dblclick", this.resetZoom);
+      this.updateBrush();
     })
 
     // set initial dimensions for the plots.
@@ -167,14 +158,24 @@ export default Vue.extend({
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
   methods: {
+    updateBrush() {
+      // Update brush so it spans the whole of the area
+      this.brush = brushX()
+        .extent([
+          [0, 0],
+          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+        ])
+        .on("end", () => this.debounceZoom(event));
+
+      this.brushRef
+        .call(this.brush)
+        .on("dblclick", this.resetZoom);
+    },
     setDims() {
       const svgContainer = document.getElementById('streamgraph');
       let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
       let maxWidth = window.innerWidth;
       this.width = containerWidth < this.minWidth || containerWidth > maxWidth ? maxWidth * 0.95 : containerWidth * 1;
-      console.log(containerWidth)
-      console.log(maxWidth)
-      console.log(this.width)
     },
     setupPlot() {
       this.svg = select(this.$refs.svg);
@@ -190,7 +191,8 @@ export default Vue.extend({
     updateScales() {
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d.date_time)));
+        .domain(extent(this.data.map(d => d.date_time)))
+        .clamp(true);
 
       this.y = this.y
         // .range([0, this.height - this.margin.top - this.margin.bottom])
@@ -283,7 +285,8 @@ export default Vue.extend({
 
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax]);
+          .domain([newMin, newMax])
+          .clamp(true);
 
         // reset the axis
         this.xAxis = axisBottom(this.x)
@@ -344,19 +347,19 @@ export default Vue.extend({
           )
         )
 
-        // annotation for the most recent date
-        const recentSelector = this.chart
+      // annotation for the most recent date
+      const recentSelector = this.chart
         .selectAll(".recent-date-annotation")
         .data([this.recentMin]);
 
-const t1 = transition().duration(500);
+      const t1 = transition().duration(500);
 
-        recentSelector.join(
-          enter => {
-            const grp = enter.append("g")
+      recentSelector.join(
+        enter => {
+          const grp = enter.append("g")
             .attr("class", "recent-date-annotation");
 
-            grp.append("line")
+          grp.append("line")
             .attr("class", "annotation-line")
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
@@ -365,7 +368,7 @@ const t1 = transition().duration(500);
             .style("stroke", "white")
             .style("stroke-dasharray", "6,6");
 
-            grp.append("line")
+          grp.append("line")
             .attr("class", "text-line")
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
@@ -373,7 +376,7 @@ const t1 = transition().duration(500);
             .attr("y2", -5)
             .style("stroke", "#2c3e50")
 
-            grp.append("text")
+          grp.append("text")
             .attr("x", d => this.x(d))
             .attr("y", 0)
             .attr("dy", -8)
@@ -382,34 +385,34 @@ const t1 = transition().duration(500);
             .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("dominant-baseline", "text-top")
             .style("font-size", "9pt");
-          },
-          update => {
-            update.select(".annotation-line")
+        },
+        update => {
+          update.select(".annotation-line")
             .attr("y1", 0)
             .attr("y2", this.height)
             .transition(t1)
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d));
 
-            update.select(".text-line")
+          update.select(".text-line")
             .transition(t1)
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
 
-            update.select("text")
+          update.select("text")
             .text(`${this.recentWindow} days`)
             .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
             .transition(t1)
             .attr("x", d => this.x(d));
-          },
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .style("opacity", 1e-5)
+          .remove()
         )
+      )
 
       this.chart
         .selectAll(".stacked-area-chart")
