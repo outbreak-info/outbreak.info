@@ -200,7 +200,7 @@
             <template v-else>
               <section id="most-recent-lineages" v-if="mostRecentLineages">
                 <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
-                <div class="d-flex align-items-start">
+                <div class="d-flex flex-wrap align-items-start">
                   <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
 
                   <!-- HEATMAP + LEGEND -->
