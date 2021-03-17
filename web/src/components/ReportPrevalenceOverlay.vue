@@ -99,7 +99,10 @@
   </div>
 
   <!-- TOOLTIPS -->
-  <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
+  <div ref="tooltip_mutations" class="tooltip-basic box-shadow" id="tooltip-mutations">
+    <h5 id="mutation" class="p-2 m-0"></h5>
+  </div>
+  <!-- <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
     <h5 id="date"></h5>
     <div class="d-flex align-items-center">
       <b id="proportion" class="font-size-2"></b>
@@ -108,7 +111,7 @@
 
     <div id="sequencing-count"></div>
     <div id="sequencing-count-rolling"></div>
-  </div>
+  </div> -->
 
   <DownloadReportData :data="data" figureRef="mutation-epi-prevalence" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
@@ -548,6 +551,36 @@ export default Vue.extend({
       selectAll(".raw-counts")
         .style("opacity", 1);
     },
+    tooltipOnMutation(d) {
+      const ttipShift = 20;
+      const ttip = select(this.$refs.tooltip_mutations);
+
+      // dim all
+      this.chart.selectAll(".mutation-trace")
+      .style("opacity", 0.3);
+
+      this.chart.select(`#${d.label.replace(/:/g, "_").replace(/\./g, "_")}`)
+      .style("opacity", 1);
+
+
+        // edit text
+        ttip.select("h5")
+        .text(d.label)
+        .style("color", this.colorScale(d.label))
+
+        // fix location
+        ttip
+          .style("left", `${event.clientX + ttipShift}px`)
+          .style("top", `${event.clientY + ttipShift}px`)
+          .style("display", "block");
+    },
+    tooltipOffMutation() {
+      this.chart.selectAll(".mutation-trace")
+      .style("opacity", 1);
+
+      select(this.$refs.tooltip_mutations)
+        .style("display", "none");
+    },
     updatePlot() {
       const t1 = transition().duration(1500);
 
@@ -651,6 +684,10 @@ export default Vue.extend({
           )
         )
 
+        this.chart
+        .selectAll(".mutation-label")
+        .on("mouseover", d => this.tooltipOnMutation(d))
+        .on("mouseout", () => this.tooltipOffMutation())
 
         const mutSelector = this.chart
           .selectAll(".mutation-trace")
@@ -661,7 +698,7 @@ export default Vue.extend({
           enter => {
             const mutGrp = enter.append("g")
               .attr("class", "mutation-trace")
-              .attr("id", d => d[this.fillVariable.replace(/\./g, "_")]);
+              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
 
             mutGrp.append("path")
               .attr("class", "confidence-interval")
@@ -679,7 +716,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .attr("id", d => d[this.fillVariable.replace(/\./g, "_")]);
+              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
 
             update.select(".confidence-interval")
               .style("fill", d => this.colorScale(d[this.fillVariable]))
