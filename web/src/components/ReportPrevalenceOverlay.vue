@@ -46,8 +46,8 @@
           </marker>
         </defs>
 
-        <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
+        <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="mutation-axis axis--x" ref="xAxis"></g>
+        <g :transform="`translate(${margin.left}, ${margin.top})`" class="mutation-axis axis--y" ref="yAxis"></g>
         <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         <g ref="brush2" class="brush" id="brush2-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
         <g id="no-data" v-if="noData">
@@ -65,7 +65,7 @@
       </svg>
 
       <!-- Histogram of sequencing counts -->
-      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts" />
+      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts" />
 
       <!-- zoom btns -->
       <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
@@ -88,8 +88,8 @@
         </div>
 
         <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
-          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xEpiAxis"></g>
-          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis epi-y axis--y" ref="yEpiAxis"></g>
+          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis axis--x" ref="xEpiAxis"></g>
+          <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis epi-y axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
           <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
         </svg>
@@ -196,6 +196,12 @@ export default Vue.extend({
       margin: {
         top: 10,
         bottom: 25,
+        left: 85,
+        right: 110
+      },
+      marginHist: {
+        top: 7,
+        bottom: 7,
         left: 85,
         right: 110
       },
@@ -774,7 +780,7 @@ export default Vue.extend({
 <style lang="scss">
 #location-report-prevalence {
     & .count-axis,
-    & .prevalence-axis {
+    & .mutation-axis {
         font-size: 16pt;
         text {
             fill: $grey-90;
@@ -783,6 +789,14 @@ export default Vue.extend({
 
     & .epi-y {
         font-size: 14pt;
+    }
+
+    & .axis--y text {
+        font-size: 12pt;
+    }
+
+    & .mutation-axis.axis--y text {
+        font-size: 16pt;
     }
 
     & .axis--x line {

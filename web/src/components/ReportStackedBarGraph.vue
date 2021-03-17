@@ -84,10 +84,10 @@ export default Vue.extend({
         right: 10
       },
       marginHist: {
-        top: 8,
-        bottom: 30,
-        left: 70,
-        right: 70
+        top: 5,
+        bottom: 10,
+        left: 55,
+        right: 55
       },
       width: 200,
       height: 500,

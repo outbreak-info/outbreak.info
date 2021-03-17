@@ -21,7 +21,7 @@
   </svg>
 
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts && x" />
+  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts && x" />
 
   <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
@@ -116,8 +116,14 @@ export default Vue.extend({
       margin: {
         top: 18,
         bottom: 30,
-        left: 50,
-        right: 50
+        left: 55,
+        right: 55
+      },
+      marginHist: {
+        top: 5,
+        bottom: 10,
+        left: 55,
+        right: 55
       },
       width: null,
       minWidth: 350,
