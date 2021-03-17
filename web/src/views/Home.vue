@@ -202,9 +202,9 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">View curated reports</h5>
+            <h5 class="text-uppercase">Curated Lineage | Mutation reports</h5>
             <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/b117_sitrep.png" alt="Outbreak.info schema" class="w-100" />
+              <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
             </div>
           </router-link>
         </div>
@@ -213,9 +213,20 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
         <div class="w-100 p-3 card">
           <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Create custom report</h5>
+            <h5 class="text-uppercase">Custom Lineage | Mutation Tracker</h5>
           </router-link>
           <CustomReportForm :minimalistic="true" />
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'LocationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Location Tracker</h5>
+            <div class="h-100 d-flex align-items-center">
+              <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
+            </div>
+          </router-link>
         </div>
       </div>
     </div>
