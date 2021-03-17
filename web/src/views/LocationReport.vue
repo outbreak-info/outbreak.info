@@ -92,11 +92,11 @@
       <!-- REPORT HEADER -->
       <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
         <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
 
             <div class="d-flex align-items-end">
-              <div class="d-flex align-items-center">
+              <div class="d-flex flex-wrap align-items-center">
                 <h1 class="m-0 font-weight-bold location-header">{{ title }}</h1>
                 <button class="btn py-1 px-2 mx-4 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-locations-modal">
                   <font-awesome-icon class="mr-2 font-size-small" :icon="['fas', 'sync']" />change location
@@ -155,8 +155,8 @@
       <div id="location-report">
         <!-- STREAM GRAPHS -->
         <div id="lineages" v-if="lineageDomain">
-          <div class="d-flex justify-content-between bg-white p-2 border-bottom mb-2">
-            <div class="d-flex flex-column align-items-start">
+          <div class="d-flex flex-wrap justify-content-between bg-white p-2 border-bottom mb-2">
+            <div class="d-flex flex-wrap flex-column align-items-start">
               <h3 class="m-0">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
               <Warning class="fa-sm my-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
               <small class="text-muted mb-2">Lineages without daily prevalence &gt; {{otherThreshFormatted}} on at least {{ndayThresh}} days in the last {{dayThresh}} are grouped into "Other"</small>
