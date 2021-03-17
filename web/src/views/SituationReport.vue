@@ -251,7 +251,7 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selected" />
+        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" />
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
