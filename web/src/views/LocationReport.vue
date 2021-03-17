@@ -224,13 +224,13 @@
                           <small class="text-light ml-2">not detected</small>
                         </div>
                         <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
-                          Mutation of Concern
+                          Variant / Mutation of Concern
                         </span>
                         <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
-                          Mutation of Interest
+                            Variant / Mutation of Interest
                         </span>
                       </div>
-                      <MutationHeatmap :data="recentHeatmap" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+                      <MutationHeatmap :data="recentHeatmap" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
                     <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
                   </div>
@@ -624,6 +624,8 @@ export default {
         this.lastUpdated = results.dateUpdated.lastUpdated;
         this.totalSequences = results.total;
         this.curatedLineages = results.curated;
+        this.voc = results.curated.filter(d => d.variantType == "Variant of Concern").map(d => d.label);
+        this.voi = results.curated.filter(d => d.variantType == "Variant of Interest").map(d => d.label);
         this.selectedLocation = results.location;
       })
 
@@ -800,6 +802,8 @@ export default {
       // data
       moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
       moc: ["E484K"],
+      voi: null,
+      voc: null,
       dateUpdated: null,
       lastUpdated: null,
       lineagesByDay: null,

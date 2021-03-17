@@ -54,6 +54,14 @@ export default Vue.extend({
       type: Array,
       default: () => []
     },
+    voi: {
+      type: Array,
+      default: () => []
+    },
+    voc: {
+      type: Array,
+      default: () => []
+    },
     bandWidth: {
       type: Number,
       default: 25
@@ -71,6 +79,16 @@ export default Vue.extend({
   watch: {
     data() {
       this.updatePlot();
+    },
+    voi() {
+      console.log(this.voi)
+      select(this.$refs.yAxisLeft)
+        .selectAll("text")
+        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
+
+      select(this.$refs.yAxisRight)
+        .selectAll("text")
+        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
     }
   },
   data() {
@@ -86,8 +104,8 @@ export default Vue.extend({
       // constants
       rx: 4,
       strokeColor: "#AAA",
-      mocColor: "#fb5759",
-      moiColor: "#feb56c",
+      concernColor: "#fb5759",
+      interestColor: "#feb56c",
       defaultColor: "#efefef",
       // scales
       x: scaleBand(),
@@ -256,7 +274,7 @@ export default Vue.extend({
         .attr("dy", "-0.75em")
         .attr("transform", "rotate(-35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? this.mocColor : this.moi.includes(d) ? this.moiColor : this.defaultColor);
+        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor);
 
       select(this.$refs.xAxisBottom)
         .selectAll("text")
@@ -265,8 +283,15 @@ export default Vue.extend({
         .attr("dy", "1.25em")
         .attr("transform", "rotate(35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? this.mocColor : this.moi.includes(d) ? this.moiColor : this.defaultColor);
+        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor);
 
+      select(this.$refs.yAxisLeft)
+        .selectAll("text")
+        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
+
+      select(this.$refs.yAxisRight)
+        .selectAll("text")
+        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
     }
   }
 })
