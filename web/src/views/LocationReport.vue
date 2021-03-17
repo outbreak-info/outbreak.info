@@ -227,7 +227,7 @@
                           Variant / Mutation of Concern
                         </span>
                         <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
-                            Variant / Mutation of Interest
+                          Variant / Mutation of Interest
                         </span>
                       </div>
                       <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
@@ -242,7 +242,7 @@
 
         <!-- TRACKED LINEAGES TABLE -->
         <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
-          <div class="d-flex align-items-center justify-content-center">
+          <div class="d-flex flex-wrap align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
@@ -296,7 +296,7 @@
           </div>
 
           <div class="d-flex flex-wrap" v-if="geoData">
-            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-33 my-3">
+            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="my-3" :class="[mediumScreen ? 'w-100' : 'w-33']">
               <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
                   <router-link :to="{name: 'MutationReport', query: { ... choro.route, loc: [loc], selected: loc }}">
@@ -312,7 +312,7 @@
                   :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
-            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData"/>
+            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData" />
           </div>
 
           <!-- no recent geo data -->
@@ -482,9 +482,6 @@ export default {
     loading() {
       return (this.locationLoading1 || this.locationLoading2 || this.locationLoading3 || this.locationLoading4 || this.locationLoading5)
     },
-    smallScreen() {
-      return (window.innerSize < 500)
-    },
     charMutThreshold() {
       return (format(".0%")(this.characteristicThreshold))
     },
@@ -609,15 +606,27 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
-    // set URL for sharing, etc.
+
     this.$nextTick(function() {
+      // resize listener
+      window.addEventListener("resize", this.setDims);
+      this.setDims;
+
+      // set URL for sharing, etc.
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
+    // intial setup
+    this.setDims();
+
     this.setupReport();
   },
   methods: {
+    setDims() {
+      this.mediumScreen = window.innerWidth < 900;
+      this.smallScreen = window.innerWidth < 500;
+    },
     setupReport() {
       this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.loc).subscribe(results => {
         this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -774,6 +783,8 @@ export default {
   },
   data() {
     return ({
+      smallScreen: false,
+      mediumScreen: false,
       currentTime: null,
       today: null,
       url: null,

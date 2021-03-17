@@ -219,7 +219,7 @@ export default {
       return (this.locationLoading1 || this.locationLoading2)
     },
     smallScreen() {
-      return (window.innerSize < 500)
+      return (window.innerWidth < 500)
     },
     selectedPango() {
       const merged = typeof(this.pango) == "string" ? [this.pango] : this.pango

@@ -438,7 +438,7 @@ export default {
   computed: {
     ...mapState("admin", ["mutationAuthors", "reportloading"]),
     smallScreen() {
-      return (window.innerSize < 500)
+      return (window.innerWidth < 500)
     },
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
