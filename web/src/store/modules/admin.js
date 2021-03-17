@@ -530,7 +530,7 @@ const state = {
       title: "Released customizable, interactive SARS-CoV-2 Lineage Situation Reports",
       description: 'Released customizable, interactive SARS-CoV-2 Lineage Situation Reports',
       route: {
-        name: "SituationReports",
+        name: "MutationReport",
         query: {
           pango: "B.1.1.7"
         }
@@ -541,9 +541,20 @@ const state = {
       title: "Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports",
       description: 'Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports',
       route: {
-        name: "SituationReports",
+        name: "MutationReport",
         query: {
-          muts: "S:N501Y"
+          muts: "S:E484K"
+        }
+      }
+    }, {
+      date: new Date("2021-03-17 0:0"),
+      category: "feature",
+      title: "Released customizable, interactive SARS-CoV-2 Location Tracker",
+      description: 'Released customizable, interactive SARS-CoV-2 Situation Reports for countries, states, and U.S. counties',
+      route: {
+        name: "LocationReport",
+        query: {
+          loc: "USA"
         }
       }
     }, {
