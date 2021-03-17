@@ -254,7 +254,7 @@
 
         <!-- TRACKED LINEAGES PREVALENCE -->
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
-          <div class="d-flex align-items-center justify-content-center mb-3">
+          <div class="d-flex flex-wrap align-items-center justify-content-center mb-3">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />

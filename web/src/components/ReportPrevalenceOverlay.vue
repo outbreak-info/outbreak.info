@@ -267,6 +267,7 @@ export default Vue.extend({
   },
   watch: {
     width: function() {
+      this.setXScale();
       this.updatePlot();
     },
     data: function() {
@@ -308,14 +309,15 @@ export default Vue.extend({
   },
   methods: {
     setDims() {
-      const mx = 0.7;
+      const mx = 0.85;
       const my = 0.4;
-      const hwRatio = 0.525;
+      const hwRatio = 0.4;
       const svgContainer = document.getElementById('location-report-prevalence');
 
       let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
       maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
       const maxHeight = window.innerHeight * my;
+
 
       const idealHeight = hwRatio * maxWidth;
       if (idealHeight <= maxHeight) {
@@ -323,17 +325,16 @@ export default Vue.extend({
         this.width = maxWidth;
       } else {
         this.height = maxHeight;
-        this.width = this.height / this.hwRatio;
+        this.width = this.height / hwRatio;
       }
 
       if (this.width < 600) {
-        this.numXTicks = 6;
+        this.numXTicks = 2;
         this.numYTicks = 4;
       } else {
         this.numXTicks = 6;
         this.numYTicks = 5;
       }
-      this.width = 1000;
     },
     zoom(evt, ref) {
       // reset domain to new coords
