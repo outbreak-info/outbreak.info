@@ -352,7 +352,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}most-recent-collection-date-by-location?${mutationVar}=${mutationString}`;
+  const url = `${apiurl}most-recent-collection-date-by-location?${mutationVar}=${mutationString}&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
