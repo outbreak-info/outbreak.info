@@ -49,7 +49,6 @@ import {
   min,
   max,
   map,
-  scaleOrdinal,
   brushX,
   event,
   transition,
@@ -67,6 +66,7 @@ export default Vue.extend({
   name: "SARSMutationMap",
   props: {
     mutationKey: String,
+    geneColorScale: Function,
     copyable: {
       type: Boolean,
       default: false
@@ -126,23 +126,7 @@ export default Vue.extend({
       deletionRef: null,
       // scales
       x: scaleLinear(),
-      xAxis: null,
-      geneColorScale: scaleOrdinal(
-        ["#bab0ab", // lt grey -- UTRs
-          "#1f77b4", // dk blue
-          "#aec7e8", // lt blue
-          "#f28e2c", // orange
-          "#e15759", // red
-          "#9edae5", // teal
-          "#59a14f", // green
-          "#edc949", // yellow
-          "#9467bd", // purple
-          "#ff9da7", // pink
-          "#8c564b", // brown
-          "#555555", // grey
-          "#bcbd22", // puce
-          "#bab0ab"
-        ]),
+      xAxis: null
     }
   },
   mounted() {
@@ -219,10 +203,6 @@ export default Vue.extend({
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, max(this.ntMapArr, d => d.end)]);
-
-      let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
-
-      this.geneColorScale = this.geneColorScale.domain(geneNames);
 
       // Update brush so it spans the whole of the area
       this.brush = brushX()

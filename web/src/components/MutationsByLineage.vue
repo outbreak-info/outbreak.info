@@ -94,6 +94,14 @@ export default Vue.extend({
       numXTicks: 4,
       bandwidth: 25,
       height: null,
+
+      // refs
+      svg: null,
+      // axes
+      x: null,
+      y: null,
+      xAxis: null,
+      yAxis: null,
       otherDataArr: []
     }
   },
