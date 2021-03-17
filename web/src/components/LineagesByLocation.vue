@@ -147,7 +147,7 @@ export default Vue.extend({
 
       this.updateBrush();
       // set initial dimensions for the plots.
-      this.setDims();
+      this.debounceSetDims();
     })
 
 
