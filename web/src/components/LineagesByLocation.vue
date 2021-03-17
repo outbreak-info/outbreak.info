@@ -113,11 +113,11 @@ export default Vue.extend({
       margin: {
         top: 18,
         bottom: 30,
-        left: 75,
-        right: 75
+        left: 50,
+        right: 50
       },
       width: null,
-      minWidth: 450,
+      minWidth: 350,
       height: 600,
       // variables
       fillVar: "pangolin_lineage",
@@ -172,10 +172,14 @@ export default Vue.extend({
         .on("dblclick", this.resetZoom);
     },
     setDims() {
-      const svgContainer = document.getElementById('streamgraph');
+      const svgContainer = document.getElementById('most-recent-lineages');
       let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
-      let maxWidth = window.innerWidth;
-      this.width = containerWidth < this.minWidth || containerWidth > maxWidth ? maxWidth * 0.95 : containerWidth * 1;
+      const pageContainer = document.getElementById('location-report')
+      let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
+      const idealWidth = (maxWidth - containerWidth)*0.95;
+      this.width = idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
+
+      this.numXTicks = this.width < 500 ? 2 : 5;
     },
     setupPlot() {
       this.svg = select(this.$refs.svg);
@@ -446,6 +450,9 @@ export default Vue.extend({
         font-size: 16pt;
     }
     .axis--y text {
+        font-size: 9pt;
+    }
+    .stream-axis.axis--y text {
         font-size: 14pt;
     }
 }
