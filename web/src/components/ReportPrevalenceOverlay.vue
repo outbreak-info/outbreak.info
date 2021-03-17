@@ -14,7 +14,17 @@
     <!-- SVGs -->
     <div class="d-flex flex-column align-items-start">
       <!-- TIME TRACE -->
-      <h5 class="p-0 m-0">{{title}}</h5>
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="p-0 m-0">{{title}}</h5>
+        <div>
+          <label class="b-contain m-auto pr-3">
+            <small>show confidence intervals</small>
+            <input type="checkbox" v-model="showCI" :value="showCI" @change="hideCIs"/>
+            <div class="b-input"></div>
+          </label>
+        </div>
+      </div>
+
       <div class="d-flex">
         <svg width="15" height="15" class="mr-2">
           <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
@@ -167,7 +177,7 @@ export default Vue.extend({
   },
   computed: {
     noData() {
-      return(this.data.flatMap(d => d.data).length === 0)
+      return (this.data.flatMap(d => d.data).length === 0)
     },
     title() {
       return (this.locationName == "Worldwide" ? `Mutation and case prevalence over time worldwide` : `Mutation and case prevalence over time in ${this.locationName}`)
@@ -190,7 +200,7 @@ export default Vue.extend({
       lengthThreshold: 1,
       showDetected: null,
       detectedDisplayThresh: 50,
-      CIColor: "#df4ab7",
+      showCI: true,
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
       xVariable: "dateTime",
@@ -492,6 +502,11 @@ export default Vue.extend({
       select(this.$refs.yAxis).call(this.yAxis);
       select(this.$refs.yEpiAxis).call(this.yEpiAxis);
     },
+    hideCIs() {
+      this.chart
+        .selectAll(".confidence-interval")
+        .classed("hidden", !this.showCI);
+    },
     tooltipOn() {
       // const ttipShift = 20;
       //
@@ -651,8 +666,9 @@ export default Vue.extend({
             mutGrp.append("path")
               .attr("class", "confidence-interval")
               .style("fill", d => this.colorScale(d[this.fillVariable]))
-              .style("fill-opacity", 0.3)
-              .attr("d", d => this.area(d.data));
+              .style("fill-opacity", 0.2)
+              .attr("d", d => this.area(d.data))
+              .classed("hidden", !this.showCI);
 
             mutGrp.append("path")
               .attr("class", "prevalence-line")
@@ -667,8 +683,8 @@ export default Vue.extend({
 
             update.select(".confidence-interval")
               .style("fill", d => this.colorScale(d[this.fillVariable]))
-              .style("fill-opacity", 0.3)
-              .attr("d", d => this.area(d.data));
+              .attr("d", d => this.area(d.data))
+              .classed("hidden", !this.showCI);
 
             update.select(".prevalence-line")
               .style("stroke", d => this.colorScale(d[this.fillVariable]))
