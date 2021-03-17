@@ -155,7 +155,7 @@
       <div id="location-report">
         <!-- STREAM GRAPHS -->
         <div id="lineages" v-if="lineageDomain">
-          <div class="d-flex w-100 justify-content-between bg-white p-2 border-bottom mb-2">
+          <div class="d-flex w-100 justify-content-between align-items-center bg-white p-2 border-bottom mb-2">
             <div class="d-flex flex-wrap flex-column align-items-start">
               <h3 class="m-0">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
               <Warning class="fa-sm my-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -163,7 +163,7 @@
               <HorizontalCategoricalLegend :values="lineageDomain" :colorScale="colorScale" />
             </div>
 
-            <div class="d-flex flex-wrap align-items-center">
+            <div class="d-flex flex-column flex-wrap align-items-center">
               <div class="d-flex align-items-center flex-shrink-0">
                 <small>Show data from last</small>
                 <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
@@ -231,7 +231,7 @@
                       </div>
                       <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
-                    <DownloadReportData class="my-2" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
+                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
                   </div>
                 </div>
               </section>
