@@ -90,7 +90,7 @@ export default Vue.extend({
         right: 70
       },
       width: 200,
-      height: 600,
+      height: 500,
       legendHeight: null,
       // variables
       fillVar: "key",

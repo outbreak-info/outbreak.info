@@ -1,12 +1,15 @@
 <template>
 <div id="streamgraph">
-  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+  <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
+    <h5 class="m-0">Lineage prevalence over time</h5>
+    <div class="d-flex justify-content-end">
     <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
       <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
     </button>
     <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
       <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
     </button>
+  </div>
   </div>
 
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
@@ -118,7 +121,7 @@ export default Vue.extend({
       },
       width: null,
       minWidth: 350,
-      height: 600,
+      height: 500,
       // variables
       fillVar: "pangolin_lineage",
       // axes

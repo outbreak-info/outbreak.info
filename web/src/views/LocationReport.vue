@@ -178,7 +178,6 @@
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
-              <h5 class="">Lineage prevalence over time</h5>
               <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
             </section>
 
@@ -204,7 +203,7 @@
                   <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
 
                   <!-- HEATMAP + LEGEND -->
-                  <div class="d-flex flex-column mt-2" v-if="recentHeatmap && recentHeatmap.length">
+                  <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
                     <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
                     <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
                     <div class="d-flex flex-column align-items-center bg-dark">
@@ -232,7 +231,7 @@
                       </div>
                       <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
-                    <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
+                    <DownloadReportData class="my-2" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
                   </div>
                 </div>
               </section>
