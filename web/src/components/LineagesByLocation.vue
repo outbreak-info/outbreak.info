@@ -1,12 +1,15 @@
 <template>
-<div>
-  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+<div id="streamgraph">
+  <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
+    <h5 class="m-0">Lineage prevalence over time</h5>
+    <div class="d-flex justify-content-end">
     <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
       <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
     </button>
     <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
       <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
     </button>
+  </div>
   </div>
 
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
@@ -100,6 +103,7 @@ export default Vue.extend({
   },
   watch: {
     width: function() {
+      this.updateBrush();
       this.updatePlot();
     },
     data: function() {
@@ -112,11 +116,12 @@ export default Vue.extend({
       margin: {
         top: 18,
         bottom: 30,
-        left: 75,
-        right: 75
+        left: 50,
+        right: 50
       },
-      width: 800,
-      height: 600,
+      width: null,
+      minWidth: 350,
+      height: 500,
       // variables
       fillVar: "pangolin_lineage",
       // axes
@@ -143,6 +148,21 @@ export default Vue.extend({
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
 
+      this.updateBrush();
+      // set initial dimensions for the plots.
+      this.debounceSetDims();
+    })
+
+
+    this.setupPlot();
+    this.updatePlot();
+  },
+  created: function() {
+    this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceZoom = this.debounce(this.zoom, 150);
+  },
+  methods: {
+    updateBrush() {
       // Update brush so it spans the whole of the area
       this.brush = brushX()
         .extent([
@@ -154,19 +174,17 @@ export default Vue.extend({
       this.brushRef
         .call(this.brush)
         .on("dblclick", this.resetZoom);
-    })
+    },
+    setDims() {
+      const svgContainer = document.getElementById('most-recent-lineages');
+      let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
+      const pageContainer = document.getElementById('location-report')
+      let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
+      const idealWidth = (maxWidth - containerWidth)*0.95;
+      this.width = idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
 
-    // set initial dimensions for the plots.
-    this.setDims();
-    this.setupPlot();
-    this.updatePlot();
-  },
-  created: function() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
-    this.debounceZoom = this.debounce(this.zoom, 150);
-  },
-  methods: {
-    setDims() {},
+      this.numXTicks = this.width < 500 ? 2 : 5;
+    },
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.legend = select(this.$refs.legend);
@@ -181,7 +199,8 @@ export default Vue.extend({
     updateScales() {
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d.date_time)));
+        .domain(extent(this.data.map(d => d.date_time)))
+        .clamp(true);
 
       this.y = this.y
         // .range([0, this.height - this.margin.top - this.margin.bottom])
@@ -274,7 +293,8 @@ export default Vue.extend({
 
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax]);
+          .domain([newMin, newMax])
+          .clamp(true);
 
         // reset the axis
         this.xAxis = axisBottom(this.x)
@@ -335,19 +355,19 @@ export default Vue.extend({
           )
         )
 
-        // annotation for the most recent date
-        const recentSelector = this.chart
+      // annotation for the most recent date
+      const recentSelector = this.chart
         .selectAll(".recent-date-annotation")
         .data([this.recentMin]);
 
-const t1 = transition().duration(500);
+      const t1 = transition().duration(500);
 
-        recentSelector.join(
-          enter => {
-            const grp = enter.append("g")
+      recentSelector.join(
+        enter => {
+          const grp = enter.append("g")
             .attr("class", "recent-date-annotation");
 
-            grp.append("line")
+          grp.append("line")
             .attr("class", "annotation-line")
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
@@ -356,7 +376,7 @@ const t1 = transition().duration(500);
             .style("stroke", "white")
             .style("stroke-dasharray", "6,6");
 
-            grp.append("line")
+          grp.append("line")
             .attr("class", "text-line")
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
@@ -364,7 +384,7 @@ const t1 = transition().duration(500);
             .attr("y2", -5)
             .style("stroke", "#2c3e50")
 
-            grp.append("text")
+          grp.append("text")
             .attr("x", d => this.x(d))
             .attr("y", 0)
             .attr("dy", -8)
@@ -373,34 +393,34 @@ const t1 = transition().duration(500);
             .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("dominant-baseline", "text-top")
             .style("font-size", "9pt");
-          },
-          update => {
-            update.select(".annotation-line")
+        },
+        update => {
+          update.select(".annotation-line")
             .attr("y1", 0)
             .attr("y2", this.height)
             .transition(t1)
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d));
 
-            update.select(".text-line")
+          update.select(".text-line")
             .transition(t1)
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
 
-            update.select("text")
+          update.select("text")
             .text(`${this.recentWindow} days`)
             .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
             .transition(t1)
             .attr("x", d => this.x(d));
-          },
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .style("opacity", 1e-5)
+          .remove()
         )
+      )
 
       this.chart
         .selectAll(".stacked-area-chart")
@@ -434,6 +454,9 @@ const t1 = transition().duration(500);
         font-size: 16pt;
     }
     .axis--y text {
+        font-size: 9pt;
+    }
+    .stream-axis.axis--y text {
         font-size: 14pt;
     }
 }

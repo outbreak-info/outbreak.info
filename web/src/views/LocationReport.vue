@@ -92,11 +92,11 @@
       <!-- REPORT HEADER -->
       <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
         <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
 
             <div class="d-flex align-items-end">
-              <div class="d-flex align-items-center">
+              <div class="d-flex flex-wrap align-items-center">
                 <h1 class="m-0 font-weight-bold location-header">{{ title }}</h1>
                 <button class="btn py-1 px-2 mx-4 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-locations-modal">
                   <font-awesome-icon class="mr-2 font-size-small" :icon="['fas', 'sync']" />change location
@@ -155,8 +155,8 @@
       <div id="location-report">
         <!-- STREAM GRAPHS -->
         <div id="lineages" v-if="lineageDomain">
-          <div class="d-flex justify-content-between bg-white p-2 border-bottom mb-2">
-            <div class="d-flex flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between bg-white p-2 border-bottom mb-2">
+            <div class="d-flex flex-wrap flex-column align-items-start">
               <h3 class="m-0">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
               <Warning class="fa-sm my-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
               <small class="text-muted mb-2">Lineages without daily prevalence &gt; {{otherThreshFormatted}} on at least {{ndayThresh}} days in the last {{dayThresh}} are grouped into "Other"</small>
@@ -177,8 +177,7 @@
           </div>
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
-            <section id="lineages-over-time" class="" v-if="lineagesByDay">
-              <h5 class="">Lineage prevalence over time</h5>
+            <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
               <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
             </section>
 
@@ -195,16 +194,16 @@
                   <small>days</small>
                 </div>
               </div>
-
             </div>
+
             <template v-else>
-              <section id="most-recent-lineages" v-if="mostRecentLineages">
+              <section id="most-recent-lineages" :class="{'flex-shrink-0': !mediumScreen}" v-if="mostRecentLineages">
                 <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
-                <div class="d-flex align-items-start">
+                <div class="d-flex align-items-start" :class="{'flex-wrap' : mediumScreen}">
                   <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
 
                   <!-- HEATMAP + LEGEND -->
-                  <div class="d-flex flex-column ml-3 mt-2" v-if="recentHeatmap && recentHeatmap.length">
+                  <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
                     <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
                     <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
                     <div class="d-flex flex-column align-items-center bg-dark">
@@ -227,12 +226,12 @@
                           Variant / Mutation of Concern
                         </span>
                         <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
-                            Variant / Mutation of Interest
+                          Variant / Mutation of Interest
                         </span>
                       </div>
                       <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
-                    <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
+                    <DownloadReportData class="my-2" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
                   </div>
                 </div>
               </section>
@@ -242,7 +241,7 @@
 
         <!-- TRACKED LINEAGES TABLE -->
         <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
-          <div class="d-flex align-items-center justify-content-center">
+          <div class="d-flex flex-wrap align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
@@ -254,7 +253,7 @@
 
         <!-- TRACKED LINEAGES PREVALENCE -->
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
-          <div class="d-flex align-items-center justify-content-center mb-3">
+          <div class="d-flex flex-wrap align-items-center justify-content-center mb-3">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
             <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
@@ -296,7 +295,7 @@
           </div>
 
           <div class="d-flex flex-wrap" v-if="geoData">
-            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="w-33 my-3">
+            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="my-3" :class="[mediumScreen ? 'w-100' : 'w-33']">
               <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
                   <router-link :to="{name: 'MutationReport', query: { ... choro.route, loc: [loc], selected: loc }}">
@@ -312,7 +311,7 @@
                   :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
-            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData"/>
+            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData" />
           </div>
 
           <!-- no recent geo data -->
@@ -482,9 +481,6 @@ export default {
     loading() {
       return (this.locationLoading1 || this.locationLoading2 || this.locationLoading3 || this.locationLoading4 || this.locationLoading5)
     },
-    smallScreen() {
-      return (window.innerSize < 500)
-    },
     charMutThreshold() {
       return (format(".0%")(this.characteristicThreshold))
     },
@@ -609,15 +605,27 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
-    // set URL for sharing, etc.
+
     this.$nextTick(function() {
+      // resize listener
+      window.addEventListener("resize", this.setDims);
+      this.setDims;
+
+      // set URL for sharing, etc.
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
 
+    // intial setup
+    this.setDims();
+
     this.setupReport();
   },
   methods: {
+    setDims() {
+      this.mediumScreen = window.innerWidth < 900;
+      this.smallScreen = window.innerWidth < 500;
+    },
     setupReport() {
       this.basicSubscription = getBasicLocationReportData(this.$genomicsurl, this.loc).subscribe(results => {
         this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -774,6 +782,8 @@ export default {
   },
   data() {
     return ({
+      smallScreen: false,
+      mediumScreen: false,
       currentTime: null,
       today: null,
       url: null,

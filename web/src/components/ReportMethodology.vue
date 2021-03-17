@@ -37,6 +37,9 @@
           Sequences with lengths &le; 20,000 base pairs were removed from the analysis.
         </li>
         <li>
+          Sequences with more than 5,000 nucleotide substitutions.
+        </li>
+        <li>
           Sequences with a contiguous deletion spanning > 500 base pairs were removed from the analysis.
         </li>
       </ul>

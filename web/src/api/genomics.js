@@ -1137,7 +1137,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
 
 
         characteristic.forEach(d => {
-          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
           d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
             d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
           d["isMOI"] = mutationsOfInterest.includes(d.mutation);

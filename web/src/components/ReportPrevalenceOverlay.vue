@@ -19,7 +19,7 @@
         <div>
           <label class="b-contain m-auto pr-3">
             <small>show confidence intervals</small>
-            <input type="checkbox" v-model="showCI" :value="showCI" @change="hideCIs"/>
+            <input type="checkbox" v-model="showCI" :value="showCI" @change="hideCIs" />
             <div class="b-input"></div>
           </label>
         </div>
@@ -99,7 +99,10 @@
   </div>
 
   <!-- TOOLTIPS -->
-  <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
+  <div ref="tooltip_mutations" class="tooltip-basic box-shadow" id="tooltip-mutations">
+    <h5 id="mutation" class="p-2 m-0"></h5>
+  </div>
+  <!-- <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
     <h5 id="date"></h5>
     <div class="d-flex align-items-center">
       <b id="proportion" class="font-size-2"></b>
@@ -108,7 +111,7 @@
 
     <div id="sequencing-count"></div>
     <div id="sequencing-count-rolling"></div>
-  </div>
+  </div> -->
 
   <DownloadReportData :data="data" figureRef="mutation-epi-prevalence" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
@@ -264,6 +267,8 @@ export default Vue.extend({
   },
   watch: {
     width: function() {
+      this.setXScale();
+      this.updateBrush();
       this.updatePlot();
     },
     data: function() {
@@ -277,6 +282,20 @@ export default Vue.extend({
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
 
+      this.updateBrush();
+    })
+
+    // set initial dimensions for the plots.
+    this.setDims();
+    this.setupPlot();
+    this.updatePlot();
+  },
+  created: function() {
+    this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceZoom = this.debounce(this.zoom, 150);
+  },
+  methods: {
+    updateBrush() {
       // Update brush so it spans the whole of the area
       this.brush = brushX()
         .extent([
@@ -292,27 +311,17 @@ export default Vue.extend({
       this.brushRef2
         .call(this.brush)
         .on("dblclick", this.resetZoom);
-    })
-
-    // set initial dimensions for the plots.
-    this.setDims();
-    this.setupPlot();
-    this.updatePlot();
-  },
-  created: function() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
-    this.debounceZoom = this.debounce(this.zoom, 150);
-  },
-  methods: {
+    },
     setDims() {
-      const mx = 0.7;
+      const mx = 0.85;
       const my = 0.4;
-      const hwRatio = 0.525;
+      const hwRatio = 0.4;
       const svgContainer = document.getElementById('location-report-prevalence');
 
       let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
       maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
       const maxHeight = window.innerHeight * my;
+
 
       const idealHeight = hwRatio * maxWidth;
       if (idealHeight <= maxHeight) {
@@ -320,17 +329,16 @@ export default Vue.extend({
         this.width = maxWidth;
       } else {
         this.height = maxHeight;
-        this.width = this.height / this.hwRatio;
+        this.width = this.height / hwRatio;
       }
 
       if (this.width < 600) {
-        this.numXTicks = 6;
+        this.numXTicks = 2;
         this.numYTicks = 4;
       } else {
         this.numXTicks = 6;
         this.numYTicks = 5;
       }
-      this.width = 1000;
     },
     zoom(evt, ref) {
       // reset domain to new coords
@@ -548,6 +556,36 @@ export default Vue.extend({
       selectAll(".raw-counts")
         .style("opacity", 1);
     },
+    tooltipOnMutation(d) {
+      const ttipShift = 20;
+      const ttip = select(this.$refs.tooltip_mutations);
+
+      // dim all
+      this.chart.selectAll(".mutation-trace")
+        .style("opacity", 0.3);
+
+      this.chart.select(`#${d.label.replace(/:/g, "_").replace(/\./g, "_")}`)
+        .style("opacity", 1);
+
+
+      // edit text
+      ttip.select("h5")
+        .text(d.label)
+        .style("color", this.colorScale(d.label))
+
+      // fix location
+      ttip
+        .style("left", `${event.clientX + ttipShift}px`)
+        .style("top", `${event.clientY + ttipShift}px`)
+        .style("display", "block");
+    },
+    tooltipOffMutation() {
+      this.chart.selectAll(".mutation-trace")
+        .style("opacity", 1);
+
+      select(this.$refs.tooltip_mutations)
+        .style("display", "none");
+    },
     updatePlot() {
       const t1 = transition().duration(1500);
 
@@ -651,6 +689,10 @@ export default Vue.extend({
           )
         )
 
+        this.chart
+          .selectAll(".mutation-label")
+          .on("mouseover", d => this.tooltipOnMutation(d))
+          .on("mouseout", () => this.tooltipOffMutation())
 
         const mutSelector = this.chart
           .selectAll(".mutation-trace")
@@ -661,7 +703,7 @@ export default Vue.extend({
           enter => {
             const mutGrp = enter.append("g")
               .attr("class", "mutation-trace")
-              .attr("id", d => d[this.fillVariable.replace(/\./g, "_")]);
+              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
 
             mutGrp.append("path")
               .attr("class", "confidence-interval")
@@ -679,7 +721,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .attr("id", d => d[this.fillVariable.replace(/\./g, "_")]);
+              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
 
             update.select(".confidence-interval")
               .style("fill", d => this.colorScale(d[this.fillVariable]))
