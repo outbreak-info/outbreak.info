@@ -72,6 +72,8 @@ export default Vue.extend({
   name: "MutationHeatmap",
   props: {
     data: Array,
+    gene: String,
+    locationID: String,
     moc: {
       type: Array,
       default: () => []
@@ -276,6 +278,26 @@ export default Vue.extend({
       select(this.$refs.tooltip_heatmap)
         .style("display", "none");
     },
+    route2Lineage(pango) {
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          loc: this.locationID,
+          pango: pango,
+          selected: this.locationID
+        }
+      })
+    },
+    route2Mutation(mut) {
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          loc: this.locationID,
+          muts: `${this.gene}:${mut}`,
+          selected: this.locationID
+        }
+      })
+    },
     drawPlot() {
 
       // base: no values
@@ -366,7 +388,10 @@ export default Vue.extend({
         .attr("dy", "-0.75em")
         .attr("transform", "rotate(-35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor);
+        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
+        .classed("hover-underline", "true")
+        .classed("pointer", "true")
+        .on("click", d => this.route2Mutation(d));
 
       select(this.$refs.xAxisBottom)
         .selectAll("text")
@@ -375,15 +400,25 @@ export default Vue.extend({
         .attr("dy", "1.25em")
         .attr("transform", "rotate(35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor);
+        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
+        .classed("hover-underline", "true")
+        .classed("pointer", "true")
+        .on("click", d => this.route2Mutation(d));
 
       select(this.$refs.yAxisLeft)
         .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
+        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
+        .classed("hover-underline", "true")
+        .classed("pointer", "true")
+        .on("click", d => this.route2Lineage(d));
 
       select(this.$refs.yAxisRight)
         .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
+        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
+        .classed("hover-underline", "true")
+        .classed("pointer", "true")
+        .on("click", d => this.route2Lineage(d));
+
 
     }
   }

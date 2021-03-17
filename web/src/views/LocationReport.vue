@@ -230,7 +230,7 @@
                             Variant / Mutation of Interest
                         </span>
                       </div>
-                      <MutationHeatmap :data="recentHeatmap" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+                      <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
                     <DownloadReportData :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
                   </div>
