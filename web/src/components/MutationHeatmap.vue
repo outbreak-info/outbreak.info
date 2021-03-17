@@ -1,17 +1,41 @@
 <template>
-<svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap">
-  <defs>
-    <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
-    </pattern>
-  </defs>
-  <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
-  <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
-  <g ref="yAxisLeft" class="axis axis--y" :transform="`translate(${this.margin.left - 5}, ${this.margin.top})`"></g>
-  <g ref="yAxisRight" class="axis axis--y" :transform="`translate(${this.margin.left + this.width + 5}, ${this.margin.top})`"></g>
-  <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
-  <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
-</svg>
+<div>
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap">
+    <defs>
+      <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
+      </pattern>
+    </defs>
+    <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
+    <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
+    <g ref="yAxisLeft" class="axis axis--y" :transform="`translate(${this.margin.left - 5}, ${this.margin.top})`"></g>
+    <g ref="yAxisRight" class="axis axis--y" :transform="`translate(${this.margin.left + this.width + 5}, ${this.margin.top})`"></g>
+    <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
+    <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
+  </svg>
+
+  <!-- TOOLTIPS -->
+  <div ref="tooltip_heatmap" class="tooltip-basic tooltip-dark box-shadow" id="tooltip-prevalence">
+    <div class="d-flex border-bottom align-items-center">
+      <div class="d-flex">
+        <h5 id="mutation"></h5>
+        <div class="fa-sm font-weight-bold" id="mutationOfInterest"></div>
+      </div>
+      <span class="mx-2 text-muted">in</span>
+      <div class="d-flex">
+        <h5 id="lineage"></h5>
+        <div class="fa-sm font-weight-bold" id="lineageOfInterest"></div>
+      </div>
+    </div>
+    <div class="d-flex align-items-center pt-2" id="prevalence">
+      <div id="value" class="fa-lg"></div> <small class="ml-2 text-muted">of all sequences</small>
+    </div>
+    <div id="not-detected" class="text-muted">
+      not detected
+    </div>
+
+  </div>
+</div>
 </template>
 
 
@@ -36,7 +60,9 @@ import {
   axisBottom,
   axisTop,
   transition,
-  max
+  max,
+  format,
+  event
 } from "d3";
 
 
@@ -79,16 +105,6 @@ export default Vue.extend({
   watch: {
     data() {
       this.updatePlot();
-    },
-    voi() {
-      console.log(this.voi)
-      select(this.$refs.yAxisLeft)
-        .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
-
-      select(this.$refs.yAxisRight)
-        .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
     }
   },
   data() {
@@ -106,6 +122,8 @@ export default Vue.extend({
       strokeColor: "#AAA",
       concernColor: "#fb5759",
       interestColor: "#feb56c",
+      concernColorDark: "#e15759",
+      interestColorDark: "#f28e2c",
       defaultColor: "#efefef",
       // scales
       x: scaleBand(),
@@ -176,6 +194,7 @@ export default Vue.extend({
           const obj = {};
           obj[this.xVar] = x;
           obj[this.yVar] = y;
+          obj["id"] = `base_${x}-${y.replace(/\./g, "_")}`;
           return (obj)
         })
       }).flatMap(d => d)
@@ -191,6 +210,72 @@ export default Vue.extend({
         this.drawPlot();
       }
     },
+    tooltipOn(d) {
+      const ttipShift = 10;
+      const ttip = select(this.$refs.tooltip_heatmap);
+
+      // turn off the rest
+      this.svg
+        .selectAll("rect")
+        .style("fill-opacity", 0.2);
+
+      this.svg.select(`#${d.id}`)
+        .style("fill-opacity", 1)
+        .style("stroke-width", 1.5)
+
+      // update text
+      ttip
+        .select("#lineage")
+        .text(d.pangolin_lineage)
+
+      ttip
+        .select("#lineageOfInterest")
+        .html(this.voc.includes(d.pangolin_lineage) ? "<sup>*</sup> VOC" : this.voi.includes(d.pangolin_lineage) ? "<sup>*</sup> VOI" : "")
+        .style("color", this.voc.includes(d.pangolin_lineage) ? this.concernColorDark : this.voi.includes(d.pangolin_lineage) ? this.interestColorDark : this.defaultColor)
+
+      ttip
+        .select("#mutation")
+        .text(d.mutation_simplified)
+
+      ttip
+        .select("#mutationOfInterest")
+        .html(this.moc.includes(d.mutation_simplified) ? "<sup>*</sup> MOC" : this.moi.includes(d.mutation_simplified) ? "<sup>*</sup> MOI" : "")
+        .style("color", this.moc.includes(d.mutation_simplified) ? this.concernColorDark : this.moi.includes(d.mutation_simplified) ? this.interestColorDark : this.defaultColor)
+
+      if (d.prevalence) {
+        ttip
+          .select("#value")
+          .text(d.prevalence < 0.0005 ? "< 0.1%" : format(".1%")(d.prevalence));
+
+        ttip
+          .select("#prevalence")
+          .classed("hidden", false)
+
+        ttip
+          .select("#not-detected")
+          .classed("hidden", true);
+      } else {
+        ttip
+          .select("#prevalence")
+          .classed("hidden", true)
+        ttip
+          .select("#not-detected")
+          .classed("hidden", false)
+      }
+      // fix location
+      ttip
+        .style("left", `${event.clientX + ttipShift}px`)
+        .style("top", `${event.clientY + ttipShift}px`)
+        .style("display", "block");
+    },
+    tooltipOff() {
+      this.svg.selectAll("rect")
+        .style("stroke-width", 0.5)
+        .style("fill-opacity", 1);
+
+      select(this.$refs.tooltip_heatmap)
+        .style("display", "none");
+    },
     drawPlot() {
 
       // base: no values
@@ -203,6 +288,7 @@ export default Vue.extend({
           enter
             .append("rect")
             .attr("class", "heatmap-base")
+            .attr("id", d => d.id)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
@@ -266,7 +352,13 @@ export default Vue.extend({
         )
       )
 
-      // rotate axes :(
+      // turn on tooltips
+      this.svg
+        .selectAll("rect")
+        .on("mousemove", d => this.tooltipOn(d))
+        .on("mouseleave", () => this.tooltipOff());
+
+      // rotate and color axes :(
       select(this.$refs.xAxisTop)
         .selectAll("text")
         .attr("y", 0)
@@ -292,6 +384,7 @@ export default Vue.extend({
       select(this.$refs.yAxisRight)
         .selectAll("text")
         .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor);
+
     }
   }
 })
@@ -324,5 +417,8 @@ export default Vue.extend({
 }
 .mutation-heatmap .axis line {
     stroke: #efefef;
+}
+.tooltip-dark {
+    background: #ffffffeb !important;
 }
 </style>
