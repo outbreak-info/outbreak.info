@@ -146,10 +146,11 @@ export default Vue.extend({
       window.addEventListener("resize", this.debounceSetDims);
 
       this.updateBrush();
+      // set initial dimensions for the plots.
+      this.setDims();
     })
 
-    // set initial dimensions for the plots.
-    this.setDims();
+
     this.setupPlot();
     this.updatePlot();
   },
