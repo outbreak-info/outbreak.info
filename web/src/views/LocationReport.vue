@@ -155,7 +155,7 @@
       <div id="location-report">
         <!-- STREAM GRAPHS -->
         <div id="lineages" v-if="lineageDomain">
-          <div class="d-flex flex-wrap justify-content-between bg-white p-2 border-bottom mb-2">
+          <div class="d-flex w-100 justify-content-between bg-white p-2 border-bottom mb-2">
             <div class="d-flex flex-wrap flex-column align-items-start">
               <h3 class="m-0">Lineage prevalence <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
               <Warning class="fa-sm my-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -177,7 +177,7 @@
           </div>
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
-            <section id="lineages-over-time" class="" v-if="lineagesByDay">
+            <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
               <h5 class="">Lineage prevalence over time</h5>
               <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
             </section>
@@ -195,16 +195,16 @@
                   <small>days</small>
                 </div>
               </div>
-
             </div>
+
             <template v-else>
-              <section id="most-recent-lineages" v-if="mostRecentLineages">
+              <section id="most-recent-lineages" :class="{'flex-shrink-0': !mediumScreen}" v-if="mostRecentLineages">
                 <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
-                <div class="d-flex flex-wrap align-items-start">
+                <div class="d-flex align-items-start" :class="{'flex-wrap' : mediumScreen}">
                   <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
 
                   <!-- HEATMAP + LEGEND -->
-                  <div class="d-flex flex-column ml-3 mt-2" v-if="recentHeatmap && recentHeatmap.length">
+                  <div class="d-flex flex-column mt-2" v-if="recentHeatmap && recentHeatmap.length">
                     <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
                     <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
                     <div class="d-flex flex-column align-items-center bg-dark">

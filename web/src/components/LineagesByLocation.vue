@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="streamgraph">
   <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
     <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
       <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
@@ -115,7 +115,8 @@ export default Vue.extend({
         left: 75,
         right: 75
       },
-      width: 800,
+      width: null,
+      minWidth: 450,
       height: 600,
       // variables
       fillVar: "pangolin_lineage",
@@ -166,7 +167,15 @@ export default Vue.extend({
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
   methods: {
-    setDims() {},
+    setDims() {
+      const svgContainer = document.getElementById('streamgraph');
+      let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
+      let maxWidth = window.innerWidth;
+      this.width = containerWidth < this.minWidth || containerWidth > maxWidth ? maxWidth * 0.95 : containerWidth * 1;
+      console.log(containerWidth)
+      console.log(maxWidth)
+      console.log(this.width)
+    },
     setupPlot() {
       this.svg = select(this.$refs.svg);
       this.legend = select(this.$refs.legend);
