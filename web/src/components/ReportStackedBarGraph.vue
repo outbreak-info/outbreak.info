@@ -28,7 +28,8 @@ import {
   axisBottom,
   area,
   stack,
-  stackOrderDescending,
+  stackOrderAscending,
+  // stackOrderDescending,
   forceCollide,
   forceY,
   forceSimulation,
@@ -130,9 +131,9 @@ export default Vue.extend({
     },
     updateScales() {
       this.y = this.y
-        .range([0, this.height - this.margin.top - this.margin.bottom])
+        .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0, 1]);
+        .domain([0,1]);
 
       this.lineages = Object.keys(this.data[0]);
 
@@ -143,8 +144,8 @@ export default Vue.extend({
       // stacking
       this.series = stack()
         .keys(this.lineages)
-        .order(stackOrderDescending)
-      // .order(stackOrderAscending)
+        // .order(stackOrderDescending)
+      .order(stackOrderAscending)
       // .order(stackOrderAppearance)
       // .order(stackOrderNone)
       // .order(stackOrderReverse)
@@ -208,8 +209,8 @@ export default Vue.extend({
           barGrp.append("rect")
             .attr("x", 0)
             .attr("width", this.rectWidth)
-            .attr("y", d => this.y(d[0][0]))
-            .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
+            .attr("y", d => this.y(d[0][1]))
+            .attr("height", d => this.y(d[0][0]) - this.y(d[0][1]))
             .style("fill", d => this.colorScale(d.key))
 
           const tspan = barGrp.append("text")
@@ -239,8 +240,8 @@ export default Vue.extend({
             .attr("id", d => d.key.replace(/\./g, "-"))
 
           update.select("rect")
-            .attr("y", d => this.y(d[0][0]))
-            .attr("height", d => this.y(d[0][1]) - this.y(d[0][0]))
+            .attr("y", d => this.y(d[0][1]))
+            .attr("height", d => this.y(d[0][0]) - this.y(d[0][1]))
             .style("fill", d => this.colorScale(d.key))
 
 
