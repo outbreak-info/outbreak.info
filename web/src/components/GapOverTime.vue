@@ -1,13 +1,12 @@
 <template>
-<div class="d-flex flex-column">
-  <h5 class="text-muted">Difference between sample collection and sequence submission in days</h5>
-
-  <svg :width="width" :height="height">
-    <g ref="hist" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
-  </svg>
-</div>
+  <div class="d-flex flex-column">
+    <h5 class="text-muted">Weekly median difference between sample collection and sequence submission in days</h5>
+    <svg :width="width" :height="height">
+      <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+      <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
+      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
+    </svg>
+  </div>
 </template>
 
 <script>
@@ -17,6 +16,7 @@ import {
   select,
   selectAll,
   scaleLinear,
+  scaleTime,
   axisBottom,
   axisLeft,
   axisRight,
@@ -26,7 +26,6 @@ import {
   max,
   format,
   line,
-  area,
   transition,
   timeDay
 } from "d3";
@@ -37,7 +36,7 @@ export default Vue.extend({
     data: Array,
     setWidth: {
       type: Number,
-      default: 500
+      default: 1000
     },
     height: {
       type: Number,
@@ -67,23 +66,21 @@ export default Vue.extend({
   data() {
     return ({
       // dims
-      width: 500,
-      // height: 400,
-      // margin: {
-      //   top: 10,
-      //   bottom: 30,
-      //   left: 10,
-      //   right: 10
-      // },
+      width: 1000,
       // axes
       x: null,
       y: null,
       xAxis: null,
       yAxis: null,
-      numXTicks: 5,
+      numXTicks: 10,
       numYTicks: 5,
+      // variables
+      xVariable: "maxDate",
+      yVariable: "median",
       // refs
-      chart: null
+      chart: null,
+      // methods
+      line: null
     })
   },
   methods: {
@@ -101,7 +98,12 @@ export default Vue.extend({
         this.setDims();
       });
 
-      this.chart = select(this.$refs.hist);
+      this.chart = select(this.$refs.chart);
+
+      // line method
+      this.line = line()
+      .x(d => this.x(d[this.xVariable]))
+      .y(d => this.y(d[this.yVariable]));
     },
     setDims() {
       if (this.setWidth) {
@@ -109,14 +111,11 @@ export default Vue.extend({
       }
     },
     updateAxes() {
-      const minVal = min(this.data, d => d.x0);
-      const maxVal = max(this.data, d => d.x1);
-
-      this.x = scaleLinear()
+      this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([minVal, maxVal])
+        .domain(extent(this.data, d => d[this.xVariable]))
 
-      const maxCounts = max(this.data.map(d => d.length));
+      const maxCounts = max(this.data.map(d => d[this.yVariable]));
       this.y = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, maxCounts]);
@@ -134,31 +133,29 @@ export default Vue.extend({
     },
     drawPlot() {
       const t1 = transition().duration(1500);
-      const xGap = 1;
-      const histSelector = this.chart
-        .selectAll(".hist")
-        .data(this.data);
 
-      histSelector.join(
-        enter => {
-          enter.append("rect")
-            .attr("class", "hist")
-            .attr("x", d => this.x(d.x0) - xGap)
-            .attr("width", d => this.x(d.x1) - this.x(d.x0) - xGap * 2)
-            .attr("y", d => this.y(d.length))
-            .attr("height", d => this.y(0) - this.y(d.length))
-            .style("fill", this.fillColor);
-        },
-        update => {
-          update
-            .transition(t1)
-            .attr("x", d => this.x(d.x0) - xGap)
-            .attr("width", d => this.x(d.x1) - this.x(d.x0) - xGap * 2)
-            .attr("y", d => this.y(d.length))
-            .attr("height", d => this.y(0) - this.y(d.length));
-        },
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-      )
+const lineSelector = this.chart
+.selectAll(".time-trace")
+.data([this.data]);
+
+lineSelector.join(
+  enter => {
+    enter.append("path")
+    .attr("class", "time-trace")
+    .attr("d", this.line)
+    .style("stroke", this.fillColor)
+    .style("fill", "none")
+    .style("stroke-width", "2.5")
+  },
+  update => {},
+  exit =>
+  exit.call(exit =>
+    exit
+    .transition(10)
+    .style("opacity", 1e-5)
+    .remove()
+  )
+)
 
     }
   },

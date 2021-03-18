@@ -55,8 +55,6 @@ import {
   event,
   max,
   format,
-  line,
-  area,
   transition,
   timeDay
 } from "d3";

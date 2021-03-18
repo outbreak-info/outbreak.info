@@ -1305,6 +1305,7 @@ export function getSeqGaps(apiurl, location) {
 
       results.forEach(d => {
         // number of weeks between the submitted date and the first date.
+        // Monday-based week.
         d["week"] = timeMonday.count(firstDate, d.dateSubmitted);
       })
 
@@ -1316,8 +1317,28 @@ export function getSeqGaps(apiurl, location) {
         .thresholds(weeklyThresholds)
       const binned = binFunc(results);
 
+      // weekly summary of median submission date
+      const weeklyMedian = nest()
+        .key(d => d.week)
+        .rollup(values => {
+          return ({
+            // values: values,
+            week: values[0].week,
+            gaps: values.map(d => d.gap),
+            minDate: min(values, d => d.dateSubmitted),
+            maxDate: max(values, d => d.dateSubmitted),
+            median: median(values, d => d.gap)
+          })
+        })
+        .entries(results)
+        .map(d => d.value);
+
+        weeklyMedian.sort((a,b) => a.week - b.week);
+
       return ({
-        gaps: binned,
+        data: results,
+        gapHist: binned,
+        weeklyMedian: weeklyMedian,
         median: medianGap
       })
     }),

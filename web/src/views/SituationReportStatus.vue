@@ -72,10 +72,10 @@
       </div>
 
       <section id="geographic" class="border-bottom py-4">
-      <h4>Submitted sequences by country</h4>
-      <div class="bg-main text-light p-5">
-        MAP MAP MAP
-      </div>
+        <h4>Submitted sequences by country</h4>
+        <div class="bg-main text-light p-5">
+          MAP MAP MAP
+        </div>
       </section>
 
       <section id="longitudinal" class="border-bottom py-4">
@@ -96,9 +96,13 @@
           notDetectedColor="#bab0ab" v-if="seqCounts" />
       </section>
 
-      <section id="delays" class="border-bottom py-4">
-      <h4>Gap between sample collection date and data submission</h4>
-      <Histogram :data="seqGaps" />
+      <section id="delays" class="border-bottom py-4 w-100">
+        <h4>Gap between sample collection date and data submission</h4>
+        <div class="d-flex flex-wrap justify-content-between">
+          <GapOverTime :data="weeklyMedianGap" />
+          <Histogram :data="seqGaps" />
+        </div>
+
       </section>
 
       <section id="search" class="d-flex flex-column align-items-center border-bottom py-4 w-100">
@@ -178,6 +182,7 @@ export default Vue.extend({
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
     SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     Histogram: () => import( /* webpackPrefetch: true */ "@/components/Histogram.vue"),
+    GapOverTime: () => import( /* webpackPrefetch: true */ "@/components/GapOverTime.vue"),
     FontAwesomeIcon
   },
   props: {
@@ -217,6 +222,7 @@ export default Vue.extend({
       total: null,
       seqCounts: null,
       seqGaps: null,
+      weeklyMedianGap: null,
       // selections
       selectedLocation: null,
       selectedSequence: null,
@@ -257,7 +263,9 @@ export default Vue.extend({
     },
     updateGap() {
       this.gapSubscription = getSeqGaps(this.$genomicsurl, this.loc).subscribe(results => {
-        this.seqGaps = results.gaps;
+        console.log(results)
+        this.seqGaps = results.gapHist;
+        this.weeklyMedianGap = results.weeklyMedian;
       })
     }
   },
