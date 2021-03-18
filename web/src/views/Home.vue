@@ -104,17 +104,17 @@
           </form>
           <small id="sBar-example" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'United Kingdom', selectedType: 'country'}} " class="text-light">B.1.1.7
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.526', muts: 'S:E484K', selected:'New York', selectedType: 'division'}} " class="text-light">B.1.526 with S:E484K
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.526', muts: 'S:E484K', selected:'USA_US-NY'}} " class="text-light">B.1.526 with S:E484K
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: { muts: ['S:S13I','S:L452R'], selected:'California', selectedType: 'division'}} " class="text-light">S:S13I & S:L452R
+              <router-link :to="{name: 'MutationReport', query: { muts: ['S:S13I','S:L452R'], selected:'USA_US-CA'}} " class="text-light">S:S13I &amp; S:L452R
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
