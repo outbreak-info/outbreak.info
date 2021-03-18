@@ -23,6 +23,7 @@ import {
   min,
   max,
   median,
+  quantile,
   sum,
   range,
   scaleOrdinal
@@ -1327,7 +1328,9 @@ export function getSeqGaps(apiurl, location) {
             counts: values.map(d => d.gap).length,
             minDate: min(values, d => d.dateSubmitted),
             maxDate: max(values, d => d.dateSubmitted),
-            median: median(values, d => d.gap)
+            median: median(values, d => d.gap),
+            quartile25: quantile(values, 0.25, d => d.gap),
+            quartile75: quantile(values, 0.75, d => d.gap)
           })
         })
         .entries(results)

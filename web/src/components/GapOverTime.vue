@@ -26,6 +26,7 @@ import {
   max,
   format,
   line,
+  area,
   transition,
   timeDay
 } from "d3";
@@ -81,7 +82,8 @@ export default Vue.extend({
       // refs
       chart: null,
       // methods
-      line: null
+      line: null,
+      area: null
     })
   },
   methods: {
@@ -105,6 +107,12 @@ export default Vue.extend({
       this.line = line()
         .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.yVariable]));
+      // area method
+
+      this.area = area()
+        .x(d => this.x(d[this.xVariable]))
+        .y0(d => this.y(d.quartile25))
+        .y1(d => this.y(d.quartile75));
     },
     setDims() {
       if (this.setWidth) {
@@ -116,7 +124,8 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.data, d => d[this.xVariable]))
 
-      const maxCounts = max(this.data.map(d => d[this.yVariable]));
+      const maxCounts = max(this.data.map(d => d.quartile25));
+      // const maxCounts = max(this.data.map(d => d[this.yVariable]));
       this.y = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, maxCounts]);
@@ -134,6 +143,35 @@ export default Vue.extend({
     },
     drawPlot() {
       const t1 = transition().duration(1500);
+
+      const areaSelector = this.chart
+        .selectAll(".quartile-trace")
+        .data([this.data]);
+
+      areaSelector.join(
+        enter => {
+          enter.append("path")
+            .attr("class", "quartile-trace")
+            .attr("d", this.area)
+            .style("stroke", this.fillColor)
+            .style("fill", this.fillColor)
+            .style("fill-opacity", 0.15)
+            .style("stroke-width", 1)
+            .style("stroke-dasharray", "4,4")
+        },
+        update => {
+          update
+            .transition(t1)
+            .attr("d", this.area)
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition(10)
+          .style("opacity", 1e-5)
+          .remove()
+        )
+      )
 
       const lineSelector = this.chart
         .selectAll(".time-trace")
