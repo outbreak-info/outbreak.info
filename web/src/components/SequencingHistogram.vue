@@ -77,6 +77,10 @@ export default Vue.extend({
       default: "sequencing-histogram"
     },
     width: Number,
+    height: {
+      type: Number,
+      default: 80
+    },
     margin: Object,
     notDetectedColor: {
       type: String,
@@ -101,7 +105,6 @@ export default Vue.extend({
   },
   data() {
     return ({
-      height: 80,
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
 
       showDetected: null,

@@ -10,7 +10,7 @@
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
 
-  <div class="mb-1">
+  <div class="my-2 mx-4 px-4">
     <img src="@/assets/sequencing.svg" alt="map" class="bg-image" />
     <div class="d-flex flex-column justify-content-center align-items-center">
       <div class="d-flex w-75 justify-content-around align-items-center">
@@ -70,21 +70,23 @@
           </button>
         </a>
       </div>
-
-      <!-- SELECT LOCATION -->
-      <h3>Select location</h3>
-      <div class="d-flex align-items-center my-3 w-100">
-        <div class="input-group w-50">
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <h4>Samples sequenced {{locationTitle}}</h4>
+        <!-- SELECT LOCATION -->
+        <div class="input-group max-width-50">
           <div class="input-group-prepend">
             <span class="input-group-text bg-grey text-muted border-0" id="sb">
               <font-awesome-icon :icon="['fas', 'search']" />
             </span>
           </div>
-          <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Select location" totalLabel="total sequences"
-            :removeOnSelect="false" @click.prevent="submitQuery" />
+          <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
+            :removeOnSelect="true" @click.prevent="submitQuery" />
         </div>
-
       </div>
+      <SequencingHistogram :data="seqCounts" :width="widthHist" :height="250" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram" title="By collection date" :onlyTotals="true"
+        notDetectedColor="#bab0ab" v-if="seqCounts" />
+
+
     </div>
   </div>
 
@@ -124,6 +126,7 @@ export default Vue.extend({
   name: "SituationReportStatus",
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
+    SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     FontAwesomeIcon
   },
   props: {
@@ -131,20 +134,51 @@ export default Vue.extend({
     var: String
   },
   computed: {
-    ...mapState("admin", ["reportloading"])
+    ...mapState("admin", ["reportloading"]),
+    locationTitle() {
+      return (this.loc ? "Worldwide" : `in ${this.loc}`)
+    }
+  },
+  watch: {
+    loc() {
+      this.updateSeqCounts();
+    }
   },
   data() {
     return {
       queryLocation: null,
       totalSubscription: null,
+      longitudinalSubscription: null,
       dateUpdated: null,
       lastUpdated: null,
-      total: null
+      total: null,
+      seqCounts: null,
+      // layout variables
+      widthHist: 800,
+      marginHist: {
+        top: 10,
+        bottom: 30,
+        left: 75,
+        right: 75
+      }
     };
   },
   methods: {
     updateLocation(newLocation) {
-      console.log(newLocation)
+      if (newLocation) {
+        this.$router.push({
+          name: "SituationReportStatus",
+          query: {
+            loc: newLocation.id,
+            var: this.var
+          }
+        })
+      }
+    },
+    updateSeqCounts() {
+      this.longitudinalSubscription = getSequenceCount(this.$genomicsurl, this.loc, false).subscribe(results => {
+        this.seqCounts = results;
+      })
     }
   },
   mounted() {
@@ -153,12 +187,17 @@ export default Vue.extend({
       this.lastUpdated = results.lastUpdated;
       this.dateUpdated = results.dateUpdated;
       this.total = results.total;
-      console.log(results)
     })
+
+    this.updateSeqCounts();
+
   },
   beforeDestroyed() {
     if (this.totalSubscription) {
       this.totalSubscription.unsubscribe();
+    }
+    if (this.longitudinalSubscription) {
+      this.longitudinalSubscription.unsubscribe();
     }
   }
 })
@@ -173,21 +212,16 @@ export default Vue.extend({
     height: 25px;
 }
 
-$mutation-width: 275px;
-.mutation-name {
-    flex: 0 0 $mutation-width;
-    width: $mutation-width;
-}
-
-.mutation-map {
-    min-width: 0;
-}
-
 .bg-image {
     width: 40%;
     position: absolute;
     left: 0;
     opacity: 0.55;
     z-index: -1;
+}
+
+.max-width-50 {
+    max-width: 50% !important;
+    min-width: 150px;
 }
 </style>
