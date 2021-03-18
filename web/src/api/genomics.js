@@ -338,6 +338,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     map(results => {
       results.forEach(d => {
         d["pangolin_lineage"] = lineage;
+        d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
       })
       return (results)
     }),
