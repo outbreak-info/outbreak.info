@@ -773,6 +773,18 @@ $comparison-color: #499894; //teal
     color: lighten($comparison-color, 15%);
 }
 
+$status-color: #bab0ab;
+.status-banner {
+    border-width: 0;
+    border-style: solid;
+    background: linear-gradient(to left, $primary-color 0%, $status-color 50%, $primary-color 100%) left bottom darken($primary-color,10%) no-repeat;
+    background-size: 100% 7px;
+    /* if linear-gradient, we need to resize it */
+}
+
+.status-header {
+    color: lighten($status-color, 10%);
+}
 
 .bright-hyperlink,
 .bright-hyperlink a {

@@ -272,6 +272,19 @@ const routes = [{
       )
   },
   {
+    path: "/situation-reports/status",
+    name: "SituationReportStatus",
+    props: route => ({
+      loc: route.query.loc,
+      var: route.query.var
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports-status" */
+        "../views/SituationReportStatus.vue"
+      )
+  },
+  {
     path: "/compare-lineages",
     name: "SituationReportComparison",
     props: route => ({
