@@ -35,6 +35,7 @@ export default Vue.extend({
   name: "SequencingHistogram",
   props: {
     data: Array,
+    median: Number,
     setWidth: {
       type: Number,
       default: 500
@@ -57,6 +58,10 @@ export default Vue.extend({
     fillColor: {
       type: String,
       default: "#9edae5"
+    },
+    medianColor: {
+      type: String,
+      default: "#114068"
     }
   },
   watch: {
@@ -135,6 +140,46 @@ export default Vue.extend({
     drawPlot() {
       const t1 = transition().duration(1500);
       const xGap = 1;
+
+
+      if (this.median) {
+        const medianSelector = this.chart
+          .selectAll("median")
+          .data([this.median]);
+
+        medianSelector.join(
+          enter => {
+            const grp = enter.append("g")
+              .attr("class", "median");
+
+            grp.append("line")
+              .attr("class", "median-line")
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
+              .attr("y1", 0)
+              .attr("y2", this.height - this.margin.top - this.margin.bottom)
+              .style("stroke", this.medianColor)
+              .style("stroke-width", 1)
+              .style("stroke-dasharray", "4,4")
+
+            grp.append("text")
+              .attr("class", "median-annotation")
+              .attr("x", d => this.x(d))
+              .attr("dx", 10)
+              .attr("y", this.margin.top)
+              .attr("dy", 5)
+              .text(d => `median: ${d} days`)
+              .style("fill", this.medianColor)
+              .style("font-size", 18)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+          },
+          update => {
+
+          },
+          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
+        )
+      }
+
       const histSelector = this.chart
         .selectAll(".hist")
         .data(this.data);
@@ -159,7 +204,6 @@ export default Vue.extend({
         },
         exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
       )
-
     }
   },
   mounted() {

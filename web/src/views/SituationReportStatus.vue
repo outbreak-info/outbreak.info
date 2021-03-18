@@ -113,7 +113,7 @@
 
         <div class="d-flex flex-wrap justify-content-between">
           <GapOverTime :data="weeklyMedianGap" />
-          <Histogram :data="seqGaps" />
+          <Histogram :data="seqGaps" :median="seqGapMedian" />
         </div>
 
       </section>
@@ -235,6 +235,7 @@ export default Vue.extend({
       total: null,
       seqCounts: null,
       seqGaps: null,
+      seqGapMedian: null,
       weeklyMedianGap: null,
       // selections
       selectedLocation: null,
@@ -278,6 +279,7 @@ export default Vue.extend({
       this.gapSubscription = getSeqGaps(this.$genomicsurl, this.loc).subscribe(results => {
         console.log(results)
         this.seqGaps = results.gapHist;
+        this.seqGapMedian = results.median;
         this.weeklyMedianGap = results.weeklyMedian;
       })
     }
