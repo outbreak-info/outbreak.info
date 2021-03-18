@@ -38,16 +38,13 @@
           </div>
         </div>
         <div class="d-flex flex-wrap">
-        <router-link :to="{ hash: '#' + group.key.replace(' + ', '_') }" v-for="(group, i) in reports" :key="'btn'+i"><button class="btn btn-main-outline my-3 mr-3">{{group.key}}</button></router-link>  
+        <router-link :to="{ hash: '#' + group.key.replace(' + ', '_') }" v-for="(group, i) in reports" :key="'btn'+i"><button class="btn btn-main-outline my-3 mr-3">{{group.key}}</button></router-link>
         <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main my-3 mr-3">Create custom report</button></router-link>
         </div>
 
       </div>
-
-      <!-- <ReportLogos class="my-4" /> -->
-
-
     </div>
+
     <section id="report-list" class="text-left">
       <!-- lineage or mutation -->
       <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" :id="group.key.replace(' + ', '_')">
