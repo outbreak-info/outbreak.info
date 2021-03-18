@@ -35,6 +35,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
+const formatDateTime = timeFormat("%e %B %Y %I:%M %p");
 const formatDateShort = timeFormat("%e %b %Y");
 const formatPercent = format(".0%");
 
@@ -143,6 +144,27 @@ export function getLocationBasics(apiurl) {
         dateUpdated: dateUpdated.lastUpdated,
         total: total,
         curated: curated
+      })
+
+    }),
+    catchError(e => {
+      console.log("%c Error in getting report list data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function getStatusBasics(apiurl) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl)]).pipe(
+    map(([total, dateUpdated]) => {
+      return ({
+        dateUpdated: dateUpdated.dateUpdated,
+        lastUpdated: dateUpdated.lastUpdated,
+        total: total
       })
 
     }),
@@ -759,7 +781,7 @@ export function getDateUpdated(apiurl) {
       }
 
       return ({
-        dateUpdated: formatDate(dateUpdated),
+        dateUpdated: formatDateTime(dateUpdated),
         lastUpdated: lastUpdated
       })
     }),
