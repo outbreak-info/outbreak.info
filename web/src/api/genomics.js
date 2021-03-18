@@ -1324,7 +1324,7 @@ export function getSeqGaps(apiurl, location) {
           return ({
             // values: values,
             week: values[0].week,
-            gaps: values.map(d => d.gap),
+            counts: values.map(d => d.gap).length,
             minDate: min(values, d => d.dateSubmitted),
             maxDate: max(values, d => d.dateSubmitted),
             median: median(values, d => d.gap)

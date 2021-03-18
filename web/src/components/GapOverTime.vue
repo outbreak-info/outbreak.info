@@ -116,8 +116,7 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.data, d => d[this.xVariable]))
 
-      const maxCounts = max(this.data.flatMap(d => d.gaps), d => d);
-      // const maxCounts = max(this.data.map(d => d[this.yVariable]));
+      const maxCounts = max(this.data.map(d => d[this.yVariable]));
       this.y = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, maxCounts]);
@@ -135,41 +134,6 @@ export default Vue.extend({
     },
     drawPlot() {
       const t1 = transition().duration(1500);
-
-      const dotSelector = this.chart
-        .selectAll("seq-gap")
-        .data(this.data);
-
-      dotSelector.join(
-        enter => {
-          const grp = enter.append("g")
-            .attr("id", d => `week${d.week}`)
-            .attr("class", "seq-gap")
-            .attr("cx", d => this.x(d[this.xVariable]));
-
-          grp.selectAll(".seq-gap")
-            .data(d => d.gaps)
-            .enter()
-            .append("circle")
-            .attr('cx', function(d) {
-              return (select(this.parentNode).attr("cx"));
-            })
-            .attr("cy", d => this.y(d))
-            .attr("r", this.radius)
-            .style("fill-opacity", 0.05)
-            .style("fill", "#bab0ab")
-        },
-        update => {
-
-        },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition(10)
-          .style("opacity", 1e-5)
-          .remove()
-        )
-      )
 
       const lineSelector = this.chart
         .selectAll(".time-trace")
