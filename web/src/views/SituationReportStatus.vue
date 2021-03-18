@@ -97,7 +97,20 @@
       </section>
 
       <section id="delays" class="border-bottom py-4 w-100">
-        <h4>Gap between sample collection date and data submission</h4>
+        <div class="d-flex justify-content-between align-items-center w-100 mb-3">
+          <h4>Gap between sample collection date and data submission</h4>
+          <!-- SELECT LOCATION -->
+          <div class="input-group max-width-50">
+            <div class="input-group-prepend">
+              <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                <font-awesome-icon :icon="['fas', 'search']" />
+              </span>
+            </div>
+            <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
+              :removeOnSelect="true" @click.prevent="submitQuery" />
+          </div>
+        </div>
+
         <div class="d-flex flex-wrap justify-content-between">
           <GapOverTime :data="weeklyMedianGap" />
           <Histogram :data="seqGaps" />

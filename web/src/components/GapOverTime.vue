@@ -1,12 +1,12 @@
 <template>
-  <div class="d-flex flex-column">
-    <h5 class="text-muted">Weekly median difference between sample collection and sequence submission in days</h5>
-    <svg :width="width" :height="height">
-      <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-      <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
-      <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
-    </svg>
-  </div>
+<div class="d-flex flex-column">
+  <h5 class="text-muted">Weekly median difference between sample collection and sequence submission in days</h5>
+  <svg :width="width" :height="height" id="gap-over-time">
+    <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
+    <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
+  </svg>
+</div>
 </template>
 
 <script>
@@ -72,9 +72,10 @@ export default Vue.extend({
       y: null,
       xAxis: null,
       yAxis: null,
-      numXTicks: 10,
+      numXTicks: 5,
       numYTicks: 5,
       // variables
+      radius: 7,
       xVariable: "maxDate",
       yVariable: "median",
       // refs
@@ -102,8 +103,8 @@ export default Vue.extend({
 
       // line method
       this.line = line()
-      .x(d => this.x(d[this.xVariable]))
-      .y(d => this.y(d[this.yVariable]));
+        .x(d => this.x(d[this.xVariable]))
+        .y(d => this.y(d[this.yVariable]));
     },
     setDims() {
       if (this.setWidth) {
@@ -115,7 +116,8 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.data, d => d[this.xVariable]))
 
-      const maxCounts = max(this.data.map(d => d[this.yVariable]));
+      const maxCounts = max(this.data.flatMap(d => d.gaps), d => d);
+      // const maxCounts = max(this.data.map(d => d[this.yVariable]));
       this.y = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, maxCounts]);
@@ -134,29 +136,67 @@ export default Vue.extend({
     drawPlot() {
       const t1 = transition().duration(1500);
 
-const lineSelector = this.chart
-.selectAll(".time-trace")
-.data([this.data]);
+      const dotSelector = this.chart
+        .selectAll("seq-gap")
+        .data(this.data);
 
-lineSelector.join(
-  enter => {
-    enter.append("path")
-    .attr("class", "time-trace")
-    .attr("d", this.line)
-    .style("stroke", this.fillColor)
-    .style("fill", "none")
-    .style("stroke-width", "2.5")
-  },
-  update => {},
-  exit =>
-  exit.call(exit =>
-    exit
-    .transition(10)
-    .style("opacity", 1e-5)
-    .remove()
-  )
-)
+      dotSelector.join(
+        enter => {
+          const grp = enter.append("g")
+            .attr("id", d => `week${d.week}`)
+            .attr("class", "seq-gap")
+            .attr("cx", d => this.x(d[this.xVariable]));
 
+          grp.selectAll(".seq-gap")
+            .data(d => d.gaps)
+            .enter()
+            .append("circle")
+            .attr('cx', function(d) {
+              return (select(this.parentNode).attr("cx"));
+            })
+            .attr("cy", d => this.y(d))
+            .attr("r", this.radius)
+            .style("fill-opacity", 0.05)
+            .style("fill", "#bab0ab")
+        },
+        update => {
+
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition(10)
+          .style("opacity", 1e-5)
+          .remove()
+        )
+      )
+
+      const lineSelector = this.chart
+        .selectAll(".time-trace")
+        .data([this.data]);
+
+      lineSelector.join(
+        enter => {
+          enter.append("path")
+            .attr("class", "time-trace")
+            .attr("d", this.line)
+            .style("stroke", this.fillColor)
+            .style("fill", "none")
+            .style("stroke-width", "2.5")
+        },
+        update => {
+          update
+            .transition(t1)
+            .attr("d", this.line)
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition(10)
+          .style("opacity", 1e-5)
+          .remove()
+        )
+      )
     }
   },
   mounted() {
@@ -165,3 +205,14 @@ lineSelector.join(
   }
 })
 </script>
+
+<style lang="scss">
+#gap-over-time {
+    .axis--x text,
+    .axis--y text {
+        font-size: 16px;
+        fill: $grey-90;
+
+    }
+}
+</style>
