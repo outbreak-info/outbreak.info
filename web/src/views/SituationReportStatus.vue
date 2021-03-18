@@ -48,44 +48,79 @@
       <div class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center">
         <a href="#geographic">
           <button class="btn btn-grey mx-3 py-2">
-            <small>Geograhic distribution</small>
+            <small>Geographic distribution</small>
           </button>
         </a>
 
-        <a href="#variants-of-concern">
+        <a href="#longitudinal">
           <button class="btn btn-grey mx-3 py-2">
             <small>Sequencing over time</small>
           </button>
         </a>
 
-        <a href="#geographic">
+        <a href="#delays">
           <button class="btn btn-grey mx-3 py-2">
             <small>Data delays</small>
           </button>
         </a>
 
-        <a href="#geographic">
+        <a href="#search">
           <button class="btn btn-grey mx-3 py-2">
             <small>Find a sequence</small>
           </button>
         </a>
       </div>
-      <div class="d-flex justify-content-between align-items-center w-100">
-        <h4>Samples sequenced {{locationTitle}}</h4>
-        <!-- SELECT LOCATION -->
-        <div class="input-group max-width-50">
+
+      <section id="longitudinal" class="border-bottom py-4">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <h4>Samples sequenced {{locationTitle}}</h4>
+          <!-- SELECT LOCATION -->
+          <div class="input-group max-width-50">
+            <div class="input-group-prepend">
+              <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                <font-awesome-icon :icon="['fas', 'search']" />
+              </span>
+            </div>
+            <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
+              :removeOnSelect="true" @click.prevent="submitQuery" />
+          </div>
+        </div>
+        <SequencingHistogram :data="seqCounts" :width="widthHist" :height="250" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram" title="By collection date" :onlyTotals="true"
+          notDetectedColor="#bab0ab" v-if="seqCounts" />
+      </section>
+
+      <section id="search" class="d-flex flex-column align-items-center border-bottom py-4 w-100">
+        <h4>Find if a GISAID ID is included</h4>
+        <div class="input-group max-width-50 my-3">
           <div class="input-group-prepend">
             <span class="input-group-text bg-grey text-muted border-0" id="sb">
               <font-awesome-icon :icon="['fas', 'search']" />
             </span>
           </div>
-          <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
-            :removeOnSelect="true" @click.prevent="submitQuery" />
-        </div>
-      </div>
-      <SequencingHistogram :data="seqCounts" :width="widthHist" :height="250" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram" title="By collection date" :onlyTotals="true"
-        notDetectedColor="#bab0ab" v-if="seqCounts" />
 
+          <input class="form-control" type="text" v-model="selectedSequence" placeholder="Enter GISAID ID, like EPI_ISL_1186010" />
+        </div>
+        <div v-if="selectedSequence && (sequenceFound === false || sequenceFound === true)">
+          <div class="fa-lg my-3">
+            <b>{{selectedSequence}}</b> is <b :class="[sequenceFound ? 'seq-found': 'seq-not-found']">{{sequenceFound ? "included" : "not included"}}</b> in our latest data build.
+          </div>
+          <div v-if="!sequenceFound" class="my-4 text-left">
+            A sequence might not be found in our data for three reasons:
+            <ul>
+              <li>
+                <b>Upload delays</b>: It takes roughly 12 hours from sequence deposition in GISAID to be processed and added to our dataset.
+              </li>
+              <li>
+                <b>Sequence quality filters</b>: We remove some sequences with our quality filters. <router-link :to="{name: 'SituationReportMethodology'}">Learn more</router-link>
+              </li>
+              <li>
+                <b>Bad GISIAD ID</b>: Make sure you provide a valid GISAID Accession ID, like "EPI_ISL_1186010"
+              </li>
+            </ul>
+
+          </div>
+        </div>
+      </section>
 
     </div>
   </div>
@@ -98,6 +133,8 @@ import Vue from "vue";
 import {
   mapState
 } from "vuex";
+
+import debounce from "lodash/debounce";
 
 // --- font awesome --
 import {
@@ -136,23 +173,37 @@ export default Vue.extend({
   computed: {
     ...mapState("admin", ["reportloading"]),
     locationTitle() {
-      return (this.loc ? "Worldwide" : `in ${this.loc}`)
+      if (this.selectedLocation) {
+        return `in ${this.selectedLocation.label}`
+      } else {
+        return ("Worldwide")
+      }
     }
   },
   watch: {
+    selectedSequence() {
+      this.debounceSeqSearch();
+    },
     loc() {
       this.updateSeqCounts();
     }
   },
   data() {
     return {
+      // methods
       queryLocation: null,
+      // subscriptions
       totalSubscription: null,
       longitudinalSubscription: null,
+      // data
       dateUpdated: null,
       lastUpdated: null,
       total: null,
       seqCounts: null,
+      // selections
+      selectedLocation: null,
+      selectedSequence: null,
+      sequenceFound: null,
       // layout variables
       widthHist: 800,
       marginHist: {
@@ -175,11 +226,21 @@ export default Vue.extend({
         })
       }
     },
+    lookupSequence() {
+      if (this.selectedSequence) {
+        this.sequenceFound = Math.random() > 0.5;
+      } else {
+        this.sequenceFound = null;
+      }
+    },
     updateSeqCounts() {
       this.longitudinalSubscription = getSequenceCount(this.$genomicsurl, this.loc, false).subscribe(results => {
         this.seqCounts = results;
       })
     }
+  },
+  created() {
+    this.debounceSeqSearch = debounce(this.lookupSequence, 250);
   },
   mounted() {
     this.queryLocation = findLocation;
@@ -223,5 +284,13 @@ export default Vue.extend({
 .max-width-50 {
     max-width: 50% !important;
     min-width: 150px;
+}
+
+.seq-found {
+    color: $secondary-color;
+}
+
+.seq-not-found {
+    color: $warning-color;
 }
 </style>
