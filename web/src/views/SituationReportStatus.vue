@@ -71,6 +71,13 @@
         </a>
       </div>
 
+      <section id="geographic" class="border-bottom py-4">
+      <h4>Submitted sequences by country</h4>
+      <div class="bg-main text-light p-5">
+        MAP MAP MAP
+      </div>
+      </section>
+
       <section id="longitudinal" class="border-bottom py-4">
         <div class="d-flex justify-content-between align-items-center w-100">
           <h4>Samples sequenced {{locationTitle}}</h4>
@@ -87,6 +94,11 @@
         </div>
         <SequencingHistogram :data="seqCounts" :width="widthHist" :height="250" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram" title="By collection date" :onlyTotals="true"
           notDetectedColor="#bab0ab" v-if="seqCounts" />
+      </section>
+
+      <section id="delays" class="border-bottom py-4">
+      <h4>Gap between sample collection date and data submission</h4>
+      <Histogram :data="seqGaps" />
       </section>
 
       <section id="search" class="d-flex flex-column align-items-center border-bottom py-4 w-100">
@@ -156,6 +168,7 @@ library.add(faClock, faSpinner, faSearch);
 import {
   getStatusBasics,
   getSequenceCount,
+  getSeqGaps,
   findLocation
 } from "@/api/genomics.js";
 
@@ -164,6 +177,7 @@ export default Vue.extend({
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
     SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
+    Histogram: () => import( /* webpackPrefetch: true */ "@/components/Histogram.vue"),
     FontAwesomeIcon
   },
   props: {
@@ -186,6 +200,7 @@ export default Vue.extend({
     },
     loc() {
       this.updateSeqCounts();
+      this.updateGap();
     }
   },
   data() {
@@ -195,11 +210,13 @@ export default Vue.extend({
       // subscriptions
       totalSubscription: null,
       longitudinalSubscription: null,
+      gapSubscription: null,
       // data
       dateUpdated: null,
       lastUpdated: null,
       total: null,
       seqCounts: null,
+      seqGaps: null,
       // selections
       selectedLocation: null,
       selectedSequence: null,
@@ -237,6 +254,11 @@ export default Vue.extend({
       this.longitudinalSubscription = getSequenceCount(this.$genomicsurl, this.loc, false).subscribe(results => {
         this.seqCounts = results;
       })
+    },
+    updateGap() {
+      this.gapSubscription = getSeqGaps(this.$genomicsurl, this.loc).subscribe(results => {
+        this.seqGaps = results.gaps;
+      })
     }
   },
   created() {
@@ -251,7 +273,7 @@ export default Vue.extend({
     })
 
     this.updateSeqCounts();
-
+    this.updateGap();
   },
   beforeDestroyed() {
     if (this.totalSubscription) {

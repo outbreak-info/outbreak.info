@@ -17,11 +17,20 @@ import {
   timeFormat,
   format,
   timeDay,
+  timeMonday,
   nest,
   mean,
+  min,
+  max,
+  median,
   sum,
+  range,
   scaleOrdinal
 } from "d3";
+
+import {
+  bin
+} from "d3-array";
 
 import {
   getEpiTraces
@@ -1263,5 +1272,60 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
       return ( of ([]));
     }),
     finalize(() => store.state.genomics.locationLoading2 = false)
+  )
+}
+
+// Lag functions
+export function getSeqGaps(apiurl, location) {
+  store.state.genomics.locationLoading1 = true;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  let url = `${apiurl}collection-submission&timestamp=${timestamp}`;
+
+  if (location) {
+    url = +`&location_id=${location}`;
+  }
+
+  return from(
+    axios.get("https://api.outbreak.info/genomics/collection-submission?location_id=USA", {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+
+      results.forEach(d => {
+        d["dateCollected"] = parseDate(d.date_collected);
+        d["dateSubmitted"] = parseDate(d.date_submitted);
+        d["gap"] = timeDay.count(d.dateCollected, d.dateSubmitted);
+      });
+
+      const firstDate = min(results, d => d.dateSubmitted);
+
+      results.forEach(d => {
+        // number of weeks between the submitted date and the first date.
+        d["week"] = timeMonday.count(firstDate, d.dateSubmitted);
+      })
+
+      // calculations
+      const medianGap = median(results, d => d.gap);
+      const weeklyThresholds = range(0, max(results, d => d.gap) + 7, 7);
+      const binFunc = bin()
+        .value(d => d.gap)
+        .thresholds(weeklyThresholds)
+      const binned = binFunc(results);
+
+      return ({
+        gaps: binned,
+        median: medianGap
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting sequencing gap data!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading1 = false)
   )
 }
