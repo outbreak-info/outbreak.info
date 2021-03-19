@@ -346,6 +346,12 @@ p.focustext {
 
 .text-highlight {
   color: $warning-color;
+  &__lighter {
+    color: lighten($warning-color, 20%);
+  }
+  &__brighter {
+    color: #f5648a;
+  }
 }
 
 .bg-white {

@@ -166,28 +166,6 @@ export function getLocationBasics(apiurl) {
   )
 }
 
-export function getStatusBasics(apiurl, location) {
-  store.state.admin.reportloading = true;
-
-  return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl), findLocationMetadata(apiurl, location)]).pipe(
-    map(([total, dateUpdated, location]) => {
-      return ({
-        dateUpdated: dateUpdated.dateUpdated,
-        lastUpdated: dateUpdated.lastUpdated,
-        total: total,
-        location: location
-      })
-
-    }),
-    catchError(e => {
-      console.log("%c Error in getting report list data!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    }),
-    finalize(() => store.state.admin.reportloading = false)
-  )
-}
-
 export function buildQueryStr(lineageString, mutationString) {
   var queryStr = "";
   if (lineageString) {
@@ -1278,6 +1256,47 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 }
 
 // Lag functions
+export function getStatusBasics(apiurl, location) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl), findLocationMetadata(apiurl, location)]).pipe(
+    map(([total, dateUpdated, location]) => {
+      return ({
+        dateUpdated: dateUpdated.dateUpdated,
+        lastUpdated: dateUpdated.lastUpdated,
+        total: total
+      })
+
+    }),
+    catchError(e => {
+      console.log("%c Error in getting status overview data!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function getStatusLocation(apiurl, location) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([getSequenceCount(apiurl, location, true), findLocationMetadata(apiurl, location)]).pipe(
+    map(([total, location]) => {
+      return ({
+        total: total,
+        location: location
+      })
+
+    }),
+    catchError(e => {
+      console.log("%c Error in getting status location data!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
 export function getSeqGaps(apiurl, location) {
   store.state.genomics.locationLoading1 = true;
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
@@ -1339,8 +1358,6 @@ export function getSeqGaps(apiurl, location) {
         .map(d => d.value);
 
       weeklyMedian.sort((a, b) => a.week - b.week);
-
-      console.log(weeklyMedian)
 
       return ({
         data: results,
