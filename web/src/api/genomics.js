@@ -664,7 +664,7 @@ export function getLineageResources(apiurl, queryString, size, page, sort = "-da
 export function findLocationMetadata(apiurl, location) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const url = `${apiurl}location-lookup?id=${location}&timestamp=${timestamp}`
-
+if(location){
   return from(
     axios.get(url, {
       headers: {
@@ -682,7 +682,9 @@ export function findLocationMetadata(apiurl, location) {
       console.log(e);
       return ( of ([]));
     })
-  )
+  )} else {
+    return(of(null))
+  }
 }
 
 export function findAllLocationMetadata(apiurl, locations, selected) {
