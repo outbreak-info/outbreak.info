@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex flex-column">
-  <h5 class="text-muted">Weekly median difference between sample collection and sequence submission in days</h5>
-  <svg :width="width" :height="height" id="gap-over-time">
+  <h5 class="text-muted">{{title}}</h5>
+  <svg :width="width" :height="height" id="gap-over-time" :name="title">
     <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
@@ -35,6 +35,7 @@ export default Vue.extend({
   name: "SequencingHistogram",
   props: {
     data: Array,
+    location: String,
     setWidth: {
       type: Number,
       default: 1000
@@ -62,6 +63,11 @@ export default Vue.extend({
   watch: {
     data() {
       this.updatePlot()
+    }
+  },
+  computed: {
+    title() {
+      return this.location ? `Weekly median difference between sample collection and sequence submission in days ${this.location}` : "Weekly median difference between sample collection and sequence submission in days"
     }
   },
   data() {

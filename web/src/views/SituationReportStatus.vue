@@ -98,7 +98,7 @@
 
       <section id="delays" class="border-bottom py-4 w-100">
         <div class="d-flex justify-content-between align-items-center w-100 mb-3">
-          <h4>Gap between sample collection date and data submission</h4>
+          <h4>Gap between sample collection date and data submission {{ locationTitle }}</h4>
           <!-- SELECT LOCATION -->
           <div class="input-group max-width-50">
             <div class="input-group-prepend">
@@ -112,8 +112,8 @@
         </div>
 
         <div class="d-flex flex-wrap justify-content-between">
-          <GapOverTime :data="weeklyMedianGap" />
-          <Histogram :data="seqGaps" :median="seqGapMedian" />
+          <GapOverTime :data="weeklyMedianGap" :location="locationTitle" />
+          <Histogram :data="seqGaps" :median="seqGapMedian" :title="`Difference between sample collection and sequence submission in days ${locationTitle}`" />
         </div>
 
       </section>
@@ -288,7 +288,6 @@ export default Vue.extend({
     },
     checkID() {
       this.idSubscription = checkGisaidID(this.$genomicsurl, this.selectedSequence).subscribe(found => {
-        console.log(found)
         this.sequenceFound = found
       })
     }
@@ -298,10 +297,11 @@ export default Vue.extend({
   },
   mounted() {
     this.queryLocation = findLocation;
-    this.totalSubscription = getStatusBasics(this.$genomicsurl).subscribe(results => {
+    this.totalSubscription = getStatusBasics(this.$genomicsurl, this.loc).subscribe(results => {
       this.lastUpdated = results.lastUpdated;
       this.dateUpdated = results.dateUpdated;
       this.total = results.total;
+      this.selectedLocation = results.location;
     })
 
     this.updateSeqCounts();

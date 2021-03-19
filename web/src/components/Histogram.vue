@@ -1,8 +1,8 @@
 <template>
 <div class="d-flex flex-column">
-  <h5 class="text-muted">Difference between sample collection and sequence submission in days</h5>
+  <h5 class="text-muted">{{title}}</h5>
 
-  <svg :width="width" :height="height" id="generic-histogram">
+  <svg :width="width" :height="height" id="generic-histogram" name="title">
     <g ref="hist" :transform="`translate(${margin.left}, ${margin.top})`"></g>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
@@ -36,6 +36,7 @@ export default Vue.extend({
   props: {
     data: Array,
     median: Number,
+    title: String,
     setWidth: {
       type: Number,
       default: 500

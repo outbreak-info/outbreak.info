@@ -166,15 +166,16 @@ export function getLocationBasics(apiurl) {
   )
 }
 
-export function getStatusBasics(apiurl) {
+export function getStatusBasics(apiurl, location) {
   store.state.admin.reportloading = true;
 
-  return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl)]).pipe(
-    map(([total, dateUpdated]) => {
+  return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl), findLocationMetadata(apiurl, location)]).pipe(
+    map(([total, dateUpdated, location]) => {
       return ({
         dateUpdated: dateUpdated.dateUpdated,
         lastUpdated: dateUpdated.lastUpdated,
-        total: total
+        total: total,
+        location: location
       })
 
     }),
