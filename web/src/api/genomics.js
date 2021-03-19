@@ -1286,8 +1286,6 @@ export function getSeqGaps(apiurl, location) {
     url += `&location_id=${location}`;
   }
 
-  console.log(url)
-
   return from(
     axios.get(url, {
       headers: {
@@ -1353,5 +1351,31 @@ export function getSeqGaps(apiurl, location) {
       return ( of ([]));
     }),
     finalize(() => store.state.genomics.locationLoading1 = false)
+  )
+}
+
+
+export function checkGisaidID(apiurl, id) {
+  store.state.genomics.locationLoading2 = true;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiurl}gisaid-id-lookup?id=${id}&timestamp=${timestamp}`;
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "exists"),
+    map(results => {
+      return(results)
+    }),
+    catchError(e => {
+      console.log("%c Error looking up GISAID ID!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading2 = false)
   )
 }

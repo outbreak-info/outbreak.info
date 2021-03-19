@@ -186,7 +186,8 @@ import {
   getStatusBasics,
   getSequenceCount,
   getSeqGaps,
-  findLocation
+  findLocation,
+  checkGisaidID
 } from "@/api/genomics.js";
 
 export default Vue.extend({
@@ -268,7 +269,7 @@ export default Vue.extend({
     },
     lookupSequence() {
       if (this.selectedSequence) {
-        this.sequenceFound = Math.random() > 0.5;
+        this.checkID();
       } else {
         this.sequenceFound = null;
       }
@@ -280,10 +281,15 @@ export default Vue.extend({
     },
     updateGap() {
       this.gapSubscription = getSeqGaps(this.$genomicsurl, this.loc).subscribe(results => {
-        console.log(results)
         this.seqGaps = results.gapHist;
         this.seqGapMedian = results.median;
         this.weeklyMedianGap = results.weeklyMedian;
+      })
+    },
+    checkID() {
+      this.idSubscription = checkGisaidID(this.$genomicsurl, this.selectedSequence).subscribe(found => {
+        console.log(found)
+        this.sequenceFound = found
       })
     }
   },
