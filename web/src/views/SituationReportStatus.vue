@@ -82,13 +82,13 @@
         <div class="d-flex justify-content-between align-items-center w-100">
           <h4>Samples sequenced {{locationTitle}}</h4>
           <!-- SELECT LOCATION -->
-          <div class="input-group max-width-50">
+          <div class="input-group max-width-50 ml-4">
             <div class="input-group-prepend">
               <span class="input-group-text bg-grey text-muted border-0" id="sb">
                 <font-awesome-icon :icon="['fas', 'search']" />
               </span>
             </div>
-            <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
+            <TypeaheadSelect class="form-control" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
               :removeOnSelect="true" />
           </div>
         </div>
@@ -100,13 +100,13 @@
         <div class="d-flex justify-content-between align-items-center w-100 mb-3">
           <h4>Gap between sample collection date and data submission {{ locationTitle }}</h4>
           <!-- SELECT LOCATION -->
-          <div class="input-group max-width-50">
+          <div class="input-group max-width-50 ml-4">
             <div class="input-group-prepend">
               <span class="input-group-text bg-grey text-muted border-0" id="sb">
                 <font-awesome-icon :icon="['fas', 'search']" />
               </span>
             </div>
-            <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
+            <TypeaheadSelect class="form-control" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
               :removeOnSelect="true" />
           </div>
         </div>
@@ -186,6 +186,7 @@ import {
   getStatusBasics,
   getSequenceCount,
   getSeqGaps,
+  getSeqMap,
   findLocation,
   checkGisaidID
 } from "@/api/genomics.js";
@@ -220,6 +221,7 @@ export default Vue.extend({
     loc() {
       this.updateSeqCounts();
       this.updateGap();
+      this.updateMap();
     }
   },
   data() {
@@ -230,12 +232,15 @@ export default Vue.extend({
       totalSubscription: null,
       longitudinalSubscription: null,
       gapSubscription: null,
+      mapSubscription: null,
+      idSubscription: null,
       // data
       dateUpdated: null,
       lastUpdated: null,
       total: null,
       seqCounts: null,
       seqGaps: null,
+      seqMap: null,
       seqGapMedian: null,
       weeklyMedianGap: null,
       // selections
@@ -286,6 +291,12 @@ export default Vue.extend({
         this.weeklyMedianGap = results.weeklyMedian;
       })
     },
+    updateMap() {
+      this.mapSubscription = getSeqMap(this.$genomicsurl, this.$apiurl, this.loc).subscribe(results => {
+        console.log(results)
+        this.seqMap = results;
+      })
+    },
     checkID() {
       this.idSubscription = checkGisaidID(this.$genomicsurl, this.selectedSequence).subscribe(found => {
         this.sequenceFound = found
@@ -306,6 +317,7 @@ export default Vue.extend({
 
     this.updateSeqCounts();
     this.updateGap();
+    this.updateMap();
   },
   beforeDestroyed() {
     if (this.totalSubscription) {
@@ -313,6 +325,12 @@ export default Vue.extend({
     }
     if (this.longitudinalSubscription) {
       this.longitudinalSubscription.unsubscribe();
+    }
+    if (this.idSubscription) {
+      this.idSubscription.unsubscribe();
+    }
+    if (this.mapSubscription) {
+      this.mapSubscription.unsubscribe();
     }
   }
 })
@@ -336,8 +354,7 @@ export default Vue.extend({
 }
 
 .max-width-50 {
-    max-width: 50% !important;
-    min-width: 150px;
+    width: 300px !important;
 }
 
 .seq-found {

@@ -664,26 +664,27 @@ export function getLineageResources(apiurl, queryString, size, page, sort = "-da
 export function findLocationMetadata(apiurl, location) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const url = `${apiurl}location-lookup?id=${location}&timestamp=${timestamp}`
-if(location){
-  return from(
-    axios.get(url, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-  ).pipe(
-    pluck("data", "results"),
-    map(results => {
-      results["id"] = location;
-      return (results)
-    }),
-    catchError(e => {
-      console.log("%c Error in getting location metadata!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )} else {
-    return(of(null))
+  if (location) {
+    return from(
+      axios.get(url, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    ).pipe(
+      pluck("data", "results"),
+      map(results => {
+        results["id"] = location;
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting location metadata!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      })
+    )
+  } else {
+    return ( of (null))
   }
 }
 
@@ -1103,15 +1104,12 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   }
 }
 
-export function getSequenceCount(apiurl, location = null, cumulative = true) {
-  let url = `${apiurl}sequence-count`;
-  if (cumulative && location) {
-    url += `?location_id=${location}&cumulative=true`;
-  } else if (location) {
-    url += `?location_id=${location}`
-  } else if (cumulative) {
-    url += "?cumulative=true";
+export function getSequenceCount(apiurl, location = null, cumulative = true, subadmin = false) {
+  let url = `${apiurl}sequence-count?subadmin=${subadmin}&cumulative=${cumulative}`;
+  if (location) {
+    url += `&location_id=${location}`;
   }
+
   const timestamp = Math.round(new Date().getTime() / 36e5);
   return from(axios.get(url, {
     headers: {
@@ -1121,7 +1119,7 @@ export function getSequenceCount(apiurl, location = null, cumulative = true) {
     pluck("data", "results"),
     map(results => {
       if (cumulative) {
-        return (results.total_count.toLocaleString())
+        return subadmin ? results : results.total_count.toLocaleString();
       } else {
         results.forEach(d => {
           d["dateTime"] = parseDate(d.date);
@@ -1298,11 +1296,12 @@ export function getSeqGaps(apiurl, location) {
   ).pipe(
     pluck("data", "results"),
     map(results => {
-
       results.forEach(d => {
         d["dateCollected"] = parseDate(d.date_collected);
         d["dateSubmitted"] = parseDate(d.date_submitted);
-        d["gap"] = timeDay.count(d.dateCollected, d.dateSubmitted);
+        const gap = timeDay.count(d.dateCollected, d.dateSubmitted);
+        // duplicate the gap by the number of sequences with the same collection / submission date
+        d["gap"] = Array(d.total_count).fill(gap);
       });
 
       const firstDate = min(results, d => d.dateSubmitted);
@@ -1314,12 +1313,12 @@ export function getSeqGaps(apiurl, location) {
       })
 
       // calculations
-      const medianGap = median(results, d => d.gap);
-      const weeklyThresholds = range(0, max(results, d => d.gap) + 7, 7);
+      const gaps = results.flatMap(d => d.gap);
+      const medianGap = median(gaps);
+      const weeklyThresholds = range(0, max(gaps) + 7, 7);
       const binFunc = bin()
-        .value(d => d.gap)
         .thresholds(weeklyThresholds)
-      const binned = binFunc(results);
+      const binned = binFunc(gaps);
 
       // weekly summary of median submission date
       const weeklyMedian = nest()
@@ -1328,18 +1327,20 @@ export function getSeqGaps(apiurl, location) {
           return ({
             // values: values,
             week: values[0].week,
-            counts: values.map(d => d.gap).length,
+            total_count: values.flatMap(d => d.gap).length,
             minDate: min(values, d => d.dateSubmitted),
             maxDate: max(values, d => d.dateSubmitted),
-            median: median(values, d => d.gap),
-            quartile25: quantile(values, 0.25, d => d.gap),
-            quartile75: quantile(values, 0.75, d => d.gap)
+            median: median(values.flatMap(d => d.gap)),
+            quartile25: quantile(values.flatMap(d => d.gap), 0.25),
+            quartile75: quantile(values.flatMap(d => d.gap), 0.75)
           })
         })
         .entries(results)
         .map(d => d.value);
 
-        weeklyMedian.sort((a,b) => a.week - b.week);
+      weeklyMedian.sort((a, b) => a.week - b.week);
+
+      console.log(weeklyMedian)
 
       return ({
         data: results,
@@ -1372,7 +1373,7 @@ export function checkGisaidID(apiurl, id) {
   ).pipe(
     pluck("data", "exists"),
     map(results => {
-      return(results)
+      return (results)
     }),
     catchError(e => {
       console.log("%c Error looking up GISAID ID!", "color: turquoise");
@@ -1380,5 +1381,23 @@ export function checkGisaidID(apiurl, id) {
       return ( of ([]));
     }),
     finalize(() => store.state.genomics.locationLoading2 = false)
+  )
+}
+
+export function getSeqMap(apiurl, epiurl, location) {
+  store.state.genomics.locationLoading3 = true;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+
+  return (forkJoin([getSequenceCount(apiurl, location, true, true)])).pipe(
+    map(([results]) => {
+      console.log(results)
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error grabbing sequence counts map!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading3 = false)
   )
 }
