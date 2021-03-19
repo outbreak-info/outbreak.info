@@ -89,7 +89,7 @@
               </span>
             </div>
             <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
-              :removeOnSelect="true" @click.prevent="submitQuery" />
+              :removeOnSelect="true" />
           </div>
         </div>
         <SequencingHistogram :data="seqCounts" :width="widthHist" :height="250" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram" title="By collection date" :onlyTotals="true"
@@ -107,7 +107,7 @@
               </span>
             </div>
             <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences"
-              :removeOnSelect="true" @click.prevent="submitQuery" />
+              :removeOnSelect="true" />
           </div>
         </div>
 
@@ -256,6 +256,9 @@ export default Vue.extend({
       if (newLocation) {
         this.$router.push({
           name: "SituationReportStatus",
+          params: {
+            disableScroll: true
+          },
           query: {
             loc: newLocation.id,
             var: this.var

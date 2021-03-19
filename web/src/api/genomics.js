@@ -1280,14 +1280,16 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 export function getSeqGaps(apiurl, location) {
   store.state.genomics.locationLoading1 = true;
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  let url = `${apiurl}collection-submission&timestamp=${timestamp}`;
+  let url = `${apiurl}collection-submission?timestamp=${timestamp}`;
 
   if (location) {
-    url = +`&location_id=${location}`;
+    url += `&location_id=${location}`;
   }
 
+  console.log(url)
+
   return from(
-    axios.get("https://api.outbreak.info/genomics/collection-submission?location_id=USA", {
+    axios.get(url, {
       headers: {
         "Content-Type": "application/json"
       }

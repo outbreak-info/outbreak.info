@@ -144,7 +144,7 @@ export default Vue.extend({
 
       if (this.median) {
         const medianSelector = this.chart
-          .selectAll("median")
+          .selectAll(".median")
           .data([this.median]);
 
         medianSelector.join(
@@ -174,7 +174,20 @@ export default Vue.extend({
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
           },
           update => {
+            update
+              .select(".median-line")
+              .attr("y2", this.height - this.margin.top - this.margin.bottom)
+              .transition(t1)
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
 
+
+            update
+              .select(".median-annotation")
+              .attr("y", this.margin.top)
+              .text(d => `median: ${d} days`)
+              .transition(t1)
+              .attr("x", d => this.x(d))
           },
           exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
         )
