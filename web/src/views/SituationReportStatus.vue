@@ -152,7 +152,7 @@
             A sequence might not be found in our data for three reasons:
             <ul>
               <li>
-                <b>Upload delays</b>: It takes roughly 12 hours from sequence deposition in GISAID to be processed and added to our dataset.
+                <b>Upload delays</b>: It takes up to 24 hours from sequence deposition in GISAID to be processed and added to our dataset.
               </li>
               <li>
                 <b>Sequence quality filters</b>: We remove some sequences with our quality filters. <router-link :to="{name: 'SituationReportMethodology'}">Learn more</router-link>
