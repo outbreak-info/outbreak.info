@@ -42,7 +42,7 @@
             {{total}} total sequences
           </div>
         </div>
-        <div id="sequence-count" class="mt-3 mb-2 fa-lg text-highlight__brighter" v-if="locTotal">
+        <div id="sequence-count" class="mt-3 mb-2 fa-lg text-highlight__brighter" v-if="loc && locTotal">
           <div>
           </div>{{locTotal}} {{locationTitle}}
           <font-awesome-icon class="ml-2 fa-xs pointer" :icon="['fas', 'sync']" data-toggle="collapse" data-target="#changeLocation" aria-expanded="false" aria-controls="change location" />
