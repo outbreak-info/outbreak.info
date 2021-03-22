@@ -178,7 +178,8 @@
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
-              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
+              <ReportStackedBarGraph :data="lineagesByWeek" :seqCounts="mostRecentLineages[0]" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="null" v-if="stacked == 'true'"/>
+              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" v-else />
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
@@ -433,7 +434,11 @@ export default {
     muts: Array,
     pango: Array,
     variant: Array,
-    selected: Array
+    selected: Array,
+    stacked: {
+      type: String,
+      default: "true"
+    }
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
@@ -640,6 +645,7 @@ export default {
       this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentWindow).subscribe(results => {
         // console.log(results)
         this.lineagesByDay = results.lineagesByDay;
+        this.lineagesByWeek = results.lineagesByDay.filter((d,i) => !(i%7)).filter((d,i) => i > 40);
         this.noRecentData = results.mostRecentLineages && results.mostRecentLineages.length ? false : true;
 
         this.mostRecentLineages = results.mostRecentLineages;
@@ -817,6 +823,7 @@ export default {
       dateUpdated: null,
       lastUpdated: null,
       lineagesByDay: null,
+      lineagesByWeek: null,
       mostRecentLineages: null,
       noRecentData: false,
       lineageTable: null,
