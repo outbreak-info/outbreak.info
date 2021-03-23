@@ -20,6 +20,17 @@
       </div>
     </div>
 
+    <!-- zoom btns -->
+    <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+      </button>
+    </div>
+
+
     <!-- SVGs -->
     <div class="d-flex flex-column align-items-start mt-2">
       <!-- TIME TRACE -->
@@ -45,6 +56,8 @@
           <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
+
+        <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
       </svg>
 
       <SequencingHistogram :data="data" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="mutationName" className="prevalence-curve prevalence-curve-counts" />
@@ -83,12 +96,30 @@ import {
   extent,
   event,
   max,
+  brushX,
   format,
   line,
   area,
   transition,
   timeDay
 } from "d3";
+
+import cloneDeep from "lodash/cloneDeep";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSearchPlus,
+  faCompressArrowsAlt
+} from "@fortawesome/free-solid-svg-icons/";
+
+library.add(faSearchPlus, faCompressArrowsAlt);
+
 
 import DownloadReportData from "@/components/DownloadReportData.vue";
 import SequencingHistogram from "@/components/SequencingHistogram.vue";
@@ -102,7 +133,8 @@ export default Vue.extend({
   },
   components: {
     SequencingHistogram,
-    DownloadReportData
+    DownloadReportData,
+    FontAwesomeIcon
   },
   computed: {
     title() {
@@ -123,6 +155,7 @@ export default Vue.extend({
         right: 70
       },
       lengthThreshold: 5,
+      rollingTotalThreshold: 25,
       CIColor: "#df4ab7",
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
@@ -138,21 +171,31 @@ export default Vue.extend({
       // methods
       line: null,
       area: null,
+      brush: null,
       // refs
-      chart: null
+      chart: null,
+      brushRef: null,
+      // data
+      plottedData: null,
+      // interaction
+      zoomAllowed: false
     }
   },
   watch: {
     width: function() {
+      this.setXScale();
+      this.updateBrush();
       this.updatePlot();
     },
     data: function() {
+      this.setXScale();
       this.updatePlot();
     },
   },
   mounted() {
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
+      this.updateBrush();
     })
 
     // set initial dimensions for the plots.
@@ -162,8 +205,97 @@ export default Vue.extend({
   },
   created: function() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceZoom = this.debounce(this.zoom, 150);
   },
   methods: {
+    updateBrush() {
+      // Update brush so it spans the whole of the area
+      this.brush = brushX()
+        .extent([
+          [0, 0],
+          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+        ])
+        .on("end", () => this.debounceZoom(event));
+
+      this.brushRef
+        .call(this.brush)
+        .on("dblclick", this.resetZoom);
+    },
+    zoom(evt, ref) {
+      // reset domain to new coords
+      const selection = this.event.selection;
+      console.log("zoom")
+
+      if (selection) {
+        const newMin = this.x.invert(selection[0]);
+        const newMax = this.x.invert(selection[1]);
+
+        this.x = scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
+          .domain([newMin, newMax]);
+
+          console.log(this.x.domain())
+        // update plotted data
+        this.plottedData = cloneDeep(this.data);
+        console.log(this.data)
+        console.log(newMin)
+        console.log(newMax)
+        this.plottedData = this.plottedData.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
+
+        // this.plottedData = this.plottedData.filter(d => d.data.length);
+        // move the brush
+        this.brushRef.call(this.brush.move, null);
+        this.zoomAllowed = false;
+        this.updatePlot();
+        //
+        //
+        // // update route
+        // const queryParams = this.$route.query;
+        //
+        // this.$router.push({
+        //   name: "LocationReport",
+        //   params: {
+        //     disableScroll: true
+        //   },
+        //   query: {
+        //     loc: queryParams.loc,
+        //     muts: queryParams.muts,
+        //     pango: queryParams.pango,
+        //     variant: queryParams.variant,
+        //     selected: queryParams.selected,
+        //     xmin: timeFormat("%Y-%m-%d")(newMin),
+        //     xmax: timeFormat("%Y-%m-%d")(newMax)
+        //   }
+        // })
+      }
+    },
+    resetZoom() {
+      this.brushRef.call(this.brush.move, null);
+      // const queryParams = this.$route.query;
+
+      this.xMin = null;
+      this.xMax = null;
+      this.setXScale();
+      //
+      // this.$router.push({
+      //   name: "LocationReport",
+      //   params: {
+      //     disableScroll: true
+      //   },
+      //   query: {
+      //     loc: queryParams.loc,
+      //     muts: queryParams.muts,
+      //     pango: queryParams.pango,
+      //     variant: queryParams.variant,
+      //     selected: queryParams.selected
+      //   }
+      // })
+
+      this.updatePlot();
+    },
+    enableZoom() {
+      this.zoomAllowed = true;
+    },
     setDims() {
       const mx = 0.7;
       const my = 0.9;
@@ -192,11 +324,18 @@ export default Vue.extend({
       }
     },
     setupPlot() {
+      this.plottedData = cloneDeep(this.data);
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
+      this.brushRef = select(this.$refs.brush);
 
       // estimate
       this.line = line()
+        .defined(d => d.total_count_rolling >= this.rollingTotalThreshold)
+        .x(d => this.x(d[this.xVariable]))
+        .y(d => this.y(d[this.yVariable]));
+
+      this.line2 = line()
         .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.yVariable]));
 
@@ -205,15 +344,17 @@ export default Vue.extend({
         .x(d => this.x(d[this.xVariable]))
         .y0(d => this.y(d.proportion_ci_lower))
         .y1(d => this.y(d.proportion_ci_upper));
+
+        this.setXScale();
     },
-    updateScales() {
-      this.x = this.x
+    setXScale() {
+      this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.data.map(d => d[this.xVariable])));
-
-
-      const avgMax = max(this.data, d => d[this.yVariable]);
-      const CIMax = max(this.data, d => d.proportion_ci_upper);
+    },
+    updateScales() {
+      const avgMax = max(this.plottedData, d => d[this.yVariable]);
+      const CIMax = max(this.plottedData, d => d.proportion_ci_upper);
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -237,7 +378,7 @@ export default Vue.extend({
       // find closest date
       const selectedX = this.x.invert(event.offsetX - this.margin.left);
       const selectedDate = timeDay.round(selectedX);
-      const selected = this.data.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
+      const selected = this.plottedData.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
 
       if (selected.length) {
         // tooltip on
@@ -275,13 +416,13 @@ export default Vue.extend({
     updatePlot() {
       const t1 = transition().duration(2500);
 
-      if (this.data) {
+      if (this.plottedData) {
         this.updateScales();
 
 
         const CISelector = this.chart
           .selectAll(".confidence-interval")
-          .data([this.data]);
+          .data([this.plottedData]);
 
         CISelector.join(
           enter => {
@@ -303,9 +444,40 @@ export default Vue.extend({
           )
         )
 
+        const pathSelector2 = this.chart
+          .selectAll(".prevalence-line-all")
+          .data([this.plottedData]);
+
+        pathSelector2.join(
+          enter => {
+            enter.append("path")
+              .attr("class", "prevalence-line-all")
+              .style("stroke", "#555")
+              .style("fill", "none")
+              .style("stroke-width", "1")
+              .style("stroke-dasharray", "4,4")
+              .datum(d => d)
+              .attr("d", this.line2)
+          },
+          // update
+          update => update
+          .datum(d => d)
+          // .transition(t1)
+          .attr("d", this.line2),
+
+          // exit
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
+
         const pathSelector = this.chart
           .selectAll(".prevalence-line")
-          .data([this.data]);
+          .data([this.plottedData]);
 
         pathSelector.join(
           enter => {
