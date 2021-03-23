@@ -559,7 +559,7 @@ export default {
           if (variant.length == 2) {
             tracked.push({
               type: "variant",
-              label: `${variant[0]} lineage with ${variant[1]}`,
+              label: `${variant[0]} + ${variant[1]}`,
               qParam: this.variant,
               query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
               variantType: "Custom Lineages & Mutations",
@@ -575,7 +575,7 @@ export default {
             if (variant.length == 2) {
               tracked.push({
                 type: "variant",
-                label: `${variant[0]} lineage with ${variant[1]}`,
+                label: `${variant[0]} + ${variant[1]}`,
                 qParam: d,
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
                 variantType: "Custom Lineages & Mutations",
