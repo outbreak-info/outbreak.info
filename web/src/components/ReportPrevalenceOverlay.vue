@@ -88,7 +88,7 @@
         </div>
 
         <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
-          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis axis--x" ref="xEpiAxis"></g>
+          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis epi-x axis--x" ref="xEpiAxis"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis epi-y axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
           <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
@@ -789,6 +789,10 @@ export default Vue.extend({
 
     & .epi-y {
         font-size: 14pt;
+    }
+
+    & .epi-x {
+        font-size: 16pt;
     }
 
     & .axis--y text {
