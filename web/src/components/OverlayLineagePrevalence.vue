@@ -7,7 +7,7 @@
       <div class="b-input"></div>
     </label>
   </div>
-  <ReportPrevalenceOverlay :data="prevalences" :seqCounts="seqCounts" :epi="epi" v-if="prevalences && epi" :locationName="locationName" />
+  <ReportPrevalenceOverlay :data="prevalences" :seqCounts="seqCounts" :epi="epi" v-if="prevalences && epi" :locationID="locationID" locationName="locationName" />
 
 </div>
 </template>
