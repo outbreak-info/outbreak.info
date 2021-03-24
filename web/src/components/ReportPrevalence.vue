@@ -224,7 +224,6 @@ export default Vue.extend({
     zoom(evt, ref) {
       // reset domain to new coords
       const selection = this.event.selection;
-      console.log("zoom")
 
       if (selection) {
         const newMin = this.x.invert(selection[0]);
@@ -234,12 +233,8 @@ export default Vue.extend({
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain([newMin, newMax]);
 
-          console.log(this.x.domain())
         // update plotted data
         this.plottedData = cloneDeep(this.data);
-        console.log(this.data)
-        console.log(newMin)
-        console.log(newMax)
         this.plottedData = this.plottedData.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
 
         // this.plottedData = this.plottedData.filter(d => d.data.length);
@@ -324,7 +319,6 @@ export default Vue.extend({
       }
     },
     setupPlot() {
-      this.plottedData = cloneDeep(this.data);
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.brushRef = select(this.$refs.brush);
@@ -348,9 +342,11 @@ export default Vue.extend({
         this.setXScale();
     },
     setXScale() {
+      this.plottedData = cloneDeep(this.data);
+
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d[this.xVariable])));
+        .domain(extent(this.plottedData.map(d => d[this.xVariable])));
     },
     updateScales() {
       const avgMax = max(this.plottedData, d => d[this.yVariable]);
@@ -444,11 +440,11 @@ export default Vue.extend({
           )
         )
 
-        const pathSelector2 = this.chart
+        const dashedPath = this.chart
           .selectAll(".prevalence-line-all")
           .data([this.plottedData]);
 
-        pathSelector2.join(
+        dashedPath.join(
           enter => {
             enter.append("path")
               .attr("class", "prevalence-line-all")
