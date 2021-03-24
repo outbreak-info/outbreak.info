@@ -242,7 +242,7 @@ export default Vue.extend({
 
         // update plotted data
         this.plottedData = cloneDeep(this.data);
-        this.plottedData = this.plottedData.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
+        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
 
         // this.plottedData = this.plottedData.filter(d => d.data.length);
         // move the brush
@@ -352,10 +352,13 @@ export default Vue.extend({
       this.setXScale();
     },
     setXScale() {
-      this.plottedData = cloneDeep(this.data);
+      let xDomain;
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
+        this.plottedData = cloneDeep(this.data);
+        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= this.xMin && d[this.xVariable] <= this.xMax);
         xDomain = [this.xMin, this.xMax];
       } else {
+        this.plottedData = cloneDeep(this.data);
         xDomain = extent(this.plottedData.map(d => d[this.xVariable]));
       }
 
