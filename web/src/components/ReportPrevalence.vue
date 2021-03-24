@@ -90,6 +90,8 @@ import {
   selectAll,
   scaleLinear,
   scaleTime,
+  timeParse,
+  timeFormat,
   axisBottom,
   axisLeft,
   axisRight,
@@ -164,6 +166,8 @@ export default Vue.extend({
       // axes
       x: scaleTime(),
       y: scaleLinear(),
+      xMin: null,
+      xMax: null,
       xAxis: null,
       yAxis: null,
       numXTicks: 5,
@@ -188,6 +192,9 @@ export default Vue.extend({
       this.updatePlot();
     },
     data: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+
       this.setXScale();
       this.updatePlot();
     },
@@ -244,47 +251,47 @@ export default Vue.extend({
         this.updatePlot();
         //
         //
-        // // update route
-        // const queryParams = this.$route.query;
-        //
-        // this.$router.push({
-        //   name: "LocationReport",
-        //   params: {
-        //     disableScroll: true
-        //   },
-        //   query: {
-        //     loc: queryParams.loc,
-        //     muts: queryParams.muts,
-        //     pango: queryParams.pango,
-        //     variant: queryParams.variant,
-        //     selected: queryParams.selected,
-        //     xmin: timeFormat("%Y-%m-%d")(newMin),
-        //     xmax: timeFormat("%Y-%m-%d")(newMax)
-        //   }
-        // })
+        // update route
+        const queryParams = this.$route.query;
+
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected,
+            xmin: timeFormat("%Y-%m-%d")(newMin),
+            xmax: timeFormat("%Y-%m-%d")(newMax)
+          }
+        })
       }
     },
     resetZoom() {
       this.brushRef.call(this.brush.move, null);
-      // const queryParams = this.$route.query;
+      const queryParams = this.$route.query;
 
       this.xMin = null;
       this.xMax = null;
       this.setXScale();
-      //
-      // this.$router.push({
-      //   name: "LocationReport",
-      //   params: {
-      //     disableScroll: true
-      //   },
-      //   query: {
-      //     loc: queryParams.loc,
-      //     muts: queryParams.muts,
-      //     pango: queryParams.pango,
-      //     variant: queryParams.variant,
-      //     selected: queryParams.selected
-      //   }
-      // })
+
+      this.$router.push({
+        name: "MutationReport",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          loc: queryParams.loc,
+          muts: queryParams.muts,
+          pango: queryParams.pango,
+          selected: queryParams.selected,
+          trim: queryParams.trim
+        }
+      })
 
       this.updatePlot();
     },
@@ -319,6 +326,9 @@ export default Vue.extend({
       }
     },
     setupPlot() {
+      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.brushRef = select(this.$refs.brush);
@@ -339,14 +349,19 @@ export default Vue.extend({
         .y0(d => this.y(d.proportion_ci_lower))
         .y1(d => this.y(d.proportion_ci_upper));
 
-        this.setXScale();
+      this.setXScale();
     },
     setXScale() {
       this.plottedData = cloneDeep(this.data);
+      if (this.xMin && this.xMax && this.xMin < this.xMax) {
+        xDomain = [this.xMin, this.xMax];
+      } else {
+        xDomain = extent(this.plottedData.map(d => d[this.xVariable]));
+      }
 
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.plottedData.map(d => d[this.xVariable])));
+        .domain(xDomain);
     },
     updateScales() {
       const avgMax = max(this.plottedData, d => d[this.yVariable]);

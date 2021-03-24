@@ -254,7 +254,10 @@ const routes = [{
       loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
-      selected: route.query.selected
+      selected: route.query.selected,
+      xmax: route.query.xmax,
+      xmin: route.query.xmin,
+      trim: route.query.trim
     }),
     component: () =>
       import(

@@ -433,6 +433,12 @@ export default {
     selected: {
       type: String,
       default: "Worldwide"
+    },
+    xmin: String,
+    xmax: String,
+    trim: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -463,7 +469,7 @@ export default {
         this.lineageName = null;
         this.reportMetadata = null;
         this.setupReport();
-      } else {
+      } else if (!isEqual(newVal.loc, oldVal.loc) || !isEqual(newVal.selected, oldVal.selected)) {
         this.updateLocations();
       }
     }
