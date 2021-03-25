@@ -251,7 +251,7 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" />
+        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" :trim="trim" />
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
@@ -437,8 +437,8 @@ export default {
     xmin: String,
     xmax: String,
     trim: {
-      type: Boolean,
-      default: true
+      type: String,
+      default: "true"
     }
   },
   computed: {

@@ -32,8 +32,8 @@
         <ThresholdSlider :countThreshold.sync="rollingTotalThreshold" :maxCount="maxTotal" v-if="maxTotal" />
 
         <label class="b-contain m-auto pr-3">
-          <small>Include ends with &lt; {{ rollingTotalThreshold }} total samples</small>
-          <input type="checkbox" :value="trim" v-model.lazy="trim" />
+          <small>Hide ends w/ &lt; {{ rollingTotalThreshold }} total samples</small>
+          <input type="checkbox" :value="trimEnds" v-model.lazy="trimEnds" @change="changeTrimmed" />
           <div class="b-input"></div>
         </label>
 
@@ -74,7 +74,7 @@
           <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
             sequencing data</text>
         </g>
-        <g id="weird-last values" :hidden="data.length < lengthThreshold">
+        <g id="weird-last values" :hidden="data.length < lengthThreshold || trimEnds">
           <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
@@ -129,6 +129,7 @@ import {
 } from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
+import findLastIndex from "lodash/findLastIndex";
 
 // --- font awesome --
 import {
@@ -155,7 +156,7 @@ export default Vue.extend({
     data: Array,
     mutationName: String,
     location: String,
-    trim: Boolean
+    trim: String
   },
   components: {
     SequencingHistogram,
@@ -182,7 +183,7 @@ export default Vue.extend({
         right: 70
       },
       lengthThreshold: 5,
-      rollingTotalThreshold: 25,
+      rollingTotalThreshold: 50,
       CIColor: "#df4ab7",
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // variables
@@ -208,7 +209,8 @@ export default Vue.extend({
       plottedData: null,
       maxTotal: null,
       // interaction
-      zoomAllowed: false
+      zoomAllowed: false,
+      trimEnds: null
     }
   },
   watch: {
@@ -216,7 +218,6 @@ export default Vue.extend({
       this.updatePlot();
     },
     width: function() {
-      console.log("wdith")
       this.setXScale();
       this.updateBrush();
       this.updatePlot();
@@ -227,6 +228,7 @@ export default Vue.extend({
     },
   },
   mounted() {
+    this.trimEnds = this.trim === "true";
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
       this.updateBrush();
@@ -268,10 +270,8 @@ export default Vue.extend({
           .domain([newMin, newMax]);
 
         // update plotted data
-        this.plottedData = cloneDeep(this.data);
-        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
+        this.prepData(newMin, newMax);
 
-        // this.plottedData = this.plottedData.filter(d => d.data.length);
         // move the brush
         this.brushRef.call(this.brush.move, null);
         this.zoomAllowed = false;
@@ -292,6 +292,7 @@ export default Vue.extend({
             pango: queryParams.pango,
             variant: queryParams.variant,
             selected: queryParams.selected,
+            trim: queryParams.trim,
             xmin: timeFormat("%Y-%m-%d")(newMin),
             xmax: timeFormat("%Y-%m-%d")(newMax)
           }
@@ -324,6 +325,30 @@ export default Vue.extend({
     },
     enableZoom() {
       this.zoomAllowed = true;
+    },
+    changeTrimmed() {
+      this.setXScale();
+
+      this.updatePlot();
+      // update route
+      const queryParams = this.$route.query;
+
+      this.$router.push({
+        name: "MutationReport",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          loc: queryParams.loc,
+          muts: queryParams.muts,
+          pango: queryParams.pango,
+          variant: queryParams.variant,
+          selected: queryParams.selected,
+          trim: String(this.trimEnds),
+          xmin: queryParams.xmin,
+          xmax: queryParams.xmax
+        }
+      })
     },
     setDims() {
       const mx = 0.7;
@@ -376,7 +401,7 @@ export default Vue.extend({
     setXScale() {
       this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
       this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
-      
+
       let xDomain;
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         this.prepData(this.xMin, this.xMax);
@@ -393,7 +418,12 @@ export default Vue.extend({
     prepData(xMin, xMax) {
       this.plottedData = cloneDeep(this.data);
       this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xMin && d[this.xVariable] <= xMax);
-      console.log(this.plottedData)
+
+      if (this.trimEnds) {
+        const minIdx = this.plottedData.findIndex(d => d.total_count_rolling >= this.rollingTotalThreshold);
+        const maxIdx = findLastIndex(this.plottedData, d => d.total_count_rolling >= this.rollingTotalThreshold);
+        this.plottedData = this.plottedData.slice(minIdx, maxIdx);
+      }
     },
     updateScales() {
       this.maxTotal = max(this.data, d => d.total_count);
