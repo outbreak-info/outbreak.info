@@ -505,6 +505,7 @@ export default {
       choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
       choroColorScale: null,
       choroCountThreshold: 25,
+      totalThresh: 25, // threshold for "unreliable estimate" in the table
 
       // data
       selectedLocations: null,
@@ -602,8 +603,8 @@ export default {
       this.setLineageAndMutationStr();
 
       if (this.lineageName || this.mutationID) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.loc, this.mutationID, this.lineageName, this.selected).subscribe(results => {
-          console.log(results)
+        this.dataSubscription = getReportData(this.$genomicsurl, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+          // console.log(results)
 
           // selected locations
           this.selectedLocations = results.locations;
@@ -715,7 +716,7 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.loc, this.selected).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");

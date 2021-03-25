@@ -248,7 +248,7 @@
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
-          <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
+          <LocationTable :data="lineageTable" :locationName="selectedLocation.location" :locationID="selectedLocation.id" />
         </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
@@ -775,7 +775,7 @@ export default {
       }
     },
     updateTable() {
-      this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations).subscribe(results => {
+      this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations, this.totalThresh).subscribe(results => {
         this.lineageTable = results;
       })
     }
@@ -801,6 +801,7 @@ export default {
       otherThresh: 0.03,
       ndayThresh: 5,
       dayThresh: 60,
+      totalThresh: 25, // threshold for "unreliable estimate" in the table
       // location info
       selectedLocation: null,
       newLocation: null,

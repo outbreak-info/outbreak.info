@@ -167,7 +167,7 @@ export function buildQueryStr(lineageString, mutationString) {
 }
 
 
-export function getReportData(apiurl, locations, mutationString, lineageString, location, defaultLocations = ["USA", "USA_US-CA"]) {
+export function getReportData(apiurl, locations, mutationString, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
   // clean up the locations data
   // ensure it's an array
   locations = typeof(locations) == "string" ? [locations] : locations;
@@ -193,7 +193,7 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
-    getCumPrevalences(apiurl, queryStr, locations),
+    getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
     getPositiveLocations(apiurl, queryStr, "Worldwide"),
     getPositiveLocations(apiurl, queryStr, "USA"),
     getLocationPrevalence(apiurl, queryStr, location),
@@ -235,7 +235,7 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
   )
 }
 
-export function updateLocationData(apiurl, mutationString, lineageString, locations, location) {
+export function updateLocationData(apiurl, mutationString, lineageString, locations, location, totalThreshold) {
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
@@ -248,7 +248,7 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
     findAllLocationMetadata(apiurl, locations, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
     getLocationPrevalence(apiurl, queryStr, location),
-    getCumPrevalences(apiurl, queryStr, locations)
+    getCumPrevalences(apiurl, queryStr, locations, totalThreshold)
   ]).pipe(
     map(([locations, longitudinal, byLocation, locPrev]) => {
       // attach names to cum prevalences
@@ -376,8 +376,8 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
   )
 }
 
-export function getCumPrevalences(apiurl, queryStr, locations) {
-  return forkJoin(...locations.map(d => getCumPrevalence(apiurl, queryStr, d))).pipe(
+export function getCumPrevalences(apiurl, queryStr, locations, totalThreshold) {
+  return forkJoin(...locations.map(d => getCumPrevalence(apiurl, queryStr, d, totalThreshold))).pipe(
     map(results => {
       results.sort((a, b) => b.global_prevalence - a.global_prevalence);
 
@@ -391,7 +391,7 @@ export function getCumPrevalences(apiurl, queryStr, locations) {
   )
 }
 
-export function getCumPrevalence(apiurl, queryStr, location) {
+export function getCumPrevalence(apiurl, queryStr, location, totalThreshold) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = location == "Worldwide" ?
     `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}` :
@@ -409,7 +409,12 @@ export function getCumPrevalence(apiurl, queryStr, location) {
       results["id"] = location;
       results["first_detected"] = first ? formatDateShort(first) : null;
       results["last_detected"] = last ? formatDateShort(last) : null;
-      results["proportion_formatted"] = results.lineage_count ? (results.global_prevalence < 0.005 ? "< 0.5%" : formatPercent(results.global_prevalence)) : "not detected";
+      if (results.total_count >= totalThreshold) {
+        results["proportion_formatted"] = results.lineage_count ? (results.global_prevalence < 0.005 ? "< 0.5%" : formatPercent(results.global_prevalence)) : "not detected";
+      } else {
+        results["proportion_formatted"] = results.lineage_count ? "no estimate" : "not detected";
+      }
+
       results["lineage_count_formatted"] = format(",")(results.lineage_count);
       return (results)
     }),
@@ -975,8 +980,8 @@ export function getLocationMaps(apiurl, location, mutations, ndays) {
   )
 }
 
-export function getMutationCumPrevalence(apiurl, mutationObj, location) {
-  return (getCumPrevalence(apiurl, mutationObj.query, location)).pipe(
+export function getMutationCumPrevalence(apiurl, mutationObj, location, totalThreshold) {
+  return (getCumPrevalence(apiurl, mutationObj.query, location, totalThreshold)).pipe(
     map(results => {
       return ({
         ...results,
@@ -1006,10 +1011,10 @@ function reportTypeSorter(a) {
   return sortingArr.indexOf(a.key.toLowerCase());
 }
 
-export function getLocationTable(apiurl, location, mutations) {
+export function getLocationTable(apiurl, location, mutations, totalThreshold) {
   store.state.genomics.locationLoading3 = true;
 
-  return forkJoin(...mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location))).pipe(
+  return forkJoin(...mutations.map(mutation => getMutationCumPrevalence(apiurl, mutation, location, totalThreshold))).pipe(
     map(results => {
       results = orderBy(results, [locationTableSorter, "global_prevalence"], ["asc", "desc"]);
 
