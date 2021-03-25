@@ -32,7 +32,7 @@
         <ThresholdSlider :countThreshold.sync="rollingTotalThreshold" :maxCount="maxTotal" v-if="maxTotal" />
 
         <label class="b-contain m-auto pr-3">
-          <small>Hide ends w/ &lt; {{ rollingTotalThreshold }} total samples</small>
+          <small>Trim ends w/ &lt; {{ rollingTotalThreshold }} total samples</small>
           <input type="checkbox" :value="trimEnds" v-model.lazy="trimEnds" @change="changeTrimmed" />
           <div class="b-input"></div>
         </label>
