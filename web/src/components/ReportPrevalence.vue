@@ -117,7 +117,7 @@ import {
   axisBottom,
   axisLeft,
   axisRight,
-  extent,
+  min,
   event,
   max,
   brushX,
@@ -215,15 +215,16 @@ export default Vue.extend({
   },
   watch: {
     rollingTotalThreshold() {
+      this.prepData(null, null);
       this.updatePlot();
     },
     width: function() {
-      this.setXScale();
+      this.prepData(null, null);
       this.updateBrush();
       this.updatePlot();
     },
     data: function() {
-      this.setXScale();
+      this.prepData(null, null);
       this.updatePlot();
     },
   },
@@ -303,9 +304,7 @@ export default Vue.extend({
       this.brushRef.call(this.brush.move, null);
       const queryParams = this.$route.query;
 
-      this.xMin = null;
-      this.xMax = null;
-      this.setXScale();
+      this.prepData(-1, -1);
 
       this.$router.push({
         name: "MutationReport",
@@ -327,7 +326,7 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     changeTrimmed() {
-      this.setXScale();
+      this.prepData(null, null);
 
       this.updatePlot();
       // update route
@@ -398,32 +397,43 @@ export default Vue.extend({
         .y0(d => this.y(d.proportion_ci_lower))
         .y1(d => this.y(d.proportion_ci_upper));
     },
-    setXScale() {
-      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+    prepData(xMin, xMax) {
+      this.xMin = xMin ? xMin : timeParse("%Y-%m-%d")(this.$route.query.xmin);
+      this.xMax = xMax ? xMax : timeParse("%Y-%m-%d")(this.$route.query.xmax);
 
       let xDomain;
-      if (this.xMin && this.xMax && this.xMin < this.xMax) {
-        this.prepData(this.xMin, this.xMax);
-        xDomain = [this.xMin, this.xMax];
-      } else {
-        this.prepData(0, Infinity)
-        xDomain = extent(this.plottedData.map(d => d[this.xVariable]));
+      if (!this.xMin || xMin === -1) {
+        this.xMin = min(this.data, d => d[this.xVariable]);
       }
 
-      this.x = scaleTime()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(xDomain);
-    },
-    prepData(xMin, xMax) {
+      if (!this.xMax || xMax === -1) {
+        this.xMax = max(this.data, d => d[this.xVariable]);
+      }
+
+      // flip them if min > max
+      if (this.xMin > this.xMax) {
+        const newMin = this.xMax;
+        this.xMax = this.xMin;
+        this.xMin = newMin;
+      }
+
       this.plottedData = cloneDeep(this.data);
-      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xMin && d[this.xVariable] <= xMax);
+      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= this.xMin && d[this.xVariable] <= this.xMax);
 
       if (this.trimEnds) {
         const minIdx = this.plottedData.findIndex(d => d.total_count_rolling >= this.rollingTotalThreshold);
         const maxIdx = findLastIndex(this.plottedData, d => d.total_count_rolling >= this.rollingTotalThreshold);
         this.plottedData = this.plottedData.slice(minIdx, maxIdx);
+
+        this.xMin = this.plottedData[0].dateTime;
+        this.xMax = this.plottedData.slice(-1)[0].dateTime;
       }
+
+      // set / reset xDomain
+      this.x = scaleTime()
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain([this.xMin, this.xMax]);
+
     },
     updateScales() {
       this.maxTotal = max(this.data, d => d.total_count);
