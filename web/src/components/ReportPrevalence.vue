@@ -2,25 +2,36 @@
 <div class="d-flex flex-column align-items-center w-100" id="report-prevalence">
   <div class="d-flex flex-column">
     <!-- LEGEND -->
-    <div class="d-flex flex-column ml-5 mt-3" id="legend">
-      <!-- legend: rolling average -->
-      <div class="d-flex">
-        <svg width="15" height="15" class="mr-2">
-          <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
-        </svg>
-        <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
-      </div>
-
-      <!-- legend: confidence interval -->
-      <div class="d-flex">
-        <div class="ci-legend mr-2" :style="{background: CIColor}">
-
+    <div class="d-flex flex-wrap justify-content-between">
+      <div class="d-flex flex-column ml-5 mt-3" id="legend">
+        <!-- legend: rolling average -->
+        <div class="d-flex">
+          <svg width="15" height="15" class="mr-2">
+            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+          </svg>
+          <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
         </div>
-        <small class="text-muted">95% confidence interval</small>
+
+        <div class="d-flex">
+          <svg width="15" height="15" class="mr-2">
+            <line x1="0" x2="15" y1="8" y2="8" stroke="#555" stroke-width="1" stroke-dasharray="4,4"></line>
+          </svg>
+          <small class="text-muted">Days with fewer than {{ rollingTotalThreshold }} samples</small>
+        </div>
+
+        <!-- legend: confidence interval -->
+        <div class="d-flex">
+          <div class="ci-legend mr-2" :style="{background: CIColor}">
+
+          </div>
+          <small class="text-muted">95% confidence interval</small>
+        </div>
       </div>
+      <ThresholdSlider :countThreshold.sync="rollingTotalThreshold" :maxCount="maxTotal" v-if="maxTotal" />
     </div>
 
     <!-- zoom btns -->
+
     <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
       <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
         <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
@@ -125,6 +136,7 @@ library.add(faSearchPlus, faCompressArrowsAlt);
 
 import DownloadReportData from "@/components/DownloadReportData.vue";
 import SequencingHistogram from "@/components/SequencingHistogram.vue";
+import ThresholdSlider from "@/components/ThresholdSlider.vue";
 
 export default Vue.extend({
   name: "ReportPrevalence",
@@ -136,6 +148,7 @@ export default Vue.extend({
   components: {
     SequencingHistogram,
     DownloadReportData,
+    ThresholdSlider,
     FontAwesomeIcon
   },
   computed: {
@@ -181,11 +194,15 @@ export default Vue.extend({
       brushRef: null,
       // data
       plottedData: null,
+      maxTotal: null,
       // interaction
       zoomAllowed: false
     }
   },
   watch: {
+    rollingTotalThreshold() {
+      this.updatePlot();
+    },
     width: function() {
       this.setXScale();
       this.updateBrush();
@@ -367,6 +384,7 @@ export default Vue.extend({
         .domain(xDomain);
     },
     updateScales() {
+      this.maxTotal = max(this.data, d => d.total_count);
       const avgMax = max(this.plottedData, d => d[this.yVariable]);
       const CIMax = max(this.plottedData, d => d.proportion_ci_upper);
 
