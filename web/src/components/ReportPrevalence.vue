@@ -16,7 +16,7 @@
           <svg width="15" height="15" class="mr-2">
             <line x1="0" x2="15" y1="8" y2="8" stroke="#555" stroke-width="1" stroke-dasharray="4,4"></line>
           </svg>
-          <small class="text-muted">Days with fewer than {{ rollingTotalThreshold }} samples</small>
+          <small class="text-muted">Days with fewer than {{ rollingTotalThreshold }} total samples</small>
         </div>
 
         <!-- legend: confidence interval -->
@@ -27,7 +27,18 @@
           <small class="text-muted">95% confidence interval</small>
         </div>
       </div>
-      <ThresholdSlider :countThreshold.sync="rollingTotalThreshold" :maxCount="maxTotal" v-if="maxTotal" />
+
+      <div class="d-flex flex-column">
+        <ThresholdSlider :countThreshold.sync="rollingTotalThreshold" :maxCount="maxTotal" v-if="maxTotal" />
+
+        <label class="b-contain m-auto pr-3">
+          <small>Include ends with &lt; {{ rollingTotalThreshold }} total samples</small>
+          <input type="checkbox" :value="trim" v-model.lazy="trim" />
+          <div class="b-input"></div>
+        </label>
+
+      </div>
+
     </div>
 
     <!-- zoom btns -->
@@ -143,7 +154,8 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    location: String
+    location: String,
+    trim: Boolean
   },
   components: {
     SequencingHistogram,
@@ -204,14 +216,12 @@ export default Vue.extend({
       this.updatePlot();
     },
     width: function() {
+      console.log("wdith")
       this.setXScale();
       this.updateBrush();
       this.updatePlot();
     },
     data: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
-
       this.setXScale();
       this.updatePlot();
     },
@@ -343,9 +353,6 @@ export default Vue.extend({
       }
     },
     setupPlot() {
-      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
-
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.brushRef = select(this.$refs.brush);
@@ -365,23 +372,28 @@ export default Vue.extend({
         .x(d => this.x(d[this.xVariable]))
         .y0(d => this.y(d.proportion_ci_lower))
         .y1(d => this.y(d.proportion_ci_upper));
-
-      this.setXScale();
     },
     setXScale() {
+      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+      
       let xDomain;
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
-        this.plottedData = cloneDeep(this.data);
-        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= this.xMin && d[this.xVariable] <= this.xMax);
+        this.prepData(this.xMin, this.xMax);
         xDomain = [this.xMin, this.xMax];
       } else {
-        this.plottedData = cloneDeep(this.data);
+        this.prepData(0, Infinity)
         xDomain = extent(this.plottedData.map(d => d[this.xVariable]));
       }
 
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
+    },
+    prepData(xMin, xMax) {
+      this.plottedData = cloneDeep(this.data);
+      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xMin && d[this.xVariable] <= xMax);
+      console.log(this.plottedData)
     },
     updateScales() {
       this.maxTotal = max(this.data, d => d.total_count);
