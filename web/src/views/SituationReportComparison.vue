@@ -238,7 +238,7 @@ export default {
       selectedMutationQuery: "S:E484K",
       selectedMutationThreshold: 0.5,
       colorScale: null,
-      prevalenceThreshold: 0.85,
+      prevalenceThreshold: 0.75,
       heatmapSubscription: null,
       basicSubscription: null,
       lineageByMutationsSubscription: null,
