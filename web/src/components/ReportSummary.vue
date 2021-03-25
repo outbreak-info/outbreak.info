@@ -54,7 +54,7 @@
             {{ location.lineage_count_formatted }}
           </td>
           <td class="text-center">
-            {{ location.proportion_formatted }}
+            <span :class="{'no-estimate' : location.proportion_formatted == 'no estimate'}" :data-tippy-info="`Prevalence estimates are unreliable since only ${location.total_count} ${location.total_count === 1 ? 'sample has' : 'samples have'} been sequenced since ${mutationName} detection in ${location.name}`">{{ location.proportion_formatted }}</span>
           </td>
           <td>
 
@@ -116,6 +116,9 @@ import {
 
 library.add(faSync);
 
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 export default {
   name: "ReportSummary",
   components: {
@@ -144,7 +147,19 @@ export default {
 
     this.$nextTick(function() {
       window.addEventListener("resize", this.setDims);
-    })
+    });
+
+    tippy(".no-estimate", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
   },
   methods: {
     setDims() {

@@ -55,8 +55,8 @@
         <td>
           {{ lineage.lineage_count_formatted }}
         </td>
-        <td :class="{'text-muted' : lineage.proportion_formatted == 'not detected'}">
-          {{ lineage.proportion_formatted }}
+        <td :class="{'text-muted' : lineage.proportion_formatted == 'no estimate' || lineage.proportion_formatted == 'not detected'}">
+          <span :class="{'no-estimate' : lineage.proportion_formatted == 'no estimate'}" :data-tippy-info="`Prevalence estimates are unreliable since only ${lineage.total_count} ${lineage.total_count === 1 ? 'sample has' : 'samples have'} been sequenced since ${lineage.label} detection in ${locationName}`">{{ lineage.proportion_formatted }}</span>
         <td class="spacer">
 
         </td>
@@ -82,6 +82,9 @@ import Vue from "vue";
 
 import Warning from "@/components/Warning.vue";
 
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 // // --- font awesome --
 // import {
 //   FontAwesomeIcon
@@ -99,7 +102,21 @@ export default {
   name: "LocationTable",
   props: {
     data: Array,
-    locationID: String
+    locationID: String,
+    locationName: String
+  },
+  mounted() {
+    tippy(".no-estimate", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
   }
 }
 </script>
