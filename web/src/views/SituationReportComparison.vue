@@ -92,15 +92,21 @@
               Containing a mutation(s)
             </h6>
             <small class="text-muted mb-1" v-if="selectedMutationQuery">Add all lineages w/ mutations {{selectedMutationQuery}} &ge; {{selectedMutationThreshold}}% prevalence in lineage</small>
-            <div class="d-flex align-items-center">
-              <input class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K,S:N501Y" />
-              <span class="mx-1">@ &ge;</span>
-              <input class="form-control border flex-grow-0" style="width: 50px" v-model="selectedMutationThreshold" placeholder="0-100%" />
-              <span>%</span>
+            <div class="d-flex">
+              <div class="d-flex flex-column">
+                <label for="add-mutation" class="fa-sm">Find lineages with mutation(s)</label>
+                <div class="d-flex align-items-center">
+                  <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
+
+                  <span class="mx-1">@ &ge;</span>
+                  <input class="form-control border flex-grow-0" style="width: 50px" v-model="selectedMutationThreshold" placeholder="0-100%" />
+                  <span>%</span>
+                </div>
+              </div>
               <small>
-                <div class="d-flex flex-column">
+                <div class="d-flex flex-column ml-3" style="width: 200px">
                   <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()" v-if="selectedMutationQuery">
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />{{selectedMutationQuery}}-containing lineages
+                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add {{selectedMutationQuery}}-containing lineages
                   </button>
                   <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()" v-if="selectedMutationQuery">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add {{selectedMutationQuery}}-containing lineages
@@ -108,7 +114,6 @@
                 </div>
               </small>
             </div>
-
           </div>
 
 
@@ -267,7 +272,7 @@ export default {
       mutationHeatmap: null,
       selectedGenes: [],
       selectedPango: null,
-      selectedMutationQuery: "S:E484K",
+      selectedMutationQuery: null,
       selectedMutationThreshold: 50,
       colorScale: null,
       prevalenceThreshold: 0.75,
@@ -340,7 +345,8 @@ export default {
       })
     },
     addMutations() {
-      this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold, this.selectedMutationQuery, this.selectedMutationThreshold / 100).subscribe(results => {
+      const selMutation = this.selectedMutationQuery.replace(/\s/g, "");
+      this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.selectedPango = results.yDomain;
 
