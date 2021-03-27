@@ -1219,6 +1219,9 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
     lineages = lineages.filter(d => d.reportType == "lineage" && (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest")).map(d => d.mutation_name);
   }
 
+  const voc = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.mutation_name);
+  const voi = CURATED.filter(d => d.variantType == "Variant of Interest").map(d => d.mutation_name);
+
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
@@ -1257,6 +1260,8 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 
       return ({
         data: nestedByGenes,
+        voc: voc,
+        voi: voi,
         yDomain: lineages
       })
     }),
