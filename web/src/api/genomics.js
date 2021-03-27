@@ -1200,6 +1200,16 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
   }
 }
 
+export function getComparisonByMutations(apiurl, lineages, prevalenceThreshold, mutationQuery, mutationThreshold) {
+  return getMutationsByLineage(apiurl, mutationQuery, mutationThreshold).pipe(
+    mergeMap(newLineages => {
+      newLineages.sort((a, b) => b.proportion - a.proportion);
+      const newPango = uniq(lineages.concat(newLineages.map(d => d.pangolin_lineage)));
+      return getLineagesComparison(apiurl, newPango, prevalenceThreshold)
+    })
+  )
+}
+
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   store.state.genomics.locationLoading2 = true;
 
@@ -1245,7 +1255,10 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
         .key(d => d.gene)
         .entries(filtered);
 
-      return ({data: nestedByGenes, yDomain: lineages})
+      return ({
+        data: nestedByGenes,
+        yDomain: lineages
+      })
     }),
     catchError(e => {
       console.log("%c Error in getting comparison report data!", "color: pink");

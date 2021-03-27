@@ -125,6 +125,18 @@ button.chip.to-add:hover {
   }
 }
 
+.btn-sec {
+  background: $secondary-color !important;
+  color: white;
+  transition: all 0.5s;
+  text-transform: uppercase;
+
+  &:hover {
+    background: $primary-color !important;
+    color: white;
+  }
+}
+
 .btn-grey {
   background: #DDD !important;
   border: #AAA 1px solid !important;

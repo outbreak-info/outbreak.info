@@ -113,9 +113,9 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 85,
+        right: 100,
         bottom: 72,
-        left: 85
+        left: 100
       },
       // UI
       sortVar: "codon_num",
