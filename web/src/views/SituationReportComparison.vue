@@ -192,10 +192,7 @@ import {
 export default {
   name: "SituationReportComparison",
   props: {
-    pango: {
-      type: Array,
-      default: () => []
-    },
+    pango: Array,
     gene: {
       type: Array,
       default: () => [
@@ -221,11 +218,6 @@ export default {
     smallScreen() {
       return (window.innerWidth < 500)
     },
-    selectedPango() {
-      const merged = typeof(this.pango) == "string" ? [this.pango] : this.pango
-      // const merged = typeof(this.pango) == "string" ? [this.pango, "average"] : this.pango.concat(["average"])
-      return (merged)
-    },
     prevalenceThresholdFormatted() {
       return (format(".0%")(this.prevalenceThreshold))
     }
@@ -235,6 +227,7 @@ export default {
       queryPangolin: null,
       mutationHeatmap: null,
       selectedGenes: [],
+      selectedPango: null,
       selectedMutationQuery: "S:E484K",
       selectedMutationThreshold: 0.5,
       colorScale: null,
@@ -263,6 +256,11 @@ export default {
   mounted() {
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = this.gene;
+    if(this.pango) {
+      this.selectedPango = typeof(this.pango) === "string" ? [this.pango] : this.pango;
+    }
+
+    // load the initial data
     this.getData();
     this.queryPangolin = findPangolin;
 
@@ -294,8 +292,8 @@ export default {
     },
     getData() {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
-        console.log(results)
-        this.mutationHeatmap = results;
+        this.mutationHeatmap = results.data;
+        this.selectedPango = results.yDomain;
       })
     },
     addMutations() {
@@ -332,7 +330,7 @@ export default {
           gene: this.selectedGenes
         }
       })
-      this.getData();
+      this.mutationHeatmap = null;
     },
     deletePango(idx) {
       this.selectedPango.splice(idx, 1);

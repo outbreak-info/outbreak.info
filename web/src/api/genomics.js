@@ -1150,7 +1150,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
         })
 
         moi.forEach(d => {
-          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
           d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
             d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
           d["isMOI"] = mutationsOfInterest.includes(d.mutation);
@@ -1201,44 +1201,48 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
 }
 
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
-  store.state.genomics.locationLoading2 = true
+  store.state.genomics.locationLoading2 = true;
+  if (!lineages) {
+    lineages = CURATED.filter(d => d.reportType == "lineage" && (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest")).map(d => d.mutation_name);
+    lineages = orderBy(lineages, ["variantType", "mutation_name"]);
+  }
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
 
-
       let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
 
-      const avgByMutation = nest()
-        .key(d => d.mutation)
-        .rollup(values => {
-          const mutation = values[0].mutation;
-          const mutation_count = sum(values, d => d.mutation_count);
-          const lineage_count = sum(values, d => d.lineage_count);
-          return ({
-            mutation_count: mutation_count,
-            lineage_count: lineage_count,
-            // prevalence: mutation_count / lineage_count,
-            prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
-            pangolin_lineage: "average",
-            mutation: mutation,
-            gene: values[0].gene
-          })
-        })
-        .entries(filtered).map(d => d.value);
+      // const avgByMutation = nest()
+      //   .key(d => d.mutation)
+      //   .rollup(values => {
+      //     const mutation = values[0].mutation;
+      //     const mutation_count = sum(values, d => d.mutation_count);
+      //     const lineage_count = sum(values, d => d.lineage_count);
+      //     return ({
+      //       mutation_count: mutation_count,
+      //       lineage_count: lineage_count,
+      //       // prevalence: mutation_count / lineage_count,
+      //       prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
+      //       pangolin_lineage: "average",
+      //       mutation: mutation,
+      //       gene: values[0].gene
+      //     })
+      //   })
+      //   .entries(filtered).map(d => d.value);
 
       // filtered = filtered.concat(avgByMutation);
 
       filtered.forEach(d => {
-        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
-        d["mutation_simplified"] = d.mutation.split(":").slice(-1)[0];
+        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
+          d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })
 
       const nestedByGenes = nest()
         .key(d => d.gene)
         .entries(filtered);
 
-      return (nestedByGenes)
+      return ({data: nestedByGenes, yDomain: lineages})
     }),
     catchError(e => {
       console.log("%c Error in getting comparison report data!", "color: pink");
