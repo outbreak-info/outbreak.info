@@ -20,8 +20,8 @@
           <div class="d-flex align-items-end">
             <div class="d-flex align-items-center">
               <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
-              <button class="btn py-1 px-2 mx-4 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-locations-modal">
-                <font-awesome-icon class="mr-2 font-size-small" :icon="['fas', 'plus']" />add lineages
+              <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-locations-modal">
+                <font-awesome-icon class="m-0 mr-2 font-size-small" :icon="['fas', 'plus']" />add lineages
               </button>
             </div>
           </div>
@@ -71,10 +71,48 @@
         <button role="button" class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1" @click="clearPango()">
           clear lineages
         </button>
-        <div style="width: 150px">
-          <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
+      </div>
+
+      <div class="border-top pt-2 mt-2">
+        <h5>Add lineages</h5>
+        <div class="d-flex flex-wrap">
+          <div class="mr-5">
+            <h6 class="d-flex align-items-center">
+              <div class="mr-2 circle">1</div>
+              <span class="mr-1">By</span><a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>
+            </h6>
+            <div style="width: 170px">
+              <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
+            </div>
+          </div>
+
+          <div class="mr-5 mb-3">
+            <h6 class="d-flex align-items-center p-0 m-0">
+              <div class="mr-2 circle">2</div>
+              Containing a mutation(s)
+            </h6>
+            <small class="text-muted mb-1" v-if="selectedMutationQuery">Add all lineages w/ mutations {{selectedMutationQuery}} &ge; {{selectedMutationThreshold}}% prevalence in lineage</small>
+            <div class="d-flex align-items-center">
+              <input class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K,S:N501Y" />
+              <span class="mx-1">@ &ge;</span>
+              <input class="form-control border flex-grow-0" style="width: 50px" v-model="selectedMutationThreshold" placeholder="0-100%" />
+              <span>%</span>
+              <small>
+                <div class="d-flex flex-column">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()" v-if="selectedMutationQuery">
+                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />{{selectedMutationQuery}}-containing lineages
+                  </button>
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()" v-if="selectedMutationQuery">
+                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add {{selectedMutationQuery}}-containing lineages
+                  </button>
+                </div>
+              </small>
+            </div>
+
+          </div>
+
+
         </div>
-        <button @click="addMutations()">Add E484K</button>
       </div>
     </div>
 
@@ -138,6 +176,7 @@ import {
   findPangolin,
   getBasicComparisonReportData,
   getLineagesComparison,
+  getComparisonByMutations,
   getMutationsByLineage
 } from "@/api/genomics.js";
 
@@ -229,7 +268,7 @@ export default {
       selectedGenes: [],
       selectedPango: null,
       selectedMutationQuery: "S:E484K",
-      selectedMutationThreshold: 0.5,
+      selectedMutationThreshold: 50,
       colorScale: null,
       prevalenceThreshold: 0.75,
       heatmapSubscription: null,
@@ -255,8 +294,9 @@ export default {
   },
   mounted() {
     this.colorScale = scaleSequential(interpolateRdPu);
-    this.selectedGenes = this.gene;
-    if(this.pango) {
+    this.selectedGenes = typeof(this.gene) === "string" ? [this.gene] : this.gene;
+
+    if (this.pango) {
       this.selectedPango = typeof(this.pango) === "string" ? [this.pango] : this.pango;
     }
 
@@ -284,9 +324,12 @@ export default {
     updateGenes() {
       this.$router.push({
         name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
         query: {
           pango: this.pango,
-          genes: this.selectedGenes
+          gene: this.selectedGenes
         }
       })
     },
@@ -297,23 +340,33 @@ export default {
       })
     },
     addMutations() {
-      this.lineageByMutationsSubscription = getMutationsByLineage(this.$genomicsurl, this.selectedMutationQuery, this.selectedMutationThreshold).subscribe(results => {
-        results.sort((a, b) => b.proportion - a.proportion);
-        this.pango = uniq(this.selectedPango.concat(results.map(d => d.pangolin_lineage)));
+      this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold, this.selectedMutationQuery, this.selectedMutationThreshold / 100).subscribe(results => {
+        this.mutationHeatmap = results.data;
+        this.selectedPango = results.yDomain;
+
         this.$router.push({
           name: "SituationReportComparison",
+          params: {
+            disableScroll: true
+          },
           query: {
-            pango: this.pango,
+            pango: results.yDomain,
             gene: this.selectedGenes
           }
         })
-        this.getData();
       })
+    },
+    clearAddMutations() {
+      this.selectedPango = [];
+      this.addMutations();
     },
     addPango(selected) {
       this.selectedPango.push(selected.name);
       this.$router.push({
         name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes
@@ -336,6 +389,9 @@ export default {
       this.selectedPango.splice(idx, 1);
       this.$router.push({
         name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes
@@ -357,5 +413,36 @@ export default {
 
 .gisaid {
     height: 25px;
+}
+
+$circle-width: 1.35em;
+$circle-width-sm: 1.1em;
+.circle {
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    flex-shrink: 0 !important;
+    color: white;
+    background: $secondary-color;
+    font-size: calc(#{$circle-width} * 0.9);
+    width: $circle-width;
+    height: $circle-width;
+}
+
+.circle-sm {
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    flex-shrink: 0 !important;
+    color: white;
+
+    font-size: calc(#{$circle-width} * 0.9);
+    background: $secondary-color;
+    width: $circle-width-sm;
+    height: $circle-width-sm;
 }
 </style>
