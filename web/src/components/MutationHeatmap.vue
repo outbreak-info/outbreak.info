@@ -404,9 +404,13 @@ export default Vue.extend({
           grp.append("tspan")
             .attr("x", this.width)
             .attr("class", "y-axis-lineage")
+            .classed("hover-underline", "true")
+            .classed("pointer", "true")
+            .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor)
             .style("font-size", 18)
             .attr("dx", 10)
-            .text(d => d.key);
+            .text(d => d.key)
+            .on("click", d => this.route2Lineage(d.key));
 
           grp.append("tspan")
             .attr("class", "y-axis-count")
@@ -474,15 +478,6 @@ export default Vue.extend({
         .classed("hover-underline", "true")
         .classed("pointer", "true")
         .on("click", d => this.route2Lineage(d));
-
-      // select(this.$refs.yAxisRight)
-      //   .selectAll("text")
-      //   .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
-      //   .classed("hover-underline", "true")
-      //   .classed("pointer", "true")
-      //   .on("click", d => this.route2Lineage(d));
-
-
     }
   }
 })

@@ -143,6 +143,15 @@
             </svg>
             <small class="text-light ml-2">not detected</small>
           </div>
+          <div class="d-flex flex-column justify-content-center align-items-end ml-3">
+            <span class="mb-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+              Variant / Mutation of Concern
+            </span>
+            <span class="line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
+              Variant / Mutation of Interest
+            </span>
+          </div>
+
         </div>
       </div>
 
@@ -164,7 +173,7 @@
         <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
           <template v-if="selectedGenes.includes(geneData.key)">
             <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
-            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" />
+            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" />
           </template>
         </div>
       </div>
@@ -281,6 +290,10 @@ export default {
       lineageByMutationsSubscription: null,
       totalSequences: null,
       lastUpdated: null,
+      voi: null,
+      voc: null,
+      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
+      moc: ["E484K"],
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -342,6 +355,8 @@ export default {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.selectedPango = results.yDomain;
+        this.voc = results.voc;
+        this.voi = results.voi;
       })
     },
     addMutations() {
@@ -349,6 +364,8 @@ export default {
       this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.selectedPango = results.yDomain;
+        this.voc = results.voc;
+        this.voi = results.voi;
 
         this.$router.push({
           name: "SituationReportComparison",
