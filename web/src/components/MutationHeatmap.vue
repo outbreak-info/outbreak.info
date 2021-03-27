@@ -9,7 +9,6 @@
     <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
     <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
     <g ref="yAxisLeft" class="axis axis--y" :transform="`translate(${this.margin.left - 5}, ${this.margin.top})`"></g>
-    <g ref="yAxisRight" class="axis axis--y" :transform="`translate(${this.margin.left + this.width + 5}, ${this.margin.top})`"></g>
     <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
     <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
   </svg>
@@ -29,6 +28,8 @@
     </div>
     <div class="d-flex align-items-center pt-2" id="prevalence">
       <div id="value" class="fa-lg"></div> <small class="ml-2 text-muted">of all sequences</small>
+    </div>
+    <div id="count">
     </div>
     <div id="not-detected" class="text-muted">
       not detected
@@ -62,6 +63,7 @@ import {
   transition,
   max,
   format,
+  nest,
   event
 } from "d3";
 
@@ -113,7 +115,7 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 100,
+        right: 160,
         bottom: 72,
         left: 100
       },
@@ -134,7 +136,6 @@ export default Vue.extend({
       xAxisTop: null,
       xAxisBottom: null,
       yAxisLeft: null,
-      yAxisRight: null,
       width: null,
       height: null,
       colorScale: interpolateRdPu,
@@ -187,9 +188,6 @@ export default Vue.extend({
 
       this.xAxisTop = axisTop(this.x).tickSizeOuter(0);
       select(this.$refs.xAxisTop).call(this.xAxisTop);
-
-      this.yAxisRight = axisRight(this.y).tickSizeOuter(0);
-      select(this.$refs.yAxisRight).call(this.yAxisRight);
 
       this.base = this.xDomain.map(x => {
         return this.yDomain.map(y => {
@@ -250,7 +248,15 @@ export default Vue.extend({
           .text(d.prevalence < 0.0005 ? "< 0.1%" : format(".1%")(d.prevalence));
 
         ttip
+          .select("#count")
+          .text(`(${format(",")(d.mutation_count)} / ${format(",")(d.lineage_count)})`)
+
+        ttip
           .select("#prevalence")
+          .classed("hidden", false)
+
+        ttip
+          .select("#count")
           .classed("hidden", false)
 
         ttip
@@ -260,6 +266,11 @@ export default Vue.extend({
         ttip
           .select("#prevalence")
           .classed("hidden", true)
+
+        ttip
+          .select("#count")
+          .classed("hidden", true)
+
         ttip
           .select("#not-detected")
           .classed("hidden", false)
@@ -374,6 +385,47 @@ export default Vue.extend({
         )
       )
 
+      const yDomainFull = nest()
+        .key(d => d[this.yVar])
+        .rollup(values => values[0].lineage_count)
+        .entries(this.data);
+
+      const yAxisRightSelector = this.heatmap
+        .selectAll(".y-axis-right")
+        .data(yDomainFull);
+
+      yAxisRightSelector.join(enter => {
+          const grp = enter.append("text")
+          .attr("class", "y-axis-right")
+            .attr("x", this.width)
+
+            .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
+            .style("fill", "#efefef")
+            .style("dominant-baseline", "central");
+
+            grp.append("tspan")
+            .attr("class", "y-axis-lineage")
+            .style("font-size", 18)
+            .attr("dx", 10)
+            .text(d => d.key);
+
+            grp.append("tspan")
+            .attr("class", "y-axis-count")
+            .attr("x", this.width + this.margin.right)
+            .style("text-anchor", "end")
+            .style("font-size", 14)
+            .style("fill", "#d2d2d2")
+            .attr("dx", -5)
+            .text(d => `(${format(",")(d.value)} seqs)`);
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .style("opacity", 1e-5)
+          .remove()
+        ))
+
       // turn on tooltips
       this.svg
         .selectAll("rect")
@@ -412,12 +464,12 @@ export default Vue.extend({
         .classed("pointer", "true")
         .on("click", d => this.route2Lineage(d));
 
-      select(this.$refs.yAxisRight)
-        .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
-        .classed("hover-underline", "true")
-        .classed("pointer", "true")
-        .on("click", d => this.route2Lineage(d));
+      // select(this.$refs.yAxisRight)
+      //   .selectAll("text")
+      //   .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
+      //   .classed("hover-underline", "true")
+      //   .classed("pointer", "true")
+      //   .on("click", d => this.route2Lineage(d));
 
 
     }
