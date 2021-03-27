@@ -396,26 +396,37 @@ export default Vue.extend({
 
       yAxisRightSelector.join(enter => {
           const grp = enter.append("text")
-          .attr("class", "y-axis-right")
-            .attr("x", this.width)
-
+            .attr("class", "y-axis-right")
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
             .style("fill", "#efefef")
             .style("dominant-baseline", "central");
 
-            grp.append("tspan")
+          grp.append("tspan")
+            .attr("x", this.width)
             .attr("class", "y-axis-lineage")
             .style("font-size", 18)
             .attr("dx", 10)
             .text(d => d.key);
 
-            grp.append("tspan")
+          grp.append("tspan")
             .attr("class", "y-axis-count")
             .attr("x", this.width + this.margin.right)
             .style("text-anchor", "end")
             .style("font-size", 14)
             .style("fill", "#d2d2d2")
             .attr("dx", -5)
+            .text(d => `(${format(",")(d.value)} seqs)`);
+        },
+        update => {
+          update.select(".y-axis-right")
+            .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
+
+          update.select(".y-axis-lineage")
+            .attr("x", this.width)
+            .text(d => d.key);
+
+          update.select(".y-axis-count")
+            .attr("x", this.width + this.margin.right)
             .text(d => `(${format(",")(d.value)} seqs)`);
         },
         exit =>
