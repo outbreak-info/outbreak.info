@@ -286,7 +286,7 @@ export default {
         name: "SituationReportComparison",
         query: {
           pango: this.pango,
-          genes: this.selectedGenes
+          gene: this.selectedGenes
         }
       })
     },
