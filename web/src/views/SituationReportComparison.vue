@@ -199,7 +199,7 @@ export default {
     gene: {
       type: Array,
       default: () => [
-        "s"
+        "S"
       ]
     }
   },
@@ -245,30 +245,18 @@ export default {
       totalSequences: null,
       lastUpdated: null,
       geneOpts: [
-        "orf1a",
-        "orf1b",
-        "s",
-        "orf3a",
-        "e",
-        "m",
-        "orf6",
-        "orf7a",
-        "orf7b",
-        "orf8",
-        "n",
-        "orf10"
-        // "ORF1a",
-        // "ORF1b",
-        // "S",
-        // "ORF3a",
-        // "E",
-        // "M",
-        // "ORF6",
-        // "ORF7a",
-        // "ORF7b",
-        // "ORF8",
-        // "N",
-        // "ORF10"
+        "ORF1a",
+        "ORF1b",
+        "S",
+        "ORF3a",
+        "E",
+        "M",
+        "ORF6",
+        "ORF7a",
+        "ORF7b",
+        "ORF8",
+        "N",
+        "ORF10"
       ]
     }
   },
@@ -306,6 +294,7 @@ export default {
     },
     getData() {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
+        console.log(results)
         this.mutationHeatmap = results;
       })
     },
@@ -329,6 +318,17 @@ export default {
         name: "SituationReportComparison",
         query: {
           pango: this.selectedPango,
+          gene: this.selectedGenes
+        }
+      })
+      this.getData();
+    },
+    clearPango() {
+      this.selectedPango = [];
+      this.$router.push({
+        name: "SituationReportComparison",
+        query: {
+          pango: [],
           gene: this.selectedGenes
         }
       })
