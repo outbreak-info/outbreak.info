@@ -1202,10 +1202,13 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
 
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   store.state.genomics.locationLoading2 = true;
+
+  // if nothing selected, pull out the VOCs/VOIs
   if (!lineages) {
-    lineages = CURATED.filter(d => d.reportType == "lineage" && (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest")).map(d => d.mutation_name);
-    lineages = orderBy(lineages, ["variantType", "mutation_name"]);
+    lineages = orderBy(CURATED, ["variantType", "mutation_name"]);
+    lineages = lineages.filter(d => d.reportType == "lineage" && (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest")).map(d => d.mutation_name);
   }
+
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
