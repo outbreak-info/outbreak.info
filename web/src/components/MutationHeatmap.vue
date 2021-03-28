@@ -299,6 +299,19 @@ export default Vue.extend({
         }
       })
     },
+    route2LineageMutation(d) {
+      console.log("routing")
+      console.log(d)
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          loc: this.locationID,
+          pango: d[this.yVar],
+          muts: d.mutation,
+          selected: this.locationID
+        }
+      })
+    },
     route2Mutation(mut) {
       this.$router.push({
         name: "MutationReport",
@@ -356,7 +369,7 @@ export default Vue.extend({
         enter => {
           enter
             .append("rect")
-            .attr("class", "heatmap")
+            .attr("class", "heatmap pointer")
             .attr("id", d => d.id)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
@@ -444,6 +457,7 @@ export default Vue.extend({
       // turn on tooltips
       this.svg
         .selectAll("rect")
+        .on("click", d => this.route2LineageMutation(d))
         .on("mousemove", d => this.tooltipOn(d))
         .on("mouseleave", () => this.tooltipOff());
 
