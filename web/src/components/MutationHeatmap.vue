@@ -300,8 +300,6 @@ export default Vue.extend({
       })
     },
     route2LineageMutation(d) {
-      console.log("routing")
-      console.log(d)
       this.$router.push({
         name: "MutationReport",
         query: {
