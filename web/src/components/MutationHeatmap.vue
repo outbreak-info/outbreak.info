@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="overflow-auto" :class="{'w-75': isOverflow}">
   <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap">
     <defs>
       <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
@@ -119,6 +119,7 @@ export default Vue.extend({
         bottom: 72,
         left: 100
       },
+      isOverflow: false,
       // UI
       sortVar: "codon_num",
       // constants
@@ -170,6 +171,7 @@ export default Vue.extend({
       this.xDomain = this.x.domain();
 
       this.width = this.xDomain.length * this.bandWidth;
+      this.isOverflow = this.width > 0.95* window.innerWidth;
       this.x.range([0, this.width]);
 
 
