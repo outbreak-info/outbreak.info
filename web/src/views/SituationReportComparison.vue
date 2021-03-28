@@ -98,9 +98,11 @@
                 <div class="d-flex align-items-center">
                   <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
 
-                  <span class="mx-1">@ &ge;</span>
-                  <input class="form-control border flex-grow-0" style="width: 50px" v-model="selectedMutationThreshold" placeholder="0-100%" />
-                  <span>%</span>
+                  <span class="ml-2 mr-3">@ &ge;</span>
+                  <span class="percent-sign border bg-white py-1">
+                    <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedMutationThreshold" placeholder="0-100" />
+                    <span class="mr-1">%</span>
+                  </span>
                 </div>
               </div>
               <small>
@@ -124,10 +126,22 @@
     <!-- LOOP OVER MUTATION HEATMAPS -->
     <div id="mutation-heatmaps">
       <div class="d-flex flex-wrap justify-content-between">
-        <div>
-          <h3 class="m-0">Mutation prevalence across lineages</h3>
-          <p class="text-muted m-0">Mutations with > {{ prevalenceThresholdFormatted }} prevalence in at least one lineage</p>
+        <div class="d-flex align-items-center">
+          <div>
+            <h3 class="m-0">Mutation prevalence across lineages</h3>
+            <p class="text-muted m-0">Mutations with > {{ prevalenceThreshold }}% prevalence in at least one lineage</p>
+          </div>
+          <div class="d-flex flex-column ml-3">
+            <small class="text-muted">Min. mutation prevalence</small>
+            <div class="mt-2">
+              <span class="percent-sign border bg-white py-1">
+                <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="prevalenceThreshold" @change="debounceThreshold" />
+                <span class="mr-1">%</span>
+              </span>
+            </div>
+          </div>
         </div>
+
 
         <!-- LEGEND -->
         <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4">
@@ -143,8 +157,8 @@
             </svg>
             <small class="text-light ml-2">not detected</small>
           </div>
-          <div class="d-flex flex-column justify-content-center align-items-end ml-3">
-            <span class="mb-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+          <div class="d-flex justify-content-center align-items-center ml-3">
+            <span class="mr-3 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
               Variant / Mutation of Concern
             </span>
             <span class="line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
@@ -238,14 +252,17 @@ import {
   scaleSequential,
   format
 } from "d3";
-import {
-  uniq
-} from "lodash";
+
+import debounce from "lodash/debounce";
 
 export default {
   name: "SituationReportComparison",
   props: {
     pango: Array,
+    threshold: {
+      type: Number,
+      default: 75
+    },
     gene: {
       type: Array,
       default: () => [
@@ -270,9 +287,6 @@ export default {
     },
     smallScreen() {
       return (window.innerWidth < 500)
-    },
-    prevalenceThresholdFormatted() {
-      return (format(".0%")(this.prevalenceThreshold))
     }
   },
   data() {
@@ -284,7 +298,7 @@ export default {
       selectedMutationQuery: null,
       selectedMutationThreshold: 50,
       colorScale: null,
-      prevalenceThreshold: 0.75,
+      prevalenceThreshold: null,
       heatmapSubscription: null,
       basicSubscription: null,
       lineageByMutationsSubscription: null,
@@ -311,6 +325,7 @@ export default {
     }
   },
   mounted() {
+    this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = typeof(this.gene) === "string" ? [this.gene] : this.gene;
 
@@ -326,6 +341,9 @@ export default {
       this.totalSequences = results.total;
       this.lastUpdated = results.dateUpdated.lastUpdated;
     })
+  },
+  created() {
+    this.debounceThreshold = debounce(this.changeThreshold, 250);
   },
   destroyed() {
     if (this.basicSubscription) {
@@ -347,12 +365,30 @@ export default {
         },
         query: {
           pango: this.pango,
-          gene: this.selectedGenes
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
         }
       })
     },
+    changeThreshold() {
+      if (this.prevalenceThreshold) {
+        this.$router.push({
+          name: "SituationReportComparison",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.pango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold
+          }
+        })
+
+        this.getData();
+      }
+    },
     getData() {
-      this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold).subscribe(results => {
+      this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
@@ -361,7 +397,7 @@ export default {
     },
     addMutations() {
       const selMutation = this.selectedMutationQuery.replace(/\s/g, "");
-      this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
+      this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
@@ -374,7 +410,8 @@ export default {
           },
           query: {
             pango: results.yDomain,
-            gene: this.selectedGenes
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold
           }
         })
       })
@@ -392,7 +429,8 @@ export default {
         },
         query: {
           pango: this.selectedPango,
-          gene: this.selectedGenes
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
         }
       })
       this.getData();
@@ -403,7 +441,8 @@ export default {
         name: "SituationReportComparison",
         query: {
           pango: [],
-          gene: this.selectedGenes
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
         }
       })
       this.mutationHeatmap = null;
@@ -417,7 +456,8 @@ export default {
         },
         query: {
           pango: this.selectedPango,
-          gene: this.selectedGenes
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
         }
       })
       this.getData();
@@ -467,5 +507,15 @@ $circle-width-sm: 1.1em;
     background: $secondary-color;
     width: $circle-width-sm;
     height: $circle-width-sm;
+}
+
+.percent-sign {
+    border-radius: 0.25rem;
+}
+
+.percent-sign input {
+    border: none;
+    padding: 0;
+    outline: none;
 }
 </style>
