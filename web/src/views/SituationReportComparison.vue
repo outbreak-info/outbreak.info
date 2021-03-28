@@ -143,8 +143,8 @@
             </svg>
             <small class="text-light ml-2">not detected</small>
           </div>
-          <div class="d-flex flex-column justify-content-center align-items-end ml-3">
-            <span class="mb-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+          <div class="d-flex justify-content-center align-items-center ml-3">
+            <span class="mr-3 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
               Variant / Mutation of Concern
             </span>
             <span class="line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
