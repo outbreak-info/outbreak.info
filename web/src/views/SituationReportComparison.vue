@@ -191,7 +191,7 @@
           </template>
         </div>
       </div>
-      <DownloadReportData class="mt-3" :data="mutationHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="true" />
+      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="true" />
 
     </div>
 
@@ -289,6 +289,7 @@ export default {
     return {
       queryPangolin: null,
       mutationHeatmap: null,
+      downloadableHeatmap: null,
       selectedGenes: [],
       selectedPango: null,
       selectedMutationQuery: null,
@@ -386,6 +387,7 @@ export default {
     getData() {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
+        this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
         this.voi = results.voi;
@@ -395,6 +397,7 @@ export default {
       const selMutation = this.selectedMutationQuery.replace(/\s/g, "");
       this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
+        this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
         this.voi = results.voi;
