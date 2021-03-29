@@ -83,7 +83,6 @@ export default Vue.extend({
       return (formatDate(dateString))
     },
     copyPng() {
-      console.log(this.darkMode)
       this.showSnackbar = true;
       this.snackbarText = "copying figure to the clipboard";
       this.$gtag.event("copy_vis", {

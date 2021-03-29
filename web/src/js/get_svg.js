@@ -231,7 +231,6 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 // Thanks, Mike.
 export function getPng(selector, sources, date, vertical = false, darkBg=false, download = false, filename = "outbreakinfo_visualization.png") {
-  console.log(darkBg)
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
   // make sure no tooltips are active
