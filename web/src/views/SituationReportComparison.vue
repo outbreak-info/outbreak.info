@@ -103,10 +103,13 @@
                   <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
 
                   <span class="ml-2 mr-3">@ &ge;</span>
-                  <span class="percent-sign border bg-white py-1">
-                    <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedMutationThreshold" placeholder="0-100" />
-                    <span class="mr-1">%</span>
-                  </span>
+                  <div class="d-flex flex-column">
+                    <small class="text-muted">min. prevalence</small>
+                    <span class="percent-sign border bg-white py-1">
+                      <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedMutationThreshold" placeholder="0-100" />
+                      <span class="mr-1">%</span>
+                    </span>
+                  </div>
                 </div>
               </div>
               <small>
@@ -129,8 +132,25 @@
             </h6>
             <div class="d-flex">
               <div class="d-flex flex-column" style="width: 250px">
-                <label for="add-mutation" class="fa-sm line-height-1 mt-2">Find lineages with &gt; {{selectedOtherThresholdFormatted}} total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in {{selectedLocation.label}}</span></label>
+                <label for="add-mutation" class="fa-sm line-height-1 mt-2">Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
+                    {{selectedLocation.label}}</span></label>
                 <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+              </div>
+              <div class="d-flex flex-column ml-3">
+              <div class="d-flex flex-column">
+                <small class="text-muted">min. prevalence</small>
+                <span class="percent-sign border bg-white py-1">
+                  <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedOtherThreshold" placeholder="0-100" />
+                  <span class="mr-1">%</span>
+                </span>
+              </div>
+              <div class="d-flex flex-column">
+                <small class="text-muted">over the last</small>
+                <span class="percent-sign border bg-white py-1">
+                  <input type="number" min="0" max="1000" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedWindow" placeholder="num. days" />
+                  <span class="mr-1">days</span>
+                </span>
+              </div>
               </div>
               <small>
                 <div class="d-flex flex-column ml-3" style="width: 200px">
@@ -313,9 +333,6 @@ export default {
     smallScreen() {
       return (window.innerWidth < 500)
     },
-    selectedOtherThresholdFormatted() {
-      return format(".0%")(this.selectedOtherThreshold);
-    },
     locationValid() {
       return this.selectedLocation ? true : false;
     }
@@ -340,7 +357,7 @@ export default {
       showSnackbar: false,
       snackbarText: null,
       selectedLocation: null,
-      selectedOtherThreshold: 0.03,
+      selectedOtherThreshold: 3,
       selectedNdayThreshold: 5,
       // selectedNdays: 60,
       selectedWindow: 60,
@@ -475,7 +492,8 @@ export default {
       })
     },
     addLocationLineages() {
-      this.lineageByLocationSubscription = getComparisonByLocation(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, this.selectedLocation.id, this.selectedOtherThreshold, this.selectedNdayThreshold, this.selectedWindow, this.selectedWindow).subscribe(results => {
+      this.lineageByLocationSubscription = getComparisonByLocation(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, this.selectedLocation.id, this.selectedOtherThreshold / 100, this.selectedNdayThreshold, this.selectedWindow,
+        this.selectedWindow).subscribe(results => {
         this.showSnackbar = true;
         this.snackbarText = `${results.addedLength} lineages added`
         setTimeout(() => {
@@ -501,7 +519,7 @@ export default {
 
         // reset / clear
         this.selectedLocation = null;
-        })
+      })
     },
     clearAddMutations() {
       this.selectedPango = [];
