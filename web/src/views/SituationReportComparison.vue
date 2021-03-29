@@ -6,6 +6,10 @@
       <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
     </div>
 
+    <p class="snackbar snackbar-accent" :class="{ show: showSnackbar }">
+      {{ snackbarText }}
+    </p>
+
     <!-- SOCIAL MEDIA SHARE, BACK BTN -->
     <div class="d-flex align-items-center">
       <ShareReport title="title" url="url" />
@@ -301,6 +305,8 @@ export default {
       lineageByMutationsSubscription: null,
       totalSequences: null,
       lastUpdated: null,
+      showSnackbar: false,
+      snackbarText: null,
       voi: null,
       voc: null,
       moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
@@ -396,6 +402,11 @@ export default {
     addMutations() {
       const selMutation = this.selectedMutationQuery.replace(/\s/g, "");
       this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
+        this.showSnackbar = true;
+        this.snackbarText = `${results.addedLength} lineages added`
+        setTimeout(() => {
+          this.showSnackbar = false;
+        }, 5000);
         this.mutationHeatmap = results.data;
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
@@ -413,6 +424,9 @@ export default {
             threshold: this.prevalenceThreshold
           }
         })
+
+        // reset / clear
+        this.selectedMutationQuery = null;
       })
     },
     clearAddMutations() {
@@ -421,6 +435,12 @@ export default {
     },
     addPango(selected) {
       this.selectedPango.push(selected.name);
+      this.showSnackbar = true;
+      this.snackbarText = `${selected.name} added`
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
       this.$router.push({
         name: "SituationReportComparison",
         params: {

@@ -1222,7 +1222,11 @@ export function getComparisonByMutations(apiurl, lineages, prevalenceThreshold, 
     mergeMap(newLineages => {
       newLineages.sort((a, b) => b.proportion - a.proportion);
       const newPango = uniq(lineages.concat(newLineages.map(d => d.pangolin_lineage)));
-      return getLineagesComparison(apiurl, newPango, prevalenceThreshold)
+      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
+        map(results => {
+          return {... results, addedLength: newLineages.length}
+        })
+      )
     })
   )
 }
