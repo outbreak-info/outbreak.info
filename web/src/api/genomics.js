@@ -1006,6 +1006,23 @@ function locationTableSorter(a) {
   return sortingArr.indexOf(a.variantType);
 }
 
+function geneSorter(a) {
+  const sortingArr = ["ORF1a",
+    "ORF1b",
+    "S",
+    "ORF3a",
+    "E",
+    "M",
+    "ORF6",
+    "ORF7a",
+    "ORF7b",
+    "ORF8",
+    "N",
+    "ORF10"
+  ];
+  return sortingArr.indexOf(a.key);
+}
+
 function reportTypeSorter(a) {
   const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key.toLowerCase());
@@ -1254,12 +1271,15 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
           d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })
 
-      const nestedByGenes = nest()
+      let nestedByGenes = nest()
         .key(d => d.gene)
         .entries(filtered);
 
+      nestedByGenes = orderBy(nestedByGenes, geneSorter);
+
       return ({
         data: nestedByGenes,
+        dataFlat: filtered,
         voc: voc,
         voi: voi,
         yDomain: lineages
