@@ -6,6 +6,10 @@
       <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
     </div>
 
+    <p class="snackbar snackbar-accent" :class="{ show: showSnackbar }">
+      {{ snackbarText }}
+    </p>
+
     <!-- SOCIAL MEDIA SHARE, BACK BTN -->
     <div class="d-flex align-items-center">
       <ShareReport title="title" url="url" />
@@ -20,8 +24,8 @@
           <div class="d-flex align-items-end">
             <div class="d-flex align-items-center">
               <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
-              <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-locations-modal">
-                <font-awesome-icon class="m-0 mr-2 font-size-small" :icon="['fas', 'plus']" />add lineages
+              <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+                <font-awesome-icon class="m-0 mr-2 font-size-small" :icon="['fas', 'sync']" />change lineages
               </button>
             </div>
           </div>
@@ -61,7 +65,7 @@
       </div>
     </div> -->
 
-    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom">
+    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom collapse">
       <h5>Selected lineages</h5>
       <div class="d-flex flex-wrap">
         <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
@@ -75,47 +79,128 @@
 
       <div class="border-top pt-2 mt-2">
         <h5>Add lineages</h5>
-        <div class="d-flex flex-wrap">
-          <div class="mr-5">
+        <div class="d-flex flex-wrap justify-content-between">
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded">
             <h6 class="d-flex align-items-center">
               <div class="mr-2 circle">1</div>
               <span class="mr-1">By</span><a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>
             </h6>
-            <div style="width: 170px">
-              <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
+            <div class="line-height-1" style="width: 200px">
+              <div class="fa-sm mt-2 ml-2">&gt;&gt; Add a specific lineage</div>
+            </div>
+            <div class="d-flex h-100 align-items-center">
+              <div style="width: 170px" class="align-self-middle">
+                <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
+              </div>
             </div>
           </div>
 
-          <div class="mr-5 mb-3">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
             <h6 class="d-flex align-items-center p-0 m-0">
               <div class="mr-2 circle">2</div>
               Containing a mutation(s)
             </h6>
-            <small class="text-muted mb-1" v-if="selectedMutationQuery">Add all lineages w/ mutations {{selectedMutationQuery}} &ge; {{selectedMutationThreshold}}% prevalence in lineage</small>
-            <div class="d-flex">
+
+            <div class="d-flex flex-column">
               <div class="d-flex flex-column">
-                <label for="add-mutation" class="fa-sm">Find lineages with mutation(s)</label>
+                <label for="add-mutation" class="fa-sm mt-2 ml-2" style="width: 300px">&gt;&gt; Find lineages with mutation(s) <span v-if="selectedMutationQuery">{{selectedMutationQuery}}</span> at &ge; {{selectedMutationThreshold}}%
+                  prevalence</label>
                 <div class="d-flex align-items-center">
-                  <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
+                  <textarea id="add-mutation" class="form-control border" style="width: 200px" v-model="selectedMutationQuery" placeholder="S:E484K, ORF1a:DEL3675/3677" />
 
                   <span class="ml-2 mr-3">@ &ge;</span>
-                  <span class="percent-sign border bg-white py-1">
-                    <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedMutationThreshold" placeholder="0-100" />
-                    <span class="mr-1">%</span>
-                  </span>
+                  <div class="d-flex flex-column">
+                    <small class="text-muted">min. prevalence</small>
+                    <span class="percent-sign border bg-white py-1">
+                      <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedMutationThreshold" placeholder="0-100" />
+                      <span class="mr-1">%</span>
+                    </span>
+                  </div>
                 </div>
               </div>
+              <div id="warnings" style="width: 400px" v-if="selectedMutationQuery && !mutationValid">
+                <div class="warning">
+                  Please check the mutation format:
+                </div>
+                <ul class="warning">
+                  <li>
+                    Add the gene before the mutation, like <b>"S:N501Y"</b>
+                  </li>
+                  <li>
+                    Substitutions should be "{gene}:{original amino acid}{codon number}{new amino acid}" like <b>"S:E484K"</b>
+                  </li>
+                  <li>
+                    Deletions should be "{gene}:DEL{start codon}/{end codon}" like <b>"ORF1a:DEL3675/3677"</b>
+                  </li>
+                  <li>
+                    Separate mutations with commas like <b>"S:E484K,S:N501Y"</b>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- select btns -->
               <small>
-                <div class="d-flex flex-column ml-3" style="width: 200px">
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()" v-if="selectedMutationQuery">
+                <div class="d-flex align-items-center justify-content-between my-3" style="width: 250px" v-if="selectedMutationQuery">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()" :disabled="!mutationValid">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add {{selectedMutationQuery}}-containing lineages
                   </button>
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()" v-if="selectedMutationQuery">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()" :disabled="!mutationValid">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add {{selectedMutationQuery}}-containing lineages
                   </button>
                 </div>
               </small>
             </div>
+          </div>
+
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
+            <h6 class="d-flex align-items-center p-0 m-0">
+              <div class="mr-2 circle">3</div>
+              Prevalent in a location
+            </h6>
+            <div class="d-flex">
+              <div class="d-flex flex-column" style="width: 250px">
+                <label for="add-mutation" class="fa-sm line-height-1 mt-2 ml-2">&gt;&gt; Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
+                    {{selectedLocation.label}}</span></label>
+                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+              </div>
+              <div class="d-flex flex-column ml-3">
+                <div class="d-flex flex-column">
+                  <small class="text-muted">min. prevalence</small>
+                  <span class="percent-sign border bg-white py-1">
+                    <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedOtherThreshold" placeholder="0-100" />
+                    <span class="mr-1">%</span>
+                  </span>
+                </div>
+                <div class="d-flex flex-column">
+                  <small class="text-muted">over the last</small>
+                  <span class="percent-sign border bg-white py-1">
+                    <input type="number" min="0" max="1000" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedWindow" placeholder="num. days" />
+                    <span class="mr-1">days</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <small>
+              <div class="d-flex align-items-center justify-content-between my-3" style="width: 400px" v-if="locationValid">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add lineages in {{ selectedLocation.label }}
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add lineages in {{ selectedLocation.label }}
+                </button>
+              </div>
+
+              <div v-else-if="selectedLocation" class="warning" style="width: 400px">
+                <p class="warning" v-if="!selectedOtherThreshold || !(selectedOtherThreshold >= 0)">
+                  Specify a minimum prevalence (<b>3%</b> by default)
+                </p>
+                <p class="warning" v-if="!(selectedWindow > 0)">
+                  Specify a time window (over the last <b>60</b> days by default)
+                </p>
+              </div>
+            </small>
+
           </div>
 
 
@@ -124,15 +209,20 @@
     </div>
 
     <!-- LOOP OVER MUTATION HEATMAPS -->
-    <div id="mutation-heatmaps">
+    <div id="mutation-heatmaps" class="mt-4">
       <div class="d-flex flex-wrap justify-content-between">
         <div class="d-flex align-items-center">
           <div>
             <h3 class="m-0">Mutation prevalence across lineages</h3>
             <p class="text-muted m-0">Mutations with > {{ prevalenceThreshold }}% prevalence in at least one lineage</p>
           </div>
+          <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+            <font-awesome-icon class="m-0 mr-2 fa-xs" :icon="['fas', 'sync']" />
+            <span class="fa-xs">change lineages</span>
+          </button>
+
           <div class="d-flex flex-column ml-3">
-            <small class="text-muted">Min. mutation prevalence</small>
+            <small class="text-muted line-height-1" style="width: 100px">Min. mutation prevalence</small>
             <div class="mt-2">
               <span class="percent-sign border bg-white py-1">
                 <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="prevalenceThreshold" @change="debounceThreshold" />
@@ -140,11 +230,12 @@
               </span>
             </div>
           </div>
+
         </div>
 
 
         <!-- LEGEND -->
-        <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4">
+        <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4 my-2">
           <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
           <div class="d-flex align-items-center">
             <svg width="24" height="24">
@@ -191,6 +282,7 @@
           </template>
         </div>
       </div>
+      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="true" />
 
     </div>
 
@@ -202,17 +294,13 @@
 import Vue from "vue";
 import {
   findPangolin,
+  findLocation,
   getBasicComparisonReportData,
   getLineagesComparison,
   getComparisonByMutations,
+  getComparisonByLocation,
   getMutationsByLineage
 } from "@/api/genomics.js";
-
-import MutationHeatmap from "@/components/MutationHeatmap.vue";
-import SARSMutationMap from "@/components/SARSMutationMap.vue";
-import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
-import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
-import GradientLegend from "@/components/GradientLegend.vue";
 
 // --- font awesome --
 import {
@@ -278,6 +366,7 @@ export default {
     ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     GradientLegend: () => import( /* webpackPrefetch: true */ "@/components/GradientLegend.vue"),
+    DownloadReportData: () => import( /* webpackPrefetch: true */ "@/components/DownloadReportData.vue"),
     FontAwesomeIcon
   },
   computed: {
@@ -287,12 +376,19 @@ export default {
     },
     smallScreen() {
       return (window.innerWidth < 500)
+    },
+    locationValid() {
+      return this.selectedLocation && this.selectedOtherThreshold && this.selectedOtherThreshold >= 0 && this.selectedWindow > 0 ? true : false;
+    },
+    mutationValid() {
+      return /\w+:[A-Z]\d+[A-Z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
     }
   },
   data() {
     return {
       queryPangolin: null,
       mutationHeatmap: null,
+      downloadableHeatmap: null,
       selectedGenes: [],
       selectedPango: null,
       selectedMutationQuery: null,
@@ -302,8 +398,17 @@ export default {
       heatmapSubscription: null,
       basicSubscription: null,
       lineageByMutationsSubscription: null,
+      lineageByLocationSubscription: null,
       totalSequences: null,
       lastUpdated: null,
+      showSnackbar: false,
+      snackbarText: null,
+      selectedLocation: null,
+      selectedOtherThreshold: 3,
+      selectedNdayThreshold: 5,
+      // selectedNdays: 60,
+      selectedWindow: 60,
+      queryLocation: null,
       voi: null,
       voc: null,
       moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
@@ -336,6 +441,7 @@ export default {
     // load the initial data
     this.getData();
     this.queryPangolin = findPangolin;
+    this.queryLocation = findLocation;
 
     this.basicSubscription = getBasicComparisonReportData(this.$genomicsurl).subscribe(results => {
       this.totalSequences = results.total;
@@ -354,6 +460,9 @@ export default {
     }
     if (this.lineageByMutationsSubscription) {
       this.lineageByMutationsSubscription.unsubscribe();
+    }
+    if (this.lineageByLocationSubscription) {
+      this.lineageByLocationSubscription.unsubscribe();
     }
   },
   methods: {
@@ -387,9 +496,13 @@ export default {
         this.getData();
       }
     },
+    updateLocation(location) {
+      this.selectedLocation = location;
+    },
     getData() {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
+        this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
         this.voi = results.voi;
@@ -398,7 +511,13 @@ export default {
     addMutations() {
       const selMutation = this.selectedMutationQuery.replace(/\s/g, "");
       this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
+        this.showSnackbar = true;
+        this.snackbarText = `${results.addedLength} lineages added`
+        setTimeout(() => {
+          this.showSnackbar = false;
+        }, 5000);
         this.mutationHeatmap = results.data;
+        this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
         this.voi = results.voi;
@@ -414,14 +533,57 @@ export default {
             threshold: this.prevalenceThreshold
           }
         })
+
+        // reset / clear
+        this.selectedMutationQuery = null;
+      })
+    },
+    addLocationLineages() {
+      this.lineageByLocationSubscription = getComparisonByLocation(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, this.selectedLocation.id, this.selectedOtherThreshold / 100, this.selectedNdayThreshold, this.selectedWindow,
+        this.selectedWindow).subscribe(results => {
+        this.showSnackbar = true;
+        this.snackbarText = `${results.addedLength} lineages added`
+        setTimeout(() => {
+          this.showSnackbar = false;
+        }, 5000);
+        this.mutationHeatmap = results.data;
+        this.downloadableHeatmap = results.dataFlat;
+        this.selectedPango = results.yDomain;
+        this.voc = results.voc;
+        this.voi = results.voi;
+
+        this.$router.push({
+          name: "SituationReportComparison",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: results.yDomain,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold
+          }
+        })
+
+        // reset / clear
+        this.selectedLocation = null;
       })
     },
     clearAddMutations() {
       this.selectedPango = [];
       this.addMutations();
     },
+    clearAddLocationLineages() {
+      this.selectedPango = [];
+      this.addLocationLineages();
+    },
     addPango(selected) {
       this.selectedPango.push(selected.name);
+      this.showSnackbar = true;
+      this.snackbarText = `${selected.name} added`
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
       this.$router.push({
         name: "SituationReportComparison",
         params: {
@@ -474,6 +636,10 @@ export default {
     width: 600px;
 }
 
+.w-75px {
+    width: 75px;
+}
+
 .gisaid {
     height: 25px;
 }
@@ -517,5 +683,9 @@ $circle-width-sm: 1.1em;
     border: none;
     padding: 0;
     outline: none;
+}
+
+.warning {
+    color: $warning-color;
 }
 </style>

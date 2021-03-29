@@ -1006,6 +1006,23 @@ function locationTableSorter(a) {
   return sortingArr.indexOf(a.variantType);
 }
 
+function geneSorter(a) {
+  const sortingArr = ["ORF1a",
+    "ORF1b",
+    "S",
+    "ORF3a",
+    "E",
+    "M",
+    "ORF6",
+    "ORF7a",
+    "ORF7b",
+    "ORF8",
+    "N",
+    "ORF10"
+  ];
+  return sortingArr.indexOf(a.key);
+}
+
 function reportTypeSorter(a) {
   const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key.toLowerCase());
@@ -1205,7 +1222,33 @@ export function getComparisonByMutations(apiurl, lineages, prevalenceThreshold, 
     mergeMap(newLineages => {
       newLineages.sort((a, b) => b.proportion - a.proportion);
       const newPango = uniq(lineages.concat(newLineages.map(d => d.pangolin_lineage)));
-      return getLineagesComparison(apiurl, newPango, prevalenceThreshold)
+      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
+        map(results => {
+          return {
+            ...results,
+            addedLength: newLineages.length
+          }
+        })
+      )
+    })
+  )
+}
+
+export function getComparisonByLocation(apiurl, lineages, prevalenceThreshold, locationID, other_threshold, nday_threshold, ndays, window) {
+  return getCumPrevalenceAllLineages(apiurl, locationID, other_threshold, nday_threshold, ndays, window).pipe(
+    mergeMap(newLineages => {
+      newLineages = Object.keys(newLineages[0]).filter(d => d.toLowerCase() != "other")
+      // newLineages.sort((a, b) => b.proportion - a.proportion);
+      const newPango = uniq(lineages.concat(newLineages));
+      console.log(newPango)
+      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
+        map(results => {
+          return {
+            ...results,
+            addedLength: newLineages.length
+          }
+        })
+      )
     })
   )
 }
@@ -1254,12 +1297,15 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
           d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })
 
-      const nestedByGenes = nest()
+      let nestedByGenes = nest()
         .key(d => d.gene)
         .entries(filtered);
 
+      nestedByGenes = orderBy(nestedByGenes, geneSorter);
+
       return ({
         data: nestedByGenes,
+        dataFlat: filtered,
         voc: voc,
         voi: voi,
         yDomain: lineages

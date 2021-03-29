@@ -1,6 +1,6 @@
 <template>
 <div class="overflow-auto" :class="{'w-75': isOverflow}">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap" name="Mutations by lineage" :subtitle="gene">
     <defs>
       <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
@@ -115,7 +115,7 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 160,
+        right: 165,
         bottom: 72,
         left: 100
       },
@@ -171,7 +171,7 @@ export default Vue.extend({
       this.xDomain = this.x.domain();
 
       this.width = this.xDomain.length * this.bandWidth;
-      this.isOverflow = this.width > 0.95* window.innerWidth;
+      this.isOverflow = this.width > 0.95 * window.innerWidth;
       this.x.range([0, this.width]);
 
 
@@ -405,17 +405,18 @@ export default Vue.extend({
 
       const yAxisRightSelector = this.heatmap
         .selectAll(".y-axis-right")
-        .data(yDomainFull);
+        .data(yDomainFull, d => d.key);
 
       yAxisRightSelector.join(enter => {
           const grp = enter.append("text")
             .attr("class", "y-axis-right")
+            .attr("x", this.width)
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
+            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("fill", "#efefef")
             .style("dominant-baseline", "central");
 
           grp.append("tspan")
-            .attr("x", this.width)
             .attr("class", "y-axis-lineage")
             .classed("hover-underline", "true")
             .classed("pointer", "true")
@@ -427,24 +428,25 @@ export default Vue.extend({
 
           grp.append("tspan")
             .attr("class", "y-axis-count")
-            .attr("x", this.width + this.margin.right)
-            .style("text-anchor", "end")
+            // .attr("x", this.width + this.margin.right)
+            // .style("text-anchor", "end")
             .style("font-size", 14)
             .style("fill", "#d2d2d2")
-            .attr("dx", -5)
-            .text(d => `(${format(",")(d.value)} seqs)`);
+            .attr("dx", 7)
+            // .attr("dx", -5)
+            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
         },
         update => {
-          update.select(".y-axis-right")
+          update
+            .attr("x", this.width)
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
 
           update.select(".y-axis-lineage")
-            .attr("x", this.width)
-            .text(d => d.key);
+            .text(d => d.key)
+            .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor);
 
           update.select(".y-axis-count")
-            .attr("x", this.width + this.margin.right)
-            .text(d => `(${format(",")(d.value)} seqs)`);
+            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
         },
         exit =>
         exit.call(exit =>
