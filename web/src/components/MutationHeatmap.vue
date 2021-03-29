@@ -171,7 +171,7 @@ export default Vue.extend({
       this.xDomain = this.x.domain();
 
       this.width = this.xDomain.length * this.bandWidth;
-      this.isOverflow = this.width > 0.95* window.innerWidth;
+      this.isOverflow = this.width > 0.95 * window.innerWidth;
       this.x.range([0, this.width]);
 
 
@@ -405,18 +405,18 @@ export default Vue.extend({
 
       const yAxisRightSelector = this.heatmap
         .selectAll(".y-axis-right")
-        .data(yDomainFull);
+        .data(yDomainFull, d => d.key);
 
       yAxisRightSelector.join(enter => {
           const grp = enter.append("text")
             .attr("class", "y-axis-right")
+            .attr("x", this.width)
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
             .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("fill", "#efefef")
             .style("dominant-baseline", "central");
 
           grp.append("tspan")
-            .attr("x", this.width)
             .attr("class", "y-axis-lineage")
             .classed("hover-underline", "true")
             .classed("pointer", "true")
@@ -434,19 +434,19 @@ export default Vue.extend({
             .style("fill", "#d2d2d2")
             .attr("dx", 7)
             // .attr("dx", -5)
-            .text((d,i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
         },
         update => {
-          update.select(".y-axis-right")
+          update
+            .attr("x", this.width)
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
 
           update.select(".y-axis-lineage")
-            .attr("x", this.width)
-            .text(d => d.key);
+            .text(d => d.key)
+            .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor);
 
           update.select(".y-axis-count")
-            .attr("x", this.width + this.margin.right)
-            .text(d => `(${format(",")(d.value)} seqs)`);
+            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
         },
         exit =>
         exit.call(exit =>
