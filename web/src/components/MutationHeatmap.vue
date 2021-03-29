@@ -1,6 +1,6 @@
 <template>
 <div class="overflow-auto" :class="{'w-75': isOverflow}">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap" name="Mutations by lineage" :subtitle="gene">
     <defs>
       <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
@@ -411,6 +411,7 @@ export default Vue.extend({
           const grp = enter.append("text")
             .attr("class", "y-axis-right")
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
+            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("fill", "#efefef")
             .style("dominant-baseline", "central");
 

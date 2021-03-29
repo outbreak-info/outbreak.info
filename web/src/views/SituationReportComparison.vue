@@ -191,6 +191,7 @@
           </template>
         </div>
       </div>
+      <DownloadReportData class="mt-3" :data="mutationHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="true" />
 
     </div>
 
@@ -207,12 +208,6 @@ import {
   getComparisonByMutations,
   getMutationsByLineage
 } from "@/api/genomics.js";
-
-import MutationHeatmap from "@/components/MutationHeatmap.vue";
-import SARSMutationMap from "@/components/SARSMutationMap.vue";
-import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
-import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
-import GradientLegend from "@/components/GradientLegend.vue";
 
 // --- font awesome --
 import {
@@ -278,6 +273,7 @@ export default {
     ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     GradientLegend: () => import( /* webpackPrefetch: true */ "@/components/GradientLegend.vue"),
+    DownloadReportData: () => import( /* webpackPrefetch: true */ "@/components/DownloadReportData.vue"),
     FontAwesomeIcon
   },
   computed: {
