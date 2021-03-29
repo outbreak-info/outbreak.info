@@ -103,9 +103,10 @@
 
             <div class="d-flex flex-column">
               <div class="d-flex flex-column">
-                <label for="add-mutation" class="fa-sm mt-2 ml-2" style="width: 250px">&gt;&gt; Find lineages with mutation(s) <span v-if="selectedMutationQuery">{{selectedMutationQuery}}</span> at &ge; {{selectedMutationThreshold}}% prevalence</label>
+                <label for="add-mutation" class="fa-sm mt-2 ml-2" style="width: 300px">&gt;&gt; Find lineages with mutation(s) <span v-if="selectedMutationQuery">{{selectedMutationQuery}}</span> at &ge; {{selectedMutationThreshold}}%
+                  prevalence</label>
                 <div class="d-flex align-items-center">
-                  <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
+                  <textarea id="add-mutation" class="form-control border" style="width: 200px" v-model="selectedMutationQuery" placeholder="S:E484K, ORF1a:DEL3675/3677" />
 
                   <span class="ml-2 mr-3">@ &ge;</span>
                   <div class="d-flex flex-column">
@@ -117,12 +118,33 @@
                   </div>
                 </div>
               </div>
+              <div id="warnings"  style="width: 400px" v-if="selectedMutationQuery && !mutationValid">
+                <div class="warning">
+                  Please check the mutation format:
+                </div>
+                <ul class="warning">
+                  <li>
+                    Add the gene before the mutation, like <b>"S:N501Y"</b>
+                  </li>
+                  <li>
+                    Substitutions should be "{gene}:{original amino acid}{codon number}{new amino acid}" like <b>"S:E484K"</b>
+                  </li>
+                  <li>
+                    Deletions should be "{gene}:DEL{start codon}/{end codon}" like <b>"ORF1a:DEL3675/3677"</b>
+                  </li>
+                  <li>
+                    Separate mutations with commas like <b>"S:E484K,S:N501Y"</b>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- select btns -->
               <small>
                 <div class="d-flex align-items-center justify-content-between my-3" style="width: 250px" v-if="selectedMutationQuery">
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()" :disabled="!mutationValid">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add {{selectedMutationQuery}}-containing lineages
                   </button>
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()" :disabled="!mutationValid">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add {{selectedMutationQuery}}-containing lineages
                   </button>
                 </div>
@@ -160,11 +182,11 @@
             </div>
 
             <small>
-              <div class="d-flex align-items-center justify-content-between my-3" style="width: 400px" v-if="locationValid">
-                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()">
+              <div class="d-flex align-items-center justify-content-between my-3" style="width: 400px" v-if="selectedLocation">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()" :disabled="locationValid">
                   <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add lineages in {{ selectedLocation.label }}
                 </button>
-                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()" :disabled="locationValid">
                   <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add lineages in {{ selectedLocation.label }}
                 </button>
               </div>
@@ -348,6 +370,10 @@ export default {
     },
     locationValid() {
       return this.selectedLocation && this.selectedOtherThreshold >= 0 && this.selectedWindow > 0 ? true : false;
+    },
+    mutationValid() {
+      console.log(this.selectedMutationQuery)
+      return /\w+:[A-Z]\d+[A-Z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
     }
   },
   data() {
@@ -649,5 +675,9 @@ $circle-width-sm: 1.1em;
     border: none;
     padding: 0;
     outline: none;
+}
+
+.warning {
+  color: $warning-color;
 }
 </style>
