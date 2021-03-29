@@ -433,7 +433,7 @@ export default Vue.extend({
             .style("font-size", 14)
             .style("fill", "#d2d2d2")
             .attr("dx", -5)
-            .text(d => `(${format(",")(d.value)} seqs)`);
+            .text((d,i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
         },
         update => {
           update.select(".y-axis-right")
