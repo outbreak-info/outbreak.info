@@ -118,7 +118,7 @@
                   </div>
                 </div>
               </div>
-              <div id="warnings"  style="width: 400px" v-if="selectedMutationQuery && !mutationValid">
+              <div id="warnings" style="width: 400px" v-if="selectedMutationQuery && !mutationValid">
                 <div class="warning">
                   Please check the mutation format:
                 </div>
@@ -182,13 +182,22 @@
             </div>
 
             <small>
-              <div class="d-flex align-items-center justify-content-between my-3" style="width: 400px" v-if="selectedLocation">
-                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()" :disabled="locationValid">
+              <div class="d-flex align-items-center justify-content-between my-3" style="width: 400px" v-if="locationValid">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()">
                   <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add lineages in {{ selectedLocation.label }}
                 </button>
-                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()" :disabled="locationValid">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()">
                   <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add lineages in {{ selectedLocation.label }}
                 </button>
+              </div>
+
+              <div v-else-if="selectedLocation" class="warning" style="width: 400px">
+                <p class="warning" v-if="!selectedOtherThreshold || !(selectedOtherThreshold >= 0)">
+                  Specify a minimum prevalence (<b>3%</b> by default)
+                </p>
+                <p class="warning" v-if="!(selectedWindow > 0)">
+                  Specify a time window (over the last <b>60</b> days by default)
+                </p>
               </div>
             </small>
 
@@ -369,10 +378,9 @@ export default {
       return (window.innerWidth < 500)
     },
     locationValid() {
-      return this.selectedLocation && this.selectedOtherThreshold >= 0 && this.selectedWindow > 0 ? true : false;
+      return this.selectedLocation && this.selectedOtherThreshold && this.selectedOtherThreshold >= 0 && this.selectedWindow > 0 ? true : false;
     },
     mutationValid() {
-      console.log(this.selectedMutationQuery)
       return /\w+:[A-Z]\d+[A-Z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
     }
   },
@@ -678,6 +686,6 @@ $circle-width-sm: 1.1em;
 }
 
 .warning {
-  color: $warning-color;
+    color: $warning-color;
 }
 </style>
