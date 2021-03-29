@@ -24,8 +24,8 @@
           <div class="d-flex align-items-end">
             <div class="d-flex align-items-center">
               <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
-              <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-locations-modal">
-                <font-awesome-icon class="m-0 mr-2 font-size-small" :icon="['fas', 'plus']" />add lineages
+              <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+                <font-awesome-icon class="m-0 mr-2 font-size-small" :icon="['fas', 'sync']" />change lineages
               </button>
             </div>
           </div>
@@ -65,7 +65,7 @@
       </div>
     </div> -->
 
-    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom">
+    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom collapse">
       <h5>Selected lineages</h5>
       <div class="d-flex flex-wrap">
         <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
@@ -178,15 +178,20 @@
     </div>
 
     <!-- LOOP OVER MUTATION HEATMAPS -->
-    <div id="mutation-heatmaps">
+    <div id="mutation-heatmaps" class="mt-4">
       <div class="d-flex flex-wrap justify-content-between">
         <div class="d-flex align-items-center">
           <div>
             <h3 class="m-0">Mutation prevalence across lineages</h3>
             <p class="text-muted m-0">Mutations with > {{ prevalenceThreshold }}% prevalence in at least one lineage</p>
           </div>
+          <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+            <font-awesome-icon class="m-0 mr-2 fa-xs" :icon="['fas', 'sync']" />
+            <span class="fa-xs">change lineages</span>
+          </button>
+
           <div class="d-flex flex-column ml-3">
-            <small class="text-muted">Min. mutation prevalence</small>
+            <small class="text-muted line-height-1" style="width: 100px">Min. mutation prevalence</small>
             <div class="mt-2">
               <span class="percent-sign border bg-white py-1">
                 <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="prevalenceThreshold" @change="debounceThreshold" />
@@ -194,11 +199,12 @@
               </span>
             </div>
           </div>
+
         </div>
 
 
         <!-- LEGEND -->
-        <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4">
+        <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4 my-2">
           <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
           <div class="d-flex align-items-center">
             <svg width="24" height="24">
@@ -594,6 +600,10 @@ export default {
 }
 .w-600px {
     width: 600px;
+}
+
+.w-75px {
+    width: 75px;
 }
 
 .gisaid {
