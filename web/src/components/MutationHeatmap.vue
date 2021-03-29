@@ -115,7 +115,7 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 160,
+        right: 165,
         bottom: 72,
         left: 100
       },
@@ -428,11 +428,12 @@ export default Vue.extend({
 
           grp.append("tspan")
             .attr("class", "y-axis-count")
-            .attr("x", this.width + this.margin.right)
-            .style("text-anchor", "end")
+            // .attr("x", this.width + this.margin.right)
+            // .style("text-anchor", "end")
             .style("font-size", 14)
             .style("fill", "#d2d2d2")
-            .attr("dx", -5)
+            .attr("dx", 7)
+            // .attr("dx", -5)
             .text((d,i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
         },
         update => {
