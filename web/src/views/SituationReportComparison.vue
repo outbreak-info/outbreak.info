@@ -98,7 +98,7 @@
             <small class="text-muted mb-1" v-if="selectedMutationQuery">Add all lineages w/ mutations {{selectedMutationQuery}} &ge; {{selectedMutationThreshold}}% prevalence in lineage</small>
             <div class="d-flex">
               <div class="d-flex flex-column">
-                <label for="add-mutation" class="fa-sm">Find lineages with mutation(s)</label>
+                <label for="add-mutation" class="fa-sm mt-2">Find lineages with mutation(s)</label>
                 <div class="d-flex align-items-center">
                   <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
 
@@ -116,6 +116,29 @@
                   </button>
                   <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()" v-if="selectedMutationQuery">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add {{selectedMutationQuery}}-containing lineages
+                  </button>
+                </div>
+              </small>
+            </div>
+          </div>
+
+          <div class="mr-5 mb-3">
+            <h6 class="d-flex align-items-center p-0 m-0">
+              <div class="mr-2 circle">3</div>
+              Prevalent in a location
+            </h6>
+            <div class="d-flex">
+              <div class="d-flex flex-column" style="width: 250px">
+                <label for="add-mutation" class="fa-sm line-height-1 mt-2">Find lineages with &gt; {{selectedOtherThresholdFormatted}} total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in {{selectedLocation.label}}</span></label>
+                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+              </div>
+              <small>
+                <div class="d-flex flex-column ml-3" style="width: 200px">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()" v-if="locationValid">
+                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add lineages in {{ selectedLocation.label }}
+                  </button>
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()" v-if="locationValid">
+                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add lineages in {{ selectedLocation.label }}
                   </button>
                 </div>
               </small>
@@ -207,9 +230,11 @@
 import Vue from "vue";
 import {
   findPangolin,
+  findLocation,
   getBasicComparisonReportData,
   getLineagesComparison,
   getComparisonByMutations,
+  getComparisonByLocation,
   getMutationsByLineage
 } from "@/api/genomics.js";
 
@@ -287,6 +312,12 @@ export default {
     },
     smallScreen() {
       return (window.innerWidth < 500)
+    },
+    selectedOtherThresholdFormatted() {
+      return format(".0%")(this.selectedOtherThreshold);
+    },
+    locationValid() {
+      return this.selectedLocation ? true : false;
     }
   },
   data() {
@@ -303,10 +334,17 @@ export default {
       heatmapSubscription: null,
       basicSubscription: null,
       lineageByMutationsSubscription: null,
+      lineageByLocationSubscription: null,
       totalSequences: null,
       lastUpdated: null,
       showSnackbar: false,
       snackbarText: null,
+      selectedLocation: null,
+      selectedOtherThreshold: 0.03,
+      selectedNdayThreshold: 5,
+      // selectedNdays: 60,
+      selectedWindow: 60,
+      queryLocation: null,
       voi: null,
       voc: null,
       moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
@@ -339,6 +377,7 @@ export default {
     // load the initial data
     this.getData();
     this.queryPangolin = findPangolin;
+    this.queryLocation = findLocation;
 
     this.basicSubscription = getBasicComparisonReportData(this.$genomicsurl).subscribe(results => {
       this.totalSequences = results.total;
@@ -357,6 +396,9 @@ export default {
     }
     if (this.lineageByMutationsSubscription) {
       this.lineageByMutationsSubscription.unsubscribe();
+    }
+    if (this.lineageByLocationSubscription) {
+      this.lineageByLocationSubscription.unsubscribe();
     }
   },
   methods: {
@@ -389,6 +431,9 @@ export default {
 
         this.getData();
       }
+    },
+    updateLocation(location) {
+      this.selectedLocation = location;
     },
     getData() {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
@@ -429,9 +474,42 @@ export default {
         this.selectedMutationQuery = null;
       })
     },
+    addLocationLineages() {
+      this.lineageByLocationSubscription = getComparisonByLocation(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, this.selectedLocation.id, this.selectedOtherThreshold, this.selectedNdayThreshold, this.selectedWindow, this.selectedWindow).subscribe(results => {
+        this.showSnackbar = true;
+        this.snackbarText = `${results.addedLength} lineages added`
+        setTimeout(() => {
+          this.showSnackbar = false;
+        }, 5000);
+        this.mutationHeatmap = results.data;
+        this.downloadableHeatmap = results.dataFlat;
+        this.selectedPango = results.yDomain;
+        this.voc = results.voc;
+        this.voi = results.voi;
+
+        this.$router.push({
+          name: "SituationReportComparison",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: results.yDomain,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold
+          }
+        })
+
+        // reset / clear
+        this.selectedLocation = null;
+        })
+    },
     clearAddMutations() {
       this.selectedPango = [];
       this.addMutations();
+    },
+    clearAddLocationLineages() {
+      this.selectedPango = [];
+      this.addLocationLineages();
     },
     addPango(selected) {
       this.selectedPango.push(selected.name);

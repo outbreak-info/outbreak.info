@@ -1224,7 +1224,29 @@ export function getComparisonByMutations(apiurl, lineages, prevalenceThreshold, 
       const newPango = uniq(lineages.concat(newLineages.map(d => d.pangolin_lineage)));
       return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
         map(results => {
-          return {... results, addedLength: newLineages.length}
+          return {
+            ...results,
+            addedLength: newLineages.length
+          }
+        })
+      )
+    })
+  )
+}
+
+export function getComparisonByLocation(apiurl, lineages, prevalenceThreshold, locationID, other_threshold, nday_threshold, ndays, window) {
+  return getCumPrevalenceAllLineages(apiurl, locationID, other_threshold, nday_threshold, ndays, window).pipe(
+    mergeMap(newLineages => {
+      newLineages = Object.keys(newLineages[0]).filter(d => d.toLowerCase() != "other")
+      // newLineages.sort((a, b) => b.proportion - a.proportion);
+      const newPango = uniq(lineages.concat(newLineages));
+      console.log(newPango)
+      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
+        map(results => {
+          return {
+            ...results,
+            addedLength: newLineages.length
+          }
         })
       )
     })
