@@ -66,7 +66,10 @@
     </div> -->
 
     <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom collapse">
-      <h5>Selected lineages</h5>
+      <div class="d-flex justify-content-between mt-1 mb-2">
+        <h4>Selected lineages</h4>
+          <font-awesome-icon class="mr-2" :icon="['far', 'times-circle']" :style="{'opacity': '0.6'}" data-toggle="collapse" data-target="#select-lineages"/>
+      </div>
       <div class="d-flex flex-wrap">
         <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
           <span>{{lineage}}</span>
@@ -77,8 +80,8 @@
         </button>
       </div>
 
-      <div class="border-top pt-2 mt-2">
-        <h5>Add lineages</h5>
+      <div class="border-top pt-3 my-3 mb-1">
+        <h4 class="mb-3">Add lineages</h4>
         <div class="d-flex flex-wrap justify-content-between">
           <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded">
             <h6 class="d-flex align-items-center">
