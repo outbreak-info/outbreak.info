@@ -100,13 +100,10 @@
               <div class="mr-2 circle">2</div>
               Containing a mutation(s)
             </h6>
-            <div class="text-muted mb-1 line-height-1" style="width: 200px" v-if="selectedMutationQuery">
-              <small>Add all lineages w/ mutations {{selectedMutationQuery}} &ge; {{selectedMutationThreshold}}% prevalence in lineage</small>
-            </div>
 
             <div class="d-flex flex-column">
               <div class="d-flex flex-column">
-                <label for="add-mutation" class="fa-sm mt-2 ml-2">&gt;&gt; Find lineages with mutation(s)</label>
+                <label for="add-mutation" class="fa-sm mt-2 ml-2" style="width: 250px">&gt;&gt; Find lineages with mutation(s) <span v-if="selectedMutationQuery">{{selectedMutationQuery}}</span> at &ge; {{selectedMutationThreshold}}% prevalence</label>
                 <div class="d-flex align-items-center">
                   <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
 
