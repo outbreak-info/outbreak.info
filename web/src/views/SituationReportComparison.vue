@@ -79,26 +79,34 @@
 
       <div class="border-top pt-2 mt-2">
         <h5>Add lineages</h5>
-        <div class="d-flex flex-wrap">
-          <div class="mr-5">
+        <div class="d-flex flex-wrap justify-content-between">
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded">
             <h6 class="d-flex align-items-center">
               <div class="mr-2 circle">1</div>
               <span class="mr-1">By</span><a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>
             </h6>
-            <div style="width: 170px">
-              <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
+            <div class="line-height-1" style="width: 200px">
+              <div class="fa-sm mt-2 ml-2">&gt;&gt; Add a specific lineage</div>
+            </div>
+            <div class="d-flex h-100 align-items-center">
+              <div style="width: 170px" class="align-self-middle">
+                <TypeaheadSelect :queryFunction="queryPangolin" @selected="addPango" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Add lineage" />
+              </div>
             </div>
           </div>
 
-          <div class="mr-5 mb-3">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
             <h6 class="d-flex align-items-center p-0 m-0">
               <div class="mr-2 circle">2</div>
               Containing a mutation(s)
             </h6>
-            <small class="text-muted mb-1" v-if="selectedMutationQuery">Add all lineages w/ mutations {{selectedMutationQuery}} &ge; {{selectedMutationThreshold}}% prevalence in lineage</small>
-            <div class="d-flex">
+            <div class="text-muted mb-1 line-height-1" style="width: 200px" v-if="selectedMutationQuery">
+              <small>Add all lineages w/ mutations {{selectedMutationQuery}} &ge; {{selectedMutationThreshold}}% prevalence in lineage</small>
+            </div>
+
+            <div class="d-flex flex-column">
               <div class="d-flex flex-column">
-                <label for="add-mutation" class="fa-sm mt-2">Find lineages with mutation(s)</label>
+                <label for="add-mutation" class="fa-sm mt-2 ml-2">&gt;&gt; Find lineages with mutation(s)</label>
                 <div class="d-flex align-items-center">
                   <textarea id="add-mutation" class="form-control border" style="width: 100px" v-model="selectedMutationQuery" placeholder="S:E484K, S:N501Y" />
 
@@ -113,11 +121,11 @@
                 </div>
               </div>
               <small>
-                <div class="d-flex flex-column ml-3" style="width: 200px">
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()" v-if="selectedMutationQuery">
+                <div class="d-flex align-items-center justify-content-between my-3" style="width: 250px" v-if="selectedMutationQuery">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addMutations()">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add {{selectedMutationQuery}}-containing lineages
                   </button>
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()" v-if="selectedMutationQuery">
+                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddMutations()">
                     <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add {{selectedMutationQuery}}-containing lineages
                   </button>
                 </div>
@@ -125,44 +133,46 @@
             </div>
           </div>
 
-          <div class="mr-5 mb-3">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
             <h6 class="d-flex align-items-center p-0 m-0">
               <div class="mr-2 circle">3</div>
               Prevalent in a location
             </h6>
             <div class="d-flex">
               <div class="d-flex flex-column" style="width: 250px">
-                <label for="add-mutation" class="fa-sm line-height-1 mt-2">Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
+                <label for="add-mutation" class="fa-sm line-height-1 mt-2 ml-2">&gt;&gt; Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
                     {{selectedLocation.label}}</span></label>
                 <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
               </div>
               <div class="d-flex flex-column ml-3">
-              <div class="d-flex flex-column">
-                <small class="text-muted">min. prevalence</small>
-                <span class="percent-sign border bg-white py-1">
-                  <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedOtherThreshold" placeholder="0-100" />
-                  <span class="mr-1">%</span>
-                </span>
-              </div>
-              <div class="d-flex flex-column">
-                <small class="text-muted">over the last</small>
-                <span class="percent-sign border bg-white py-1">
-                  <input type="number" min="0" max="1000" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedWindow" placeholder="num. days" />
-                  <span class="mr-1">days</span>
-                </span>
-              </div>
-              </div>
-              <small>
-                <div class="d-flex flex-column ml-3" style="width: 200px">
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()" v-if="locationValid">
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add lineages in {{ selectedLocation.label }}
-                  </button>
-                  <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()" v-if="locationValid">
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add lineages in {{ selectedLocation.label }}
-                  </button>
+                <div class="d-flex flex-column">
+                  <small class="text-muted">min. prevalence</small>
+                  <span class="percent-sign border bg-white py-1">
+                    <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedOtherThreshold" placeholder="0-100" />
+                    <span class="mr-1">%</span>
+                  </span>
                 </div>
-              </small>
+                <div class="d-flex flex-column">
+                  <small class="text-muted">over the last</small>
+                  <span class="percent-sign border bg-white py-1">
+                    <input type="number" min="0" max="1000" class="flex-grow-0 px-2" style="width: 60px" v-model="selectedWindow" placeholder="num. days" />
+                    <span class="mr-1">days</span>
+                  </span>
+                </div>
+              </div>
             </div>
+
+            <small>
+              <div class="d-flex align-items-center justify-content-between my-3" style="width: 400px" v-if="locationValid">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addLocationLineages()">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add lineages in {{ selectedLocation.label }}
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="clearAddLocationLineages()">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add lineages in {{ selectedLocation.label }}
+                </button>
+              </div>
+            </small>
+
           </div>
 
 
@@ -334,7 +344,7 @@ export default {
       return (window.innerWidth < 500)
     },
     locationValid() {
-      return this.selectedLocation ? true : false;
+      return this.selectedLocation && this.selectedOtherThreshold >= 0 && this.selectedWindow > 0 ? true : false;
     }
   },
   data() {
