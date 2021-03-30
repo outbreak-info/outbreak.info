@@ -434,10 +434,10 @@ export default {
   name: "LocationReport",
   props: {
     loc: String,
-    muts: Array,
-    pango: Array,
-    variant: Array,
-    selected: Array
+    muts: [Array, String],
+    pango: [Array, String],
+    variant: [Array, String],
+    selected: [Array, String]
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
