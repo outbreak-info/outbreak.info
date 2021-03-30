@@ -228,7 +228,7 @@
           <div class="d-flex align-items-center" :class="{'flex-wrap': smallScreen}">
             <!-- CHECKBOX TO SELECT GENES -->
             <div id="select-genes" class="d-flex align-items-center justify-content-between mt-3">
-              <small class="text-muted text-right mr-2 line-height-1">include genes:</small>
+              <small class="text-muted text-right mx-2 line-height-1">include genes:</small>
               <div class="d-flex flex-wrap">
                 <label class="b-contain pr-3" v-for="(gene, idx) in geneOpts" :key="idx">
                   <span>{{gene}}</span>
