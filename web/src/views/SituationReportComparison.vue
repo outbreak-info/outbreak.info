@@ -348,6 +348,7 @@ import {
 } from "d3";
 
 import debounce from "lodash/debounce";
+import uniq from "lodash/uniq";
 
 export default {
   name: "SituationReportComparison",
@@ -587,6 +588,8 @@ export default {
     },
     addPango(selected) {
       this.selectedPango.push(selected.name);
+      this.selectedPango = uniq(this.selectedPango);
+
       this.showSnackbar = true;
       this.snackbarText = `${selected.name} added`
       setTimeout(() => {
