@@ -391,7 +391,7 @@ export default {
       return this.selectedLocation && this.selectedOtherThreshold && this.selectedOtherThreshold >= 0 && this.selectedWindow > 0 ? true : false;
     },
     mutationValid() {
-      return /\w+:[A-Z]\d+[A-Z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
+      return /\w+:[A-z]\d+[A-z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
     }
   },
   data() {
