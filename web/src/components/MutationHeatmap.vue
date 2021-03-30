@@ -1,6 +1,6 @@
 <template>
-<div>
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap">
+<div class="overflow-auto" :class="{'w-75': isOverflow}">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap" name="Mutations by lineage" :subtitle="gene" style="background: #343a40;">
     <defs>
       <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
@@ -9,7 +9,6 @@
     <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
     <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
     <g ref="yAxisLeft" class="axis axis--y" :transform="`translate(${this.margin.left - 5}, ${this.margin.top})`"></g>
-    <g ref="yAxisRight" class="axis axis--y" :transform="`translate(${this.margin.left + this.width + 5}, ${this.margin.top})`"></g>
     <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
     <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
   </svg>
@@ -29,6 +28,8 @@
     </div>
     <div class="d-flex align-items-center pt-2" id="prevalence">
       <div id="value" class="fa-lg"></div> <small class="ml-2 text-muted">of all sequences</small>
+    </div>
+    <div id="count">
     </div>
     <div id="not-detected" class="text-muted">
       not detected
@@ -62,6 +63,7 @@ import {
   transition,
   max,
   format,
+  nest,
   event
 } from "d3";
 
@@ -113,10 +115,11 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 85,
+        right: 165,
         bottom: 72,
-        left: 85
+        left: 100
       },
+      isOverflow: false,
       // UI
       sortVar: "codon_num",
       // constants
@@ -134,7 +137,6 @@ export default Vue.extend({
       xAxisTop: null,
       xAxisBottom: null,
       yAxisLeft: null,
-      yAxisRight: null,
       width: null,
       height: null,
       colorScale: interpolateRdPu,
@@ -169,6 +171,7 @@ export default Vue.extend({
       this.xDomain = this.x.domain();
 
       this.width = this.xDomain.length * this.bandWidth;
+      this.isOverflow = this.width > 0.95 * window.innerWidth;
       this.x.range([0, this.width]);
 
 
@@ -187,9 +190,6 @@ export default Vue.extend({
 
       this.xAxisTop = axisTop(this.x).tickSizeOuter(0);
       select(this.$refs.xAxisTop).call(this.xAxisTop);
-
-      this.yAxisRight = axisRight(this.y).tickSizeOuter(0);
-      select(this.$refs.yAxisRight).call(this.yAxisRight);
 
       this.base = this.xDomain.map(x => {
         return this.yDomain.map(y => {
@@ -250,7 +250,15 @@ export default Vue.extend({
           .text(d.prevalence < 0.0005 ? "< 0.1%" : format(".1%")(d.prevalence));
 
         ttip
+          .select("#count")
+          .text(`(${format(",")(d.mutation_count)} / ${format(",")(d.lineage_count)})`)
+
+        ttip
           .select("#prevalence")
+          .classed("hidden", false)
+
+        ttip
+          .select("#count")
           .classed("hidden", false)
 
         ttip
@@ -260,6 +268,11 @@ export default Vue.extend({
         ttip
           .select("#prevalence")
           .classed("hidden", true)
+
+        ttip
+          .select("#count")
+          .classed("hidden", true)
+
         ttip
           .select("#not-detected")
           .classed("hidden", false)
@@ -284,6 +297,17 @@ export default Vue.extend({
         query: {
           loc: this.locationID,
           pango: pango,
+          selected: this.locationID
+        }
+      })
+    },
+    route2LineageMutation(d) {
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          loc: this.locationID,
+          pango: d[this.yVar],
+          muts: d.mutation,
           selected: this.locationID
         }
       })
@@ -345,7 +369,7 @@ export default Vue.extend({
         enter => {
           enter
             .append("rect")
-            .attr("class", "heatmap")
+            .attr("class", "heatmap pointer")
             .attr("id", d => d.id)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
@@ -374,9 +398,68 @@ export default Vue.extend({
         )
       )
 
+      const yDomainFull = nest()
+        .key(d => d[this.yVar])
+        .rollup(values => values[0].lineage_count)
+        .entries(this.data);
+
+      const yAxisRightSelector = this.heatmap
+        .selectAll(".y-axis-right")
+        .data(yDomainFull, d => d.key);
+
+      yAxisRightSelector.join(enter => {
+          const grp = enter.append("text")
+            .attr("class", "y-axis-right")
+            .attr("x", this.width)
+            .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
+            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+            .style("fill", "#efefef")
+            .style("dominant-baseline", "central");
+
+          grp.append("tspan")
+            .attr("class", "y-axis-lineage")
+            .classed("hover-underline", "true")
+            .classed("pointer", "true")
+            .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor)
+            .style("font-size", 18)
+            .attr("dx", 10)
+            .text(d => d.key)
+            .on("click", d => this.route2Lineage(d.key));
+
+          grp.append("tspan")
+            .attr("class", "y-axis-count")
+            // .attr("x", this.width + this.margin.right)
+            // .style("text-anchor", "end")
+            .style("font-size", 14)
+            .style("fill", "#d2d2d2")
+            .attr("dx", 7)
+            // .attr("dx", -5)
+            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+        },
+        update => {
+          update
+            .attr("x", this.width)
+            .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
+
+          update.select(".y-axis-lineage")
+            .text(d => d.key)
+            .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor);
+
+          update.select(".y-axis-count")
+            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+        },
+        exit =>
+        exit.call(exit =>
+          exit
+          .transition()
+          .style("opacity", 1e-5)
+          .remove()
+        ))
+
       // turn on tooltips
       this.svg
         .selectAll("rect")
+        .on("click", d => this.route2LineageMutation(d))
         .on("mousemove", d => this.tooltipOn(d))
         .on("mouseleave", () => this.tooltipOff());
 
@@ -411,15 +494,6 @@ export default Vue.extend({
         .classed("hover-underline", "true")
         .classed("pointer", "true")
         .on("click", d => this.route2Lineage(d));
-
-      select(this.$refs.yAxisRight)
-        .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
-        .classed("hover-underline", "true")
-        .classed("pointer", "true")
-        .on("click", d => this.route2Lineage(d));
-
-
     }
   }
 })

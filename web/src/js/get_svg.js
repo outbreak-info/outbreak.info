@@ -17,7 +17,7 @@ import {
 } from "d3";
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
-export function getSvg(figureRef, sources, date) {
+export function getSvg(figureRef, sources, date, darkBg) {
   // make sure no tooltips are active
   selectAll("path").style("opacity", 1);
   // selectAll("rect").style("opacity", 1);
@@ -28,11 +28,11 @@ export function getSvg(figureRef, sources, date) {
   window.document.body.appendChild(emptySvg);
   var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
 
-  const svgObject = getSvgSources(refs, emptySvgDeclarationComputed, sources, date);
+  const svgObject = getSvgSources(refs, emptySvgDeclarationComputed, sources, date, darkBg);
   return (svgObject)
 }
 
-function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
+function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date, darkBg) {
   var svgInfo = [];
   var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
@@ -65,7 +65,7 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
     const subtitle = svg.getAttribute("subtitle");
     const footer = getFooter(rect.width, rect.height, sources, date);
     const header = getHeader(rect.width, rect.height * 0.1, title);
-    const subheader = getHeader(rect.width, rect.height * 0.07, subtitle, 25);
+    const subheader = getHeader(rect.width, rect.height * 0.07, subtitle, 25, darkBg);
 
 
     svgInfo.push({
@@ -83,16 +83,18 @@ function getSvgSources(svgs, emptySvgDeclarationComputed, sources, date) {
   return svgInfo;
 }
 
-function getHeader(width, height, title, marginL = 5) {
+function getHeader(width, height, title, marginL = 5, darkBg = false) {
   if (!title) {
     title = "";
   }
 
+  const fontColor = darkBg ? "#efefef" : "#2c3e50";
+
   const fontSize = height * 0.95;
   // view box needs to be a bit bigger to not get cut off
   return (`<svg xmlns="http://www.w3.org/2000/svg" id="title" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet">
-  <text x="0" y="0" transform="translate(${marginL},5)" fill="currentColor"
-    style="dominant-baseline: hanging; font-size:${fontSize}px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:rgb(44, 62, 80);text-anchor:start;caret-color:rgb(44, 62, 80);">
+  <text x="0" y="0" transform="translate(${marginL},5)"
+    style="dominant-baseline: hanging; font-size:${fontSize}px;display:block;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;height:auto;line-height:15px;outline-color:rgb(44, 62, 80);overflow-x:visible;overflow-y:visible;text-align:center;text-decoration:none solid rgb(44, 62, 80);text-decoration-color:rgb(44, 62, 80);vertical-align:baseline;white-space:nowrap;width:auto;column-rule-color:rgb(44, 62, 80);-webkit-font-smoothing:antialiased;perspective-origin:0px 0px;-webkit-text-emphasis-color:rgb(44, 62, 80);-webkit-text-fill-color:rgb(44, 62, 80);-webkit-text-stroke-color:rgb(44, 62, 80);transform-origin:0px 0px;fill:${fontColor};text-anchor:start;caret-color:rgb(44, 62, 80);">
   ${title.replace("&mdash;", "\u2014").replace("&le;", "\u2264").replace("&ge;", "\u2265").replace("&", "and")}</text>
   </svg>`)
 }
@@ -228,7 +230,7 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 // Thanks, Mike.
-export function getPng(selector, sources, date, vertical = false, download = false, filename = "outbreakinfo_visualization.png") {
+export function getPng(selector, sources, date, vertical = false, darkBg=false, download = false, filename = "outbreakinfo_visualization.png") {
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
   // make sure no tooltips are active
@@ -347,7 +349,7 @@ export function getPng(selector, sources, date, vertical = false, download = fal
           role: "subhead"
         });
 
-        subheader = getHeader(width, height * subheaderFraction, subtitle, 75);
+        subheader = getHeader(width, height * subheaderFraction, subtitle, 75, darkBg);
       }
 
       dims.push({

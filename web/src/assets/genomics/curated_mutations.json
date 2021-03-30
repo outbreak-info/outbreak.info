@@ -312,14 +312,14 @@
       "codon_num": 1118,
       "alt_aa": "H"
     }, {
-      "mutation": "ORF8:Q27_",
+      "mutation": "ORF8:Q27*",
       "type": "substitution",
       "gene": "ORF8",
       "ref_codon": "CAA",
       "pos": 27971,
       "ref_aa": "Q",
       "codon_num": 27,
-      "alt_aa": "_"
+      "alt_aa": "*"
     }, {
       "mutation": "ORF8:R52I",
       "type": "substitution",
@@ -707,14 +707,14 @@
       "codon_num": 1118,
       "alt_aa": "H"
     }, {
-      "mutation": "ORF8:Q27_",
+      "mutation": "ORF8:Q27*",
       "type": "substitution",
       "gene": "ORF8",
       "ref_codon": "CAA",
       "pos": 27971,
       "ref_aa": "Q",
       "codon_num": 27,
-      "alt_aa": "_"
+      "alt_aa": "*"
     }, {
       "mutation": "ORF8:R52I",
       "type": "substitution",
