@@ -88,7 +88,7 @@
         </div>
 
         <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
-          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis axis--x" ref="xEpiAxis"></g>
+          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis epi-x axis--x" ref="xEpiAxis"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis epi-y axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
           <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
@@ -171,7 +171,8 @@ export default Vue.extend({
     data: Array,
     seqCounts: Array,
     epi: Array,
-    locationName: String
+    locationName: String,
+    locationID: String
   },
   components: {
     DownloadReportData,
@@ -197,7 +198,7 @@ export default Vue.extend({
         top: 10,
         bottom: 25,
         left: 85,
-        right: 110
+        right: 135
       },
       marginHist: {
         top: 7,
@@ -563,6 +564,7 @@ export default Vue.extend({
         .style("opacity", 1);
     },
     tooltipOnMutation(d) {
+      console.log(d)
       const ttipShift = 20;
       const ttip = select(this.$refs.tooltip_mutations);
 
@@ -632,6 +634,7 @@ export default Vue.extend({
         const endLabels = this.plottedData.map(d => {
           return ({
             label: d[this.fillVariable],
+            route: d.route,
             fx: 0,
             targetY: this.y(d.data.slice(-1)[0][this.yVariable])
           })
@@ -671,7 +674,7 @@ export default Vue.extend({
           enter => {
             enter
               .append("text")
-              .attr("class", "mutation-label")
+              .attr("class", "mutation-label pointer")
               .attr("x", this.width - this.margin.left - this.margin.right)
               .attr("dx", 5)
               .attr("y", d => d.y)
@@ -699,6 +702,7 @@ export default Vue.extend({
           .selectAll(".mutation-label")
           .on("mouseover", d => this.tooltipOnMutation(d))
           .on("mouseout", () => this.tooltipOffMutation())
+          .on("click", d => this.route2Mutation(d));
 
         const mutSelector = this.chart
           .selectAll(".mutation-trace")
@@ -758,6 +762,15 @@ export default Vue.extend({
           .on("mouseleave", () => this.tooltipOff())
       }
     },
+    route2Mutation(d) {
+      this.$router.push({
+        name: "MutationReport",
+        query: { ... d.route,
+          loc: this.locationID,
+          selected: this.locationID
+        }
+      })
+    },
     debounce(fn, delay) {
       var timer = null;
       return function() {
@@ -789,6 +802,10 @@ export default Vue.extend({
 
     & .epi-y {
         font-size: 14pt;
+    }
+
+    & .epi-x {
+        font-size: 16pt;
     }
 
     & .axis--y text {

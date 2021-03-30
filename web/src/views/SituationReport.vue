@@ -235,7 +235,7 @@
 
         <!-- RIGHT: SUMMARY BOX -->
         <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :reportType="reportType" :selected="selected" :locationTotals="locationTotals" :countries="countries"
+          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :locationQueryParams="locationQueryParams" :reportType="reportType" :selected="selected" :locationTotals="locationTotals" :countries="countries"
             :states="states" />
         </section>
       </div>
@@ -479,6 +479,7 @@ export default {
       mutationVar: null,
       mutations: null,
       reportType: null,
+      locationQueryParams: null,
       title: null,
       lastUpdated: null,
       disclaimer: null,
@@ -505,6 +506,7 @@ export default {
       choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
       choroColorScale: null,
       choroCountThreshold: 25,
+      totalThresh: 25, // threshold for "unreliable estimate" in the table
 
       // data
       selectedLocations: null,
@@ -554,6 +556,8 @@ export default {
           this.reportType = "lineage with added mutations";
           this.searchTerms = `${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`
           this.title = `${this.reportName} Report`;
+          const qParam = typeof(this.$route.query.muts) == "string" ? `${this.lineageName}|${this.$route.query.muts}` : `${this.lineageName}|${this.$route.query.muts.join(",")}`;
+          this.locationQueryParams = { variant: [qParam] };
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
@@ -566,6 +570,7 @@ export default {
           this.reportType = "lineage";
           this.title = `${this.reportName} Lineage Report`;
           this.searchTerms = [this.lineageName];
+          this.locationQueryParams = { pango: [this.lineageName] };
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
 
@@ -580,6 +585,7 @@ export default {
           this.mutationName = this.reportName;
           this.reportType = "mutation";
           this.searchTerms = [this.mutationName.split(":").slice(-1)];
+          this.locationQueryParams = { muts: [this.$route.query.muts] };
           this.title = `${this.reportName} Mutation Report`;
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
@@ -593,6 +599,7 @@ export default {
           this.mutationID = this.$route.query.muts.join(",");
           this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
           this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
+          this.locationQueryParams = { muts: [this.$route.query.muts.join(",")] };
           this.disclaimer =
             `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
         }
@@ -602,8 +609,8 @@ export default {
       this.setLineageAndMutationStr();
 
       if (this.lineageName || this.mutationID) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.loc, this.mutationID, this.lineageName, this.selected).subscribe(results => {
-          console.log(results)
+        this.dataSubscription = getReportData(this.$genomicsurl, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+          // console.log(results)
 
           // selected locations
           this.selectedLocations = results.locations;
@@ -715,7 +722,7 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.loc, this.selected).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
