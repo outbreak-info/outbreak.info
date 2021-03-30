@@ -131,7 +131,7 @@ export default {
   computed: {
     title() {
       if (this.selectedLineage) {
-        return this.selectedMutations.length ? `${this.selectedLineage} lineage with ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
+        return this.selectedMutations.length ? `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
       } else {
         return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
       }
@@ -144,7 +144,7 @@ export default {
     addVariant() {
       if (this.selectedLineage && this.selectedMutations.length) {
         this.variant.push({
-          label: `${this.selectedLineage} with ${this.selectedMutations.map(d => d.mutation).join(", ")}`,
+          label: `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}`,
           route: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`
         })
       } else if (this.selectedLineage) {

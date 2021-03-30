@@ -205,7 +205,11 @@
                   <!-- HEATMAP + LEGEND -->
                   <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
                     <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
-                    <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+                      <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
+                    </div>
+
                     <div class="d-flex flex-column align-items-center bg-dark">
 
                       <!-- HEATMAP LEGEND -->
@@ -231,7 +235,7 @@
                       </div>
                       <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
-                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
+                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
                   </div>
                 </div>
               </section>
@@ -248,7 +252,7 @@
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
-          <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
+          <LocationTable :data="lineageTable" :locationName="selectedLocation.location" :locationID="selectedLocation.id" />
         </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
@@ -430,10 +434,10 @@ export default {
   name: "LocationReport",
   props: {
     loc: String,
-    muts: Array,
-    pango: Array,
-    variant: Array,
-    selected: Array
+    muts: [Array, String],
+    pango: [Array, String],
+    variant: [Array, String],
+    selected: [Array, String]
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
@@ -559,7 +563,7 @@ export default {
           if (variant.length == 2) {
             tracked.push({
               type: "variant",
-              label: `${variant[0]} lineage with ${variant[1]}`,
+              label: `${variant[0]} + ${variant[1]}`,
               qParam: this.variant,
               query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
               variantType: "Custom Lineages & Mutations",
@@ -575,7 +579,7 @@ export default {
             if (variant.length == 2) {
               tracked.push({
                 type: "variant",
-                label: `${variant[0]} lineage with ${variant[1]}`,
+                label: `${variant[0]} + ${variant[1]}`,
                 qParam: d,
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
                 variantType: "Custom Lineages & Mutations",
@@ -775,7 +779,7 @@ export default {
       }
     },
     updateTable() {
-      this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations).subscribe(results => {
+      this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations, this.totalThresh).subscribe(results => {
         this.lineageTable = results;
       })
     }
@@ -801,6 +805,7 @@ export default {
       otherThresh: 0.03,
       ndayThresh: 5,
       dayThresh: 60,
+      totalThresh: 25, // threshold for "unreliable estimate" in the table
       // location info
       selectedLocation: null,
       newLocation: null,

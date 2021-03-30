@@ -114,6 +114,10 @@ export default {
       type: Boolean,
       default: false
     },
+    darkMode: {
+      type: Boolean,
+      default: false
+    },
     sourceString: {
       type: String,
       default: "Johns Hopkins University Center for Systems Science and Engineering (non-U.S. data); The New York Times (U.S. data); The COVID Tracking Project (testing data), updated daily."
@@ -235,7 +239,7 @@ ${resourcesString}
 `)
     },
     downloadSvg() {
-      const svgObject = getSvg(this.figureRef, this.sourceString, this.todayFormattedLong,);
+      const svgObject = getSvg(this.figureRef, this.sourceString, this.todayFormattedLong, this.darkMode);
 
       const filenames = svgObject.map(svg => this.filename + "_" + svg.name + ".svg").join(", ");
 
@@ -249,7 +253,7 @@ ${resourcesString}
         'event_category': `${this.type}_${this.figureRef}_${this.downloadLabel}`,
         'event_label': `downloading |${this.figureRef}| {${this.downloadLabel}} data from [${this.$route.fullPath}] as (.png)`
       });
-      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormattedLong, this.isVertical, true, `${this.filename}.png`);
+      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormattedLong, this.isVertical, this.darkMode, true, `${this.filename}.png`);
       this.downloadData([this.getMetadata(this.filename)], "text/plain", `${this.filename}_README.txt`, true);
     },
     prepData(fileType) {
