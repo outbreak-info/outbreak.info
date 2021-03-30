@@ -1240,7 +1240,6 @@ export function getComparisonByLocation(apiurl, lineages, prevalenceThreshold, l
       newLineages = Object.keys(newLineages[0]).filter(d => d.toLowerCase() != "other")
       // newLineages.sort((a, b) => b.proportion - a.proportion);
       const newPango = uniq(lineages.concat(newLineages));
-      console.log(newPango)
       return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
         map(results => {
           return {

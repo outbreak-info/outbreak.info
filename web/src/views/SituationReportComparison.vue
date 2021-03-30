@@ -18,13 +18,13 @@
     <!-- REPORT HEADER -->
     <div class="d-flex flex-column text-light comparison-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
       <h3 class="m-0 mt-n1 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
-      <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex flex-wrap justify-content-between align-items-center">
         <div class="d-flex flex-column align-items-start">
 
           <div class="d-flex align-items-end">
-            <div class="d-flex align-items-center">
+            <div class="d-flex flex-wrap align-items-center">
               <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
-              <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+              <button class="btn py-1 px-2 mx-4 my-1 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
                 <font-awesome-icon class="m-0 mr-2 font-size-small" :icon="['fas', 'sync']" />change lineages
               </button>
             </div>
@@ -68,7 +68,7 @@
     <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom collapse">
       <div class="d-flex justify-content-between mt-1 mb-2">
         <h4>Selected lineages</h4>
-          <font-awesome-icon class="mr-2" :icon="['far', 'times-circle']" :style="{'opacity': '0.6'}" data-toggle="collapse" data-target="#select-lineages"/>
+        <font-awesome-icon class="mr-2" :icon="['far', 'times-circle']" :style="{'opacity': '0.6'}" data-toggle="collapse" data-target="#select-lineages" />
       </div>
       <div class="d-flex flex-wrap">
         <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
@@ -164,7 +164,7 @@
               <div class="d-flex flex-column" style="width: 250px">
                 <label for="add-mutation" class="fa-sm line-height-1 mt-2 ml-2">&gt;&gt; Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
                     {{selectedLocation.label}}</span></label>
-                <TypeaheadSelect :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+                <TypeaheadSelect :queryFunction="queryLocation" :selectedValue="selectedLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
               </div>
               <div class="d-flex flex-column ml-3">
                 <div class="d-flex flex-column">
@@ -214,31 +214,47 @@
     <!-- LOOP OVER MUTATION HEATMAPS -->
     <div id="mutation-heatmaps" class="mt-4">
       <div class="d-flex flex-wrap justify-content-between">
-        <div class="d-flex align-items-center">
-          <div>
-            <h3 class="m-0">Mutation prevalence across lineages</h3>
-            <p class="text-muted m-0">Mutations with > {{ prevalenceThreshold }}% prevalence in at least one lineage</p>
-          </div>
-          <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
-            <font-awesome-icon class="m-0 mr-2 fa-xs" :icon="['fas', 'sync']" />
-            <span class="fa-xs">change lineages</span>
-          </button>
-
-          <div class="d-flex flex-column ml-3">
-            <small class="text-muted line-height-1" style="width: 100px">Min. mutation prevalence</small>
-            <div class="mt-2">
-              <span class="percent-sign border bg-white py-1">
-                <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="prevalenceThreshold" @change="debounceThreshold" />
-                <span class="mr-1">%</span>
-              </span>
+        <div class="d-flex align-items-center" :class="{'flex-wrap': mediumScreen}">
+          <div class="d-flex flex-column">
+            <div class="d-flex align-items-center">
+              <h3 class="m-0">Mutation prevalence across lineages</h3>
+              <button class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+                <font-awesome-icon class="m-0 mr-2 fa-xs" :icon="['fas', 'sync']" />
+                <span class="fa-xs">change lineages</span>
+              </button>
             </div>
+            <p class="text-muted line-height-1 m-0 my-1">Mutations with > {{ prevalenceThreshold }}% prevalence in at least one lineage</p>
           </div>
+          <div class="d-flex align-items-center" :class="{'flex-wrap': smallScreen}">
+            <!-- CHECKBOX TO SELECT GENES -->
+            <div id="select-genes" class="d-flex align-items-center justify-content-between mt-3">
+              <small class="text-muted text-right mr-2 line-height-1">include genes:</small>
+              <div class="d-flex flex-wrap">
+                <label class="b-contain pr-3" v-for="(gene, idx) in geneOpts" :key="idx">
+                  <span>{{gene}}</span>
+                  <input type="checkbox" :id="gene" :value="gene" v-model.lazy="selectedGenes" @change="updateGenes()" />
+                  <div class="b-input"></div>
+                </label>
+              </div>
+            </div>
 
+            <div class="d-flex flex-column ml-3">
+              <small class="text-muted line-height-1" style="width: 100px">Min. mutation prevalence</small>
+              <div class="mt-2">
+                <span class="percent-sign border bg-white py-1">
+                  <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 60px" v-model="prevalenceThreshold" @change="debounceThreshold" />
+                  <span class="mr-1">%</span>
+                </span>
+              </div>
+            </div>
+
+          </div>
         </div>
+      </div>
 
-
-        <!-- LEGEND -->
-        <div id="legend" class="d-flex bg-dark px-2 py-1 mx-4 my-2">
+      <!-- LEGEND -->
+      <div class="d-flex w-100 justify-content-end">
+        <div id="legend" class="d-flex bg-dark px-2 py-1 my-2">
           <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
           <div class="d-flex align-items-center">
             <svg width="24" height="24">
@@ -263,21 +279,8 @@
         </div>
       </div>
 
-      <!-- CHECKBOX TO SELECT GENES -->
-      <div id="select-genes" class="d-flex flex-wrap align-items-center justify-content-between mt-3">
-        <div class="d-flex flex-wrap">
-          <small class="text-muted mr-2 align-self-start">include genes:</small>
-          <label class="b-contain pr-3" v-for="(gene, idx) in geneOpts" :key="idx">
-            <span>{{gene}}</span>
-            <input type="checkbox" :id="gene" :value="gene" v-model.lazy="selectedGenes" @change="updateGenes()" />
-            <div class="b-input"></div>
-          </label>
-        </div>
-      </div>
-
 
       <div class="d-flex flex-wrap">
-
         <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
           <template v-if="selectedGenes.includes(geneData.key)">
             <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
@@ -345,6 +348,7 @@ import {
 } from "d3";
 
 import debounce from "lodash/debounce";
+import uniq from "lodash/uniq";
 
 export default {
   name: "SituationReportComparison",
@@ -380,11 +384,14 @@ export default {
     smallScreen() {
       return (window.innerWidth < 500)
     },
+    mediumScreen() {
+      return (window.innerWidth < 1000)
+    },
     locationValid() {
       return this.selectedLocation && this.selectedOtherThreshold && this.selectedOtherThreshold >= 0 && this.selectedWindow > 0 ? true : false;
     },
     mutationValid() {
-      return /\w+:[A-Z]\d+[A-Z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
+      return /\w+:[A-z]\d+[A-z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
     }
   },
   data() {
@@ -581,6 +588,8 @@ export default {
     },
     addPango(selected) {
       this.selectedPango.push(selected.name);
+      this.selectedPango = uniq(this.selectedPango);
+
       this.showSnackbar = true;
       this.snackbarText = `${selected.name} added`
       setTimeout(() => {

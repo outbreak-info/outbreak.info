@@ -229,6 +229,17 @@
           </router-link>
         </div>
       </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="w-100 p-3 card">
+          <router-link :to="{name: 'SituationReportComparison'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <h5 class="text-uppercase">Lineage Comparison</h5>
+            <div class="h-100 d-flex align-items-center">
+              <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
+            </div>
+          </router-link>
+        </div>
+      </div>
     </div>
   </section>
 
