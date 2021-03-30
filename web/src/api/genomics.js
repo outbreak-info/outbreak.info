@@ -1006,6 +1006,23 @@ function locationTableSorter(a) {
   return sortingArr.indexOf(a.variantType);
 }
 
+function geneSorter(a) {
+  const sortingArr = ["ORF1a",
+    "ORF1b",
+    "S",
+    "ORF3a",
+    "E",
+    "M",
+    "ORF6",
+    "ORF7a",
+    "ORF7b",
+    "ORF8",
+    "N",
+    "ORF10"
+  ];
+  return sortingArr.indexOf(a.key);
+}
+
 function reportTypeSorter(a) {
   const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key.toLowerCase());
@@ -1150,7 +1167,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
         })
 
         moi.forEach(d => {
-          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
+          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
           d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
             d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
           d["isMOI"] = mutationsOfInterest.includes(d.mutation);
@@ -1200,45 +1217,98 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
   }
 }
 
+export function getComparisonByMutations(apiurl, lineages, prevalenceThreshold, mutationQuery, mutationThreshold) {
+  return getMutationsByLineage(apiurl, mutationQuery, mutationThreshold).pipe(
+    mergeMap(newLineages => {
+      newLineages.sort((a, b) => b.proportion - a.proportion);
+      const newPango = uniq(lineages.concat(newLineages.map(d => d.pangolin_lineage)));
+      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
+        map(results => {
+          return {
+            ...results,
+            addedLength: newLineages.length
+          }
+        })
+      )
+    })
+  )
+}
+
+export function getComparisonByLocation(apiurl, lineages, prevalenceThreshold, locationID, other_threshold, nday_threshold, ndays, window) {
+  return getCumPrevalenceAllLineages(apiurl, locationID, other_threshold, nday_threshold, ndays, window).pipe(
+    mergeMap(newLineages => {
+      newLineages = Object.keys(newLineages[0]).filter(d => d.toLowerCase() != "other")
+      // newLineages.sort((a, b) => b.proportion - a.proportion);
+      const newPango = uniq(lineages.concat(newLineages));
+      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
+        map(results => {
+          return {
+            ...results,
+            addedLength: newLineages.length
+          }
+        })
+      )
+    })
+  )
+}
+
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
-  store.state.genomics.locationLoading2 = true
+  store.state.genomics.locationLoading2 = true;
+
+  // if nothing selected, pull out the VOCs/VOIs
+  if (!lineages) {
+    lineages = orderBy(CURATED, ["variantType", "mutation_name"]);
+    lineages = lineages.filter(d => d.reportType == "lineage" && (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest")).map(d => d.mutation_name);
+  }
+
+  const voc = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.mutation_name);
+  const voi = CURATED.filter(d => d.variantType == "Variant of Interest").map(d => d.mutation_name);
+
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
 
-
       let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
 
-      const avgByMutation = nest()
-        .key(d => d.mutation)
-        .rollup(values => {
-          const mutation = values[0].mutation;
-          const mutation_count = sum(values, d => d.mutation_count);
-          const lineage_count = sum(values, d => d.lineage_count);
-          return ({
-            mutation_count: mutation_count,
-            lineage_count: lineage_count,
-            // prevalence: mutation_count / lineage_count,
-            prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
-            pangolin_lineage: "average",
-            mutation: mutation,
-            gene: values[0].gene
-          })
-        })
-        .entries(filtered).map(d => d.value);
+      // const avgByMutation = nest()
+      //   .key(d => d.mutation)
+      //   .rollup(values => {
+      //     const mutation = values[0].mutation;
+      //     const mutation_count = sum(values, d => d.mutation_count);
+      //     const lineage_count = sum(values, d => d.lineage_count);
+      //     return ({
+      //       mutation_count: mutation_count,
+      //       lineage_count: lineage_count,
+      //       // prevalence: mutation_count / lineage_count,
+      //       prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
+      //       pangolin_lineage: "average",
+      //       mutation: mutation,
+      //       gene: values[0].gene
+      //     })
+      //   })
+      //   .entries(filtered).map(d => d.value);
 
       // filtered = filtered.concat(avgByMutation);
 
       filtered.forEach(d => {
-        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/:/g, "_")}`;
-        d["mutation_simplified"] = d.mutation.split(":").slice(-1)[0];
+        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
+          d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })
 
-      const nestedByGenes = nest()
+      let nestedByGenes = nest()
         .key(d => d.gene)
         .entries(filtered);
 
-      return (nestedByGenes)
+      nestedByGenes = orderBy(nestedByGenes, geneSorter);
+
+      return ({
+        data: nestedByGenes,
+        dataFlat: filtered,
+        voc: voc,
+        voi: voi,
+        yDomain: lineages
+      })
     }),
     catchError(e => {
       console.log("%c Error in getting comparison report data!", "color: pink");

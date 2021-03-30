@@ -205,7 +205,11 @@
                   <!-- HEATMAP + LEGEND -->
                   <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
                     <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
-                    <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+                      <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
+                    </div>
+
                     <div class="d-flex flex-column align-items-center bg-dark">
 
                       <!-- HEATMAP LEGEND -->
@@ -231,7 +235,7 @@
                       </div>
                       <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
                     </div>
-                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Prevalence over Time" />
+                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
                   </div>
                 </div>
               </section>
@@ -430,10 +434,10 @@ export default {
   name: "LocationReport",
   props: {
     loc: String,
-    muts: Array,
-    pango: Array,
-    variant: Array,
-    selected: Array
+    muts: [Array, String],
+    pango: [Array, String],
+    variant: [Array, String],
+    selected: [Array, String]
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),

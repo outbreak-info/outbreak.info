@@ -602,69 +602,94 @@
       "loc": ["USA", "USA_US-CA"],
       "selected": "USA_US-CA"
     },
-    "mutations": [{
-        "mutation": "S:D614G",
-        "gene": "S",
-        "ref_aa": "D",
-        "alt_aa": "G",
-        "codon_num": 614,
-        "type": "substitution"
+    "mutations": [
+      {
+	"mutation": "ORF1A:T265I",
+	"gene": "ORF1a",
+	"ref_aa": "T",
+	"alt_aa": "I",
+	"codon_num": 265,
+	"type": "substitution"
       },
       {
-        "mutation": "ORF1a:T265I",
-        "gene": "ORF1a",
-        "ref_aa": "T",
-        "alt_aa": "I",
-        "codon_num": 265,
-        "type": "substitution"
+	"mutation": "ORF1A:S3158T",
+	"gene": "ORF1a",
+	"ref_aa": "S",
+	"alt_aa": "T",
+	"codon_num": 3158,
+	"type": "substitution"
       },
       {
-        "mutation": "ORF1b:D1183Y",
-        "gene": "ORF1b",
-        "ref_aa": "D",
-        "alt_aa": "Y",
-        "codon_num": 1183,
-        "type": "substitution"
+	"mutation": "ORF1B:P314L",
+	"gene": "ORF1b",
+	"ref_aa": "P",
+	"alt_aa": "L",
+	"codon_num": 314,
+	"type": "substitution"
       },
       {
-        "mutation": "N:T205I",
-        "gene": "N",
-        "ref_aa": "T",
-        "alt_aa": "I",
-        "codon_num": 205,
-        "type": "substitution"
+	"mutation": "ORF1B:P976L",
+	"gene": "ORF1b",
+	"ref_aa": "P",
+	"alt_aa": "L",
+	"codon_num": 976,
+	"type": "substitution"
       },
       {
-        "mutation": "S:L452R",
-        "gene": "S",
-        "ref_aa": "L",
-        "alt_aa": "R",
-        "codon_num": 452,
-        "type": "substitution"
+	"mutation": "ORF1B:D1183Y",
+	"gene": "ORF1b",
+	"ref_aa": "D",
+	"alt_aa": "Y",
+	"codon_num": 1183,
+	"type": "substitution"
       },
       {
-        "mutation": "ORF1a:S3158T",
-        "gene": "ORF1a",
-        "ref_aa": "S",
-        "alt_aa": "T",
-        "codon_num": 3158,
-        "type": "substitution"
+	"mutation": "S:S13I",
+	"gene": "S",
+	"ref_aa": "S",
+	"alt_aa": "I",
+	"codon_num": 13,
+	"type": "substitution"
       },
       {
-        "mutation": "ORF1b:P976L",
-        "gene": "ORF1b",
-        "ref_aa": "P",
-        "alt_aa": "L",
-        "codon_num": 976,
-        "type": "substitution"
+	"mutation": "S:W152C",
+	"gene": "S",
+	"ref_aa": "W",
+	"alt_aa": "C",
+	"codon_num": 152,
+	"type": "substitution"
       },
       {
-        "mutation": "ORF3a:Q57H",
-        "gene": "ORF3a",
-        "ref_aa": "Q",
-        "alt_aa": "H",
-        "codon_num": 57,
-        "type": "substitution"
+	"mutation": "S:L452R",
+	"gene": "S",
+	"ref_aa": "L",
+	"alt_aa": "R",
+	"codon_num": 452,
+	"type": "substitution"
+      },
+      {
+	"mutation": "S:D614G",
+	"gene": "S",
+	"ref_aa": "D",
+	"alt_aa": "G",
+	"codon_num": 614,
+	"type": "substitution"
+      },
+      {
+	"mutation": "ORF3A:Q57H",
+	"gene": "ORF3a",
+	"ref_aa": "Q",
+	"alt_aa": "H",
+	"codon_num": 57,
+	"type": "substitution"
+      },
+      {
+	"mutation": "N:T205I",
+	"gene": "N",
+	"ref_aa": "T",
+	"alt_aa": "I",
+	"codon_num": 205,
+	"type": "substitution"
       }
     ]
   },

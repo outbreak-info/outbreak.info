@@ -409,6 +409,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-03-30 0:0"),
+      category: "feature",
+      title: "Added Lineage Comparison tool",
+      description: "Added tool to compare mutations within particular lineages. Lineages can be selected manually, based on the presence of a particular mutation(s), based on prevalence within a location, or from the Variants of Concern and Interest.",
+      route: {
+        name: "SituationReportComparison"
+      }
+    },
+    {
       date: new Date("2020-07-06 0:0"),
       category: "feature",
       title: "Overlaid 7-day rolling averages for case counts",

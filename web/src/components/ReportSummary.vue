@@ -48,7 +48,8 @@
       <tbody class="checkbook">
         <tr v-for="(location, lIdx) in locationTotals" :key="lIdx" :class="{'font-weight-bold' : location.id == selected}">
           <td>
-            {{ location.name }}
+            <router-link class="bright-hyperlink" :to="{name: 'LocationReport', query:{ loc: location.id, ... locationQueryParams }}" v-if="location.name != 'Worldwide'">{{ location.name }}</router-link>
+            <span class="bright-hyperlink" v-else>{{ location.name }}</span>
           </td>
           <td class="text-center">
             {{ location.lineage_count_formatted }}
@@ -129,6 +130,7 @@ export default {
   props: {
     selected: String,
     dateUpdated: String,
+    locationQueryParams: Object,
     totalLineage: String,
     mutationName: String,
     reportType: String,

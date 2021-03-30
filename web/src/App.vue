@@ -70,6 +70,8 @@
               </router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'LocationReports'}" :class="{ active: $route.name == 'LocationReports' }">Location Tracker
               </router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'SituationReportComparison'}" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
+              </router-link>
             </div>
           </li>
 
@@ -179,6 +181,10 @@
           </li>
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'LocationReports'}" :class="{ active: $route.name == 'LocationReports' }">Location Tracker
+            </router-link>
+          </li>
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReportComparison'}" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
             </router-link>
           </li>
         </ul>

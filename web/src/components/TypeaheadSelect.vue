@@ -24,7 +24,7 @@ export default {
     apiUrl: String,
     placeholder: String,
     totalLabel: String,
-    selectedValue: String,
+    selectedValue: [String, Object],
     labelVariable: {
       type: String,
       default: "name"
@@ -44,7 +44,7 @@ export default {
   },
   watch: {
     selectedValue() {
-      this.selected = this.selectedValue;
+      this.selected = this.selectedValue ? typeof(this.selectedValue) == "string" ? this.selectedValue : this.selectedValue[this.labelVariable] : null;
     }
   },
   created: function() {
