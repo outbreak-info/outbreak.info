@@ -18,13 +18,13 @@
     <!-- REPORT HEADER -->
     <div class="d-flex flex-column text-light comparison-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
       <h3 class="m-0 mt-n1 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
-      <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex flex-wrap justify-content-between align-items-center">
         <div class="d-flex flex-column align-items-start">
 
           <div class="d-flex align-items-end">
-            <div class="d-flex align-items-center">
+            <div class="d-flex flex-wrap align-items-center">
               <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
-              <button class="btn py-1 px-2 mx-4 my-0 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+              <button class="btn py-1 px-2 mx-4 my-1 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
                 <font-awesome-icon class="m-0 mr-2 font-size-small" :icon="['fas', 'sync']" />change lineages
               </button>
             </div>
