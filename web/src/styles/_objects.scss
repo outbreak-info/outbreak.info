@@ -90,6 +90,7 @@ button.chip.to-add:hover {
 
 .btn-main {
   background: $primary-color !important;
+  border: $primary-color 2px solid !important;
   color: white;
   transition: all 0.5s;
   text-transform: uppercase;

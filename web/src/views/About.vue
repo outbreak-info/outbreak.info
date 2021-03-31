@@ -15,7 +15,8 @@
           one place.
         </p>
         <p class="text-left focustext py-2">
-          <b>Outbreak.info</b> aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. We standardize the metadata describing these resources, providing a web interface to easily search over 100,000 resources. The platform also serves as a data integration tool that makes COVID-19 data more usable.
+          <b>Outbreak.info</b> aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. We standardize the metadata describing these resources, providing a web interface to easily search over
+          100,000 resources. The platform also serves as a data integration tool that makes COVID-19 data more usable.
         </p>
         <p class="text-left focustext py-2">
           We also are tracking developments about new SARS-CoV-2 mutations and epidemiological trends, offering key insights and daily reports.
@@ -62,6 +63,29 @@
               <a :href="person.linkedin" target="_blank" v-if="person.linkedin" class="mr-2">
                 <font-awesome-icon :icon="['fab', 'linkedin-in']" />
               </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-light d-flex justify-content-center align-items-center">
+      <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top pt-3 pb-5" id="jobs">
+        <h4>Open positions</h4>
+        <div class="d-flex align-items-center">
+          <div class="card w-30 py-2 px-3 text-left">
+            <div class="border-bottom pt-2 pb-1 mb-2">
+              <h5>Research Programmer</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
+            </div>
+            <div class="wpb_text_column wpb_content_element ">
+              <div class="wpb_wrapper">
+                <p>We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including iVar
+                  (<a href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">https://github.com/andersen-lab/ivar</a>) and <a href="https://outbreak.info" target="_blank" rel="noopener">https://outbreak.info</a>, can be seen on
+                  our
+                  Github account at <a href="https://github.com/andersen-lab/" target="_blank" rel="noopener">https://github.com/andersen-lab/</a>.</p>
+                <p>For further details please contact <a href="mailto:gkarthik@scripps.edu">gkarthik@scripps.edu</a>.</p>
+                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&amp;gni=8a78879f7823d1090178240894ba01f1" target="_blank" rel="noopener noreferrer">here</a>. Qualification: BSc or equivalent.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -141,5 +165,9 @@ export default Vue.extend({
     height: 150px;
     border-radius: 50%;
     object-fit: contain;
+}
+
+.w-30 {
+    width: 30% !important;
 }
 </style>
