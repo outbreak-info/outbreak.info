@@ -73,8 +73,8 @@
       <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top pt-3 pb-5" id="jobs">
         <h4>Open positions</h4>
         <div class="d-flex align-items-center">
-          <div class="card w-30 py-2 px-3 text-left">
-            <div class="border-bottom pt-2 pb-1 mb-2">
+          <div class="card w-30 py-2 px-4 text-left">
+            <div class="border-bottom pt-3 pb-1 mb-2">
               <h5>Research Programmer</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
             </div>
             <div class="wpb_text_column wpb_content_element ">
