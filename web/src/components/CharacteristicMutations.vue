@@ -15,10 +15,10 @@
   </div>
 
 
-  <div class="collapse ml-2" id="mutation-table">
+  <div class="ml-2" id="mutation-table">
     <div class="row">
       <div class="col" v-if="lineageName">
-        <MutationTable :data="mutations" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`"  v-if="colorScale" />
+        <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`"  v-if="colorScale" />
       </div>
       <div class="col" v-if="additionalMutations.length > 0">
         <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" />
@@ -45,6 +45,8 @@ import MutationTable from "@/components/MutationTable.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 
+import { getBadMutations } from "@/api/genomics.js";
+
 export default {
   name: "CharacteristicMutations",
   computed: {
@@ -69,6 +71,8 @@ export default {
   data() {
     return ({
       colorScale: null,
+      moi: null,
+      moc: null,
       colorDomain:
         ["#bab0ab", // lt grey -- UTRs
           "#1f77b4", // dk blue
@@ -88,6 +92,10 @@ export default {
     })
   },
   mounted() {
+    const ofInterest = getBadMutations();
+    console.log(ofInterest)
+    this.moc = ofInterest.moc;
+    this.moi = ofInterest.moi;
     // convert object of nucleotides into an array
     this.ntMapArr = Object.entries(NT_MAP).map(d => {
       return {
@@ -101,7 +109,6 @@ export default {
 
     this.colorScale = scaleOrdinal(this.colorDomain)
     .domain(geneNames);
-    console.log(this.colorScale)
   }
 }
 </script>

@@ -1319,3 +1319,71 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
     finalize(() => store.state.genomics.locationLoading2 = false)
   )
 }
+
+
+export function getBadMutations(returnSimplified = false) {
+  // let moc = CURATED.filter(d => d.variantType && d.variantType.toLowerCase() == "mutation of concern");
+  // moc.forEach(d => {
+  //   d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
+  //     d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
+  // })
+
+  const moc = [{
+    mutation: "S:E484K",
+    mutation_simplified: "E484K"
+  }]
+
+  const moi = [{
+      mutation: "S:S477N",
+      mutation_simplified: "S477N"
+    },
+    {
+      mutation: "S:N501Y",
+      mutation_simplified: "N501Y"
+    },
+    {
+      mutation: "S:K417N",
+      mutation_simplified: "K417N"
+    },
+    {
+      mutation: "S:K417T",
+      mutation_simplified: "K417T"
+    },
+    {
+      mutation: "S:P681H",
+      mutation_simplified: "P681H"
+    },
+    {
+      mutation: "S:L18F",
+      mutation_simplified: "L18F"
+    },
+    {
+      mutation: "S:S494P",
+      mutation_simplified: "S494P"
+    },
+    {
+      mutation: "S:L452R",
+      mutation_simplified: "L452R"
+    },
+    {
+      mutation: "S:Y453F",
+      mutation_simplified: "Y453F"
+    },
+    {
+      mutation: "S:N439K",
+      mutation_simplified: "N439K"
+    }
+  ];
+
+  if (returnSimplified) {
+    return ({
+      moc: moc.map(d => d.mutation_simplified),
+      moi: moi.map(d => d.mutation_simplified)
+    })
+  } else {
+    return ({
+      moc: moc.map(d => d.mutation),
+      moi: moi.map(d => d.mutation)
+    })
+  }
+}

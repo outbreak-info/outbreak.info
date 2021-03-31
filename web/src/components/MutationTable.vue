@@ -41,6 +41,8 @@ export default Vue.extend({
     colorScale: Function,
     lineageName: String,
     tableTitle: String,
+    moi: Array,
+    moc: Array,
     width: {
       type: Number,
       default: 450
@@ -105,6 +107,7 @@ export default Vue.extend({
     },
     updateAxes() {
       this.plottedData = cloneDeep(this.data);
+      console.log(this.data)
       this.plottedData.sort((a, b) => a[this.sortVar] > b[this.sortVar] ? -1 : 1);
 
       this.height = this.bandwidth * this.plottedData.length * (1 + this.paddingInner) + this.margin.top + this.margin.bottom;
@@ -180,17 +183,17 @@ export default Vue.extend({
 
           grp.append("text")
             .attr("class", "annotation")
-            .attr("x", this.width - this.margin.left - this.margin.right)
-            .attr("dx", 10)
+            .attr("x", this.x(1))
+            .attr("dx", 37)
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
             .text(d => format(".0%")(d.prevalence))
             .style("font-size", 13)
             .style("fill", this.fillColor)
             .style("dominant-baseline", "central")
-            .style("text-anchor", "start");
+            .style("text-anchor", "end");
 
           grp
-            .filter((d, i) => i % 2)
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
             .append("rect")
             .attr("class", "moi")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
@@ -203,7 +206,7 @@ export default Vue.extend({
             .style("stroke-width", 0.75);
 
           grp
-            .filter((d, i) => i % 2)
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
             .append("text")
             .attr("class", "moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
@@ -216,7 +219,7 @@ export default Vue.extend({
             .style("text-anchor", "middle");
 
           grp
-            .filter((d, i) => i % 3)
+            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
             .append("rect")
             .attr("class", "moc")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
@@ -229,7 +232,7 @@ export default Vue.extend({
             .style("stroke-width", 0.75);
 
           grp
-            .filter((d, i) => i % 3)
+            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
             .append("text")
             .attr("class", "moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
@@ -271,7 +274,7 @@ export default Vue.extend({
 
 
             update
-              .filter((d, i) => i % 2)
+              .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
               .select(".moi")
               .attr("x", this.width - this.margin.left - this.interestWidth - 2)
               .attr("height", this.y.bandwidth())
@@ -279,14 +282,14 @@ export default Vue.extend({
               .attr("y", d => this.y(d.mutation));
 
             update
-              .filter((d, i) => i % 2)
+              .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
               .select(".moi-annotation")
               .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
               .transition(t1)
               .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
 
             update
-              .filter((d, i) => i % 3)
+              .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
               .select(".moc")
               .attr("x", this.width - this.margin.left - this.interestWidth - 2)
               .attr("height", this.y.bandwidth())
@@ -294,7 +297,7 @@ export default Vue.extend({
               .attr("y", d => this.y(d.mutation));
 
             update
-              .filter((d, i) => i % 3)
+              .filter(d => this.moc.includes(d.mutation))
               .select(".moi-annotation")
               .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
               .transition(t1)
