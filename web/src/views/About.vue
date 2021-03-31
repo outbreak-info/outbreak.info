@@ -47,7 +47,7 @@
     <!-- TEAM -->
     <div class="bg-light d-flex justify-content-center align-items-center">
       <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5">
-        <h4 class="mb-4">Outbreak.info team</h4>
+        <h3 class="mb-4">Outbreak.info team</h3>
         <div class="d-flex flex-wrap">
           <div v-for="(person, idx) in team" :key="idx" class="team-member d-flex flex-column align-items-center mx-5 my-3">
             <img :src="require(`@/assets/team/${person.img}`)" class="profile-pic text-" />
@@ -71,7 +71,7 @@
 
     <div class="bg-light d-flex justify-content-center align-items-center">
       <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top pt-3 pb-5" id="jobs">
-        <h4>Open positions</h4>
+        <h3>Open positions</h3>
         <div class="d-flex align-items-center">
           <div class="card w-30 py-2 px-4 text-left">
             <div class="border-bottom pt-3 pb-1 mb-2">
