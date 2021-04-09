@@ -46,7 +46,7 @@
         identified by S-gene target failures (SGTF)
         in community-based diagnostic PCR testing.
         SGTF indicates a deletion mutation that is one of several mutations able to distinguish the B.1.1.7 from other SARS-CoV-2 strains.
-        Estimates of true prevalence in the U.S. are discussed in the <a href="https://blog.helix.com/b117-variant-updated-data/ target='_blank'">Helix Research blog</a>.
+        Estimates of true prevalence in the U.S. are discussed in the <a href="https://blog.helix.com/b117-variant-updated-data/" target="_blank">Helix Research blog</a>.
       </p>
     </div>
 
