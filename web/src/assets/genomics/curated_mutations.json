@@ -847,7 +847,7 @@
     "variantType": "Variant of Interest",
     "location_first_identified": "Brazil",
     "reportQuery": {
-      "pango": "B.1.526.2",
+      "pango": "P.2",
       "loc": ["BRA", "USA", "USA_US-CA"],
       "selected": "BRA"
     },
