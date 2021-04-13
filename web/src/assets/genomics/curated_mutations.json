@@ -135,6 +135,579 @@
     }
   },
   {
+    "mutation_name": "B.1.526.1",
+    "pangolin_lineage": "B.1.526.1",
+    "searchTerms": ["B.1.526.1", "B15261"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "location_first_identified": "New York",
+    "reportQuery": {
+      "pango": "B.1.526.1",
+      "loc": ["USA", "USA_US-NY"],
+      "selected": "USA_US-NY"
+    },
+    "mutations": [{
+        "mutation": "orf1a:del3675/3677",
+        "mutation_count": 935,
+        "lineage_count": 982,
+        "gene": "ORF1a",
+        "ref_aa": "ORF1A:DEL3675/3677",
+        "alt_aa": "DEL3675/3677",
+        "change_length_nt": 9,
+        "codon_num": 3675,
+        "type": "deletion",
+        "prevalence": 0.9521384928716904
+      },
+      {
+        "mutation": "s:d614g",
+        "mutation_count": 923,
+        "lineage_count": 982,
+        "gene": "S",
+        "ref_aa": "D",
+        "alt_aa": "G",
+        "codon_num": 614,
+        "type": "substitution",
+        "prevalence": 0.939918533604888
+      },
+      {
+        "mutation": "orf1a:l3201p",
+        "mutation_count": 922,
+        "lineage_count": 982,
+        "gene": "ORF1a",
+        "ref_aa": "L",
+        "alt_aa": "P",
+        "codon_num": 3201,
+        "type": "substitution",
+        "prevalence": 0.9389002036659878
+      },
+      {
+        "mutation": "orf1b:p314l",
+        "mutation_count": 921,
+        "lineage_count": 982,
+        "gene": "ORF1b",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 314,
+        "type": "substitution",
+        "prevalence": 0.9378818737270875
+      },
+      {
+        "mutation": "n:t205i",
+        "mutation_count": 920,
+        "lineage_count": 982,
+        "gene": "N",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 205,
+        "type": "substitution",
+        "prevalence": 0.9368635437881874
+      },
+      {
+        "mutation": "orf3a:q57h",
+        "mutation_count": 920,
+        "lineage_count": 982,
+        "gene": "ORF3a",
+        "ref_aa": "Q",
+        "alt_aa": "H",
+        "codon_num": 57,
+        "type": "substitution",
+        "prevalence": 0.9368635437881874
+      },
+      {
+        "mutation": "orf1a:t265i",
+        "mutation_count": 919,
+        "lineage_count": 982,
+        "gene": "ORF1a",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 265,
+        "type": "substitution",
+        "prevalence": 0.9358452138492872
+      },
+      {
+        "mutation": "n:m234i",
+        "mutation_count": 913,
+        "lineage_count": 982,
+        "gene": "N",
+        "ref_aa": "M",
+        "alt_aa": "I",
+        "codon_num": 234,
+        "type": "substitution",
+        "prevalence": 0.929735234215886
+      },
+      {
+        "mutation": "orf3a:p42l",
+        "mutation_count": 909,
+        "lineage_count": 982,
+        "gene": "ORF3a",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 42,
+        "type": "substitution",
+        "prevalence": 0.9256619144602851
+      },
+      {
+        "mutation": "orf1a:a3209v",
+        "mutation_count": 908,
+        "lineage_count": 982,
+        "gene": "ORF1a",
+        "ref_aa": "A",
+        "alt_aa": "V",
+        "codon_num": 3209,
+        "type": "substitution",
+        "prevalence": 0.924643584521385
+      },
+      {
+        "mutation": "orf8:t11i",
+        "mutation_count": 903,
+        "lineage_count": 982,
+        "gene": "ORF8",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 11,
+        "type": "substitution",
+        "prevalence": 0.9195519348268839
+      },
+      {
+        "mutation": "orf1a:k3162e",
+        "mutation_count": 902,
+        "lineage_count": 982,
+        "gene": "ORF1a",
+        "ref_aa": "K",
+        "alt_aa": "E",
+        "codon_num": 3162,
+        "type": "substitution",
+        "prevalence": 0.9185336048879837
+      },
+      {
+        "mutation": "s:l452r",
+        "mutation_count": 900,
+        "lineage_count": 982,
+        "gene": "S",
+        "ref_aa": "L",
+        "alt_aa": "R",
+        "codon_num": 452,
+        "type": "substitution",
+        "prevalence": 0.9164969450101833
+      },
+      {
+        "mutation": "orf1a:v3847i",
+        "mutation_count": 897,
+        "lineage_count": 982,
+        "gene": "ORF1a",
+        "ref_aa": "V",
+        "alt_aa": "I",
+        "codon_num": 3847,
+        "type": "substitution",
+        "prevalence": 0.9134419551934827
+      },
+      {
+        "mutation": "orf8:a51s",
+        "mutation_count": 894,
+        "lineage_count": 982,
+        "gene": "ORF8",
+        "ref_aa": "A",
+        "alt_aa": "S",
+        "codon_num": 51,
+        "type": "substitution",
+        "prevalence": 0.9103869653767821
+      },
+      {
+        "mutation": "s:f157s",
+        "mutation_count": 891,
+        "lineage_count": 982,
+        "gene": "S",
+        "ref_aa": "F",
+        "alt_aa": "S",
+        "codon_num": 157,
+        "type": "substitution",
+        "prevalence": 0.9073319755600815
+      },
+      {
+        "mutation": "s:t859n",
+        "mutation_count": 879,
+        "lineage_count": 982,
+        "gene": "S",
+        "ref_aa": "T",
+        "alt_aa": "N",
+        "codon_num": 859,
+        "type": "substitution",
+        "prevalence": 0.895112016293279
+      },
+      {
+        "mutation": "s:del144/144",
+        "mutation_count": 864,
+        "lineage_count": 982,
+        "gene": "S",
+        "ref_aa": "S:DEL144/144",
+        "alt_aa": "DEL144/144",
+        "codon_num": 144,
+        "type": "deletion",
+        "change_length_nt": 3,
+        "prevalence": 0.879837067209776
+      },
+      {
+        "mutation": "s:d950h",
+        "mutation_count": 832,
+        "lineage_count": 982,
+        "gene": "S",
+        "ref_aa": "D",
+        "alt_aa": "H",
+        "codon_num": 950,
+        "type": "substitution",
+        "prevalence": 0.8472505091649695
+      },
+      {
+        "mutation": "s:d80g",
+        "mutation_count": 819,
+        "lineage_count": 982,
+        "gene": "S",
+        "ref_aa": "D",
+        "alt_aa": "G",
+        "codon_num": 80,
+        "type": "substitution",
+        "prevalence": 0.8340122199592668
+      }
+    ]
+  },
+  {
+    "mutation_name": "B.1.526.2",
+    "pangolin_lineage": "B.1.526.2",
+    "searchTerms": ["B.1.526.2", "B15262"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "location_first_identified": "New York",
+    "reportQuery": {
+      "pango": "B.1.526.2",
+      "loc": ["USA", "USA_US-NY"],
+      "selected": "USA_US-NY"
+    },
+    "mutations": [{
+        "mutation": "orf1a:del3675/3677",
+        "mutation_count": 944,
+        "lineage_count": 968,
+        "gene": "ORF1a",
+        "ref_aa": "ORF1A:DEL3675/3677",
+        "alt_aa": "DEL3675/3677",
+        "codon_num": 3675,
+        "type": "deletion",
+        "change_length_nt": 9,
+        "prevalence": 0.9752066115702479
+      },
+      {
+        "mutation": "n:s202r",
+        "mutation_count": 931,
+        "lineage_count": 968,
+        "gene": "N",
+        "ref_aa": "S",
+        "alt_aa": "R",
+        "codon_num": 202,
+        "type": "substitution",
+        "prevalence": 0.9617768595041323
+      },
+      {
+        "mutation": "orf1b:p314l",
+        "mutation_count": 931,
+        "lineage_count": 968,
+        "gene": "ORF1b",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 314,
+        "type": "substitution",
+        "prevalence": 0.9617768595041323
+      },
+      {
+        "mutation": "s:d253g",
+        "mutation_count": 931,
+        "lineage_count": 968,
+        "gene": "S",
+        "ref_aa": "D",
+        "alt_aa": "G",
+        "codon_num": 253,
+        "type": "substitution",
+        "prevalence": 0.9617768595041323
+      },
+      {
+        "mutation": "s:d614g",
+        "mutation_count": 931,
+        "lineage_count": 968,
+        "gene": "S",
+        "ref_aa": "D",
+        "alt_aa": "G",
+        "codon_num": 614,
+        "type": "substitution",
+        "prevalence": 0.9617768595041323
+      },
+      {
+        "mutation": "orf1a:l3201p",
+        "mutation_count": 926,
+        "lineage_count": 968,
+        "gene": "ORF1a",
+        "ref_aa": "L",
+        "alt_aa": "P",
+        "codon_num": 3201,
+        "type": "substitution",
+        "prevalence": 0.9566115702479339
+      },
+      {
+        "mutation": "orf1a:t265i",
+        "mutation_count": 926,
+        "lineage_count": 968,
+        "gene": "ORF1a",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 265,
+        "type": "substitution",
+        "prevalence": 0.9566115702479339
+      },
+      {
+        "mutation": "orf3a:q57h",
+        "mutation_count": 925,
+        "lineage_count": 968,
+        "gene": "ORF3a",
+        "ref_aa": "Q",
+        "alt_aa": "H",
+        "codon_num": 57,
+        "type": "substitution",
+        "prevalence": 0.9555785123966942
+      },
+      {
+        "mutation": "orf8:t11i",
+        "mutation_count": 925,
+        "lineage_count": 968,
+        "gene": "ORF8",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 11,
+        "type": "substitution",
+        "prevalence": 0.9555785123966942
+      },
+      {
+        "mutation": "s:t95i",
+        "mutation_count": 925,
+        "lineage_count": 968,
+        "gene": "S",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 95,
+        "type": "substitution",
+        "prevalence": 0.9555785123966942
+      },
+      {
+        "mutation": "orf1b:q1011h",
+        "mutation_count": 922,
+        "lineage_count": 968,
+        "gene": "ORF1b",
+        "ref_aa": "Q",
+        "alt_aa": "H",
+        "codon_num": 1011,
+        "type": "substitution",
+        "prevalence": 0.9524793388429752
+      },
+      {
+        "mutation": "n:p13l",
+        "mutation_count": 917,
+        "lineage_count": 968,
+        "gene": "N",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 13,
+        "type": "substitution",
+        "prevalence": 0.9473140495867769
+      },
+      {
+        "mutation": "orf3a:p42l",
+        "mutation_count": 917,
+        "lineage_count": 968,
+        "gene": "ORF3a",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 42,
+        "type": "substitution",
+        "prevalence": 0.9473140495867769
+      },
+      {
+        "mutation": "s:s477n",
+        "mutation_count": 910,
+        "lineage_count": 968,
+        "gene": "S",
+        "ref_aa": "S",
+        "alt_aa": "N",
+        "codon_num": 477,
+        "type": "substitution",
+        "prevalence": 0.9400826446280992
+      },
+      {
+        "mutation": "orf1a:g1946s",
+        "mutation_count": 899,
+        "lineage_count": 968,
+        "gene": "ORF1a",
+        "ref_aa": "G",
+        "alt_aa": "S",
+        "codon_num": 1946,
+        "type": "substitution",
+        "prevalence": 0.9287190082644629
+      },
+      {
+        "mutation": "orf7a:l116f",
+        "mutation_count": 899,
+        "lineage_count": 968,
+        "gene": "ORF7a",
+        "ref_aa": "L",
+        "alt_aa": "F",
+        "codon_num": 116,
+        "type": "substitution",
+        "prevalence": 0.9287190082644629
+      },
+      {
+        "mutation": "s:l5f",
+        "mutation_count": 893,
+        "lineage_count": 968,
+        "gene": "S",
+        "ref_aa": "L",
+        "alt_aa": "F",
+        "codon_num": 5,
+        "type": "substitution",
+        "prevalence": 0.9225206611570248
+      },
+      {
+        "mutation": "s:q957r",
+        "mutation_count": 882,
+        "lineage_count": 968,
+        "gene": "S",
+        "ref_aa": "Q",
+        "alt_aa": "R",
+        "codon_num": 957,
+        "type": "substitution",
+        "prevalence": 0.9111570247933884
+      }
+    ]
+  },
+  {
+    "mutation_name": "P.2",
+    "pangolin_lineage": "P.2",
+    "searchTerms": ["P.2", "P2"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "location_first_identified": "Brazil",
+    "reportQuery": {
+      "pango": "P.2",
+      "loc": ["BRA", "USA", "USA_US-CA"],
+      "selected": "BRA"
+    },
+    "mutations": [{
+        "mutation": "n:a119s",
+        "mutation_count": 1576,
+        "lineage_count": 1577,
+        "gene": "N",
+        "ref_aa": "A",
+        "alt_aa": "S",
+        "codon_num": 119,
+        "type": "substitution",
+        "prevalence": 0.9993658845909955
+      },
+      {
+        "mutation": "orf1a:l3468v",
+        "mutation_count": 1576,
+        "lineage_count": 1577,
+        "gene": "ORF1a",
+        "ref_aa": "L",
+        "alt_aa": "V",
+        "codon_num": 3468,
+        "type": "substitution",
+        "prevalence": 0.9993658845909955
+      },
+      {
+        "mutation": "orf1a:l3930f",
+        "mutation_count": 1576,
+        "lineage_count": 1577,
+        "gene": "ORF1a",
+        "ref_aa": "L",
+        "alt_aa": "F",
+        "codon_num": 3930,
+        "type": "substitution",
+        "prevalence": 0.9993658845909955
+      },
+      {
+        "mutation": "s:e484k",
+        "mutation_count": 1576,
+        "lineage_count": 1577,
+        "gene": "S",
+        "ref_aa": "E",
+        "alt_aa": "K",
+        "codon_num": 484,
+        "type": "substitution",
+        "prevalence": 0.9993658845909955
+      },
+      {
+        "mutation": "s:v1176f",
+        "mutation_count": 1576,
+        "lineage_count": 1577,
+        "gene": "S",
+        "ref_aa": "V",
+        "alt_aa": "F",
+        "codon_num": 1176,
+        "type": "substitution",
+        "prevalence": 0.9993658845909955
+      },
+      {
+        "mutation": "orf1b:p314l",
+        "mutation_count": 1569,
+        "lineage_count": 1577,
+        "gene": "ORF1b",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 314,
+        "type": "substitution",
+        "prevalence": 0.9949270767279645
+      },
+      {
+        "mutation": "s:d614g",
+        "mutation_count": 1567,
+        "lineage_count": 1577,
+        "gene": "S",
+        "ref_aa": "D",
+        "alt_aa": "G",
+        "codon_num": 614,
+        "type": "substitution",
+        "prevalence": 0.9936588459099556
+      },
+      {
+        "mutation": "n:m234i",
+        "mutation_count": 1562,
+        "lineage_count": 1577,
+        "gene": "N",
+        "ref_aa": "M",
+        "alt_aa": "I",
+        "codon_num": 234,
+        "type": "substitution",
+        "prevalence": 0.9904882688649335
+      },
+      {
+        "mutation": "n:r203k",
+        "mutation_count": 1562,
+        "lineage_count": 1577,
+        "gene": "N",
+        "ref_aa": "R",
+        "alt_aa": "K",
+        "codon_num": 203,
+        "type": "substitution",
+        "prevalence": 0.9904882688649335
+      },
+      {
+        "mutation": "n:g204r",
+        "mutation_count": 1559,
+        "lineage_count": 1577,
+        "gene": "N",
+        "ref_aa": "G",
+        "alt_aa": "R",
+        "codon_num": 204,
+        "type": "substitution",
+        "prevalence": 0.9885859226379201
+      }
+    ]
+  },
+  {
     "mutation_name": "B.1.526",
     "pangolin_lineage": "B.1.526",
     "searchTerms": ["B.1.526", "B1526"],
@@ -173,7 +746,96 @@
       "pango": "B.1.427",
       "loc": ["USA", "USA_US-CA"],
       "selected": "USA_US-CA"
-    }
+    },
+    "mutations": [{
+        "mutation": "ORF1A:T265I",
+        "gene": "ORF1a",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 265,
+        "type": "substitution"
+      },
+      {
+        "mutation": "ORF1A:S3158T",
+        "gene": "ORF1a",
+        "ref_aa": "S",
+        "alt_aa": "T",
+        "codon_num": 3158,
+        "type": "substitution"
+      },
+      {
+        "mutation": "ORF1B:P314L",
+        "gene": "ORF1b",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 314,
+        "type": "substitution"
+      },
+      {
+        "mutation": "ORF1B:P976L",
+        "gene": "ORF1b",
+        "ref_aa": "P",
+        "alt_aa": "L",
+        "codon_num": 976,
+        "type": "substitution"
+      },
+      {
+        "mutation": "ORF1B:D1183Y",
+        "gene": "ORF1b",
+        "ref_aa": "D",
+        "alt_aa": "Y",
+        "codon_num": 1183,
+        "type": "substitution"
+      },
+      {
+        "mutation": "S:S13I",
+        "gene": "S",
+        "ref_aa": "S",
+        "alt_aa": "I",
+        "codon_num": 13,
+        "type": "substitution"
+      },
+      {
+        "mutation": "S:W152C",
+        "gene": "S",
+        "ref_aa": "W",
+        "alt_aa": "C",
+        "codon_num": 152,
+        "type": "substitution"
+      },
+      {
+        "mutation": "S:L452R",
+        "gene": "S",
+        "ref_aa": "L",
+        "alt_aa": "R",
+        "codon_num": 452,
+        "type": "substitution"
+      },
+      {
+        "mutation": "S:D614G",
+        "gene": "S",
+        "ref_aa": "D",
+        "alt_aa": "G",
+        "codon_num": 614,
+        "type": "substitution"
+      },
+      {
+        "mutation": "ORF3A:Q57H",
+        "gene": "ORF3a",
+        "ref_aa": "Q",
+        "alt_aa": "H",
+        "codon_num": 57,
+        "type": "substitution"
+      },
+      {
+        "mutation": "N:T205I",
+        "gene": "N",
+        "ref_aa": "T",
+        "alt_aa": "I",
+        "codon_num": 205,
+        "type": "substitution"
+      }
+    ]
   },
   {
     "mutation_name": "B.1.1.7",
@@ -607,7 +1269,7 @@
       "codon_num": 2230,
       "alt_aa": "T"
     }, {
-      "mutation": "ORF1a:DEL3675/3677.0",
+      "mutation": "ORF1a:DEL3675/3677",
       "type": "deletion",
       "gene": "ORF1a",
       "ref_codon": "TGGTTTTAA",
@@ -617,7 +1279,7 @@
       "alt_aa": "NA",
       "change_length_nt": 9
     }, {
-      "mutation": "S:DEL69/70.0",
+      "mutation": "S:DEL69/70",
       "type": "deletion",
       "gene": "S",
       "ref_codon": "CATGTC",
@@ -627,7 +1289,7 @@
       "alt_aa": "NA",
       "change_length_nt": 6
     }, {
-      "mutation": "S:DEL144/144.0",
+      "mutation": "S:DEL144/144",
       "type": "deletion",
       "gene": "S",
       "ref_codon": "TAT",

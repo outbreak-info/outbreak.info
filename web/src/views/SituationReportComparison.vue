@@ -361,7 +361,7 @@ export default {
     gene: {
       type: Array,
       default: () => [
-        "S"
+        "ORF1a", "ORF1b", "S"
       ]
     }
   },

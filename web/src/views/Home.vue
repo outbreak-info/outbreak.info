@@ -30,6 +30,8 @@
           <button class="btn btn-main-outline mt-3">
             <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
           </button>
+
+          <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline ml-4"><button class="btn btn-main mt-3">We're hiring!</button></router-link>
         </small>
       </div>
 
@@ -83,7 +85,7 @@
       </div>
 
       <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro">
-        <div  class="mb-3">
+        <div class="mb-3">
           <router-link :to="{name: 'SituationReports'}" class="text-light">
             <h3 class="my-3">Variants</h3>
           </router-link>

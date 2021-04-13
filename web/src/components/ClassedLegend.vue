@@ -9,7 +9,7 @@
       <svg :width="35" :height="rectWidth + 15" class="categorical-rect my-1" style="margin-right: 15px;">
         <g transform="translate(2,2)">
           <rect :width="rectWidth" :height="rectWidth" x="0" y="0" :fill="colorScale(0)" :stroke="strokeColor" stroke-width="1"></rect>
-          <text :x="0" :y="rectWidth" dy="5" dominant-baseline="hanging" text-anchor="start" :fill="strokeColor" font-size="10px">0-{{colorDomain[1]*100}}</text>
+          <text :x="0" :y="rectWidth" dy="5" dominant-baseline="hanging" text-anchor="start" :fill="strokeColor" font-size="10px">0-{{colorDomain[0]*100}}</text>
         </g>
       </svg>
 

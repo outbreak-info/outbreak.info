@@ -526,6 +526,14 @@ const state = {
         }
       }
     }, {
+      date: new Date("2021-04-01 0:0"),
+      category: "data",
+      title: "Added B.1.526.1, B.1.526.2, and P.2 as Variants of Interest",
+      description: "Based on the split of the B.1.526 lineage into B.1.526, B.1.526.1, and B.1.526.2 lineages, added the two new lineages as Variants of Interest, as well as the P.2 lineage circulating in Brazil.",
+      route: {
+        name: "SituationReports"
+      }
+    }, {
       date: new Date("2021-01-21 0:0"),
       category: "data",
       title: "Added SARS-CoV-2 Mutation Situation Reports",

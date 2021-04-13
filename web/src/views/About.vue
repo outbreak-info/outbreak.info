@@ -15,7 +15,8 @@
           one place.
         </p>
         <p class="text-left focustext py-2">
-          <b>Outbreak.info</b> aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. We standardize the metadata describing these resources, providing a web interface to easily search over 100,000 resources. The platform also serves as a data integration tool that makes COVID-19 data more usable.
+          <b>Outbreak.info</b> aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. We standardize the metadata describing these resources, providing a web interface to easily search over
+          100,000 resources. The platform also serves as a data integration tool that makes COVID-19 data more usable.
         </p>
         <p class="text-left focustext py-2">
           We also are tracking developments about new SARS-CoV-2 mutations and epidemiological trends, offering key insights and daily reports.
@@ -46,7 +47,7 @@
     <!-- TEAM -->
     <div class="bg-light d-flex justify-content-center align-items-center">
       <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5">
-        <h4 class="mb-4">Outbreak.info team</h4>
+        <h3 class="mb-4">Outbreak.info team</h3>
         <div class="d-flex flex-wrap">
           <div v-for="(person, idx) in team" :key="idx" class="team-member d-flex flex-column align-items-center mx-5 my-3">
             <img :src="require(`@/assets/team/${person.img}`)" class="profile-pic text-" />
@@ -62,6 +63,40 @@
               <a :href="person.linkedin" target="_blank" v-if="person.linkedin" class="mr-2">
                 <font-awesome-icon :icon="['fab', 'linkedin-in']" />
               </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-light d-flex justify-content-center align-items-center">
+      <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top pt-3 pb-5" id="jobs">
+        <h3 class="mb-4">Open positions</h3>
+        <div class="d-flex justify-content-center">
+          <div class="card w-30 py-2 px-4 text-left mr-4">
+            <div class="border-bottom pt-3 pb-1 mb-2">
+              <h5>Front-end Developer</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
+            </div>
+            <div class="wpb_text_column wpb_content_element ">
+              <div class="wpb_wrapper">
+                <p>We are looking for a <strong>Front-end Developer</strong> to build interfaces to explore, visualize, and analyze biomedical data, including current data from the ongoing COVID-19 pandemic. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.</p>
+                <p>For further details, please contact <a href="mailto:lhughes@scripps.edu">lhughes@scripps.edu</a>.</p>
+                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178a3c4765d45b8" target="_blank" rel="noopener noreferrer">here</a>. Qualification: BSc or equivalent.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card w-30 py-2 px-4 text-left mr-4">
+            <div class="border-bottom pt-3 pb-1 mb-2">
+              <h5>Research Programmer</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
+            </div>
+            <div class="wpb_text_column wpb_content_element ">
+              <div class="wpb_wrapper">
+                <p>We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including <a href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">iVar</a> and <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, can be seen on
+                  our <a href="https://github.com/andersen-lab/" target="_blank" rel="noopener">Github account</a>.</p>
+                <p>For further details, please contact <a href="mailto:gkarthik@scripps.edu">gkarthik@scripps.edu</a>.</p>
+                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&amp;gni=8a78879f7823d1090178240894ba01f1" target="_blank" rel="noopener noreferrer">here</a>. Qualification: BSc or equivalent.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -141,5 +176,9 @@ export default Vue.extend({
     height: 150px;
     border-radius: 50%;
     object-fit: contain;
+}
+
+.w-30 {
+    width: 30% !important;
 }
 </style>
