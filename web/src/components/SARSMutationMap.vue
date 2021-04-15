@@ -46,6 +46,7 @@ import {
   select,
   selectAll,
   scaleLinear,
+  scaleOrdinal,
   min,
   max,
   map,
@@ -66,7 +67,6 @@ export default Vue.extend({
   name: "SARSMutationMap",
   props: {
     mutationKey: String,
-    geneColorScale: Function,
     copyable: {
       type: Boolean,
       default: false
@@ -126,6 +126,23 @@ export default Vue.extend({
       deletionRef: null,
       // scales
       x: scaleLinear(),
+      geneColorScale: null,
+      colorDomain:
+        ["#bab0ab", // lt grey -- UTRs
+          "#1f77b4", // dk blue
+          "#aec7e8", // lt blue
+          "#f28e2c", // orange
+          "#e15759", // red
+          "#9edae5", // teal
+          "#59a14f", // green
+          "#edc949", // yellow
+          "#9467bd", // purple
+          "#ff9da7", // pink
+          "#8c564b", // brown
+          "#555555", // grey
+          "#bcbd22", // puce
+          "#bab0ab"
+        ],
       xAxis: null
     }
   },
@@ -138,6 +155,11 @@ export default Vue.extend({
         end: d[1].end
       }
     })
+
+    let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
+
+    this.geneColorScale = scaleOrdinal(this.colorDomain)
+    .domain(geneNames);
 
     this.setupMutationArr();
     this.setupPlot();
