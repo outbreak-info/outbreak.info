@@ -54,7 +54,7 @@ function titleCase(value) {
 }
 
 export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThreshold) {
-  const queryStr = mutationObj["mutations"].map(d => d.mutation).join(",");
+  const queryStr = mutationObj["additionalMutations"].map(d => d.mutation).join(",");
   return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
     map(lineages => {
       mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
