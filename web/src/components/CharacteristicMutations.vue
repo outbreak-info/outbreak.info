@@ -93,7 +93,6 @@ export default {
   },
   mounted() {
     const ofInterest = getBadMutations();
-    console.log(ofInterest)
     this.moc = ofInterest.moc;
     this.moi = ofInterest.moi;
     // convert object of nucleotides into an array
@@ -109,6 +108,7 @@ export default {
 
     this.colorScale = scaleOrdinal(this.colorDomain)
     .domain(geneNames);
+    console.log(this.colorScale)
   }
 }
 </script>

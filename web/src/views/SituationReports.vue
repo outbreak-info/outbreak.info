@@ -38,7 +38,7 @@
           </div>
         </div>
         <div class="d-flex flex-wrap">
-        <router-link :to="{ hash: '#' + group.key.replace(' + ', '_') }" v-for="(group, i) in reports" :key="'btn'+i"><button class="btn btn-main-outline my-3 mr-3">{{group.key}}</button></router-link>  
+        <router-link :to="{ hash: '#' + group.key.replace(' + ', '_') }" v-for="(group, i) in reports" :key="'btn'+i"><button class="btn btn-main-outline my-3 mr-3">{{group.key}}</button></router-link>
         <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main my-3 mr-3">Create custom report</button></router-link>
         </div>
 
@@ -71,7 +71,7 @@
 
               <!-- MUTATION MAP / DEFINITION -->
               <div class="mutation-map flex-grow-1 px-2">
-                <SARSMutationMap :lineageMutations="report.mutations" :mutationKey="report.mutation_name" />
+                <SARSMutationMap :lineageMutations="report.mutations" :mutationKey="report.mutation_name" :geneColorScale="colorScale" />
               </div>
 
             </div>
@@ -99,6 +99,9 @@ import ReportCard from "@/components/ReportCard.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
+import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
+
+import { scaleOrdinal } from "d3";
 
 // --- font awesome --
 import {
@@ -152,10 +155,40 @@ export default {
       totalSubscription: null,
       lastUpdated: null,
       total: null,
-      reports: null
+      reports: null,
+      colorScale: null,
+      colorDomain:
+        ["#bab0ab", // lt grey -- UTRs
+          "#1f77b4", // dk blue
+          "#aec7e8", // lt blue
+          "#f28e2c", // orange
+          "#e15759", // red
+          "#9edae5", // teal
+          "#59a14f", // green
+          "#edc949", // yellow
+          "#9467bd", // purple
+          "#ff9da7", // pink
+          "#8c564b", // brown
+          "#555555", // grey
+          "#bcbd22", // puce
+          "#bab0ab"
+        ]
     }
   },
   mounted() {
+    this.ntMapArr = Object.entries(NT_MAP).map(d => {
+      return {
+        gene: d[0],
+        start: d[1].start,
+        end: d[1].end
+      }
+    })
+
+    let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
+
+    this.colorScale = scaleOrdinal(this.colorDomain)
+    .domain(geneNames);
+
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;

@@ -53,17 +53,26 @@ function titleCase(value) {
   }
 }
 
-export function addLineages2CuratedMutations(apiurl, mutationObj, prevalenceThreshold) {
-  const queryStr = mutationObj["additionalMutations"].map(d => d.mutation).join(",");
-  return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
-    map(lineages => {
-      mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
-      return (mutationObj)
-    })
-  )
+export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
+  if (mutationObj.reportType == "mutation") {
+    mutationObj["mutations"] = mutationObj.additionalMutations;
+
+    const queryStr = mutationObj["additionalMutations"].map(d => d.mutation).join(",");
+    return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
+      map(lineages => {
+        mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
+        return (mutationObj)
+      })
+    )
+  } else {
+    return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
+      mutationObj["mutations"] = charMuts;
+    }));
+  }
 }
 
 export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
+
   return getMutationsByLineage(apiurl, mutation.mutation_str, prevalenceThreshold).pipe(
     map(lineages => {
       mutation["lineages"] = lineages.map(d => d.pangolin_lineage);
@@ -73,9 +82,9 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
 }
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
-  const mutations = CURATED.filter(d => d.reportType.toLowerCase() == "mutation");
+  // const mutations = CURATED.filter(d => d.reportType.toLowerCase() == "mutation");
 
-  return forkJoin(...mutations.map(mutation => addLineages2CuratedMutations(apiurl, mutation, prevalenceThreshold))).pipe(
+  return forkJoin(...CURATED.map(mutation => lookupCharMutations(apiurl, mutation, prevalenceThreshold))).pipe(
     map(results => {
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
 
