@@ -8,18 +8,18 @@
     <!-- <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="horizontal-bargraph-x axis--x" ref="xAxisBottom"></g> -->
   </svg>
 
-<div class="d-flex">
-  <small class="my-3">
-    <button class="btn btn-main-outline" @click="viewMore">view more mutations</button>
-  </small>
-  <div class="d-flex flex-column">
-    <small class="text-muted">min. prevalence</small>
-    <span class="percent-sign border bg-white py-1">
-      <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 65px" v-model="selectedMutationThreshold" placeholder="0-100" />
-      <span class="mr-1">%</span>
-    </span>
+  <div class="d-flex">
+    <small class="my-3">
+      <button class="btn btn-main-outline" @click="viewMore">view more mutations</button>
+    </small>
+    <div class="d-flex flex-column">
+      <small class="text-muted">min. prevalence</small>
+      <span class="percent-sign border bg-white py-1">
+        <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 65px" v-model="selectedMutationThreshold" placeholder="0-100" />
+        <span class="mr-1">%</span>
+      </span>
+    </div>
   </div>
-</div>
 
 </div>
 </template>
@@ -120,7 +120,6 @@ export default Vue.extend({
     },
     updateAxes() {
       this.plottedData = cloneDeep(this.data);
-      console.log(this.data)
       this.plottedData.sort((a, b) => a[this.sortVar] > b[this.sortVar] ? -1 : 1);
 
       this.height = this.bandwidth * this.plottedData.length * (1 + this.paddingInner) + this.margin.top + this.margin.bottom;
@@ -136,7 +135,6 @@ export default Vue.extend({
 
     },
     drawPlot() {
-      const geneX = -120;
       const mutationX = -5;
       const yHeader = -15;
       const t1 = transition()
@@ -171,28 +169,24 @@ export default Vue.extend({
             .attr("height", this.y.bandwidth())
             .style("fill", this.fillColor);
 
-          grp.append("text")
-            .attr("class", "gene")
-            .attr("x", 0)
-            .attr("dx", geneX)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
-            .text(d => d.gene)
-            .style("fill", d => this.colorScale(d.gene))
-            .style("font-weight", 700)
-            .style("dominant-baseline", "central")
-            .style("text-anchor", "end");
-
-          grp.append("text")
-            .attr("class", "mutation")
+          const textGrp = grp.append("text")
+            .attr("class", "gene-mutation")
             .attr("x", 0)
             .attr("dx", mutationX)
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
-            .text(d => d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : `${d.mutation.split(":").slice(-1)[0].toUpperCase()}`)
-            .style("fill", "#555")
-            // .style("fill", d => this.colorScale(d.gene))
-            // .style("font-weight", 700)
+            .style("fill", d => this.colorScale(d.gene))
             .style("dominant-baseline", "central")
             .style("text-anchor", "end");
+
+          textGrp.append("tspan")
+            .attr("class", "gene")
+            .text(d => `${d.gene}: `);
+
+          textGrp.append("tspan")
+            .attr("class", "mutation")
+            .text(d => d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : `${d.mutation.split(":").slice(-1)[0].toUpperCase()}`)
+            .style("font-weight", 700)
+          // .style("fill", "#555");
 
           grp.append("text")
             .attr("class", "annotation")
@@ -267,16 +261,16 @@ export default Vue.extend({
             .attr("width", d => this.x(d.prevalence) - this.x(0))
             .attr("y", d => this.y(d.mutation));
 
-          update.select(".gene")
-            .text(d => d.gene)
+          update.select(".gene-mutation")
+            .style("fill", d => this.colorScale(d.gene))
             .transition(t1)
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
-            .style("fill", d => this.colorScale(d.gene));
+
+          update.select(".gene")
+            .text(d => `${d.gene}: `);
 
           update.select(".mutation")
-            .text(d => d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : `${d.mutation.split(":")[-1].toUpperCase()}`)
-            .transition(t1)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
+            .text(d => d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : `${d.mutation.split(":")[-1].toUpperCase()}`);
 
           update
             .select(".annotation")
@@ -286,35 +280,35 @@ export default Vue.extend({
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
 
 
-            update
-              .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
-              .select(".moi")
-              .attr("x", this.width - this.margin.left - this.interestWidth - 2)
-              .attr("height", this.y.bandwidth())
-              .transition(t1)
-              .attr("y", d => this.y(d.mutation));
+          update
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
+            .select(".moi")
+            .attr("x", this.width - this.margin.left - this.interestWidth - 2)
+            .attr("height", this.y.bandwidth())
+            .transition(t1)
+            .attr("y", d => this.y(d.mutation));
 
-            update
-              .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
-              .select(".moi-annotation")
-              .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
-              .transition(t1)
-              .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
+          update
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
+            .select(".moi-annotation")
+            .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
+            .transition(t1)
+            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
 
-            update
-              .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
-              .select(".moc")
-              .attr("x", this.width - this.margin.left - this.interestWidth - 2)
-              .attr("height", this.y.bandwidth())
-              .transition(t1)
-              .attr("y", d => this.y(d.mutation));
+          update
+            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
+            .select(".moc")
+            .attr("x", this.width - this.margin.left - this.interestWidth - 2)
+            .attr("height", this.y.bandwidth())
+            .transition(t1)
+            .attr("y", d => this.y(d.mutation));
 
-            update
-              .filter(d => this.moc.includes(d.mutation))
-              .select(".moi-annotation")
-              .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
-              .transition(t1)
-              .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
+          update
+            .filter(d => this.moc.includes(d.mutation))
+            .select(".moi-annotation")
+            .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
+            .transition(t1)
+            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
         },
         exit =>
         exit.call(exit =>
@@ -334,96 +328,91 @@ export default Vue.extend({
         .data([0]);
 
       annotSelector.join(
-          enter => {
-            const grp = enter.append("g")
-              .attr("class", "annotation-group");
+        enter => {
+          const grp = enter.append("g")
+            .attr("class", "annotation-group");
 
-            grp.append("text")
-              .attr("class", "th")
-              .attr("x", 0)
-              .attr("dx", geneX)
-              .attr("y", 0)
-              .attr("dy", yHeader)
-              .text("gene")
-              .style("fill", "#555")
-              .style("font-size", 14)
-              .style("dominant-baseline", "central")
-              .style("text-anchor", "end");
+          const textGrp = grp.append("text")
+            .attr("class", "th")
+            .attr("x", 0)
+            .attr("dx", mutationX)
+            .attr("y", 0)
+            .attr("dy", yHeader)
 
-            grp.append("text")
-              .attr("class", "th")
-              .attr("x", 0)
-              .attr("dx", mutationX)
-              .attr("y", 0)
-              .attr("dy", yHeader)
-              .text("mutation")
-              .style("fill", "#555")
-              .style("dominant-baseline", "central")
-              .style("font-size", 14)
-              .style("text-anchor", "end");
+            .style("fill", "#555")
+            .style("font-size", 14)
+            .style("dominant-baseline", "central")
+            .style("text-anchor", "end");
 
-            grp.append("text")
-              .attr("class", "th")
-              .attr("x", this.width - this.margin.left - this.margin.right)
-              .attr("y", 0)
-              .attr("dy", yHeader)
-              .text("prevalence in lineage")
-              .style("fill", "#555")
-              .style("dominant-baseline", "central")
-              .style("font-size", 14)
-              .style("text-anchor", "end");
+          textGrp.append("tspan")
+            .text("gene: ");
 
-            grp
-              .append("line")
-              .attr("class", "characteristic-threshold")
-              .attr("x1", this.x(this.characteristicThreshold))
-              .attr("x2", this.x(this.characteristicThreshold))
-              .attr("y1", -1 * thresholdExtension)
-              .attr("y2", this.height - this.margin.top - this.margin.bottom + thresholdExtension)
-              .style("stroke", this.thresholdColor)
-              .style("stroke-width", 1)
-              .style("stroke-dasharray", "4,4")
+          textGrp.append("tspan")
+            .text("mutation")
+            .style("font-weight", 700);
 
-            grp
-              .append("polyline")
-              .attr("class", "threshold-annotation-line")
-              .attr("points",
-                `${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom} ${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom + thresholdY} ${this.x(this.characteristicThreshold) + thresholdX},${this.height - this.margin.top - this.margin.bottom + thresholdY}`
-              )
-              .style("fill", "none")
-              .style("stroke", this.thresholdColor)
-              .style("stroke-width", 1)
+          grp.append("text")
+            .attr("class", "th")
+            .attr("x", this.width - this.margin.left - this.margin.right)
+            .attr("y", 0)
+            .attr("dy", yHeader)
+            .text("prevalence in lineage")
+            .style("fill", "#555")
+            .style("dominant-baseline", "central")
+            .style("font-size", 14)
+            .style("text-anchor", "end");
 
-            grp
-              .append("text")
-              .attr("class", "threshold-annotation")
-              .attr("x", this.x(this.characteristicThreshold))
-              .attr("y", this.height - this.margin.top - this.margin.bottom + thresholdY)
-              .attr("dx", -3 + thresholdX)
-              .text(`characteristic threshold (${format(".0%")(this.characteristicThreshold)})`)
-              .style("text-anchor", "end")
-              .style("font-size", 14)
-              .style("dominant-baseline", "central")
-              .style("fill", this.thresholdColor)
-          },
-          update => {
-            update
-              .select(".characteristic-threshold")
-              .attr("x1", this.x(this.characteristicThreshold))
-              .attr("x2", this.x(this.characteristicThreshold))
-              .attr("y2", this.height - this.margin.top - this.margin.bottom + thresholdExtension);
+          grp
+            .append("line")
+            .attr("class", "characteristic-threshold")
+            .attr("x1", this.x(this.characteristicThreshold))
+            .attr("x2", this.x(this.characteristicThreshold))
+            .attr("y1", -1 * thresholdExtension)
+            .attr("y2", this.height - this.margin.top - this.margin.bottom + thresholdExtension)
+            .style("stroke", this.thresholdColor)
+            .style("stroke-width", 1)
+            .style("stroke-dasharray", "4,4")
 
-            update
-              .select(".threshold-annotation-line")
-          .attr("points",
-            `${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom} ${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom + thresholdY} ${this.x(this.characteristicThreshold) + thresholdX},${this.height - this.margin.top - this.margin.bottom + thresholdY}`
-          );
+          grp
+            .append("polyline")
+            .attr("class", "threshold-annotation-line")
+            .attr("points",
+              `${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom} ${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom + thresholdY} ${this.x(this.characteristicThreshold) + thresholdX},${this.height - this.margin.top - this.margin.bottom + thresholdY}`
+            )
+            .style("fill", "none")
+            .style("stroke", this.thresholdColor)
+            .style("stroke-width", 1)
+
+          grp
+            .append("text")
+            .attr("class", "threshold-annotation")
+            .attr("x", this.x(this.characteristicThreshold))
+            .attr("y", this.height - this.margin.top - this.margin.bottom + thresholdY)
+            .attr("dx", -3 + thresholdX)
+            .text(`characteristic threshold (${format(".0%")(this.characteristicThreshold)})`)
+            .style("text-anchor", "end")
+            .style("font-size", 14)
+            .style("dominant-baseline", "central")
+            .style("fill", this.thresholdColor)
+        },
+        update => {
+          update
+            .select(".characteristic-threshold")
+            .attr("x1", this.x(this.characteristicThreshold))
+            .attr("x2", this.x(this.characteristicThreshold))
+            .attr("y2", this.height - this.margin.top - this.margin.bottom + thresholdExtension);
 
           update
-          .select(".threshold-annotation")
-          .attr("x", this.x(this.characteristicThreshold))
-          .attr("y", this.height - this.margin.top - this.margin.bottom + thresholdY)
-          .text(`characteristic threshold (${format(".0%")(this.characteristicThreshold)})`);
+            .select(".threshold-annotation-line")
+            .attr("points",
+              `${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom} ${this.x(this.characteristicThreshold)},${this.height - this.margin.top - this.margin.bottom + thresholdY} ${this.x(this.characteristicThreshold) + thresholdX},${this.height - this.margin.top - this.margin.bottom + thresholdY}`
+            );
+
+          update
+            .select(".threshold-annotation")
+            .attr("x", this.x(this.characteristicThreshold))
+            .attr("y", this.height - this.margin.top - this.margin.bottom + thresholdY)
+            .text(`characteristic threshold (${format(".0%")(this.characteristicThreshold)})`);
         },
         exit =>
         exit.call(exit =>
@@ -432,13 +421,13 @@ export default Vue.extend({
           .style("opacity", 1e-5)
           .remove()
         )
-    )
+      )
+    }
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   }
-},
-mounted() {
-  this.setupPlot();
-  this.updatePlot();
-}
 })
 </script>
 
