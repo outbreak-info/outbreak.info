@@ -71,7 +71,7 @@
 
               <!-- MUTATION MAP / DEFINITION -->
               <div class="mutation-map flex-grow-1 px-2">
-                <SARSMutationMap :lineageMutations="report.mutations" :mutationKey="report.mutation_name" :geneColorScale="colorScale" />
+                <SARSMutationMap :lineageMutations="report.mutations" :mutationKey="report.mutation_name" />
               </div>
 
             </div>
