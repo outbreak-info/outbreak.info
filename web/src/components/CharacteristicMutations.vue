@@ -15,16 +15,26 @@
   </div>
 
 
-  <div class="ml-2" id="mutation-table">
+    <div class="collapse ml-2" id="mutation-table">
     <div class="row">
       <div class="col" v-if="lineageName">
-        <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`"  v-if="colorScale" />
+        <MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
       </div>
       <div class="col" v-if="additionalMutations.length > 0">
-        <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" />
+        <MutationTable :mutations="additionalMutations" tableTitle="Additional Mutations" />
       </div>
     </div>
   </div>
+  <!-- <div class="ml-2" id="mutation-table"> -->
+  <!--   <div class="row"> -->
+  <!--     <div class="col" v-if="lineageName"> -->
+  <!--       <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`"  v-if="colorScale" /> -->
+  <!--     </div> -->
+  <!--     <div class="col" v-if="additionalMutations.length > 0"> -->
+  <!--       <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" /> -->
+  <!--     </div> -->
+  <!--   </div> -->
+  <!-- </div> -->
 </div>
 </template>
 
