@@ -99,6 +99,19 @@
               </div>
             </div>
           </div>
+
+          <div class="card w-30 py-2 px-4 text-left mr-4">
+            <div class="border-bottom pt-3 pb-1 mb-2">
+              <h5>Postdoctoral Associate</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
+            </div>
+            <div class="wpb_text_column wpb_content_element ">
+              <div class="wpb_wrapper">
+		<p>The <a href="https://andersen-lab.com/">Andersen lab</a> is looking for a <strong>computational Postdoctoral Associate</strong> interested in phylogenetics and data science of emerging outbreaks. Together with a large group of collaborators we recently created outbreak.info, which has become a major resource for genomic, epidemiological, clinical, and article data for outbreak response. Our <a href="https://github.com/andersen-lab/">tools</a> are being widely used by public health departments and labs across the world to process sequencing data and gain up-to-date information on the COVID-19 pandemic. We are looking for a dedicated individual who is interested in developing new tools and investigating more basic principles of how viruses - and their variants - emerge, evolve, and spread. The initial focus will be on SARS-CoV-2, however, we expect the role to expand significantly beyond that.</p>
+
+                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178d2084c3b0b63" target="_blank" rel="noopener noreferrer">here</a>. Qualification: Ph.D. in computational biology, computer science, mathematics, physics, or equivalent.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
