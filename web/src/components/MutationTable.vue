@@ -13,7 +13,7 @@
     </tr>
   </thead>
   <tbody class="checkbook border-bottom">
-    <tr v-for="(mutation, mIdx) in mutations" :key="mIdx">
+    <tr v-for="(mutation, mIdx) in sortedMutations" :key="mIdx">
       <td>
         {{mutation.gene}}
       </td>
@@ -34,12 +34,35 @@
 
 <script lang="js">
 import Vue from "vue";
+import cloneDeep from "lodash/cloneDeep";
+import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
+
 export default Vue.extend({
   name: "MutationTable",
   props: {
     mutations: Array,
     tableTitle: String
+  },
+  computed: {
+    sortedMutations() {
+      let sortedMutations = [];
+      sortedMutations = cloneDeep(this.mutations);
+      function compare(a, b) {
+	if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
+	  return 0;
+	if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
+	  return -1;
+	if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
+	  return 0;
+	return (a.codon_num < b.codon_num ? -1 : 0);
+      }
+
+      sortedMutations = sortedMutations.sort(compare);
+
+      return sortedMutations;
+    }
   }
+
 })
 </script>
 
