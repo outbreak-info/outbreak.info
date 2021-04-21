@@ -1,0 +1,12 @@
+{
+  "Data": [
+    {
+      "q": "Where do you get your data?",
+      "a": "We source our data from a bunch of sources. Read more at <a href=''>sources</a>"
+    },
+    {
+      "q": "How often do you update your data?",
+      "a": "We pull data from our sources at least daily. Mutation genomics data for our Variant Reports are updated four times daily from the GISAID data source."
+    }
+  ]
+}
