@@ -731,7 +731,7 @@ select:hover {
   font-size: 1.25rem;
 }
 
-$location-color: #fc6189;
+$location-color: #fc6189; // pink
 .location-banner {
     border-width: 0;
     border-style: solid;
@@ -745,7 +745,7 @@ $location-color: #fc6189;
 }
 
 
-$mutation-color: #f28e2c;
+$mutation-color: #f28e2c; // orange
 .mutation-banner {
     border-width: 0;
     border-style: solid;
@@ -777,6 +777,21 @@ $comparison-color: #499894; //teal
     color: lighten($comparison-color, 15%);
 }
 
+$interest-color: #aec7e8; // lt. blue
+$interest-color: $publication-color; // red
+$interest-color: #f0484b; // brighter red
+$interest-color: #c06aa8; // purple
+.interest-banner {
+    border-width: 0;
+    border-style: solid;
+    background: linear-gradient(to left, $primary-color 0%, $interest-color 50%, $primary-color 100%) left bottom darken($primary-color,10%) no-repeat;
+    background-size: 100% 7px;
+    /* if linear-gradient, we need to resize it */
+}
+
+.interest-header {
+    color: lighten($interest-color, 15%);
+}
 
 .bright-hyperlink,
 .bright-hyperlink a {

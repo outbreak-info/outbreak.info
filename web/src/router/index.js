@@ -462,6 +462,15 @@ const routes = [{
         /* webpackChunkName: "watch-list" */
         "../views/WatchList.vue"
       )
+  },
+  {
+    path: "/variants-of-interest",
+    name: "VariantsOfInterest",
+    component: () =>
+      import(
+        /* webpackChunkName: "watch-list" */
+        "../views/VariantsOfInterest.vue"
+      )
   }
 ];
 
