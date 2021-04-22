@@ -57,6 +57,8 @@
               </router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'SituationReportComparison'}" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
               </router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'SituationReportCaveats'}" :class="{ active: $route.name == 'SituationReportCaveats' }">Intrepreting Reports
+              </router-link>
             </div>
           </li>
 
@@ -164,6 +166,10 @@
           </li>
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReportComparison'}" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
+            </router-link>
+          </li>
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReportCaveats'}" :class="{ active: $route.name == 'SituationReportCaveats' }">Interpreting Reports
             </router-link>
           </li>
         </ul>
