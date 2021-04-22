@@ -42,6 +42,13 @@
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
+
+            <span class="mr-3">
+              <router-link :to="{name: 'Epidemiology', query: {location: 'CITY_US-NY_NYC'}} " class="text-light">New York City
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+
             <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
@@ -56,7 +63,7 @@
             <h3 class="my-3">Variants</h3>
           </router-link>
 
-          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Explore SARS-CoV-2 lineage, variant, and mutation situation reports</div>
+          <div id="resourceBar-text" class="form-text d-block text-light-highlight line-height-1">Explore SARS-CoV-2 lineage, variant, and mutation situation reports</div>
         </div>
 
         <div id="search-lineage">
@@ -89,7 +96,7 @@
           </small>
         </div>
 
-        <div id="search-variant-location" class="mt-4">
+        <div id="search-variant-location" class="mt-3">
           <form autocomplete="off" class="w-100" id="search-variant-location-input">
             <div class="input-group">
               <div class="input-group-prepend">
@@ -149,14 +156,23 @@
             </div>
           </form>
           <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
+
             <span class="mr-3">
-              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
-                remdesivir
+              <router-link :to="{name: 'Resources', query: {q: 'E484K'}} " class="text-light">E484K
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
-            <router-link :to="{name: 'NIAID'} " class="text-light">
-              NIAID-related
+            <span class="mr-3">
+              <router-link :to="{name: 'Resources', query: {q: 'Moderna'}} " class="text-light">Moderna
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">remdesivir
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <router-link :to="{name: 'NIAID'} " class="text-light">NIAID-funded
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </small>
