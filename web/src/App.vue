@@ -16,7 +16,7 @@
           <!-- EPIDEMIOLOGY -->
           <li class="dropdown px-3 nav-link">
             <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Epidemiology
+              Cases &amp; Deaths
             </div>
             <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :to="{
@@ -111,7 +111,7 @@
       <!-- epi group -->
       <div class="text-light px-4">
         <div>
-          Epidemiology
+          COVID-19 Cases &amp; Deaths
         </div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">

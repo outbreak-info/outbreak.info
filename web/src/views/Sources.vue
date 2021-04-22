@@ -17,7 +17,7 @@
         </div>
 
         <div class="text-left">
-          <h3 id="epidemiology">Epidemiology Data</h3>
+          <h3 id="epidemiology">COVID-19 Cases &amp; Deaths Data</h3>
           <SourceDescription :sources="sources" />
         </div>
 

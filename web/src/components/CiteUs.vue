@@ -16,7 +16,7 @@
   </div>
 
   <div id="epi-citation" class="mb-2 py-3 border-bottom">
-    <h6 class="m-0">Epidemiology data</h6>
+    <h6 class="m-0">COVID-19 Cases &amp; Deaths data</h6>
     <div v-for="(source, eIdx) in sources" :key="eIdx" class="mb-4 line-height-1">
       <span class="text-highlight">{{source.scope}}:</span> <span v-html="source.citation"></span>
       <small v-if="source.license" class="d-block  mt-1">
