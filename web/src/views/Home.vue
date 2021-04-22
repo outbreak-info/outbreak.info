@@ -34,7 +34,7 @@
         </div>
 
         <div>
-          <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
+          <SearchBar routeTo="/epidemiology?" placeholder="Search location" class="w-100" :darkMode="false"></SearchBar>
           <small id="sBar-example" class="form-text d-block text-left ml-5">
             <span class="mr-2">Try:</span>
             <span class="mr-3">
@@ -59,8 +59,8 @@
           <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Explore SARS-CoV-2 lineage, variant, and mutation situation reports</div>
         </div>
 
-        <div class="">
-          <form autocomplete="off" class="w-100">
+        <div id="search-lineage">
+          <form autocomplete="off" class="w-100" id="search-lineage-input">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb">
@@ -70,7 +70,7 @@
               <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Search PANGO lineage" />
             </div>
           </form>
-          <small id="sBar-example" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
+          <small id="sBar-example-variant-lineage" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
               <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
@@ -88,6 +88,42 @@
             </span>
           </small>
         </div>
+
+        <div id="search-variant-location" class="mt-4">
+          <form autocomplete="off" class="w-100" id="search-variant-location-input">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
+              </div>
+              <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryLocation" @selected="submitLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+            </div>
+          </form>
+          <small id="sBar-example-variant-location" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
+            <span class="mr-3">
+              <router-link :to="{name: 'LocationReport', query: {loc: 'USA'}} " class="text-light">USA
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'LocationReport', query: {loc: 'GBR'}} " class="text-light">U.K.
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'LocationReport', query: {loc: 'USA_US-NY'}} " class="text-light">New York
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'LocationReport', query: {loc: 'USA_US-CA_06073'}} " class="text-light">San Diego
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+          </small>
+        </div>
+
       </div>
 
       <!-- resources -->
@@ -102,7 +138,7 @@
         </div>
 
         <div>
-          <form autocomplete="off" class="w-100">
+          <form autocomplete="off" class="w-100" id="search-resources">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb">
@@ -400,7 +436,7 @@ import {
 library.add(faSpinner, faAngleDoubleRight, faSearch);
 
 import {
-  findPangolin
+  findPangolin, findLocation
 } from "@/api/genomics.js";
 
 export default {
@@ -420,12 +456,21 @@ export default {
       summaryDeletable: false,
       dataSubscription: null,
       queryPangolin: null,
+      queryLocation: null
     };
   },
   computed: {
     ...mapState("admin", ["loading"])
   },
   methods: {
+    submitLocation(selected) {
+      this.$router.push({
+        name: "LocationReport",
+        query: {
+          loc: selected.id
+        }
+      })
+    },
     submitSearch() {
       this.$router.push({
         name: "Resources",
@@ -488,6 +533,7 @@ export default {
     this.glanceLocations = locations ? locations.split(",") : [];
 
     this.queryPangolin = findPangolin;
+    this.queryLocation = findLocation;
 
     this.dataSubscription = getGlanceSummary(
       this.$apiurl,
