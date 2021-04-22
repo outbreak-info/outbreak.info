@@ -63,14 +63,14 @@
           <!-- RESOURCES -->
           <li class="dropdown px-3 nav-link">
             <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Resources
+              Research Library
             </div>
             <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/resources" :class="{ active: $route.name == 'Resources' }">Search resource library
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/resources" :class="{ active: $route.name == 'Resources' }">Find research
               </router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Sources', hash: '#resources'}" :class="{ active: $route.name == 'Sources' }">Download metadata
               </router-link>
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/schema" :class="{ active: $route.name == 'Schema' }">View & adapt schema
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/schema" :class="{ active: $route.name == 'Schema' }">View &amp; adapt schema
               </router-link>
             </div>
           </li>
@@ -172,11 +172,11 @@
       <!-- resources group -->
       <div class="text-light px-4">
         <div>
-          Resources
+          Research Library
         </div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/resources" :class="{ active: $route.name == 'Resources' }">Search resource library
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/resources" :class="{ active: $route.name == 'Resources' }">Find research
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
@@ -184,7 +184,7 @@
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/schema" :class="{ active: $route.name == 'Schema' }">View & adapt schema
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/schema" :class="{ active: $route.name == 'Schema' }">View &amp; adapt schema
             </router-link>
           </li>
         </ul>
