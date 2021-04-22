@@ -17,73 +17,39 @@
     </div>
   </section>
 
-  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
-    <div class="row d-flex align-items-center p-3">
-      <div class="col-sm-9 d-flex flex-column align-items-center justify-content-center px-4">
-        <p class="larger">
-          During the COVID-19 pandemic, researchers have been sharing thousands of datasets, papers, and tools each week.
-        </p>
-        <p class="text-dark larger">
-          <b class="text-highlight">outbreak.info</b> compiles a database of COVID-19 and SARS-CoV-2 resources and epidemiology data to easily discover this information.
-        </p>
-        <small>
-          <button class="btn btn-main-outline mt-3">
-            <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
-          </button>
-
-          <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline ml-4"><button class="btn btn-main mt-3">We're hiring!</button></router-link>
-        </small>
-      </div>
-
-      <div class="col-sm-3">
-        <video class="w-100 mb-3" controls>
-          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
-          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-          Your browser does not support the video tag.
-        </video>
-      </div>
-    </div>
-  </div>
 
   <!-- SEARCH  -->
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
     <div class="row m-0 w-100 d-flex justify-content-center">
-      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
+
+      <!-- EPI INTRO -->
+      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro">
         <div class="mb-3">
-          <router-link :to="{name: 'Resource Summary'}" class="text-light">
-            <h3 class="my-3">
-              Resources</h3>
+          <router-link :to="{name: 'Epidemiology'}" class="text-light">
+            <h3 class="my-3">COVID-19 Cases &amp; Deaths</h3>
           </router-link>
 
-          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
+          <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
+            metropolitan area, or U.S. county</div>
         </div>
 
         <div>
-          <form autocomplete="off" class="w-100">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text bg-grey text-muted border-0" id="sb">
-                  <font-awesome-icon :icon="['fas', 'search']" />
-                </span>
-              </div>
-              <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
-            </div>
-          </form>
-          <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
+          <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
+          <small id="sBar-example" class="form-text d-block text-left ml-5">
+            <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
-                remdesivir
+              <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
-            <router-link :to="{name: 'NIAID'} " class="text-light">
-              NIAID-related
+            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </small>
         </div>
       </div>
 
+      <!-- VARIANTS -->
       <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro">
         <div class="mb-3">
           <router-link :to="{name: 'SituationReports'}" class="text-light">
@@ -124,36 +90,73 @@
         </div>
       </div>
 
-
-      <!-- EPI INTRO -->
-      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro">
+      <!-- resources -->
+      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
         <div class="mb-3">
-          <router-link :to="{name: 'Epidemiology'}" class="text-light">
-            <h3 class="my-3">Epidemiology</h3>
+          <router-link :to="{name: 'Resource Summary'}" class="text-light">
+            <h3 class="my-3">
+              Research Library</h3>
           </router-link>
 
-          <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
-            metropolitan area, or U.S. county</div>
+          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
         </div>
 
         <div>
-          <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
-          <small id="sBar-example" class="form-text d-block text-left ml-5">
-            <span class="mr-2">Try:</span>
+          <form autocomplete="off" class="w-100">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
+              </div>
+              <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
+            </div>
+          </form>
+          <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
+              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
+                remdesivir
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
-            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
+            <router-link :to="{name: 'NIAID'} " class="text-light">
+              NIAID-related
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </small>
         </div>
-
       </div>
+
     </div>
   </section>
+
+  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
+    <div class="row d-flex align-items-center p-3">
+      <div class="col-sm-9 d-flex flex-column align-items-center justify-content-center px-4">
+        <p class="larger">
+          During the COVID-19 pandemic, researchers have been sharing thousands of datasets, papers, and tools each week.
+        </p>
+        <p class="text-dark larger">
+          <b class="text-highlight">outbreak.info</b> compiles a database of COVID-19 and SARS-CoV-2 resources and epidemiology data to easily discover this information.
+        </p>
+        <small>
+          <button class="btn btn-main-outline mt-3">
+            <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
+          </button>
+
+          <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline ml-4"><button class="btn btn-main mt-3">We're hiring!</button></router-link>
+        </small>
+      </div>
+
+      <div class="col-sm-3">
+        <video class="w-100 mb-3" controls>
+          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
+          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
 
   <!-- RESOURCE EXAMPLES -->
   <section id="resource-examples" class="container my-3">
@@ -500,7 +503,8 @@ export default {
 
 <style lang="scss" scoped>
 .resources-intro {
-    background: $primary-color;
+    background: #507192;
+    border-left: 3px solid white;
 }
 
 .variants-intro {
@@ -509,8 +513,8 @@ export default {
 }
 
 .epi-intro {
-    background: #507192;
-    border-left: 3px solid white;
+    background: $primary-color;
+
 }
 
 @media (max-width:767px) {
