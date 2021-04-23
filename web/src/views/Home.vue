@@ -104,7 +104,8 @@
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
-              <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryLocation" @selected="submitLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+              <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryLocation" @selected="submitLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location"
+                totalLabel="total sequences" />
             </div>
           </form>
           <small id="sBar-example-variant-location" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
@@ -182,33 +183,37 @@
     </div>
   </section>
 
-  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
+  <!-- INTRO + VIDEO -->
+  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest">
     <div class="row d-flex align-items-center p-3">
-      <div class="col-sm-9 d-flex flex-column align-items-center justify-content-center px-4">
-        <p class="larger">
-          During the COVID-19 pandemic, researchers have been sharing thousands of datasets, papers, and tools each week.
+      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 larger">
+        <p>
+          Outbreak.info is a project from the <a href="http://sulab.org/" target="_blank">Su</a>, <a href="https://wulab.io/" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" target="_blank">Andersen</a> labs at Scripps Research to
+          unify COVID-19 and SARS-CoV-2 epidemiology and genomic data, published research, and other resources.
         </p>
-        <p class="text-dark larger">
-          <b class="text-highlight">outbreak.info</b> compiles a database of COVID-19 and SARS-CoV-2 resources and epidemiology data to easily discover this information.
-        </p>
-        <small>
-          <button class="btn btn-main-outline mt-3">
-            <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
-          </button>
 
-          <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline ml-4"><button class="btn btn-main mt-3">We're hiring!</button></router-link>
-        </small>
+        <p>Researchers, health officials, and the public can track the pandemic using data on cases, deaths, and genomic variants, and stay updated on related research through interactive visualizations, a searchable library, and downloadable raw
+          data.
+        </p>
       </div>
 
-      <div class="col-sm-3">
-        <video class="w-100 mb-3" controls>
-          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
-          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+      <div class="col-sm-12 col-lg-6">
+        <video class="w-100 mb-3" controls @play="videoClick">
+          <source src="@/assets/home/outbreak_info.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
       </div>
     </div>
   </div>
+
+  <small>
+    <button class="btn btn-main-outline mt-3">
+      <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
+    </button>
+
+    <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline ml-4"><button class="btn btn-main mt-3">We're hiring!</button></router-link>
+  </small>
+
 
   <!-- RESOURCE EXAMPLES -->
   <section id="resource-examples" class="container my-3">
@@ -452,7 +457,8 @@ import {
 library.add(faSpinner, faAngleDoubleRight, faSearch);
 
 import {
-  findPangolin, findLocation
+  findPangolin,
+  findLocation
 } from "@/api/genomics.js";
 
 export default {
@@ -479,6 +485,12 @@ export default {
     ...mapState("admin", ["loading"])
   },
   methods: {
+    videoClick() {
+      this.$gtag.event("video_play", {
+        'event_category': `video_play`,
+        'event_label': `outbreak.info homepage overview`
+      })
+    },
     submitLocation(selected) {
       this.$router.push({
         name: "LocationReport",
@@ -608,6 +620,6 @@ export default {
 }
 
 .larger {
-    font-size: larger;
+    font-size: x-large;
 }
 </style>
