@@ -234,7 +234,7 @@
     <section id="epi-examples" class="container my-3">
       <h3 class="mb-1">Explore cases &amp; deaths</h3>
       <p class="text-muted">
-Track how reported COVID-19 cases and deaths are changing over time, how they compare between locations, and where locations have similar case loads.
+        Track how reported COVID-19 cases and deaths are changing over time, how they compare between locations, and where locations have similar case loads.
       </p>
       <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
@@ -305,23 +305,46 @@ Track how reported COVID-19 cases and deaths are changing over time, how they co
     <section id="epi-examples" class="container my-3">
       <h3 class="mb-1">View SARS-CoV-2 Variant Reports</h3>
       <p class="text-muted">
-        SARS-CoV-2 variants have been shown to have increased transmissibility, virulence, and/or decreased efficacy of vaccines and therapeutics and have been associated with resurgences of COVID-19 cases and deaths across the world. Our Variant Reports are <b>real-time surveillance reports</b> to track the prevalence of these variants or any arbitrary combination of mutations to understand how they're changing.
+        SARS-CoV-2 variants have been shown to have increased transmissibility, virulence, and/or decreased efficacy of vaccines and therapeutics and have been associated with resurgences of COVID-19 cases and deaths across the world. Our Variant
+        Reports are <b>real-time surveillance reports</b> to track the prevalence of these variants or any arbitrary combination of mutations to understand how they're changing.
       </p>
       <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
-            <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <router-link :to="{name: 'SituationReports'}" class="text-dark d-flex flex-column justify-content-between">
               <h5 class="text-uppercase">Track Variants of Concern &amp; Interest</h5>
-              <div class="h-100 d-flex align-items-center">
-                <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
-              </div>
             </router-link>
+            <div class="h-100 d-flex flex-column justify-content-center">
+              <router-link :to="{name: 'SituationReports'}" class="text-dark d-flex flex-column justify-content-between">
+                <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
+              </router-link>
+              <a data-toggle="collapse" href="#lineage-report-questions" aria-expanded="false" aria-controls="lineage-report-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with Lineage | Mutation Tracker
+                Reports?</a>
+              <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="lineage-report-questions">
+                <li class="mb-2">
+                  How many sequences of a lineage /set of mutations have been detected?
+                </li>
+                <li class="mb-2">
+                  What mutations are characteristic of a lineage?
+                </li>
+                <li class="mb-2">
+                  How is its prevalence changing?
+                </li>
+                <li class="mb-2">
+                  Where is the lineage / set of mutations prominent?
+                </li>
+                <li class="mb-2">
+                  What is known about the lineage / mutations in the literature?
+                </li>
+              </ul>
+            </div>
+
           </div>
         </div>
 
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
-            <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark d-flex flex-column justify-content-between">
               <h5 class="text-uppercase">Create custom lineage and/or mutation reports</h5>
             </router-link>
             <CustomReportForm :minimalistic="true" />
@@ -330,23 +353,64 @@ Track how reported COVID-19 cases and deaths are changing over time, how they co
 
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
-            <router-link :to="{name: 'LocationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <router-link :to="{name: 'LocationReports'}" class="text-dark d-flex flex-column justify-content-between">
               <h5 class="text-uppercase">Discover lineages within a location</h5>
-              <div class="h-100 d-flex align-items-center">
-                <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
-              </div>
             </router-link>
+            <div class="h-100 d-flex flex-column justify-content-start">
+              <router-link :to="{name: 'LocationReports'}" class="text-dark d-flex flex-column justify-content-between">
+                <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
+              </router-link>
+
+              <a data-toggle="collapse" href="#location-report-questions" aria-expanded="false" aria-controls="location-report-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with Location Tracker
+                Reports?</a>
+              <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="location-report-questions">
+                <li class="mb-2">
+                  What are the most prevalent lineages in a location recently?
+                </li>
+                <li class="mb-2">
+                  What mutations are contained within these lineages?
+                </li>
+                <li class="mb-2">
+                  What Variants of Concern / Interest have been detected here?
+                </li>
+                <li class="mb-2">
+                  Where are the Variants of Concern / Interest most prevalent within the location?
+                </li>
+                <li class="mb-2">
+                  How do the prevalence of lineages or sets of mutations over time compare to daily reported cases?
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
-            <router-link :to="{name: 'SituationReportComparison'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+            <router-link :to="{name: 'SituationReportComparison'}" class="text-dark d-flex flex-column justify-content-between">
               <h5 class="text-uppercase">Compare PANGO Lineages</h5>
-              <div class="h-100 d-flex align-items-center">
+              </router-link>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <router-link :to="{name: 'SituationReportComparison'}" class="text-dark d-flex flex-column justify-content-between">
                 <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
+                </router-link>
+                <a data-toggle="collapse" href="#compare-lineage-questions" aria-expanded="false" aria-controls="compare-lineage-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with the Lineage Comparison Tool?</a>
+
+                <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="compare-lineage-questions">
+                  <li class="mb-2">
+                    What mutations are shared between lineages?
+                  </li>
+                  <li class="mb-2">
+                    How prevalent are Mutations of Interest with lineages?
+                  </li>
+                  <li class="mb-2">
+                    Which lineages contain a particular mutation like S:E484K?
+                  </li>
+                  <li class="mb-2">
+                    Which lineages are prominent in a location recently?
+                  </li>
+                </ul>
               </div>
-            </router-link>
+
           </div>
         </div>
       </div>
