@@ -233,7 +233,7 @@ export default Vue.extend({
       this.clearForm();
     },
     selectedType: {
-      immediate: true,
+      immediate: false,
       handler(newVal, oldVal) {
         if (this.selectedType.id == "variant") {
           this.$emit("update:submitLabel", 5);
