@@ -206,196 +206,210 @@
     </div>
   </div>
 
-  <small>
-    <button class="btn btn-main-outline mt-3">
-      <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
+  <div id="features" class="d-flex flex-wrap align-items-center justify-content-center py-5 my-5" >
+    <button class="btn btn-main-outline m-4" data-toggle="collapse" href="#collapsedFeatures">
+      What can I do with outbreak.info?
     </button>
+    <router-link :to="{ name: 'Sources' }" class="no-underline m-4">
+      <button class="btn btn-main-outline">
+        Where do we get our data?
+      </button>
+    </router-link>
 
-    <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline ml-4"><button class="btn btn-main mt-3">We're hiring!</button></router-link>
-  </small>
+    <router-link :to="{ name: 'Latest' }" class="no-underline m-4">
+      <button class="btn btn-main-outline">
+        What's new at outbreak.info?
+      </button>
+    </router-link>
 
+    <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline m-4">
+      <button class="btn btn-main">We're hiring!</button>
+    </router-link>
+  </div>
 
-  <!-- RESOURCE EXAMPLES -->
-  <section id="resource-examples" class="container my-3">
-    <h3>Find COVID-19 resources</h3>
-    <div class="row d-flex flex-wrap">
+  <div class="collapse" id="collapsedFeatures">
+    <!-- RESOURCE EXAMPLES -->
+    <section id="resource-examples" class="container my-3">
+      <h3>Find COVID-19 resources</h3>
+      <div class="row d-flex flex-wrap">
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Search Resource Library</h5>
-            <img src="@/assets/home/resources_search.png" alt="Search Outbreak.info resources" class="w-100 mb-3" />
-          </router-link>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Search Resource Library</h5>
+              <img src="@/assets/home/resources_search.png" alt="Search Outbreak.info resources" class="w-100 mb-3" />
+            </router-link>
+          </div>
         </div>
-      </div>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Download metadata</h5>
-          <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
-            <h6>API</h6>
-            <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
-          </a>
-          <router-link :to="{name: 'Sources', hash: '#resources'}">
-            <h6>.tsv files</h6>
-            <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
-          </router-link>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <h5 class="text-uppercase">Download metadata</h5>
+            <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
+              <h6>API</h6>
+              <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
+            </a>
+            <router-link :to="{name: 'Sources', hash: '#resources'}">
+              <h6>.tsv files</h6>
+              <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
+            </router-link>
+          </div>
         </div>
-      </div>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">View & adapt schema</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- GENOMICS -->
-  <section id="epi-examples" class="container my-3">
-    <h3>View SARS-CoV-2 Mutation Reports</h3>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Curated Lineage | Mutation reports</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Custom Lineage | Mutation Tracker</h5>
-          </router-link>
-          <CustomReportForm :minimalistic="true" />
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'LocationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Location Tracker</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'SituationReportComparison'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Lineage Comparison</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- EPI EXAMPLES -->
-  <section id="epi-examples" class="container my-3">
-    <h3>Explore epidemiology data</h3>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Epidemiology'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Compare locations over time</h5>
-            <img src="@/assets/home/epi_example.svg" alt="Outbreak.info epidemiology data over time" class="w-100" />
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Maps'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">View by geography</h5>
-            <img src="@/assets/home/map_example.svg" alt="Outbreak.info U.S. epidemiology data by metro area" class="w-100" />
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Compare'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Find similar regions</h5>
-            <img src="@/assets/home/compare_example.png" alt="Outbreak.info compare regions" class="w-100" />
-          </router-link>
-        </div>
-      </div>
-
-      <!-- EPI CURVE SUMMARIES -->
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <section class="w-100 p-3 card" id="regional-epi-curves">
-          <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Explore regions</h5>
-            <div class="h-100 d-flex flex-column justify-content-center">
-              <img src="@/assets/home/regions_example.svg" alt="Outbreak.info regional data" class="w-100" />
-            </div>
-          </router-link>
-        </section>
-      </div>
-
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Doubling Rates'}" class="text-dark h-100 d-flex flex-column">
-            <h5 class="text-uppercase">View doubling rates</h5>
-            <div class="h-100 d-flex flex-column justify-content-center">
-              <img src="@/assets/home/doubling_example.svg" alt="Outbreak.info doubling rates" class="w-100" />
-            </div>
-          </router-link>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">View &amp; adapt schema</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
+              </div>
+            </router-link>
+          </div>
         </div>
 
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Data'}" class="text-dark h-100 d-flex flex-column">
-            <h5 class="text-uppercase">View tables</h5>
-            <div class="h-100 d-flex flex-column justify-content-center">
-              <img src="@/assets/home/data_table.png" alt="Outbreak.info doubling rates" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Access data -->
-  <section id="epi-examples" class="container my-3">
-    <h3>Access data</h3>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
-            <h5 class="text-dark">API</h5>
-            <img src="@/assets/home/api.png" alt="Outbreak.info" class="w-100 mb-3" />
-          </a>
+    <!-- GENOMICS -->
+    <section id="epi-examples" class="container my-3">
+      <h3>View SARS-CoV-2 Mutation Reports</h3>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Curated Lineage | Mutation reports</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
+              </div>
+            </router-link>
+          </div>
         </div>
-      </div>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
-            <h5 class="text-dark">R package</h5>
-            <img src="@/assets/home/R_package.png" alt="Outbreak.info" class="w-100" />
-          </a>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Custom Lineage | Mutation Tracker</h5>
+            </router-link>
+            <CustomReportForm :minimalistic="true" />
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'LocationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Location Tracker</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReportComparison'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Lineage Comparison</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
+              </div>
+            </router-link>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- EPI EXAMPLES -->
+    <section id="epi-examples" class="container my-3">
+      <h3>Explore epidemiology data</h3>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Epidemiology'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Compare locations over time</h5>
+              <img src="@/assets/home/epi_example.svg" alt="Outbreak.info epidemiology data over time" class="w-100" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Maps'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">View by geography</h5>
+              <img src="@/assets/home/map_example.svg" alt="Outbreak.info U.S. epidemiology data by metro area" class="w-100" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Compare'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Find similar regions</h5>
+              <img src="@/assets/home/compare_example.png" alt="Outbreak.info compare regions" class="w-100" />
+            </router-link>
+          </div>
+        </div>
+
+        <!-- EPI CURVE SUMMARIES -->
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <section class="w-100 p-3 card" id="regional-epi-curves">
+            <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Explore regions</h5>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <img src="@/assets/home/regions_example.svg" alt="Outbreak.info regional data" class="w-100" />
+              </div>
+            </router-link>
+          </section>
+        </div>
+
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Doubling Rates'}" class="text-dark h-100 d-flex flex-column">
+              <h5 class="text-uppercase">View doubling rates</h5>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <img src="@/assets/home/doubling_example.svg" alt="Outbreak.info doubling rates" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Data'}" class="text-dark h-100 d-flex flex-column">
+              <h5 class="text-uppercase">View tables</h5>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <img src="@/assets/home/data_table.png" alt="Outbreak.info doubling rates" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Access data -->
+    <section id="epi-examples" class="container my-3">
+      <h3>Access data</h3>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
+              <h5 class="text-dark">API</h5>
+              <img src="@/assets/home/api.png" alt="Outbreak.info" class="w-100 mb-3" />
+            </a>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
+              <h5 class="text-dark">R package</h5>
+              <img src="@/assets/home/R_package.png" alt="Outbreak.info" class="w-100" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 
 
   <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
