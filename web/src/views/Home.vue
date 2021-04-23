@@ -232,7 +232,10 @@
 
     <!-- EPI EXAMPLES -->
     <section id="epi-examples" class="container my-3">
-      <h3>Explore cases &amp; deaths</h3>
+      <h3 class="mb-1">Explore cases &amp; deaths</h3>
+      <p class="text-muted">
+Track how reported COVID-19 cases and deaths are changing over time, how they compare between locations, and where locations have similar case loads.
+      </p>
       <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
@@ -300,7 +303,10 @@
 
     <!-- GENOMICS -->
     <section id="epi-examples" class="container my-3">
-      <h3>View SARS-CoV-2 Variant Reports</h3>
+      <h3 class="mb-1">View SARS-CoV-2 Variant Reports</h3>
+      <p class="text-muted">
+        SARS-CoV-2 variants have been shown to have increased transmissibility, virulence, and/or decreased efficacy of vaccines and therapeutics and have been associated with resurgences of COVID-19 cases and deaths across the world. Our Variant Reports are <b>real-time surveillance reports</b> to track the prevalence of these variants or any arbitrary combination of mutations to understand how they're changing.
+      </p>
       <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
@@ -348,7 +354,10 @@
 
     <!-- RESOURCE EXAMPLES -->
     <section id="resource-examples" class="container my-3">
-      <h3>Find COVID-19 resources</h3>
+      <h3 class="mb-1">Search COVID-19 research library</h3>
+      <p class="text-muted">
+        Keeping track of rapidly changing COVID-19 research is a daunting task. We assembled a searchable library of COVID-19 and SARS-CoV-2 publications, datasets, clinical trials, protocols, and more, updated daily.
+      </p>
       <div class="row d-flex flex-wrap">
 
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
@@ -390,7 +399,10 @@
 
     <!-- ACCESS DATA -->
     <section id="epi-examples" class="container my-3">
-      <h3>Access data</h3>
+      <h3 class="mb-1">Access data</h3>
+      <p class="text-muted">
+        All the data we aggregate and standardized can be accessed through our API and R package.
+      </p>
       <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
