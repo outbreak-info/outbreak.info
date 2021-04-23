@@ -18,7 +18,7 @@
       </div>
 
       <form id="custom-variants" @submit.prevent="submitQuery" :class="[minimalistic ? 'mt-2 mb-0' : 'my-3']">
-        <div class="d-flex align-items-center circle-header">
+        <div class="d-flex align-items-center circle-header" v-if="selectedType">
           <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">2</div>
           <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
             Select {{selectedType.id == 'pango' || selectedType.id == 'variant' ? "PANGO lineage" : "mutation(s)"}}
@@ -26,7 +26,7 @@
         </div>
 
         <!-- PANGO Lineage -->
-        <div id="pango" class="ml-5" :class="[minimalistic ? 'mb-2' : 'mb-4']" v-if="selectedType.id == 'pango' || selectedType.id == 'variant'">
+        <div id="pango" class="ml-5" :class="[minimalistic ? 'mb-2' : 'mb-4']" v-if="selectedType && (selectedType.id == 'pango' || selectedType.id == 'variant')">
           <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
 
           <div class="flew-row d-flex w-350px">
@@ -36,14 +36,14 @@
         </div>
 
         <!-- MUTATIONS -->
-        <div class="d-flex align-items-center mb-1 circle-header" v-if="selectedType.id == 'variant'">
+        <div class="d-flex align-items-center mb-1 circle-header" v-if="selectedType && selectedType.id == 'variant' && selectedLineage">
           <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">3</div>
           <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
             Select mutation(s)
           </div>
         </div>
 
-        <div id="mutation-set" class="ml-5" v-if="selectedType.id == 'mut' || selectedType.id == 'variant'">
+        <div id="mutation-set" class="ml-5" v-if="selectedType && (selectedType.id == 'mut' || selectedType.id == 'variant' && selectedLineage)">
           <div class="d-flex align-items-center">
             <!-- <div class="d-flex flex-column align-items-start mr-4 coords p-2" id="coordinate-type"> -->
             <!--   <h6 class="text-uppercase text-muted">coordinate system</h6> -->
@@ -411,10 +411,7 @@ export default Vue.extend({
       badBulkGene: false,
       badBulkSubstitution: false,
       badBulkDeletion: false,
-      selectedType: {
-        id: "pango",
-        label: "PANGO lineage"
-      },
+      selectedType: null,
       typeOptions: [{
         id: "pango",
         label: "PANGO lineage"
