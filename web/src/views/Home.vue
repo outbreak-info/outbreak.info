@@ -206,7 +206,7 @@
     </div>
   </div>
 
-  <div id="features" class="d-flex flex-wrap align-items-center justify-content-center py-5 my-5" >
+  <div id="features" class="d-flex flex-wrap align-items-center justify-content-center py-5 my-5">
     <button class="btn btn-main-outline m-4" data-toggle="collapse" href="#collapsedFeatures">
       What can I do with outbreak.info?
     </button>
@@ -228,99 +228,11 @@
   </div>
 
   <div class="collapse" id="collapsedFeatures">
-    <!-- RESOURCE EXAMPLES -->
-    <section id="resource-examples" class="container my-3">
-      <h3>Find COVID-19 resources</h3>
-      <div class="row d-flex flex-wrap">
-
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-          <div class="w-100 p-3 card">
-            <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-              <h5 class="text-uppercase">Search Resource Library</h5>
-              <img src="@/assets/home/resources_search.png" alt="Search Outbreak.info resources" class="w-100 mb-3" />
-            </router-link>
-          </div>
-        </div>
-
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-          <div class="w-100 p-3 card">
-            <h5 class="text-uppercase">Download metadata</h5>
-            <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
-              <h6>API</h6>
-              <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
-            </a>
-            <router-link :to="{name: 'Sources', hash: '#resources'}">
-              <h6>.tsv files</h6>
-              <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
-            </router-link>
-          </div>
-        </div>
-
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-          <div class="w-100 p-3 card">
-            <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-              <h5 class="text-uppercase">View &amp; adapt schema</h5>
-              <div class="h-100 d-flex align-items-center">
-                <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
-              </div>
-            </router-link>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- GENOMICS -->
-    <section id="epi-examples" class="container my-3">
-      <h3>View SARS-CoV-2 Mutation Reports</h3>
-      <div class="row">
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-          <div class="w-100 p-3 card">
-            <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-              <h5 class="text-uppercase">Curated Lineage | Mutation reports</h5>
-              <div class="h-100 d-flex align-items-center">
-                <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
-              </div>
-            </router-link>
-          </div>
-        </div>
-
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-          <div class="w-100 p-3 card">
-            <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-              <h5 class="text-uppercase">Custom Lineage | Mutation Tracker</h5>
-            </router-link>
-            <CustomReportForm :minimalistic="true" />
-          </div>
-        </div>
-
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-          <div class="w-100 p-3 card">
-            <router-link :to="{name: 'LocationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-              <h5 class="text-uppercase">Location Tracker</h5>
-              <div class="h-100 d-flex align-items-center">
-                <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
-              </div>
-            </router-link>
-          </div>
-        </div>
-
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-          <div class="w-100 p-3 card">
-            <router-link :to="{name: 'SituationReportComparison'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-              <h5 class="text-uppercase">Lineage Comparison</h5>
-              <div class="h-100 d-flex align-items-center">
-                <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
-              </div>
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </section>
+    <h1 class="text-center">What can I do with outbreak.info?</h1>
 
     <!-- EPI EXAMPLES -->
     <section id="epi-examples" class="container my-3">
-      <h3>Explore epidemiology data</h3>
+      <h3>Explore cases &amp; deaths</h3>
       <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
           <div class="w-100 p-3 card">
@@ -386,7 +298,97 @@
       </div>
     </section>
 
-    <!-- Access data -->
+    <!-- GENOMICS -->
+    <section id="epi-examples" class="container my-3">
+      <h3>View SARS-CoV-2 Variant Reports</h3>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Track Variants of Concern &amp; Interest</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Create custom lineage and/or mutation reports</h5>
+            </router-link>
+            <CustomReportForm :minimalistic="true" />
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'LocationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Location Tracker</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReportComparison'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Lineage Comparison</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESOURCE EXAMPLES -->
+    <section id="resource-examples" class="container my-3">
+      <h3>Find COVID-19 resources</h3>
+      <div class="row d-flex flex-wrap">
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Search Resource Library</h5>
+              <img src="@/assets/home/resources_search.png" alt="Search Outbreak.info resources" class="w-100 mb-3" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <h5 class="text-uppercase">Download metadata</h5>
+            <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
+              <h6>API</h6>
+              <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
+            </a>
+            <router-link :to="{name: 'Sources', hash: '#resources'}">
+              <h6>.tsv files</h6>
+              <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">View &amp; adapt schema</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ACCESS DATA -->
     <section id="epi-examples" class="container my-3">
       <h3>Access data</h3>
       <div class="row">
@@ -409,6 +411,8 @@
         </div>
       </div>
     </section>
+
+
   </div>
 
 
