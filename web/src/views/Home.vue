@@ -399,17 +399,19 @@
 
 
   <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
-    <div class="d-flex justify-content-center align-items-center mb-2">
-      <div>
-        <h5 class="at-a-glance-header m-0">At a glance</h5>
-        <p class="ml-3 mb-0">
-          View the three locations with the largest increase in cases in the
-          past day, or select your own locations
-        </p>
-        <button class="btn btn-main-outline router-link no-underline bg-white" @click="summaryDeletable = !summaryDeletable">
-          {{ summaryDeletable ? "done" : "change locations" }}
-        </button>
+    <div class="d-flex justify-content-center align-items-center px-5 py-3">
+      <div class="d-flex w-100 justify-content-between">
+        <div>
+          <h4 class="at-a-glance-header m-0">At a glance</h4>
+          <p class="mb-0">
+            View the three locations with the largest increase in COVID-19 cases in the
+            past day, or select your own locations
+          </p>
+        </div>
       </div>
+      <button class="btn btn-main-outline flex-shrink-0 router-link no-underline bg-white" @click="summaryDeletable = !summaryDeletable">
+        {{ summaryDeletable ? "done" : "change locations" }}
+      </button>
     </div>
 
     <div class="row d-flex justify-content-center">

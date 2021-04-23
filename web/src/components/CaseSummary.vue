@@ -63,7 +63,7 @@
         <div>
           <h5 class="at-a-glance-header m-0">At a glance</h5>
           <p class="ml-3 mb-0">
-            View the three locations with the largest increase in cases in the
+            View the three locations with the largest increase in COVID-19 cases in the
             past day, or select your own locations
           </p>
           <button
