@@ -21,7 +21,7 @@
 
   <div class="my-5" v-if="includeMutations">
     <template v-if="includeLocation">
-    <h3>Add lineages & mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
+    <h3>Add lineages &amp; mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
     <h6 class="text-muted">Optional: specify lineages and mutations to track in addition to the Variants of Concern and Interest we're tracking</h6>
     <b class="text-muted m-0 p-0" v-if="curated">
       Default:
