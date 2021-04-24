@@ -198,49 +198,50 @@
 
             <template v-else>
               <section id="most-recent-lineages" :class="{'flex-shrink-0': !mediumScreen}" v-if="mostRecentLineages">
-                <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
+                <h5 class="mb-0">Common lineages</h5>
+                <small class="text-muted">Prevalence over last {{recentWindow}} days</small>
                 <div class="d-flex align-items-start" :class="{'flex-wrap' : mediumScreen}">
                   <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
-
-                  <!-- HEATMAP + LEGEND -->
-                  <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
-                    <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
-                    <div class="d-flex flex-wrap justify-content-between">
-                      <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-                      <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
-                    </div>
-
-                    <div class="d-flex flex-column align-items-center bg-dark">
-
-                      <!-- HEATMAP LEGEND -->
-                      <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
-                        <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
-                        <div class="d-flex align-items-center">
-                          <svg width="24" height="24">
-                            <defs>
-                              <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                                <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
-                              </pattern>
-                            </defs>
-                            <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
-                          </svg>
-                          <small class="text-light ml-2">not detected</small>
-                        </div>
-                        <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
-                          Variant / Mutation of Concern
-                        </span>
-                        <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
-                          Variant / Mutation of Interest
-                        </span>
-                      </div>
-                      <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
-                    </div>
-                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
-                  </div>
                 </div>
               </section>
             </template>
           </div>
+        </div>
+
+        <!-- HEATMAP + LEGEND -->
+        <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
+          <h5 class="m-0">Characteristic S-gene mutations in common lineages over the last {{recentWindow}} days</h5>
+          <div class="d-flex flex-wrap justify-content-between">
+            <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+            <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
+          </div>
+
+          <div class="d-flex flex-column align-items-center bg-dark">
+
+            <!-- HEATMAP LEGEND -->
+            <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
+              <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+              <div class="d-flex align-items-center">
+                <svg width="24" height="24">
+                  <defs>
+                    <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                      <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
+                    </pattern>
+                  </defs>
+                  <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
+                </svg>
+                <small class="text-light ml-2">not detected</small>
+              </div>
+              <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+                Variant / Mutation of Concern
+              </span>
+              <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
+                Variant / Mutation of Interest
+              </span>
+            </div>
+            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+          </div>
+          <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
         </div>
 
         <!-- TRACKED LINEAGES TABLE -->
