@@ -74,12 +74,8 @@
   <div class="d-flex align-items-center circle-header" v-if="formValid">
     <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType.id == 'variant' ? 4 : 3}}</div>
     <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
-      Review selections: <span class="text-highlight" v-html="title"></span>
+      View <span class="text-highlight" v-html="title"></span>
     </div>
-    <button role="button" class="btn chip btn-outline-secondary d-flex align-items-center py-1 px-2 ml-3 line-height-1" @click="clearForm()" v-if="formValid">
-      clear form
-      <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-    </button>
   </div>
 
 
