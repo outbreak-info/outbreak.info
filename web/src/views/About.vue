@@ -3,24 +3,21 @@
   <div class="row m-0">
     <div class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5" style="min-height: 70vh;">
       <div class="container half-page">
-        <h1>About</h1>
-        <img src="@/assets/logo-full-01.svg" alt="Outbreak.info" class="w-50 mb-5" />
-        <p class="text-left focustext py-2">
-          In response to the current outbreak of SARS-CoV-2 (the virus that
-          causes COVID-19), researchers worldwide have been generating and
-          openly sharing data, publications, reagents, code, protocols, and
-          more. Broad sharing of these research resources improves the speed
-          and efficiency of science. Unfortunately, there are no uniform
-          standards and repositories for collecting all this information in
-          one place.
-        </p>
-        <p class="text-left focustext py-2">
-          <b>Outbreak.info</b> aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. We standardize the metadata describing these resources, providing a web interface to easily search over
-          100,000 resources. The platform also serves as a data integration tool that makes COVID-19 data more usable.
-        </p>
-        <p class="text-left focustext py-2">
-          We also are tracking developments about new SARS-CoV-2 mutations and epidemiological trends, offering key insights and daily reports.
-        </p>
+       <h1>About</h1>
+<img class="w-50 mb-5" src="@/assets/logo-full-01.svg" alt="Outbreak.info" />
+  <p class="text-left focustext py-2">In response to the current outbreak of SARS-CoV-2 (the virus that causes COVID-19), researchers worldwide have been generating and openly sharing data, publications, reagents, code, protocols, and more. Broad sharing of these resources improves the speed and efficiency of science. Unfortunately, there are no uniform standards and repositories for collecting all this information in one place.</p>
+<p class="text-left focustext py-2"><strong>Outbreak.info</strong> aggregates data across scientific sources, providing numerous tools to meet three major aims:</p>
+<ul>
+<li>track daily developments regarding SARS-CoV-2 variants,</li>
+<li>track trends in COVID-19 cases and deaths,</li>
+<li>pull publications, preprints, clinical trials, datasets, protocols, and other resources into one searchable library of COVID-19 research.</li>
+</ul>
+<p><strong>SARS-CoV-2 Variants</strong></p>
+<p>Outbreak.info collects and visualizes genomic data from GISAID. With over 1 million SARS-CoV-2 sequences uploaded to GISAID, Outbreak.info makes this data more accessible, providing information about lineages and mutations, countries, states, and counties.</p>
+<p><strong>COVID-19 Cases &amp; Deaths</strong></p>
+<p>Outbreak.info serves as a data integration tool that makes COVID-19 data more usable. The platform traces developments around the world and across states/counties with interactive maps, location comparison tools, data tables, and more.</p>
+<p><strong>Research Library</strong></p>
+<p>Outbreak.info aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. The platform standardizes the metadata describing these resources, providing a web interface to easily search over 155,000 resources.</p>
 
         <p class="text-left focustext mty-5 py-4 border-top">
           Outbreak.info is a project from the <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer"
