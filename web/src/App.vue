@@ -211,6 +211,10 @@
           </li>
 
           <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/faq" :class="{ active: $route.name == 'FAQ' }">FAQ</router-link>
+          </li>
+
+          <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/latest" :class="{ active: $route.name == 'Latest' }">Latest changes</router-link>
           </li>
 
