@@ -108,6 +108,25 @@ import {
 
 export default {
   name: "ComparePrevalence",
+  props: {
+    loc: String,
+    muts: [Array, String],
+    pango: [Array, String],
+    variant: [Array, String],
+    selected: [Array, String]
+  },
+  components: {
+    // TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
+    // ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
+    // Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
+    // ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
+    // ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
+    // OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
+    // CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    // SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
+    // DownloadReportData: () => import( /* webpackPrefetch: true */ "@/components/DownloadReportData.vue"),
+    FontAwesomeIcon
+  },
   computed: {
     ...mapState("admin", ["mutationAuthors"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5", "characteristicThreshold"]),
