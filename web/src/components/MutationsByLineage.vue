@@ -347,11 +347,13 @@ export default Vue.extend({
         update => {
           update
             .attr("id", d => d.pangolin_lineage.replace(/\./g, "_"))
+            .style("text-anchor", d => this.x(d.proportion) > textThresh ? "end" : "start")
+            .text(d => d.proportion_formatted)
+            .transition().duration(250)
             .attr("x", d => this.x(d.proportion))
             .attr("dx", d => this.x(d.proportion) > textThresh ? -5 : 5)
-            .style("text-anchor", d => this.x(d.proportion) > textThresh ? "end" : "start")
-            .attr("y", d => this.y(d.pangolin_lineage))
-            .text(d => d.proportion_formatted)
+            .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth() / 2);
+
         },
         exit => {
           exit.call(exit =>
