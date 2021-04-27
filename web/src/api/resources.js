@@ -15,7 +15,7 @@ import store from "@/store";
 
 import {
   timeParse,
-  timeFormat
+  timeFormat, format
 } from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
@@ -428,6 +428,23 @@ export function getSourceSummary(apiUrl, query) {
   )
 }
 
+export function getResourceTotal(apiUrl) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+
+  return from(axios.get(
+    `${apiUrl}query?size=0&timestamp=${timestamp}`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )).pipe(
+    pluck("data", "total"),
+    map(total => {
+      const rounded = (Math.floor(total/1000)*1000)
+      return({floor: format(",")(rounded), total: total})
+    })
+  )
+}
 
 export function getSourceCounts(apiUrl, queryString) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
