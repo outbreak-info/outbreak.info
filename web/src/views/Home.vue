@@ -199,7 +199,7 @@
 
       <div class="col-sm-12 col-lg-6">
         <video class="w-100 mb-3" controls @play="videoClick">
-          <source src="@/assets/home/outbreak_info.mp4" type="video/mp4">
+          <source src="@/assets/home/outbreak_video_v3.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
       </div>
