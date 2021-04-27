@@ -781,10 +781,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.gisaid {
-    height: 25px;
-}
-
 .font-size-2 {
     font-size: 1.25rem;
 }

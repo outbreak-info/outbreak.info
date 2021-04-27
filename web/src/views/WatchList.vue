@@ -145,10 +145,6 @@ export default {
     width: 150px;
 }
 
-.gisaid {
-    height: 25px;
-}
-
 $location-color: #8CD17D;
 .location-banner {
     border-width: 0;

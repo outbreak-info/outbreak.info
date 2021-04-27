@@ -652,10 +652,6 @@ export default {
     width: 75px;
 }
 
-.gisaid {
-    height: 25px;
-}
-
 $circle-width: 1.35em;
 $circle-width-sm: 1.1em;
 .circle {

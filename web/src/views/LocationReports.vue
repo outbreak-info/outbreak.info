@@ -134,10 +134,6 @@ export default {
     width: 150px;
 }
 
-.gisaid {
-    height: 25px;
-}
-
 .bg-image {
     width: 45%;
     position: absolute;

@@ -181,10 +181,6 @@ export default {
     width: 150px;
 }
 
-.gisaid {
-    height: 25px;
-}
-
 $mutation-width: 275px;
 .mutation-name {
     flex: 0 0 $mutation-width;
