@@ -187,7 +187,7 @@ export default Vue.extend({
     },
     updateAxes() {
       const paddingInner = 0.25;
-      this.height = this.processedData.length * this.bandwidth * (1 + paddingInner);
+      this.height = this.processedData.length * this.bandwidth + (this.processedData.length -1) * this.bandwidth * paddingInner + this.margin.top + this.margin.bottom;
 
       this.x = scaleLinear()
         .range([0, this.width - this.margin.right - this.margin.left])
