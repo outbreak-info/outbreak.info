@@ -139,7 +139,7 @@
 
         <a href="#variants-of-concern">
           <button class="btn btn-grey mx-3 py-2">
-            <small>Variants of Concern & Interest</small>
+            <small>Variants of Concern &amp; Interest</small>
           </button>
         </a>
 
