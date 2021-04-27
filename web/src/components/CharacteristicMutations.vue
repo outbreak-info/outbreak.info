@@ -121,7 +121,6 @@ export default {
 
     this.colorScale = scaleOrdinal(this.colorDomain)
     .domain(geneNames);
-    console.log(this.colorScale)
   }
 }
 </script>
