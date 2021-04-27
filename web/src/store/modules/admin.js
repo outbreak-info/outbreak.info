@@ -23,7 +23,9 @@ const state = {
     },
     {
       name: "Karthik Gangavarapu",
-      img: "karthik.jpg"
+      img: "karthik.jpg",
+      email: "gkarthik@scripps.edu",
+      twitter: "https://twitter.com/gkay92"
     },
     {
       name: "Emily Haag",

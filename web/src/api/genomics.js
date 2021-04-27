@@ -53,6 +53,7 @@ function titleCase(value) {
   }
 }
 
+
 export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
   if (mutationObj.reportType == "mutation") {
     mutationObj["mutations"] = mutationObj.additionalMutations;
@@ -1100,7 +1101,7 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   }
 }
 
-export function getSequenceCount(apiurl, location = null, cumulative = true) {
+export function getSequenceCount(apiurl, location = null, cumulative = true, rounded = false) {
   let url = `${apiurl}sequence-count`;
   if (cumulative && location) {
     url += `?location_id=${location}&cumulative=true`;
@@ -1117,6 +1118,9 @@ export function getSequenceCount(apiurl, location = null, cumulative = true) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      if(rounded) {
+        return(Math.floor(results.total_count/1e5) / 10)
+      }
       if (cumulative) {
         return (results.total_count.toLocaleString())
       } else {
