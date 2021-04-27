@@ -293,6 +293,27 @@
     </div>
 
   </div>
+  <div class="mx-5 text-left">
+
+  <!-- METHODOLOGY -->
+  <section class="mt-3 mb-5 border-top pt-3" id="methods">
+    <h4>Methodology</h4>
+    <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
+    <Warning class="mt-2" :text="disclaimer" />
+  </section>
+
+  <!-- CITATION -->
+  <section class="my-3 border-top pt-3">
+    <h4 class="">Citing this report</h4>
+    <p class="m-0">
+      <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
+    </p>
+    <ShareReport :title="title" :url="url" />
+  </section>
+
+  <!-- ACKNOWLEDGEMENTS -->
+  <ReportAcknowledgements class="border-top pt-3" />
+</div>
 </div>
 </template>
 
@@ -344,7 +365,7 @@ import {
 
 import {
   scaleSequential,
-  format
+  format, timeFormat
 } from "d3";
 
 import debounce from "lodash/debounce";
@@ -367,9 +388,9 @@ export default {
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
-    // ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
-    // Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
-    // ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
+    ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
+    Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
+    ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
     ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     GradientLegend: () => import( /* webpackPrefetch: true */ "@/components/GradientLegend.vue"),
@@ -377,6 +398,7 @@ export default {
     FontAwesomeIcon
   },
   computed: {
+    ...mapState("admin", ["mutationAuthors"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2"]),
     loading() {
       return (this.locationLoading1 || this.locationLoading2)
@@ -396,6 +418,10 @@ export default {
   },
   data() {
     return {
+      today: null,
+      url: null,
+      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+      title: "Lineage Comparison",
       queryPangolin: null,
       mutationHeatmap: null,
       downloadableHeatmap: null,
@@ -440,6 +466,10 @@ export default {
     }
   },
   mounted() {
+    const formatDate = timeFormat("%e %B %Y");
+    this.currentTime = new Date();
+    this.today = formatDate(this.currentTime);
+
     this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = typeof(this.gene) === "string" ? [this.gene] : this.gene;
@@ -447,6 +477,12 @@ export default {
     if (this.pango) {
       this.selectedPango = typeof(this.pango) === "string" ? [this.pango] : this.pango;
     }
+
+    this.$nextTick(function() {
+      // set URL for sharing, etc.
+      const location = window.location;
+      this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
+    })
 
     // load the initial data
     this.getData();
