@@ -777,6 +777,20 @@ $comparison-color: #499894; //teal
     color: lighten($comparison-color, 15%);
 }
 
+$overlay-color: #edc949; // yellow
+$overlay-color: #e15759; // red
+.overlay-banner {
+    border-width: 0;
+    border-style: solid;
+    background: linear-gradient(to left, $primary-color 0%, $overlay-color 50%, $primary-color 100%) left bottom darken($primary-color,10%) no-repeat;
+    background-size: 100% 7px;
+    /* if linear-gradient, we need to resize it */
+}
+
+.overlay-header {
+    color: lighten($overlay-color, 15%);
+}
+
 
 .bright-hyperlink,
 .bright-hyperlink a {

@@ -451,6 +451,24 @@ const routes = [{
       )
   },
   {
+    path: "/compare-prevalence",
+    name: "ComparePrevalence",
+    props: route => ({
+      loc: route.query.loc,
+      muts: route.query.muts,
+      pango: route.query.pango,
+      variant: route.query.variant,
+      selected: route.query.selected,
+      xmax: route.query.xmax,
+      xmin: route.query.xmin
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "compare-prevalence" */
+        "../views/ComparePrevalence.vue"
+      )
+  },
+  {
     path: "/watch-list",
     name: "WatchList",
     props: route => ({
