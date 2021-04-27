@@ -3,21 +3,29 @@
   <div class="row m-0">
     <div class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5" style="min-height: 70vh;">
       <div class="container half-page">
-       <h1>About</h1>
-<img class="w-50 mb-5" src="@/assets/logo-full-01.svg" alt="Outbreak.info" />
-  <p class="text-left focustext py-2">In response to the current outbreak of SARS-CoV-2 (the virus that causes COVID-19), researchers worldwide have been generating and openly sharing data, publications, reagents, code, protocols, and more. Broad sharing of these resources improves the speed and efficiency of science. Unfortunately, there are no uniform standards and repositories for collecting all this information in one place.</p>
-<p class="text-left focustext py-2"><strong>Outbreak.info</strong> aggregates data across scientific sources, providing numerous tools to meet three major aims:</p>
-<ul>
-<li>track daily developments regarding SARS-CoV-2 variants,</li>
-<li>track trends in COVID-19 cases and deaths,</li>
-<li>pull publications, preprints, clinical trials, datasets, protocols, and other resources into one searchable library of COVID-19 research.</li>
-</ul>
-<p><strong>SARS-CoV-2 Variants</strong></p>
-<p>Outbreak.info collects and visualizes genomic data from GISAID. With over 1 million SARS-CoV-2 sequences uploaded to GISAID, Outbreak.info makes this data more accessible, providing information about lineages and mutations, countries, states, and counties.</p>
-<p><strong>COVID-19 Cases &amp; Deaths</strong></p>
-<p>Outbreak.info serves as a data integration tool that makes COVID-19 data more usable. The platform traces developments around the world and across states/counties with interactive maps, location comparison tools, data tables, and more.</p>
-<p><strong>Research Library</strong></p>
-<p>Outbreak.info aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. The platform standardizes the metadata describing these resources, providing a web interface to easily search over 155,000 resources.</p>
+        <h1>About</h1>
+        <img class="w-50 mb-5" src="@/assets/logo-full-01.svg" alt="Outbreak.info" />
+        <p class="text-left focustext py-2">In response to the current outbreak of SARS-CoV-2 (the virus that causes COVID-19), researchers worldwide have been generating and openly sharing data, publications, reagents, code, protocols, and more.
+          Broad sharing of these resources improves the speed and efficiency of science. Unfortunately, there are no uniform standards and repositories for collecting all this information in one place.</p>
+        <p class="text-left focustext pt-2"><strong>Outbreak.info</strong> aggregates data across scientific sources, providing tools to meet three major aims:</p>
+        <ul class="focustext text-left ">
+          <li class="large">Track trends in COVID-19 cases and deaths</li>
+          <li class="large">Track daily developments in SARS-CoV-2 variants</li>
+          <li class="large">Integrate publications, preprints, clinical trials, datasets, protocols, and other resources into one searchable library of COVID-19 research</li>
+        </ul>
+        <div class="text-left focustext ml-4">
+          <router-link :to="{name: 'Epidemiology'}"><h4 class="mb-0">COVID-19 Cases &amp; Deaths</h4></router-link>
+          <p>Outbreak.info serves as a data integration tool to make COVID-19 data more usable. The platform tracks case and death trends around the world and across states/counties with interactive maps, location comparison tools, data tables, and more.
+          </p>
+
+          <router-link :to="{name: 'SituationReports'}"><h4 class="mb-0">SARS-CoV-2 Variants</h4></router-link>
+          <p>Outbreak.info collects and visualizes genomic data from the <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>. With over {{ gisaidCount }} million SARS-CoV-2 sequences uploaded to GISAID, Outbreak.info makes this data more accessible, providing daily surveillance reports about lineages and mutations, countries,
+            states, and counties.</p>
+
+          <router-link :to="{name: 'Resource Summary'}"><h4 class="mb-0">Research Library</h4></router-link>
+          <p>Outbreak.info aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. The platform standardizes the metadata describing these resources, providing a web interface to easily search
+            over {{ resourceCount }} resources.</p>
+        </div>
 
         <p class="text-left focustext mty-5 py-4 border-top">
           Outbreak.info is a project from the <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer"
@@ -44,7 +52,7 @@
     <!-- TEAM -->
     <div class="bg-light d-flex justify-content-center align-items-center">
       <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5">
-        <h3 class="mb-4">Outbreak.info team</h3>
+        <h4 class="mb-4">Outbreak.info team</h4>
         <div class="d-flex flex-wrap">
           <div v-for="(person, idx) in team" :key="idx" class="team-member d-flex flex-column align-items-center mx-5 my-3">
             <img :src="require(`@/assets/team/${person.img}`)" class="profile-pic text-" />
@@ -68,7 +76,7 @@
 
     <div class="bg-light d-flex justify-content-center align-items-center">
       <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top pt-3 pb-5" id="jobs">
-        <h3 class="mb-4">Open positions</h3>
+        <h4 class="mb-4">Open positions</h4>
         <div class="d-flex justify-content-center">
           <div class="card w-30 py-2 px-4 text-left mr-4">
             <div class="border-bottom pt-3 pb-1 mb-2">
@@ -76,7 +84,8 @@
             </div>
             <div class="wpb_text_column wpb_content_element ">
               <div class="wpb_wrapper">
-                <p>We are looking for a <strong>Front-end Developer</strong> to build interfaces to explore, visualize, and analyze biomedical data, including current data from the ongoing COVID-19 pandemic. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.</p>
+                <p>We are looking for a <strong>Front-end Developer</strong> to build interfaces to explore, visualize, and analyze biomedical data, including current data from the ongoing COVID-19 pandemic. Current projects include <a
+                    href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.</p>
                 <p>For further details, please contact <a href="mailto:lhughes@scripps.edu">lhughes@scripps.edu</a>.</p>
                 <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178a3c4765d45b8" target="_blank" rel="noopener noreferrer">here</a>. Qualification: BSc or equivalent.</p>
               </div>
@@ -89,7 +98,8 @@
             </div>
             <div class="wpb_text_column wpb_content_element ">
               <div class="wpb_wrapper">
-                <p>We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including <a href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">iVar</a> and <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, can be seen on
+                <p>We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including <a
+                    href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">iVar</a> and <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, can be seen on
                   our <a href="https://github.com/andersen-lab/" target="_blank" rel="noopener">Github account</a>.</p>
                 <p>For further details, please contact <a href="mailto:gkarthik@scripps.edu">gkarthik@scripps.edu</a>.</p>
                 <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&amp;gni=8a78879f7823d1090178240894ba01f1" target="_blank" rel="noopener noreferrer">here</a>. Qualification: BSc or equivalent.</p>
@@ -103,9 +113,13 @@
             </div>
             <div class="wpb_text_column wpb_content_element ">
               <div class="wpb_wrapper">
-		<p>The <a href="https://andersen-lab.com/">Andersen lab</a> is looking for a <strong>computational Postdoctoral Associate</strong> interested in phylogenetics and data science of emerging outbreaks. Together with a large group of collaborators we recently created outbreak.info, which has become a major resource for genomic, epidemiological, clinical, and article data for outbreak response. Our <a href="https://github.com/andersen-lab/">tools</a> are being widely used by public health departments and labs across the world to process sequencing data and gain up-to-date information on the COVID-19 pandemic. We are looking for a dedicated individual who is interested in developing new tools and investigating more basic principles of how viruses - and their variants - emerge, evolve, and spread. The initial focus will be on SARS-CoV-2, however, we expect the role to expand significantly beyond that.</p>
+                <p>The <a href="https://andersen-lab.com/">Andersen lab</a> is looking for a <strong>computational Postdoctoral Associate</strong> interested in phylogenetics and data science of emerging outbreaks. Together with a large group of
+                  collaborators we recently created outbreak.info, which has become a major resource for genomic, epidemiological, clinical, and article data for outbreak response. Our <a href="https://github.com/andersen-lab/">tools</a> are being
+                  widely used by public health departments and labs across the world to process sequencing data and gain up-to-date information on the COVID-19 pandemic. We are looking for a dedicated individual who is interested in developing new
+                  tools and investigating more basic principles of how viruses - and their variants - emerge, evolve, and spread. The initial focus will be on SARS-CoV-2, however, we expect the role to expand significantly beyond that.</p>
 
-                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178d2084c3b0b63" target="_blank" rel="noopener noreferrer">here</a>. Qualification: Ph.D. in computational biology, computer science, mathematics, physics, or equivalent.</p>
+                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178d2084c3b0b63" target="_blank" rel="noopener noreferrer">here</a>. Qualification: Ph.D. in computational biology, computer science,
+                  mathematics, physics, or equivalent.</p>
               </div>
             </div>
           </div>
@@ -159,6 +173,9 @@ import {
 
 library.add(faAt, faTwitter, faLinkedinIn);
 
+import { getResourceTotal } from "@/api/resources.js";
+import { getSequenceCount } from "@/api/genomics.js";
+
 
 export default Vue.extend({
   name: "About",
@@ -168,10 +185,34 @@ export default Vue.extend({
   components: {
     FontAwesomeIcon
   },
+  data() {
+    return({
+    resourceCount: null,
+    gisaidCount: null,
+    resourceSubscription: null,
+    genomicsSubscription: null
+    })
+  },
   mounted() {
-    let twitterScript = document.createElement('script')
-    twitterScript.setAttribute("src", "https://platform.twitter.com/widgets.js")
-    document.head.appendChild(twitterScript)
+    let twitterScript = document.createElement('script');
+    twitterScript.setAttribute("src", "https://platform.twitter.com/widgets.js");
+    document.head.appendChild(twitterScript);
+
+    // get totals from the API
+    this.resourceSubscription = getResourceTotal(this.$resourceurl).subscribe(total => {
+      this.resourceCount = total.floor;
+    })
+    this.genomicsSubscription = getSequenceCount(this.$genomicsurl, null, true, true).subscribe(total => {
+      this.gisaidCount = total;
+    })
+  },
+  destroyed() {
+    if(this.resourceSubscription) {
+      this.resourceSubscription.unsubscribe();
+    }
+    if(this.genomicsSubscription) {
+      this.genomicsSubscription.unsubscribe();
+    }
   }
 });
 </script>
@@ -190,5 +231,9 @@ export default Vue.extend({
 
 .w-30 {
     width: 30% !important;
+}
+
+.large {
+  font-size: large;
 }
 </style>
