@@ -421,7 +421,7 @@ export default {
       queryLocation: null,
       voi: null,
       voc: null,
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
+      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
       moc: ["E484K"],
       geneOpts: [
         "ORF1a",
