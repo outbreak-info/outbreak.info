@@ -64,20 +64,20 @@
       },
       {
         "q": "How trustworthy is the data?",
-        "a": "All genomic data is sourced from <a href='https://www.gisaid.org/'>GISAID</a>, the world’s largest database of SARS-CoV-2 sequences, and updated daily. Quality filters are applied to reduce errors (<a href='https://outbreak.info/situation-reports/methods'read more here</a>). The data contains some known biases,<a href='https://outbreak.info/situation-reports/caveats'>which we explain here</a>."
+        "a": "All genomic data is sourced from <a href='https://www.gisaid.org/'>GISAID</a>, the world’s largest database of SARS-CoV-2 sequences, and updated daily. Quality filters are applied to reduce errors (<a href='https://outbreak.info/situation-reports/methods'>read more here</a>). The data contains some known biases,<a href='https://outbreak.info/situation-reports/caveats'>which we explain here</a>."
       },
       {
         "q": "I see X number of sequences in the GISAID repository but you list fewer sequences. Why?",
-        "a": "We apply quality filters which remove some sequences from our analysis. These filters are described in our <a href='https://outbreak.info/situation-reports/methods'Methods</a> section and include removing sequences which lack a sample collection date and those of poor quality."
+        "a": "We apply quality filters which remove some sequences from our analysis. These filters are described in our <a href='https://outbreak.info/situation-reports/methods'>Methods</a> section and include removing sequences which lack a sample collection date and those of poor quality."
       },
       {
         "q": "In your 'characteristic mutations' for a given lineage, I think you're missing mutation X.",
-        "a": "We report characteristic mutations for a lineage as any mutation that is present in at least 75% of all sequences for that lineage. These mutations are updated in real-time, based on the most up-to-date sequencing data. Sometimes, a mutation is ascribed to a lineage in the media despite not having met this 75% prevalence threshold. You can view the prevalence of less abundant mutations in a lineage by changing the threshold in the barplot on the <a href='https://outbreak.info/situation-reports'Lineage|Mutation Tracker</a> or on the <a href='https://outbreak.info/compare-lineages'Lineage Comparison Page</a>."
+        "a": "We report characteristic mutations for a lineage as any mutation that is present in at least 75% of all sequences for that lineage. These mutations are updated in real-time, based on the most up-to-date sequencing data. Sometimes, a mutation is ascribed to a lineage in the media despite not having met this 75% prevalence threshold. You can view the prevalence of less abundant mutations in a lineage by changing the threshold in the barplot on the <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a> or on the <a href='https://outbreak.info/compare-lineages'>Lineage Comparison Page</a>."
       }
     ],
     "General variant questions": [{
         "q": "What is the status of B.1.1.7 or other Variants of Concern?",
-        "a": "Find the latest information on <a href='https://outbreak.info/situation-reports?pango=B.1.1.7'>B.1.1.7</a> or other lineages at Outbreak.info’s <a href='https://outbreak.info/situation-reports'Lineage|Mutation Tracker</a> updated daily with data from GISAID."
+        "a": "Find the latest information on <a href='https://outbreak.info/situation-reports?pango=B.1.1.7'>B.1.1.7</a> or other lineages at Outbreak.info’s <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a> updated daily with data from GISAID."
       },
       {
         "q": "How do variants affect vaccines? Do vaccines still work on variants?",
@@ -85,45 +85,45 @@
       },
       {
         "q": "What are the new COVID-19 variants?",
-        "a": "Like all viruses, when SARS-CoV-2 (the virus that causes COVID-19) replicates, it can produce mutations. An increasing number of genomes that contain certain sets of mutations have been discovered around the world. Outbreak.info is tracking the spread of these variants, including lineages that have been classified as Variants of Concern and Variants of Interest. Find the latest info on SARS-CoV-2 variants using Outbreak.info’s <a href='https://outbreak.info/situation-reports'Lineage|Mutation Tracker</a>. <br>Learn more about the definitions of variants at our <a href='https://outbreak.info/situation-reports/caveats'Glossary of Mutations Terms</a>. Read more about the biological significance of mutations and how they impact the pandemic on the Outbreak.info <a href='https://outbreak.info/blog/what-are-covid-19-mutations'blog</a>."
+        "a": "Like all viruses, when SARS-CoV-2 (the virus that causes COVID-19) replicates, it can produce mutations. An increasing number of genomes that contain certain sets of mutations have been discovered around the world. Outbreak.info is tracking the spread of these variants, including lineages that have been classified as Variants of Concern and Variants of Interest. Find the latest info on SARS-CoV-2 variants using Outbreak.info’s <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a>. <br>Learn more about the definitions of variants at our <a href='https://outbreak.info/situation-reports/caveats'>Glossary of Mutations Terms</a>. Read more about the biological significance of mutations and how they impact the pandemic on the Outbreak.info <a href='https://outbreak.info/blog/what-are-covid-19-mutations'>blog</a>."
       },
       {
         "q": "Where have the variants spread?",
-        "a": "COVID-19 variants have been detected all around the world. Find the prevalence of variants in a given location using Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a>. Or use Outbreak.info’s <a href='https://outbreak.info/situation-reports'Lineage|Mutation Tracker</a> to find geographic prevalence for any lineage, mutation, or combination of both."
+        "a": "COVID-19 variants have been detected all around the world. Find the prevalence of variants in a given location using Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a>. Or use Outbreak.info’s <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a> to find geographic prevalence for any lineage, mutation, or combination of both."
       }
     ]
   }],
   "COVID-19 Tracking (Cases & Deaths)": [{
       "q": "What COVID-19 data is Outbreak.info tracking?",
-      "a": "Outbreak.info is tracking trends in COVID-19 cases and deaths for locations around the world, as well as testing data for US states. Select one or more locations and choose the metric you’d like to compare (new cases/deaths, cumulative cases/deaths, average cases/deaths, etc.) using Outbreak.info’s <a href='https://outbreak.info/epidemiology'Epidemiology</a> tool. <img src='@/assets/faqs/epidemiology-1.png' alt='Epidemiology Tool'> <br>Or explore trends around the world or across states/counties using the interactive <a href='https://outbreak.info/maps'World Map</a>. <img src='@/assets/faqs/maps.png' alt='World Map'> <br>Or search for a location and find other places with similar trends using the <a href='https://outbreak.info/compare'Comparison</a> tool. <img src='@/assets/faqs/compare-locations.png' alt='Compare Locations'> <br>Or find data tables on cases, deaths, and recoveries at the <a href='https://outbreak.info/data'Data Tables</a> page. <img src='@/assets/faqs/data-tables.png' alt='Data Tables'> <br>Or select a location and find doubling rates of cases or deaths at the <a href='https://outbreak.info/doubling-rates'Doubling Rates</a> page. <img src='@/assets/faqs/doubling-rates.png' alt='Doubling Rates'>"
+      "a": "Outbreak.info is tracking trends in COVID-19 cases and deaths for locations around the world, as well as testing data for US states. Select one or more locations and choose the metric you’d like to compare (new cases/deaths, cumulative cases/deaths, average cases/deaths, etc.) using Outbreak.info’s <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool. <img src='@/assets/faqs/epidemiology-1.png' alt='Epidemiology Tool'> <br>Or explore trends around the world or across states/counties using the interactive <a href='https://outbreak.info/maps'>World Map</a>. <img src='@/assets/faqs/maps.png' alt='World Map'> <br>Or search for a location and find other places with similar trends using the <a href='https://outbreak.info/compare'>Comparison</a> tool. <img src='@/assets/faqs/compare-locations.png' alt='Compare Locations'> <br>Or find data tables on cases, deaths, and recoveries at the <a href='https://outbreak.info/data'>Data Tables</a> page. <img src='@/assets/faqs/data-tables.png' alt='Data Tables'> <br>Or select a location and find doubling rates of cases or deaths at the <a href='https://outbreak.info/doubling-rates'>Doubling Rates</a> page. <img src='@/assets/faqs/doubling-rates.png' alt='Doubling Rates'>"
     },
     {
       "q": "How can I compare COVID-19 trends for multiple locations?",
-      "a": "Compare COVID-19 trends for locations using the <a href='https://outbreak.info/epidemiology'Epidemiology</a> tool. Enter multiple locations and click 'overlay graphs' to view trends on a single chart. <img src='@/assets/faqs/epidemiology-2.png' alt='Compare Multiple Locations'>"
+      "a": "Compare COVID-19 trends for locations using the <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool. Enter multiple locations and click 'overlay graphs' to view trends on a single chart. <img src='@/assets/faqs/epidemiology-2.png' alt='Compare Multiple Locations'>"
     },
     {
       "q": "What are the locations with the largest increase in cases in the past day?",
-      "a": "Find locations with the greatest increase in cases or deaths using the interactive <a href='https://outbreak.info/maps'World Map</a>."
+      "a": "Find locations with the greatest increase in cases or deaths using the interactive <a href='https://outbreak.info/maps'>World Map</a>."
     },
     {
       "q": "Are COVID-19 cases increasing or decreasing in my location?",
-      "a": "Find COVID-19 trends for any location using Outbreak.info’s <a href='https://outbreak.info/epidemiology'Epidemiology</a> tool."
+      "a": "Find COVID-19 trends for any location using Outbreak.info’s <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool."
     },
     {
       "q": "Where are COVID-19 deaths increasing?",
-      "a": "View locations around the world where COVID-19 deaths are increasing (or decreasing) using the interactive <a href='https://outbreak.info/maps'World Map</a> with two week change in deaths/day selected."
+      "a": "View locations around the world where COVID-19 deaths are increasing (or decreasing) using the interactive <a href='https://outbreak.info/maps'>World Map</a> with two week change in deaths/day selected."
     },
     {
       "q": "Where are COVID-19 cases the highest?",
-      "a": "Use Outbreak.info’s <a href='https://outbreak.info/data'Data Tables</a> to sort by locations that have the greatest number of cumulative COVID-19 cases or deaths."
+      "a": "Use Outbreak.info’s <a href='https://outbreak.info/data'>Data Tables</a> to sort by locations that have the greatest number of cumulative COVID-19 cases or deaths."
     },
     {
       "q": "Where does the data come from? And how often is it updated?",
-      "a": "COVID-19 cases and deaths data are sourced from Johns Hopkins University, The New York Times, and The COVID Tracking Project.  <a href='https://outbreak.info/sources'Click here for more about our sources</a>. Data is aggregated daily."
+      "a": "COVID-19 cases and deaths data are sourced from Johns Hopkins University, The New York Times, and The COVID Tracking Project.  <a href='https://outbreak.info/sources'>Click here for more about our sources</a>. Data is aggregated daily."
     },
     {
       "q": "Is the data accurate?",
-      "a": "The data is aggregated from <a href='https://outbreak.info/sources'scientific sources</a> on a daily basis. However, data always contains some bias. We have added caveats where more explanation is needed. For example, from the <a href='https://outbreak.info/doubling-rates'Doubling Rates</a> tool:<img src='@/assets/faqs/doubling-rates-warning.png' alt='Doubling Rates Caveat'>"
+      "a": "The data is aggregated from <a href='https://outbreak.info/sources'>scientific sources</a> on a daily basis. However, data always contains some bias. We have added caveats where more explanation is needed. For example, from the <a href='https://outbreak.info/doubling-rates'>Doubling Rates</a> tool:<img src='@/assets/faqs/doubling-rates-warning.png' alt='Doubling Rates Caveat'>"
     },
     {
       "q": "Why is there a big blip in cases / deaths in a location on a particular date?",
@@ -132,27 +132,27 @@
   ],
   "Research Library": [{
       "q": "What is the research library?",
-      "a": "Outbreak.info’s <a href='https://outbreak.info/resources'Research Library</a> aggregates resources from LitCovid, PubMed, bioRxiv, medRxiv, ClinicalTrials.gov, WHO Clinical Trials Registry, Figshare, Harvard Dataverse, Zenodo, and more. <a href='https://outbreak.info/sources'Read about the sources here</a>. Outbreak.info standardizes the metadata to make a searchable index of publications, clinical trials, protocols, and datasets across these sources."
+      "a": "Outbreak.info’s <a href='https://outbreak.info/resources'>Research Library</a> aggregates resources from LitCovid, PubMed, bioRxiv, medRxiv, ClinicalTrials.gov, WHO Clinical Trials Registry, Figshare, Harvard Dataverse, Zenodo, and more. <a href='https://outbreak.info/sources'>Read about the sources here</a>. Outbreak.info standardizes the metadata to make a searchable index of publications, clinical trials, protocols, and datasets across these sources."
     },
     {
       "q": "What research has recently been published about COVID-19?",
-      "a": "To view the most recent journal articles, preprints, clinical trial information, datasets, protocols, and more, go to the Outbreak.info <a href='https://outbreak.info/resources'Research Library</a> and scroll to 'What's New.'"
+      "a": "To view the most recent journal articles, preprints, clinical trial information, datasets, protocols, and more, go to the Outbreak.info <a href='https://outbreak.info/resources'>Research Library</a> and scroll to 'What's New.'"
     },
     {
       "q": "What is the latest published research regarding the variants?",
-      "a": "Outbreak.info aggregates the latest publications about each variant. Go to the <a href='https://outbreak.info/situation-reports'Lineage|Mutation Tracker</a>, select a lineage or mutation, and click “Publications” (or scroll to the bottom of the report)."
+      "a": "Outbreak.info aggregates the latest publications about each variant. Go to the <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a>, select a lineage or mutation, and click “Publications” (or scroll to the bottom of the report)."
     },
     {
       "q": "How do I find clinical trial data?",
-      "a": "Outbreak.info’s Research Library includes a searchable index of COVID-19 related clinical trials. <a href='https://outbreak.info/resources/search?sort=-date&filter=%40type%3AClinicalTrial'Sort by clinical trials</a> and search for keywords or apply other filters like date, funding, trial intervention, etc."
+      "a": "Outbreak.info’s Research Library includes a searchable index of COVID-19 related clinical trials. <a href='https://outbreak.info/resources/search?sort=-date&filter=%40type%3AClinicalTrial'>Sort by clinical trials</a> and search for keywords or apply other filters like date, funding, trial intervention, etc."
     },
     {
       "q": "Where can I find published research or clinical trial data on the vaccines?",
-      "a": "Because Outbreak.info’s Research Library is searchable, it is easy to find the latest research surrounding COVID-19 vaccines. Try: <a href='https://outbreak.info/resources/search?q=moderna'Moderna</a>, <a href='https://outbreak.info/resources/search?q=pfizer'Pfizer</a>, <a href='https://outbreak.info/resources/search?q=janssen'Johnson & Johnson</a>, <a href='https://outbreak.info/resources/search?q=astrazeneca'Astrazeneca</a>, <a href='https://outbreak.info/resources/search?q=sinovac'Sinovac</a>, or <a href='https://outbreak.info/resources/search?q=covaxin'Covaxin</a>."
+      "a": "Because Outbreak.info’s Research Library is searchable, it is easy to find the latest research surrounding COVID-19 vaccines. Try: <a href='https://outbreak.info/resources/search?q=moderna'>Moderna</a>, <a href='https://outbreak.info/resources/search?q=pfizer'>Pfizer</a>, <a href='https://outbreak.info/resources/search?q=janssen'>Johnson & Johnson</a>, <a href='https://outbreak.info/resources/search?q=astrazeneca'>Astra Zeneca</a>, <a href='https://outbreak.info/resources/search?q=sinovac'>Sinovac</a>, or <a href='https://outbreak.info/resources/search?q=covaxin'>Covaxin</a>."
     },
     {
       "q": "How often are the resources updated?",
-      "a": "Outbreak.info aggregates resources across numerous scientific sources on a daily basis. <a href='https://outbreak.info/sources#resources'To learn more about the sources, click here</a>."
+      "a": "Outbreak.info aggregates resources across numerous scientific sources on a daily basis. <a href='https://outbreak.info/sources#resources'>To learn more about the sources, click here</a>."
     },
     {
       "q": "Can I suggest a new source to be added to the Research Library?",
