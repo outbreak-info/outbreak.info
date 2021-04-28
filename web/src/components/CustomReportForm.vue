@@ -5,8 +5,8 @@
   <div>
     <div class="d-flex align-items-center my-4 w-100">
       <div>
+        <button type="submit" class="btn btn-outline-secondary mx-5"  @click="clearQuery">Clear selection</button>
         <button :disabled="!formValid" type="submit" class="btn btn-accent"  @click="submitQuery">Go</button>
-        <button type="submit" class="btn btn-outline-secondary ml-4"  @click="clearQuery">Clear selection</button>
       </div>
 
     </div>

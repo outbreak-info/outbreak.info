@@ -126,7 +126,7 @@ export default Vue.extend({
         right: 55
       },
       width: null,
-      minWidth: 350,
+      minWidth: 450,
       height: 500,
       // variables
       fillVar: "pangolin_lineage",

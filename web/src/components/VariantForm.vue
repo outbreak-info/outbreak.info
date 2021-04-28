@@ -74,7 +74,7 @@
   <div class="d-flex align-items-center circle-header" v-if="formValid">
     <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType.id == 'variant' ? 4 : 3}}</div>
     <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
-      View <span class="text-highlight" v-html="title"></span>
+      Add <span class="text-highlight" v-html="title"></span>
     </div>
   </div>
 

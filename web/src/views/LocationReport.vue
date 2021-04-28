@@ -49,9 +49,11 @@
             </button>
           </div>
           <div class="modal-body">
-            <div class="mx-4 border-bottom pb-3" v-if="customMutations.length">
+            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" :formCount.sync="formCount" />
+
+            <div class="mx-4 border-top pt-3" v-if="customMutations.length">
               <h6 class="font-weight-bold text-muted">
-                Current additions:
+                Already selected:
               </h6>
               <div class="d-flex flex-wrap">
                 <button role="button" class="btn chip bg-main__darker text-light d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in customMutations" :key="mIdx" @click="deleteMutation(mIdx)">
@@ -60,12 +62,12 @@
                 </button>
               </div>
             </div>
-
-            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" />
           </div>
 
           <div class="modal-footer border-secondary">
-            <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Create report</button>
+            <button type="button" class="btn btn-outline-secondary" @click="clearMutations">Clear selections</button>
+            <button type="button" class="btn btn-sec-outline" @click="addMutations">Add another lineage/mutation</button>
+            <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Go</button>
 
           </div>
         </div>
@@ -209,7 +211,7 @@
         </div>
 
         <!-- HEATMAP + LEGEND -->
-        <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
+        <div class="d-flex flex-column align-items-center mt-3" v-if="recentHeatmap && recentHeatmap.length">
           <h5 class="m-0">Characteristic S-gene mutations in common lineages over the last {{recentWindow}} days</h5>
           <div class="d-flex flex-wrap justify-content-between">
             <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
@@ -732,6 +734,18 @@ export default {
     deleteMutation(idx) {
       this.customMutations.splice(idx, 1);
     },
+    addMutations() {
+      console.log("ADDING")
+      this.newPango = [];
+      this.newMuts = [];
+      this.newVariants = [];
+    },
+    clearMutations() {
+      this.newPango = [];
+      this.newMuts = [];
+      this.newVariants = [];
+      this.customMutations = [];
+    },
     submitNewMutations() {
       let selected = this.selected ? this.selected : [];
 
@@ -815,6 +829,7 @@ export default {
       newPango: [],
       newVariants: [],
       customMutations: [],
+      formCount: 0,
       // data
       moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
       moc: ["E484K"],
