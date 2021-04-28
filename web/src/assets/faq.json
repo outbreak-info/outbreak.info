@@ -20,7 +20,7 @@
       "a": "When using Outbreak.info’s data and/or visualizations, please cite the authors/curators. <a href='https://outbreak.info/citation'>Click here for the citation and our data usage policy</a>."
     }
   ],
-  "Variant Reports": [{
+  "Variant Reports": {
     "Functionality of our variant tracking tools": [{
         "q": "How do I find which variants are spreading in a given location?",
         "a": "Go to Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a> and enter a country, state, or county to find info on the SARS-CoV-2 variants for that location. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/location-tracker.png' alt='Location Tracker'> The location reports track lineage prevalence over time and cumulative lineage or mutation prevalence. The reports also include geographic prevalence maps and comparison charts of mutations across the most common lineages. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/location-reports-1.png' alt='Location Report'><img class='d-flex align-items-center w-75 mb-4' src='/faqs/location-reports-2.png' alt='Location Report'>"
@@ -42,7 +42,7 @@
         "a": "Confidence intervals (CI) describe the certainty of a value. We provide CI to more accurately represent any uncertainty in the underlying data. <a href='https://outbreak.info/situation-reports/methods'>The formula for calculating CI is described here</a>. For example, if 100% of sequences in a location have been identified as the B.1.1.7 lineage, but that location has only sequenced and reported 3 samples, we could say with 95% confidence that the true prevalence actually falls somewhere between 46% and 100%."
       }
     ],
-    "Variant data": [{
+    "Data Sources, processing, & interpretation": [{
         "q": "Where does the variant data come from and how often is it updated?",
         "a": "All genomic data is sourced from <a href='https://www.gisaid.org/'>GISAID</a> and updated daily. <a href='https://outbreak.info/situation-reports/methods'>Read more about how data is processed and reported here</a>."
       },
@@ -92,7 +92,7 @@
         "a": "COVID-19 variants have been detected all around the world. Find the prevalence of variants in a given location using Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a>. Or use Outbreak.info’s <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a> to find geographic prevalence for any lineage, mutation, or combination of both."
       }
     ]
-  }],
+  },
   "COVID-19 Tracking (Cases & Deaths)": [{
       "q": "What COVID-19 data is Outbreak.info tracking?",
       "a": "Outbreak.info is tracking trends in COVID-19 cases and deaths for locations around the world, as well as testing data for US states. Select one or more locations and choose the metric you’d like to compare (new cases/deaths, cumulative cases/deaths, average cases/deaths, etc.) using Outbreak.info’s <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/epidemiology-1.png' alt='Epidemiology Tool'> <br>Or explore trends around the world or across states/counties using the interactive <a href='https://outbreak.info/maps'>World Map</a>. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/maps.png' alt='World Map'> <br>Or search for a location and find other places with similar trends using the <a href='https://outbreak.info/compare'>Comparison</a> tool. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/compare-locations.png' alt='Compare Locations'> <br>Or find data tables on cases, deaths, and recoveries at the <a href='https://outbreak.info/data'>Data Tables</a> page. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/data-tables.png' alt='Data Tables'> <br>Or select a location and find doubling rates of cases or deaths at the <a href='https://outbreak.info/doubling-rates'>Doubling Rates</a> page. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/doubling-rates.png' alt='Doubling Rates'>"
