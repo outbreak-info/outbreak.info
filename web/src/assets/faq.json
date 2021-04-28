@@ -20,7 +20,7 @@
       "a": "When using Outbreak.info’s data and/or visualizations, please cite the authors/curators. <a href='https://outbreak.info/citation'>Click here for the citation and our data usage policy</a>."
     }
   ],
-  "About Variants": [{
+  "Variant Reports": [{
     "Functionality of our variant tracking tools": [{
         "q": "How do I find which variants are spreading in a given location?",
         "a": "Go to Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a> and enter a country, state, or county to find info on the SARS-CoV-2 variants for that location. <img src='@/assets/faqs/location-tracker.png' alt='Location Tracker'> The location reports track lineage prevalence over time and cumulative lineage or mutation prevalence. The reports also include geographic prevalence maps and comparison charts of mutations across the most common lineages. <img src='@/assets/faqs/location-reports-1.png' alt='Location Report'><img src='@/assets/faqs/location-reports-2.png' alt='Location Report'>"
@@ -93,7 +93,7 @@
       }
     ]
   }],
-  "About COVID-19 Tracking (Cases & Deaths)": [{
+  "COVID-19 Tracking (Cases & Deaths)": [{
       "q": "What COVID-19 data is Outbreak.info tracking?",
       "a": "Outbreak.info is tracking trends in COVID-19 cases and deaths for locations around the world, as well as testing data for US states. Select one or more locations and choose the metric you’d like to compare (new cases/deaths, cumulative cases/deaths, average cases/deaths, etc.) using Outbreak.info’s <a href='https://outbreak.info/epidemiology'Epidemiology</a> tool. <img src='@/assets/faqs/epidemiology-1.png' alt='Epidemiology Tool'> <br>Or explore trends around the world or across states/counties using the interactive <a href='https://outbreak.info/maps'World Map</a>. <img src='@/assets/faqs/maps.png' alt='World Map'> <br>Or search for a location and find other places with similar trends using the <a href='https://outbreak.info/compare'Comparison</a> tool. <img src='@/assets/faqs/compare-locations.png' alt='Compare Locations'> <br>Or find data tables on cases, deaths, and recoveries at the <a href='https://outbreak.info/data'Data Tables</a> page. <img src='@/assets/faqs/data-tables.png' alt='Data Tables'> <br>Or select a location and find doubling rates of cases or deaths at the <a href='https://outbreak.info/doubling-rates'Doubling Rates</a> page. <img src='@/assets/faqs/doubling-rates.png' alt='Doubling Rates'>"
     },
@@ -130,7 +130,7 @@
       "a": "Countries, states, counties, and metro areas all have varied rates of testing and reporting. Not all jurisdictions report case/death counts daily, so case/death counts may increase at different intervals."
     }
   ],
-  "About COVID-19 Tracking (Cases & Deaths)": [{
+  "Research Library": [{
       "q": "What is the research library?",
       "a": "Outbreak.info’s <a href='https://outbreak.info/resources'Research Library</a> aggregates resources from LitCovid, PubMed, bioRxiv, medRxiv, ClinicalTrials.gov, WHO Clinical Trials Registry, Figshare, Harvard Dataverse, Zenodo, and more. <a href='https://outbreak.info/sources'Read about the sources here</a>. Outbreak.info standardizes the metadata to make a searchable index of publications, clinical trials, protocols, and datasets across these sources."
     },
