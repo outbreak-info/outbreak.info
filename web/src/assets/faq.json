@@ -36,10 +36,6 @@
       {
         "q": "Can I see if a particular GISAID sequence is included in a Variant Report?",
         "a": "This functionality is coming soon."
-      },
-      {
-        "q": "What are those pink blobs (confidence intervals) on the Lineage|Mutation Tracker?",
-        "a": "Confidence intervals (CI) describe the certainty of a value. We provide CI to more accurately represent any uncertainty in the underlying data. <a href='https://outbreak.info/situation-reports/methods'>The formula for calculating CI is described here</a>. For example, if 100% of sequences in a location have been identified as the B.1.1.7 lineage, but that location has only sequenced and reported 3 samples, we could say with 95% confidence that the true prevalence actually falls somewhere between 46% and 100%."
       }
     ],
     "Data Sources, processing, & interpretation": [{
@@ -61,6 +57,10 @@
       {
         "q": "Are the trends I’m seeing real?",
         "a": "Trends presented by Outbreak.info are rooted in real data and real statistical analysis. However, sampling and sequencing contains some known biases, hence data is presented with confidence intervals and caveats. Data may be skewed by a number of factors, particularly for the most recent dates,<a href='https://outbreak.info/situation-reports/caveats'>which is explained here</a>."
+      },
+      {
+        "q": "What are those pink blobs (confidence intervals) on the Lineage|Mutation Tracker?",
+        "a": "Confidence intervals (CI) describe the certainty of a value. We provide CI to more accurately represent any uncertainty in the underlying data. <a href='https://outbreak.info/situation-reports/methods'>The formula for calculating CI is described here</a>. For example, if 100% of sequences in a location have been identified as the B.1.1.7 lineage, but that location has only sequenced and reported 3 samples, we could say with 95% confidence that the true prevalence actually falls somewhere between 46% and 100%."
       },
       {
         "q": "How trustworthy is the data?",
