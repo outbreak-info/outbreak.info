@@ -23,15 +23,15 @@
   "Variant Reports": [{
     "Functionality of our variant tracking tools": [{
         "q": "How do I find which variants are spreading in a given location?",
-        "a": "Go to Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a> and enter a country, state, or county to find info on the SARS-CoV-2 variants for that location. <img src='/faqs/location-tracker.png' alt='Location Tracker'> The location reports track lineage prevalence over time and cumulative lineage or mutation prevalence. The reports also include geographic prevalence maps and comparison charts of mutations across the most common lineages. <img src='/faqs/location-reports-1.png' alt='Location Report'><img src='/faqs/location-reports-2.png' alt='Location Report'>"
+        "a": "Go to Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a> and enter a country, state, or county to find info on the SARS-CoV-2 variants for that location. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/location-tracker.png' alt='Location Tracker'> The location reports track lineage prevalence over time and cumulative lineage or mutation prevalence. The reports also include geographic prevalence maps and comparison charts of mutations across the most common lineages. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/location-reports-1.png' alt='Location Report'><img class='d-flex align-items-center w-75 mb-4' src='/faqs/location-reports-2.png' alt='Location Report'>"
       },
       {
         "q": "How can I compare variant prevalence to overall COVID-19 cases?",
-        "a": "Compare variant prevalence and COVID-19 cases using Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a>. Enter a country, state, or county, then scroll down to the two charts that show 'Tracked lineages over time in...' and 'Daily COVID-19 cases in….' For example: <img src='/faqs/variant-cases-comparison.png' alt='Compare Variants and Cases'>"
+        "a": "Compare variant prevalence and COVID-19 cases using Outbreak.info’s <a href='https://outbreak.info/location-reports'>Location Tracker</a>. Enter a country, state, or county, then scroll down to the two charts that show 'Tracked lineages over time in...' and 'Daily COVID-19 cases in….' For example: <img class='d-flex align-items-center w-75 mb-4' src='/faqs/variant-cases-comparison.png' alt='Compare Variants and Cases'>"
       },
       {
         "q": "How can I compare mutations across lineages?",
-        "a": "Outbreak.info’s <a href='https://outbreak.info/compare-lineages'>Lineage Comparison</a> tool compares the prevalence of mutations across lineages with the ability to sort by gene and adjust mutation prevalence threshold. <img src='/faqs/lineage-comparison.png' alt='Lineage Comparison'>"
+        "a": "Outbreak.info’s <a href='https://outbreak.info/compare-lineages'>Lineage Comparison</a> tool compares the prevalence of mutations across lineages with the ability to sort by gene and adjust mutation prevalence threshold. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/lineage-comparison.png' alt='Lineage Comparison'>"
       },
       {
         "q": "Can I see if a particular GISAID sequence is included in a Variant Report?",
@@ -56,7 +56,7 @@
       },
       {
         "q": "How do I interpret the data?",
-        "a": "<a href='https://outbreak.info/situation-reports/caveats'>We define all of the variant reporting terms here</a>, as well as the caveats, limitations, and biases that help with interpretation. You’ll also find annotations throughout the variant pages where explanation is needed. For example, from <a href='https://outbreak.info/situation-reports?pango=B.1.1.7'>B.1.1.7</a>: <img src='/faqs/b117-warning.png' alt='B.1.1.7 Caveat'>"
+        "a": "<a href='https://outbreak.info/situation-reports/caveats'>We define all of the variant reporting terms here</a>, as well as the caveats, limitations, and biases that help with interpretation. You’ll also find annotations throughout the variant pages where explanation is needed. For example, from <a href='https://outbreak.info/situation-reports?pango=B.1.1.7'>B.1.1.7</a>: <img class='d-flex align-items-center w-75 mb-4' src='/faqs/b117-warning.png' alt='B.1.1.7 Caveat'>"
       },
       {
         "q": "Are the trends I’m seeing real?",
@@ -95,11 +95,11 @@
   }],
   "COVID-19 Tracking (Cases & Deaths)": [{
       "q": "What COVID-19 data is Outbreak.info tracking?",
-      "a": "Outbreak.info is tracking trends in COVID-19 cases and deaths for locations around the world, as well as testing data for US states. Select one or more locations and choose the metric you’d like to compare (new cases/deaths, cumulative cases/deaths, average cases/deaths, etc.) using Outbreak.info’s <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool. <img src='/faqs/epidemiology-1.png' alt='Epidemiology Tool'> <br>Or explore trends around the world or across states/counties using the interactive <a href='https://outbreak.info/maps'>World Map</a>. <img src='/faqs/maps.png' alt='World Map'> <br>Or search for a location and find other places with similar trends using the <a href='https://outbreak.info/compare'>Comparison</a> tool. <img src='/faqs/compare-locations.png' alt='Compare Locations'> <br>Or find data tables on cases, deaths, and recoveries at the <a href='https://outbreak.info/data'>Data Tables</a> page. <img src='/faqs/data-tables.png' alt='Data Tables'> <br>Or select a location and find doubling rates of cases or deaths at the <a href='https://outbreak.info/doubling-rates'>Doubling Rates</a> page. <img src='/faqs/doubling-rates.png' alt='Doubling Rates'>"
+      "a": "Outbreak.info is tracking trends in COVID-19 cases and deaths for locations around the world, as well as testing data for US states. Select one or more locations and choose the metric you’d like to compare (new cases/deaths, cumulative cases/deaths, average cases/deaths, etc.) using Outbreak.info’s <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/epidemiology-1.png' alt='Epidemiology Tool'> <br>Or explore trends around the world or across states/counties using the interactive <a href='https://outbreak.info/maps'>World Map</a>. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/maps.png' alt='World Map'> <br>Or search for a location and find other places with similar trends using the <a href='https://outbreak.info/compare'>Comparison</a> tool. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/compare-locations.png' alt='Compare Locations'> <br>Or find data tables on cases, deaths, and recoveries at the <a href='https://outbreak.info/data'>Data Tables</a> page. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/data-tables.png' alt='Data Tables'> <br>Or select a location and find doubling rates of cases or deaths at the <a href='https://outbreak.info/doubling-rates'>Doubling Rates</a> page. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/doubling-rates.png' alt='Doubling Rates'>"
     },
     {
       "q": "How can I compare COVID-19 trends for multiple locations?",
-      "a": "Compare COVID-19 trends for locations using the <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool. Enter multiple locations and click 'overlay graphs' to view trends on a single chart. <img src='/faqs/epidemiology-2.png' alt='Compare Multiple Locations'>"
+      "a": "Compare COVID-19 trends for locations using the <a href='https://outbreak.info/epidemiology'>Epidemiology</a> tool. Enter multiple locations and click 'overlay graphs' to view trends on a single chart. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/epidemiology-2.png' alt='Compare Multiple Locations'>"
     },
     {
       "q": "What are the locations with the largest increase in cases in the past day?",
@@ -123,7 +123,7 @@
     },
     {
       "q": "Is the data accurate?",
-      "a": "The data is aggregated from <a href='https://outbreak.info/sources'>scientific sources</a> on a daily basis. However, data always contains some bias. We have added caveats where more explanation is needed. For example, from the <a href='https://outbreak.info/doubling-rates'>Doubling Rates</a> tool:<img src='/faqs/doubling-rates-warning.png' alt='Doubling Rates Caveat'>"
+      "a": "The data is aggregated from <a href='https://outbreak.info/sources'>scientific sources</a> on a daily basis. However, data always contains some bias. We have added caveats where more explanation is needed. For example, from the <a href='https://outbreak.info/doubling-rates'>Doubling Rates</a> tool:<img class='d-flex align-items-center w-75 mb-4' src='/faqs/doubling-rates-warning.png' alt='Doubling Rates Caveat'>"
     },
     {
       "q": "Why is there a big blip in cases / deaths in a location on a particular date?",
