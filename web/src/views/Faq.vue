@@ -10,7 +10,7 @@
         <div v-for="(group, gIdx) in faqGroups" :key="gIdx">
           <h3 data-toggle="collapse" :href="'#group' + gIdx" class="pointer my-5 py-2 border-left-main">{{group}}</h3>
           <ol :id="'group' + gIdx" class="collapse multi-collapse">
-            <li v-for="(question, qIdx) in faq[group]" :key="qIdx" class="mb-4 border-bottom pb-4 font-size-xlarge">
+            <li v-for="(question, qIdx) in faq[group]" :key="qIdx" class="mb-4 border-bottom pb-4 font-size-xlarge" :id="'g' + gIdx + '-q' + qIdx">
               <b>{{question.q}}</b>
               <div class="font-size-normal" v-html="question.a"></div>
             </li>
