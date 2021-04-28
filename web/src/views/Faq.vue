@@ -10,7 +10,7 @@
         <div v-for="(group, gIdx) in faqGroups" :key="gIdx">
           <h3 data-toggle="collapse" :href="'#group' + gIdx" class="pointer my-5 py-2 border-left-main">{{group}}</h3>
           <ol :id="'group' + gIdx" class="collapse multi-collapse">
-            <li v-for="(question, qIdx) in faq[group]" :key="qIdx" class="mb-3 font-size-xlarge">
+            <li v-for="(question, qIdx) in faq[group]" :key="qIdx" class="mb-4 border-bottom pb-4 font-size-xlarge">
               <b>{{question.q}}</b>
               <div class="font-size-normal" v-html="question.a"></div>
             </li>
@@ -39,7 +39,6 @@ export default Vue.extend({
   mounted() {
     this.faq = FAQ;
     this.faqGroups = Object.keys(this.faq);
-    console.log(this.faq)
   }
 })
 </script>
@@ -51,7 +50,7 @@ export default Vue.extend({
 }
 
 .font-size-xlarge {
-  font-size: large;
+  font-size: larger;
 }
 
 .font-size-normal {
