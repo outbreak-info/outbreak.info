@@ -5,10 +5,6 @@
 
     <div class="container text-left mb-5">
       <h1>Frequently Asked Questions</h1>
-      <section>
-        Hi Emily! This is where you could add html code.
-      </section>
-
       <!-- automatically pull Q&A from /assets/faq.json -->
       <section id="faq" class="my-3">
         <div v-for="(group, gIdx) in faqGroups" :key="gIdx">
