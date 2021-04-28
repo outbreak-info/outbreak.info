@@ -8,8 +8,8 @@
       <!-- automatically pull Q&A from /assets/faq.json -->
       <section id="faq" class="my-3">
         <div v-for="(group, gIdx) in faqGroups" :key="gIdx">
-          <h3>{{group}}</h3>
-          <ol>
+          <h3 data-toggle="collapse" :href="'#group' + gIdx" class="pointer my-5 py-2 border-left-main">{{group}}</h3>
+          <ol :id="'group' + gIdx" class="collapse multi-collapse">
             <li v-for="(question, qIdx) in faq[group]" :key="qIdx" class="mb-3">
               <b>{{question.q}}</b>
               <div v-html="question.a"></div>
@@ -43,3 +43,10 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style lang="scss">
+.border-left-main {
+    border-left: 8px solid $secondary-color;
+    padding-left: 0.75rem;
+}
+</style>
