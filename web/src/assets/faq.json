@@ -148,7 +148,7 @@
     },
     {
       "q": "Where can I find published research or clinical trial data on the vaccines?",
-      "a": "Because Outbreak.info’s Research Library is searchable, it is easy to find the latest research surrounding COVID-19 vaccines. Try: <a href='https://outbreak.info/resources/search?q=moderna'>Moderna</a>, <a href='https://outbreak.info/resources/search?q=pfizer'>Pfizer</a>, <a href='https://outbreak.info/resources/search?q=janssen'>Johnson & Johnson</a>, <a href='https://outbreak.info/resources/search?q=astrazeneca'>Astra Zeneca</a>, <a href='https://outbreak.info/resources/search?q=sinovac'>Sinovac</a>, or <a href='https://outbreak.info/resources/search?q=covaxin'>Covaxin</a>."
+      "a": "Because Outbreak.info’s Research Library is searchable, it is easy to find the latest research surrounding COVID-19 vaccines. Try: <a href='https://outbreak.info/resources/search?q=moderna'>Moderna</a>, <a href='https://outbreak.info/resources/search?q=pfizer'>Pfizer</a>, <a href='https://outbreak.info/resources/search?q=janssen'>Johnson & Johnson</a>, <a href='https://outbreak.info/resources/search?q=astrazeneca'>AstraZeneca</a>, <a href='https://outbreak.info/resources/search?q=sinovac'>Sinovac</a>, or <a href='https://outbreak.info/resources/search?q=covaxin'>Covaxin</a>."
     },
     {
       "q": "How often are the resources updated?",
