@@ -5,8 +5,9 @@
   <h5 class="">{{ tableTitle }}</h5>
   <svg :width="width" :height="height" class="characteristic_mutations" :name="title" ref="mut_bars_svg">
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="mut_bars"></g>
-     <g :transform="`translate(${margin.left}, ${margin.top})`" class="horizontal-bargraph-x axis--x" ref="xAxisTop"></g>
-     <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="horizontal-bargraph-x axis--x" ref="xAxisBottom"></g>
+    <g :transform="`translate(${margin.left}, ${margin.top})`" ref="annotation"></g>
+    <g :transform="`translate(${margin.left}, ${margin.top})`" class="horizontal-bargraph-x axis--x" ref="xAxisTop"></g>
+    <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="horizontal-bargraph-x axis--x" ref="xAxisBottom"></g>
   </svg>
 
   <div class="d-flex">
@@ -100,6 +101,7 @@ export default Vue.extend({
       paddingInner: 0.25,
       // refs
       chart: null,
+      annotation: null,
       // data
       plottedData: null,
       // forms
@@ -112,6 +114,7 @@ export default Vue.extend({
     },
     setupPlot() {
       this.chart = select(this.$refs.mut_bars);
+      this.annotation = select(this.$refs.annotation);
     },
     updatePlot: function() {
       if (this.data) {
@@ -262,6 +265,14 @@ export default Vue.extend({
             .attr("width", d => this.x(d.prevalence) - this.x(0))
             .attr("y", d => this.y(d.mutation));
 
+            update
+              .select(".hundred-percent")
+              .attr("height", this.y.bandwidth())
+              .transition(t1)
+              .attr("x", this.x(0))
+              .attr("y", d => this.y(d.mutation))
+              .attr("width", d => this.x(1) - this.x(0))
+
           update.select(".gene-mutation")
             .style("fill", d => this.colorScale(d.gene))
             .transition(t1)
@@ -279,7 +290,6 @@ export default Vue.extend({
             .text(d => format(".0%")(d.prevalence))
             .transition(t1)
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
-
 
           update
             .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
@@ -324,7 +334,7 @@ export default Vue.extend({
       const thresholdX = -7;
       const thresholdY = 18;
 
-      const annotSelector = this.chart
+      const annotSelector = this.annotation
         .selectAll(".annotation-group")
         .data([0]);
 
