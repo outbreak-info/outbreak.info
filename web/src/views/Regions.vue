@@ -3,9 +3,23 @@
   <div v-if="loading" class="loader">
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
-  <section id="world_total" v-if="total">
-    <Bargraph :data="total" title="Daily worldwide COVID-19 cases" :variableObj="variableObj" :includeAxis="true" :width="800" :height="400" :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" id="world-cases"
-      color="black" />
+  <section id="world_total" v-if="total" class="container my-5">
+    <div class="row">
+      <!-- EPI CURVE SUMMARIES -->
+
+      <div class="col-sm-12 d-flex flex-column">
+    <h3>
+      Daily worldwide COVID-19
+      <select v-model="variableObj" class="select-dropdown">
+        <option v-for="option in totalOptions" :value="option" :key="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </h3>
+    <Bargraph :data="total" :title="null" :variableObj="variableObj" :includeAxis="true" :width="800" :height="400" :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" id="world-cases"
+      color="#888380" />
+    </div>
+    </div>
   </section>
 
   <!-- EPI EXAMPLES -->
@@ -121,11 +135,22 @@ export default {
       nestedData: null,
       selectedVariable: "confirmed",
       variableObj: {
-        label: "daily new cases",
+        label: "cases",
         ttip: "new cases",
         value: "confirmed_numIncrease",
         sources: ["NYT", "JHU"]
       },
+      totalOptions: [{
+        label: "cases",
+        ttip: "new cases",
+        value: "confirmed_numIncrease",
+        sources: ["NYT", "JHU"]
+      },{
+        label: "deaths",
+        ttip: "new deaths",
+        value: "dead_numIncrease",
+        sources: ["NYT", "JHU"]
+      }],
       variableOptions: [{
           label: "Cases",
           value: "confirmed"
