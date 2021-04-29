@@ -291,6 +291,27 @@ export default Vue.extend({
       select(this.$refs.tooltip_heatmap)
         .style("display", "none");
     },
+    highlightRow(d) {
+      this.svg
+        .selectAll("rect")
+        .style("fill-opacity", 0.2);
+
+      this.svg.selectAll(`.${d.replace(/\./g, "_")}`)
+        .style("fill-opacity", 1)
+    },
+    highlightColumn(d) {
+      this.svg
+        .selectAll("rect")
+        .style("fill-opacity", 0.2);
+
+      this.svg.selectAll(`.${d.replace(/\//g, "_")}`)
+        .style("fill-opacity", 1)
+    },
+    highlightOff(d) {
+      this.svg
+        .selectAll("rect")
+        .style("fill-opacity", 1);
+    },
     route2Lineage(pango) {
       this.$router.push({
         name: "MutationReport",
@@ -369,7 +390,7 @@ export default Vue.extend({
         enter => {
           enter
             .append("rect")
-            .attr("class", "heatmap pointer")
+            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\./g, "_")}`)
             .attr("id", d => d.id)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
@@ -383,6 +404,7 @@ export default Vue.extend({
         },
         update => {
           update.attr("id", d => d.id)
+          .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\./g, "_")}`)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
@@ -424,7 +446,9 @@ export default Vue.extend({
             .style("font-size", 18)
             .attr("dx", 10)
             .text(d => d.key)
-            .on("click", d => this.route2Lineage(d.key));
+            .on("click", d => this.route2Lineage(d.key))
+            .on("mouseover", d => this.highlightRow(d.key))
+            .on("mouseout", this.highlightOff);
 
           grp.append("tspan")
             .attr("class", "y-axis-count")
@@ -474,7 +498,9 @@ export default Vue.extend({
         .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
         .classed("hover-underline", "true")
         .classed("pointer", "true")
-        .on("click", d => this.route2Mutation(d));
+        .on("click", d => this.route2Mutation(d))
+        .on("mouseover", d => this.highlightColumn(d))
+        .on("mouseout", this.highlightOff);
 
       select(this.$refs.xAxisBottom)
         .selectAll("text")
@@ -486,14 +512,18 @@ export default Vue.extend({
         .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
         .classed("hover-underline", "true")
         .classed("pointer", "true")
-        .on("click", d => this.route2Mutation(d));
+        .on("click", d => this.route2Mutation(d))
+        .on("mouseover", d => this.highlightColumn(d))
+        .on("mouseout", this.highlightOff);;
 
       select(this.$refs.yAxisLeft)
         .selectAll("text")
         .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
         .classed("hover-underline", "true")
         .classed("pointer", "true")
-        .on("click", d => this.route2Lineage(d));
+        .on("click", d => this.route2Lineage(d))
+        .on("mouseover", d => this.highlightRow(d))
+        .on("mouseout", this.highlightOff);
     }
   }
 })
