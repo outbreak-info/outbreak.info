@@ -736,20 +736,23 @@ export default {
     },
     addMutations() {
       console.log("ADDING")
-      this.newPango = [];
+      console.log(this.customMutations)
+      this.customMutations.push(this.newPango);
+      this.newPango = null;
       this.newMuts = [];
       this.newVariants = [];
     },
     clearMutations() {
-      this.newPango = [];
+      this.newPango = null;
       this.newMuts = [];
       this.newVariants = [];
       this.customMutations = [];
     },
-    submitNewMutations() {
+    commitNewMutations() {
+      console.log(this.newPango)
       let selected = this.selected ? this.selected : [];
 
-      let pango = this.newPango.map(d => d.route);
+      let pango = this.newPango.route;
       selected = selected.concat(pango);
       pango = pango.concat(this.customMutations.filter(d => d.type == "pango").map(d => d.qParam));
 
@@ -760,6 +763,12 @@ export default {
       let variant = this.newVariants.map(d => d.route);
       selected = selected.concat(variant);
       variant = variant.concat(this.customMutations.filter(d => d.type == "variant").map(d => d.qParam));
+      this.newPango = null;
+      this.newMuts = [];
+      this.newVariants = [];
+    },
+    submitNewMutations() {
+      this.commitNewMutations();
 
       this.$router.push({
         name: "LocationReport",
@@ -768,12 +777,10 @@ export default {
           pango: uniq(pango),
           variant: uniq(variant),
           muts: uniq(mutation),
-          selected: uniq(selected)
+          // selected: uniq(selected)
         }
       })
-      this.newPango = [];
-      this.newMuts = [];
-      this.newVariants = [];
+
     },
     updateWindow() {
       this.setupReport();
@@ -826,7 +833,7 @@ export default {
       newLocation: null,
       // update mutations
       newMuts: [],
-      newPango: [],
+      newPango: null,
       newVariants: [],
       customMutations: [],
       formCount: 0,

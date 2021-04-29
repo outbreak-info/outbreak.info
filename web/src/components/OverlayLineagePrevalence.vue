@@ -33,7 +33,7 @@ export default {
     seqCounts: Array,
     locationID: String,
     locationName: String,
-    selected: Array
+    selected: [Array, String]
   },
   components: {
     ReportPrevalenceOverlay

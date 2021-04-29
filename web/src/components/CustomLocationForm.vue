@@ -38,12 +38,12 @@
     <div>
       <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="formCount" :submitLabel.sync="submitLabel" />
 
-      <b class="text-muted m-0 p-0" v-if="pango.length || variant.length || muts.length">
+      <b class="text-muted m-0 p-0" v-if="pango || variant.length || muts.length">
         New lineages / mutations:
       </b>
       <div class="d-flex flex-wrap align-items-center mb-3">
-        <button v-for="(lineage, lIdx) in pango" :key="'pango'+lIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(lIdx, pango)">
-          {{ lineage.label }}
+        <button class="btn chip bg-main text-light pl-3" @click="deleteVariant(pango)" v-if="pango">
+          {{ pango.label }}
           <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
         </button>
         <button v-for="(variant, vIdx) in variant" :key="'variant' + vIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(vIdx, variant)">
@@ -155,10 +155,17 @@ export default {
           route: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`
         })
       } else if (this.selectedLineage) {
-        this.pango.push({
+
+        const newPango = {
           label: `${this.selectedLineage} lineage`,
-          route: this.selectedLineage
-        })
+          qParam: this.selectedLineage,
+          type: "lineage"
+        };
+        this.$emit("update:pango", newPango);
+        // this.pango.push({
+        //   label: `${this.selectedLineage} lineage`,
+        //   route: this.selectedLineage
+        // })
       } else if (this.selectedMutations.length) {
         this.muts.push({
           label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
