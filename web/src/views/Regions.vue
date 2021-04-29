@@ -1,9 +1,12 @@
 <template>
 <div class="home flex-column text-left d-flex">
   <div v-if="loading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
-
+  <section id="world_total" v-if="total">
+    <Bargraph :data="total" title="Daily worldwide COVID-19 cases" :variableObj="variableObj" :includeAxis="true" :width="800" :height="400" :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" id="world-cases"
+      color="black" />
+  </section>
 
   <!-- EPI EXAMPLES -->
   <section id="regional data" class="container my-5">
@@ -70,9 +73,14 @@
 import EpiStacked from "@/components/EpiStacked.vue";
 import CountryBarGraph from "@/components/CountryBarGraph.vue";
 import DataSource from "@/components/DataSource.vue";
+import Bargraph from "@/components/Bargraph.vue";
 import {
   getStackedRegions
 } from "@/api/region-summary.js";
+
+import {
+  getWorldDailyCases
+} from "@/api/epi-traces.js";
 
 import {
   mapState
@@ -97,6 +105,7 @@ export default {
   name: "Regions",
   components: {
     EpiStacked,
+    Bargraph,
     CountryBarGraph,
     DataSource,
     FontAwesomeIcon
@@ -106,9 +115,17 @@ export default {
       stackedWidth: 500,
       stackedHeight: 250,
       data: null,
+      total: null,
       dataSubscription: null,
+      totalSubscription: null,
       nestedData: null,
       selectedVariable: "confirmed",
+      variableObj: {
+        label: "daily new cases",
+        ttip: "new cases",
+        value: "confirmed_numIncrease",
+        sources: ["NYT", "JHU"]
+      },
       variableOptions: [{
           label: "Cases",
           value: "confirmed"
@@ -175,6 +192,9 @@ export default {
       this.data = d;
       this.nestedData = d[this.selectedVariable];
     });
+    this.totalSubscription = getWorldDailyCases(this.$apiurl).subscribe(d => {
+      this.total = d;
+    });
 
     // Event listener for mobile responsiveness
     // $nextTick waits till DOM rendered
@@ -186,6 +206,7 @@ export default {
   },
   destroyed() {
     this.dataSubscription.unsubscribe();
+    this.totalSubscription.unsubscribe();
     window.removeEventListener("resize", this.setDims);
   }
 };
