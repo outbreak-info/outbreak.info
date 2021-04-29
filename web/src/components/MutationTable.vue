@@ -3,6 +3,11 @@
 <div class="d-flex flex-column w-100 align-items-center mt-3">
 
   <h5 class="">{{ tableTitle }}</h5>
+  <div>
+    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4">view more mutations</button>
+    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1" @click="changeSort">sort by {{ isLinearSorted ? "prevalence" : "position"}}</button>
+  </div>
+
   <svg :width="width" :height="height" class="characteristic_mutations" :name="title" ref="mut_bars_svg">
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="mut_bars"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="annotation"></g>
@@ -33,7 +38,7 @@ import {
   mapState
 } from "vuex";
 
-
+import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 import cloneDeep from "lodash/cloneDeep";
 
 import {
@@ -105,10 +110,15 @@ export default Vue.extend({
       // data
       plottedData: null,
       // forms
-      sortVar: "prevalence"
+      // interactions
+      isLinearSorted: false
     }
   },
   methods: {
+    changeSort() {
+      this.isLinearSorted = !this.isLinearSorted;
+      this.updatePlot();
+    },
     viewMore() {
       console.log("MORE")
     },
@@ -132,9 +142,22 @@ export default Vue.extend({
         this.drawPlot();
       }
     },
+    linearSorter(a, b) {
+      if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
+        return 0;
+      if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
+        return -1;
+      if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
+        return 0;
+      return (a.codon_num < b.codon_num ? -1 : 0);
+    },
     updateAxes() {
       this.plottedData = cloneDeep(this.data);
-      this.plottedData.sort((a, b) => a[this.sortVar] > b[this.sortVar] ? -1 : 1);
+      if (this.isLinearSorted) {
+        this.plottedData.sort(this.linearSorter)
+      } else {
+        this.plottedData.sort((a, b) => a.prevalence > b.prevalence ? -1 : 1);
+      }
 
       this.height = this.bandwidth * this.plottedData.length * (1 + this.paddingInner) + this.margin.top + this.margin.bottom;
 
@@ -276,13 +299,13 @@ export default Vue.extend({
             .attr("width", d => this.x(d.prevalence) - this.x(0))
             .attr("y", d => this.y(d.mutation));
 
-            update
-              .select(".hundred-percent")
-              .attr("height", this.y.bandwidth())
-              .transition(t1)
-              .attr("x", this.x(0))
-              .attr("y", d => this.y(d.mutation))
-              .attr("width", d => this.x(1) - this.x(0))
+          update
+            .select(".hundred-percent")
+            .attr("height", this.y.bandwidth())
+            .transition(t1)
+            .attr("x", this.x(0))
+            .attr("y", d => this.y(d.mutation))
+            .attr("width", d => this.x(1) - this.x(0))
 
           update.select(".gene-mutation")
             .style("fill", d => this.colorScale(d.gene))
