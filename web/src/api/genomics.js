@@ -1161,8 +1161,9 @@ export function getBasicComparisonReportData(apiurl) {
 }
 
 export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
-  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
+  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:p681r", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
   const mutationsOfConcern = ["s:e484k"];
+  console.log(mutationsOfInterest);
 
   if (lineages && lineages.length) {
     return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
@@ -1365,6 +1366,10 @@ export function getBadMutations(returnSimplified = false) {
     {
       mutation: "S:P681H",
       mutation_simplified: "P681H"
+    },
+    {
+      mutation: "S:P681R",
+      mutation_simplified: "P681R"
     },
     {
       mutation: "S:L18F",

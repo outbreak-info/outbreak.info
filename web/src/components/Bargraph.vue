@@ -23,7 +23,7 @@
       </g>
     </svg>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" style="left:0; bottom:0" class="epi-bargraph-arrows position-absolute" ref="svg_arrows">
-      <g class="switch-button-group" transform="translate(5,0)" ref="switch_btn" v-if="includeAxis">
+      <g class="switch-button-group" transform="translate(5,0)" ref="switch_btn" v-if="includeAxis && loggable">
         <rect class="switch-button-rect"></rect>
         <path class="swoopy-arrow" id="switch-btn-swoopy-arrow" marker-end="url(#arrow)"></path>
         <text class="switch-button" x="5"></text>
@@ -67,6 +67,10 @@ export default Vue.extend({
     includeAxis: {
       type: Boolean,
       default: false
+    },
+    loggable: {
+      type: Boolean,
+      default: true
     },
     includeTooltips: {
       type: Boolean,

@@ -309,6 +309,10 @@ export default {
         "mutation_str": "S:P681H",
         "r_formatted": "1.4%",
         "r_err": 0.0365
+      }, {
+        "mutation_str": "S:P681R",
+        "r_formatted": "1.4%",
+        "r_err": 0.0365
       }]
     })
   }
