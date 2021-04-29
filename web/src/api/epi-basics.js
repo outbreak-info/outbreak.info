@@ -15,15 +15,26 @@ import {
   nest,
   timeParse,
   timeFormat,
-  sum
+  sum,
+  scaleThreshold
 } from "d3";
 
 import {
+  schemeYlGnBu
+} from "d3-scale-chromatic";
+import {
   getSparklineTraces
 } from "@/api/epi-traces.js";
+
+import {
+  getLocationTable
+} from "@/api/genomics.js";
+
 import {
   getAll
 } from "@/api/biothings.js";
+
+import CURATED from "@/assets/genomics/curated_mutations.json";
 
 import store from "@/store";
 
@@ -247,7 +258,7 @@ export function getCasesAboveThresh(apiUrl, threshold) {
   );
 }
 
-export function getGlanceSummary(apiUrl, locations) {
+export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
   store.state.admin.loading = true;
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
@@ -265,12 +276,15 @@ export function getGlanceSummary(apiUrl, locations) {
   ).pipe(
     pluck("data", "hits"),
     mergeMap(summaryData =>
-      getSparklineTraces(
-        apiUrl,
-        summaryData.map(d => d.location_id),
-        "confirmed,dead,confirmed_numIncrease,dead_numIncrease,confirmed_rolling,dead_rolling"
-      ).pipe(
-        map(sparks => {
+      forkJoin([
+        getVOCs(genomicsUrl, summaryData.map(d => d.location_id), 25),
+        getSparklineTraces(
+          apiUrl,
+          summaryData.map(d => d.location_id),
+          "confirmed,dead,confirmed_numIncrease,dead_numIncrease,confirmed_rolling,dead_rolling"
+        )
+      ]).pipe(
+        map(([voc, sparks]) => {
           sparks.forEach(spark => {
             const idx = summaryData.findIndex(d => d.location_id === spark.key);
             if (idx > -1) {
@@ -278,18 +292,64 @@ export function getGlanceSummary(apiUrl, locations) {
             }
           });
 
+          voc.forEach(variant => {
+            if (variant) {
+              const idx = summaryData.findIndex(d => d.location_id === variant[0].id);
+              if (idx > -1) {
+                summaryData[idx]["voc"] = variant;
+              }
+            }
+          })
+
           summaryData.forEach(d => {
             d["date"] = formatDate(parseDate(d["date"]));
           });
+
           return summaryData;
         })
       )
     ),
     catchError(e => {
-      console.log("%c Error in getting highest case counts!", "color: red");
+      console.log("%c Error in getting glance summary!", "color: red");
       console.log(e);
       return from([]);
     }),
     finalize(() => (store.state.admin.loading = false))
+  );
+}
+
+export function getVOCs(genomicsUrl, locations, totalThreshold) {
+  const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest") && d.reportType == "lineage").map(d => {
+    // const mutations = CURATED.filter(d => d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest").map(d => {
+    return ({
+      label: d.mutation_name,
+      type: d.variantType == "Variant of Concern" ? "VOC" : d.variantType == "Variant of Interest" ? "VOI" : null,
+      query: `pangolin_lineage=${d.mutation_name}`
+    })
+  });
+
+  return forkJoin(...locations.map(loc => getLocationTable(genomicsUrl, loc, mutations, totalThreshold))).pipe(
+    map(results => {
+      const flattened = results.flatMap(d => d).map(d => d.values);
+      const whiteThreshold = 0.35;
+      const colorScale = scaleThreshold(schemeYlGnBu[9])
+        .domain([0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75]);
+
+      const cleaned = flattened.map(location => {
+        if (location.every(d => !d.global_prevalence)) {
+          // no location map for sequencing
+          return (null)
+        } else {
+          location.forEach(d => {
+            d["fill"] = colorScale(d.global_prevalence);
+            d["proportion_formatted"] = d.proportion_formatted == "not detected" ? "none" : d.proportion_formatted;
+            d["color"] = d.global_prevalence > whiteThreshold ? "#FFFFFF" : "#2c3e50";
+          })
+          return (location)
+        }
+      })
+
+      return cleaned;
+    })
   );
 }

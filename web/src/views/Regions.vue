@@ -1,9 +1,27 @@
 <template>
 <div class="home flex-column text-left d-flex">
   <div v-if="loading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
+    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
   </div>
+  <section id="world_total" v-if="total" class="container my-5">
+    <div class="row">
+      <!-- EPI CURVE SUMMARIES -->
 
+      <div class="col-sm-12 d-flex flex-column">
+        <h3>
+          Daily worldwide COVID-19
+          <select v-model="variableObj" class="select-dropdown">
+            <option v-for="option in totalOptions" :value="option" :key="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </h3>
+        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false"
+          :animate="true" id="world-cases" color="#888380" />
+        <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="1" :data="total.total" v-if="total" />
+      </div>
+    </div>
+  </section>
 
   <!-- EPI EXAMPLES -->
   <section id="regional data" class="container my-5">
@@ -61,6 +79,30 @@
     </div>
   </section>
 
+  <section v-if="total" class="container my-5" id="world-daily-small-multiples">
+    <div class="row">
+      <!-- EPI CURVE SUMMARIES -->
+
+      <div class="col-sm-12 d-flex flex-column">
+        <h3>
+          Daily COVID-19
+          <select v-model="variableObj" class="select-dropdown">
+            <option v-for="option in totalOptions" :value="option" :key="option.value">
+              {{ option.label }}
+            </option>
+          </select> by World Bank Region
+        </h3>
+        <div class="d-flex flex-wrap justify-content-between">
+
+        <Bargraph v-for="(regionData, idx) in total.regional" :key="idx" :data="regionData.value" :title="regionData.key" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth/3" :height="stackedHeight/2"
+          :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" :id="'region'+idx" :color="regionColorScale(regionData.key)" />
+
+        </div>
+        <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="total.regional.length" :data="total.regional" v-if="total" />
+      </div>
+    </div>
+  </section>
+
 </div>
 </template>
 
@@ -70,9 +112,14 @@
 import EpiStacked from "@/components/EpiStacked.vue";
 import CountryBarGraph from "@/components/CountryBarGraph.vue";
 import DataSource from "@/components/DataSource.vue";
+import Bargraph from "@/components/Bargraph.vue";
 import {
   getStackedRegions
 } from "@/api/region-summary.js";
+
+import {
+  getWorldDailyCases
+} from "@/api/epi-traces.js";
 
 import {
   mapState
@@ -97,6 +144,7 @@ export default {
   name: "Regions",
   components: {
     EpiStacked,
+    Bargraph,
     CountryBarGraph,
     DataSource,
     FontAwesomeIcon
@@ -106,9 +154,28 @@ export default {
       stackedWidth: 500,
       stackedHeight: 250,
       data: null,
+      total: null,
       dataSubscription: null,
+      totalSubscription: null,
       nestedData: null,
       selectedVariable: "confirmed",
+      variableObj: {
+        label: "cases",
+        ttip: "new cases",
+        value: "confirmed_numIncrease",
+        sources: ["NYT", "JHU"]
+      },
+      totalOptions: [{
+        label: "cases",
+        ttip: "new cases",
+        value: "confirmed_numIncrease",
+        sources: ["NYT", "JHU"]
+      }, {
+        label: "deaths",
+        ttip: "new deaths",
+        value: "dead_numIncrease",
+        sources: ["NYT", "JHU"]
+      }],
       variableOptions: [{
           label: "Cases",
           value: "confirmed"
@@ -175,6 +242,9 @@ export default {
       this.data = d;
       this.nestedData = d[this.selectedVariable];
     });
+    this.totalSubscription = getWorldDailyCases(this.$apiurl).subscribe(d => {
+      this.total = d;
+    });
 
     // Event listener for mobile responsiveness
     // $nextTick waits till DOM rendered
@@ -186,6 +256,7 @@ export default {
   },
   destroyed() {
     this.dataSubscription.unsubscribe();
+    this.totalSubscription.unsubscribe();
     window.removeEventListener("resize", this.setDims);
   }
 };

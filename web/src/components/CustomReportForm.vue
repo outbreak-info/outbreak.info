@@ -4,11 +4,9 @@
 
   <div>
     <div class="d-flex align-items-center my-4 w-100">
-      <div class="d-flex align-items-center circle-header" v-if="formValid">
-        <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{ submitLabel }}</div>
-      </div>
       <div>
-        <button :disabled="!formValid" type="submit" class="btn btn-accent"  @click="submitQuery">Create report</button>
+        <button type="submit" class="btn btn-outline-secondary mx-5"  @click="clearQuery">Clear selection</button>
+        <button :disabled="!formValid" type="submit" class="btn btn-accent"  @click="submitQuery">Go</button>
       </div>
 
     </div>
@@ -39,6 +37,10 @@ export default Vue.extend({
     }
   },
   methods: {
+    clearQuery() {
+      // forces the form to clear
+      this.submitCount += 1;
+    },
     submitQuery() {
       this.$emit("exit", true);
 

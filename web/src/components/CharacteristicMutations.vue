@@ -1,7 +1,10 @@
 <template>
 <div>
   <h4 class="mb-0">{{ definitionLabel }}</h4>
-  <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+  <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
+    <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+    <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
+  </div>
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
@@ -107,8 +110,7 @@ export default {
     let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
 
     this.colorScale = scaleOrdinal(this.colorDomain)
-      .domain(geneNames);
-    console.log(this.colorScale)
+    .domain(geneNames);
   }
 }
 </script>

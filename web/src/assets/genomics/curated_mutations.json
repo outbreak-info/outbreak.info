@@ -200,6 +200,19 @@
     }
   },
   {
+    "mutation_name": "B.1.617.1",
+    "pangolin_lineage": "B.1.617.1",
+    "searchTerms": ["B.1.617.1", "B16171"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "location_first_identified": "India",
+    "reportQuery": {
+      "pango": "B.1.617.1",
+      "loc": ["IND", "GBR", "USA"],
+      "selected": "IND"
+    }
+  },
+  {
     "mutation_name": "B.1.429",
     "pangolin_lineage": "B.1.429",
     "mutation_synonyms": ["CA VUI1", "CAL.20C"],

@@ -49,9 +49,11 @@
             </button>
           </div>
           <div class="modal-body">
-            <div class="mx-4 border-bottom pb-3" v-if="customMutations.length">
+            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" :formCount.sync="formCount" />
+
+            <div class="mx-4 border-top pt-3" v-if="customMutations.length">
               <h6 class="font-weight-bold text-muted">
-                Current additions:
+                Already selected:
               </h6>
               <div class="d-flex flex-wrap">
                 <button role="button" class="btn chip bg-main__darker text-light d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in customMutations" :key="mIdx" @click="deleteMutation(mIdx)">
@@ -60,12 +62,12 @@
                 </button>
               </div>
             </div>
-
-            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" />
           </div>
 
           <div class="modal-footer border-secondary">
-            <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Create report</button>
+            <button type="button" class="btn btn-outline-secondary" @click="clearMutations">Clear selections</button>
+            <button type="button" class="btn btn-sec-outline" @click="addMutations">Add another lineage/mutation</button>
+            <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Go</button>
 
           </div>
         </div>
@@ -198,49 +200,50 @@
 
             <template v-else>
               <section id="most-recent-lineages" :class="{'flex-shrink-0': !mediumScreen}" v-if="mostRecentLineages">
-                <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
+                <h5 class="mb-0">Common lineages</h5>
+                <small class="text-muted">Prevalence over last {{recentWindow}} days</small>
                 <div class="d-flex align-items-start" :class="{'flex-wrap' : mediumScreen}">
                   <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
-
-                  <!-- HEATMAP + LEGEND -->
-                  <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
-                    <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
-                    <div class="d-flex flex-wrap justify-content-between">
-                      <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-                      <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
-                    </div>
-
-                    <div class="d-flex flex-column align-items-center bg-dark">
-
-                      <!-- HEATMAP LEGEND -->
-                      <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
-                        <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
-                        <div class="d-flex align-items-center">
-                          <svg width="24" height="24">
-                            <defs>
-                              <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                                <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
-                              </pattern>
-                            </defs>
-                            <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
-                          </svg>
-                          <small class="text-light ml-2">not detected</small>
-                        </div>
-                        <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
-                          Variant / Mutation of Concern
-                        </span>
-                        <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
-                          Variant / Mutation of Interest
-                        </span>
-                      </div>
-                      <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
-                    </div>
-                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
-                  </div>
                 </div>
               </section>
             </template>
           </div>
+        </div>
+
+        <!-- HEATMAP + LEGEND -->
+        <div class="d-flex flex-column align-items-center mt-3" v-if="recentHeatmap && recentHeatmap.length">
+          <h5 class="m-0">Characteristic S-gene mutations in common lineages over the last {{recentWindow}} days</h5>
+          <div class="d-flex flex-wrap justify-content-between">
+            <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+            <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
+          </div>
+
+          <div class="d-flex flex-column align-items-center bg-dark">
+
+            <!-- HEATMAP LEGEND -->
+            <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
+              <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+              <div class="d-flex align-items-center">
+                <svg width="24" height="24">
+                  <defs>
+                    <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                      <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
+                    </pattern>
+                  </defs>
+                  <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
+                </svg>
+                <small class="text-light ml-2">not detected</small>
+              </div>
+              <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+                Variant / Mutation of Concern
+              </span>
+              <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
+                Variant / Mutation of Interest
+              </span>
+            </div>
+            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+          </div>
+          <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
         </div>
 
         <!-- TRACKED LINEAGES TABLE -->
@@ -731,20 +734,33 @@ export default {
     deleteMutation(idx) {
       this.customMutations.splice(idx, 1);
     },
+    addMutations() {
+      console.log("ADDING")
+      console.log(this.customMutations)
+      this.customMutations.push(this.newPango);
+      this.newPango = null;
+      this.newMuts = [];
+      this.newVariants = [];
+    },
+    clearMutations() {
+      this.newPango = null;
+      this.newMuts = [];
+      this.newVariants = [];
+      this.customMutations = [];
+    },
     submitNewMutations() {
-      let selected = this.selected ? this.selected : [];
+      if(this.newPango) {
+        this.customMutations.push(this.newPango);
+      }
+      let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
 
-      let pango = this.newPango.map(d => d.route);
-      selected = selected.concat(pango);
-      pango = pango.concat(this.customMutations.filter(d => d.type == "pango").map(d => d.qParam));
+      console.log(pango)
+      const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
+      const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
-      let mutation = this.newMuts.map(d => d.route);
-      selected = selected.concat(mutation);
-      mutation = mutation.concat(this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam));
-
-      let variant = this.newVariants.map(d => d.route);
-      selected = selected.concat(variant);
-      variant = variant.concat(this.customMutations.filter(d => d.type == "variant").map(d => d.qParam));
+      // clear new additions
+      this.newPango = null;
+      this.formCount += 1;
 
       this.$router.push({
         name: "LocationReport",
@@ -753,12 +769,10 @@ export default {
           pango: uniq(pango),
           variant: uniq(variant),
           muts: uniq(mutation),
-          selected: uniq(selected)
+          // selected: uniq(selected)
         }
       })
-      this.newPango = [];
-      this.newMuts = [];
-      this.newVariants = [];
+
     },
     updateWindow() {
       this.setupReport();
@@ -811,11 +825,12 @@ export default {
       newLocation: null,
       // update mutations
       newMuts: [],
-      newPango: [],
+      newPango: null,
       newVariants: [],
       customMutations: [],
+      formCount: 0,
       // data
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
+      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
       moc: ["E484K"],
       voi: null,
       voc: null,

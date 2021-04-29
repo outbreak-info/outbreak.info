@@ -2,7 +2,7 @@
 <div class="my-5 mx-4">
   <div class="d-flex justify-content-center align-items-top" id="resource-overview">
     <div class="ml-3 text-left">
-      <h2 class="">Finding resources is hard</h2>
+      <h2 class="">Finding research is hard</h2>
       <p>
         During the COVID-19 epidemic, researchers from around the world have not only been working around the clock to better understand the disease and the virus that causes it, but they are also sharing this knowledge at an unprecedented speed.
         This
@@ -56,7 +56,7 @@
         </div>
 
         <router-link :to="{name: 'Resources'}" class="btn btn-main-outline router-link no-underline mt-2 mb-5">
-          View all resources
+          View entire library
         </router-link>
       </div>
 

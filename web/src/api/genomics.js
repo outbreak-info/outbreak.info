@@ -53,6 +53,7 @@ function titleCase(value) {
   }
 }
 
+
 export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
   if (mutationObj.reportType == "mutation") {
     mutationObj["mutations"] = mutationObj.additionalMutations;
@@ -1100,7 +1101,7 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   }
 }
 
-export function getSequenceCount(apiurl, location = null, cumulative = true) {
+export function getSequenceCount(apiurl, location = null, cumulative = true, rounded = false) {
   let url = `${apiurl}sequence-count`;
   if (cumulative && location) {
     url += `?location_id=${location}&cumulative=true`;
@@ -1117,6 +1118,9 @@ export function getSequenceCount(apiurl, location = null, cumulative = true) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      if(rounded) {
+        return(Math.floor(results.total_count/1e5) / 10)
+      }
       if (cumulative) {
         return (results.total_count.toLocaleString())
       } else {
@@ -1157,7 +1161,7 @@ export function getBasicComparisonReportData(apiurl) {
 }
 
 export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
-  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
+  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:p681r", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
   const mutationsOfConcern = ["s:e484k"];
 
   if (lineages && lineages.length) {
@@ -1361,6 +1365,10 @@ export function getBadMutations(returnSimplified = false) {
     {
       mutation: "S:P681H",
       mutation_simplified: "P681H"
+    },
+    {
+      mutation: "S:P681R",
+      mutation_simplified: "P681R"
     },
     {
       mutation: "S:L18F",

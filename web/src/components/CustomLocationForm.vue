@@ -21,46 +21,46 @@
 
   <div class="my-5" v-if="includeMutations">
     <template v-if="includeLocation">
-    <h3>Add lineages & mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
-    <h6 class="text-muted">Optional: specify lineages and mutations to track in addition to the Variants of Concern and Interest we're tracking</h6>
-    <b class="text-muted m-0 p-0" v-if="curated">
-      Default:
-    </b>
-    <div v-for="(type, tIdx) in curated" :key="tIdx" class="d-flex mb-3 align-items-center">
-      <div class="mr-3">
-        <small :class="{ 'VOC': type.key == 'Variant of Concern', 'MOC': type.key == 'Mutation of Concern', 'MOI': type.key == 'Mutation of Interest', 'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
+      <h3>Add lineages &amp; mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
+      <h6 class="text-muted">Optional: specify lineages and mutations to track in addition to the Variants of Concern and Interest we're tracking</h6>
+      <b class="text-muted m-0 p-0" v-if="curated">
+        Default:
+      </b>
+      <div v-for="(type, tIdx) in curated" :key="tIdx" class="d-flex mb-3 align-items-center">
+        <div class="mr-3">
+          <small :class="{ 'VOC': type.key == 'Variant of Concern', 'MOC': type.key == 'Mutation of Concern', 'MOI': type.key == 'Mutation of Interest', 'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
+        </div>
+
+        <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip bg-white text-muted btn-outline-secondary-no-hover">{{variant}}</button>
       </div>
-
-      <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip bg-white text-muted btn-outline-secondary-no-hover">{{variant}}</button>
-    </div>
-  </template>
-
-    <b class="text-muted m-0 p-0">
-      Custom additions:
-    </b>
-    <div class="d-flex flex-wrap align-items-center mb-3">
-      <button v-for="(lineage, lIdx) in pango" :key="'pango'+lIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(lIdx, pango)">
-        {{ lineage.label }}
-        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-      </button>
-      <button v-for="(variant, vIdx) in variant" :key="'variant' + vIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(vIdx, variant)">
-        {{ variant.label }}
-        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-      </button>
-      <button v-for="(mutation, mIdx) in muts" :key="'mutation' + mIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(mIdx, muts)">
-        {{ mutation.label }}
-        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-      </button>
-    </div>
+    </template>
 
     <div>
-      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="formCount" :submitLabel.sync="submitLabel" />
-        <div class="d-flex align-items-center my-4 w-100">
-          <div class="d-flex align-items-center circle-header" v-if="formValid">
-            <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{ submitLabel }}</div>
-          </div>
-          <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="addVariant">Add {{ title }}</button>
-        </div>
+      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="submitCount" :submitLabel.sync="submitLabel" />
+
+      <b class="text-muted m-0 p-0" v-if="pango || variant.length || muts.length">
+        New lineages / mutations:
+      </b>
+      <div class="d-flex flex-wrap align-items-center mb-3">
+        <button class="btn chip bg-main text-light pl-3" @click="deleteVariant(pango)" v-if="pango">
+          {{ pango.label }}
+          <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+        </button>
+        <button v-for="(variant, vIdx) in variant" :key="'variant' + vIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(vIdx, variant)">
+          {{ variant.label }}
+          <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+        </button>
+        <button v-for="(mutation, mIdx) in muts" :key="'mutation' + mIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(mIdx, muts)">
+          {{ mutation.label }}
+          <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+        </button>
+      </div>
+
+      <!-- <div class="d-flex align-items-center my-4 w-100">
+        <button type="submit" class="btn btn-outline-secondary" :class="{'btn-lg': !minimalistic }" @click="clearSelection">Clear selection</button>
+        <button :disabled="!formValid" type="submit" class="btn btn-sec-outline" :class="{'btn-lg': !minimalistic }" @click="addVariant">Add another lineage/mutation</button>
+        <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Go</button>
+      </div> -->
 
     </div>
 
@@ -124,8 +124,15 @@ export default {
       default: () => []
     },
     pango: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => null
+    },
+    // formCount: Number
+  },
+  watch: {
+    selectedLineage() {
+      console.log(this.selectedLineage)
+      this.addVariant();
     }
   },
   computed: {
@@ -148,10 +155,13 @@ export default {
           route: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`
         })
       } else if (this.selectedLineage) {
-        this.pango.push({
+
+        const newPango = {
           label: `${this.selectedLineage} lineage`,
-          route: this.selectedLineage
-        })
+          qParam: this.selectedLineage,
+          type: "pango"
+        };
+        this.$emit("update:pango", newPango);
       } else if (this.selectedMutations.length) {
         this.muts.push({
           label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
@@ -159,7 +169,6 @@ export default {
         })
       }
 
-      this.formCount += 1;
       this.selectedLineage = null;
       this.selectedMutations = [];
     },
@@ -189,8 +198,8 @@ export default {
       location: null,
       selectedLineage: null,
       selectedMutations: [],
-      formCount: 0,
-      submitLabel: null
+      submitLabel: null,
+      submitCount: 0
     }
   },
   mounted() {

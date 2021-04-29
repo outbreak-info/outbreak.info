@@ -63,7 +63,7 @@
         <div>
           <h5 class="at-a-glance-header m-0">At a glance</h5>
           <p class="ml-3 mb-0">
-            View the three locations with the largest increase in cases in the
+            View the three locations with the largest increase in COVID-19 cases in the
             past day, or select your own locations
           </p>
           <button
@@ -141,7 +141,7 @@ export default Vue.extend({
       Vue.$cookies.set("custom_locations", this.glanceLocations);
       if (this.glanceLocations.length > 0) {
         this.updatedSubscription = getGlanceSummary(
-          this.$apiurl,
+          this.$apiurl, this.$genomicsurl,
           this.glanceLocations
         ).subscribe(d => {
           this.glanceSummaries = this.sortSummaries(d);
@@ -154,7 +154,7 @@ export default Vue.extend({
       this.glanceLocations = this.glanceLocations.concat(location_id);
       Vue.$cookies.set("custom_locations", this.glanceLocations);
       this.updatedSubscription = getGlanceSummary(
-        this.$apiurl,
+        this.$apiurl, this.$genomicsurl,
         this.glanceLocations
       ).subscribe(d => {
         this.glanceSummaries = this.sortSummaries(d);
@@ -188,7 +188,7 @@ export default Vue.extend({
     this.glanceLocations = locations ? locations.split(",") : [];
 
     this.dataSubscription = getGlanceSummary(
-      this.$apiurl,
+      this.$apiurl, this.$genomicsurl,
       this.glanceLocations
     ).subscribe(d => {
       this.glanceSummaries = this.sortSummaries(d);
