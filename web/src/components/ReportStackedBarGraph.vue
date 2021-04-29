@@ -302,10 +302,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.hover-underline:hover {
-    text-decoration: underline;
-}
-
 .report-stacked-bar {
     .axis--y text {
         font-size: 14pt;
