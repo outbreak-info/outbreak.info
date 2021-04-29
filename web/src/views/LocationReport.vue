@@ -748,27 +748,19 @@ export default {
       this.newVariants = [];
       this.customMutations = [];
     },
-    commitNewMutations() {
-      console.log(this.newPango)
-      let selected = this.selected ? this.selected : [];
-
-      let pango = this.newPango.route;
-      selected = selected.concat(pango);
-      pango = pango.concat(this.customMutations.filter(d => d.type == "pango").map(d => d.qParam));
-
-      let mutation = this.newMuts.map(d => d.route);
-      selected = selected.concat(mutation);
-      mutation = mutation.concat(this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam));
-
-      let variant = this.newVariants.map(d => d.route);
-      selected = selected.concat(variant);
-      variant = variant.concat(this.customMutations.filter(d => d.type == "variant").map(d => d.qParam));
-      this.newPango = null;
-      this.newMuts = [];
-      this.newVariants = [];
-    },
     submitNewMutations() {
-      this.commitNewMutations();
+      if(this.newPango) {
+        this.customMutations.push(this.newPango);
+      }
+      let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
+
+      console.log(pango)
+      const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
+      const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
+
+      // clear new additions
+      this.newPango = null;
+      this.formCount += 1;
 
       this.$router.push({
         name: "LocationReport",

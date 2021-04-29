@@ -36,7 +36,7 @@
     </template>
 
     <div>
-      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="formCount" :submitLabel.sync="submitLabel" />
+      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="submitCount" :submitLabel.sync="submitLabel" />
 
       <b class="text-muted m-0 p-0" v-if="pango || variant.length || muts.length">
         New lineages / mutations:
@@ -124,10 +124,10 @@ export default {
       default: () => []
     },
     pango: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => null
     },
-    formCount: Number
+    // formCount: Number
   },
   watch: {
     selectedLineage() {
@@ -159,13 +159,9 @@ export default {
         const newPango = {
           label: `${this.selectedLineage} lineage`,
           qParam: this.selectedLineage,
-          type: "lineage"
+          type: "pango"
         };
         this.$emit("update:pango", newPango);
-        // this.pango.push({
-        //   label: `${this.selectedLineage} lineage`,
-        //   route: this.selectedLineage
-        // })
       } else if (this.selectedMutations.length) {
         this.muts.push({
           label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
@@ -173,7 +169,6 @@ export default {
         })
       }
 
-      this.formCount += 1;
       this.selectedLineage = null;
       this.selectedMutations = [];
     },
@@ -203,7 +198,8 @@ export default {
       location: null,
       selectedLineage: null,
       selectedMutations: [],
-      submitLabel: null
+      submitLabel: null,
+      submitCount: 0
     }
   },
   mounted() {

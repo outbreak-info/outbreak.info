@@ -44,6 +44,7 @@ export default {
   },
   watch: {
     selectedValue() {
+      console.log(this.selectedValue)
       this.selected = this.selectedValue ? typeof(this.selectedValue) == "string" ? this.selectedValue : this.selectedValue[this.labelVariable] : null;
     }
   },
