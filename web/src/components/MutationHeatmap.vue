@@ -293,21 +293,55 @@ export default Vue.extend({
     },
     highlightRow(d) {
       this.svg
+        .selectAll(".y-axis-right")
+        .style("opacity", 0.2);
+
+      select(this.$refs.yAxisLeft)
+        .selectAll("text")
+        .style("opacity", 0.2);
+
+      this.svg
         .selectAll("rect")
         .style("fill-opacity", 0.2);
 
       this.svg.selectAll(`.${d.replace(/\./g, "_")}`)
         .style("fill-opacity", 1)
+        .style("opacity", 1)
     },
     highlightColumn(d) {
+      select(this.$refs.xAxisBottom)
+        .selectAll("text")
+        .style("opacity", 0.2);
+
+      select(this.$refs.xAxisTop)
+        .selectAll("text")
+        .style("opacity", 0.2);
+
       this.svg
         .selectAll("rect")
         .style("fill-opacity", 0.2);
 
       this.svg.selectAll(`.${d.replace(/\//g, "_")}`)
         .style("fill-opacity", 1)
+        .style("opacity", 1)
     },
     highlightOff(d) {
+      select(this.$refs.xAxisBottom)
+        .selectAll("text")
+        .style("opacity", 1);
+
+      select(this.$refs.xAxisTop)
+        .selectAll("text")
+        .style("opacity", 1);
+
+      select(this.$refs.yAxisLeft)
+        .selectAll("text")
+        .style("opacity", 1);
+
+      this.svg
+        .selectAll(".y-axis-right")
+        .style("opacity", 1);
+
       this.svg
         .selectAll("rect")
         .style("fill-opacity", 1);
@@ -404,7 +438,7 @@ export default Vue.extend({
         },
         update => {
           update.attr("id", d => d.id)
-          .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\./g, "_")}`)
+            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\./g, "_")}`)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
@@ -431,12 +465,14 @@ export default Vue.extend({
 
       yAxisRightSelector.join(enter => {
           const grp = enter.append("text")
-            .attr("class", "y-axis-right")
+            .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
             .attr("x", this.width)
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
             .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("fill", "#efefef")
-            .style("dominant-baseline", "central");
+            .style("dominant-baseline", "central")
+            .on("mouseover", d => this.highlightRow(d.key))
+            .on("mouseout", this.highlightOff);
 
           grp.append("tspan")
             .attr("class", "y-axis-lineage")
@@ -446,9 +482,7 @@ export default Vue.extend({
             .style("font-size", 18)
             .attr("dx", 10)
             .text(d => d.key)
-            .on("click", d => this.route2Lineage(d.key))
-            .on("mouseover", d => this.highlightRow(d.key))
-            .on("mouseout", this.highlightOff);
+            .on("click", d => this.route2Lineage(d.key));
 
           grp.append("tspan")
             .attr("class", "y-axis-count")
@@ -462,6 +496,7 @@ export default Vue.extend({
         },
         update => {
           update
+            .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
             .attr("x", this.width)
             .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
 
@@ -496,8 +531,7 @@ export default Vue.extend({
         .attr("transform", "rotate(-35)")
         .style("text-anchor", "start")
         .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
-        .classed("hover-underline", "true")
-        .classed("pointer", "true")
+        .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
         .on("mouseout", this.highlightOff);
@@ -510,8 +544,7 @@ export default Vue.extend({
         .attr("transform", "rotate(35)")
         .style("text-anchor", "start")
         .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
-        .classed("hover-underline", "true")
-        .classed("pointer", "true")
+        .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
         .on("mouseout", this.highlightOff);;
@@ -519,8 +552,7 @@ export default Vue.extend({
       select(this.$refs.yAxisLeft)
         .selectAll("text")
         .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
-        .classed("hover-underline", "true")
-        .classed("pointer", "true")
+        .attr("class", d => `hover-underline pointer ${d.replace(/\./g, "_")}`)
         .on("click", d => this.route2Lineage(d))
         .on("mouseover", d => this.highlightRow(d))
         .on("mouseout", this.highlightOff);
