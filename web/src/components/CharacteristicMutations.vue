@@ -14,27 +14,16 @@
     <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" />
   </div>
 
-
-    <div class="collapse ml-2" id="mutation-table">
+  <div class="ml-2" id="mutation-table">
     <div class="row">
       <div class="col" v-if="lineageName">
-        <MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
+        <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`" v-if="colorScale" />
       </div>
       <div class="col" v-if="additionalMutations.length > 0">
-        <MutationTable :mutations="additionalMutations" tableTitle="Additional Mutations" />
+        <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" />
       </div>
     </div>
   </div>
-  <!-- <div class="ml-2" id="mutation-table"> -->
-  <!--   <div class="row"> -->
-  <!--     <div class="col" v-if="lineageName"> -->
-  <!--       <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`"  v-if="colorScale" /> -->
-  <!--     </div> -->
-  <!--     <div class="col" v-if="additionalMutations.length > 0"> -->
-  <!--       <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" /> -->
-  <!--     </div> -->
-  <!--   </div> -->
-  <!-- </div> -->
 </div>
 </template>
 
@@ -55,7 +44,9 @@ import MutationTable from "@/components/MutationTable.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 
-import { getBadMutations } from "@/api/genomics.js";
+import {
+  getBadMutations
+} from "@/api/genomics.js";
 
 export default {
   name: "CharacteristicMutations",
@@ -83,22 +74,21 @@ export default {
       colorScale: null,
       moi: null,
       moc: null,
-      colorDomain:
-        ["#bab0ab", // lt grey -- UTRs
-          "#1f77b4", // dk blue
-          "#aec7e8", // lt blue
-          "#f28e2c", // orange
-          "#e15759", // red
-          "#9edae5", // teal
-          "#59a14f", // green
-          "#edc949", // yellow
-          "#9467bd", // purple
-          "#ff9da7", // pink
-          "#8c564b", // brown
-          "#555555", // grey
-          "#bcbd22", // puce
-          "#bab0ab"
-        ]
+      colorDomain: ["#bab0ab", // lt grey -- UTRs
+        "#1f77b4", // dk blue
+        "#aec7e8", // lt blue
+        "#f28e2c", // orange
+        "#e15759", // red
+        "#9edae5", // teal
+        "#59a14f", // green
+        "#edc949", // yellow
+        "#9467bd", // purple
+        "#ff9da7", // pink
+        "#8c564b", // brown
+        "#555555", // grey
+        "#bcbd22", // puce
+        "#bab0ab"
+      ]
     })
   },
   mounted() {
@@ -117,7 +107,7 @@ export default {
     let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
 
     this.colorScale = scaleOrdinal(this.colorDomain)
-    .domain(geneNames);
+      .domain(geneNames);
     console.log(this.colorScale)
   }
 }
