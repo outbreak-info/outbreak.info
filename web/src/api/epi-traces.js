@@ -90,11 +90,22 @@ export function getWorldDailyCases(apiUrl, fields = "wb_region,confirmed_numIncr
       results.sort((a, b) => a.date - b.date);
       nested.sort((a, b) => a.date - b.date);
 
-      const regions = nest()
+      let regions = nest()
       .key(d => d.wb_region)
       .rollup(values => values)
-      .entries(results)
-      console.log(regions)
+      .entries(results);
+
+      const regionalTotal = regions.map(region => {
+        const total = sum(region.value, d => d.confirmed_numIncrease);
+        return({
+          key: region.key,
+          total: total
+        })
+      });
+
+      const regionOrder = regionalTotal.sort((a,b) => b.total - a.total).map(d => d.key);
+
+      regions.sort((a,b) => regionOrder.indexOf(a.key) - regionOrder.indexOf(b.key));
 
       return ({
         total: nested,
