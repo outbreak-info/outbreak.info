@@ -14,7 +14,8 @@ import {
 import {
   nest,
   timeParse,
-  format, sum
+  format,
+  sum
 } from "d3";
 
 import {
@@ -48,7 +49,7 @@ export function getEpiData(apiUrl, locations, adminLevels, sort, page, size) {
   );
 }
 
-export function getWorldDailyCases(apiUrl, fields="confirmed_numIncrease, confirmed_rolling, date, dead_numIncrease, dead_rolling") {
+export function getWorldDailyCases(apiUrl, fields = "wb_region,confirmed_numIncrease, confirmed_rolling, date, dead_numIncrease, dead_rolling") {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
 
@@ -59,30 +60,46 @@ export function getWorldDailyCases(apiUrl, fields="confirmed_numIncrease, confir
     // pluck("data"),
     map(results => {
 
+
       let nested = nest()
-      .key(d => d.date)
-      .rollup(values => {
-        return({
-          confirmed_numIncrease: sum(values, d => d.confirmed_numIncrease),
-          dead_numIncrease: sum(values, d => d.dead_numIncrease),
-          confirmed_rolling: sum(values, d => d.confirmed_rolling),
-          dead_rolling: sum(values, d => d.dead_rolling)
+        .key(d => d.date)
+        .rollup(values => {
+          return ({
+            confirmed_numIncrease: sum(values, d => d.confirmed_numIncrease),
+            dead_numIncrease: sum(values, d => d.dead_numIncrease),
+            confirmed_rolling: sum(values, d => d.confirmed_rolling),
+            dead_rolling: sum(values, d => d.dead_rolling)
+          })
         })
+        .entries(results)
+        .map(d => {
+          return ({
+            date: parseDate(d.key),
+            confirmed_numIncrease: d.value.confirmed_numIncrease,
+            confirmed_rolling: d.value.confirmed_rolling,
+            dead_numIncrease: d.value.dead_numIncrease,
+            dead_rolling: d.value.dead_rolling
+          })
+        })
+
+
+      results.forEach(d => {
+        d["date"] = parseDate(d.date)
       })
+
+      results.sort((a, b) => a.date - b.date);
+      nested.sort((a, b) => a.date - b.date);
+
+      const regions = nest()
+      .key(d => d.wb_region)
+      .rollup(values => values)
       .entries(results)
-      .map(d => {
-        return({
-          date: parseDate(d.key),
-          confirmed_numIncrease: d.value.confirmed_numIncrease,
-          confirmed_rolling: d.value.confirmed_rolling,
-          dead_numIncrease: d.value.dead_numIncrease,
-          dead_rolling: d.value.dead_rolling
-        })
+      console.log(regions)
+
+      return ({
+        total: nested,
+        regional: regions
       })
-
-      nested.sort((a,b) => a.date - b.date);
-
-      return(nested)
     })
   )
 }

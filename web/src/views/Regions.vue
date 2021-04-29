@@ -8,18 +8,18 @@
       <!-- EPI CURVE SUMMARIES -->
 
       <div class="col-sm-12 d-flex flex-column">
-    <h3>
-      Daily worldwide COVID-19
-      <select v-model="variableObj" class="select-dropdown">
-        <option v-for="option in totalOptions" :value="option" :key="option.value">
-          {{ option.label }}
-        </option>
-      </select>
-    </h3>
-    <Bargraph :data="total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="800" :height="400" :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" id="world-cases"
-      color="#888380" />
-      <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" numSvgs="1" :data="total" v-if="total" />
-    </div>
+        <h3>
+          Daily worldwide COVID-19
+          <select v-model="variableObj" class="select-dropdown">
+            <option v-for="option in totalOptions" :value="option" :key="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </h3>
+        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false"
+          :animate="true" id="world-cases" color="#888380" />
+        <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="1" :data="total.total" v-if="total" />
+      </div>
     </div>
   </section>
 
@@ -76,6 +76,30 @@
       </div>
 
 
+    </div>
+  </section>
+
+  <section v-if="total" class="container my-5" id="world-daily-small-multiples">
+    <div class="row">
+      <!-- EPI CURVE SUMMARIES -->
+
+      <div class="col-sm-12 d-flex flex-column">
+        <h3>
+          Daily COVID-19
+          <select v-model="variableObj" class="select-dropdown">
+            <option v-for="option in totalOptions" :value="option" :key="option.value">
+              {{ option.label }}
+            </option> by World Bank Region
+          </select>
+        </h3>
+        <div class="d-flex flex-wrap justify-content-between">
+
+        <Bargraph v-for="(regionData, idx) in total.regional" :key="idx" :data="regionData.value" :title="regionData.key" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth/3" :height="stackedHeight/2"
+          :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" :id="'region'+idx" :color="regionColorScale(regionData.key)" />
+
+        </div>
+        <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="total.regional.length" :data="total.regional" v-if="total" />
+      </div>
     </div>
   </section>
 
@@ -146,7 +170,7 @@ export default {
         ttip: "new cases",
         value: "confirmed_numIncrease",
         sources: ["NYT", "JHU"]
-      },{
+      }, {
         label: "deaths",
         ttip: "new deaths",
         value: "dead_numIncrease",
