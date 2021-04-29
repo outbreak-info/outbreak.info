@@ -89,8 +89,8 @@
           <select v-model="variableObj" class="select-dropdown">
             <option v-for="option in totalOptions" :value="option" :key="option.value">
               {{ option.label }}
-            </option> by World Bank Region
-          </select>
+            </option>
+          </select> by World Bank Region
         </h3>
         <div class="d-flex flex-wrap justify-content-between">
 
