@@ -14,7 +14,8 @@ import {
 import {
   nest,
   timeParse,
-  format
+  format,
+  sum
 } from "d3";
 
 import {
@@ -46,6 +47,72 @@ export function getEpiData(apiUrl, locations, adminLevels, sort, page, size) {
     }),
     finalize(() => (store.state.admin.loading = false))
   );
+}
+
+export function getWorldDailyCases(apiUrl, fields = "wb_region,confirmed_numIncrease, confirmed_rolling, date, dead_numIncrease, dead_rolling") {
+  store.state.admin.loading = true;
+  const parseDate = timeParse("%Y-%m-%d");
+
+  const queryString = `admin_level:"-1"&sort=date&fields=${fields}&size=1000`;
+
+  return getAll(apiUrl, queryString).pipe(
+
+    // pluck("data"),
+    map(results => {
+
+
+      let nested = nest()
+        .key(d => d.date)
+        .rollup(values => {
+          return ({
+            confirmed_numIncrease: sum(values, d => d.confirmed_numIncrease),
+            dead_numIncrease: sum(values, d => d.dead_numIncrease),
+            confirmed_rolling: sum(values, d => d.confirmed_rolling),
+            dead_rolling: sum(values, d => d.dead_rolling)
+          })
+        })
+        .entries(results)
+        .map(d => {
+          return ({
+            date: parseDate(d.key),
+            confirmed_numIncrease: d.value.confirmed_numIncrease,
+            confirmed_rolling: d.value.confirmed_rolling,
+            dead_numIncrease: d.value.dead_numIncrease,
+            dead_rolling: d.value.dead_rolling
+          })
+        })
+
+
+      results.forEach(d => {
+        d["date"] = parseDate(d.date)
+      })
+
+      results.sort((a, b) => a.date - b.date);
+      nested.sort((a, b) => a.date - b.date);
+
+      let regions = nest()
+      .key(d => d.wb_region)
+      .rollup(values => values)
+      .entries(results);
+
+      const regionalTotal = regions.map(region => {
+        const total = sum(region.value, d => d.confirmed_numIncrease);
+        return({
+          key: region.key,
+          total: total
+        })
+      });
+
+      const regionOrder = regionalTotal.sort((a,b) => b.total - a.total).map(d => d.key);
+
+      regions.sort((a,b) => regionOrder.indexOf(a.key) - regionOrder.indexOf(b.key));
+
+      return ({
+        total: nested,
+        regional: regions
+      })
+    })
+  )
 }
 
 export function getEpiTraces(apiUrl, locations, fields = "location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k,sub_parts") {

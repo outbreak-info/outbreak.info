@@ -831,7 +831,7 @@ export default {
       customMutations: [],
       formCount: 0,
       // data
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
+      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
       moc: ["E484K"],
       voi: null,
       voc: null,

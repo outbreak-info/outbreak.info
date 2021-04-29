@@ -181,7 +181,7 @@ export default Vue.extend({
 
       // --- annotations ---
       this.area = area()
-        .x(d => this.x(d.data.date_time))
+        .x(d => this.x(d.data.date))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]));
 
