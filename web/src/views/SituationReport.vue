@@ -428,7 +428,7 @@ export default {
   },
   props: {
     loc: Array,
-    muts: Array,
+    muts: [Array, String],
     pango: String,
     selected: {
       type: String,
