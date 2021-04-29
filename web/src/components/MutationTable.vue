@@ -112,6 +112,16 @@ export default Vue.extend({
     viewMore() {
       console.log("MORE")
     },
+    route2Mutation(d) {
+      const mutation = d.mutation.split(":")[1];
+
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          muts: [`${d.gene}:${mutation.toUpperCase()}`]
+        }
+      })
+    },
     setupPlot() {
       this.chart = select(this.$refs.mut_bars);
       this.annotation = select(this.$refs.annotation);
@@ -174,13 +184,14 @@ export default Vue.extend({
             .style("fill", this.fillColor);
 
           const textGrp = grp.append("text")
-            .attr("class", "gene-mutation")
+            .attr("class", "gene-mutation hover-underline pointer")
             .attr("x", 0)
             .attr("dx", mutationX)
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
             .style("fill", d => this.colorScale(d.gene))
             .style("dominant-baseline", "central")
-            .style("text-anchor", "end");
+            .style("text-anchor", "end")
+            .on("click", d => this.route2Mutation(d));
 
           textGrp.append("tspan")
             .attr("class", "gene")
@@ -189,7 +200,7 @@ export default Vue.extend({
           textGrp.append("tspan")
             .attr("class", "mutation")
             .text(d => d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : `${d.mutation.split(":").slice(-1)[0].toUpperCase()}`)
-            .style("font-weight", 700)
+            .style("font-weight", 700);
           // .style("fill", "#555");
 
           grp.append("text")
@@ -276,7 +287,7 @@ export default Vue.extend({
           update.select(".gene-mutation")
             .style("fill", d => this.colorScale(d.gene))
             .transition(t1)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
+            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
 
           update.select(".gene")
             .text(d => `${d.gene}: `);
