@@ -18,6 +18,7 @@
     </h3>
     <Bargraph :data="total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="800" :height="400" :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" id="world-cases"
       color="#888380" />
+      <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" numSvgs="1" :data="total" v-if="total" />
     </div>
     </div>
   </section>
