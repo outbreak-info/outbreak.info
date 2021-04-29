@@ -4,8 +4,23 @@
 
   <h5 class="">{{ tableTitle }}</h5>
   <div>
-    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4">view more mutations</button>
-    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1" @click="changeSort">sort by {{ isLinearSorted ? "prevalence" : "position"}}</button>
+    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" data-toggle="collapse" href="#view-more">view more mutations</button>
+    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1" @click="changeSort">sort by {{ isLinearSorted ? "prevalence" : "AA position"}}</button>
+  </div>
+
+  <div class="collapse" id="view-more">
+    <div class="d-flex align-items-end">
+      <div class="d-flex flex-column mr-3">
+        <small class="text-muted">min. prevalence</small>
+        <span class="percent-sign border bg-white py-1">
+          <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 65px" v-model="selectedMutationThreshold" placeholder="0-100" />
+          <span class="mr-1">%</span>
+        </span>
+      </div>
+      <small>
+        <button class="btn btn-main" @click="viewMore">Go</button>
+      </small>
+    </div>
   </div>
 
   <svg :width="width" :height="height" class="characteristic_mutations" :name="title" ref="mut_bars_svg">
@@ -15,18 +30,7 @@
     <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="horizontal-bargraph-x axis--x" ref="xAxisBottom"></g>
   </svg>
 
-  <div class="d-flex">
-    <small class="my-3">
-      <button class="btn btn-main-outline" @click="viewMore">view more mutations</button>
-    </small>
-    <div class="d-flex flex-column">
-      <small class="text-muted">min. prevalence</small>
-      <span class="percent-sign border bg-white py-1">
-        <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 65px" v-model="selectedMutationThreshold" placeholder="0-100" />
-        <span class="mr-1">%</span>
-      </span>
-    </div>
-  </div>
+
 
 </div>
 </template>
@@ -98,7 +102,7 @@ export default Vue.extend({
       interestColor: "#f28e2c",
       concernBg: "#fceeef",
       concernColor: "#e15759",
-      selectedMutationThreshold: 50,
+      selectedMutationThreshold: 75,
       height: null,
       // axes
       x: null,
