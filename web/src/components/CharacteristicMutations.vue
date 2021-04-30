@@ -1,9 +1,16 @@
 <template>
 <div>
-  <h4 class="mb-0">{{ definitionLabel }}</h4>
   <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
-    <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-    <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
+    <div class="d-flex flex-column">
+      <h4 class="mb-0">{{ definitionLabel }}</h4>
+      <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+    </div>
+
+    <div class="d-flex flex-column align-items-end">
+      <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
+      <router-link class="mt-n1" v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
+    </div>
+
   </div>
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
@@ -18,7 +25,7 @@
   </div>
 
 
-    <div class="collapse ml-2" id="mutation-table">
+  <div class="collapse ml-2" id="mutation-table">
     <div class="row">
       <div class="col" v-if="lineageName">
         <MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
@@ -58,7 +65,9 @@ import MutationTable from "@/components/MutationTable.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 
-import { getBadMutations } from "@/api/genomics.js";
+import {
+  getBadMutations
+} from "@/api/genomics.js";
 
 export default {
   name: "CharacteristicMutations",
@@ -86,22 +95,21 @@ export default {
       colorScale: null,
       moi: null,
       moc: null,
-      colorDomain:
-        ["#bab0ab", // lt grey -- UTRs
-          "#1f77b4", // dk blue
-          "#aec7e8", // lt blue
-          "#f28e2c", // orange
-          "#e15759", // red
-          "#9edae5", // teal
-          "#59a14f", // green
-          "#edc949", // yellow
-          "#9467bd", // purple
-          "#ff9da7", // pink
-          "#8c564b", // brown
-          "#555555", // grey
-          "#bcbd22", // puce
-          "#bab0ab"
-        ]
+      colorDomain: ["#bab0ab", // lt grey -- UTRs
+        "#1f77b4", // dk blue
+        "#aec7e8", // lt blue
+        "#f28e2c", // orange
+        "#e15759", // red
+        "#9edae5", // teal
+        "#59a14f", // green
+        "#edc949", // yellow
+        "#9467bd", // purple
+        "#ff9da7", // pink
+        "#8c564b", // brown
+        "#555555", // grey
+        "#bcbd22", // puce
+        "#bab0ab"
+      ]
     })
   },
   mounted() {
@@ -120,7 +128,7 @@ export default {
     let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
 
     this.colorScale = scaleOrdinal(this.colorDomain)
-    .domain(geneNames);
+      .domain(geneNames);
   }
 }
 </script>
