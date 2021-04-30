@@ -71,7 +71,7 @@
 
   </div>
 
-  <div class="d-flex align-items-center circle-header" v-if="formValid">
+  <div class="d-flex align-items-center circle-header" v-if="formValid && selectedType">
     <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType.id == 'variant' ? 4 : 3}}</div>
     <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
       Add <span class="text-highlight" v-html="title"></span>
@@ -152,7 +152,7 @@ export default Vue.extend({
     selectedType: {
       immediate: false,
       handler(newVal, oldVal) {
-        if (this.selectedType.id == "variant") {
+        if (this.selectedType && this.selectedType.id == "variant") {
           this.$emit("update:submitLabel", 5);
         } else {
           this.$emit("update:submitLabel", 4);
