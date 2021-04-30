@@ -16,7 +16,7 @@
 import Vue from "vue";
 
 import {
-  getEpiMutationPrevalence
+  getEpiMutationPrevalence, getAllTemporalPrevalences
 } from "@/api/genomics.js";
 import {
   getEpiTraces
@@ -80,7 +80,7 @@ export default {
           selected: this.selectedMutations.map(d => d.label)
         }
       })
-      this.updateData();
+      this.updateMutations();
     },
     setMutations() {
       if (this.selected) {
@@ -88,6 +88,11 @@ export default {
       } else {
         this.selectedMutations = this.options.slice(0, this.numPreselected);
       }
+    },
+    updateMutations() {
+      this.prevalenceSubscription = getAllTemporalPrevalences(this.$genomicsurl, this.locationID, this.selectedMutations).subscribe(results => {
+        this.prevalences = results;
+      })
     },
     updateData() {
       this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl, this.$apiurl, this.locationID, this.selectedMutations).subscribe(results => {
