@@ -784,7 +784,7 @@ export default {
       const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
-      let selected = this.selected;
+      let selected = this.customMutations.map(d => d.label).concat(this.selected);
       if (this.newVariant) {
         if (typeof(this.selected) == "string") {
           selected = [this.selected, this.newVariant.label];
