@@ -773,10 +773,8 @@ export default {
       if(this.newVariant) {
         this.customMutations.push(this.newVariant);
       }
-      
       let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
 
-      console.log(pango)
       const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
@@ -793,7 +791,6 @@ export default {
           // selected: uniq(selected)
         }
       })
-
     },
     updateWindow() {
       this.setupReport();
