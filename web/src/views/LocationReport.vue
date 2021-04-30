@@ -435,6 +435,7 @@ import {
 
 import cloneDeep from "lodash/cloneDeep";
 import uniq from "lodash/uniq";
+import uniqBy from "lodash/uniqBy";
 
 export default {
   name: "LocationReport",
@@ -766,11 +767,13 @@ export default {
     },
     addMutations() {
       this.customMutations.push(this.newVariant);
+      this.customMutations = uniqBy(this.customMutations, "qParam");
       this.submitCount += 1;
     },
     clearMutations() {
       this.submitCount += 1;
       this.customMutations = [];
+      this.selected = [];
     },
     submitNewMutations() {
       if (this.newVariant) {
@@ -782,11 +785,13 @@ export default {
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
       let selected = this.selected;
-      if (typeof(this.selected) == "string") {
-        selected = [this.selected, this.newVariant.label];
-      } else {
-        selected.push(this.newVariant.label);
-      }
+      if (this.newVariant) {
+        if (typeof(this.selected) == "string") {
+          selected = [this.selected, this.newVariant.label];
+        } else {
+          selected.push(this.newVariant.label);
+        }
+      };
 
       // clear new additions
       this.submitCount += 1;
