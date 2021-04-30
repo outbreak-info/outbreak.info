@@ -50,7 +50,7 @@
           </div>
           <div class="modal-body">
             <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
-            <VariantForm :minimalistic="false" :selectedLineage.sync="newPango"  :selectedMutations.sync="newMuts" :submitted="submitCount" />
+            <VariantForm :minimalistic="false" :selectedLineage.sync="newPango" :selectedMutations.sync="newMuts" :submitted="submitCount" />
 
             <div class="mx-4 border-top pt-3" v-if="customMutations.length">
               <h6 class="font-weight-bold text-muted">
@@ -216,7 +216,9 @@
           <h5 class="m-0">Characteristic S-gene mutations in common lineages over the last {{recentWindow}} days</h5>
           <div class="d-flex flex-wrap justify-content-between">
             <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-            <small class="mb-2 ml-3"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
+            <small class="mb-2 ml-3">
+              <router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link>
+            </small>
           </div>
 
           <div class="d-flex flex-column align-items-center bg-dark">
@@ -441,7 +443,10 @@ export default {
     muts: [Array, String],
     pango: [Array, String],
     variant: [Array, String],
-    selected: [Array, String]
+    selected: {
+      type: [Array, String],
+      default: () => []
+    }
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
@@ -506,24 +511,24 @@ export default {
     newVariant() {
       if (this.newPango && this.newMuts.length) {
         return ({
-          label: `${this.newPango} lineage with ${this.newMuts.join(", ")}`,
+          label: `${this.newPango} + ${this.newMuts.join(", ")}`,
           qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
           type: "variant"
         });
       } else if (this.newPango) {
         return ({
-          label: `${this.newPango} lineage`,
+          label: this.newPango,
           qParam: this.newPango,
           type: "pango"
         });
       } else if (this.newMuts.length) {
         return ({
-          label: `${this.newMuts.map(d => d.mutation).join(", ")} ${this.newMuts.length === 1 ? "mutation" : "variant"}`,
-          qParam: `${this.newMuts.map(d => d.mutation).join(",")}`,
-          type: "variant"
+          label: this.newMuts.map(d => d.mutation).join(", "),
+          qParam: this.newMuts.map(d => d.mutation).join(","),
+          type: "mutation"
         });
       } else {
-        return(null)
+        return (null)
       }
     },
     selectedMutations() {
@@ -560,7 +565,7 @@ export default {
           const mutations = this.muts.split(",");
           tracked.push({
             type: "mutation",
-            label: mutations.length === 1 ? `${this.muts} mutation` : `${mutations.join(", ")} variant`,
+            label: this.muts,
             qParam: this.muts,
             query: `mutations=${this.muts}`,
             variantType: "Custom Lineages & Mutations",
@@ -573,7 +578,7 @@ export default {
             const mutations = d.split(",");
             return ({
               type: "mutation",
-              label: mutations.length === 1 ? `${d} mutation` : `${mutations.join(", ")} variant`,
+              label: mutations.join(", "),
               qParam: d,
               query: `mutations=${d}`,
               variantType: "Custom Lineages & Mutations",
@@ -727,7 +732,7 @@ export default {
           const label = this.variant.split("|");
           variant = [{
             type: "variant",
-            label: `${label[0]} with ${label[1]}`,
+            label: `${label[0]} + ${label[1]}`,
             qParam: this.variant
           }]
         } else {
@@ -735,7 +740,7 @@ export default {
             const label = d.split("|");
             return ({
               type: "variant",
-              label: `${label[0]} with ${label[1]}`,
+              label: `${label[0]} + ${label[1]}`,
               qParam: d
             })
           })
@@ -770,7 +775,9 @@ export default {
       this.customMutations = [];
     },
     submitNewMutations() {
-      if(this.newVariant) {
+      if (this.newVariant) {
+        console.log(this.customMutations)
+        console.log(this.newVariant)
         this.customMutations.push(this.newVariant);
       }
       let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
@@ -778,8 +785,19 @@ export default {
       const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
+      console.log(this.newVariant)
+      console.log(this.selected)
+      let selected = this.selected;
+      if (typeof(this.selected) == "string") {
+        selected = [this.selected, this.newVariant.label];
+      } else {
+        selected.push(this.newVariant.label);
+      }
+      console.log(selected)
+
       // clear new additions
       this.newPango = null;
+      this.newMuts = [];
 
       this.$router.push({
         name: "LocationReport",
@@ -788,7 +806,7 @@ export default {
           pango: uniq(pango),
           variant: uniq(variant),
           muts: uniq(mutation),
-          // selected: uniq(selected)
+          selected: uniq(selected)
         }
       })
     },
