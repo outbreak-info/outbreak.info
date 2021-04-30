@@ -241,12 +241,12 @@ export default Vue.extend({
       this.selectedBulkString = this.selectedBulkMutations.map(d => d.mutation).join(",");
     },
     clearForm() {
-      console.log("CLEARING BITCHES")
       this.badBulkSubstitution = false;
       this.badBulkDeletion = false;
       this.badBulkGene = false;
       this.selectedBulkMutations = [];
       this.selectedBulkString = null;
+      this.selectedType = null;
       this.$emit("update:selectedLineage", null);
       this.$emit("update:selectedMutations", []);
     }
