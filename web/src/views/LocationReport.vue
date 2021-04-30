@@ -512,7 +512,7 @@ export default {
     newVariant() {
       if (this.newPango && this.newMuts.length) {
         return ({
-          label: `${this.newPango} + ${this.newMuts.join(", ")}`,
+          label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
           qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
           type: "variant"
         });
