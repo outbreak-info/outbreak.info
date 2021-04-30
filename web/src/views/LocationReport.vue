@@ -215,7 +215,7 @@
           <h5 class="m-0">Characteristic S-gene mutations in common lineages over the last {{recentWindow}} days</h5>
           <div class="d-flex flex-wrap justify-content-between">
             <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-            <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
+            <small class="mb-2 ml-3"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
           </div>
 
           <div class="d-flex flex-column align-items-center bg-dark">
