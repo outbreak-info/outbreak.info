@@ -10,7 +10,8 @@
   </div>
 
   <div class="collapse" id="view-more">
-    <div class="d-flex align-items-end">
+    <div class="d-flex my-3 bg-grey__lightest px-3 py-2 border-top border-bottom align-items-center">
+      <h5 class="mr-3">View more mutations</h5>
       <div class="d-flex flex-column mr-3">
         <small class="text-muted">min. prevalence</small>
         <span class="percent-sign border bg-white py-1">
