@@ -766,18 +766,14 @@ export default {
     },
     addMutations() {
       this.customMutations.push(this.newVariant);
-      this.newPango = null;
-      this.newMuts = [];
+      this.submitCount += 1;
     },
     clearMutations() {
-      this.newPango = null;
-      this.newMuts = [];
+      this.submitCount += 1;
       this.customMutations = [];
     },
     submitNewMutations() {
       if (this.newVariant) {
-        console.log(this.customMutations)
-        console.log(this.newVariant)
         this.customMutations.push(this.newVariant);
       }
       let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
@@ -785,19 +781,15 @@ export default {
       const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
-      console.log(this.newVariant)
-      console.log(this.selected)
       let selected = this.selected;
       if (typeof(this.selected) == "string") {
         selected = [this.selected, this.newVariant.label];
       } else {
         selected.push(this.newVariant.label);
       }
-      console.log(selected)
 
       // clear new additions
-      this.newPango = null;
-      this.newMuts = [];
+      this.submitCount += 1;
 
       this.$router.push({
         name: "LocationReport",
