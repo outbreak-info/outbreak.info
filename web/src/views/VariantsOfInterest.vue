@@ -86,9 +86,9 @@
         </div>
       </section>
 
-      <section id="voc">
+      <!-- <section id="voc">
         <h3>Variants of Concern</h3>
-      </section>
+      </section> -->
 
       <section id="moi">
         <h3>Mutations of Interest</h3>
@@ -127,7 +127,7 @@
                 <font-awesome-icon v-if="mutation.evidence.infectivity && mutation.evidence.infectivity.isAltered" class="fa-lg is-altered" :icon="['far', 'check-circle']" />
                 <font-awesome-icon v-else-if="mutation.evidence.infectivity && mutation.evidence.infectivity.isAltered === false" class="fa-lg is-not-altered" :icon="['far', 'times-circle']" />
                 <font-awesome-icon v-else class="fa-lg unknown-altered" :icon="['far', 'question-circle']" />
-                <span v-if="mutation.evidence.infectivity && mutation.evidence.infectivity.citation">{{mutation.evidence.infectivity.citation}}</span>
+                <span class="ml-2" v-if="mutation.evidence.infectivity && mutation.evidence.infectivity.citation">{{mutation.evidence.infectivity.citation}}</span>
               </td>
               <td>
                 <font-awesome-icon v-if="mutation.evidence.virulence && mutation.evidence.virulence.isAltered" class="fa-lg is-altered" :icon="['far', 'check-circle']" />
@@ -144,6 +144,30 @@
             </tr>
           </tbody>
         </table>
+      </section>
+
+      <section class="w-100 border-top my-5 pt-3">
+        <h3>Variant Classification Committee</h3>
+        <div class="d-flex">
+
+
+        <div v-for="(person, idx) in team" :key="idx" class="team-member d-flex flex-column align-items-center mx-5 my-3">
+          <img :src="require(`@/assets/team/${person.img}`)" class="profile-pic text-" />
+          <span class="mt-1">{{person.name}}</span>
+          <div class="d-flex">
+
+            <a :href="`mailto:${person.email}`" target="_blank" v-if="person.email" class="mr-2">
+              <font-awesome-icon :icon="['fas', 'at']" />
+            </a>
+            <a :href="person.twitter" target="_blank" v-if="person.twitter" class="mr-2">
+              <font-awesome-icon :icon="['fab', 'twitter']" />
+            </a>
+            <a :href="person.linkedin" target="_blank" v-if="person.linkedin" class="mr-2">
+              <font-awesome-icon :icon="['fab', 'linkedin-in']" />
+            </a>
+          </div>
+        </div>
+        </div>
       </section>
 
     </div>
@@ -182,21 +206,42 @@ import {
 
 library.add(faClock, faSpinner, faQuestionCircle, faTimesCircle, faCheckCircle);
 
+import {
+  mapState
+} from "vuex";
 
 export default {
   name: "SituationReports",
   components: {
     FontAwesomeIcon
   },
+  computed: {
+        ...mapState("admin", ["team"])
+  },
   data() {
     return ({
       lastUpdated: "19 April 2021",
       moi: [{
+        mutation_name: "S:N501Y",
+        evidence: {
+          transmissibility: {
+            isAltered: true,
+            citation: "citation blah blah blah",
+            url: "https://doi.org/10.1016/j.cell.2021.01.037"
+          },
+          infectivity: {
+            isAltered: true,
+            citation: "citation blah blah blah",
+            url: "https://doi.org/10.1016/j.cell.2021.01.037"
+          }
+        }
+
+      },{
         mutation_name: "S:N439K",
         evidence: {
           virulence: {
             isAltered: false,
-            citation: "fake citation",
+            citation: "citation blah blah blah",
             url: "https://doi.org/10.1016/j.cell.2021.01.037"
           },
           evasion: {
@@ -253,5 +298,16 @@ th, td {
 
 tr {
   border-bottom: 1pt solid #aaa;
+}
+
+.team-member {
+    flex-basis: 15%;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: contain;
 }
 </style>
