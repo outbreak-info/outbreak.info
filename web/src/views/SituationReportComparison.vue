@@ -164,7 +164,8 @@
               <div class="d-flex flex-column" style="width: 250px">
                 <label for="add-mutation" class="fa-sm line-height-1 mt-2 ml-2">&gt;&gt; Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
                     {{selectedLocation.label}}</span></label>
-                <TypeaheadSelect :queryFunction="queryLocation" :selectedValue="selectedLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+                <TypeaheadSelect :queryFunction="queryLocation" :selectedValue="selectedLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location"
+                  totalLabel="total sequences" />
               </div>
               <div class="d-flex flex-column ml-3">
                 <div class="d-flex flex-column">
@@ -295,25 +296,25 @@
   </div>
   <div class="mx-5 text-left">
 
-  <!-- METHODOLOGY -->
-  <section class="mt-3 mb-5 border-top pt-3" id="methods">
-    <h4>Methodology</h4>
-    <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
-    <Warning class="mt-2" :text="disclaimer" />
-  </section>
+    <!-- METHODOLOGY -->
+    <section class="mt-3 mb-5 border-top pt-3" id="methods">
+      <h4>Methodology</h4>
+      <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
+      <Warning class="mt-2" :text="disclaimer" />
+    </section>
 
-  <!-- CITATION -->
-  <section class="my-3 border-top pt-3">
-    <h4 class="">Citing this report</h4>
-    <p class="m-0">
-      <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
-    </p>
-    <ShareReport :title="title" :url="url" />
-  </section>
+    <!-- CITATION -->
+    <section class="my-3 border-top pt-3">
+      <h4 class="">Citing this report</h4>
+      <p class="m-0">
+        <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
+      </p>
+      <ShareReport :title="title" :url="url" />
+    </section>
 
-  <!-- ACKNOWLEDGEMENTS -->
-  <ReportAcknowledgements class="border-top pt-3" />
-</div>
+    <!-- ACKNOWLEDGEMENTS -->
+    <ReportAcknowledgements class="border-top pt-3" />
+  </div>
 </div>
 </template>
 
@@ -365,7 +366,8 @@ import {
 
 import {
   scaleSequential,
-  format, timeFormat
+  format,
+  timeFormat
 } from "d3";
 
 import debounce from "lodash/debounce";
@@ -374,7 +376,7 @@ import uniq from "lodash/uniq";
 export default {
   name: "SituationReportComparison",
   props: {
-    pango: Array,
+    pango: [Array, String],
     threshold: {
       type: Number,
       default: 75
