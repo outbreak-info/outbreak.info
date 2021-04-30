@@ -147,7 +147,6 @@ export default Vue.extend({
   },
   watch: {
     submitted(newVal, oldVal) {
-      console.log("submitted")
       this.clearForm();
     },
     selectedType: {
@@ -181,7 +180,6 @@ export default Vue.extend({
   },
   methods: {
     updatePangolin(selected) {
-      console.log("pangolin update")
       selected ?
         this.$emit("update:selectedLineage", selected.name) :
         this.$emit("update:selectedLineage", null);
@@ -243,6 +241,7 @@ export default Vue.extend({
       this.selectedBulkString = this.selectedBulkMutations.map(d => d.mutation).join(",");
     },
     clearForm() {
+      console.log("CLEARING BITCHES")
       this.badBulkSubstitution = false;
       this.badBulkDeletion = false;
       this.badBulkGene = false;

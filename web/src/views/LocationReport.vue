@@ -49,7 +49,8 @@
             </button>
           </div>
           <div class="modal-body">
-            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" :formCount.sync="formCount" />
+            <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
+            <VariantForm :minimalistic="false" :selectedLineage.sync="newPango"  :selectedMutations.sync="newMuts" :submitted="submitCount" />
 
             <div class="mx-4 border-top pt-3" v-if="customMutations.length">
               <h6 class="font-weight-bold text-muted">
@@ -454,7 +455,8 @@ export default {
     HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
     LocationTable: () => import( /* webpackPrefetch: true */ "@/components/LocationTable.vue"),
     OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
-    CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    // CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    VariantForm: () => import( /* webpackPrefetch: true */ "@/components/VariantForm.vue"),
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
     SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
@@ -500,6 +502,29 @@ export default {
     seqCountsWindowed() {
       return this.recentMin && this.seqCounts ?
         this.seqCounts.filter(d => d.dateTime >= this.recentMin) : null;
+    },
+    newVariant() {
+      if (this.newPango && this.newMuts.length) {
+        return ({
+          label: `${this.newPango} lineage with ${this.newMuts.join(", ")}`,
+          qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
+          type: "variant"
+        });
+      } else if (this.newPango) {
+        return ({
+          label: `${this.newPango} lineage`,
+          qParam: this.newPango,
+          type: "pango"
+        });
+      } else if (this.newMuts.length) {
+        return ({
+          label: `${this.newMuts.map(d => d.mutation).join(", ")} ${this.newMuts.length === 1 ? "mutation" : "variant"}`,
+          qParam: `${this.newMuts.map(d => d.mutation).join(",")}`,
+          type: "variant"
+        });
+      } else {
+        return(null)
+      }
     },
     selectedMutations() {
       let tracked = this.curatedLineages;
@@ -735,23 +760,20 @@ export default {
       this.customMutations.splice(idx, 1);
     },
     addMutations() {
-      console.log("ADDING")
-      console.log(this.customMutations)
-      this.customMutations.push(this.newPango);
+      this.customMutations.push(this.newVariant);
       this.newPango = null;
       this.newMuts = [];
-      this.newVariants = [];
     },
     clearMutations() {
       this.newPango = null;
       this.newMuts = [];
-      this.newVariants = [];
       this.customMutations = [];
     },
     submitNewMutations() {
-      if(this.newPango) {
-        this.customMutations.push(this.newPango);
+      if(this.newVariant) {
+        this.customMutations.push(this.newVariant);
       }
+      
       let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
 
       console.log(pango)
@@ -760,7 +782,6 @@ export default {
 
       // clear new additions
       this.newPango = null;
-      this.formCount += 1;
 
       this.$router.push({
         name: "LocationReport",
@@ -826,9 +847,8 @@ export default {
       // update mutations
       newMuts: [],
       newPango: null,
-      newVariants: [],
       customMutations: [],
-      formCount: 0,
+      submitCount: 0,
       // data
       moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
       moc: ["E484K"],

@@ -1,5 +1,9 @@
 <template>
-<form class="mx-4" @submit.prevent="submitQuery">
+  <div>
+    <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :submitLabel.sync="submitLabel" :selectedMutations.sync="selectedMutations" :submitted="submitCount" />
+  </div>
+
+<!-- <div class="mx-4">
   <template v-if="includeLocation">
     <h3>Select location</h3>
     <div class="d-flex align-items-center my-3">
@@ -56,16 +60,16 @@
         </button>
       </div>
 
-      <!-- <div class="d-flex align-items-center my-4 w-100">
+       <div class="d-flex align-items-center my-4 w-100">
         <button type="submit" class="btn btn-outline-secondary" :class="{'btn-lg': !minimalistic }" @click="clearSelection">Clear selection</button>
         <button :disabled="!formValid" type="submit" class="btn btn-sec-outline" :class="{'btn-lg': !minimalistic }" @click="addVariant">Add another lineage/mutation</button>
         <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Go</button>
-      </div> -->
+      </div>
 
     </div>
 
   </div>
-</form>
+</div> -->
 </template>
 
 <script>
@@ -97,113 +101,120 @@ library.add(faSearch, faTimesCircle);
 export default {
   name: "CustomLocationForm",
   components: {
-    TypeaheadSelect,
+    // TypeaheadSelect,
     VariantForm,
-    FontAwesomeIcon
+    // FontAwesomeIcon
   },
   props: {
     minimalistic: {
       type: Boolean,
       default: false
     },
-    includeLocation: {
-      type: Boolean,
-      default: true
-    },
-    includeMutations: {
-      type: Boolean,
-      default: true
-    },
-    curated: Array,
-    variant: {
-      type: Array,
-      default: () => []
-    },
-    muts: {
-      type: Array,
-      default: () => []
-    },
-    pango: {
-      type: Object,
-      default: () => null
-    },
+    selectedLineage: Object,
+    selectedMutations: Array
+    // includeLocation: {
+    //   type: Boolean,
+    //   default: true
+    // },
+    // includeMutations: {
+    //   type: Boolean,
+    //   default: true
+    // },
+    // curated: Array,
+    // variant: {
+    //   type: Array,
+    //   default: () => []
+    // },
+    // muts: {
+    //   type: Array,
+    //   default: () => []
+    // },
+    // pango: {
+    //   type: Object,
+    //   default: () => null
+    // },
     // formCount: Number
   },
   watch: {
-    selectedLineage() {
-      console.log(this.selectedLineage)
-      this.addVariant();
-    }
+    // selectedLineage() {
+    //   console.log(this.selectedLineage)
+    //   // this.addVariant();
+    //   // this.submitCount += 1;
+    // }
   },
   computed: {
-    title() {
-      if (this.selectedLineage) {
-        return this.selectedMutations.length ? `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
-      } else {
-        return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
-      }
-    },
-    formValid() {
-      return (this.selectedMutations.length > 0 || this.selectedLineage)
-    }
+    // title() {
+    //   if (this.selectedLineage) {
+    //     return this.selectedMutations.length ? `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
+    //   } else {
+    //     return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
+    //   }
+    // },
+    // formValid() {
+    //   return (this.selectedMutations.length > 0 || this.selectedLineage)
+    // }
   },
   methods: {
+    clearQuery() {
+      console.log("clear")
+    },
     addVariant() {
-      if (this.selectedLineage && this.selectedMutations.length) {
-        this.variant.push({
-          label: `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}`,
-          route: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`
-        })
-      } else if (this.selectedLineage) {
-
-        const newPango = {
-          label: `${this.selectedLineage} lineage`,
-          qParam: this.selectedLineage,
-          type: "pango"
-        };
-        this.$emit("update:pango", newPango);
-      } else if (this.selectedMutations.length) {
-        this.muts.push({
-          label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
-          route: this.selectedMutations.map(d => d.mutation).join(",")
-        })
-      }
-
-      this.selectedLineage = null;
-      this.selectedMutations = [];
+      // if (this.selectedLineage && this.selectedMutations.length) {
+      //   this.variant.push({
+      //     label: `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}`,
+      //     route: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`
+      //   })
+      // } else if (this.selectedLineage) {
+      //
+      //   const newPango = {
+      //     label: `${this.selectedLineage} lineage`,
+      //     qParam: this.selectedLineage,
+      //     type: "pango"
+      //   };
+      //   this.$emit("update:pango", newPango);
+      // } else if (this.selectedMutations.length) {
+      //   this.muts.push({
+      //     label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
+      //     route: this.selectedMutations.map(d => d.mutation).join(",")
+      //   })
+      // }
+      //
+      // this.selectedLineage = null;
+      // this.selectedMutations = [];
     },
     deleteVariant(idx, variantArr) {
-      variantArr.splice(idx, 1);
+      // variantArr.splice(idx, 1);
     },
     submitQuery() {
-      this.$router.push({
-        name: "LocationReport",
-        query: {
-          loc: this.location.id,
-          pango: this.pango.map(d => d.route),
-          variant: this.variant.map(d => d.route),
-          muts: this.muts.map(d => d.route)
-        }
-      })
-    },
-    updateLocation(location) {
-      if (location && location.id) {
-        this.location = location;
-      }
+      console.log("custom loc submit")
+    //   this.$router.push({
+    //     name: "LocationReport",
+    //     query: {
+    //       loc: this.location.id,
+    //       pango: this.pango.map(d => d.route),
+    //       variant: this.variant.map(d => d.route),
+    //       muts: this.muts.map(d => d.route)
+    //     }
+    //   })
+    // },
+    // updateLocation(location) {
+    //   if (location && location.id) {
+    //     this.location = location;
+    //   }
     }
   },
   data() {
     return {
-      queryLocation: null,
-      location: null,
-      selectedLineage: null,
-      selectedMutations: [],
+      // queryLocation: null,
+      // location: null,
+      // selectedLineage: null,
+      // selectedMutations: [],
       submitLabel: null,
       submitCount: 0
     }
   },
   mounted() {
-    this.queryLocation = findLocation;
+    // this.queryLocation = findLocation;
   }
 }
 </script>
