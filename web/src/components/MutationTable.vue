@@ -5,6 +5,7 @@
   <h5 class="">{{ tableTitle }}</h5>
   <div>
     <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" data-toggle="collapse" href="#view-more">view more mutations</button>
+    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" data-toggle="collapse" href="#find-mutation">find a mutation</button>
     <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1" @click="changeSort">sort by {{ isLinearSorted ? "prevalence" : "AA position"}}</button>
   </div>
 
@@ -20,6 +21,35 @@
       <small>
         <button class="btn btn-main" @click="viewMore">Go</button>
       </small>
+    </div>
+  </div>
+
+  <div class="collapse" id="find-mutation">
+    <div class="d-flex my-3 bg-grey__lightest px-3 py-2 border-top border-bottom align-items-center">
+      <h5 class="mr-3">Find a mutation</h5>
+      <div class="d-flex flex-column">
+        <div class="d-flex align-items-center">
+          <div class="d-flex flex-column mr-3">
+            <small class="text-muted line-height-1 mb-1" style="width: 175px">
+              Enter mutation preceded by gene name, like <b>"S:E484K"</b>
+            </small>
+            <input type="text" class="flex-grow-0 border bg-white px-2" style="width: 175px" v-model="selectedMutationLookup" placeholder="gene:mutation" />
+          </div>
+          <small>
+            <button class="btn btn-main" @click="findMutation">Go</button>
+          </small>
+        </div>
+
+        <div class="d-flex align-items-center mt-2 pt-2 border-top">
+          <small class="text-muted line-height-1 mr-3" style="width: 175px">
+            View prevelance of all <b>Mutations of Concern</b> &amp; <b>Interest</b>
+          </small>
+          <small class="flex-shrink-0">
+            <button class="btn btn-sec" @click="findMutation">View MOC/MOI</button>
+          </small>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -103,6 +133,7 @@ export default Vue.extend({
       concernBg: "#fceeef",
       concernColor: "#e15759",
       selectedMutationThreshold: 75,
+      selectedMutationLookup: null,
       height: null,
       // axes
       x: null,
@@ -125,6 +156,9 @@ export default Vue.extend({
     },
     viewMore() {
       console.log("MORE")
+    },
+    findMutation() {
+      console.log("mutation")
     },
     route2Mutation(d) {
       const mutation = d.mutation.split(":")[1];

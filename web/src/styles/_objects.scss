@@ -128,6 +128,7 @@ button.chip.to-add:hover {
 
 .btn-sec {
   background: $secondary-color !important;
+  border: $secondary-color 2px solid !important;
   color: white;
   transition: all 0.5s;
   text-transform: uppercase;
