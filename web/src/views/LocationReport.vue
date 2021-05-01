@@ -67,7 +67,7 @@
 
           <div class="modal-footer border-secondary">
             <button type="button" class="btn btn-outline-secondary" @click="clearMutations">Clear selections</button>
-            <button type="button" class="btn btn-sec-outline" @click="addMutations">Add another lineage/mutation</button>
+            <button type="button" :disabled="!formValid" class="btn btn-main" @click="addMutations">Add another lineage/mutation</button>
             <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Go</button>
 
           </div>
@@ -508,6 +508,9 @@ export default {
     seqCountsWindowed() {
       return this.recentMin && this.seqCounts ?
         this.seqCounts.filter(d => d.dateTime >= this.recentMin) : null;
+    },
+    formValid() {
+      return(this.newMuts.length > 0 || this.newPango)
     },
     newVariant() {
       if (this.newPango && this.newMuts.length) {
