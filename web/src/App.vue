@@ -91,6 +91,7 @@
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Data sources</router-link>
               <a class="nav-link" href="https://outbreak.info/blog">Blog</a>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/faq" :class="{ active: $route.name == 'Faq' }">FAQ</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/latest" :class="{ active: $route.name == 'Latest' }">Latest changes</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Citation' }" :to="{name: 'Citation'}">How to cite</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Videos' }" :to="{name: 'Videos'}">Video demos</router-link>
@@ -214,6 +215,10 @@
 
           <li class="nav-item px-0 py-1">
             <a class="nav-link p-0" href="https://outbreak.info/blog">Blog</a>
+          </li>
+
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/faq" :class="{ active: $route.name == 'FAQ' }">FAQ</router-link>
           </li>
 
           <li class="nav-item px-0 py-1">
