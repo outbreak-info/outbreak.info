@@ -149,7 +149,7 @@ export default {
           pango: pango,
           variant: variant,
           muts: muts,
-          selected: pango.concat([variant, muts]).filter(d => d.length)
+          selected: pango.concat(variant, muts).filter(d => d.length)
         }
       })
     },
