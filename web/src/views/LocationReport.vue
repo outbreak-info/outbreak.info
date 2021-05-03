@@ -513,27 +513,34 @@ export default {
       return(this.newMuts.length > 0 || this.newPango)
     },
     newVariant() {
+      const selectedMutationLabels = this.selectedMutations.map(d => d.label);
+      let newVariantObj = null;
       if (this.newPango && this.newMuts.length) {
-        return ({
-          label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
-          qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
-          type: "variant"
-        });
+	let label = `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`;
+	if(selectedMutationLabels.indexOf(label) < 0)
+	  newVariantObj = {
+            label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
+            qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
+            type: "variant"
+          }
       } else if (this.newPango) {
-        return ({
-          label: this.newPango,
-          qParam: this.newPango,
-          type: "pango"
-        });
+	let label = this.newPango;
+	if(selectedMutationLabels.indexOf(label) < 0)
+	  newVariantObj = {
+            label: this.newPango,
+            qParam: this.newPango,
+            type: "pango"
+          }
       } else if (this.newMuts.length) {
-        return ({
-          label: this.newMuts.map(d => d.mutation).join(", "),
-          qParam: this.newMuts.map(d => d.mutation).join(","),
-          type: "mutation"
-        });
-      } else {
-        return (null)
+	let label = this.newMuts.map(d => d.mutation).join(", ");
+	if(selectedMutationLabels.indexOf(label) < 0)
+	  newVariantObj = {
+            label: this.newMuts.map(d => d.mutation).join(", "),
+            qParam: this.newMuts.map(d => d.mutation).join(","),
+            type: "mutation"
+          }
       }
+      return (newVariantObj);
     },
     selectedMutations() {
       let tracked = this.curatedLineages;
@@ -769,7 +776,10 @@ export default {
       this.customMutations.splice(idx, 1);
     },
     addMutations() {
-      this.customMutations.push(this.newVariant);
+      if (this.newVariant) {
+        this.customMutations.push(this.newVariant);
+      }
+      // this.customMutations.push(this.newVariant);
       this.customMutations = uniqBy(this.customMutations, "qParam");
       this.submitCount += 1;
     },
@@ -788,6 +798,7 @@ export default {
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
       let selected = this.customMutations.map(d => d.label).concat(this.selected);
+
       if (this.newVariant) {
         if (typeof(this.selected) == "string") {
           selected = [this.selected, this.newVariant.label];
