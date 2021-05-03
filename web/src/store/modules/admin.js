@@ -549,7 +549,7 @@ const state = {
         }
       }
     }, {
-    date: new Date("2021-04-28 0:0"),
+    date: new Date("2021-05-03 0:0"),
     category: "data",
     title: "Added B.1.617.1 as a Variant of Interest",
     description: "Based on split of B.1.617 into sublineages, added B.1.617.1 as a Variant of Interest based on its expansion in India and presence of S:E484Q mutation.",
