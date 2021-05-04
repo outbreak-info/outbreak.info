@@ -513,34 +513,27 @@ export default {
       return(this.newMuts.length > 0 || this.newPango)
     },
     newVariant() {
-      const selectedMutationLabels = this.selectedMutations.map(d => d.label);
       let newVariantObj = null;
       if (this.newPango && this.newMuts.length) {
-	let label = `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`;
-	if(selectedMutationLabels.indexOf(label) < 0)
-	  newVariantObj = {
-            label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
-            qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
-            type: "variant"
-          }
+	newVariantObj = {
+          label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
+          qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
+          type: "variant"
+        }
       } else if (this.newPango) {
-	let label = this.newPango;
-	if(selectedMutationLabels.indexOf(label) < 0)
-	  newVariantObj = {
-            label: this.newPango,
-            qParam: this.newPango,
-            type: "pango"
-          }
+	newVariantObj = {
+          label: this.newPango,
+          qParam: this.newPango,
+          type: "pango"
+        }
       } else if (this.newMuts.length) {
-	let label = this.newMuts.map(d => d.mutation).join(", ");
-	if(selectedMutationLabels.indexOf(label) < 0)
-	  newVariantObj = {
-            label: this.newMuts.map(d => d.mutation).join(", "),
-            qParam: this.newMuts.map(d => d.mutation).join(","),
-            type: "mutation"
-          }
+	newVariantObj = {
+          label: this.newMuts.map(d => d.mutation).join(", "),
+          qParam: this.newMuts.map(d => d.mutation).join(","),
+          type: "mutation"
+        }
       }
-      return (newVariantObj);
+      return newVariantObj;
     },
     selectedMutations() {
       let tracked = this.curatedLineages;
@@ -636,6 +629,7 @@ export default {
           })
         }
       }
+      tracked = uniqBy(tracked, "label");
       return (tracked)
     }
   },
