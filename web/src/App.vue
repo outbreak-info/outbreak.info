@@ -16,7 +16,7 @@
           <!-- EPIDEMIOLOGY -->
           <li class="dropdown px-3 nav-link">
             <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Epidemiology
+              Cases &amp; Deaths
             </div>
             <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Epidemiology' }" :to="{
@@ -45,21 +45,6 @@
             </div>
           </li>
 
-          <!-- RESOURCES -->
-          <li class="dropdown px-3 nav-link">
-            <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Resources
-            </div>
-            <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/resources" :class="{ active: $route.name == 'Resources' }">Search resource library
-              </router-link>
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Sources', hash: '#resources'}" :class="{ active: $route.name == 'Sources' }">Download metadata
-              </router-link>
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/schema" :class="{ active: $route.name == 'Schema' }">View & adapt schema
-              </router-link>
-            </div>
-          </li>
-
           <!-- Genomics -->
           <li class="dropdown px-3 nav-link">
             <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -71,6 +56,23 @@
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'LocationReports'}" :class="{ active: $route.name == 'LocationReports' }">Location Tracker
               </router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'SituationReportComparison'}" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
+              </router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'SituationReportCaveats'}" :class="{ active: $route.name == 'SituationReportCaveats' }">Intrepreting Reports
+              </router-link>
+            </div>
+          </li>
+
+          <!-- RESOURCES -->
+          <li class="dropdown px-3 nav-link">
+            <div class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Research Library
+            </div>
+            <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/resources" :class="{ active: $route.name == 'Resources' }">Find research
+              </router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :to="{name: 'Sources', hash: '#resources'}" :class="{ active: $route.name == 'Sources' }">Download metadata
+              </router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/schema" :class="{ active: $route.name == 'Schema' }">View &amp; adapt schema
               </router-link>
             </div>
           </li>
@@ -89,6 +91,7 @@
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Data sources</router-link>
               <a class="nav-link" href="https://outbreak.info/blog">Blog</a>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/faq" :class="{ active: $route.name == 'Faq' }">FAQ</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/latest" :class="{ active: $route.name == 'Latest' }">Latest changes</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Citation' }" :to="{name: 'Citation'}">How to cite</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Videos' }" :to="{name: 'Videos'}">Video demos</router-link>
@@ -111,7 +114,7 @@
       <!-- epi group -->
       <div class="text-light px-4">
         <div>
-          Epidemiology
+          COVID-19 Cases &amp; Deaths
         </div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
@@ -148,27 +151,6 @@
         </ul>
       </div>
 
-      <!-- resources group -->
-      <div class="text-light px-4">
-        <div>
-          Resources
-        </div>
-        <ul class="navbar-nav navbar-footer">
-          <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/resources" :class="{ active: $route.name == 'Resources' }">Search resource library
-            </router-link>
-          </li>
-          <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'Sources', hash: '#resources'}" :class="{ active: $route.name == 'Sources' }">Download metadata
-            </router-link>
-          </li>
-          <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/schema" :class="{ active: $route.name == 'Schema' }">View & adapt schema
-            </router-link>
-          </li>
-        </ul>
-      </div>
-
       <!-- genomics group -->
       <div class="text-light px-4">
         <div>
@@ -187,8 +169,34 @@
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReportComparison'}" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
             </router-link>
           </li>
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReportCaveats'}" :class="{ active: $route.name == 'SituationReportCaveats' }">Interpreting Reports
+            </router-link>
+          </li>
         </ul>
       </div>
+
+      <!-- resources group -->
+      <div class="text-light px-4">
+        <div>
+          Research Library
+        </div>
+        <ul class="navbar-nav navbar-footer">
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/resources" :class="{ active: $route.name == 'Resources' }">Find research
+            </router-link>
+          </li>
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'Sources', hash: '#resources'}" :class="{ active: $route.name == 'Sources' }">Download metadata
+            </router-link>
+          </li>
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/schema" :class="{ active: $route.name == 'Schema' }">View &amp; adapt schema
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
 
       <!-- about group -->
       <div class="text-light px-4">
@@ -207,6 +215,10 @@
 
           <li class="nav-item px-0 py-1">
             <a class="nav-link p-0" href="https://outbreak.info/blog">Blog</a>
+          </li>
+
+          <li class="nav-item px-0 py-1">
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/faq" :class="{ active: $route.name == 'FAQ' }">FAQ</router-link>
           </li>
 
           <li class="nav-item px-0 py-1">

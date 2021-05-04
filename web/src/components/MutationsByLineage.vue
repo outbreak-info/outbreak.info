@@ -1,14 +1,19 @@
 <template>
 <div class="mutations-by-lineage d-flex flex-column text-left">
   <h6 class="m-0">{{title}}</h6>
-  <small class="text-muted">{{subtitle}}</small>
+  <div class="d-flex justify-content-between align-items-center" :style="{width: width + 'px'}">
+    <small class="text-muted">{{subtitle}}</small>
+    <button class="small btn btn-outline-secondary my-1 px-2 py-1" @click="expandOther" v-if="otherDataArr.length">{{ otherExpanded ? "hide" :"expand" }} other</button>
+  </div>
+
   <svg :width="width" :height="height" class="mutations_by_lineage" :name="title">
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="horizontal_bargraph"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="horizontal-bargraph-y pointer axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left}, ${height - margin.bottom})`" class="horizontal-bargraph-x axis--x" ref="xAxis"></g>
   </svg>
 
-  <div class="w-50">
+  <div class="d-flex justify-content-between align-items-center" :style="{width: width + 'px'}">
+    <button class="small btn btn-outline-secondary my-1 px-2 py-1 flex-shrink-0" @click="expandOther" v-if="otherDataArr.length">{{ otherExpanded ? "hide" :"expand" }} other</button>
     <DownloadReportData :data="data" figureRef="mutations_by_lineage" dataType="Mutation by Lineage" class="mt-3" />
   </div>
 
@@ -54,6 +59,11 @@ import cloneDeep from "lodash/cloneDeep";
 
 import DownloadReportData from "@/components/DownloadReportData.vue";
 
+// --- store / Vuex ---
+import {
+  mapState
+} from "vuex";
+
 export default Vue.extend({
   name: "MutationsByLineage",
   components: {
@@ -78,7 +88,7 @@ export default Vue.extend({
     },
     width: {
       type: Number,
-      default: 400
+      default: 450
     },
     fill: {
       type: String,
@@ -102,7 +112,8 @@ export default Vue.extend({
       y: null,
       xAxis: null,
       yAxis: null,
-      otherDataArr: []
+      otherDataArr: [],
+      otherExpanded: false
     }
   },
   watch: {
@@ -110,6 +121,9 @@ export default Vue.extend({
       this.setupPlot();
       this.updatePlot();
     }
+  },
+  computed: {
+    ...mapState("genomics", ["characteristicThreshold"])
   },
   methods: {
     handleLineageClick(lineage) {
@@ -126,14 +140,27 @@ export default Vue.extend({
         }
       })
     },
+    expandOther() {
+      if (this.otherExpanded) {
+        this.preprocessData();
+        this.updatePlot();
+      } else {
+        this.processedData = cloneDeep(this.data).sort((a, b) => {
+          return b.proportion - a.proportion;
+        })
+        this.updatePlot();
+      }
+      this.otherExpanded = !this.otherExpanded;
+    },
     preprocessData() {
       var sortedData = cloneDeep(this.data).sort((a, b) => {
         return b.proportion - a.proportion;
       })
-      this.processedData = sortedData.slice(0, this.n);
-      if (this.n < sortedData.length) {
+
+      this.processedData = sortedData.filter(d => d.proportion >= this.characteristicThreshold);
+      if (this.processedData.length < sortedData.length) {
         this.otherDataArr = sortedData
-          .slice(this.n, sortedData.length);
+          .filter(d => d.proportion < this.characteristicThreshold);
 
         const otherData = this.otherDataArr
           .reduce((x, y) => {
@@ -160,7 +187,7 @@ export default Vue.extend({
     },
     updateAxes() {
       const paddingInner = 0.25;
-      this.height = this.processedData.length * this.bandwidth * (1 + paddingInner);
+      this.height = this.processedData.length * this.bandwidth + (this.processedData.length -1) * this.bandwidth * paddingInner + this.margin.top + this.margin.bottom;
 
       this.x = scaleLinear()
         .range([0, this.width - this.margin.right - this.margin.left])
@@ -200,16 +227,16 @@ export default Vue.extend({
       selectAll(`#${d.pangolin_lineage.replace(/\./g, "_")}`)
         .style("opacity", 1);
 
-        if (d.pangolin_lineage != "other") {
-          ttip.select("#other_data").classed("hidden", true);
-          ttip.select("#lineage").text(d.pangolin_lineage);
-          ttip.select("#proportion").html(`<b>${d.proportion_formatted}</b> ${this.mutationName}`);
-          ttip.select("#counts").text(`(${format(",")(d.mutation_count)} / ${format(",")(d.lineage_count)})`);
-        } else {
-          ttip.select("#other_data").classed("hidden", false);
-          ttip.select("#proportion").html("");
-          ttip.select("#counts").text("");
-        }
+      if (d.pangolin_lineage != "other") {
+        ttip.select("#other_data").classed("hidden", true);
+        ttip.select("#lineage").text(d.pangolin_lineage);
+        ttip.select("#proportion").html(`<b>${d.proportion_formatted}</b> ${this.mutationName}`);
+        ttip.select("#counts").text(`(${format(",")(d.mutation_count)} / ${format(",")(d.lineage_count)})`);
+      } else {
+        ttip.select("#other_data").classed("hidden", false);
+        ttip.select("#proportion").html("");
+        ttip.select("#counts").text("");
+      }
 
       // fix location
       ttip
@@ -320,11 +347,13 @@ export default Vue.extend({
         update => {
           update
             .attr("id", d => d.pangolin_lineage.replace(/\./g, "_"))
+            .style("text-anchor", d => this.x(d.proportion) > textThresh ? "end" : "start")
+            .text(d => d.proportion_formatted)
+            .transition().duration(250)
             .attr("x", d => this.x(d.proportion))
             .attr("dx", d => this.x(d.proportion) > textThresh ? -5 : 5)
-            .style("text-anchor", d => this.x(d.proportion) > textThresh ? "end" : "start")
-            .attr("y", d => this.y(d.pangolin_lineage))
-            .text(d => d.proportion_formatted)
+            .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth() / 2);
+
         },
         exit => {
           exit.call(exit =>
@@ -361,5 +390,8 @@ export default Vue.extend({
 .horizontal-bargraph-x,
 .horizontal-bargraph-y {
     font-size: 16px;
+}
+.small {
+    font-size: small;
 }
 </style>

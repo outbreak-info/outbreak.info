@@ -1,7 +1,7 @@
 <template>
 <div class="container text-left my-5">
   <h1 class="m-0">
-    How to interpret SARS-CoV-2 Mutation Situation Reports
+    How to interpret SARS-CoV-2 Variant Reports
   </h1>
   <section id="caveat-overview" class="my-4 w-75">
     <h3>Caveats &amp; Limitations</h3>
