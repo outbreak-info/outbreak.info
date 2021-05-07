@@ -213,6 +213,32 @@
     }
   },
   {
+    "mutation_name": "B.1.617.2",
+    "pangolin_lineage": "B.1.617.2",
+    "searchTerms": ["B.1.617.2", "B16172"],
+    "reportType": "lineage",
+    "variantType": "Variant of Concern",
+    "location_first_identified": "India",
+    "reportQuery": {
+      "pango": "B.1.617.2",
+      "loc": ["IND", "GBR", "USA"],
+      "selected": "IND"
+    }
+  },
+  {
+    "mutation_name": "B.1.617.3",
+    "pangolin_lineage": "B.1.617.3",
+    "searchTerms": ["B.1.617.3", "B16173"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "location_first_identified": "India",
+    "reportQuery": {
+      "pango": "B.1.617.3",
+      "loc": ["IND", "GBR", "USA"],
+      "selected": "IND"
+    }
+  },
+  {
     "mutation_name": "B.1.429",
     "pangolin_lineage": "B.1.429",
     "mutation_synonyms": ["CA VUI1", "CAL.20C"],
