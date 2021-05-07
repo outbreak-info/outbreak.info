@@ -564,7 +564,7 @@ const state = {
     }, {
     date: new Date("2021-05-07 0:0"),
     category: "data",
-    title: "Added B.1.617.2 as a Variant of Concern, and B.1.617.3 as a Variant of Interest",
+    title: "Added B.1.617.2 as a Variant of Concern, and B.1.617.3 as a Variant of Interest. B.1.427 and B.1.429 downgraded to VOI.",
     description: "Based on the report, <a href=\"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf\">Technical Briefing 10<a/> from PHE.",
     route: {
       name: "MutationReport",

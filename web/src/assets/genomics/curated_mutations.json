@@ -244,7 +244,7 @@
     "mutation_synonyms": ["CA VUI1", "CAL.20C"],
     "searchTerms": ["B.1.429", "CAVUI1", "CA VUI1", "b1429", "cal.20C", "cal20c"],
     "reportType": "lineage",
-    "variantType": "Variant of Concern",
+    "variantType": "Variant of Interest",
     "location_first_identified": "California (United States)",
     "reportQuery": {
       "pango": "B.1.429",
@@ -258,7 +258,7 @@
     "mutation_synonyms": ["CA VUI1", "CAL.20C"],
     "searchTerms": ["B.1.427", "CAVUI1", "CA VUI1", "b1427", "cal.20C", "cal20c"],
     "reportType": "lineage",
-    "variantType": "Variant of Concern",
+    "variantType": "Variant of Interest",
     "location_first_identified": "California",
     "reportQuery": {
       "pango": "B.1.427",
