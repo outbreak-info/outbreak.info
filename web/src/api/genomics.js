@@ -90,7 +90,7 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
 
       curated = nest()
-        .key(d => d.reportType)
+        .key(d => d.variantType)
         .entries(curated);
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"])
@@ -1035,8 +1035,9 @@ function geneSorter(a) {
 }
 
 function reportTypeSorter(a) {
-  const sortingArr = ["lineage", "lineage + mutation", "mutation"];
-  return sortingArr.indexOf(a.key.toLowerCase());
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Mutation of Concern", "Mutation of Interest", "undefined"];
+  // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
+  return sortingArr.indexOf(a.key);
 }
 
 export function getLocationTable(apiurl, location, mutations, totalThreshold) {

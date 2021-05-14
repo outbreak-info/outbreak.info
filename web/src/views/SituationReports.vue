@@ -144,7 +144,7 @@
 
         <!-- report cards (heh) -->
         <div class="row mt-3">
-          <div class="col-sm-12 col-md-12 col-lg-12 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
+          <div class="col-sm-6 col-md-4 col-lg-4 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
             <div class="w-100 p-3 card">
               <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
                 <ReportCard :report="report" />
