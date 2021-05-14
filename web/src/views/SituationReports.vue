@@ -45,11 +45,11 @@
         <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
           <div class="d-flex flex-column">
             View:
-            <div class="d-flex my-2">
+            <div class="d-flex align-items-center my-2">
               <router-link :to="{ hash: '#voc' }">Variants of Concern</router-link>
-              <div class="d-flex flex-wrap ml-3">
-                <small class="text-muted mr-2 align-self-start">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-4" v-for="(curator, idx) in curatorOpts" :key="idx">
+              <div class="d-flex flex-wrap align-items-center ml-3">
+                <small class="text-muted mr-2">classified by:</small>
+                <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
                   <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
                   <span>{{curator.label}}</span>
                   <input type="checkbox" :id="curator.label" :value="curator.label" v-model.lazy="selectedVOC" @change="updateVOC()" />
@@ -58,11 +58,11 @@
               </div>
             </div>
 
-            <div class="d-flex my-2">
+            <div class="d-flex align-items-center my-2">
               <router-link :to="{ hash: '#voi' }">Variants of Interest</router-link>
-              <div class="d-flex flex-wrap ml-3">
-                <small class="text-muted mr-2 align-self-start">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-4" v-for="(curator, idx) in curatorOpts" :key="idx">
+              <div class="d-flex flex-wrap align-items-center ml-3">
+                <small class="text-muted mr-2">classified by:</small>
+                <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
                   <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
                   <span>{{curator.label}}</span>
                   <input type="checkbox" :id="curator.label" :value="curator.label" v-model.lazy="selectedVOI" @change="updateVOI()" />
@@ -154,9 +154,7 @@
         <div class="row mt-3">
           <div class="col-sm-6 col-md-4 col-lg-4 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
             <div class="w-100 p-3 card">
-              <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
                 <ReportCard :report="report" />
-              </router-link>
 
             </div>
           </div>
@@ -236,7 +234,19 @@ export default {
       lastUpdated: null,
       total: null,
       reports: null,
-      curatorOpts: [{label:"outbreak.info", src:"icon-01.svg"}, {label:"CDC", src:"resources/cdc-logo.svg"}, {label:"Public Health England", src:"resources/PHE-logo-square.png"}, {label:"WHO", src:"resources/who-emblem.png"}],
+      curatorOpts: [{
+        label: "outbreak.info",
+        src: "icon-01.svg"
+      }, {
+        label: "CDC",
+        src: "resources/cdc-logo.svg"
+      }, {
+        label: "Public Health England",
+        src: "resources/PHE-logo-square.png"
+      }, {
+        label: "WHO",
+        src: "resources/who-emblem.png"
+      }],
       selectedVOC: [],
       selectedVOI: []
     }

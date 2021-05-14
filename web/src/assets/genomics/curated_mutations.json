@@ -1,4 +1,27 @@
-[{
+[  {
+    "mutation_name": "B.1.1.7",
+    "pangolin_lineage": "B.1.1.7",
+    "nextstrain_clade": "20I/501Y.V1",
+    "mutation_synonyms": ["Variant of Concern 202012/01", "VOC-202012/01", "20B/501Y.V1", "20I/501Y.V1"],
+    "searchTerms": ["B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
+    "reportType": "lineage",
+    "variantType": "Variant of Concern",
+    "dateModified": "XXXX-XX-XX",
+    "classifications": [
+      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"who.int", "variantType": "VOC"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"who.int", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"who.int", "variantType": "VOC"}
+    ],
+    "location_first_identified": "United Kingdom",
+    "description": "Concerns surrounding a new strain of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. <b>B.1.1.7 lineage</b>, also known as <span class='text-highlight'>Variant of Concern 202012/01</span> (VOC-202012/01) or <span class='text-highlight'>20B/501Y.V1</span>, was first identified in the UK in September 2020 and has since been detected in the US and other countries. This is of growing concern because it has shown to be significantly more transmissible than other variants.",
+    "disclaimer": "B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
+    "reportQuery": {
+      "pango": "B.1.1.7",
+      "loc": ["GBR", "USA", "USA_US-CA"],
+      "selected": "GBR"
+    }
+  },
+  {
     "mutation_name": "P.1",
     "pangolin_lineage": "P.1",
     "nextstrain_clade": "20J/501Y.V3",
@@ -264,23 +287,6 @@
       "pango": "B.1.427",
       "loc": ["USA", "USA_US-CA"],
       "selected": "USA_US-CA"
-    }
-  },
-  {
-    "mutation_name": "B.1.1.7",
-    "pangolin_lineage": "B.1.1.7",
-    "nextstrain_clade": "20I/501Y.V1",
-    "mutation_synonyms": ["Variant of Concern 202012/01", "VOC-202012/01", "20B/501Y.V1", "20I/501Y.V1"],
-    "searchTerms": ["B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
-    "reportType": "lineage",
-    "variantType": "Variant of Concern",
-    "location_first_identified": "United Kingdom",
-    "description": "Concerns surrounding a new strain of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. <b>B.1.1.7 lineage</b>, also known as <span class='text-highlight'>Variant of Concern 202012/01</span> (VOC-202012/01) or <span class='text-highlight'>20B/501Y.V1</span>, was first identified in the UK in September 2020 and has since been detected in the US and other countries. This is of growing concern because it has shown to be significantly more transmissible than other variants.",
-    "disclaimer": "B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
-    "reportQuery": {
-      "pango": "B.1.1.7",
-      "loc": ["GBR", "USA", "USA_US-CA"],
-      "selected": "GBR"
     }
   },
   {

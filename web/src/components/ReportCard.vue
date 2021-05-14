@@ -2,7 +2,9 @@
 <div>
   <!-- NAME -->
   <div class="d-flex justify-content-between" id="mutation-name">
-    <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
+    <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
+      <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
+    </router-link>
     <small v-if="report.location_first_identified"><em>first identified in {{ report.location_first_identified }}</em></small>
 
     <!-- <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
@@ -26,26 +28,33 @@
   </div>
 
   <!-- VOC / VOIs -->
-  <div class="d-flex align-items-center mt-3">
-    <div class="tracked-variant-badge voc-logo" v-if="report.variantType == 'Variant of Concern'">
-      <img src="@/assets/icon-01.svg" class="variant-logo" />
-      <span class="ml-2">VOC</span>
-    </div>
+  <div class="d-flex flex-wrap align-items-center mt-3">
     <div class="d-flex flex-column align-items-center">
-      <div class="tracked-variant-badge voc-logo ml-3">
-        <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
+      <div class="tracked-variant-badge voc-logo" v-if="report.variantType == 'Variant of Concern'">
+        <img src="@/assets/icon-01.svg" class="variant-logo" />
         <span class="ml-2">VOC</span>
       </div>
-      <small>
-        <a href="link.com">14 May 2021</a>
+      <small>{{ report.dateModified }}
       </small>
     </div>
 
-    <div class="tracked-variant-badge voc-logo ml-3">
-      <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" />
-      <span class="ml-2">VOC</span>
+    <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
+      <div class="d-flex flex-column align-items-center ml-3">
+        <div class="tracked-variant-badge voc-logo">
+          <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
+          <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
+          <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
+          <span class="ml-2">{{curated.variantType}}</span>
+        </div>
+        <small>
+          <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">{{curated.dateModified}}</a>
+          <a target="_blank" v-else-if="curated.url" :href="curated.url">report</a>
+          <span v-else>{{ curated.dateModified }}</span>
+        </small>
+      </div>
     </div>
   </div>
+
 
 </div>
 </template>
