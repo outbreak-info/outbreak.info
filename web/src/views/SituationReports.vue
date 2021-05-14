@@ -49,9 +49,10 @@
               <router-link :to="{ hash: '#voc' }">Variants of Concern</router-link>
               <div class="d-flex flex-wrap ml-3">
                 <small class="text-muted mr-2 align-self-start">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
-                  <span>{{curator}}</span>
-                  <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOC" @change="updateVOC()" />
+                <label class="b-contain d-flex align-items-center pr-4" v-for="(curator, idx) in curatorOpts" :key="idx">
+                  <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
+                  <span>{{curator.label}}</span>
+                  <input type="checkbox" :id="curator.label" :value="curator.label" v-model.lazy="selectedVOC" @change="updateVOC()" />
                   <div class="b-input"></div>
                 </label>
               </div>
@@ -61,9 +62,10 @@
               <router-link :to="{ hash: '#voi' }">Variants of Interest</router-link>
               <div class="d-flex flex-wrap ml-3">
                 <small class="text-muted mr-2 align-self-start">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
-                  <span>{{curator}}</span>
-                  <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOI" @change="updateVOI()" />
+                <label class="b-contain d-flex align-items-center pr-4" v-for="(curator, idx) in curatorOpts" :key="idx">
+                  <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
+                  <span>{{curator.label}}</span>
+                  <input type="checkbox" :id="curator.label" :value="curator.label" v-model.lazy="selectedVOI" @change="updateVOI()" />
                   <div class="b-input"></div>
                 </label>
               </div>
@@ -234,7 +236,7 @@ export default {
       lastUpdated: null,
       total: null,
       reports: null,
-      curatorOpts: ["outbreak.info", "CDC", "Public Health England", "WHO"],
+      curatorOpts: [{label:"outbreak.info", src:"icon-01.svg"}, {label:"CDC", src:"resources/cdc-logo.svg"}, {label:"Public Health England", src:"resources/PHE-logo-square.png"}, {label:"WHO", src:"resources/who-emblem.png"}],
       selectedVOC: [],
       selectedVOI: []
     }
