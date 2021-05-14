@@ -45,7 +45,7 @@
         <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
           <div class="d-flex flex-column">
             View:
-            <div class="d-flex align-items-center my-2">
+            <div class="d-flex align-items-center justify-content-between my-2">
               <router-link :to="{ hash: '#voc' }">Variants of Concern</router-link>
               <div class="d-flex flex-wrap align-items-center ml-3">
                 <small class="text-muted mr-2">classified by:</small>
@@ -58,7 +58,7 @@
               </div>
             </div>
 
-            <div class="d-flex align-items-center my-2">
+            <div class="d-flex align-items-center justify-content-between my-2">
               <router-link :to="{ hash: '#voi' }">Variants of Interest</router-link>
               <div class="d-flex flex-wrap align-items-center ml-3">
                 <small class="text-muted mr-2">classified by:</small>

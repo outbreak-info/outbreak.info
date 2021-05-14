@@ -5,7 +5,7 @@
     <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
       <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
     </router-link>
-    <small v-if="report.location_first_identified"><em>first identified in {{ report.location_first_identified }}</em></small>
+    <small v-if="report.location_first_identified"><em>first identified in <b>{{ report.location_first_identified }}</b></em></small>
 
     <!-- <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
     <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
