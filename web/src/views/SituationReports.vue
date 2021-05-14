@@ -43,40 +43,46 @@
         </div> -->
 
         <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
-        <div class="d-flex flex-column">
-          View:
-          <div class="d-flex my-2">
-            <router-link :to="{ hash: '#voc' }">Variants of Concern</router-link>
-            <div class="d-flex flex-wrap ml-3">
-              <small class="text-muted mr-2 align-self-start">classified by:</small>
-              <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
-                <span>{{curator}}</span>
-                <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOC" @change="updateVOC()" />
-                <div class="b-input"></div>
-              </label>
+          <div class="d-flex flex-column">
+            View:
+            <div class="d-flex my-2">
+              <router-link :to="{ hash: '#voc' }">Variants of Concern</router-link>
+              <div class="d-flex flex-wrap ml-3">
+                <small class="text-muted mr-2 align-self-start">classified by:</small>
+                <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
+                  <span>{{curator}}</span>
+                  <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOC" @change="updateVOC()" />
+                  <div class="b-input"></div>
+                </label>
+              </div>
+            </div>
+
+            <div class="d-flex my-2">
+              <router-link :to="{ hash: '#voi' }">Variants of Interest</router-link>
+              <div class="d-flex flex-wrap ml-3">
+                <small class="text-muted mr-2 align-self-start">classified by:</small>
+                <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
+                  <span>{{curator}}</span>
+                  <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOI" @change="updateVOI()" />
+                  <div class="b-input"></div>
+                </label>
+              </div>
+            </div>
+
+            <div class="d-flex my-2">
+              <router-link :to="{ hash: '#moc' }">Mutations of Concern</router-link>
+              <router-link :to="{ hash: '#moi' }" class="mx-5">Mutations of Interest</router-link>
             </div>
           </div>
-
-          <div class="d-flex my-2">
-            <router-link :to="{ hash: '#voi' }">Variants of Interest</router-link>
-            <div class="d-flex flex-wrap ml-3">
-              <small class="text-muted mr-2 align-self-start">classified by:</small>
-              <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
-                <span>{{curator}}</span>
-                <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOI" @change="updateVOI()" />
-                <div class="b-input"></div>
-              </label>
+          <div class="d-flex flex-column border-top mt-3 pt-2 w-100">
+            <div class="align-self-center my-3">
+              <div class="btn btn-main" data-toggle="collapse" href="#custom-report" aria-expanded="false">Select my own lineage and/or mutation(s)</div>
             </div>
-          </div>
 
-          <div class="d-flex my-2">
-            <router-link :to="{ hash: '#moc' }">Mutations of Concern</router-link>
-            <router-link :to="{ hash: '#moi' }" class="mx-5">Mutations of Interest</router-link>
+            <section id="custom-report" class="collapse text-left">
+              <CustomReportForm />
+            </section>
           </div>
-        </div>
-        <div class="d-flex border-top mt-3 pt-2">
-            <router-link :to="{ hash: '#custom-report' }">Select my own lineage and/or mutation(s)</router-link>
-        </div>
         </div>
       </div>
 
@@ -86,7 +92,7 @@
     </div>
     <section id="report-list" class="text-left">
 
-      <div class="d-flex align-items-center">
+      <!-- <div class="d-flex align-items-center">
         <div class="tracked-variant-badge voc-logo">
           <img src="@/assets/icon-01.svg" class="variant-logo" />
           <span class="ml-2">VOC</span>
@@ -126,9 +132,9 @@
         <div class="tracked-variant-badge voi-logo ml-3">
           <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" />
           <span class="ml-2">VOI</span>
-        </div>
+        </div> -->
 
-      </div>
+      <!-- </div> -->
 
       <!-- lineage or mutation -->
       <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" :id="group.key.replace(' + ', '_')">
@@ -150,21 +156,11 @@
                 <ReportCard :report="report" />
               </router-link>
 
-              <!-- MUTATION MAP / DEFINITION -->
-              <div class="mutation-map flex-grow-1 px-2">
-                <SARSMutationMap :lineageMutations="report.mutations" :mutationKey="report.mutation_name" />
-              </div>
-
             </div>
           </div>
         </div>
 
       </div>
-    </section>
-
-    <section id="custom-report" class="text-left">
-      <h2 class="m-0 p-0">Create custom report</h2>
-      <CustomReportForm />
     </section>
 
     <ReportAcknowledgements />
@@ -179,7 +175,6 @@ import Vue from "vue";
 import ReportCard from "@/components/ReportCard.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
-import SARSMutationMap from "@/components/SARSMutationMap.vue";
 
 // --- font awesome --
 import {
@@ -210,9 +205,7 @@ import {
 export default {
   name: "SituationReports",
   components: {
-    // ReportLogos,
     ReportCard,
-    SARSMutationMap,
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
@@ -298,34 +291,7 @@ $mutation-width: 275px;
     z-index: -1;
 }
 
-$voc-height: 25px;
-
-.variant-logo {
-    height: $voc-height;
-}
-
-.tracked-variant-badge {
-    color: white;
-    font-weight: 700;
-    font-size: $voc-height * 0.75;
-    display: flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem 0.25rem 0.25rem;
-    border-radius: 0.25rem;
-}
-
-.voc-logo {
-    // border: 2px solid $publication-color;
-    // color: $publication-color;
-    background: $publication-color;
-}
-
-.voi-logo {
-    background: $website-color;
-    // border: 2px solid $website-color;
-    // color: $website-color;
-}
 .font-size-large {
-  font-size: large;
+    font-size: large;
 }
 </style>

@@ -3,11 +3,12 @@
   <!-- NAME -->
   <div class="d-flex justify-content-between" id="mutation-name">
     <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
+    <small v-if="report.location_first_identified"><em>first identified in {{ report.location_first_identified }}</em></small>
 
-    <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
+    <!-- <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
     <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
     <div class="MOC" v-if="report.variantType == 'Mutation of Concern'">Mutation of Concern</div>
-    <div class="MOI" v-if="report.variantType == 'Mutation of Interest'">Mutation of Interest</div>
+    <div class="MOI" v-if="report.variantType == 'Mutation of Interest'">Mutation of Interest</div> -->
   </div>
   <p v-if="report.lineages && report.lineages.length" class="text-muted">
     prominent in<router-link :to="{name:'MutationReport', query:{ pango: lineage }}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
@@ -17,7 +18,6 @@
   </p>
   <!-- DESCRIPTION -->
   <div class="d-flex flex-column text-dark">
-    <small v-if="report.location_first_identified"><em>first identified in {{ report.location_first_identified }}</em></small>
     <small v-if="report.mutation_synonyms && report.mutation_synonyms.length"><span>a.k.a. </span>
       <span v-for="(synonym, sIdx) in report.mutation_synonyms" :key="sIdx">
         <b>{{ synonym }}</b>
@@ -25,6 +25,27 @@
     </small>
   </div>
 
+  <!-- VOC / VOIs -->
+  <div class="d-flex align-items-center mt-3">
+    <div class="tracked-variant-badge voc-logo" v-if="report.variantType == 'Variant of Concern'">
+      <img src="@/assets/icon-01.svg" class="variant-logo" />
+      <span class="ml-2">VOC</span>
+    </div>
+    <div class="d-flex flex-column align-items-center">
+      <div class="tracked-variant-badge voc-logo ml-3">
+        <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
+        <span class="ml-2">VOC</span>
+      </div>
+      <small>
+        <a href="link.com">14 May 2021</a>
+      </small>
+    </div>
+
+    <div class="tracked-variant-badge voc-logo ml-3">
+      <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" />
+      <span class="ml-2">VOC</span>
+    </div>
+  </div>
 
 </div>
 </template>
@@ -40,3 +61,33 @@ export default {
   }
 }
   </script>
+
+  <style lang="scss">
+  $voc-height: 25px;
+
+  .variant-logo {
+      height: $voc-height;
+  }
+
+  .tracked-variant-badge {
+      color: white;
+      font-weight: 700;
+      font-size: $voc-height * 0.75;
+      display: flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+      border-radius: 0.25rem;
+  }
+
+  .voc-logo {
+      // border: 2px solid $publication-color;
+      // color: $publication-color;
+      background: $publication-color;
+  }
+
+  .voi-logo {
+      background: $website-color;
+      // border: 2px solid $website-color;
+      // color: $website-color;
+  }
+  </style>
