@@ -37,11 +37,47 @@
             {{total}} sequences
           </div>
         </div>
-        <div class="d-flex flex-wrap">
-        <router-link :to="{ hash: '#' + group.key.replace(' + ', '_') }" v-for="(group, i) in reports" :key="'btn'+i"><button class="btn btn-main-outline my-3 mr-3">{{group.key}}</button></router-link>
-        <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main my-3 mr-3">Create custom report</button></router-link>
-        </div>
+        <!-- <div class="d-flex flex-wrap">
+          <router-link :to="{ hash: '#' + group.key.replace(' + ', '_') }" v-for="(group, i) in reports" :key="'btn'+i"><button class="btn btn-main-outline my-3 mr-3">{{group.key}}</button></router-link>
+          <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main my-3 mr-3">Create custom report</button></router-link>
+        </div> -->
 
+        <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
+        <div class="d-flex flex-column">
+          View:
+          <div class="d-flex my-2">
+            <router-link :to="{ hash: '#voc' }">Variants of Concern</router-link>
+            <div class="d-flex flex-wrap ml-3">
+              <small class="text-muted mr-2 align-self-start">classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
+                <span>{{curator}}</span>
+                <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOC" @change="updateVOC()" />
+                <div class="b-input"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex my-2">
+            <router-link :to="{ hash: '#voi' }">Variants of Interest</router-link>
+            <div class="d-flex flex-wrap ml-3">
+              <small class="text-muted mr-2 align-self-start">classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-3" v-for="(curator, idx) in curatorOpts" :key="idx">
+                <span>{{curator}}</span>
+                <input type="checkbox" :id="curator" :value="curator" v-model.lazy="selectedVOI" @change="updateVOI()" />
+                <div class="b-input"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex my-2">
+            <router-link :to="{ hash: '#moc' }">Mutations of Concern</router-link>
+            <router-link :to="{ hash: '#moi' }" class="mx-5">Mutations of Interest</router-link>
+          </div>
+        </div>
+        <div class="d-flex border-top mt-3 pt-2">
+            <router-link :to="{ hash: '#custom-report' }">Select my own lineage and/or mutation(s)</router-link>
+        </div>
+        </div>
       </div>
 
       <!-- <ReportLogos class="my-4" /> -->
@@ -49,6 +85,51 @@
 
     </div>
     <section id="report-list" class="text-left">
+
+      <div class="d-flex align-items-center">
+        <div class="tracked-variant-badge voc-logo">
+          <img src="@/assets/icon-01.svg" class="variant-logo" />
+          <span class="ml-2">VOC</span>
+        </div>
+
+        <div class="tracked-variant-badge voi-logo ml-3">
+          <img src="@/assets/icon-01.svg" class="variant-logo" />
+          <span class="ml-2">VOI</span>
+        </div>
+
+
+        <div class="tracked-variant-badge voc-logo ml-3">
+          <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" />
+          <span class="ml-2">VOC</span>
+        </div>
+
+        <div class="tracked-variant-badge voi-logo ml-3">
+          <img src="@/assets/resources/cdc-logo.svg" class="variant-logo bg-white" />
+          <span class="ml-2">VOI</span>
+        </div>
+
+        <div class="tracked-variant-badge voc-logo ml-3">
+          <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
+          <span class="ml-2">VOC</span>
+        </div>
+
+        <div class="tracked-variant-badge voi-logo ml-3">
+          <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
+          <span class="ml-2">VOI</span>
+        </div>
+
+        <div class="tracked-variant-badge voc-logo ml-3">
+          <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" />
+          <span class="ml-2">VOC</span>
+        </div>
+
+        <div class="tracked-variant-badge voi-logo ml-3">
+          <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" />
+          <span class="ml-2">VOI</span>
+        </div>
+
+      </div>
+
       <!-- lineage or mutation -->
       <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" :id="group.key.replace(' + ', '_')">
         <div class="d-flex justify-content-between">
@@ -111,7 +192,8 @@ import {
   faClock
 } from "@fortawesome/free-regular-svg-icons";
 import {
-  faSpinner, faInfoCircle
+  faSpinner,
+  faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faClock, faSpinner, faInfoCircle);
@@ -143,6 +225,12 @@ export default {
       return group.toLowerCase() == "lineage" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>" :
         (group.toLowerCase() == "lineage + mutation" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a> with added mutations" :
           "sequences with a particular mutation(s)")
+    },
+    updateVOC() {
+      console.log("VOC")
+    },
+    updateVOI() {
+      console.log("VOC")
     }
   },
   data() {
@@ -152,7 +240,10 @@ export default {
       totalSubscription: null,
       lastUpdated: null,
       total: null,
-      reports: null
+      reports: null,
+      curatorOpts: ["outbreak.info", "CDC", "Public Health England", "WHO"],
+      selectedVOC: [],
+      selectedVOI: []
     }
   },
   mounted() {
@@ -200,10 +291,41 @@ $mutation-width: 275px;
 }
 
 .bg-image {
-  width: 16%;
+    width: 16%;
     position: absolute;
     left: 0;
     opacity: 0.55;
     z-index: -1;
+}
+
+$voc-height: 25px;
+
+.variant-logo {
+    height: $voc-height;
+}
+
+.tracked-variant-badge {
+    color: white;
+    font-weight: 700;
+    font-size: $voc-height * 0.75;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.voc-logo {
+    // border: 2px solid $publication-color;
+    // color: $publication-color;
+    background: $publication-color;
+}
+
+.voi-logo {
+    background: $website-color;
+    // border: 2px solid $website-color;
+    // color: $website-color;
+}
+.font-size-large {
+  font-size: large;
 }
 </style>
