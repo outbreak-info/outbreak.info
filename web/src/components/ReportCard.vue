@@ -8,9 +8,9 @@
     <small v-if="report.location_first_identified"><em>first identified in <b>{{ report.location_first_identified }}</b></em></small>
 
     <!-- <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
-    <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
-    <div class="MOC" v-if="report.variantType == 'Mutation of Concern'">Mutation of Concern</div>
-    <div class="MOI" v-if="report.variantType == 'Mutation of Interest'">Mutation of Interest</div> -->
+	 <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
+	 <div class="MOC" v-if="report.variantType == 'Mutation of Concern'">Mutation of Concern</div>
+	 <div class="MOI" v-if="report.variantType == 'Mutation of Interest'">Mutation of Interest</div> -->
   </div>
   <p v-if="report.lineages && report.lineages.length" class="text-muted">
     prominent in<router-link :to="{name:'MutationReport', query:{ pango: lineage }}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
@@ -40,7 +40,11 @@
 
     <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
       <div class="d-flex flex-column align-items-center ml-3">
-        <div class="tracked-variant-badge voc-logo">
+        <div class="tracked-variant-badge"
+	     :class="[
+		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
+		     ]"
+	     >
           <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
           <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
           <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
