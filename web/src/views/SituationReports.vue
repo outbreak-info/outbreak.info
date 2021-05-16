@@ -150,7 +150,7 @@
 
         <small class="text-highlight" v-html="getReportType(group.key)"></small>
 
-        <!-- report cards (heh) -->
+        <!-- report cards (heh) (Oh I hated these :p) -->
         <div class="row mt-3">
           <div class="col-sm-6 col-md-4 col-lg-4 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
             <div class="w-100 p-3 card">
@@ -246,6 +246,9 @@ export default {
       }, {
         label: "WHO",
         src: "resources/who-emblem.png"
+      }, {
+	label: "ECDC",
+	src: "resources/ecdc-logo.png"
       }],
       selectedVOC: [],
       selectedVOI: []
