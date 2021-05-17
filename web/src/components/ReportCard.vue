@@ -6,11 +6,6 @@
       <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
     </router-link>
     <small v-if="report.location_first_identified"><em>first identified in <b>{{ report.location_first_identified }}</b></em></small>
-
-    <!-- <div class="VOC" v-if="report.variantType == 'Variant of Concern'">Variant of Concern</div>
-    <div class="VOI" v-if="report.variantType == 'Variant of Interest'">Variant of Interest</div>
-    <div class="MOC" v-if="report.variantType == 'Mutation of Concern'">Mutation of Concern</div>
-    <div class="MOI" v-if="report.variantType == 'Mutation of Interest'">Mutation of Interest</div> -->
   </div>
   <p v-if="report.lineages && report.lineages.length" class="text-muted">
     prominent in<router-link :to="{name:'MutationReport', query:{ pango: lineage }}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
@@ -27,16 +22,16 @@
     </small>
   </div>
 
-  <!-- VOC / VOIs -->
+  <!-- VOC / VOIs badges -->
   <div class="d-flex flex-wrap align-items-center mt-3">
     <div class="d-flex flex-column align-items-center">
-      <div class="tracked-variant-badge voc-logo" v-if="report.variantType == 'Variant of Concern'">
+      <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge voc-logo pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
         <img src="@/assets/icon-01.svg" class="variant-logo" />
         <span class="ml-2">VOC</span>
       </div>
       <small>{{ report.dateModified }}
       </small>
-    </div>
+    </router-link>
 
     <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
       <div class="d-flex flex-column align-items-center ml-3">
@@ -63,10 +58,26 @@
 <script>
 import Vue from "vue";
 
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 export default {
   name: "ReportCard",
   props: {
     report: Object
+  },
+  mounted() {
+        tippy(".voc-logo", {
+          content: "Loading...",
+          maxWidth: "200px",
+          placement: "bottom",
+          animation: "fade",
+          theme: "light",
+          onShow(instance) {
+            let info = instance.reference.dataset.tippyInfo;
+            instance.setContent(info);
+          }
+        });
   }
 }
   </script>

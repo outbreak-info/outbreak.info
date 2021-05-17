@@ -139,7 +139,7 @@
       <!-- </div> -->
 
       <!-- lineage or mutation -->
-      <div class="mutation-group mb-5" v-for="(group, i) in reports" :key="i" :id="group.key.replace(' + ', '_')">
+      <div class="mutation-group mb-5" v-for="(group, i) in filteredReports" :key="i" :id="group.key.replace(' + ', '_')">
         <div class="d-flex justify-content-between">
           <h2 class="mb-0">{{ group.key | capitalize }} Reports</h2>
           <div class="d-flex align-items-center text-sec" v-if="i === 0">
@@ -204,6 +204,10 @@ import {
 
 export default {
   name: "SituationReports",
+  props: {
+    voc: [Array, String],
+    voi: [Array, String]
+  },
   components: {
     ReportCard,
     CustomReportForm,
@@ -215,7 +219,7 @@ export default {
   },
   methods: {
     getReportType(group) {
-      return group.toLowerCase() == "lineage" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>" :
+      return group.toLowerCase() == "variant of concern" ? "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy<a class='ml-2' href='http://localhost:8080/situation-reports/caveats#variant'>read more</a>" :
         (group.toLowerCase() == "lineage + mutation" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a> with added mutations" :
           "sequences with a particular mutation(s)")
     },
@@ -234,6 +238,7 @@ export default {
       lastUpdated: null,
       total: null,
       reports: null,
+      filteredReports: null,
       curatorOpts: [{
         label: "outbreak.info",
         src: "icon-01.svg"
@@ -255,6 +260,8 @@ export default {
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
+      console.log(this.reports)
+      this.filteredReports = this.reports;
     })
     this.totalSubscription = getSequenceCount(this.$genomicsurl, null, true).subscribe(total => {
       this.total = total;
