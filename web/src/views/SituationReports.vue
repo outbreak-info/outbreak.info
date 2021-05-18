@@ -37,10 +37,6 @@
             {{total}} sequences
           </div>
         </div>
-        <!-- <div class="d-flex flex-wrap">
-          <router-link :to="{ hash: '#' + group.key.replace(' + ', '_') }" v-for="(group, i) in reports" :key="'btn'+i"><button class="btn btn-main-outline my-3 mr-3">{{group.key}}</button></router-link>
-          <router-link :to="{ hash: '#custom-report' }"><button class="btn btn-main my-3 mr-3">Create custom report</button></router-link>
-        </div> -->
 
         <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
           <div class="d-flex flex-column">
@@ -88,55 +84,8 @@
         </div>
       </div>
 
-      <!-- <ReportLogos class="my-4" /> -->
-
-
     </div>
     <section id="report-list" class="text-left">
-
-      <!-- <div class="d-flex align-items-center">
-        <div class="tracked-variant-badge voc-logo">
-          <img src="@/assets/icon-01.svg" class="variant-logo" />
-          <span class="ml-2">VOC</span>
-        </div>
-
-        <div class="tracked-variant-badge voi-logo ml-3">
-          <img src="@/assets/icon-01.svg" class="variant-logo" />
-          <span class="ml-2">VOI</span>
-        </div>
-
-
-        <div class="tracked-variant-badge voc-logo ml-3">
-          <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" />
-          <span class="ml-2">VOC</span>
-        </div>
-
-        <div class="tracked-variant-badge voi-logo ml-3">
-          <img src="@/assets/resources/cdc-logo.svg" class="variant-logo bg-white" />
-          <span class="ml-2">VOI</span>
-        </div>
-
-        <div class="tracked-variant-badge voc-logo ml-3">
-          <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
-          <span class="ml-2">VOC</span>
-        </div>
-
-        <div class="tracked-variant-badge voi-logo ml-3">
-          <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
-          <span class="ml-2">VOI</span>
-        </div>
-
-        <div class="tracked-variant-badge voc-logo ml-3">
-          <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" />
-          <span class="ml-2">VOC</span>
-        </div>
-
-        <div class="tracked-variant-badge voi-logo ml-3">
-          <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" />
-          <span class="ml-2">VOI</span>
-        </div> -->
-
-      <!-- </div> -->
 
       <!-- lineage or mutation -->
       <div class="mutation-group mb-5" v-for="(group, i) in filteredReports" :key="i" :id="group.key.replace(' + ', '_')">
@@ -154,7 +103,7 @@
         <div class="row mt-3">
           <div class="col-sm-6 col-md-4 col-lg-4 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
             <div class="w-100 p-3 card">
-                <ReportCard :report="report" />
+              <ReportCard :report="report" />
 
             </div>
           </div>
@@ -219,7 +168,8 @@ export default {
   },
   methods: {
     getReportType(group) {
-      return group.toLowerCase() == "variant of concern" ? "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy<a class='ml-2' href='http://localhost:8080/situation-reports/caveats#variant'>read more</a>" :
+      return group.toLowerCase() == "variant of concern" ?
+        "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy<a class='ml-2' href='http://localhost:8080/situation-reports/caveats#variant'>read more</a>" :
         (group.toLowerCase() == "lineage + mutation" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a> with added mutations" :
           "sequences with a particular mutation(s)")
     },
@@ -240,21 +190,23 @@ export default {
       reports: null,
       filteredReports: null,
       curatorOpts: [{
-        label: "outbreak.info",
-        src: "icon-01.svg"
-      }, {
-        label: "CDC",
-        src: "resources/cdc-logo.svg"
-      }, {
-        label: "Public Health England",
-        src: "resources/PHE-logo-square.png"
-      }, {
-        label: "WHO",
-        src: "resources/who-emblem.png"
-      }, {
-	label: "ECDC",
-	src: "resources/ecdc-logo.png"
-      }],
+          label: "outbreak.info",
+          src: "icon-01.svg"
+        }, {
+          label: "CDC",
+          src: "resources/cdc-logo.svg"
+        }, {
+          label: "ECDC",
+          src: "resources/ecdc-logo.png"
+        },
+        {
+          label: "Public Health England",
+          src: "resources/PHE-logo-square.png"
+        }, {
+          label: "WHO",
+          src: "resources/who-emblem.png"
+        }
+      ],
       selectedVOC: [],
       selectedVOI: []
     }
