@@ -189,6 +189,7 @@ export default {
       total: null,
       reports: null,
       filteredReports: null,
+      // sort in alpha order
       curatorOpts: [{
           label: "outbreak.info",
           src: "icon-01.svg"

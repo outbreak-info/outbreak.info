@@ -1,11 +1,24 @@
 <template>
 <div>
   <!-- NAME -->
-  <div class="d-flex justify-content-between" id="mutation-name">
+  <div class="d-flex justify-content-between align-items-center" id="mutation-name">
     <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
       <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
     </router-link>
     <small v-if="report.location_first_identified"><em>first identified in <b>{{ report.location_first_identified }}</b></em></small>
+
+    <div class="d-flex flex-column align-items-center">
+      <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge voc-logo pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
+        <img src="@/assets/icon-01.svg" class="variant-logo" />
+        <span class="ml-2">VOC</span>
+      </router-link>
+      <router-link :to="{ hash: '#voi', params: {} }" class="tracked-variant-badge voi-logo pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
+        <img src="@/assets/icon-01.svg" class="variant-logo" />
+        <span class="ml-2">VOI</span>
+      </router-link>
+      <small>{{ report.dateModified }}
+      </small>
+    </div>
   </div>
   <p v-if="report.lineages && report.lineages.length" class="text-muted">
     prominent in<router-link :to="{name:'MutationReport', query:{ pango: lineage }}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
@@ -23,27 +36,17 @@
   </div>
 
   <!-- VOC / VOIs badges -->
-  <div class="d-flex flex-wrap align-items-center mt-3">
-    <div class="d-flex flex-column align-items-center">
-      <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge voc-logo pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
-        <img src="@/assets/icon-01.svg" class="variant-logo" />
-        <span class="ml-2">VOC</span>
-      </div>
-      <small>{{ report.dateModified }}
-      </small>
-    </router-link>
 
+  <div class="d-flex flex-wrap align-items-center mt-3">
     <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
       <div class="d-flex flex-column align-items-center ml-3">
-        <div class="tracked-variant-badge"
-	     :class="[
+        <div class="tracked-variant-badge" :class="[
 		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
-		     ]"
-	     >
+		     ]">
           <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
           <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
           <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
-	  <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
+          <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
           <span class="ml-2">{{curated.variantType}}</span>
         </div>
         <small>
@@ -73,6 +76,17 @@ export default {
   },
   mounted() {
         tippy(".voc-logo", {
+          content: "Loading...",
+          maxWidth: "200px",
+          placement: "bottom",
+          animation: "fade",
+          theme: "light",
+          onShow(instance) {
+            let info = instance.reference.dataset.tippyInfo;
+            instance.setContent(info);
+          }
+        });
+        tippy(".voi-logo", {
           content: "Loading...",
           maxWidth: "200px",
           placement: "bottom",
