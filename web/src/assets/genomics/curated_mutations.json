@@ -7,12 +7,12 @@
     "searchTerms": ["B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
     "reportType": "lineage",
     "variantType": "Variant of Concern",
-    "dateModified": "XXXX-XX-XX",
+    "dateModified": "2021-02-01",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/csr/don/31-december-2020-sars-cov2-variants/en/", "variantType": "VOC"},
-      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
-      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/959426/Variant_of_Concern_VOC_202012_01_Technical_Briefing_5.pdf", "variantType": "VOC"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+      {"author": "WHO", "dateModified": "2020-12-31", "url":"https://www.who.int/csr/don/31-december-2020-sars-cov2-variants/en/", "variantType": "VOC"},
+      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "2020-12-21", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/959426/Variant_of_Concern_VOC_202012_01_Technical_Briefing_5.pdf", "variantType": "VOC"},
+      {"author": "ECDC", "dateModified": "2020-12-29", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
     "location_first_identified": "United Kingdom",
     "description": "Concerns surrounding a new strain of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. <b>B.1.1.7 lineage</b>, also known as <span class='text-highlight'>Variant of Concern 202012/01</span> (VOC-202012/01) or <span class='text-highlight'>20B/501Y.V1</span>, was first identified in the UK in September 2020 and has since been detected in the US and other countries. This is of growing concern because it has shown to be significantly more transmissible than other variants.",
@@ -32,10 +32,10 @@
     "searchTerms": ["P.1", "B.1.1.28.1", "20J/501Y.V3", "b11281", "501Y.V3"],
     "reportType": "lineage",
     "variantType": "Variant of Concern",
-    "dateModified": "XXXX-XX-XX",
+    "dateModified": "2021-02-01",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
-      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
@@ -161,12 +161,12 @@
     "searchTerms": ["B.1.351", "20H/501Y.V2", "501Y.V2"],
     "reportType": "lineage",
     "variantType": "Variant of Concern",
-    "dateModified": "XXXX-XX-XX",
+    "dateModified": "2021-02-01",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
-      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "url": "https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+      {"author": "ECDC", "dateModified": "2020-12-29", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
     "location_first_identified": "South Africa",
     "reportQuery": {
@@ -181,6 +181,7 @@
     "searchTerms": ["B.1.526.1", "B15261"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-04-01",
     "classifications": [
       {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
@@ -200,8 +201,9 @@
     "searchTerms": ["B.1.526.2", "B15262"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-04-01",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
@@ -219,8 +221,9 @@
     "searchTerms": ["P.2", "P2"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-04-01",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
@@ -238,8 +241,9 @@
     "searchTerms": ["B.1.526", "B1526"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-04-01",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
@@ -257,8 +261,9 @@
     "searchTerms": ["B.1.617", "B1617"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-04-27",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
@@ -276,8 +281,9 @@
     "searchTerms": ["B.1.617.1", "B16171"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-04-27",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
@@ -295,8 +301,9 @@
     "searchTerms": ["B.1.617.2", "B16172"],
     "reportType": "lineage",
     "variantType": "Variant of Concern",
+    "dateModified": "2021-05-07",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
@@ -314,8 +321,9 @@
     "searchTerms": ["B.1.617.3", "B16173"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-05-07",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
@@ -334,10 +342,11 @@
     "searchTerms": ["B.1.429", "CAVUI1", "CA VUI1", "b1429", "cal.20C", "cal20c"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
-    "location_first_identified": "California (United States)",
+    "location_first_identified": "California",
+    "dateModified": "2021-05-07",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
-      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "2021-03-16", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
@@ -354,9 +363,10 @@
     "searchTerms": ["B.1.427", "CAVUI1", "CA VUI1", "b1427", "cal.20C", "cal20c"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
+    "dateModified": "2021-05-07",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
-      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "2021-03-16", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
@@ -368,7 +378,7 @@
     }
   },
   {
-    "mutation_name": "B.1.1.7 with S:E484K",
+    "mutation_name": "B.1.1.7 + S:E484K",
     "pangolin_lineage": "B.1.1.7",
     "reportQuery": {
       "pango": "B.1.1.7",
@@ -381,9 +391,10 @@
     "searchTerms": ["B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
     "reportType": "Lineage + Mutation",
     "variantType": "Variant of Concern",
+    "dateModified": "2021-02-26",
     "classifications": [
-      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
-      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
