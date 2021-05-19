@@ -241,7 +241,7 @@
     "searchTerms": ["B.1.526", "B1526"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
-    "dateModified": "2021-04-01",
+    "dateModified": "2021-02-26",
     "classifications": [
       {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
