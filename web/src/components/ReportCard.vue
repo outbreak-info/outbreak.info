@@ -3,7 +3,7 @@
   <!-- NAME -->
   <div class="d-flex justify-content-between align-items-center" id="mutation-name">
     <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
-      <h4 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h4>
+      <h3 class="m-0 pb-1 mr-3 underline-hover"><b>{{ report.mutation_name }}</b></h3>
     </router-link>
     <small v-if="report.location_first_identified"><em>first identified in <b>{{ report.location_first_identified }}</b></em></small>
 
@@ -37,9 +37,9 @@
 
   <!-- VOC / VOIs badges -->
 
-  <div class="d-flex flex-wrap align-items-center mt-3">
+  <div class="d-flex flex-wrap align-items-center mt-2 pt-3 border-top">
     <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-      <div class="d-flex flex-column align-items-center ml-3">
+      <div class="d-flex flex-column align-items-center mr-3">
         <div class="tracked-variant-badge" :class="[
 		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
 		     ]">
@@ -102,10 +102,14 @@ export default {
   </script>
 
   <style lang="scss">
-  $voc-height: 25px;
+  $voc-height: 20px;
 
   .variant-logo {
       height: $voc-height;
+  }
+
+  .variant-logo-large {
+      height: $voc-height * 1.25;
   }
 
   .tracked-variant-badge {
@@ -114,7 +118,7 @@ export default {
       font-size: $voc-height * 0.75;
       display: flex;
       align-items: center;
-      padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+      padding: 0.25rem 0.5rem 0.25rem 0.35rem;
       border-radius: 0.25rem;
   }
 

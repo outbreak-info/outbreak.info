@@ -99,6 +99,82 @@
 
         <small class="text-highlight" v-html="getReportType(group.key)"></small>
 
+        <table class="bg-white">
+          <thead class="text-uppercase">
+            <tr>
+              <th>
+
+              </th>
+
+              <th>
+                variant
+              </th>
+
+              <th>
+                classification
+              </th>
+              <th>
+                first identified
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(report, rIdx) in group.values" :key="rIdx" class="checkbook">
+              <td class="align-middle">
+                <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge voc-logo pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
+                  <img src="@/assets/icon-01.svg" class="variant-logo-large" />
+                  <span class="ml-2 variant-logo-large">VOC</span>
+                </router-link>
+                <router-link :to="{ hash: '#voi', params: {} }" class="tracked-variant-badge voi-logo pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
+                  <img src="@/assets/icon-01.svg" class="variant-logo-large" />
+                  <span class="ml-2 variant-logo-large">VOI</span>
+                </router-link>
+                <small>{{ report.dateModified }}
+                </small>
+              </td>
+
+              <td style="width: 250px">
+                <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
+                  <h4 class="m-0"><b>{{ report.mutation_name }}</b></h4>
+                </router-link>
+                <div class="d-flex flex-column text-muted line-height-1">
+                  <small v-if="report.mutation_synonyms && report.mutation_synonyms.length"><span>a.k.a. </span>
+                    <span v-for="(synonym, sIdx) in report.mutation_synonyms" :key="sIdx">
+                      <b>{{ synonym }}</b>
+                      <span v-if="sIdx < report.mutation_synonyms.length - 1">, </span></span>
+                  </small>
+                </div>
+              </td>
+
+              <td class="d-flex flex-wrap align-items-center">
+                <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
+                  <div class="d-flex flex-column align-items-center mr-3">
+                    <div class="tracked-variant-badge" :class="[
+            		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
+            		     ]">
+                      <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
+                      <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
+                      <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
+                      <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
+                      <span class="ml-2">{{curated.variantType}}</span>
+                    </div>
+                    <small>
+                      <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">{{curated.dateModified}}</a>
+                      <a target="_blank" v-else-if="curated.url" :href="curated.url">report</a>
+                      <span v-else>{{ curated.dateModified }}</span>
+                    </small>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                {{ report.location_first_identified }}
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+
         <!-- report cards (heh) (Oh I hated these :p) -->
         <div class="row mt-3">
           <div class="col-sm-6 col-md-4 col-lg-4 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
@@ -124,6 +200,10 @@ import Vue from "vue";
 import ReportCard from "@/components/ReportCard.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
+
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 
 // --- font awesome --
 import {
@@ -268,5 +348,47 @@ $mutation-width: 275px;
 
 .font-size-large {
     font-size: large;
+}
+
+td {
+  padding: 0.25rem 0.5rem;
+}
+
+.checkbook:nth-child(2n+1) {
+    background: lighten($base-grey,70%);
+    border-bottom: 1px solid #dee2e6!important;
+}
+
+$voc-height: 16px;
+
+.variant-logo {
+    height: $voc-height;
+}
+
+.variant-logo-large {
+    height: $voc-height * 1.5;
+    font-size: $voc-height * 1.5 * 0.75;
+}
+
+.tracked-variant-badge {
+    color: white;
+    font-weight: 700;
+    font-size: $voc-height * 0.75;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem 0.25rem 0.35rem;
+    border-radius: 0.25rem;
+}
+
+.voc-logo {
+    // border: 2px solid $publication-color;
+    // color: $publication-color;
+    background: $publication-color;
+}
+
+.voi-logo {
+    background: $website-color;
+    // border: 2px solid $website-color;
+    // color: $website-color;
 }
 </style>
