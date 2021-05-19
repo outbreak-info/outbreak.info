@@ -176,14 +176,14 @@
         </table>
 
         <!-- report cards (heh) (Oh I hated these :p) -->
-        <div class="row mt-3">
+        <!-- <div class="row mt-3">
           <div class="col-sm-6 col-md-4 col-lg-4 mb-3 d-flex report-group" v-for="(report, rIdx) in group.values" :key="rIdx" id="mutation-report">
             <div class="w-100 p-3 card">
               <ReportCard :report="report" />
 
             </div>
           </div>
-        </div>
+        </div> -->
 
       </div>
     </section>
@@ -238,7 +238,7 @@ export default {
     voi: [Array, String]
   },
   components: {
-    ReportCard,
+    // ReportCard,
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon
