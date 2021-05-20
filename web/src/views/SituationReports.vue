@@ -148,7 +148,7 @@
 
               <td class="d-flex flex-wrap align-items-center">
                 <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-                  <div class="d-flex flex-column align-items-center mr-3" style="width:70px">
+                  <div class="d-flex flex-column align-items-center mr-3" style="width:75px">
                     <div class="tracked-variant-badge">
                       <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                       <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
