@@ -121,13 +121,13 @@
           <tbody>
             <tr v-for="(report, rIdx) in group.values" :key="rIdx" class="checkbook">
               <td class="align-middle">
-                <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge voc-logo pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
+                <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-2 variant-logo-large">VOC</span>
+                  <span class="ml-1 voc-logo variant-logo-large">VOC</span>
                 </router-link>
-                <router-link :to="{ hash: '#voi', params: {} }" class="tracked-variant-badge voi-logo pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
+                <router-link :to="{ hash: '#voi', params: {} }" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-2 variant-logo-large">VOI</span>
+                  <span class="ml-1 voi-logo variant-logo-large">VOI</span>
                 </router-link>
                 <small>{{ report.dateModified }}
                 </small>
@@ -148,15 +148,15 @@
 
               <td class="d-flex flex-wrap align-items-center">
                 <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-                  <div class="d-flex flex-column align-items-center mr-3">
-                    <div class="tracked-variant-badge" :class="[
-            		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
-            		     ]">
+                  <div class="d-flex flex-column align-items-center mr-3" style="width:70px">
+                    <div class="tracked-variant-badge">
                       <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                       <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
-                      <img src="@/assets/resources/who-emblem.png" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
+                      <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
                       <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
-                      <span class="ml-2">{{curated.variantType}}</span>
+                      <span :class="[
+              		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
+              		     ]">{{curated.variantType}}</span>
                     </div>
                     <small>
                       <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">{{curated.dateModified}}</a>
@@ -285,7 +285,7 @@ export default {
           src: "resources/PHE-logo-square.png"
         }, {
           label: "WHO",
-          src: "resources/who-emblem.png"
+          src: "resources/who-emblem.svg"
         }
       ],
       selectedVOC: [],
@@ -359,16 +359,12 @@ td {
     border-bottom: 1px solid #dee2e6!important;
 }
 
-$voc-height: 16px;
+$voc-height: 20px;
 
 .variant-logo {
     height: $voc-height;
 }
 
-.variant-logo-large {
-    height: $voc-height * 1.5;
-    font-size: $voc-height * 1.5 * 0.75;
-}
 
 .tracked-variant-badge {
     color: white;
@@ -376,19 +372,30 @@ $voc-height: 16px;
     font-size: $voc-height * 0.75;
     display: flex;
     align-items: center;
-    padding: 0.25rem 0.5rem 0.25rem 0.35rem;
-    border-radius: 0.25rem;
+    // padding: 0.25rem 0.5rem 0.25rem 0.35rem;
+    // border-radius: 0.25rem;
 }
 
 .voc-logo {
     // border: 2px solid $publication-color;
     // color: $publication-color;
     background: $publication-color;
+    height: $voc-height;
+    border-left: 4px solid lighten($publication-color, 20%);
+    padding: 0 0.25rem;
 }
 
 .voi-logo {
     background: $website-color;
     // border: 2px solid $website-color;
     // color: $website-color;
+    height: $voc-height;
+    border-left: 4px solid lighten($website-color, 23%);
+    padding: 0 0.25rem;
+}
+
+.variant-logo-large {
+    height: $voc-height * 1.25;
+    font-size: $voc-height * 1.25 * 0.75;
 }
 </style>
