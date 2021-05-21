@@ -131,7 +131,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(report, rIdx) in group.values" :key="rIdx" class="checkbook">
+            <tr v-for="(report, rIdx) in group.values" :key="rIdx" class="checkbook" :id="report.identifier">
               <td class="align-middle">
                 <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
@@ -145,7 +145,7 @@
                 </small>
               </td>
 
-              <td style="width: 250px">
+              <td style="width: 200px">
                 <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
                   <h4 class="m-0"><b>{{ report.mutation_name }}</b></h4>
                 </router-link>
@@ -160,24 +160,24 @@
 
               <td class="" style="width:385px">
                 <div class="d-flex flex-wrap">
-                <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-                  <div class="d-flex flex-column align-items-center mr-3" style="width:75px">
-                    <div class="tracked-variant-badge">
-                      <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
-                      <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
-                      <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
-                      <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
-                      <span :class="[
+                  <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
+                    <div class="d-flex flex-column align-items-center mr-3" style="width:75px">
+                      <div class="tracked-variant-badge">
+                        <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
+                        <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
+                        <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
+                        <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
+                        <span :class="[
               		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
               		     ]">{{curated.variantType}}</span>
+                      </div>
+                      <small>
+                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">{{curated.dateModified}}</a>
+                        <a target="_blank" v-else-if="curated.url" :href="curated.url">report</a>
+                        <span v-else>{{ curated.dateModified }}</span>
+                      </small>
                     </div>
-                    <small>
-                      <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">{{curated.dateModified}}</a>
-                      <a target="_blank" v-else-if="curated.url" :href="curated.url">report</a>
-                      <span v-else>{{ curated.dateModified }}</span>
-                    </small>
                   </div>
-                </div>
                 </div>
               </td>
 
@@ -188,13 +188,13 @@
               <td>
                 <div class="d-flex flex-wrap">
 
-                <span v-for="(mutation, mIdx) in report.mutations" :key="mIdx">
-                  <router-link :to="{ name: 'MutationReport', query: {muts: mutation.mutation} }">
-                    <span v-if="mutation.type == 'substitution'">{{mutation.gene}}:<b>{{mutation.ref_aa}}{{mutation.codon_num}}{{mutation.alt_aa}}</b></span>
-                    <span v-else>{{mutation.gene}}:<b>{{mutation.mutation.split(":")[1].toUpperCase()}}</b></span>
-                  </router-link>
-                  <span v-if="mIdx < report.mutations.length - 1" class="mr-1">,</span>
-                </span>
+                  <span v-for="(mutation, mIdx) in report.mutations" :key="mIdx">
+                    <router-link :to="{ name: 'MutationReport', query: {muts: mutation.mutation} }">
+                      <span v-if="mutation.type == 'substitution'">{{mutation.gene}}:<b>{{mutation.ref_aa}}{{mutation.codon_num}}{{mutation.alt_aa}}</b></span>
+                      <span v-else>{{mutation.gene}}:<b>{{mutation.mutation.split(":")[1].toUpperCase()}}</b></span>
+                    </router-link>
+                    <span v-if="mIdx < report.mutations.length - 1" class="mr-1">,</span>
+                  </span>
                 </div>
 
                 <router-link class="btn btn-main-outline mt-2 px-2 py-0" :to="{ name: 'SituationReportComparison', query: {pango: report.pangolin_lineage }}">
@@ -209,7 +209,13 @@
 
               <td>
                 <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: report.reportQuery }">View report</router-link>
-
+                <div class="text-highlight line-height-1 fa-sm mt-2" v-if="report.related">
+                  related:
+                  <span v-for="(related, rIdx) in report.related" :key="rIdx">
+                  <router-link :to="{hash: related.identifier}">{{related.label}}</router-link>
+                  <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
+                  </span>
+                </div>
               </td>
 
             </tr>
@@ -407,12 +413,12 @@ $mutation-width: 275px;
     font-size: large;
 }
 
-td{
+td {
     padding: 0.5rem;
 }
 
 th {
-  padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.5rem;
     font-weight: 400;
 }
 

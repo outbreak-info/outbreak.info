@@ -1,6 +1,8 @@
 [
   {
     "mutation_name": "B.1.1.7",
+    "identifier": "B_1_1_7",
+    "related": [{"identifier": "B_1_1_7_SE484K", "label": "B.1.1.7 + E484K"}],
     "pangolin_lineage": "B.1.1.7",
     "nextstrain_clade": "20I/501Y.V1",
     "mutation_synonyms": ["Variant of Concern 202012/01", "VOC-202012/01", "20B/501Y.V1", "20I/501Y.V1"],
@@ -25,6 +27,8 @@
   },
   {
     "mutation_name": "P.1",
+    "identifier": "P_1",
+    "related": [{"identifier": "P_2", "label": "P.2"}],
     "pangolin_lineage": "P.1",
     "nextstrain_clade": "20J/501Y.V3",
     "pangolin_url": "https://cov-lineages.org/lineages/lineage_P.1.html",
@@ -155,6 +159,7 @@
   },
   {
     "mutation_name": "B.1.351",
+    "identifier": "B_1_351",
     "pangolin_lineage": "B.1.351",
     "nextstrain_clade": "20H/501Y.V2",
     "mutation_synonyms": ["20H/501Y.V2"],
@@ -177,6 +182,8 @@
   },
   {
     "mutation_name": "B.1.526.1",
+    "identifier": "B_1_526_1",
+    "related": [{"identifier": "B_1_526", "label": "B.1.526"}, {"identifier": "B_1_526_2", "label": "B.1.526.2"}],
     "pangolin_lineage": "B.1.526.1",
     "searchTerms": ["B.1.526.1", "B15261"],
     "reportType": "lineage",
@@ -198,6 +205,8 @@
   {
     "mutation_name": "B.1.526.2",
     "pangolin_lineage": "B.1.526.2",
+    "identifier": "B_1_526_2",
+    "related": [{"identifier": "B_1_526", "label": "B.1.526"}, {"identifier": "B_1_526_1", "label": "B.1.526.1"}],
     "searchTerms": ["B.1.526.2", "B15262"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
@@ -217,6 +226,8 @@
   },
   {
     "mutation_name": "P.2",
+    "identifier": "P_2",
+    "related": [{"identifier": "P_1", "label": "P.1"}],
     "pangolin_lineage": "P.2",
     "searchTerms": ["P.2", "P2"],
     "reportType": "lineage",
@@ -238,6 +249,8 @@
   {
     "mutation_name": "B.1.526",
     "pangolin_lineage": "B.1.526",
+    "identifier": "B_1_526",
+    "related": [{"identifier": "B_1_526_1", "label": "B.1.526.1"}, {"identifier": "B_1_526_2", "label": "B.1.526.2"}],
     "searchTerms": ["B.1.526", "B1526"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
@@ -258,6 +271,8 @@
   {
     "mutation_name": "B.1.617",
     "pangolin_lineage": "B.1.617",
+    "identifier": "B_1_617",
+    "related": [{"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
     "searchTerms": ["B.1.617", "B1617"],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
@@ -279,6 +294,8 @@
     "mutation_name": "B.1.617.1",
     "pangolin_lineage": "B.1.617.1",
     "searchTerms": ["B.1.617.1", "B16171"],
+    "identifier": "B_1_617_1",
+    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
     "reportType": "lineage",
     "variantType": "Variant of Interest",
     "dateModified": "2021-05-03",
@@ -297,6 +314,8 @@
   },
   {
     "mutation_name": "B.1.617.2",
+    "identifier": "B_1_617_2",
+    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
     "pangolin_lineage": "B.1.617.2",
     "searchTerms": ["B.1.617.2", "B16172"],
     "reportType": "lineage",
@@ -317,6 +336,8 @@
   },
   {
     "mutation_name": "B.1.617.3",
+    "identifier": "B_1_617_3",
+    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}],
     "pangolin_lineage": "B.1.617.3",
     "searchTerms": ["B.1.617.3", "B16173"],
     "reportType": "lineage",
@@ -337,6 +358,8 @@
   },
   {
     "mutation_name": "B.1.429",
+    "identifier": "B_1_429",
+    "related": [{"identifier": "B_1_427", "label": "B.1.427"}],
     "pangolin_lineage": "B.1.429",
     "mutation_synonyms": ["CA VUI1", "CAL.20C"],
     "searchTerms": ["B.1.429", "CAVUI1", "CA VUI1", "b1429", "cal.20C", "cal20c"],
@@ -358,6 +381,8 @@
   },
   {
     "mutation_name": "B.1.427",
+    "identifier": "B_1_427",
+    "related": [{"identifier": "B_1_429", "label": "B.1.429"}],
     "pangolin_lineage": "B.1.427",
     "mutation_synonyms": ["CA VUI1", "CAL.20C"],
     "searchTerms": ["B.1.427", "CAVUI1", "CA VUI1", "b1427", "cal.20C", "cal20c"],
@@ -379,6 +404,8 @@
   },
   {
     "mutation_name": "B.1.1.7 + S:E484K",
+    "identifier": "B_1_1_7_SE484K",
+    "related": [{"identifier": "B_1_1_7", "label": "B.1.1.7"}],
     "pangolin_lineage": "B.1.1.7",
     "reportQuery": {
       "pango": "B.1.1.7",
