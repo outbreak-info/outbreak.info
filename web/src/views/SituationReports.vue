@@ -99,7 +99,7 @@
 
         <small class="text-highlight" v-html="getReportType(group.key)"></small>
 
-        <table class="bg-white">
+        <table class="bg-white m-auto">
           <thead class="text-uppercase">
             <tr>
               <th>
@@ -108,17 +108,25 @@
 
               <th class="pointer" @click="sortVar('mutation_name', group.values)">
                 variant
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'mutation_name' && tableSortAsc"/>
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'mutation_name' && !tableSortAsc"/>
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'mutation_name' && tableSortAsc" />
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'mutation_name' && !tableSortAsc" />
               </th>
 
               <th>
                 classification
               </th>
+
               <th class="pointer" @click="sortVar('location_first_identified', group.values)">
                 first identified
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'location_first_identified' && tableSortAsc"/>
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'location_first_identified' && !tableSortAsc"/>
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'location_first_identified' && tableSortAsc" />
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'location_first_identified' && !tableSortAsc" />
+              </th>
+
+              <th>
+                Mutations<sup>*</sup>
+              </th>
+              <th>
+
               </th>
             </tr>
           </thead>
@@ -150,7 +158,8 @@
                 </div>
               </td>
 
-              <td class="d-flex flex-wrap align-items-center">
+              <td class="" style="width:385px">
+                <div class="d-flex flex-wrap">
                 <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
                   <div class="d-flex flex-column align-items-center mr-3" style="width:75px">
                     <div class="tracked-variant-badge">
@@ -169,10 +178,38 @@
                     </small>
                   </div>
                 </div>
+                </div>
               </td>
 
               <td>
                 {{ report.location_first_identified }}
+              </td>
+
+              <td>
+                <div class="d-flex flex-wrap">
+
+                <span v-for="(mutation, mIdx) in report.mutations" :key="mIdx">
+                  <router-link :to="{ name: 'MutationReport', query: {muts: mutation.mutation} }">
+                    <span v-if="mutation.type == 'substitution'">{{mutation.gene}}:<b>{{mutation.ref_aa}}{{mutation.codon_num}}{{mutation.alt_aa}}</b></span>
+                    <span v-else>{{mutation.gene}}:<b>{{mutation.mutation.split(":")[1].toUpperCase()}}</b></span>
+                  </router-link>
+                  <span v-if="mIdx < report.mutations.length - 1" class="mr-1">,</span>
+                </span>
+                </div>
+
+                <router-link class="btn btn-main-outline mt-2 px-2 py-0" :to="{ name: 'SituationReportComparison', query: {pango: report.pangolin_lineage }}">
+                  <small>View mutation frequency
+                  </small>
+                </router-link>
+                <router-link class="btn btn-main-outline ml-2 mt-2 px-2 py-0" :to="{ name: 'SituationReportComparison', query: {pango: report.pangolin_lineage }}">
+                  <small>Compare lineages
+                  </small>
+                </router-link>
+              </td>
+
+              <td>
+                <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: report.reportQuery }">View report</router-link>
+
               </td>
 
             </tr>
@@ -370,12 +407,12 @@ $mutation-width: 275px;
     font-size: large;
 }
 
-td,
-th {
-    padding: 0.25rem 0.5rem;
+td{
+    padding: 0.5rem;
 }
 
 th {
+  padding: 0.25rem 0.5rem;
     font-weight: 400;
 }
 

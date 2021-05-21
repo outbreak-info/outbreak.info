@@ -28,6 +28,7 @@ import {
 } from "@/api/epi-traces.js";
 
 import CURATED from "@/assets/genomics/curated_mutations.json";
+import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
@@ -67,7 +68,17 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
     )
   } else {
     return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
-      mutationObj["mutations"] = charMuts;
+      function compare(a, b) {
+        if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
+          return 0;
+        if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
+          return -1;
+        if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
+          return 0;
+        return (a.codon_num < b.codon_num ? -1 : 0);
+      }
+
+      mutationObj["mutations"] = charMuts.sort(compare);
     }));
   }
 }
@@ -1119,8 +1130,8 @@ export function getSequenceCount(apiurl, location = null, cumulative = true, rou
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      if(rounded) {
-        return(Math.floor(results.total_count/1e5) / 10)
+      if (rounded) {
+        return (Math.floor(results.total_count / 1e5) / 10)
       }
       if (cumulative) {
         return (results.total_count.toLocaleString())
