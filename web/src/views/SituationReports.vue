@@ -48,7 +48,7 @@
                 <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
                   <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
                   <span>{{curator.label}}</span>
-                  <input type="checkbox" :id="curator.label" :value="curator.label" v-model.lazy="selectedVOC" @change="updateVOC()" />
+                  <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" />
                   <div class="b-input"></div>
                 </label>
               </div>
@@ -61,7 +61,7 @@
                 <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
                   <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
                   <span>{{curator.label}}</span>
-                  <input type="checkbox" :id="curator.label" :value="curator.label" v-model.lazy="selectedVOI" @change="updateVOI()" />
+                  <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" />
                   <div class="b-input"></div>
                 </label>
               </div>
@@ -282,6 +282,8 @@ import {
   format
 } from "d3";
 
+import cloneDeep from "lodash/cloneDeep";
+
 import {
   getReportList,
   getSequenceCount
@@ -326,11 +328,48 @@ export default {
         reportGroup.sort((a, b) => a[varName] > b[varName] ? -1 : 1)
       }
     },
-    updateVOC() {
-      console.log("VOC")
+    filterVOC() {
+      // cleanup empty values
+    if(!this.selectedVOC[0]) {
+      this.selectedVOC = [];
+    }
+    if(!this.selectedVOI[0]) {
+      this.selectedVOI = [];
+    }
+      this.filterReports();
+
+      this.$router.push({
+        name: "SituationReports",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          voc: this.selectedVOC,
+          voi: this.selectedVOI
+        }
+      });
     },
-    updateVOI() {
-      console.log("VOC")
+    filterReports() {
+      this.filteredReports = cloneDeep(this.reports);
+
+      if (this.selectedVOC.length || this.selectedVOI.length) {
+        // filter the selected VOC/VOI
+        this.filteredReports.forEach(report => {
+          let filtered = [];
+          report.values.forEach(d => {
+            if (d.classifications) {
+              // VOC
+              if (d.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || d.classifications.filter(x => x.variantType == "VOI" && this.selectedVOI.includes(x.author)).length) {
+                filtered.push(d);
+              } else if(d.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || d.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
+                filtered.push(d)
+              }
+            }
+          })
+
+          report.values = filtered;
+        })
+      } 
     }
   },
   data() {
@@ -346,19 +385,24 @@ export default {
       tableSortAsc: true,
       // sort in alpha order
       curatorOpts: [{
+        id: "outbreak",
           label: "outbreak.info",
           src: "icon-01.svg"
         }, {
+          id: "CDC",
           label: "CDC",
           src: "resources/cdc-logo.svg"
         }, {
+          id: "ECDC",
           label: "ECDC",
           src: "resources/ecdc-logo.png"
         },
         {
+          id: "PHE",
           label: "Public Health England",
           src: "resources/PHE-logo-square.png"
         }, {
+          id: "WHO",
           label: "WHO",
           src: "resources/who-emblem.svg"
         }
@@ -368,12 +412,15 @@ export default {
     }
   },
   mounted() {
+    this.selectedVOC = this.voc ? typeof(this.voc) == "string" ? [this.voc] : this.voc : [];
+    this.selectedVOI = this.voi ? typeof(this.voi) == "string" ? [this.voi] : this.voi : [];
+
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
-      console.log(this.reports)
-      this.filteredReports = this.reports;
+      this.filterReports();
     })
+
     this.totalSubscription = getSequenceCount(this.$genomicsurl, null, true).subscribe(total => {
       this.total = total;
     })
