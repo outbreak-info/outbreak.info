@@ -106,15 +106,19 @@
 
               </th>
 
-              <th>
+              <th class="pointer" @click="sortVar('mutation_name', group.values)">
                 variant
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'mutation_name' && tableSortAsc"/>
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'mutation_name' && !tableSortAsc"/>
               </th>
 
               <th>
                 classification
               </th>
-              <th>
+              <th class="pointer" @click="sortVar('location_first_identified', group.values)">
                 first identified
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'location_first_identified' && tableSortAsc"/>
+                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'location_first_identified' && !tableSortAsc"/>
               </th>
             </tr>
           </thead>
@@ -217,10 +221,12 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faSpinner,
-  faInfoCircle
+  faInfoCircle,
+  faSortAlphaDown,
+  faSortAlphaDownAlt
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faClock, faSpinner, faInfoCircle);
+library.add(faClock, faSpinner, faInfoCircle, faSortAlphaDown, faSortAlphaDownAlt);
 
 import {
   mapState
@@ -253,6 +259,18 @@ export default {
         (group.toLowerCase() == "lineage + mutation" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a> with added mutations" :
           "sequences with a particular mutation(s)")
     },
+    sortVar(varName, reportGroup) {
+      if (varName == this.tableSortVar) {
+        this.tableSortAsc = !this.tableSortAsc;
+      } else {
+        this.tableSortVar = varName;
+      }
+      if (this.tableSortAsc) {
+        reportGroup.sort((a, b) => a[varName] < b[varName] ? -1 : 1)
+      } else {
+        reportGroup.sort((a, b) => a[varName] > b[varName] ? -1 : 1)
+      }
+    },
     updateVOC() {
       console.log("VOC")
     },
@@ -269,6 +287,8 @@ export default {
       total: null,
       reports: null,
       filteredReports: null,
+      tableSortVar: "mutation_name",
+      tableSortAsc: true,
       // sort in alpha order
       curatorOpts: [{
           label: "outbreak.info",
@@ -350,8 +370,13 @@ $mutation-width: 275px;
     font-size: large;
 }
 
-td {
-  padding: 0.25rem 0.5rem;
+td,
+th {
+    padding: 0.25rem 0.5rem;
+}
+
+th {
+    font-weight: 400;
 }
 
 .checkbook:nth-child(2n+1) {
@@ -364,7 +389,6 @@ $voc-height: 20px;
 .variant-logo {
     height: $voc-height;
 }
-
 
 .tracked-variant-badge {
     color: white;
