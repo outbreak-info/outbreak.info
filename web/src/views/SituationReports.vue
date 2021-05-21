@@ -212,8 +212,8 @@
                 <div class="text-highlight line-height-1 fa-sm mt-2" v-if="report.related">
                   related:
                   <span v-for="(related, rIdx) in report.related" :key="rIdx">
-                  <router-link :to="{hash: related.identifier}">{{related.label}}</router-link>
-                  <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
+                    <router-link :to="{hash: related.identifier}">{{related.label}}</router-link>
+                    <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
                   </span>
                 </div>
               </td>
@@ -221,6 +221,9 @@
             </tr>
           </tbody>
         </table>
+
+        <sup class="text-muted mr-1 mt-1">*</sup><small class="text-muted">Mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)
+          </router-link></small>
 
         <!-- report cards (heh) (Oh I hated these :p) -->
         <!-- <div class="row mt-3">
@@ -276,6 +279,10 @@ import {
 } from "vuex";
 
 import {
+  format
+} from "d3";
+
+import {
   getReportList,
   getSequenceCount
 } from "@/api/genomics.js";
@@ -293,7 +300,11 @@ export default {
     FontAwesomeIcon
   },
   computed: {
-    ...mapState("admin", ["reportloading"])
+    ...mapState("admin", ["reportloading"]),
+    ...mapState("genomics", ["characteristicThreshold"]),
+    charMutThreshold() {
+      return (format(".0%")(this.characteristicThreshold))
+    }
   },
   methods: {
     getReportType(group) {
@@ -307,6 +318,7 @@ export default {
         this.tableSortAsc = !this.tableSortAsc;
       } else {
         this.tableSortVar = varName;
+        this.tableSortAsc = true;
       }
       if (this.tableSortAsc) {
         reportGroup.sort((a, b) => a[varName] < b[varName] ? -1 : 1)
