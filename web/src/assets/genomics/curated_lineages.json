@@ -1,0 +1,441 @@
+[
+  {
+    "mutation_name": "B.1.1.7",
+    "identifier": "B_1_1_7",
+    "related": [{"identifier": "B_1_1_7_SE484K", "label": "B.1.1.7 + E484K"}],
+    "pangolin_lineage": "B.1.1.7",
+    "nextstrain_clade": "20I/501Y.V1",
+    "mutation_synonyms": ["Variant of Concern 202012/01", "VOC-202012/01", "20B/501Y.V1", "20I/501Y.V1"],
+    "searchTerms": ["B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
+    "reportType": "lineage",
+    "variantType": "Variant of Concern",
+    "dateModified": "2021-02-01",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2020-12-31", "url":"https://www.who.int/csr/don/31-december-2020-sars-cov2-variants/en/", "variantType": "VOC"},
+      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "2020-12-21", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/959426/Variant_of_Concern_VOC_202012_01_Technical_Briefing_5.pdf", "variantType": "VOC"},
+      {"author": "ECDC", "dateModified": "2020-12-29", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+    ],
+    "location_first_identified": "United Kingdom",
+    "description": "Concerns surrounding a new strain of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. <b>B.1.1.7 lineage</b>, also known as <span class='text-highlight'>Variant of Concern 202012/01</span> (VOC-202012/01) or <span class='text-highlight'>20B/501Y.V1</span>, was first identified in the UK in September 2020 and has since been detected in the US and other countries. This is of growing concern because it has shown to be significantly more transmissible than other variants.",
+    "disclaimer": "B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
+    "reportQuery": {
+      "pango": "B.1.1.7",
+      "loc": ["GBR", "USA", "USA_US-CA"],
+      "selected": "GBR"
+    }
+  },
+  {
+    "mutation_name": "P.1",
+    "identifier": "P_1",
+    "related": [{"identifier": "P_2", "label": "P.2"}],
+    "pangolin_lineage": "P.1",
+    "nextstrain_clade": "20J/501Y.V3",
+    "pangolin_url": "https://cov-lineages.org/lineages/lineage_P.1.html",
+    "mutation_synonyms": ["B.1.1.28.1", "20J/501Y.V3"],
+    "searchTerms": ["P.1", "B.1.1.28.1", "20J/501Y.V3", "b11281", "501Y.V3"],
+    "reportType": "lineage",
+    "variantType": "Variant of Concern",
+    "dateModified": "2021-02-01",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+    ],
+    "location_first_identified": "Brazil",
+    "reportQuery": {
+      "pango": "P.1",
+      "selected": "BRA",
+      "loc": ["BRA", "USA", "USA_US-CA"]
+    }
+  },
+  {
+    "mutation_name": "S:N501Y",
+    "reportType": "mutation",
+    "reportQuery": {
+      "muts": "S:N501Y"
+    },
+    "additionalMutations": [{
+      "type": "substitution",
+      "is_synonymous": false,
+      "mutation": "S:N501Y",
+      "gene": "S",
+      "ref_aa": "N",
+      "codon_num": 501,
+      "alt_aa": "Y"
+    }]
+  },
+  {
+    "mutation_name": "S:S13I & S:L452R",
+    "reportType": "mutation",
+    "reportQuery": {
+      "muts": ["S:S13I", "S:L452R"],
+      "loc": ["USA_US-CA"],
+      "selected": "USA_US-CA"
+    },
+    "additionalMutations": [
+      {
+	"type": "substitution",
+	"is_synonymous": false,
+	"mutation": "S:S13I",
+	"gene": "S",
+	"ref_aa": "S",
+	"codon_num": 13,
+	"alt_aa": "I"
+      },
+      {
+	"type": "substitution",
+	"is_synonymous": false,
+	"mutation": "S:L452R",
+	"gene": "S",
+	"ref_aa": "L",
+	"codon_num": 452,
+	"alt_aa": "R"
+      }
+    ]
+  },
+  {
+    "mutation_name": "S:L452R",
+    "reportType": "mutation",
+    "reportQuery": {
+      "muts": ["S:L452R"],
+      "loc": ["USA_US-CA"],
+      "selected": "USA_US-CA"
+    },
+    "additionalMutations": [{
+      "type": "substitution",
+      "is_synonymous": false,
+      "mutation": "S:L452R",
+      "gene": "S",
+      "ref_aa": "L",
+      "codon_num": 452,
+      "alt_aa": "R"
+    }]
+  },
+  {
+    "mutation_name": "S:E484K",
+    "reportType": "mutation",
+    "variantType": "Mutation of Concern",
+    "reportQuery": {
+      "muts": ["S:E484K"]
+    },
+    "additionalMutations": [{
+      "type": "substitution",
+      "is_synonymous": false,
+      "mutation": "S:E484K",
+      "gene": "S",
+      "ref_aa": "E",
+      "codon_num": 484,
+      "alt_aa": "K"
+    }]
+  },
+  {
+    "mutation_name": "S:N501Y & S:E484K",
+    "reportType": "mutation",
+    "reportQuery": {
+      "muts": ["S:N501Y", "S:E484K"]
+    },
+    "additionalMutations": [
+      {
+	"type": "substitution",
+	"is_synonymous": false,
+	"mutation": "S:E484K",
+	"gene": "S",
+	"ref_aa": "E",
+	"codon_num": 484,
+	"alt_aa": "K"
+      },
+      {
+	"type": "substitution",
+	"is_synonymous": false,
+	"mutation": "S:N501Y",
+	"gene": "S",
+	"ref_aa": "N",
+	"codon_num": 501,
+	"alt_aa": "Y"
+      }
+    ]
+  },
+  {
+    "mutation_name": "B.1.351",
+    "identifier": "B_1_351",
+    "pangolin_lineage": "B.1.351",
+    "nextstrain_clade": "20H/501Y.V2",
+    "mutation_synonyms": ["20H/501Y.V2"],
+    "searchTerms": ["B.1.351", "20H/501Y.V2", "501Y.V2"],
+    "reportType": "lineage",
+    "variantType": "Variant of Concern",
+    "dateModified": "2021-02-01",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "url": "https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
+      {"author": "ECDC", "dateModified": "2020-12-29", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+    ],
+    "location_first_identified": "South Africa",
+    "reportQuery": {
+      "pango": "B.1.351",
+      "selected": "ZAF",
+      "loc": ["ZAF", "USA", "USA_US-CA"]
+    }
+  },
+  {
+    "mutation_name": "B.1.526.1",
+    "identifier": "B_1_526_1",
+    "related": [{"identifier": "B_1_526", "label": "B.1.526"}, {"identifier": "B_1_526_2", "label": "B.1.526.2"}],
+    "pangolin_lineage": "B.1.526.1",
+    "searchTerms": ["B.1.526.1", "B15261"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-04-01",
+    "classifications": [
+      {"author": "WHO", "dateModified": "XXXX-XX-XX", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "New York",
+    "reportQuery": {
+      "pango": "B.1.526.1",
+      "loc": ["USA", "USA_US-NY"],
+      "selected": "USA_US-NY"
+    }
+  },
+  {
+    "mutation_name": "B.1.526.2",
+    "pangolin_lineage": "B.1.526.2",
+    "identifier": "B_1_526_2",
+    "related": [{"identifier": "B_1_526", "label": "B.1.526"}, {"identifier": "B_1_526_1", "label": "B.1.526.1"}],
+    "searchTerms": ["B.1.526.2", "B15262"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-04-01",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "New York",
+    "reportQuery": {
+      "pango": "B.1.526.2",
+      "loc": ["USA", "USA_US-NY"],
+      "selected": "USA_US-NY"
+    }
+  },
+  {
+    "mutation_name": "P.2",
+    "identifier": "P_2",
+    "related": [{"identifier": "P_1", "label": "P.1"}],
+    "pangolin_lineage": "P.2",
+    "searchTerms": ["P.2", "P2"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-04-01",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "Brazil",
+    "reportQuery": {
+      "pango": "P.2",
+      "loc": ["BRA", "USA", "USA_US-CA"],
+      "selected": "BRA"
+    }
+  },
+  {
+    "mutation_name": "B.1.526",
+    "pangolin_lineage": "B.1.526",
+    "identifier": "B_1_526",
+    "related": [{"identifier": "B_1_526_1", "label": "B.1.526.1"}, {"identifier": "B_1_526_2", "label": "B.1.526.2"}],
+    "searchTerms": ["B.1.526", "B1526"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-02-26",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "New York",
+    "reportQuery": {
+      "pango": "B.1.526",
+      "loc": ["USA", "USA_US-NY"],
+      "selected": "USA_US-NY"
+    }
+  },
+  {
+    "mutation_name": "B.1.617",
+    "pangolin_lineage": "B.1.617",
+    "identifier": "B_1_617",
+    "related": [{"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
+    "searchTerms": ["B.1.617", "B1617"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-04-15",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "India",
+    "reportQuery": {
+      "pango": "B.1.617",
+      "loc": ["IND", "GBR", "USA"],
+      "selected": "IND"
+    }
+  },
+  {
+    "mutation_name": "B.1.617.1",
+    "pangolin_lineage": "B.1.617.1",
+    "searchTerms": ["B.1.617.1", "B16171"],
+    "identifier": "B_1_617_1",
+    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-05-03",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "India",
+    "reportQuery": {
+      "pango": "B.1.617.1",
+      "loc": ["IND", "GBR", "USA"],
+      "selected": "IND"
+    }
+  },
+  {
+    "mutation_name": "B.1.617.2",
+    "identifier": "B_1_617_2",
+    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
+    "pangolin_lineage": "B.1.617.2",
+    "searchTerms": ["B.1.617.2", "B16172"],
+    "reportType": "lineage",
+    "variantType": "Variant of Concern",
+    "dateModified": "2021-05-07",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "India",
+    "reportQuery": {
+      "pango": "B.1.617.2",
+      "loc": ["IND", "GBR", "USA"],
+      "selected": "IND"
+    }
+  },
+  {
+    "mutation_name": "B.1.617.3",
+    "identifier": "B_1_617_3",
+    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}],
+    "pangolin_lineage": "B.1.617.3",
+    "searchTerms": ["B.1.617.3", "B16173"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-05-07",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "India",
+    "reportQuery": {
+      "pango": "B.1.617.3",
+      "loc": ["IND", "GBR", "USA"],
+      "selected": "IND"
+    }
+  },
+  {
+    "mutation_name": "B.1.429",
+    "identifier": "B_1_429",
+    "related": [{"identifier": "B_1_427", "label": "B.1.427"}],
+    "pangolin_lineage": "B.1.429",
+    "mutation_synonyms": ["CA VUI1", "CAL.20C"],
+    "searchTerms": ["B.1.429", "CAVUI1", "CA VUI1", "b1429", "cal.20C", "cal20c"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "location_first_identified": "California",
+    "dateModified": "2021-05-07",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "2021-03-16", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "reportQuery": {
+      "pango": "B.1.429",
+      "loc": ["USA", "USA_US-CA"],
+      "selected": "USA_US-CA"
+    }
+  },
+  {
+    "mutation_name": "B.1.427",
+    "identifier": "B_1_427",
+    "related": [{"identifier": "B_1_429", "label": "B.1.429"}],
+    "pangolin_lineage": "B.1.427",
+    "mutation_synonyms": ["CA VUI1", "CAL.20C"],
+    "searchTerms": ["B.1.427", "CAVUI1", "CA VUI1", "b1427", "cal.20C", "cal20c"],
+    "reportType": "lineage",
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-05-07",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "2021-03-16", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "California",
+    "reportQuery": {
+      "pango": "B.1.427",
+      "loc": ["USA", "USA_US-CA"],
+      "selected": "USA_US-CA"
+    }
+  },
+  {
+    "mutation_name": "B.1.1.7 + S:E484K",
+    "identifier": "B_1_1_7_SE484K",
+    "related": [{"identifier": "B_1_1_7", "label": "B.1.1.7"}],
+    "pangolin_lineage": "B.1.1.7",
+    "reportQuery": {
+      "pango": "B.1.1.7",
+      "muts": ["S:E484K"],
+      "loc": ["GBR", "USA", "USA_US-CA"],
+      "selected": "GBR"
+    },
+    "nextstrain_clade": "20I/501Y.V1",
+    "mutation_synonyms": ["Variant of Concern 202012/01", "VOC-202012/01", "20B/501Y.V1", "20I/501Y.V1"],
+    "searchTerms": ["B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
+    "reportType": "Lineage + Mutation",
+    "variantType": "Variant of Concern",
+    "dateModified": "2021-02-26",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/publications/m/item/weekly-epidemiological-update-on-covid-19---11-may-2021", "variantType": "VOC"},
+      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+    ],
+    "location_first_identified": "United Kingdom",
+    "url": "https://andersen-lab.github.io/hCoV19-sitrep/b117_current_report.html",
+    "description": "Concerns surrounding a new strain of SARS-CoV-2 (hCov-19), the virus behind the COVID-19 pandemic, have been developing. <b>B.1.1.7 lineage</b>, also known as <span class='text-highlight'>Variant of Concern 202012/01</span> (VOC-202012/01) or <span class='text-highlight'>20B/501Y.V1</span>, was first identified in the UK in September 2020 and has since been detected in the US and other countries. This is of growing concern because it has shown to be significantly more transmissible than other variants.",
+    "disclaimer": "B.1.1.7 genomes in the US were identified by S-gene target failures (SGTF) in community-based diagnostic PCR testing. Since this is not an unbiased approach, it does not indicate the true prevalence of the B117 lineage.  <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
+    "additionalMutations": [{
+      "mutation": "S:E484K",
+      "type": "substitution",
+      "gene": "S",
+      "ref_aa": "E",
+      "codon_num": 484,
+      "alt_aa": "K"
+    }]
+  }
+]

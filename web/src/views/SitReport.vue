@@ -36,7 +36,7 @@ export default Vue.extend({
   },
   mounted() {
 
-    axios.get("https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_mutations.json").then(response => {
+    axios.get("https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_lineages.json").then(response => {
       const report = response.data.filter(d => d.identifier == this.$route.params.mutation);
       this.reportUrl = report.length == 1 ? report[0].url : null;
     })

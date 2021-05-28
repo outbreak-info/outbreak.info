@@ -34,7 +34,7 @@ import {
   getAll
 } from "@/api/biothings.js";
 
-import CURATED from "@/assets/genomics/curated_mutations.json";
+import CURATED from "@/assets/genomics/curated_lineages.json";
 
 import store from "@/store";
 
