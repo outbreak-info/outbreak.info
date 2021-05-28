@@ -78,6 +78,10 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
         return (a.codon_num < b.codon_num ? -1 : 0);
       }
 
+      charMuts.forEach(d => {
+        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+      })
+
       mutationObj["mutations"] = charMuts.sort(compare);
     }));
   }

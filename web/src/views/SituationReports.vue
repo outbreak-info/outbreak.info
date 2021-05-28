@@ -123,7 +123,7 @@
               </th>
 
               <th>
-                Mutations<sup>*</sup>
+                S-gene Mutations<sup>*</sup>
               </th>
               <th>
 
@@ -158,10 +158,10 @@
                 </div>
               </td>
 
-              <td class="" style="width:385px">
+              <td class="" style="width:500px">
                 <div class="d-flex flex-wrap">
                   <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-                    <div class="d-flex flex-column align-items-center mr-3" style="width:75px">
+                    <div class="d-flex flex-column align-items-center" :class="{'mr-3': cIdx < report.classifications.length - 1 }" style="width:105px">
                       <div class="tracked-variant-badge">
                         <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
@@ -172,8 +172,8 @@
               		     ]">{{curated.variantType}}</span>
                       </div>
                       <small>
-                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">{{curated.dateModified}}</a>
-                        <a target="_blank" v-else-if="curated.url" :href="curated.url">report</a>
+                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModified}}</a>
+                        <a target="_blank" v-else-if="curated.url" :href="curated.url">citation</a>
                         <span v-else>{{ curated.dateModified }}</span>
                       </small>
                     </div>
@@ -186,9 +186,10 @@
               </td>
 
               <td>
-                <div class="d-flex flex-wrap">
+                <!-- <div class="d-flex flex-wrap"> -->
+                <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :includeXAxis="false" />
 
-                  <span v-for="(mutation, mIdx) in report.mutations" :key="mIdx">
+                <!-- <span v-for="(mutation, mIdx) in report.mutations" :key="mIdx">
                     <router-link :to="{ name: 'MutationReport', query: {muts: mutation.mutation} }">
                       <span v-if="mutation.type == 'substitution'">{{mutation.gene}}:<b>{{mutation.ref_aa}}{{mutation.codon_num}}{{mutation.alt_aa}}</b></span>
                       <span v-else>{{mutation.gene}}:<b>{{mutation.mutation.split(":")[1].toUpperCase()}}</b></span>
@@ -203,6 +204,10 @@
                 </router-link>
                 <router-link class="btn btn-main-outline ml-2 mt-2 px-2 py-0" :to="{ name: 'SituationReportComparison', query: {pango: report.pangolin_lineage }}">
                   <small>Compare lineages
+                  </small>
+                </router-link> -->
+                <router-link :to="{ name: 'SituationReportComparison'}">
+                  <small>Explore all genes
                   </small>
                 </router-link>
               </td>
@@ -222,8 +227,11 @@
           </tbody>
         </table>
 
-        <sup class="text-muted mr-1 mt-1">*</sup><small class="text-muted">Mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)
-          </router-link></small>
+        <div class="mt-2">
+          <sup class="text-muted mr-1">*</sup><small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
+              more)
+            </router-link></small>
+        </div>
 
         <!-- report cards (heh) (Oh I hated these :p) -->
         <!-- <div class="row mt-3">
@@ -250,6 +258,7 @@ import Vue from "vue";
 import ReportCard from "@/components/ReportCard.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
+import MutationHeatmap from "@/components/MutationHeatmap.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -299,7 +308,8 @@ export default {
     // ReportCard,
     CustomReportForm,
     ReportAcknowledgements,
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    MutationHeatmap
   },
   computed: {
     ...mapState("admin", ["reportloading"]),
@@ -330,12 +340,12 @@ export default {
     },
     filterVOC() {
       // cleanup empty values
-    if(!this.selectedVOC[0]) {
-      this.selectedVOC = [];
-    }
-    if(!this.selectedVOI[0]) {
-      this.selectedVOI = [];
-    }
+      if (!this.selectedVOC[0]) {
+        this.selectedVOC = [];
+      }
+      if (!this.selectedVOI[0]) {
+        this.selectedVOI = [];
+      }
       this.filterReports();
 
       this.$router.push({
@@ -351,17 +361,20 @@ export default {
     },
     filterReports() {
       this.filteredReports = cloneDeep(this.reports);
+      console.log(this.filteredReports)
 
       if (this.selectedVOC.length || this.selectedVOI.length) {
         // filter the selected VOC/VOI
         this.filteredReports.forEach(report => {
           let filtered = [];
           report.values.forEach(d => {
+            d["sMutations"] = d.mutations.filter(x => x.gene == "S");
+
             if (d.classifications) {
               // VOC
               if (d.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || d.classifications.filter(x => x.variantType == "VOI" && this.selectedVOI.includes(x.author)).length) {
                 filtered.push(d);
-              } else if(d.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || d.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
+              } else if (d.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || d.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
                 filtered.push(d)
               }
             }
@@ -369,7 +382,13 @@ export default {
 
           report.values = filtered;
         })
-      } 
+      } else {
+        this.filteredReports.forEach(report => {
+          report.values.forEach(d => {
+            d["sMutations"] = d.mutations.filter(x => x.gene == "S");
+          })
+        })
+      }
     }
   },
   data() {
@@ -385,7 +404,7 @@ export default {
       tableSortAsc: true,
       // sort in alpha order
       curatorOpts: [{
-        id: "outbreak",
+          id: "outbreak",
           label: "outbreak.info",
           src: "icon-01.svg"
         }, {
