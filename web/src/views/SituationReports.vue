@@ -122,11 +122,13 @@
                 <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'location_first_identified' && !tableSortAsc" />
               </th>
 
-              <th>
-                S-gene Mutations<sup>*</sup>
-              </th>
+
               <th>
 
+              </th>
+
+              <th>
+                S-gene Mutations<sup>*</sup>
               </th>
             </tr>
           </thead>
@@ -186,33 +188,6 @@
               </td>
 
               <td>
-                <!-- <div class="d-flex flex-wrap"> -->
-                <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :includeXAxis="false" />
-
-                <!-- <span v-for="(mutation, mIdx) in report.mutations" :key="mIdx">
-                    <router-link :to="{ name: 'MutationReport', query: {muts: mutation.mutation} }">
-                      <span v-if="mutation.type == 'substitution'">{{mutation.gene}}:<b>{{mutation.ref_aa}}{{mutation.codon_num}}{{mutation.alt_aa}}</b></span>
-                      <span v-else>{{mutation.gene}}:<b>{{mutation.mutation.split(":")[1].toUpperCase()}}</b></span>
-                    </router-link>
-                    <span v-if="mIdx < report.mutations.length - 1" class="mr-1">,</span>
-                  </span>
-                </div>
-
-                <router-link class="btn btn-main-outline mt-2 px-2 py-0" :to="{ name: 'SituationReportComparison', query: {pango: report.pangolin_lineage }}">
-                  <small>View mutation frequency
-                  </small>
-                </router-link>
-                <router-link class="btn btn-main-outline ml-2 mt-2 px-2 py-0" :to="{ name: 'SituationReportComparison', query: {pango: report.pangolin_lineage }}">
-                  <small>Compare lineages
-                  </small>
-                </router-link> -->
-                <router-link :to="{ name: 'SituationReportComparison'}">
-                  <small>Explore all genes
-                  </small>
-                </router-link>
-              </td>
-
-              <td>
                 <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: report.reportQuery }">View report</router-link>
                 <div class="text-highlight line-height-1 fa-sm mt-2" v-if="report.related">
                   related:
@@ -222,6 +197,15 @@
                   </span>
                 </div>
               </td>
+
+              <td>
+                <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :includeXAxis="false" />
+                <router-link :to="{ name: 'SituationReportComparison'}">
+                  <small>Explore all genes
+                  </small>
+                </router-link>
+              </td>
+
 
             </tr>
           </tbody>
