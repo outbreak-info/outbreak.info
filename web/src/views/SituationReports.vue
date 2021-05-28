@@ -90,7 +90,7 @@
       <!-- lineage or mutation -->
       <div class="mutation-group mb-5" v-for="(group, i) in filteredReports" :key="i" :id="group.key.replace(' + ', '_')">
         <div class="d-flex justify-content-between">
-          <h2 class="mb-0">{{ group.key | capitalize }} Reports</h2>
+          <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
           <div class="d-flex align-items-center text-sec" v-if="i === 0">
             <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
             <router-link :to="{name:'SituationReportCaveats'}" class="text-sec">How to interpret these reports</router-link>
@@ -135,14 +135,14 @@
           <tbody>
             <tr v-for="(report, rIdx) in group.values" :key="rIdx" class="checkbook" :id="report.identifier">
               <td class="align-middle">
-                <router-link :to="{ hash: '#voc', params: {} }" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
+                <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                   <span class="ml-1 voc-logo variant-logo-large">VOC</span>
-                </router-link>
-                <router-link :to="{ hash: '#voi', params: {} }" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
+                </div>
+                <div @click="route2OutbreakClass('vo')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                   <span class="ml-1 voi-logo variant-logo-large">VOI</span>
-                </router-link>
+                </div>
                 <small>{{ report.dateModified }}
                 </small>
               </td>
@@ -205,7 +205,6 @@
                   </small>
                 </router-link>
               </td>
-
 
             </tr>
           </tbody>
@@ -343,9 +342,19 @@ export default {
         }
       });
     },
+    route2OutbreakClass(anchorID) {
+      // clear anything that's selected
+      this.selectedVOC = [];
+      this.selectedVOI = [];
+      this.filterReports();
+      this.$router.push({
+        name: "SituationReports",
+        query: {},
+        hash: `#${anchorID}`
+      })
+    },
     filterReports() {
       this.filteredReports = cloneDeep(this.reports);
-      console.log(this.filteredReports)
 
       if (this.selectedVOC.length || this.selectedVOI.length) {
         // filter the selected VOC/VOI
