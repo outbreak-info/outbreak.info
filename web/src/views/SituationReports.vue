@@ -199,7 +199,7 @@
               </td>
 
               <td>
-                <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :includeXAxis="false" />
+                <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" />
                 <router-link :to="{ name: 'SituationReportComparison'}">
                   <small>Explore all genes
                   </small>

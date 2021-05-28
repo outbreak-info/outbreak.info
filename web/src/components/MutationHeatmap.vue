@@ -105,9 +105,9 @@ export default Vue.extend({
       default: "pangolin_lineage"
     },
     yDomain: Array,
-    includeXAxis: {
+    onlyTopAxis: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   watch: {
@@ -163,9 +163,10 @@ export default Vue.extend({
 
     },
     setupPlot() {
-      if (!this.includeXAxis) {
+      if (this.onlyTopAxis) {
         this.margin.left = 5;
-        this.margin.right = 30;
+        this.margin.right = 27;
+        this.margin.bottom = 5;
       }
 
       this.svg = select(this.$refs.svg);
@@ -191,10 +192,10 @@ export default Vue.extend({
       this.height = this.yDomain.length * this.bandWidth;
       this.y.range([0, this.height]);
 
-      this.xAxisBottom = axisBottom(this.x).tickSizeOuter(0);
-      select(this.$refs.xAxisBottom).call(this.xAxisBottom);
+      if (!this.onlyTopAxis) {
+        this.xAxisBottom = axisBottom(this.x).tickSizeOuter(0);
+        select(this.$refs.xAxisBottom).call(this.xAxisBottom);
 
-      if (this.includeXAxis) {
         this.yAxisLeft = axisLeft(this.y).tickSizeOuter(0);
         select(this.$refs.yAxisLeft).call(this.yAxisLeft);
       }
@@ -469,7 +470,7 @@ export default Vue.extend({
         .rollup(values => values[0].lineage_count)
         .entries(this.data);
 
-      if (this.includeXAxis) {
+      if (!this.onlyTopAxis) {
         const yAxisRightSelector = this.heatmap
           .selectAll(".y-axis-right")
           .data(yDomainFull, d => d.key);
