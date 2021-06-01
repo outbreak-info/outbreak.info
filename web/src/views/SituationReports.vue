@@ -512,7 +512,7 @@ export default {
 
             if (d.classifications) {
               // VOC, VOI, VUI
-              if (d.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || d.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI")&& this.selectedVOI.includes(x.author)).length) {
+              if (d.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || d.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI.includes(x.author)).length) {
                 filtered.push(d);
               } else if (d.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || d.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
                 filtered.push(d)
