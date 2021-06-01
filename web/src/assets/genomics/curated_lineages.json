@@ -9,7 +9,7 @@
     "variantType": "Variant of Interest",
     "classifications": [
       {"author": "PHE", "dateModified": "2021-02-05", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf", "variantType": "VUI"},
-      {"author": "ECDC", "dateModified": "XX", "url":"https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
+      {"author": "ECDC", "url":"https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
     ],
     "location_first_identified": "England",
     "reportQuery": {
@@ -37,7 +37,7 @@
     "variantType": "Variant of Interest",
     "classifications": [
       {"author": "PHE", "dateModified": "2021-05-14", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/988619/Variants_of_Concern_VOC_Technical_Briefing_12_England.pdf", "variantType": "VUI"},
-      {"author": "ECDC", "dateModified": "XX", "url":"https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
+      {"author": "ECDC", "dateModified": "2021-05-20", "url":"https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
     ],
     "reportQuery": {
       "pango": "AV.1"
@@ -109,7 +109,7 @@
       {"author": "WHO", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOC"},
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "2021-02-05", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
     "location_first_identified": "United Kingdom",
     "url": "https://andersen-lab.github.io/hCoV19-sitrep/b117_current_report.html",
@@ -161,7 +161,7 @@
     "classifications": [
       {"author": "WHO", "dateModified": "2021-03-05", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "2021-03-16", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
     "location_first_identified": "California",
     "reportQuery": {
@@ -186,7 +186,7 @@
       {"author": "WHO", "dateModified": "2021-03-05", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "2021-03-16", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "2021-03-10", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf", "variantType": "VUM"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
     "reportQuery": {
       "pango": "B.1.429",
@@ -232,7 +232,7 @@
       {"author": "WHO", "dateModified": "2021-03-24", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-03-10", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf", "variantType": "VUM"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
     ],
     "location_first_identified": "New York",
     "reportQuery": {
@@ -251,7 +251,7 @@
     "dateModified": "2021-04-01",
     "classifications": [
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
     ],
     "location_first_identified": "New York",
     "reportQuery": {
@@ -269,7 +269,7 @@
     "variantType": "Variant of Interest",
     "dateModified": "2021-04-01",
     "classifications": [
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
     ],
     "location_first_identified": "New York",
     "reportQuery": {
@@ -293,7 +293,7 @@
       {"author": "WHO", "dateModified": "2021-04-04", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-04-01", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/979818/Variants_of_Concern_VOC_Technical_Briefing_9_England.pdf", "variantType": "VUI"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
     "location_first_identified": "India",
     "reportQuery": {
@@ -317,7 +317,7 @@
       {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOC"},
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-05-06", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf", "variantType": "VOC"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+      {"author": "ECDC", "dateModified": "2021-05-24", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
     "location_first_identified": "India",
     "reportQuery": {
@@ -338,7 +338,7 @@
     "classifications": [
       {"author": "CDC",  "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-04-27", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf", "variantType": "VUI"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
     "location_first_identified": "India",
     "reportQuery": {
@@ -379,7 +379,7 @@
       {"author": "WHO", "dateModified": "2021-01-11", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOC"},
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
       {"author": "PHE", "dateModified": "2021-01-13", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
     "location_first_identified": "Brazil",
     "reportQuery": {
@@ -403,7 +403,7 @@
       {"author": "WHO", "dateModified": "2021-03-17", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-01-13", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf", "variantType": "VUI"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
+      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
     ],
     "location_first_identified": "Brazil",
     "reportQuery": {
@@ -426,7 +426,7 @@
     "classifications": [
       {"author": "WHO", "dateModified": "2021-03-17", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-03-11", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/975742/Variants_of_Concern_VOC_Technical_Briefing_8_England.pdf", "variantType": "VUI"},
-      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+      {"author": "ECDC", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
     "location_first_identified": "Philippines",
     "reportQuery": {
