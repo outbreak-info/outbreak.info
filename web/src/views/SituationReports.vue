@@ -55,7 +55,12 @@
             </div>
 
             <div class="d-flex align-items-center justify-content-between my-2">
-              <router-link :to="{ hash: '#voi' }">Variants of Interest</router-link>
+              <div class="d-flex flex-column">
+              <router-link :to="{ hash: '#voi' }" class="line-height-1">Variants of Interest</router-link>
+              <div class="text-muted text-size-xs">a.k.a. Variants under Investigation</div>
+              </div>
+
+
               <div class="d-flex flex-wrap align-items-center ml-3">
                 <small class="text-muted mr-2">classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
@@ -665,7 +670,7 @@ $voc-height: 20px;
     padding: 0 0.25rem;
 }
 
-.VOI-logo {
+.VOI-logo, .VUI-logo {
     background: $website-color;
     // border: 2px solid $website-color;
     // color: $website-color;
@@ -674,17 +679,13 @@ $voc-height: 20px;
     padding: 0 0.25rem;
 }
 
-.VUI-logo {
-    background: lighten($website-color, 32%);
-    // border: 2px solid $website-color;
-    color: $website-color;
-    height: $voc-height;
-    border-left: 4px solid lighten($website-color, 15%);
-    padding: 0 0.25rem;
-}
 
 .variant-logo-large {
     height: $voc-height * 1.25;
     font-size: $voc-height * 1.25 * 0.75;
+}
+
+.text-size-xs {
+  font-size: x-small;
 }
 </style>

@@ -1,14 +1,73 @@
 [
   {
+    "mutation_name": "A.23.1 + S:E484K",
+    "identifier":"A_23_1_SE484K",
+    "pangolin_lineage": "A.23.1",
+    "mutation_synonyms": ["VUI-202102/01", "VUI-21FEB-01"],
+    "searchTerms": ["A.23.1", "VUI-202102/01", "VUI-21FEB-01"],
+    "dateModified": "2021-06-01",
+    "variantType": "Variant of Interest",
+    "classifications": [
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"", "variantType": "VUI"}
+    ],
+    "location_first_identified": "England",
+    "reportQuery": {
+      "pango": "A.23.1",
+      "muts": "S:E484K",
+      "selected": "GBR",
+      "loc": ["GBR", ""]
+    },
+    "additionalMutations": [{
+      "mutation": "S:E484K",
+      "type": "substitution",
+      "gene": "S",
+      "ref_aa": "E",
+      "codon_num": 484,
+      "alt_aa": "K"
+    }]
+  },
+  {
+    "mutation_name": "AV.1",
+    "identifier": "AV_1",
+    "pangolin_lineage": "AV.1",
+    "mutation_synonyms": ["VUI-21MAY-01"],
+    "searchTerms": ["VUI-21MAY-01"],
+    "dateModified": "2021-06-01",
+    "variantType": "Variant of Interest",
+    "classifications": [
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"", "variantType": "VUI"}
+    ],
+    "reportQuery": {
+      "pango": "AV.1"
+    }
+  },
+  {
+    "mutation_name": "B.1.1.318",
+    "identifier": "B_1_1_318",
+    "pangolin_lineage": "B.1.1.318",
+    "mutation_synonyms": ["VUI-202102/04", "VUI-21FEB-04"],
+    "searchTerms": ["B.1.1.318", "VUI-202102/04", "VUI-21FEB-04"],
+    "dateModified": "2021-06-01",
+    "variantType": "Variant of Interest",
+    "classifications": [
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"", "variantType": "VUI"}
+    ],
+    "location_first_identified": "England",
+    "reportQuery": {
+      "pango": "B.1.1.318",
+      "selected": "GBR",
+      "loc": ["GBR"]
+    }
+  },
+  {
     "mutation_name": "B.1.1.7",
     "identifier": "B_1_1_7",
     "related": [{"identifier": "B_1_1_7_SE484K", "label": "B.1.1.7 + E484K"}],
     "pangolin_lineage": "B.1.1.7",
     "nextstrain_clade": "20I/501Y.V1",
     "gisaid_clade": "GRY",
-    "mutation_synonyms": ["Alpha", "Variant of Concern 202012/01", "VOC-202012/01", "20B/501Y.V1", "20I/501Y.V1", "GRY", "GR/501Y.V1"],
-    "searchTerms": ["GRY", "GR/501Y.V1", "B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
-    "reportType": "lineage",
+    "mutation_synonyms": ["VOC-20DEC-01", "Alpha", "VOC-202012/01", "20B/501Y.V1", "20I/501Y.V1", "GRY", "GR/501Y.V1"],
+    "searchTerms": ["VOC-20DEC-01", "GRY", "GR/501Y.V1", "B.1.1.7", "Variant of Concern 202012/01", "VOC-202012/01", "202012/01", "20B/501Y.V1", "20I/501Y.V1", "501Y.V1", "voc 20201201", "voc-202012/01", "vui 20201201"],
     "variantType": "Variant of Concern",
     "dateModified": "2021-02-01",
     "classifications": [
@@ -39,9 +98,8 @@
     },
     "nextstrain_clade": "20I/501Y.V1",
     "gisaid_clade": "GRY",
-    "mutation_synonyms": ["Variant of Concern 202102/02", "VOC-202102/02"],
-    "searchTerms": ["B.1.1.7", "Variant of Concern 202102/02", "VOC-202102/02", "202102/02", "voc 202102/02", "vui 202102/02"],
-    "reportType": "Lineage + Mutation",
+    "mutation_synonyms": ["VOC-202102/02", "VOC-21FEB-02"],
+    "searchTerms": ["B.1.1.7", "Variant of Concern 202102/02", "VOC-202102/02", "202102/02", "voc 202102/02", "vui 202102/02", "VOC-21FEB-02"],
     "variantType": "Variant of Concern",
     "dateModified": "2021-02-26",
     "classifications": [
@@ -69,9 +127,8 @@
     "pangolin_lineage": "B.1.351",
     "nextstrain_clade": "20H/501Y.V2",
     "gisaid_clade": "GH/501Y.V2",
-    "mutation_synonyms": ["GH/501Y.V2", "Beta", "20H/501Y.V2"],
-    "searchTerms": ["GH/501Y.V2", "B.1.351", "20H/501Y.V2", "501Y.V2"],
-    "reportType": "lineage",
+    "mutation_synonyms": ["GH/501Y.V2", "Beta", "20H/501Y.V2", "VOC-20DEC-02"],
+    "searchTerms": ["GH/501Y.V2", "B.1.351", "20H/501Y.V2", "501Y.V2", "VOC-20DEC-02"],
     "variantType": "Variant of Concern",
     "dateModified": "2021-02-01",
     "classifications": [
@@ -96,7 +153,6 @@
     "nextstrain_clade": "20C/S.452R",
     "mutation_synonyms": ["Epsilon", "20C/S.452R", "GH/452R.V1", "CA VUI1", "CAL.20C"],
     "searchTerms": ["20C/S.452R", "GH/452R.V1", "B.1.427", "CAVUI1", "CA VUI1", "b1429", "cal.20C", "cal20c"],
-    "reportType": "lineage",
     "variantType": "Variant of Interest",
     "dateModified": "2021-05-07",
     "classifications": [
@@ -121,7 +177,6 @@
     "nextstrain_clade": "20C/S.452R",
     "mutation_synonyms": ["Epsilon", "20C/S.452R", "GH/452R.V1", "CA VUI1", "CAL.20C"],
     "searchTerms": ["20C/S.452R", "GH/452R.V1", "B.1.429", "CAVUI1", "CA VUI1", "b1429", "cal.20C", "cal20c"],
-    "reportType": "lineage",
     "variantType": "Variant of Interest",
     "location_first_identified": "California",
     "dateModified": "2021-05-07",
@@ -138,6 +193,24 @@
     }
   },
   {
+    "mutation_name": "B.1.525",
+    "identifier": "B_1_525",
+    "pangolin_lineage": "B.1.525",
+    "mutation_synonyms": ["UK1188", "VUI-202102/03", "VUI-21FEB-03"],
+    "searchTerms": ["B.1.525", "UK1188", "VUI-202102/03", "VUI-21FEB-03"],
+    "dateModified": "2021-06-01",
+    "variantType": "Variant of Interest",
+    "classifications": [
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"", "variantType": "VUI"}
+    ],
+    "location_first_identified": "England, Nigeria",
+    "reportQuery": {
+      "pango": "B.1.525",
+      "selected": "NGA",
+      "loc": ["GBR", "NGA"]
+    }
+  },
+  {
     "mutation_name": "B.1.526",
     "pangolin_lineage": "B.1.526",
     "nextstrain_clade": "20C/S:484K",
@@ -146,7 +219,6 @@
     "related": [{"identifier": "B_1_526_1", "label": "B.1.526.1"}, {"identifier": "B_1_526_2", "label": "B.1.526.2"}],
     "searchTerms": ["B.1.526", "B1526", "20C/S:484K", "GH"],
     "mutation_synonyms": ["20C/S:484K", "Iota", "GH"],
-    "reportType": "lineage",
     "variantType": "Variant of Interest",
     "dateModified": "2021-02-26",
     "classifications": [
@@ -171,7 +243,6 @@
     "nextstrain_clade": "",
     "mutation_synonyms": [""],
     "searchTerms": ["B.1.526.1", "B15261"],
-    "reportType": "lineage",
     "variantType": "Variant of Interest",
     "dateModified": "2021-04-01",
     "classifications": [
@@ -192,7 +263,6 @@
     "identifier": "B_1_526_2",
     "related": [{"identifier": "B_1_526", "label": "B.1.526"}, {"identifier": "B_1_526_1", "label": "B.1.526.1"}],
     "searchTerms": ["B.1.526.2", "B15262"],
-    "reportType": "lineage",
     "variantType": "Variant of Interest",
     "dateModified": "2021-04-01",
     "classifications": [
@@ -212,13 +282,13 @@
     "pangolin_lineage": "B.1.617",
     "identifier": "B_1_617",
     "related": [{"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
-    "searchTerms": ["B.1.617", "B1617"],
-    "reportType": "lineage",
+    "mutation_synonyms": ["VUI-21APR-01"],
+    "searchTerms": ["B.1.617", "B1617", "VUI-21APR-01"],
     "variantType": "Variant of Interest",
     "dateModified": "2021-04-15",
     "classifications": [
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
-      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VUI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
     "location_first_identified": "India",
@@ -237,7 +307,6 @@
     "searchTerms": ["B.1.617.1", "B16171", "1A/S:154K"],
     "identifier": "B_1_617_1",
     "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
-    "reportType": "lineage",
     "variantType": "Variant of Interest",
     "dateModified": "2021-05-03",
     "classifications": [
@@ -260,9 +329,8 @@
     "pangolin_lineage": "B.1.617.2",
     "nextstrain_clade": "21A/S:478K",
     "gisaid_clade": "G/452R.V3",
-    "searchTerms": ["G/452R.V3", "B.1.617.2", "B16172"],
-    "mutation_synonyms": ["G/452R.V3", "Delta", "21A/S:478K"],
-    "reportType": "lineage",
+    "searchTerms": ["G/452R.V3", "B.1.617.2", "B16172", "VOC-21APR-02"],
+    "mutation_synonyms": ["G/452R.V3", "Delta", "21A/S:478K", "VOC-21APR-02"],
     "variantType": "Variant of Concern",
     "dateModified": "2021-05-07",
     "classifications": [
@@ -283,13 +351,13 @@
     "identifier": "B_1_617_3",
     "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}],
     "pangolin_lineage": "B.1.617.3",
-    "searchTerms": ["B.1.617.3", "B16173"],
-    "reportType": "lineage",
+    "searchTerms": ["B.1.617.3", "B16173", "VUI-21APR-03"],
+    "mutation_synonyms": ["VUI-21APR-03"],
     "variantType": "Variant of Interest",
     "dateModified": "2021-05-07",
     "classifications": [
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
-      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VUI"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
     "location_first_identified": "India",
@@ -302,13 +370,12 @@
   {
     "mutation_name": "P.1",
     "identifier": "P_1",
-    "related": [{"identifier": "P_2", "label": "P.2"}],
+    "related": [{"identifier": "P_2", "label": "P.2"}, {"identifier": "P_3", "label": "P.3"}],
     "pangolin_lineage": "P.1",
     "nextstrain_clade": "20J/501Y.V3",
     "gisaid_clade": "GR/501Y.V3",
-    "mutation_synonyms": ["Gamma", "GR/501Y.V3","B.1.1.28.1", "20J/501Y.V3"],
-    "searchTerms": ["GR/501Y.V3","P.1", "B.1.1.28.1", "20J/501Y.V3", "b11281", "501Y.V3"],
-    "reportType": "lineage",
+    "mutation_synonyms": ["Gamma", "GR/501Y.V3","B.1.1.28.1", "20J/501Y.V3", "VOC-21JAN-02", "VOC-202101/02"],
+    "searchTerms": ["GR/501Y.V3","P.1", "B.1.1.28.1", "20J/501Y.V3", "b11281", "501Y.V3", "VOC-21JAN-02", "VOC-202101/02"],
     "variantType": "Variant of Concern",
     "dateModified": "2021-02-01",
     "classifications": [
@@ -321,21 +388,20 @@
     "reportQuery": {
       "pango": "P.1",
       "selected": "BRA",
-      "loc": ["BRA", "USA", "USA_US-CA"]
+      "loc": ["BRA", "USA", "JPN"]
     }
   },
   {
     "mutation_name": "P.2",
     "identifier": "P_2",
-    "related": [{"identifier": "P_1", "label": "P.1"}],
+    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_3", "label": "P.3"}],
     "pangolin_lineage": "P.2",
     "gisaid_clade": "GR",
-    "nextstrain_clade": "20B/S.484K ",
-    "mutation_synonyms": ["Zeta", "GR", "20B/S.484K"],
-    "searchTerms": ["P.2", "P2", "GR", "20B/S.484K"],
-    "reportType": "lineage",
+    "nextstrain_clade": "20B/S.484K",
+    "mutation_synonyms": ["Zeta", "GR", "20B/S.484K", "VUI-21JAN-01", "VUI-202101/01"],
+    "searchTerms": ["P.2", "P2", "GR", "20B/S.484K", "VUI-21JAN-01", "VUI-202101/01"],
     "variantType": "Variant of Interest",
-    "dateModified": "2021-04-01",
+    "dateModified": "2021-06-01",
     "classifications": [
       {"author": "WHO", "dateModified": "2021-03-17", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
@@ -347,6 +413,30 @@
       "pango": "P.2",
       "loc": ["BRA", "USA", "USA_US-CA"],
       "selected": "BRA"
+    }
+  },
+  {
+    "mutation_name": "P.3",
+    "identifier": "P_3",
+    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_2", "label": "P.2"}],
+    "pangolin_lineage": "P.3",
+    "gisaid_clade": "GR",
+    "nextstrain_clade": "20B/S:265C",
+    "mutation_synonyms": ["Theta", "GR", "20B/S:265C", "VUI-21MAR-02"],
+    "searchTerms": ["P.3", "P3", "GR", "20B/S:265C", "VUI-21MAR-02"],
+    "variantType": "Variant of Interest",
+    "dateModified": "2021-06-01",
+    "classifications": [
+      {"author": "WHO", "dateModified": "2021-03-17", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
+      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "PHE", "dateModified": "XXXX-XX-XX", "url":"", "variantType": "VUI"},
+      {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "location_first_identified": "Philippines",
+    "reportQuery": {
+      "pango": "P.3",
+      "loc": ["PHL", "USA", "USA_US-CA"],
+      "selected": "PHL"
     }
   }
 ]

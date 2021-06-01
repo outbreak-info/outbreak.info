@@ -1060,7 +1060,7 @@ function geneSorter(a) {
 }
 
 function reportTypeSorter(a) {
-  const sortingArr = ["Variant of Concern", "Variant of Interest", "Mutation of Concern", "Mutation of Interest", "undefined"];
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Investigation", "Mutation of Concern", "Mutation of Interest", "undefined"];
   // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key);
 }
