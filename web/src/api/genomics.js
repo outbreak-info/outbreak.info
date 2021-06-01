@@ -56,27 +56,41 @@ function titleCase(value) {
 
 
 export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
-    return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
-      function compare(a, b) {
-        if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
-          return 0;
-        if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
-          return -1;
-        if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
-          return 0;
-        return (a.codon_num < b.codon_num ? -1 : 0);
-      }
+  return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
+    function compare(a, b) {
+      if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
+        return 0;
+      if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
+        return -1;
+      if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
+        return 0;
+      return (a.codon_num < b.codon_num ? -1 : 0);
+    }
 
-      charMuts.forEach(d => {
-        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+    charMuts.forEach(d => {
+      d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+    })
+
+    // sort the mutation synonyms
+    if (mutationObj.mutation_synonyms) {
+      mutationObj.mutation_synonyms.sort();
+    }
+
+    // translate dates into human readable formats
+    if (mutationObj.dateModified) {
+      const parsedDate = parseDate(mutationObj.dateModified);
+      mutationObj["dateModifiedFormatted"] = formatDateShort(parsedDate);
+    }
+
+    if (mutationObj.classifications) {
+      mutationObj.classifications.forEach(d => {
+        const parsedDate = parseDate(d.dateModified);
+        d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
       })
+    }
 
-      if (mutationObj.mutation_synonyms) {
-        mutationObj.mutation_synonyms.sort();
-      }
-
-      mutationObj["mutations"] = charMuts.sort(compare);
-    }));
+    mutationObj["mutations"] = charMuts.sort(compare);
+  }));
 }
 
 export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {

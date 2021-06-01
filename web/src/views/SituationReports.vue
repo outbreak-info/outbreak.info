@@ -173,7 +173,7 @@
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                   <span class="ml-1 VOI-logo variant-logo-large">VOI</span>
                 </div>
-                <small>{{ report.dateModified }}
+                <small>{{ report.dateModifiedFormatted }}
                 </small>
               </td>
 
@@ -202,9 +202,9 @@
                         <span :class="[`${curated.variantType}-logo`]">{{curated.variantType}}</span>
                       </div>
                       <small>
-                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModified}}</a>
+                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModifiedFormatted}}</a>
                         <a target="_blank" v-else-if="curated.url" :href="curated.url">citation</a>
-                        <span v-else>{{ curated.dateModified }}</span>
+                        <span v-else>{{ curated.dateModifiedFormatted }}</span>
                       </small>
                     </div>
                   </div>
@@ -301,7 +301,7 @@
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                   <span class="ml-1 VOI-logo variant-logo-large">VOI</span>
                 </div>
-                <small>{{ report.dateModified }}
+                <small>{{ report.dateModifiedFormatted }}
                 </small>
               </td>
 
@@ -332,9 +332,9 @@
               		     ]">{{curated.variantType}}</span>
                       </div>
                       <small>
-                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModified}}</a>
+                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModifiedFormatted}}</a>
                         <a target="_blank" v-else-if="curated.url" :href="curated.url">citation</a>
-                        <span v-else>{{ curated.dateModified }}</span>
+                        <span v-else>{{ curated.dateModifiedFormatted }}</span>
                       </small>
                     </div>
                   </div>
