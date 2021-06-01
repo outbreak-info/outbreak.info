@@ -56,17 +56,6 @@ function titleCase(value) {
 
 
 export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
-  if (mutationObj.reportType == "mutation") {
-    mutationObj["mutations"] = mutationObj.additionalMutations;
-
-    const queryStr = mutationObj["additionalMutations"].map(d => d.mutation).join(",");
-    return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
-      map(lineages => {
-        mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
-        return (mutationObj)
-      })
-    )
-  } else {
     return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
       function compare(a, b) {
         if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
@@ -88,7 +77,6 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
 
       mutationObj["mutations"] = charMuts.sort(compare);
     }));
-  }
 }
 
 export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
