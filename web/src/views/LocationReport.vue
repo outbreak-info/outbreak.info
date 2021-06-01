@@ -859,7 +859,7 @@ export default {
       recentMin: null,
       otherThresh: 0.03,
       ndayThresh: 5,
-      dayThresh: 60,
+      dayThresh: 300,
       totalThresh: 25, // threshold for "unreliable estimate" in the table
       // location info
       selectedLocation: null,

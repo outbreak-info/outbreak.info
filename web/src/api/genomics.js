@@ -109,7 +109,7 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
         .entries(curated);
 
         curated.forEach(d => {
-          d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Mutation of Concern" ? "moc" : d.key == "Mutation of Interest" ? "moi" : "unknown";
+          d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : "unknown";
         })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"])
