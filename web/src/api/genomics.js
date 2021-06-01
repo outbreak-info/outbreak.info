@@ -83,6 +83,8 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
     }
 
     if (mutationObj.classifications) {
+      mutationObj.classifications = orderBy(mutationObj.classifications, [reportIDSorter, "author"], ["asc"]);
+
       mutationObj.classifications.forEach(d => {
         const parsedDate = parseDate(d.dateModified);
         d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
@@ -1065,6 +1067,12 @@ function reportTypeSorter(a) {
   const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Investigation", "Mutation of Concern", "Mutation of Interest", "undefined"];
   // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key);
+}
+
+function reportIDSorter(a) {
+  const sortingArr = ["VOC", "VOI", "VUI", "VUM", "unknown"];
+  // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
+  return sortingArr.indexOf(a.variantType);
 }
 
 export function getLocationTable(apiurl, location, mutations, totalThreshold) {
