@@ -82,6 +82,10 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
         d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
       })
 
+      if (mutationObj.mutation_synonyms) {
+        mutationObj.mutation_synonyms.sort();
+      }
+
       mutationObj["mutations"] = charMuts.sort(compare);
     }));
   }
@@ -108,11 +112,13 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
         .key(d => d.variantType)
         .entries(curated);
 
-        curated.forEach(d => {
-          d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : "unknown";
-        })
+      curated.forEach(d => {
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : "unknown";
+      })
 
-      curated = orderBy(curated, [reportTypeSorter], ["asc"])
+      curated = orderBy(curated, [reportTypeSorter], ["asc"]);
+
+      console.log(curated)
 
       return (curated)
     })
