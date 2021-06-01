@@ -452,8 +452,8 @@ export default {
     getReportType(group) {
       return group.toLowerCase() == "variant of concern" ?
         "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy" :
-        (group.toLowerCase() == "lineage + mutation" ? "sequences classified as a particular <a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a> with added mutations" :
-          "sequences with a particular mutation(s)")
+        (group.toLowerCase() == "variant of interest" ? "Variants with community transmission, a cluster of cases, or detection in mutliple countries" :
+          "Variants being monitored based on increasing prevalence and/or mutations in areas of biological importance")
     },
     sortVar(varName, reportGroup) {
       if (varName == this.tableSortVar) {
