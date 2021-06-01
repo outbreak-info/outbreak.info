@@ -164,6 +164,7 @@ export default Vue.extend({
     },
     setupPlot() {
       if (this.onlyTopAxis) {
+        this.margin.top = 62;
         this.margin.left = 5;
         this.margin.right = 27;
         this.margin.bottom = 5;
