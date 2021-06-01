@@ -279,25 +279,6 @@
     }
   },
   {
-    "mutation_name": "B.1.617",
-    "pangolin_lineage": "B.1.617",
-    "identifier": "B_1_617",
-    "related": [{"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
-    "mutation_synonyms": ["VUI-21APR-01"],
-    "searchTerms": ["B.1.617", "B1617", "VUI-21APR-01"],
-    "variantType": "Variant of Interest",
-    "dateModified": "2021-04-15",
-    "classifications": [
-      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"}
-    ],
-    "location_first_identified": "India",
-    "reportQuery": {
-      "pango": "B.1.617",
-      "loc": ["IND", "GBR", "USA"],
-      "selected": "IND"
-    }
-  },
-  {
     "mutation_name": "B.1.617.1",
     "pangolin_lineage": "B.1.617.1",
     "nextstrain_clade": "21A/S:154K",
