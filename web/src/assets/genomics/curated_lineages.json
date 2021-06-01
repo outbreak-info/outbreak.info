@@ -334,7 +334,7 @@
     "dateModified": "2021-05-07",
     "classifications": [
       {"author": "WHO", "dateModified": "2021-05-11", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOC"},
-      {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
+      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-05-06", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf", "variantType": "VOC"},
       {"author": "ECDC", "dateModified": "XXXX-XX-XX", "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
     ],
@@ -417,7 +417,7 @@
     "mutation_synonyms": ["Zeta", "GR", "20B/S.484K", "VUI-21JAN-01", "VUI-202101/01"],
     "searchTerms": ["P.2", "P2", "GR", "20B/S.484K", "VUI-21JAN-01", "VUI-202101/01"],
     "variantType": "Variant of Interest",
-    "dateModified": "2021-06-01",
+    "dateModified": "2021-04-01",
     "classifications": [
       {"author": "WHO", "dateModified": "2021-03-17", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "CDC", "dateModified": "XXXX-XX-XX", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
