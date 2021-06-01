@@ -511,8 +511,8 @@ export default {
             d["sMutations"] = d.mutations.filter(x => x.gene == "S");
 
             if (d.classifications) {
-              // VOC
-              if (d.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || d.classifications.filter(x => x.variantType == "VOI" && this.selectedVOI.includes(x.author)).length) {
+              // VOC, VOI, VUI
+              if (d.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || d.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI")&& this.selectedVOI.includes(x.author)).length) {
                 filtered.push(d);
               } else if (d.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || d.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
                 filtered.push(d)
