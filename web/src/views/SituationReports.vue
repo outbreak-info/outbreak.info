@@ -679,12 +679,12 @@ $voc-height: 20px;
     padding: 0 0.25rem;
 }
 
+$vum-color: #edc949;
 .VUM-logo {
-    background: lighten($website-color, 32%);
-    // border: 2px solid $website-color;
-    color: $website-color;
+    background: lighten($vum-color, 20%);
+    color: darken($vum-color, 20%);
     height: $voc-height;
-    border-left: 4px solid lighten($website-color, 15%);
+    border-left: 4px solid lighten($vum-color, 0%);
     padding: 0 0.25rem;
 }
 
