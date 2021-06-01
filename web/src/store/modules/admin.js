@@ -482,8 +482,8 @@ const state = {
     {
       date: new Date("2021-06-01 0:0"),
       category: "data",
-      title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, and P.3 as Variants of Interest",
-      description: 'Based on the <a href="https://www.gov.uk/government/publications/covid-19-variants-genomically-confirmed-case-numbers/variants-distribution-of-cases-data" target="_blank">PHE</a> classification, added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, and P.3 as Variants of Interest (VOIs)',
+      title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest",
+      description: 'Based on the <a href="https://www.gov.uk/government/publications/covid-19-variants-genomically-confirmed-case-numbers/variants-distribution-of-cases-data" target="_blank">PHE</a> classification, added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest (VOIs)',
       route: {
         name: "SituationReports"
       }
