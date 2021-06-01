@@ -162,11 +162,11 @@
               <td class="align-middle">
                 <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-1 voc-logo variant-logo-large">VOC</span>
+                  <span class="ml-1 VOC-logo variant-logo-large">VOC</span>
                 </div>
-                <div @click="route2OutbreakClass('vo')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
+                <div @click="route2OutbreakClass('voi')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-1 voi-logo variant-logo-large">VOI</span>
+                  <span class="ml-1 VOI-logo variant-logo-large">VOI</span>
                 </div>
                 <small>{{ report.dateModified }}
                 </small>
@@ -194,9 +194,7 @@
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
                         <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
                         <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
-                        <span :class="[
-              		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
-              		     ]">{{curated.variantType}}</span>
+                        <span :class="[`${curated.variantType}-logo`]">{{curated.variantType}}</span>
                       </div>
                       <small>
                         <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModified}}</a>
@@ -292,11 +290,11 @@
               <td class="align-middle">
                 <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-1 voc-logo variant-logo-large">VOC</span>
+                  <span class="ml-1 VOC-logo variant-logo-large">VOC</span>
                 </div>
                 <div @click="route2OutbreakClass('vo')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
                   <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-1 voi-logo variant-logo-large">VOI</span>
+                  <span class="ml-1 VOI-logo variant-logo-large">VOI</span>
                 </div>
                 <small>{{ report.dateModified }}
                 </small>
@@ -325,7 +323,7 @@
                         <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
                         <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
                         <span :class="[
-              		     curated.variantType == 'VOC' ? 'voc-logo' : 'voi-logo',
+              		     `${curated.variantType}-logo`
               		     ]">{{curated.variantType}}</span>
                       </div>
                       <small>
@@ -658,7 +656,7 @@ $voc-height: 20px;
     // border-radius: 0.25rem;
 }
 
-.voc-logo {
+.VOC-logo {
     // border: 2px solid $publication-color;
     // color: $publication-color;
     background: $publication-color;
@@ -667,12 +665,21 @@ $voc-height: 20px;
     padding: 0 0.25rem;
 }
 
-.voi-logo {
+.VOI-logo {
     background: $website-color;
     // border: 2px solid $website-color;
     // color: $website-color;
     height: $voc-height;
     border-left: 4px solid lighten($website-color, 23%);
+    padding: 0 0.25rem;
+}
+
+.VUI-logo {
+    background: lighten($website-color, 32%);
+    // border: 2px solid $website-color;
+    color: $website-color;
+    height: $voc-height;
+    border-left: 4px solid lighten($website-color, 15%);
     padding: 0 0.25rem;
 }
 
