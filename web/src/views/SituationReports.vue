@@ -193,7 +193,7 @@
               <td class="" style="width:500px">
                 <div class="d-flex flex-wrap">
                   <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-                    <div class="d-flex flex-column align-items-center" :class="{'mr-3': cIdx < report.classifications.length - 1 }" style="width:105px">
+                    <div class="d-flex flex-column align-items-center" :class="{'mr-3': cIdx < report.classifications.length - 1 }" style="width:110px">
                       <div class="tracked-variant-badge">
                         <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
@@ -321,7 +321,7 @@
               <td class="" style="width:500px">
                 <div class="d-flex flex-wrap">
                   <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-                    <div class="d-flex flex-column align-items-center" :class="{'mr-3': cIdx < report.classifications.length - 1 }" style="width:105px">
+                    <div class="d-flex flex-column align-items-center" :class="{'mr-3': cIdx < report.classifications.length - 1 }" style="width:110px">
                       <div class="tracked-variant-badge">
                         <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
