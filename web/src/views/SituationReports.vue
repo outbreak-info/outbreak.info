@@ -176,7 +176,7 @@
                 </td>
 
                 <td class="font-weight-bold">
-                  100,000
+                  {{ report.lineage_count }}
                 </td>
 
                 <!-- view report link / related -->
@@ -368,7 +368,7 @@ export default {
         }
       });
     },
-    filterMOC(disableScroll = true){
+    filterMOC(disableScroll = true) {
       // cleanup empty values
       if (!this.selectedMOC[0]) {
         this.selectedMOC = [];
@@ -391,13 +391,13 @@ export default {
       });
     },
     route2Filtered(org, type) {
-      if(type == "VOC"){
+      if (type == "VOC") {
         this.selectedVOC = [org];
         this.selectedVOI = [];
         this.selectedMOC = [];
         this.selectedMOI = [];
       }
-      if(type == "VOI" || type == "VUI"){
+      if (type == "VOI" || type == "VUI") {
         this.selectedVOI = [org];
         this.selectedVOC = [];
         this.selectedMOC = [];

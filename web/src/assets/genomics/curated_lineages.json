@@ -16,7 +16,7 @@
     "location_first_identified": "England",
     "reportQuery": {
       "pango": "A.23.1",
-      "muts": "S:E484K",
+      "muts": ["S:E484K"],
       "selected": "GBR",
       "loc": ["GBR", ""]
     },

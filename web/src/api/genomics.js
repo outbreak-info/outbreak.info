@@ -54,9 +54,49 @@ function titleCase(value) {
   }
 }
 
+export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
+  const queryStr = mutationObj.reportQuery.muts ?
+    `pangolin_lineage=${mutationObj.reportQuery.pango}&mutations=${mutationObj.reportQuery.muts}` :
+    `pangolin_lineage=${mutationObj.reportQuery.pango}`
+  return forkJoin([lookupCharMutations(apiurl, mutationObj, prevalenceThreshold), getVariantTotal(apiurl, queryStr)]).pipe(
+    map(([charMuts, total]) => {
+      mutationObj["lineage_count"] = total;
+
+      // sort the mutation synonyms
+      if (mutationObj.mutation_synonyms) {
+        mutationObj.mutation_synonyms.sort();
+      }
+
+      // translate dates into human readable formats
+      if (mutationObj.dateModified) {
+        const parsedDate = parseDate(mutationObj.dateModified);
+        mutationObj["dateModifiedFormatted"] = formatDateShort(parsedDate);
+      }
+
+      // sort the classifications, format the dates
+      if (mutationObj.classifications) {
+        mutationObj.classifications = orderBy(mutationObj.classifications, ["author"], ["asc"]);
+        // mutationObj.classifications = orderBy(mutationObj.classifications, [reportIDSorter, "dateModified", "author"], ["asc"]);
+
+        mutationObj.classifications.forEach(d => {
+          const parsedDate = parseDate(d.dateModified);
+          d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
+          const reportType = d.variantType == "VOC" ? "Variants of Concern" : d.variantType == "VOI" ? "Variants of Interest" : d.variantType == "VUI" ? "Variants under Investigation" : d.variantType == "VUM" ? "Variants under Monitoring" : null;
+          d["ttip"] = reportType ? `Show <b>${d.author}</b> ${reportType}` : `Not classified by <b>${d.author}</b>`;
+        })
+      }
+
+      // add in characteristic mutations
+      mutationObj["mutations"] = charMuts;
+
+    })
+  )
+
+}
 
 export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
   return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
+    // sort the mutations by position within the genes
     function compare(a, b) {
       if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
         return 0;
@@ -71,30 +111,7 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
       d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
     })
 
-    // sort the mutation synonyms
-    if (mutationObj.mutation_synonyms) {
-      mutationObj.mutation_synonyms.sort();
-    }
-
-    // translate dates into human readable formats
-    if (mutationObj.dateModified) {
-      const parsedDate = parseDate(mutationObj.dateModified);
-      mutationObj["dateModifiedFormatted"] = formatDateShort(parsedDate);
-    }
-
-    if (mutationObj.classifications) {
-      mutationObj.classifications = orderBy(mutationObj.classifications, ["author"], ["asc"]);
-      // mutationObj.classifications = orderBy(mutationObj.classifications, [reportIDSorter, "dateModified", "author"], ["asc"]);
-
-      mutationObj.classifications.forEach(d => {
-        const parsedDate = parseDate(d.dateModified);
-        d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
-        const reportType = d.variantType == "VOC" ? "Variants of Concern" : d.variantType == "VOI" ? "Variants of Interest" :  d.variantType == "VUI" ? "Variants under Investigation" : d.variantType == "VUM" ? "Variants under Monitoring" : null;
-        d["ttip"] = reportType ? `Show <b>${d.author}</b> ${reportType}` : `Not classified by <b>${d.author}</b>`;
-      })
-    }
-
-    mutationObj["mutations"] = charMuts.sort(compare);
+    return (charMuts.sort(compare))
   }));
 }
 
@@ -109,9 +126,7 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
 }
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
-  // const mutations = CURATED.filter(d => d.reportType.toLowerCase() == "mutation");
-
-  return forkJoin(...CURATED.map(mutation => lookupCharMutations(apiurl, mutation, prevalenceThreshold))).pipe(
+  return forkJoin(...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))).pipe(
     map(results => {
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
 
@@ -432,6 +447,30 @@ export function getCumPrevalences(apiurl, queryStr, locations, totalThreshold) {
       return ( of ([]));
     })
   )
+}
+
+export function getVariantTotal(apiurl, queryStr, formatted = true) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      if (formatted) {
+        return (format(",")(results.lineage_count))
+      }
+      return (results.lineage_count);
+    }),
+    catchError(e => {
+      console.log(`%c Error in getting total cumulative prevalence data for ${queryStr}!`, "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+
 }
 
 export function getCumPrevalence(apiurl, queryStr, location, totalThreshold) {
