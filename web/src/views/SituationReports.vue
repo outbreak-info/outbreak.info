@@ -282,12 +282,10 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faSpinner,
-  faInfoCircle,
-  faSortAlphaDown,
-  faSortAlphaDownAlt
+  faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faClock, faSpinner, faInfoCircle, faSortAlphaDown, faSortAlphaDownAlt);
+library.add(faClock, faSpinner, faInfoCircle);
 
 import {
   mapState
@@ -330,19 +328,6 @@ export default {
         "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy" :
         (group.toLowerCase() == "variant of interest" ? "Variants with community transmission, a cluster of cases, or detection in multiple countries" :
           "Variants being monitored based on increasing prevalence and/or mutations in areas of biological importance")
-    },
-    sortVar(varName, reportGroup) {
-      if (varName == this.tableSortVar) {
-        this.tableSortAsc = !this.tableSortAsc;
-      } else {
-        this.tableSortVar = varName;
-        this.tableSortAsc = true;
-      }
-      if (this.tableSortAsc) {
-        reportGroup.sort((a, b) => a[varName] < b[varName] ? -1 : 1)
-      } else {
-        reportGroup.sort((a, b) => a[varName] > b[varName] ? -1 : 1)
-      }
     },
     filterVOC(disableScroll = true) {
       // cleanup empty values
@@ -460,9 +445,6 @@ export default {
       total: null,
       reports: null,
       filteredReports: null,
-      tableSortVar: "mutation_name",
-      tableSortAsc: true,
-      // sort in alpha order
       curatorOpts: [{
           id: "outbreak",
           label: "outbreak.info",
