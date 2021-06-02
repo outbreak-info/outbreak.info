@@ -369,10 +369,14 @@ export default {
       if(type == "VOC"){
         this.selectedVOC = [org];
         this.selectedVOI = [];
+        this.selectedMOC = [];
+        this.selectedMOI = [];
       }
       if(type == "VOI" || type == "VUI"){
         this.selectedVOI = [org];
         this.selectedVOC = [];
+        this.selectedMOC = [];
+        this.selectedMOI = [];
       }
 
       this.filterVOC(false);
@@ -381,6 +385,8 @@ export default {
       // clear anything that's selected
       this.selectedVOC = [];
       this.selectedVOI = [];
+      this.selectedMOC = [];
+      this.selectedMOI = [];
       this.filterReports();
       this.$router.push({
         name: "SituationReports",
@@ -456,7 +462,9 @@ export default {
         }
       ],
       selectedVOC: [],
-      selectedVOI: []
+      selectedVOI: [],
+      selectedMOC: [],
+      selectedMOI: []
     }
   },
   mounted() {

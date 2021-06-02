@@ -238,7 +238,9 @@ const routes = [{
     name: "SituationReports",
     props: route => ({
       voc: route.query.voc,
-      voi: route.query.voi
+      voi: route.query.voi,
+      moc: route.query.moc,
+      moi: route.query.moi
     }),
     component: () =>
       import(
