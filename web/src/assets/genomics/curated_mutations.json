@@ -2,39 +2,72 @@
     "mutation_name": "S:E484K",
     "identifier": "S_E484K",
     "variantType": "Mutation of Concern",
-    "dateModified": ""
+    "dateModified": "2021-03-15"
   },
   {
     "mutation_name": "S:S477N",
+    "identifier": "S_S477N",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:N501Y",
+    "identifier": "S_N501Y",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-02-01"
   },
   {
     "mutation_name": "S:K417N",
+    "identifier": "S_K417N",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:K417T",
+    "identifier": "S_K417T",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:P681H",
+    "identifier": "S_P681H",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-02-01"
   },
   {
     "mutation_name": "S:P681R",
+    "identifier": "S_P681R",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-04-27"
   },
   {
     "mutation_name": "S:L18F",
+    "identifier": "S_L18F",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:S494P",
+    "identifier": "S_S494P",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:L452R",
+    "identifier": "S_L452R",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-02-01"
   },
   {
     "mutation_name": "S:Y453F",
+    "identifier": "S_Y453F",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:N439K",
+    "identifier": "S_N439K",
+    "variantType": "Mutation of Interest",
+    "dateModified": "2021-03-16"
   }
 ]

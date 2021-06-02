@@ -28,6 +28,7 @@ import {
 } from "@/api/epi-traces.js";
 
 import CURATED from "@/assets/genomics/curated_lineages.json";
+import MUTATIONS from "@/assets/genomics/curated_mutations.json";
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 
 import orderBy from "lodash/orderBy";
