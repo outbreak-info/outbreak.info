@@ -195,7 +195,7 @@
                 <!-- s-gene mutations heatmap -->
                 <td rowspan="2" class="border-bottom pb-3">
                   <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" v-if="report.sMutations.length" />
-                  <router-link :to="{ name: 'SituationReportComparison'}" v-if="report.sMutations.length" >
+                  <router-link :to="{ name: 'SituationReportComparison'}" v-if="report.sMutations.length">
                     <small>Explore all genes
                     </small>
                   </router-link>
@@ -207,7 +207,7 @@
                 <td colspan="3" class="border-top pt-1 pb-2">
                   <div class="d-flex flex-wrap align-items-center">
                     <div class="d-flex flex-column align-items-center mr-3 mb-1 pointer">
-                      <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
+                      <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge voc-ttip" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                         <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                         <span class="ml-1 VOC-logo variant-logo-large">VOC</span>
                       </div>
@@ -220,15 +220,15 @@
                     </div>
 
 
-                    <div class="d-flex flex-column align-items-center flex-shrink-0 mb-1" v-for="(curated, cIdx) in report.classifications" :key="cIdx" :class="{'mr-2': cIdx < report.classifications.length - 1 }"  style="width:100px">
-                      <div class="tracked-variant-badge pointer" >
+                    <div class="d-flex flex-column align-items-center flex-shrink-0 mb-1" v-for="(curated, cIdx) in report.classifications" :key="cIdx" :class="{'mr-2': cIdx < report.classifications.length - 1 }" style="width:100px">
+                      <div class="tracked-variant-badge pointer" :data-tippy-info="curated.ttip">
                         <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
                         <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
                         <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
                         <span :class="[`${curated.variantType}-logo`]">{{curated.variantType}}</span>
                       </div>
-                      <div class="fa-xs">
+                      <div class="fa-xs citation" :data-tippy-info="`View ${curated.author} classification`">
                         <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModifiedFormatted}}</a>
                         <a target="_blank" v-else-if="curated.url" :href="curated.url">citation</a>
                         <span v-else-if="curated.dateModified">{{ curated.dateModifiedFormatted }}</span>
@@ -460,6 +460,33 @@ export default {
     this.totalSubscription = getSequenceCount(this.$genomicsurl, null, true).subscribe(total => {
       this.total = total;
     })
+
+  },
+  updated() {
+    tippy(".tracked-variant-badge", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+
+    tippy(".citation", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
   },
   beforeDestroyed() {
     if (this.curatedSubscription) {
@@ -584,6 +611,6 @@ $vum-color: #edc949;
 }
 
 .opacity-0 {
-  opacity: 0;
+    opacity: 0;
 }
 </style>
