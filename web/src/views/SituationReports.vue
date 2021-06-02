@@ -203,7 +203,7 @@
               </tr>
 
               <!--  classifications -->
-              <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}">
+              <tr :key="rIdx + 'classification'" class="border-bottom" :class="{checkbook : rIdx%2-1}">
                 <td colspan="3" class="border-top pt-1 pb-2">
                   <div class="d-flex flex-wrap align-items-center">
                     <div class="d-flex flex-column align-items-center mr-3 mb-1 pointer">
