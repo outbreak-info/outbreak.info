@@ -141,7 +141,7 @@
                 first identified
               </th>
               <th>
-                num. found
+                total found
               </th>
 
               <th>
