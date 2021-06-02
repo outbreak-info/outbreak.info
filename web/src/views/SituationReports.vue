@@ -207,7 +207,7 @@
                 <td colspan="3" class="border-top pt-1 pb-2">
                   <div class="d-flex flex-wrap align-items-center">
                     <div class="d-flex flex-column align-items-center mr-3 mb-1 pointer">
-                      <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge voc-ttip" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
+                      <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                         <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                         <span class="ml-1 VOC-logo variant-logo-large">VOC</span>
                       </div>
@@ -221,7 +221,7 @@
 
 
                     <div class="d-flex flex-column align-items-center flex-shrink-0 mb-1" v-for="(curated, cIdx) in report.classifications" :key="cIdx" :class="{'mr-2': cIdx < report.classifications.length - 1 }" style="width:85px">
-                      <div class="tracked-variant-badge pointer" :data-tippy-info="curated.ttip">
+                      <div class="tracked-variant-badge pointer" :data-tippy-info="curated.ttip" @click="route2Filtered(curated.author, curated.variantType)">
                         <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
                         <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
@@ -344,7 +344,7 @@ export default {
         reportGroup.sort((a, b) => a[varName] > b[varName] ? -1 : 1)
       }
     },
-    filterVOC() {
+    filterVOC(disableScroll = true) {
       // cleanup empty values
       if (!this.selectedVOC[0]) {
         this.selectedVOC = [];
@@ -357,13 +357,25 @@ export default {
       this.$router.push({
         name: "SituationReports",
         params: {
-          disableScroll: true
+          disableScroll: disableScroll
         },
         query: {
           voc: this.selectedVOC,
           voi: this.selectedVOI
         }
       });
+    },
+    route2Filtered(org, type) {
+      if(type == "VOC"){
+        this.selectedVOC = [org];
+        this.selectedVOI = [];
+      }
+      if(type == "VOI" || type == "VUI"){
+        this.selectedVOI = [org];
+        this.selectedVOC = [];
+      }
+
+      this.filterVOC(false);
     },
     route2OutbreakClass(anchorID) {
       // clear anything that's selected
