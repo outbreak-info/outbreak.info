@@ -298,7 +298,7 @@
     "mutation_synonyms": ["21A/S:154K", "G/452R.V3", "Kappa"],
     "searchTerms": ["B.1.617.1", "B16171", "21A/S:154K"],
     "identifier": "B_1_617_1",
-    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
+    "related": [{"identifier": "B_1_617_2", "label": "B.1.617.2"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
     "variantType": "Variant of Interest",
     "dateModified": "2021-05-03",
     "classifications": [
@@ -317,7 +317,7 @@
   {
     "mutation_name": "B.1.617.2",
     "identifier": "B_1_617_2",
-    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
+    "related": [{"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_3", "label": "B.1.617.3"}],
     "pangolin_lineage": "B.1.617.2",
     "nextstrain_clade": "21A/S:478K",
     "gisaid_clade": "G/452R.V3",
