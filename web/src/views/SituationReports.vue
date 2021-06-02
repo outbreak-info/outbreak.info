@@ -92,7 +92,7 @@
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
                   <span>outbreak.info</span>
-                  <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOI" @change="filterMOI()" />
+                  <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOI" @change="filterMOC()" />
                   <div class="b-input"></div>
                 </label>
               </div>
@@ -352,6 +352,7 @@ export default {
       if (!this.selectedVOI[0]) {
         this.selectedVOI = [];
       }
+
       this.filterReports();
 
       this.$router.push({
@@ -361,7 +362,31 @@ export default {
         },
         query: {
           voc: this.selectedVOC,
-          voi: this.selectedVOI
+          voi: this.selectedVOI,
+          moc: this.selectedMOC,
+          moi: this.selectedMOI
+        }
+      });
+    },
+    filterMOC(disableScroll = true){
+      // cleanup empty values
+      if (!this.selectedMOC[0]) {
+        this.selectedMOC = [];
+      }
+      if (!this.selectedMOI[0]) {
+        this.selectedMOI = [];
+      }
+
+      this.$router.push({
+        name: "SituationReports",
+        params: {
+          disableScroll: disableScroll
+        },
+        query: {
+          voc: this.selectedVOC,
+          voi: this.selectedVOI,
+          moc: this.selectedMOC,
+          moi: this.selectedMOI
         }
       });
     },
