@@ -154,7 +154,7 @@
           </thead>
           <tbody>
             <template v-for="(report, rIdx) in group.values">
-              <tr :key="rIdx" :class="{checkbook : rIdx%2-1}">
+              <tr :key="rIdx" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
 
                 <!-- name + synonyms -->
                 <td class="pt-2">
