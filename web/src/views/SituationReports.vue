@@ -206,12 +206,12 @@
               <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}">
                 <td colspan="3" class="border-top pt-1 pb-2">
                   <div class="d-flex flex-wrap align-items-center">
-                    <div class="d-flex flex-column mr-3 mb-1">
-                      <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
+                    <div class="d-flex flex-column align-items-center mr-3 mb-1 pointer">
+                      <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
                         <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                         <span class="ml-1 VOC-logo variant-logo-large">VOC</span>
                       </div>
-                      <div @click="route2OutbreakClass('voi')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
+                      <div @click="route2OutbreakClass('voi')" class="tracked-variant-badge" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
                         <img src="@/assets/icon-01.svg" class="variant-logo-large" />
                         <span class="ml-1 VOI-logo variant-logo-large">VOI</span>
                       </div>
@@ -220,8 +220,8 @@
                     </div>
 
 
-                    <div class="d-flex flex-column align-items-center flex-shrink-0 mb-1" v-for="(curated, cIdx) in report.classifications" :key="cIdx" :class="{'mr-2': cIdx < report.classifications.length - 1 }">
-                      <div class="tracked-variant-badge">
+                    <div class="d-flex flex-column align-items-center flex-shrink-0 mb-1" v-for="(curated, cIdx) in report.classifications" :key="cIdx" :class="{'mr-2': cIdx < report.classifications.length - 1 }"  style="width:100px">
+                      <div class="tracked-variant-badge pointer" >
                         <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
                         <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
@@ -231,7 +231,8 @@
                       <div class="fa-xs">
                         <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModifiedFormatted}}</a>
                         <a target="_blank" v-else-if="curated.url" :href="curated.url">citation</a>
-                        <span v-else>{{ curated.dateModifiedFormatted }}</span>
+                        <span v-else-if="curated.dateModified">{{ curated.dateModifiedFormatted }}</span>
+                        <span v-else class="opacity-0">.</span>
                       </div>
                     </div>
                   </div>
@@ -248,135 +249,7 @@
         </div>
       </div>
 
-      <!-- mutation groups -->
-      <div class="mutation-group mb-5" v-for="(group, i) in filteredMutations" :key="i" :id="group.key.replace(' + ', '_')">
-        <div class="d-flex justify-content-between">
-          <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
-          <div class="d-flex align-items-center text-sec" v-if="i === 0">
-            <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
-            <router-link :to="{name:'SituationReportCaveats'}" class="text-sec">How to interpret these reports</router-link>
-          </div>
-        </div>
 
-        <small class="text-highlight" v-html="getReportType(group.key)"></small>
-
-        <table class="bg-white m-auto">
-          <thead class="text-uppercase">
-            <tr>
-              <th>
-
-              </th>
-
-              <th class="pointer" @click="sortVar('mutation_name', group.values)">
-                variant
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'mutation_name' && tableSortAsc" />
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'mutation_name' && !tableSortAsc" />
-              </th>
-
-              <th>
-                classification
-              </th>
-
-              <th class="pointer" @click="sortVar('location_first_identified', group.values)">
-                first identified
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down']" v-if="tableSortVar == 'location_first_identified' && tableSortAsc" />
-                <font-awesome-icon class="ml-1 text-muted" :icon="['fas', 'sort-alpha-down-alt']" v-if="tableSortVar == 'location_first_identified' && !tableSortAsc" />
-              </th>
-
-
-              <th>
-
-              </th>
-
-              <th>
-                S-gene Mutations<sup>*</sup>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(report, rIdx) in group.values" :key="rIdx" class="checkbook" :id="report.identifier">
-              <td class="align-middle">
-                <div @click="route2OutbreakClass('voc')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Concern'" data-tippy-info="Show outbreak.info Variants of Concern">
-                  <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-1 VOC-logo variant-logo-large">VOC</span>
-                </div>
-                <div @click="route2OutbreakClass('vo')" class="tracked-variant-badge pointer" v-if="report.variantType == 'Variant of Interest'" data-tippy-info="Show outbreak.info Variants of Interest">
-                  <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                  <span class="ml-1 VOI-logo variant-logo-large">VOI</span>
-                </div>
-                <small>{{ report.dateModifiedFormatted }}
-                </small>
-              </td>
-
-              <td style="width: 200px">
-                <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
-                  <h4 class="m-0"><b>{{ report.mutation_name }}</b></h4>
-                </router-link>
-                <div class="d-flex flex-column text-muted line-height-1">
-                  <small v-if="report.mutation_synonyms && report.mutation_synonyms.length"><span>a.k.a. </span>
-                    <span v-for="(synonym, sIdx) in report.mutation_synonyms" :key="sIdx">
-                      <b>{{ synonym }}</b>
-                      <span v-if="sIdx < report.mutation_synonyms.length - 1">, </span></span>
-                  </small>
-                </div>
-              </td>
-
-              <td class="" style="width:500px">
-                <div class="d-flex flex-wrap">
-                  <div v-for="(curated, cIdx) in report.classifications" :key="cIdx">
-                    <div class="d-flex flex-column align-items-center flex-shrink-0" :class="{'mr-3': cIdx < report.classifications.length - 1 }">
-                      <div class="tracked-variant-badge">
-                        <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
-                        <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
-                        <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" v-if="curated.author == 'WHO'" />
-                        <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" v-if="curated.author == 'ECDC'" />
-                        <span :class="[
-              		     `${curated.variantType}-logo`
-              		     ]">{{curated.variantType}}</span>
-                      </div>
-                      <small>
-                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModifiedFormatted}}</a>
-                        <a target="_blank" v-else-if="curated.url" :href="curated.url">citation</a>
-                        <span v-else>{{ curated.dateModifiedFormatted }}</span>
-                      </small>
-                    </div>
-                  </div>
-                </div>
-              </td>
-
-              <td>
-                {{ report.location_first_identified }}
-              </td>
-
-              <td>
-                <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: report.reportQuery }">View report</router-link>
-                <div class="text-highlight line-height-1 fa-sm mt-2" v-if="report.related">
-                  related:
-                  <span v-for="(related, rIdx) in report.related" :key="rIdx">
-                    <router-link :to="{hash: related.identifier}">{{related.label}}</router-link>
-                    <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
-                  </span>
-                </div>
-              </td>
-
-              <td>
-                <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" />
-                <router-link :to="{ name: 'SituationReportComparison'}">
-                  <small>Explore all genes
-                  </small>
-                </router-link>
-              </td>
-
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="mt-2">
-          <sup class="text-muted mr-1">*</sup><small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
-              more)
-            </router-link></small>
-        </div>
-      </div>
     </section>
 
     <ReportAcknowledgements />
@@ -692,6 +565,15 @@ $vum-color: #edc949;
     padding: 0 0.25rem;
 }
 
+.none-logo {
+    background: #DDD;
+    color: #888;
+    height: $voc-height;
+    border-left: 4px solid #BBB;
+    padding: 0 0.25rem;
+    font-weight: 400;
+}
+
 .variant-logo-large {
     height: $voc-height * 1.3;
     font-size: $voc-height * 1.3 * 0.75;
@@ -699,5 +581,9 @@ $vum-color: #edc949;
 
 .text-size-xs {
     font-size: x-small;
+}
+
+.opacity-0 {
+  opacity: 0;
 }
 </style>

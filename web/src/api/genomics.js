@@ -83,7 +83,8 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
     }
 
     if (mutationObj.classifications) {
-      mutationObj.classifications = orderBy(mutationObj.classifications, [reportIDSorter, "dateModified", "author"], ["asc"]);
+      mutationObj.classifications = orderBy(mutationObj.classifications, ["author"], ["asc"]);
+      // mutationObj.classifications = orderBy(mutationObj.classifications, [reportIDSorter, "dateModified", "author"], ["asc"]);
 
       mutationObj.classifications.forEach(d => {
         const parsedDate = parseDate(d.dateModified);
