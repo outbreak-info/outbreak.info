@@ -90,7 +90,7 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
         const parsedDate = parseDate(d.dateModified);
         d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
         const reportType = d.variantType == "VOC" ? "Variants of Concern" : d.variantType == "VOI" ? "Variants of Interest" :  d.variantType == "VUI" ? "Variants under Investigation" : d.variantType == "VUM" ? "Variants under Monitoring" : null;
-        d["ttip"] = reportType ? `Show <b>${d.author}</b> ${reportType}` : `Not classified by ${d.author}`;
+        d["ttip"] = reportType ? `Show <b>${d.author}</b> ${reportType}` : `Not classified by <b>${d.author}</b>`;
       })
     }
 
