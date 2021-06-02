@@ -134,8 +134,18 @@
         <table class="bg-white mt-2 w-100">
           <thead class="text-uppercase text-muted">
             <tr class="border-bottom">
-              <th>
+              <th class="d-flex align-items-center">
                 variant
+                <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                  <div class="input-group">
+                    <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput"  @input="debounceSearch" />
+                    <div class="input-group-prepend">
+                      <span class="input-group-text text-muted border-0" id="sb">
+                        <font-awesome-icon :icon="['fas', 'search']" />
+                      </span>
+                    </div>
+                  </div>
+                </form>
               </th>
               <th>
                 first identified
@@ -282,10 +292,11 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faSpinner,
-  faInfoCircle
+  faInfoCircle,
+  faSearch
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faClock, faSpinner, faInfoCircle);
+library.add(faClock, faSpinner, faInfoCircle, faSearch);
 
 import {
   mapState
@@ -296,6 +307,7 @@ import {
 } from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 
 import {
   getReportList,
@@ -404,6 +416,23 @@ export default {
         hash: `#${anchorID}`
       })
     },
+    filterName() {
+            this.filteredReports = cloneDeep(this.reports);
+            this.filteredReports.forEach(group => {
+              let filtered = [];
+              group.values.forEach(report => {
+                report["sMutations"] = report.mutations.filter(x => x.gene == "S");
+                  // VOC, VOI, VUI
+                  if(report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
+                  (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
+                    filtered.push(report);
+                  }
+              })
+
+              group.values = filtered;
+            })
+
+    },
     filterReports() {
       this.filteredReports = cloneDeep(this.reports);
 
@@ -468,6 +497,7 @@ export default {
           src: "resources/who-emblem.svg"
         }
       ],
+      searchInput: "",
       selectedVOC: [],
       selectedVOI: [],
       selectedMOC: [],
@@ -488,6 +518,9 @@ export default {
       this.total = total;
     })
 
+  },
+  created: function() {
+    this.debounceSearch = debounce(this.filterName, 250);
   },
   updated() {
     tippy(".tracked-variant-badge", {
