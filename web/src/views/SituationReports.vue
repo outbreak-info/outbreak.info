@@ -220,7 +220,7 @@
                     </div>
 
 
-                    <div class="d-flex flex-column align-items-center flex-shrink-0 mb-1" v-for="(curated, cIdx) in report.classifications" :key="cIdx" :class="{'mr-2': cIdx < report.classifications.length - 1 }" style="width:100px">
+                    <div class="d-flex flex-column align-items-center flex-shrink-0 mb-1" v-for="(curated, cIdx) in report.classifications" :key="cIdx" :class="{'mr-2': cIdx < report.classifications.length - 1 }" style="width:85px">
                       <div class="tracked-variant-badge pointer" :data-tippy-info="curated.ttip">
                         <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" v-if="curated.author == 'CDC'" />
                         <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" v-if="curated.author == 'PHE'" />
@@ -229,8 +229,8 @@
                         <span :class="[`${curated.variantType}-logo`]">{{curated.variantType}}</span>
                       </div>
                       <div class="fa-xs citation" :data-tippy-info="`View ${curated.author} classification`">
-                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">cite: {{curated.dateModifiedFormatted}}</a>
-                        <a target="_blank" v-else-if="curated.url" :href="curated.url">citation</a>
+                        <a target="_blank" v-if="curated.dateModified && curated.url" :href="curated.url">{{curated.dateModifiedFormatted}}</a>
+                        <a target="_blank" v-else-if="curated.url" :href="curated.url">classification</a>
                         <span v-else-if="curated.dateModified">{{ curated.dateModifiedFormatted }}</span>
                         <span v-else class="opacity-0">.</span>
                       </div>
