@@ -309,13 +309,13 @@
                   {{ report.lineage_count }}
                 </td>
                 <!-- view report link / related -->
-                <td rowspan="2" style="width: 150px" class="border-bottom pb-3">
+                <td rowspan="1" style="width: 150px" class="border-bottom pb-3">
                   <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: {muts: report.mutation_name} }">View report</router-link>
                 </td>
 
               </tr>
               <!--  classifications -->
-              <tr :key="rIdx + 'classification'" class="border-bottom" :class="{checkbook : rIdx%2-1}">
+              <!-- <tr :key="rIdx + 'classification'" class="border-bottom" :class="{checkbook : rIdx%2-1}">
                 <td colspan="3" class="border-top pt-1 pb-2">
                   <div class="d-flex flex-wrap align-items-center">
                     <div class="d-flex flex-column align-items-center mr-3 mb-1 pointer">
@@ -332,7 +332,7 @@
                     </div>
                   </div>
                 </td>
-              </tr>
+              </tr> -->
 
             </template>
           </tbody>
