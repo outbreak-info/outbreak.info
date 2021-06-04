@@ -138,7 +138,7 @@
                 variant
                 <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
                   <div class="input-group">
-                    <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput"  @input="debounceSearch" />
+                    <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
                     <div class="input-group-prepend">
                       <span class="input-group-text text-muted border-0" id="sb">
                         <font-awesome-icon :icon="['fas', 'search']" />
@@ -318,7 +318,10 @@ export default {
   name: "SituationReports",
   props: {
     voc: [Array, String],
-    voi: [Array, String]
+    voi: [Array, String],
+    moc: [Array, String],
+    moi: [Array, String],
+    name: String
   },
   components: {
     // ReportCard,
@@ -361,7 +364,8 @@ export default {
           voc: this.selectedVOC,
           voi: this.selectedVOI,
           moc: this.selectedMOC,
-          moi: this.selectedMOI
+          moi: this.selectedMOI,
+          name: this.searchInput
         }
       });
     },
@@ -383,7 +387,8 @@ export default {
           voc: this.selectedVOC,
           voi: this.selectedVOI,
           moc: this.selectedMOC,
-          moi: this.selectedMOI
+          moi: this.selectedMOI,
+          name: this.searchInput
         }
       });
     },
@@ -417,44 +422,50 @@ export default {
       })
     },
     filterName() {
-            this.filteredReports = cloneDeep(this.reports);
-            this.filteredReports.forEach(group => {
-              let filtered = [];
-              group.values.forEach(report => {
-                report["sMutations"] = report.mutations.filter(x => x.gene == "S");
-                  // VOC, VOI, VUI
-                  if(report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
-                  (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
-                    filtered.push(report);
-                  }
-              })
+      this.filterReports();
 
-              group.values = filtered;
-            })
-
+      this.$router.push({
+        name: "SituationReports",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          voc: this.selectedVOC,
+          voi: this.selectedVOI,
+          moc: this.selectedMOC,
+          moi: this.selectedMOI,
+          name: this.searchInput
+        }
+      })
     },
     filterReports() {
       this.filteredReports = cloneDeep(this.reports);
 
       if (this.selectedVOC.length || this.selectedVOI.length) {
         // filter the selected VOC/VOI
-        this.filteredReports.forEach(report => {
+        this.filteredReports.forEach(group => {
           let filtered = [];
-          report.values.forEach(d => {
-            d["sMutations"] = d.mutations.filter(x => x.gene == "S");
+          group.values.forEach(report => {
+            report["sMutations"] = report.mutations.filter(x => x.gene == "S");
 
-            if (d.classifications) {
+            if (report.classifications) {
               // VOC, VOI, VUI
-              if (d.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || d.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI.includes(x.author))
+              if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI.includes(x.author))
                 .length) {
-                filtered.push(d);
-              } else if (d.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || d.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
-                filtered.push(d)
+                  if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
+                    (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
+                    filtered.push(report);
+                  }
+              } else if (report.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || report.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
+                if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
+                  (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
+                  filtered.push(report);
+                }
               }
             }
           })
 
-          report.values = filtered;
+          group.values = filtered;
         })
       } else {
         this.filteredReports.forEach(report => {
@@ -507,6 +518,7 @@ export default {
   mounted() {
     this.selectedVOC = this.voc ? typeof(this.voc) == "string" ? [this.voc] : this.voc : [];
     this.selectedVOI = this.voi ? typeof(this.voi) == "string" ? [this.voi] : this.voi : [];
+    this.searchInput = this.name;
 
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;

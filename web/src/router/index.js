@@ -240,7 +240,8 @@ const routes = [{
       voc: route.query.voc,
       voi: route.query.voi,
       moc: route.query.moc,
-      moi: route.query.moi
+      moi: route.query.moi,
+      name: route.query.name
     }),
     component: () =>
       import(
