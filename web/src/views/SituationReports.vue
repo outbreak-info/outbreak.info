@@ -114,9 +114,8 @@
     </div>
 
     <section id="report-list" class="text-left">
-
       <!-- lineage groups -->
-      <div class="lineage-group my-5" v-for="(group, i) in filteredReports" :key="i" :id="group.key.replace(' + ', '_')">
+      <div class="lineage-group my-5" v-for="(group, i) in filteredReports" :key="i" :id="group.id + '-reports'">
 
         <div class="d-flex justify-content-between">
           <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
@@ -259,7 +258,91 @@
         </div>
       </div>
 
+      <!-- mutation groups -->
+      <div class="mutation-group my-5" v-for="(group, i) in filteredMutations" :key="'mutation' + i" :id="group.id + '-reports'">
+        <div class="d-flex justify-content-between">
+          <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
+        </div>
+        <table class="bg-white mt-2 w-100">
+          <thead class="text-uppercase text-muted">
+            <th class="d-flex align-items-center">
+              mutation
+              <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                <div class="input-group">
+                  <input :id="'sBar-mutation' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                  <div class="input-group-prepend">
+                    <span class="input-group-text text-muted border-0" id="sb">
+                      <font-awesome-icon :icon="['fas', 'search']" />
+                    </span>
+                  </div>
+                </div>
+              </form>
+            </th>
+            <th>
+              prominent in <sup>**</sup>
+            </th>
+            <th>
+              total found
+            </th>
+            <th>
 
+            </th>
+          </thead>
+
+          <tbody>
+            <template v-for="(report, rIdx) in group.values">
+              <tr :key="rIdx" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
+
+                <!-- name + synonyms -->
+                <td class="pt-2">
+                  <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
+                    <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
+                  </router-link>
+                </td>
+                <td>
+                  <router-link class="btn btn-main-outline mx-1 my-1 py-0 px-1" :to="{name: 'MutationReport', query:{pango: lineage}}"
+                   v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
+                   {{lineage}}
+                 </router-link>
+                </td>
+                <td class="font-weight-bold">
+                  {{ report.lineage_count }}
+                </td>
+                <!-- view report link / related -->
+                <td rowspan="2" style="width: 150px" class="border-bottom pb-3">
+                  <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: {muts: report.mutation_name} }">View report</router-link>
+                </td>
+
+              </tr>
+              <!--  classifications -->
+              <tr :key="rIdx + 'classification'" class="border-bottom" :class="{checkbook : rIdx%2-1}">
+                <td colspan="3" class="border-top pt-1 pb-2">
+                  <div class="d-flex flex-wrap align-items-center">
+                    <div class="d-flex flex-column align-items-center mr-3 mb-1 pointer">
+                      <div @click="route2OutbreakClass('moc')" class="tracked-variant-badge" v-if="report.variantType == 'Mutation of Concern'" data-tippy-info="Show outbreak.info Mutations of Concern">
+                        <img src="@/assets/icon-01.svg" class="variant-logo-large" />
+                        <span class="ml-1 MOC-logo variant-logo-large">MOC</span>
+                      </div>
+                      <div @click="route2OutbreakClass('moi')" class="tracked-variant-badge" v-if="report.variantType == 'Mutation of Interest'" data-tippy-info="Show outbreak.info Mutations of Interest">
+                        <img src="@/assets/icon-01.svg" class="variant-logo-large" />
+                        <span class="ml-1 MOI-logo variant-logo-large">MOI</span>
+                      </div>
+                      <small>{{ report.dateModifiedFormatted }}
+                      </small>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            </template>
+          </tbody>
+
+        </table>
+        <div class="mt-2">
+          <sup class="text-muted mr-1">**</sup><small class="text-muted">Lineages containing at least {{charMutThreshold}} of sequences with the particular mutation
+          </small>
+        </div>
+      </div>
     </section>
 
     <ReportAcknowledgements />
@@ -440,6 +523,7 @@ export default {
     },
     filterReports() {
       this.filteredReports = cloneDeep(this.reports);
+      this.filteredMutations = cloneDeep(this.mutationReports);
 
       if (this.selectedVOC.length || this.selectedVOI.length) {
         // filter the selected VOC/VOI
@@ -450,12 +534,13 @@ export default {
 
             if (report.classifications) {
               // VOC, VOI, VUI
-              if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI.includes(x.author))
+              if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI.includes(x
+                  .author))
                 .length) {
-                  if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
-                    (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
-                    filtered.push(report);
-                  }
+                if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
+                  (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
+                  filtered.push(report);
+                }
               } else if (report.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || report.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
                 if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
                   (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
@@ -484,7 +569,9 @@ export default {
       lastUpdated: null,
       total: null,
       reports: null,
+      mutationReports: null,
       filteredReports: null,
+      filteredMutations: null,
       curatorOpts: [{
           id: "outbreak",
           label: "outbreak.info",
@@ -521,8 +608,10 @@ export default {
     this.searchInput = this.name;
 
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
+      console.log(results)
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
+      this.mutationReports = results.mutations;
       this.filterReports();
     })
 
@@ -636,7 +725,7 @@ $voc-height: 20px;
     // border-radius: 0.25rem;
 }
 
-.VOC-logo {
+.VOC-logo, .MOC-logo {
     // border: 2px solid $publication-color;
     // color: $publication-color;
     background: $publication-color;
@@ -646,6 +735,7 @@ $voc-height: 20px;
 }
 
 .VOI-logo,
+.MOI-logo,
 .VUI-logo {
     background: $website-color;
     // border: 2px solid $website-color;

@@ -118,10 +118,28 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
 
 export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
 
-  return getMutationsByLineage(apiurl, mutation.mutation_str, prevalenceThreshold).pipe(
+  return getMutationsByLineage(apiurl, mutation.mutation_name, prevalenceThreshold).pipe(
     map(lineages => {
       mutation["lineages"] = lineages.map(d => d.pangolin_lineage);
       return (mutation)
+    })
+  )
+}
+
+export function getCuratedMutations(apiurl, prevalenceThreshold) {
+  return forkJoin(...MUTATIONS.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
+    map(results => {
+
+      let curated = nest()
+        .key(d => d.variantType)
+        .entries(results);
+
+      curated.forEach(d => {
+        d["id"] = d.key == "Mutation of Concern" ? "moc" : d.key == "Mutation of Interest" ? "moi" : "unknown";
+      })
+
+      curated = orderBy(curated, [reportTypeSorter], ["asc"]);
+      return (curated)
     })
   )
 }
@@ -141,22 +159,7 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
 
-      console.log(curated)
-
       return (curated)
-    })
-  )
-}
-
-export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshold) {
-  return forkJoin(...mutations.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
-    map(results => {
-      mutations.forEach((d, i) => {
-        d["gene"] = d.mutation_str.split(":")[0];
-
-      });
-
-      return (mutations)
     })
   )
 }
@@ -164,11 +167,12 @@ export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshol
 export function getReportList(apiurl, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   store.state.admin.reportloading = true;
 
-  return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold)]).pipe(
-    map(([dateUpdated, md]) => {
+  return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold), getCuratedMutations(apiurl, prevalenceThreshold)]).pipe(
+    map(([dateUpdated, md, muts]) => {
       return ({
         dateUpdated: dateUpdated.lastUpdated,
-        md: md
+        md: md,
+        mutations: muts
       })
 
     }),
