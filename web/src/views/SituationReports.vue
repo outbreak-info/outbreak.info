@@ -131,13 +131,14 @@
         </small>
 
         <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
-          <small class="text-muted mr-2">filter VOC classification by:</small>
+          <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
           <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
             <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
             <span>{{curator.label}}</span>
             <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" />
             <div class="b-input"></div>
           </label>
+          <button class="btn btn-grey-outline py-1 m-0">clear</button>
         </div>
 
         <table class="bg-white my-2">
