@@ -121,6 +121,7 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
   return getMutationsByLineage(apiurl, mutation.mutation_name, prevalenceThreshold).pipe(
     map(lineages => {
       mutation["lineages"] = lineages.map(d => d.pangolin_lineage);
+      mutation.lineages.sort();
       return (mutation)
     })
   )
@@ -129,6 +130,8 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
 export function getCuratedMutations(apiurl, prevalenceThreshold) {
   return forkJoin(...MUTATIONS.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
     map(results => {
+      // sort by codon num, then alpha
+      results = orderBy(results, ["codon_num", "mutation_name"]);
 
       let curated = nest()
         .key(d => d.variantType)

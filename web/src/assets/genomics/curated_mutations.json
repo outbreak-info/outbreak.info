@@ -1,72 +1,84 @@
 [{
     "mutation_name": "S:E484K",
     "identifier": "S_E484K",
+    "codon_num": 484,
     "variantType": "Mutation of Concern",
     "dateModified": "2021-03-15"
   },
   {
     "mutation_name": "S:S477N",
     "identifier": "S_S477N",
+    "codon_num": 477,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:N501Y",
     "identifier": "S_N501Y",
+    "codon_num": 501,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-02-01"
   },
   {
     "mutation_name": "S:K417N",
     "identifier": "S_K417N",
+    "codon_num": 417,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:K417T",
     "identifier": "S_K417T",
+    "codon_num": 417,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:P681H",
     "identifier": "S_P681H",
+    "codon_num": 681,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-02-01"
   },
   {
     "mutation_name": "S:P681R",
     "identifier": "S_P681R",
+    "codon_num": 681,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-04-27"
   },
   {
     "mutation_name": "S:L18F",
     "identifier": "S_L18F",
+    "codon_num": 18,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:S494P",
     "identifier": "S_S494P",
+    "codon_num": 494,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:L452R",
     "identifier": "S_L452R",
+    "codon_num": 452,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-02-01"
   },
   {
     "mutation_name": "S:Y453F",
     "identifier": "S_Y453F",
+    "codon_num": 453,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-03-16"
   },
   {
     "mutation_name": "S:N439K",
     "identifier": "S_N439K",
+    "codon_num": 439,
     "variantType": "Mutation of Interest",
     "dateModified": "2021-03-16"
   }
