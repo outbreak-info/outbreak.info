@@ -589,20 +589,24 @@ export default {
             report["sMutations"] = report.mutations.filter(x => x.gene == "S");
 
             if (report.classifications) {
-              // VOC, VOI, VUI
-              if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI.includes(x
-                  .author))
-                .length) {
-                // add name filtering
-                if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+              // filter name filters
+              if (this.searchInput) {
+                if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())) &&
+                  (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length ||
+                    report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") &&
+                      this.selectedVOI.includes(x.author)).length)) {
                   filtered.push(report);
                 }
               } else {
-                if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+                if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI
+                    .includes(x
+                      .author))
+                  .length) {
                   filtered.push(report);
                 }
               }
             } else {
+              // no report classifications
               if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
                 filtered.push(report);
               }
@@ -613,19 +617,20 @@ export default {
         })
 
         // filter mutation reports
-
-        this.filteredMutations.forEach(group => {
-          let mutFiltered = [];
-          group.values.forEach(report => {
-            if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) || report.lineages.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
-              mutFiltered.push(report);
-            }
-                })
+        if (this.searchInput) {
+          this.filteredMutations.forEach(group => {
+            let mutFiltered = [];
+            group.values.forEach(report => {
+              if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) || report.lineages.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+                mutFiltered.push(report);
+              }
+            })
             group.values = mutFiltered;
-
-        })
+          })
+        }
 
       } else {
+        // no filters applied
         this.filteredReports.forEach(report => {
           report.values.forEach(d => {
             d["sMutations"] = d.mutations.filter(x => x.gene == "S");

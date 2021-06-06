@@ -85,6 +85,18 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
           const reportType = d.variantType == "VOC" ? "Variants of Concern" : d.variantType == "VOI" ? "Variants of Interest" : d.variantType == "VUI" ? "Variants under Investigation" : d.variantType == "VUM" ? "Variants under Monitoring" : null;
           d["ttip"] = reportType ? `Show <b>${d.author}</b> ${reportType}` : `Not classified by <b>${d.author}</b>`;
         })
+
+        const outbreakVariantType = mutationObj.variantType == "Variant of Concern" ? "VOC" : mutationObj.variantType == "Variant of Interest" ? "VOI" : "VUM";
+        mutationObj.classifications.push({
+          author: "outbreak",
+          date: mutationObj.dateModified,
+          variantType: outbreakVariantType
+        })
+
+        // create classification table
+        mutationObj["classificationTable"] = nest()
+          .key(d => d.variantType)
+          .entries(mutationObj.classifications)
       }
 
       // add in characteristic mutations
@@ -170,6 +182,7 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
 function getVariantSynonyms(md) {
   md.forEach(group => {
     group.values.forEach(report => {
+      // merge mutation synonyms
       if (report["mutation_synonyms"]) {
         report["mutation_synonyms"] = report["mutation_synonyms"].concat(report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade)
       } else {
