@@ -135,10 +135,11 @@
           <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
             <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
             <span>{{curator.label}}</span>
-            <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" />
+            <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" v-if="group.id == 'voc'" />
+            <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" v-if="group.id == 'voi'" />
             <div class="b-input"></div>
           </label>
-          <button class="btn btn-grey-outline py-1 m-0">clear</button>
+          <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
         </div>
 
         <table class="bg-white my-2">
@@ -477,6 +478,13 @@ export default {
     }
   },
   methods: {
+    clearFilters() {
+      this.selectedVOC = [];
+      this.selectedVOI = [];
+      this.selectedMOC = [];
+      this.selectedMOI = [];
+      this.filterReports();
+    },
     getReportType(group) {
       return group.toLowerCase() == "variant of concern" ?
         "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy" :
@@ -549,11 +557,7 @@ export default {
     },
     route2OutbreakClass(anchorID) {
       // clear anything that's selected
-      this.selectedVOC = [];
-      this.selectedVOI = [];
-      this.selectedMOC = [];
-      this.selectedMOI = [];
-      this.filterReports();
+      this.clearFilters();
       this.$router.push({
         name: "SituationReports",
         query: {},
