@@ -274,7 +274,7 @@
                         </td>
                         <td>
                           <a href="google.com"><small>report</small>
-                            </a>
+                          </a>
                         </td>
                         <td>
                         </td>
@@ -581,7 +581,7 @@ export default {
       this.filteredReports = cloneDeep(this.reports);
       this.filteredMutations = cloneDeep(this.mutationReports);
 
-      if (this.selectedVOC.length || this.selectedVOI.length) {
+      if (this.selectedVOC.length || this.selectedVOI.length || this.searchInput) {
         // filter the selected VOC/VOI
         this.filteredReports.forEach(group => {
           let filtered = [];
@@ -593,15 +593,18 @@ export default {
               if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI.includes(x
                   .author))
                 .length) {
-                if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
-                  (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
+                // add name filtering
+                if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
                   filtered.push(report);
                 }
-              } else if (report.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") || report.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
-                if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
-                  (report.mutation_synonyms && report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())))) {
+              } else {
+                if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
                   filtered.push(report);
                 }
+              }
+            } else {
+              if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+                filtered.push(report);
               }
             }
           })

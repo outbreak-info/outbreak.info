@@ -167,11 +167,28 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
   )
 }
 
+function getVariantSynonyms(md) {
+  md.forEach(group => {
+    group.values.forEach(report => {
+      if (report["mutation_synonyms"]) {
+        report["mutation_synonyms"] = report["mutation_synonyms"].concat(report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade)
+      } else {
+        report["mutation_synonyms"] = [report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade]
+      }
+      report.mutation_synonyms = report.mutation_synonyms.filter(d => d);
+    })
+  })
+}
+
 export function getReportList(apiurl, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   store.state.admin.reportloading = true;
 
   return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold), getCuratedMutations(apiurl, prevalenceThreshold)]).pipe(
     map(([dateUpdated, md, muts]) => {
+
+      // combine all the variant synoynms together
+      getVariantSynonyms(md);
+
       return ({
         dateUpdated: dateUpdated.lastUpdated,
         md: md,
@@ -402,11 +419,11 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
     pluck("data", "results"),
     map(results => {
       let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
-	d => {
+        d => {
           d["pangolin_lineage"] = lineage_key;
           d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
-	  return (d);
-	}
+          return (d);
+        }
       ));
       return (res);
     }),
