@@ -10,7 +10,7 @@ import {
   catchError,
   pluck,
   map,
-  mergeMap
+  mergeMap,
 } from "rxjs/operators";
 import {
   timeParse,
@@ -401,12 +401,16 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      results.forEach(d => {
-        d["pangolin_lineage"] = lineage;
-        d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
-      })
-      return (results)
+      let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
+	d => {
+          d["pangolin_lineage"] = lineage_key;
+          d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
+	  return (d);
+	}
+      ));
+      return (res);
     }),
+    map(res => [].concat(...res)),
     catchError(e => {
       console.log("%c Error in getting characteristic mutations!", "color: red");
       console.log(e);
