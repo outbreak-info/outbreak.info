@@ -396,7 +396,7 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   if (!mutationString)
     return ( of ([]));
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}mutations-by-lineage?mutations=${mutationString}&timestamp=${timestamp}`;
+  const url = `${apiurl}mutations-by-lineage?mutations=${mutationString}&timestamp=${timestamp}&frequency=${proportionThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -404,15 +404,18 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   })).pipe(
     pluck("data", "results"),
     map(results => {
-
-      results = results.filter(d => d.proportion >= proportionThreshold);
-
-      results.forEach(d => {
-        d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
-        d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
-      })
-      return (results)
+      let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
+        d => {
+	  d["mutation_string"] = mutation_key;
+          d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
+          d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
+          return (d);
+        }
+      ));
+      console.log(res);
+      return (res);
     }),
+    map(res => [].concat(...res)),
     catchError(e => {
       console.log("%c Error in getting mutations by lineage!", "color: red");
       console.log(e);
