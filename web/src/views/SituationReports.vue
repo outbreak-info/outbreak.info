@@ -611,6 +611,20 @@ export default {
 
           group.values = filtered;
         })
+
+        // filter mutation reports
+
+        this.filteredMutations.forEach(group => {
+          let mutFiltered = [];
+          group.values.forEach(report => {
+            if (report.mutation_name.toLowerCase().includes(this.searchInput.toLowerCase()) || report.lineages.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+              mutFiltered.push(report);
+            }
+                })
+            group.values = mutFiltered;
+
+        })
+
       } else {
         this.filteredReports.forEach(report => {
           report.values.forEach(d => {
