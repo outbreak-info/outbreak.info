@@ -342,9 +342,6 @@
             <th>
               total found
             </th>
-            <th>
-
-            </th>
           </thead>
 
           <tbody>
@@ -357,19 +354,16 @@
                     <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
                   </router-link>
                 </td>
+
                 <td>
                   <router-link class="btn btn-main-outline mx-1 my-1 py-0 px-1" :to="{name: 'MutationReport', query:{pango: lineage}}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
                     {{lineage}}
                   </router-link>
                 </td>
+
                 <td class="font-weight-bold">
                   {{ report.lineage_count }}
                 </td>
-                <!-- view report link / related -->
-                <td rowspan="1" style="width: 150px" class="border-bottom pb-3">
-                  <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: {muts: report.mutation_name} }">View report</router-link>
-                </td>
-
               </tr>
               <!--  classifications -->
               <!-- <tr :key="rIdx + 'classification'" class="border-bottom" :class="{checkbook : rIdx%2-1}">
@@ -396,7 +390,7 @@
 
         </table>
         <div class="mt-2">
-          <sup class="text-muted mr-1">**</sup><small class="text-muted">Lineages containing at least {{charMutThreshold}} of sequences with the particular mutation
+          <sup class="text-muted mr-1">**</sup><small class="text-muted">Lineages with the mutation in at least {{charMutThreshold}} of sequences
           </small>
         </div>
       </div>
