@@ -233,7 +233,7 @@
 
                           <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant] && report.classificationTable[variant][curator.id] ? variant + '-bg' : 'no-classification']">
                             <div v-if="report.classificationTable[variant]" class="border-inset">
-                              <small class="line-height-sm tracked-variant-report" v-if="report.classificationTable[variant][curator.id] && report.classificationTable[variant][curator.id].report"
+                              <small class="line-height-1 tracked-variant-report" v-if="report.classificationTable[variant][curator.id] && report.classificationTable[variant][curator.id].report"
                                 :data-tippy-info="report.classificationTable[variant][curator.id].ttip" v-html="report.classificationTable[variant][curator.id].report"></small>
                             </div>
 
@@ -828,7 +828,7 @@ $voc-height: 20px;
     padding: 0 !important;
     & .border-inset {
         border-left: 4px solid $publication-color !important;
-        padding: 0 0.25rem;
+        padding: 0 0.25rem 0 0.5rem;
         height: 100%;
         display: flex;
         align-items: center;
@@ -849,7 +849,7 @@ $voc-height: 20px;
     padding: 0 !important;
     & .border-inset {
         border-left: 4px solid $website-color !important;
-        padding: 0 0.25rem;
+        padding: 0 0.25rem 0 0.5rem;
         height: 100%;
         display: flex;
         align-items: center;
@@ -868,7 +868,7 @@ $vum-color: #edc949;
     padding: 0 !important;
     & .border-inset {
         border-left: 4px solid $vum-color !important;
-        padding: 0 0.25rem;
+        padding: 0 0.25rem 0 0.5rem;
         height: 100%;
         display: flex;
         align-items: center;
