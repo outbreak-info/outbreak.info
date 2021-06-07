@@ -256,7 +256,7 @@
                   <!-- s-gene mutations heatmap -->
                   <td>
                     <div class="d-flex flex-column align-items-center bg-dark">
-                      <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" v-if="report.sMutations.length" />
+                      <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
                       <router-link class="text-light" :to="{ name: 'SituationReportComparison'}" v-if="report.sMutations.length">
                         <small>Explore all genes
                         </small>
@@ -446,7 +446,7 @@ import debounce from "lodash/debounce";
 
 import {
   getReportList,
-  getSequenceCount
+  getSequenceCount, getBadMutations
 } from "@/api/genomics.js";
 
 export default {
@@ -669,6 +669,8 @@ export default {
       filteredReports: null,
       filteredMutations: null,
       variantTypes: ["VOC", "VOI", "VUM"],
+      curatedMOC: null,
+      curatedMOI: null,
       curatorOpts: [{
           id: "outbreak",
           label: "outbreak.info",
@@ -704,9 +706,12 @@ export default {
     this.selectedVOI = this.voi ? typeof(this.voi) == "string" ? [this.voi] : this.voi : [];
     this.searchInput = this.name;
 
+    const ofInterest = getBadMutations(true);
+    this.curatedMOC = ofInterest.moc;
+    this.curatedMOI = ofInterest.moi;
+
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       console.log(results)
-      console.log(results.md[0].values[3].classificationTable)
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
       this.mutationReports = results.mutations;

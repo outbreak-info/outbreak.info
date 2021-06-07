@@ -327,7 +327,8 @@ import {
   getLineagesComparison,
   getComparisonByMutations,
   getComparisonByLocation,
-  getMutationsByLineage
+  getMutationsByLineage,
+  getBadMutations
 } from "@/api/genomics.js";
 
 // --- font awesome --
@@ -449,8 +450,8 @@ export default {
       queryLocation: null,
       voi: null,
       voc: null,
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
-      moc: ["E484K"],
+      moi: null,
+      moc: null,
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -548,6 +549,10 @@ export default {
       this.selectedLocation = location;
     },
     getData() {
+      const ofInterest = getBadMutations(true);
+      this.moc = ofInterest.moc;
+      this.moi = ofInterest.moi;
+
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.downloadableHeatmap = results.dataFlat;

@@ -141,24 +141,25 @@ function arr2Obj(arr, keyVar, valVar) {
   return (transformed)
 }
 
+// sort the mutations by position within the genes
+function compareMutationLocation(a, b) {
+  if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
+    return 0;
+  if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
+    return -1;
+  if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
+    return 0;
+  return (a.codon_num < b.codon_num ? -1 : 0);
+}
+
 export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
   return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
-    // sort the mutations by position within the genes
-    function compare(a, b) {
-      if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
-        return 0;
-      if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
-        return -1;
-      if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
-        return 0;
-      return (a.codon_num < b.codon_num ? -1 : 0);
-    }
 
     charMuts.forEach(d => {
       d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
     })
 
-    return (charMuts.sort(compare))
+    return (charMuts.sort(compareMutationLocation))
   }));
 }
 
@@ -1491,72 +1492,21 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 
 
 export function getBadMutations(returnSimplified = false) {
-  // let moc = CURATED.filter(d => d.variantType && d.variantType.toLowerCase() == "mutation of concern");
-  // moc.forEach(d => {
-  //   d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
-  //     d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
-  // })
+  const moc = MUTATIONS.filter(d => d.variantType == "Mutation of Concern");
+  let moi = MUTATIONS.filter(d => d.variantType == "Mutation of Interest");
 
-  const moc = [{
-    mutation: "S:E484K",
-    mutation_simplified: "E484K"
-  }]
-
-  const moi = [{
-      mutation: "S:S477N",
-      mutation_simplified: "S477N"
-    },
-    {
-      mutation: "S:N501Y",
-      mutation_simplified: "N501Y"
-    },
-    {
-      mutation: "S:K417N",
-      mutation_simplified: "K417N"
-    },
-    {
-      mutation: "S:K417T",
-      mutation_simplified: "K417T"
-    },
-    {
-      mutation: "S:P681H",
-      mutation_simplified: "P681H"
-    },
-    {
-      mutation: "S:P681R",
-      mutation_simplified: "P681R"
-    },
-    {
-      mutation: "S:L18F",
-      mutation_simplified: "L18F"
-    },
-    {
-      mutation: "S:S494P",
-      mutation_simplified: "S494P"
-    },
-    {
-      mutation: "S:L452R",
-      mutation_simplified: "L452R"
-    },
-    {
-      mutation: "S:Y453F",
-      mutation_simplified: "Y453F"
-    },
-    {
-      mutation: "S:N439K",
-      mutation_simplified: "N439K"
-    }
-  ];
+  moc.sort((a,b) => a.codon_num - b.codon_num);
+  moi.sort((a,b) => a.codon_num - b.codon_num);
 
   if (returnSimplified) {
     return ({
-      moc: moc.map(d => d.mutation_simplified),
-      moi: moi.map(d => d.mutation_simplified)
+      moc: moc.map(d => d.mutation_name.split(":")[1]),
+      moi: moi.map(d => d.mutation_name.split(":")[1])
     })
   } else {
     return ({
-      moc: moc.map(d => d.mutation),
-      moi: moi.map(d => d.mutation)
+      moc: moc.map(d => d.mutation_name),
+      moi: moi.map(d => d.mutation_name)
     })
   }
 }
