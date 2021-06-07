@@ -132,197 +132,205 @@
           </div>
         </small>
 
-        <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
-          <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
-          <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
-            <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
-            <span>{{curator.label}}</span>
-            <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" v-if="group.id == 'voc'" />
-            <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" v-if="group.id == 'voi'" />
-            <div class="b-input"></div>
-          </label>
-          <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
-        </div>
 
-        <table class="bg-white my-2">
-          <thead class="text-uppercase text-muted">
-            <tr class="border-bottom">
-              <th class="d-flex align-items-center">
-                variant
-                <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-                  <div class="input-group">
-                    <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-                    <div class="input-group-prepend">
-                      <span class="input-group-text text-muted border-0" id="sb">
-                        <font-awesome-icon :icon="['fas', 'search']" />
-                      </span>
-                    </div>
-                  </div>
-                </form>
-              </th>
-              <th>
-                classifications
-              </th>
-              <th>
-                first identified
-              </th>
-              <th>
-                total found
-              </th>
-              <th>
-                S-gene Mutations<sup>*</sup>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-for="(report, rIdx) in group.values">
-              <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
-                <!-- name + synonyms -->
-                <td class="pt-2">
-                  <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
-                    <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
-                    <!-- <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: report.reportQuery }">View report</router-link> -->
-
-                  </router-link>
-
-                  <small class="d-flex flex-column text-muted">
-                    <div v-if="report.who_name">
-                      WHO: <span class="font-weight-bold">{{report.who_name}}</span>
-                    </div>
-                    <div v-if="report.phe_name">
-                      PHE: <span class="font-weight-bold">{{report.phe_name}}</span>
-                    </div>
-                    <div v-if="report.nextstrain_clade">
-                      Nextstrain: <span class="font-weight-bold">{{report.nextstrain_clade}}</span>
-                    </div>
-                    <div v-if="report.gisaid_clade">
-                      GISAID: <span class="font-weight-bold">{{report.gisaid_clade}}</span>
-                    </div>
-                    <div class="text-highlight d-flex flex-wrap" v-if="report.related">
-                      <span class="mr-1">related:</span>
-                      <span v-for="(related, rIdx) in report.related" :key="rIdx">
-                        <router-link :to="{hash: related.identifier}" class="font-weight-bold">{{related.label}}</router-link>
-                        <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
-                      </span>
-                    </div>
-                  </small>
-                </td>
-
-                <!-- classifications -->
-                <td>
-                  <table class="bordered">
-                    <thead>
-                      <tr class="fa-xs">
-                        <th>
-
-                        </th>
-                        <th>
-                          <!-- outbreak.info -->
-                          <img src="@/assets/icon-01.svg" class="variant-logo" />
-                        </th>
-                        <th>
-                          <!-- CDC -->
-                          <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" />
-                        </th>
-                        <th>
-                          <!-- ECDC -->
-                          <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" />
-                        </th>
-                        <th>
-                          <!-- PHE -->
-                          <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
-                        </th>
-                        <th>
-                          <!-- WHO -->
-                          <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" />
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th>
-                          <span class="tracked-variant-badge VOC-logo">VOC</span>
-                        </th>
-                        <td>
-                          <small class="line-height-sm">12 May 2021</small>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-
-                      <tr>
-                        <th>
-                          <span class="tracked-variant-badge VOI-logo">VOI</span>
-                        </th>
-                        <td>
-                        </td>
-                        <td><small class="line-height-sm">12 May 2021</small></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-
-                      <tr>
-                        <th>
-                          <span class="tracked-variant-badge VUM-logo">VUM</span>
-                        </th>
-
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                        </td>
-                        <td>
-                          <a href="google.com"><small>report</small>
-                          </a>
-                        </td>
-                        <td>
-                        </td>
-                      </tr>
-                    </tbody>
-
-                  </table>
-                </td>
-
-                <td class="text-center line-height-1">
-                  {{ report.location_first_identified }}
-                </td>
-
-                <td class="text-center">
-                  {{ report.lineage_count }}
-                </td>
-
-                <!-- s-gene mutations heatmap -->
-                <td>
-                  <div class="d-flex flex-column align-items-center">
-                    <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" v-if="report.sMutations.length" />
-                    <router-link :to="{ name: 'SituationReportComparison'}" v-if="report.sMutations.length">
-                      <small>Explore all genes
-                      </small>
-                    </router-link>
-                  </div>
-                </td>
-              </tr>
-            </template>
-          </tbody>
-
-        </table>
-
-        <div class="mt-2">
-
-          <div class="mt-2 d-flex justify-content-between align-items-center">
-            <div class="flex-shrink-0">
-              <sup class="text-muted mr-1">*</sup>
-              <small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
-                  more)
-                </router-link></small>
-            </div>
-
-            <DownloadReportData :data="group.values" dataType="Curated Variant List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
+        <template v-if="group.values.length">
+          <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
+            <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
+            <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
+              <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
+              <span>{{curator.label}}</span>
+              <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" v-if="group.id == 'voc'" />
+              <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" v-if="group.id == 'voi'" />
+              <div class="b-input"></div>
+            </label>
+            <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
           </div>
+
+          <table class="bg-white my-2">
+            <thead class="text-uppercase text-muted">
+              <tr class="border-bottom">
+                <th class="d-flex align-items-center">
+                  variant
+                  <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                    <div class="input-group">
+                      <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                      <div class="input-group-prepend">
+                        <span class="input-group-text text-muted border-0" id="sb">
+                          <font-awesome-icon :icon="['fas', 'search']" />
+                        </span>
+                      </div>
+                    </div>
+                  </form>
+                </th>
+                <th>
+                  classifications
+                </th>
+                <th>
+                  first identified
+                </th>
+                <th>
+                  total found
+                </th>
+                <th>
+                  S-gene Mutations<sup>*</sup>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="(report, rIdx) in group.values">
+                <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
+                  <!-- name + synonyms -->
+                  <td class="pt-2">
+                    <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
+                      <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
+                      <!-- <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: report.reportQuery }">View report</router-link> -->
+
+                    </router-link>
+
+                    <small class="d-flex flex-column text-muted">
+                      <div v-if="report.who_name">
+                        WHO: <span class="font-weight-bold">{{report.who_name}}</span>
+                      </div>
+                      <div v-if="report.phe_name">
+                        PHE: <span class="font-weight-bold">{{report.phe_name}}</span>
+                      </div>
+                      <div v-if="report.nextstrain_clade">
+                        Nextstrain: <span class="font-weight-bold">{{report.nextstrain_clade}}</span>
+                      </div>
+                      <div v-if="report.gisaid_clade">
+                        GISAID: <span class="font-weight-bold">{{report.gisaid_clade}}</span>
+                      </div>
+                      <div class="text-highlight d-flex flex-wrap" v-if="report.related">
+                        <span class="mr-1">related:</span>
+                        <span v-for="(related, rIdx) in report.related" :key="rIdx">
+                          <router-link :to="{hash: related.identifier}" class="font-weight-bold">{{related.label}}</router-link>
+                          <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
+                        </span>
+                      </div>
+                    </small>
+                  </td>
+
+                  <!-- classifications -->
+                  <td>
+                    <table class="bordered">
+                      <thead>
+                        <tr class="fa-xs">
+                          <th>
+
+                          </th>
+                          <th>
+                            <!-- outbreak.info -->
+                            <img src="@/assets/icon-01.svg" class="variant-logo" />
+                          </th>
+                          <th>
+                            <!-- CDC -->
+                            <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" />
+                          </th>
+                          <th>
+                            <!-- ECDC -->
+                            <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" />
+                          </th>
+                          <th>
+                            <!-- PHE -->
+                            <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
+                          </th>
+                          <th>
+                            <!-- WHO -->
+                            <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" />
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th>
+                            <span class="tracked-variant-badge VOC-logo">VOC</span>
+                          </th>
+                          <td>
+                            <small class="line-height-sm">12 May 2021</small>
+                          </td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+
+                        <tr>
+                          <th>
+                            <span class="tracked-variant-badge VOI-logo">VOI</span>
+                          </th>
+                          <td>
+                          </td>
+                          <td><small class="line-height-sm">12 May 2021</small></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+
+                        <tr>
+                          <th>
+                            <span class="tracked-variant-badge VUM-logo">VUM</span>
+                          </th>
+
+                          <td>
+                          </td>
+                          <td>
+                          </td>
+                          <td>
+                          </td>
+                          <td>
+                            <a href="google.com"><small>report</small>
+                            </a>
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      </tbody>
+
+                    </table>
+                  </td>
+
+                  <td class="text-center line-height-1">
+                    {{ report.location_first_identified }}
+                  </td>
+
+                  <td class="text-center">
+                    {{ report.lineage_count }}
+                  </td>
+
+                  <!-- s-gene mutations heatmap -->
+                  <td>
+                    <div class="d-flex flex-column align-items-center">
+                      <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" v-if="report.sMutations.length" />
+                      <router-link :to="{ name: 'SituationReportComparison'}" v-if="report.sMutations.length">
+                        <small>Explore all genes
+                        </small>
+                      </router-link>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+
+          </table>
+
+          <div class="mt-2">
+
+            <div class="mt-2 d-flex justify-content-between align-items-center">
+              <div class="flex-shrink-0">
+                <sup class="text-muted mr-1">*</sup>
+                <small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
+                    more)
+                  </router-link></small>
+              </div>
+
+              <DownloadReportData :data="group.values" dataType="Curated Variant List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
+            </div>
+          </div>
+        </template>
+
+        <div class="d-flex align-items-center my-3" v-else>
+          <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
+          <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
         </div>
       </div>
 
@@ -338,64 +346,71 @@
           </div>
         </small>
 
-        <table class="bg-white mt-2 w-100">
-          <thead class="text-uppercase text-muted">
-            <th class="d-flex align-items-center">
-              mutation
-              <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-                <div class="input-group">
-                  <input :id="'sBar-mutation' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-                  <div class="input-group-prepend">
-                    <span class="input-group-text text-muted border-0" id="sb">
-                      <font-awesome-icon :icon="['fas', 'search']" />
-                    </span>
+        <template v-if="group.values.length">
+          <table class="bg-white mt-2 w-100">
+            <thead class="text-uppercase text-muted">
+              <th class="d-flex align-items-center">
+                mutation
+                <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                  <div class="input-group">
+                    <input :id="'sBar-mutation' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                    <div class="input-group-prepend">
+                      <span class="input-group-text text-muted border-0" id="sb">
+                        <font-awesome-icon :icon="['fas', 'search']" />
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </form>
-            </th>
-            <th>
-              prominent in <sup>**</sup>
-            </th>
-            <th>
-              total found
-            </th>
-          </thead>
+                </form>
+              </th>
+              <th>
+                prominent in <sup>**</sup>
+              </th>
+              <th>
+                total found
+              </th>
+            </thead>
 
-          <tbody>
-            <template v-for="(report, rIdx) in group.values">
-              <tr :key="rIdx" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
+            <tbody>
+              <template v-for="(report, rIdx) in group.values">
+                <tr :key="rIdx" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
 
-                <!-- name + synonyms -->
-                <td class="pt-2">
-                  <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
-                    <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
-                  </router-link>
-                </td>
+                  <!-- name + synonyms -->
+                  <td class="pt-2">
+                    <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
+                      <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
+                    </router-link>
+                  </td>
 
-                <td>
-                  <router-link class="btn btn-main-outline mx-1 my-1 py-0 px-1" :to="{name: 'MutationReport', query:{pango: lineage}}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
-                    {{lineage}}
-                  </router-link>
-                </td>
+                  <td>
+                    <router-link class="btn btn-main-outline mx-1 my-1 py-0 px-1" :to="{name: 'MutationReport', query:{pango: lineage}}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
+                      {{lineage}}
+                    </router-link>
+                  </td>
 
-                <td class="font-weight-bold">
-                  {{ report.lineage_count }}
-                </td>
-              </tr>
+                  <td class="font-weight-bold">
+                    {{ report.lineage_count }}
+                  </td>
+                </tr>
 
-            </template>
-          </tbody>
-        </table>
+              </template>
+            </tbody>
+          </table>
 
-        <div class="mt-2 d-flex justify-content-between align-items-center">
-          <div class="flex-shrink-0">
-            <sup class="text-muted mr-1">**</sup>
-            <small class="text-muted">Lineages with the mutation in at least {{charMutThreshold}} of sequences
-            </small>
+          <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="flex-shrink-0">
+              <sup class="text-muted mr-1">**</sup>
+              <small class="text-muted">Lineages with the mutation in at least {{charMutThreshold}} of sequences
+              </small>
+            </div>
+
+            <DownloadReportData :data="group.values" dataType="Curated Mutation List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
           </div>
-
-          <DownloadReportData :data="group.values" dataType="Curated Mutation List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
+        </template>
+        <div class="d-flex align-items-center my-3" v-else>
+          <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
+          <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
         </div>
+
       </div>
     </section>
 
@@ -481,7 +496,22 @@ export default {
       this.selectedVOI = [];
       this.selectedMOC = [];
       this.selectedMOI = [];
+      this.searchInput = null;
       this.filterReports();
+
+      this.$router.push({
+        name: "SituationReports",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          voc: this.selectedVOC,
+          voi: this.selectedVOI,
+          moc: this.selectedMOC,
+          moi: this.selectedMOI,
+          name: this.searchInput
+        }
+      })
     },
     getReportType(group) {
       return group.toLowerCase() == "variant of concern" ?
@@ -572,7 +602,7 @@ export default {
       this.$router.push({
         name: "SituationReports",
         params: {
-          disableScroll: true
+          disableScroll: false
         },
         query: {
           voc: this.selectedVOC,
