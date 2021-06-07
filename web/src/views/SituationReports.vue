@@ -330,6 +330,17 @@
 
         <div class="d-flex align-items-center my-3" v-else>
           <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
+          <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+            <div class="input-group">
+              <input :id="'sBar-clear' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+              <div class="input-group-prepend">
+                <span class="input-group-text text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
+              </div>
+            </div>
+          </form>
+
           <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
         </div>
       </div>
@@ -408,6 +419,17 @@
         </template>
         <div class="d-flex align-items-center my-3" v-else>
           <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
+          <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+            <div class="input-group">
+              <input :id="'sBar-clear-mut' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+              <div class="input-group-prepend">
+                <span class="input-group-text text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
+              </div>
+            </div>
+          </form>
+          
           <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
         </div>
 
