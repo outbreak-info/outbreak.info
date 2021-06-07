@@ -82,8 +82,6 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
         mutationObj.classifications.forEach(d => {
           const parsedDate = parseDate(d.dateModified);
           d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
-          const reportType = d.variantType == "VOC" ? "Variants of Concern" : d.variantType == "VOI" ? "Variants of Interest" : d.variantType == "VUI" ? "Variants under Investigation" : d.variantType == "VUM" ? "Variants under Monitoring" : null;
-          d["ttip"] = reportType ? `Show <b>${d.author}</b> ${reportType}` : `Not classified by <b>${d.author}</b>`;
         })
 
         const outbreakVariantType = mutationObj.variantType == "Variant of Concern" ? "VOC" : mutationObj.variantType == "Variant of Interest" ? "VOI" : "VUM";
@@ -106,11 +104,17 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
               const reportLink = d.url && d.dateModifiedFormatted ? `<a href="${d.url}" target="_blank">${d.dateModifiedFormatted}</a>` :
                 d.url ? `<a href="${d.url}" target="_blank">report</a>` :
                 d.dateModifiedFormatted ? d.dateModifiedFormatted :
-                null
+                null;
+
+              const reportType = d.variantType == "VOC" ? "Variant of Concern" : d.variantType == "VOI" ? "Variant of Interest" : d.variantType == "VUI" ? "Variants under Investigation" : d.variantType == "VUM" ? "Variants under Monitoring" : null;
+
+              const ttip = reportLink ? d.author == "outbreak" ? `<b>${reportType}</b> classification by <b>outbreak.info</b>` : `View <b>${reportType}</b> classification by <b>${d.author}</b>` : null;
+
               obj[d.author] = {
                 dateModified: d.dateModifiedFormatted,
                 url: d.url,
-                report: reportLink
+                report: reportLink,
+                ttip: ttip
               };
             })
             return (obj)

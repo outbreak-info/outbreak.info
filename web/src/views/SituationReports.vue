@@ -232,9 +232,10 @@
                           </th>
 
                           <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant] && report.classificationTable[variant][curator.id] ? variant + '-bg' : 'no-classification']">
-                            <template v-if="report.classificationTable[variant]">
-                              <small class="line-height-sm" v-if="report.classificationTable[variant][curator.id] && report.classificationTable[variant][curator.id].report" v-html="report.classificationTable[variant][curator.id].report"></small>
-                            </template>
+                            <div v-if="report.classificationTable[variant]" class="border-inset">
+                              <small class="line-height-sm tracked-variant-report" v-if="report.classificationTable[variant][curator.id] && report.classificationTable[variant][curator.id].report"
+                                :data-tippy-info="report.classificationTable[variant][curator.id].ttip" v-html="report.classificationTable[variant][curator.id].report"></small>
+                            </div>
 
                           </td>
                         </tr>
@@ -721,25 +722,13 @@ export default {
     this.debounceSearch = debounce(this.filterName, 250);
   },
   updated() {
-    tippy(".tracked-variant-badge", {
+    tippy(".tracked-variant-report", {
       content: "Loading...",
       maxWidth: "200px",
       placement: "bottom",
       animation: "fade",
       theme: "light",
       allowHTML: true,
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      }
-    });
-
-    tippy(".citation", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
       onShow(instance) {
         let info = instance.reference.dataset.tippyInfo;
         instance.setContent(info);
@@ -817,6 +806,9 @@ $voc-height: 20px;
     color: white;
     font-weight: 700;
     font-size: $voc-height * 0.75;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: $voc-height;
     line-height: $voc-height;
     padding: 0 0.25rem;
@@ -833,7 +825,14 @@ $voc-height: 20px;
 
 .VOC-bg {
     background: lighten($publication-color, 33%);
-    border-left: 4px solid $publication-color !important;
+    padding: 0 !important;
+    & .border-inset {
+        border-left: 4px solid $publication-color !important;
+        padding: 0 0.25rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
 }
 
 .MOI-logo,
@@ -847,7 +846,14 @@ $voc-height: 20px;
 
 .VOI-bg {
     background: lighten($website-color, 37%);
-    border-left: 4px solid $website-color !important;
+    padding: 0 !important;
+    & .border-inset {
+        border-left: 4px solid $website-color !important;
+        padding: 0 0.25rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
 }
 
 $vum-color: #edc949;
@@ -859,7 +865,14 @@ $vum-color: #edc949;
 
 .VUM-bg {
     background: lighten($vum-color, 33%);
-    border-left: 4px solid $vum-color !important;
+    padding: 0 !important;
+    & .border-inset {
+        border-left: 4px solid $vum-color !important;
+        padding: 0 0.25rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
 }
 
 .none-logo {
@@ -894,6 +907,7 @@ $vum-color: #edc949;
 .bordered td {
     border: 1px solid #dee2e6;
     width: 95px;
+    height: 10px;
 }
 
 .my-10 {
