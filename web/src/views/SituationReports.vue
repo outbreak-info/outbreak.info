@@ -147,20 +147,22 @@
           </div>
 
           <table class="bg-white my-2">
-            <thead class="text-uppercase text-muted">
-              <tr class="border-bottom">
-                <th class="d-flex align-items-center">
-                  variant
-                  <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-                    <div class="input-group">
-                      <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-                      <div class="input-group-prepend">
-                        <span class="input-group-text text-muted border-0" id="sb">
-                          <font-awesome-icon :icon="['fas', 'search']" />
-                        </span>
+            <thead class="text-uppercase bg-dark text-light">
+              <tr class="border-bottom border-white">
+                <th>
+                  <div class="d-flex align-items-center">
+                    variant
+                    <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                      <div class="input-group">
+                        <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                        <div class="input-group-prepend">
+                          <span class="input-group-text text-muted border-0" id="sb">
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 </th>
                 <th>
                   classifications
@@ -176,6 +178,7 @@
                 </th>
               </tr>
             </thead>
+
             <tbody>
               <template v-for="(report, rIdx) in group.values">
                 <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
@@ -215,75 +218,27 @@
                     <table class="bordered">
                       <thead>
                         <tr class="fa-xs">
-                          <th>
-
-                          </th>
-                          <th>
-                            <!-- outbreak.info -->
-                            <img src="@/assets/icon-01.svg" class="variant-logo" />
-                          </th>
-                          <th>
-                            <!-- CDC -->
-                            <img src="@/assets/resources/cdc-logo.svg" class="variant-logo" />
-                          </th>
-                          <th>
-                            <!-- ECDC -->
-                            <img src="@/assets/resources/ecdc-logo.png" class="variant-logo bg-white" />
-                          </th>
-                          <th>
-                            <!-- PHE -->
-                            <img src="@/assets/resources/PHE-logo-square.png" class="variant-logo" />
-                          </th>
-                          <th>
-                            <!-- WHO -->
-                            <img src="@/assets/resources/who-emblem.svg" class="variant-logo bg-white" />
+                          <th></th>
+                          <th v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'table'">
+                            <img :src="require(`@/assets/${curator.src}`)" class="variant-logo" />
                           </th>
                         </tr>
                       </thead>
+
                       <tbody>
-                        <tr>
+                        <tr v-for="(variant, vIdx) in variantTypes" :key="vIdx">
                           <th>
-                            <span class="tracked-variant-badge VOC-logo">VOC</span>
-                          </th>
-                          <td>
-                            <small class="line-height-sm">12 May 2021</small>
-                          </td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-
-                        <tr>
-                          <th>
-                            <span class="tracked-variant-badge VOI-logo">VOI</span>
-                          </th>
-                          <td>
-                          </td>
-                          <td><small class="line-height-sm">12 May 2021</small></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-
-                        <tr>
-                          <th>
-                            <span class="tracked-variant-badge VUM-logo">VUM</span>
+                            <span :class="'tracked-variant-badge ' + variant + '-logo'">{{variant}}</span>
                           </th>
 
-                          <td>
-                          </td>
-                          <td>
-                          </td>
-                          <td>
-                          </td>
-                          <td>
-                            <a href="google.com"><small>report</small>
-                            </a>
-                          </td>
-                          <td>
+                          <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant] && report.classificationTable[variant][curator.id] ? variant + '-bg' : 'no-classification']">
+                            <template v-if="report.classificationTable[variant]">
+                              <small class="line-height-sm" v-if="report.classificationTable[variant][curator.id] && report.classificationTable[variant][curator.id].report" v-html="report.classificationTable[variant][curator.id].report"></small>
+                            </template>
+
                           </td>
                         </tr>
+
                       </tbody>
 
                     </table>
@@ -299,9 +254,9 @@
 
                   <!-- s-gene mutations heatmap -->
                   <td>
-                    <div class="d-flex flex-column align-items-center">
+                    <div class="d-flex flex-column align-items-center bg-dark">
                       <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" v-if="report.sMutations.length" />
-                      <router-link :to="{ name: 'SituationReportComparison'}" v-if="report.sMutations.length">
+                      <router-link class="text-light" :to="{ name: 'SituationReportComparison'}" v-if="report.sMutations.length">
                         <small>Explore all genes
                         </small>
                       </router-link>
@@ -359,26 +314,30 @@
 
         <template v-if="group.values.length">
           <table class="bg-white mt-2 w-100">
-            <thead class="text-uppercase text-muted">
-              <th class="d-flex align-items-center">
-                mutation
-                <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-                  <div class="input-group">
-                    <input :id="'sBar-mutation' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-                    <div class="input-group-prepend">
-                      <span class="input-group-text text-muted border-0" id="sb">
-                        <font-awesome-icon :icon="['fas', 'search']" />
-                      </span>
-                    </div>
+            <thead class="text-uppercase bg-dark text-light">
+              <tr class="border-bottom border-white">
+                <th>
+                  <div class="d-flex align-items-center">
+                    mutation
+                    <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                      <div class="input-group">
+                        <input :id="'sBar-mutation' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                        <div class="input-group-prepend">
+                          <span class="input-group-text text-muted border-0" id="sb">
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                          </span>
+                        </div>
+                      </div>
+                    </form>
                   </div>
-                </form>
-              </th>
-              <th>
-                prominent in <sup>**</sup>
-              </th>
-              <th>
-                total found
-              </th>
+                </th>
+                <th>
+                  prominent in <sup>**</sup>
+                </th>
+                <th>
+                  total found
+                </th>
+              </tr>
             </thead>
 
             <tbody>
@@ -708,6 +667,7 @@ export default {
       mutationReports: null,
       filteredReports: null,
       filteredMutations: null,
+      variantTypes: ["VOC", "VOI", "VUM"],
       curatorOpts: [{
           id: "outbreak",
           label: "outbreak.info",
@@ -745,6 +705,7 @@ export default {
 
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       console.log(results)
+      console.log(results.md[0].values[3].classificationTable)
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
       this.mutationReports = results.mutations;
@@ -856,10 +817,11 @@ $voc-height: 20px;
     color: white;
     font-weight: 700;
     font-size: $voc-height * 0.75;
-    display: flex;
-    align-items: center;
-    // padding: 0.25rem 0.5rem 0.25rem 0.35rem;
-    // border-radius: 0.25rem;
+    height: $voc-height;
+    line-height: $voc-height;
+    padding: 0 0.25rem;
+    text-align: center;
+    border-radius: 0.25rem;
 }
 
 .MOC-logo,
@@ -867,9 +829,11 @@ $voc-height: 20px;
     // border: 2px solid $publication-color;
     // color: $publication-color;
     background: $publication-color;
-    height: $voc-height;
-    border-left: 4px solid lighten($publication-color, 20%);
-    padding: 0 0.25rem;
+}
+
+.VOC-bg {
+    background: lighten($publication-color, 33%);
+    border-left: 4px solid $publication-color !important;
 }
 
 .MOI-logo,
@@ -878,18 +842,24 @@ $voc-height: 20px;
     background: $website-color;
     // border: 2px solid $website-color;
     // color: $website-color;
-    height: $voc-height;
-    border-left: 4px solid lighten($website-color, 23%);
-    padding: 0 0.25rem;
+    // border-left: 4px solid lighten($website-color, 23%);
+}
+
+.VOI-bg {
+    background: lighten($website-color, 37%);
+    border-left: 4px solid $website-color !important;
 }
 
 $vum-color: #edc949;
 .VUM-logo {
     background: lighten($vum-color, 20%);
     color: darken($vum-color, 20%);
-    height: $voc-height;
-    border-left: 4px solid lighten($vum-color, 0%);
-    padding: 0 0.25rem;
+    // border-left: 4px solid lighten($vum-color, 0%);
+}
+
+.VUM-bg {
+    background: lighten($vum-color, 33%);
+    border-left: 4px solid $vum-color !important;
 }
 
 .none-logo {
@@ -922,8 +892,8 @@ $vum-color: #edc949;
 }
 
 .bordered td {
-    border: 1px solid #dee2e6!important;
-    width: 90px;
+    border: 1px solid #dee2e6;
+    width: 95px;
 }
 
 .my-10 {

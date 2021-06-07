@@ -89,14 +89,35 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
         const outbreakVariantType = mutationObj.variantType == "Variant of Concern" ? "VOC" : mutationObj.variantType == "Variant of Interest" ? "VOI" : "VUM";
         mutationObj.classifications.push({
           author: "outbreak",
-          date: mutationObj.dateModified,
+          dateModified: mutationObj.dateModified,
+          dateModifiedFormatted: formatDateShort(parseDate(mutationObj.dateModified)),
           variantType: outbreakVariantType
         })
 
         // create classification table
         mutationObj["classificationTable"] = nest()
           .key(d => d.variantType)
-          .entries(mutationObj.classifications)
+          // .key(d => d.author)
+          .rollup(values => {
+            let obj = {};
+            // WARNING: this assumes that there aren't duplicate author keys.
+            // should be okay if the curation is okay.
+            values.forEach(d => {
+              const reportLink = d.url && d.dateModifiedFormatted ? `<a href="${d.url}" target="_blank">${d.dateModifiedFormatted}</a>` :
+                d.url ? `<a href="${d.url}" target="_blank">report</a>` :
+                d.dateModifiedFormatted ? d.dateModifiedFormatted :
+                null
+              obj[d.author] = {
+                dateModified: d.dateModifiedFormatted,
+                url: d.url,
+                report: reportLink
+              };
+            })
+            return (obj)
+          })
+          .entries(mutationObj.classifications);
+
+        mutationObj["classificationTable"] = arr2Obj(mutationObj["classificationTable"], "key", "value");
       }
 
       // add in characteristic mutations
@@ -105,6 +126,15 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
     })
   )
 
+}
+
+function arr2Obj(arr, keyVar, valVar) {
+  const transformed = arr.reduce((r, e) => {
+    r[e[keyVar]] = e[valVar];
+    return (r)
+  }, {});
+
+  return (transformed)
 }
 
 export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
@@ -406,7 +436,7 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
     map(results => {
       let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
         d => {
-	  d["mutation_string"] = mutation_key;
+          d["mutation_string"] = mutation_key;
           d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
           d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
           return (d);
