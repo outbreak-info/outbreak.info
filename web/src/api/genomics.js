@@ -412,7 +412,6 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
           return (d);
         }
       ));
-      console.log(res);
       return (res);
     }),
     map(res => [].concat(...res)),

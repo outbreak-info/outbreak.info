@@ -602,7 +602,7 @@ export default {
       this.$router.push({
         name: "SituationReports",
         params: {
-          disableScroll: false
+          disableScroll: true
         },
         query: {
           voc: this.selectedVOC,
@@ -624,7 +624,7 @@ export default {
           group.values.forEach(report => {
             report["sMutations"] = report.mutations.filter(x => x.gene == "S");
 
-            if (report.classifications) {
+            if (report.classifications && (this.selectedVOC.length || this.selectedVOI.length)) {
               // filter name filters
               if (this.searchInput) {
                 if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())) &&
