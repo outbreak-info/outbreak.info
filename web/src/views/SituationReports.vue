@@ -126,8 +126,10 @@
         </div>
 
         <small>
-          <span class="text-highlight" v-html="getReportType(group.key)"></span>
-          <a class='ml-2' href='http://localhost:8080/situation-reports/caveats#variant'>Read more</a>
+          <div class="line-height-1">
+            <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
+            <a class='ml-2 d-inline' href='http://localhost:8080/situation-reports/caveats#variant'>Read more</a>
+          </div>
         </small>
 
         <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
@@ -329,6 +331,13 @@
         <div class="d-flex justify-content-between">
           <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
         </div>
+        <small>
+          <div class="line-height-1">
+            <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
+            <a class='ml-2 d-inline' href='http://localhost:8080/situation-reports/caveats#variant'>Read more</a>
+          </div>
+        </small>
+
         <table class="bg-white mt-2 w-100">
           <thead class="text-uppercase text-muted">
             <th class="d-flex align-items-center">
@@ -477,8 +486,12 @@ export default {
     getReportType(group) {
       return group.toLowerCase() == "variant of concern" ?
         "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy" :
-        (group.toLowerCase() == "variant of interest" ? "Variants with community transmission, a cluster of cases, or detection in multiple countries" :
-          "Variants being monitored based on increasing prevalence and/or mutations in areas of biological importance")
+        group.toLowerCase() == "variant of interest" ? "Variants with community transmission, a cluster of cases, or detection in multiple countries" :
+        group.toLowerCase() == "mutation of concern" ?
+        "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation." :
+        group.toLowerCase() == "mutation of interest" ?
+        "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation." :
+        null
     },
     filterVOC(disableScroll = true) {
       // cleanup empty values
@@ -862,7 +875,7 @@ $vum-color: #edc949;
 }
 
 .my-10 {
-  margin-bottom: 6rem;
-  margin-top: 6rem;
+    margin-bottom: 6rem;
+    margin-top: 6rem;
 }
 </style>
