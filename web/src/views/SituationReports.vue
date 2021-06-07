@@ -52,7 +52,7 @@
 
             <router-link class="mx-3" :to="{ hash: '#moi' }">Mutations of Interest</router-link>
           </div>
-          <div class="d-flex justify-content-center mt-3">
+          <div class="d-flex justify-content-center mt-3 fa-sm">
             <button class="btn btn-grey-outline" data-toggle="collapse" href="#filter-classifiers">
               Filter reports
             </button>
