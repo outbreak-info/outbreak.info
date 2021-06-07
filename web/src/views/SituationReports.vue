@@ -310,9 +310,17 @@
         </table>
 
         <div class="mt-2">
-          <sup class="text-muted mr-1">*</sup><small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
-              more)
-            </router-link></small>
+
+          <div class="mt-2 d-flex justify-content-between align-items-center">
+            <div class="flex-shrink-0">
+              <sup class="text-muted mr-1">*</sup>
+              <small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
+                  more)
+                </router-link></small>
+            </div>
+
+            <DownloadReportData :data="group.values" dataType="Curated Variant List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
+          </div>
         </div>
       </div>
 
@@ -365,33 +373,19 @@
                   {{ report.lineage_count }}
                 </td>
               </tr>
-              <!--  classifications -->
-              <!-- <tr :key="rIdx + 'classification'" class="border-bottom" :class="{checkbook : rIdx%2-1}">
-                <td colspan="3" class="border-top pt-1 pb-2">
-                  <div class="d-flex flex-wrap align-items-center">
-                    <div class="d-flex flex-column align-items-center mr-3 mb-1 pointer">
-                      <div @click="route2OutbreakClass('moc')" class="tracked-variant-badge" v-if="report.variantType == 'Mutation of Concern'" data-tippy-info="Show outbreak.info Mutations of Concern">
-                        <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                        <span class="ml-1 MOC-logo variant-logo-large">MOC</span>
-                      </div>
-                      <div @click="route2OutbreakClass('moi')" class="tracked-variant-badge" v-if="report.variantType == 'Mutation of Interest'" data-tippy-info="Show outbreak.info Mutations of Interest">
-                        <img src="@/assets/icon-01.svg" class="variant-logo-large" />
-                        <span class="ml-1 MOI-logo variant-logo-large">MOI</span>
-                      </div>
-                      <small>{{ report.dateModifiedFormatted }}
-                      </small>
-                    </div>
-                  </div>
-                </td>
-              </tr> -->
 
             </template>
           </tbody>
-
         </table>
-        <div class="mt-2">
-          <sup class="text-muted mr-1">**</sup><small class="text-muted">Lineages with the mutation in at least {{charMutThreshold}} of sequences
-          </small>
+
+        <div class="mt-2 d-flex justify-content-between align-items-center">
+          <div class="flex-shrink-0">
+            <sup class="text-muted mr-1">**</sup>
+            <small class="text-muted">Lineages with the mutation in at least {{charMutThreshold}} of sequences
+            </small>
+          </div>
+
+          <DownloadReportData :data="group.values" dataType="Curated Mutation List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
         </div>
       </div>
     </section>
@@ -409,6 +403,7 @@ import ReportCard from "@/components/ReportCard.vue";
 import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import MutationHeatmap from "@/components/MutationHeatmap.vue";
+import DownloadReportData from "@/components/DownloadReportData.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -458,7 +453,7 @@ export default {
     name: String
   },
   components: {
-    // ReportCard,
+    DownloadReportData,
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon,
