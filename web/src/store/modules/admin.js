@@ -122,7 +122,7 @@ const state = {
       name: "The COVID Tracking Project",
       scope: "testing data",
       img: "ustesting.svg",
-      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
+      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>. The COVID Tracking Project stopped collecting data on <a href="https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done" target="_blank">7 March 2021</a>.',
       url: "https://covidtracking.com/",
       license: {
         url: "https://covidtracking.com/license",
@@ -477,6 +477,15 @@ const state = {
           pango: "B.1.429",
           selected: "USA_US-CA"
         }
+      }
+    },
+    {
+      date: new Date("2021-06-01 0:0"),
+      category: "data",
+      title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest",
+      description: 'Based on the <a href="https://www.gov.uk/government/publications/covid-19-variants-genomically-confirmed-case-numbers/variants-distribution-of-cases-data" target="_blank">PHE</a> classification, added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest (VOIs). Also removed B.1.617 as a VOI, due to the expansion of the B.1.617 sublineages.',
+      route: {
+        name: "SituationReports"
       }
     },
     {
