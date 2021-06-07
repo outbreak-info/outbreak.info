@@ -39,65 +39,65 @@
         </div>
 
         <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
-          <div class="d-flex flex-column">
+          <div class="d-flex flex-wrap">
             View:
-            <div class="d-flex align-items-center justify-content-between my-2">
-              <router-link :to="{ hash: '#voc' }">Variants of Concern</router-link>
-              <div class="d-flex flex-wrap align-items-center ml-3">
-                <small class="text-muted mr-2">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
-                  <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
-                  <span>{{curator.label}}</span>
-                  <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" />
-                  <div class="b-input"></div>
-                </label>
-              </div>
+            <router-link class="mx-3" :to="{ hash: '#voc' }">Variants of Concern</router-link>
+
+            <div class="d-flex flex-column mx-3">
+              <router-link :to="{ hash: '#voi' }" class="">Variants of Interest</router-link>
+              <div class="text-muted text-size-xs mt-n1">a.k.a. Variants Under Investigation</div>
             </div>
 
-            <div class="d-flex align-items-center justify-content-between my-2">
-              <div class="d-flex flex-column">
-                <router-link :to="{ hash: '#voi' }" class="line-height-1">Variants of Interest</router-link>
-                <div class="text-muted text-size-xs">a.k.a. Variants under Investigation</div>
-              </div>
+            <router-link class="mx-3" :to="{ hash: '#moc' }">Mutations of Concern</router-link>
 
+            <router-link class="mx-3" :to="{ hash: '#moi' }">Mutations of Interest</router-link>
+          </div>
+          <div class="d-flex justify-content-center mt-3">
+            <button class="btn btn-grey-outline" data-toggle="collapse" href="#filter-classifiers">
+              Filter reports
+            </button>
+          </div>
 
-              <div class="d-flex flex-wrap align-items-center ml-3">
-                <small class="text-muted mr-2">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
-                  <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
-                  <span>{{curator.label}}</span>
-                  <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" />
-                  <div class="b-input"></div>
-                </label>
-              </div>
+          <div id="filter-classifiers" class="mt-3 collapse">
+            <div class="d-flex flex-wrap align-items-center my-3">
+              <small class="text-muted mr-2">VOC classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
+                <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
+                <span>{{curator.label}}</span>
+                <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" />
+                <div class="b-input"></div>
+              </label>
             </div>
 
-            <div class="d-flex my-2">
-              <router-link :to="{ hash: '#moc' }">Mutations of Concern</router-link>
-              <div class="d-flex flex-wrap align-items-center ml-3">
-                <small class="text-muted mr-2">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-4 m-0">
-                  <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
-                  <span>outbreak.info</span>
-                  <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOC" @change="filterMOC()" />
-                  <div class="b-input"></div>
-                </label>
-              </div>
+            <div class="d-flex flex-wrap align-items-center my-3">
+              <small class="text-muted mr-2">VOI classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
+                <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
+                <span>{{curator.label}}</span>
+                <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" />
+                <div class="b-input"></div>
+              </label>
             </div>
 
-            <div class="d-flex my-2">
-              <router-link :to="{ hash: '#moi' }">Mutations of Interest</router-link>
-              <div class="d-flex flex-wrap align-items-center ml-3">
-                <small class="text-muted mr-2">classified by:</small>
-                <label class="b-contain d-flex align-items-center pr-4 m-0">
-                  <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
-                  <span>outbreak.info</span>
-                  <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOI" @change="filterMOC()" />
-                  <div class="b-input"></div>
-                </label>
-              </div>
+            <div class="d-flex flex-wrap align-items-center my-3">
+              <small class="text-muted mr-2">MOC classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-4 m-0">
+                <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
+                <span>outbreak.info</span>
+                <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOC" @change="filterMOC()" />
+                <div class="b-input"></div>
+              </label>
             </div>
 
+            <div class="d-flex flex-wrap align-items-center my-3">
+              <small class="text-muted mr-2">MOI classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-4 m-0">
+                <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
+                <span>outbreak.info</span>
+                <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOI" @change="filterMOC()" />
+                <div class="b-input"></div>
+              </label>
+            </div>
           </div>
           <div class="d-flex flex-column border-top mt-3 pt-2 w-100">
             <div class="align-self-center my-3">
@@ -429,7 +429,7 @@
               </div>
             </div>
           </form>
-          
+
           <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
         </div>
 
