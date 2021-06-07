@@ -122,7 +122,7 @@ const state = {
       name: "The COVID Tracking Project",
       scope: "testing data",
       img: "ustesting.svg",
-      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
+      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>. The COVID Tracking Project stopped collecting data on <a href="https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done" target="_blank">7 March 2021</a>.',
       url: "https://covidtracking.com/",
       license: {
         url: "https://covidtracking.com/license",
