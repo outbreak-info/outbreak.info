@@ -115,7 +115,7 @@
 
     <section id="report-list" class="text-left">
       <!-- lineage groups -->
-      <div class="lineage-group my-5" v-for="(group, i) in filteredReports" :key="i" :id="group.id + '-reports'">
+      <div class="lineage-group my-10" v-for="(group, i) in filteredReports" :key="i" :id="group.id + '-reports'">
 
         <div class="d-flex justify-content-between">
           <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
@@ -317,7 +317,7 @@
       </div>
 
       <!-- mutation groups -->
-      <div class="mutation-group my-5" v-for="(group, i) in filteredMutations" :key="'mutation' + i" :id="group.id + '-reports'">
+      <div class="mutation-group my-10" v-for="(group, i) in filteredMutations" :key="'mutation' + i" :id="group.id + '-reports'">
         <div class="d-flex justify-content-between">
           <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
         </div>
@@ -870,5 +870,10 @@ $vum-color: #edc949;
 .bordered td {
     border: 1px solid #dee2e6!important;
     width: 90px;
+}
+
+.my-10 {
+  margin-bottom: 6rem;
+  margin-top: 6rem;
 }
 </style>
