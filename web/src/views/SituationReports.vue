@@ -358,7 +358,7 @@
                     </router-link>
                   </td>
 
-                  <td class="font-weight-bold">
+                  <td>
                     {{ report.lineage_count }}
                   </td>
                 </tr>

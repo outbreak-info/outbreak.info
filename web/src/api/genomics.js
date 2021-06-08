@@ -163,22 +163,23 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
   }));
 }
 
-export function addTotals2Mutations(apiurl, mutation) {
-
-  return getMutationsByLineage(apiurl, mutation.mutation_name, prevalenceThreshold).pipe(
-    map(lineages => {
-      mutation["lineages"] = lineages.map(d => d.pangolin_lineage);
-      mutation.lineages.sort();
-      return (mutation)
+function addTotal2Mutation(apiurl, mutation) {
+  return (getVariantTotal(apiurl, `mutations=${mutation.mutation_name}`)).pipe(
+    map(total => {
+      mutation["lineage_count"] = total;
     })
   )
+}
+
+export function addTotals2Mutations(apiurl) {
+  return forkJoin(...MUTATIONS.map(mutation => addTotal2Mutation(apiurl, mutation)))
 }
 
 export function getCuratedMutations(apiurl, prevalenceThreshold) {
   const query = MUTATIONS.map(mutation => mutation.mutation_name).join(" AND ");
 
-  return getMutationsByLineage(apiurl, query, prevalenceThreshold).pipe(
-    map(results => {
+  return forkJoin([addTotals2Mutations(apiurl), getMutationsByLineage(apiurl, query, prevalenceThreshold)]).pipe(
+    map((total, results) => {
       // sort by codon num, then alpha
       let curated = orderBy(MUTATIONS, ["codon_num", "mutation_name"]);
 
@@ -188,7 +189,7 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
         .rollup(values => {
           const lineages = values.map(d => d.pangolin_lineage);
           lineages.sort()
-          return(lineages)
+          return (lineages)
         })
         .entries(results);
 
