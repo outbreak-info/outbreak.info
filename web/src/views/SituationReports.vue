@@ -711,7 +711,6 @@ export default {
     this.curatedMOI = ofInterest.moi;
 
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
-      console.log(results)
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
       this.mutationReports = results.mutations;

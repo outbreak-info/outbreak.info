@@ -84,13 +84,16 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
           d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
         })
 
-        const outbreakVariantType = mutationObj.variantType == "Variant of Concern" ? "VOC" : mutationObj.variantType == "Variant of Interest" ? "VOI" : "VUM";
-        mutationObj.classifications.push({
-          author: "outbreak",
-          dateModified: mutationObj.dateModified,
-          dateModifiedFormatted: formatDateShort(parseDate(mutationObj.dateModified)),
-          variantType: outbreakVariantType
-        })
+        // Add outbreak's classification on the first instance
+        if (!mutationObj.classifications.filter(d => d.author == "outbreak").length) {
+          const outbreakVariantType = mutationObj.variantType == "Variant of Concern" ? "VOC" : mutationObj.variantType == "Variant of Interest" ? "VOI" : "VUM";
+          mutationObj.classifications.push({
+            author: "outbreak",
+            dateModified: mutationObj.dateModified,
+            dateModifiedFormatted: formatDateShort(parseDate(mutationObj.dateModified)),
+            variantType: outbreakVariantType
+          })
+        }
 
         // create classification table
         mutationObj["classificationTable"] = nest()
@@ -484,7 +487,6 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       if (returnFlat) {
         let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
           d => {
