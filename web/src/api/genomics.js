@@ -175,23 +175,32 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
 }
 
 export function getCuratedMutations(apiurl, prevalenceThreshold) {
-  return forkJoin(...MUTATIONS.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
-    map(results => {
-      // sort by codon num, then alpha
-      results = orderBy(results, ["codon_num", "mutation_name"]);
+const query = MUTATIONS.map(mutation => mutation.mutation_name).join(" AND ");
 
-      let curated = nest()
-        .key(d => d.variantType)
-        .entries(results);
+return getMutationsByLineage(apiurl, query, prevalenceThreshold).pipe(
+  map(results => {
+    console.log(results);
 
-      curated.forEach(d => {
-        d["id"] = d.key == "Mutation of Concern" ? "moc" : d.key == "Mutation of Interest" ? "moi" : "unknown";
-      })
+  })
+)
 
-      curated = orderBy(curated, [reportTypeSorter], ["asc"]);
-      return (curated)
-    })
-  )
+  // return forkJoin(...MUTATIONS.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
+  //   map(results => {
+  //     // sort by codon num, then alpha
+  //     results = orderBy(results, ["codon_num", "mutation_name"]);
+  //
+  //     let curated = nest()
+  //       .key(d => d.variantType)
+  //       .entries(results);
+  //
+  //     curated.forEach(d => {
+  //       d["id"] = d.key == "Mutation of Concern" ? "moc" : d.key == "Mutation of Interest" ? "moi" : "unknown";
+  //     })
+  //
+  //     curated = orderBy(curated, [reportTypeSorter], ["asc"]);
+  //     return (curated)
+  //   })
+  // )
 }
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
@@ -1429,7 +1438,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   // if nothing selected, pull out the VOCs/VOIs
   if (!lineages) {
     lineages = orderBy(CURATED, ["variantType", "mutation_name"]);
-    lineages = lineages.filter(d => d.reportType == "lineage" && (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest")).map(d => d.mutation_name);
+    lineages = lineages.map(d => d.mutation_name);
   }
 
   const voc = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.mutation_name);
