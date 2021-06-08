@@ -228,13 +228,14 @@
                       <tbody>
                         <tr v-for="(variant, vIdx) in variantTypes" :key="vIdx">
                           <th>
-                            <span :class="'tracked-variant-badge ' + variant + '-logo'">{{variant}}</span>
+                            <span :class="'tracked-variant-badge ' + variant.id + '-logo'" :data-tippy-info="variant.label">{{variant.id}}</span>
+                            <!-- <span :class="'tracked-variant-badge ' + variant.id + '-logo'" :data-tippy-info="`<b>${variant.label}</b><div class='fa-sm line-height-1'>${variant.def}</div>`">{{variant.id}}</span> -->
                           </th>
 
-                          <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant] && report.classificationTable[variant][curator.id] ? variant + '-bg' : 'no-classification']">
-                            <div v-if="report.classificationTable[variant]" class="border-inset">
-                              <small class="line-height-1 tracked-variant-report" v-if="report.classificationTable[variant][curator.id] && report.classificationTable[variant][curator.id].report"
-                                :data-tippy-info="report.classificationTable[variant][curator.id].ttip" v-html="report.classificationTable[variant][curator.id].report"></small>
+                          <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant.id] && report.classificationTable[variant.id][curator.id] ? variant.id + '-bg' : 'no-classification']">
+                            <div v-if="report.classificationTable[variant.id]" class="border-inset">
+                              <small class="line-height-1 tracked-variant-report" v-if="report.classificationTable[variant.id][curator.id] && report.classificationTable[variant.id][curator.id].report"
+                                :data-tippy-info="report.classificationTable[variant.id][curator.id].ttip" v-html="report.classificationTable[variant.id][curator.id].report"></small>
                             </div>
 
                           </td>
@@ -272,14 +273,21 @@
           <div class="mt-2">
 
             <div class="mt-2 d-flex justify-content-between align-items-center">
-              <div class="flex-shrink-0">
-                <sup class="text-muted mr-1">*</sup>
-                <small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
-                    more)
-                  </router-link></small>
+              <div>
+                <div class = "border-bottom pb-2">
+                  <sup class="text-muted mr-1">*</sup>
+                  <small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
+                      more)
+                    </router-link>
+                  </small>
+                </div>
+                <div v-for="(variant, vIdx) in variantTypes" :key="vIdx" class="line-height-1 my-2">
+                  <small><b>{{variant.label}}</b> (<span class="text-underline">{{variant.id}}</span>): <span v-html="variant.def"></span></small>
+                </div>
               </div>
 
-              <DownloadReportData :data="group.values" dataType="Curated Variant List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
+
+              <DownloadReportData :fullWidth="false" :data="group.values" dataType="Curated Variant List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
             </div>
           </div>
         </template>
@@ -515,14 +523,15 @@ export default {
       })
     },
     getReportType(group) {
-      return group.toLowerCase() == "variant of concern" ?
-        "Variants with increased transmissibility, virulence, and/or decrease in therapeutic or vaccine efficacy" :
-        group.toLowerCase() == "variant of interest" ? "Variants with community transmission, a cluster of cases, or detection in multiple countries" :
-        group.toLowerCase() == "mutation of concern" ?
-        "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation." :
-        group.toLowerCase() == "mutation of interest" ?
-        "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation." :
-        null
+      const vfiltered = this.variantTypes.filter(d => d.label == group);
+      const mfiltered = this.mutationTypes.filter(d => d.label == group);
+      if (vfiltered.length == 1) {
+        return (vfiltered[0].def)
+      }
+      if (mfiltered.length == 1) {
+        return (mfiltered[0].def)
+      }
+      return (null)
     },
     filterVOC(disableScroll = true) {
       // cleanup empty values
@@ -734,7 +743,33 @@ export default {
       mutationReports: null,
       filteredReports: null,
       filteredMutations: null,
-      variantTypes: ["VOC", "VOI", "VUM"],
+      variantTypes: [{
+          id: "VOC",
+          label: "Variant of Concern",
+          def: "Variants with increased transmissibility, virulence, and/or decreased diagnostic, therapeutic, or vaccine efficacy"
+        },
+        {
+          id: "VOI",
+          label: "Variant of Interest",
+          def: "Variants with mutations suspected or confirmed to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy, <span class='text-underline'>plus</span> community transmission, a cluster of cases, or detection in multiple countries"
+        },
+        {
+          id: "VUM",
+          label: "Variant Under Monitoring",
+          def: "Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy"
+        }
+      ],
+      mutationTypes: [{
+          id: "MOC",
+          label: "Mutation of Concern",
+          def: "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation."
+        },
+        {
+          id: "MOI",
+          label: "Mutation of Interest",
+          def: "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation."
+        }
+      ],
       curatedVOC: null,
       curatedVOI: null,
       curatedMOC: null,
@@ -781,7 +816,6 @@ export default {
     this.curatedMOI = ofInterest.moi;
 
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
-      console.log(results)
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
       this.curatedVOC = results.voc.map(d => d.toLowerCase());
@@ -799,6 +833,19 @@ export default {
     this.debounceSearch = debounce(this.filterName, 250);
   },
   updated() {
+    tippy(".tracked-variant-badge", {
+      content: "Loading...",
+      maxWidth: "250px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+
     tippy(".tracked-variant-report", {
       content: "Loading...",
       maxWidth: "200px",
@@ -921,7 +968,8 @@ $voc-height: 20px;
     // border-left: 4px solid lighten($website-color, 23%);
 }
 
-.VOC-badge, .VOI-badge {
+.VOC-badge,
+.VOI-badge {
     color: white;
     border-radius: 0 3px 3px 0;
     padding: 0 0.25rem;

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100 d-flex align-items-center justify-content-end">
+  <div class="d-flex align-items-center justify-content-end" :class="{'w-100': fullWidth}">
     <div class="btn ml-3 py-0 px-2 btn-main-outline" v-if="copyable">
       <font-awesome-icon :icon="['far', 'copy']" @click="copyPng" />
     </div>
@@ -53,6 +53,10 @@ export default Vue.extend({
     isVertical: {
       type: Boolean,
       default: false
+    },
+    fullWidth: {
+      type: Boolean,
+      default: true
     },
     downloadLabel: {
       type: String,
