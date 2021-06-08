@@ -168,26 +168,14 @@ export function addTotals2Mutations(apiurl) {
 export function getCuratedMutations(apiurl, prevalenceThreshold) {
   const query = MUTATIONS.map(mutation => mutation.mutation_name).join(" AND ");
 
-  return forkJoin([addTotals2Mutations(apiurl), getMutationsByLineage(apiurl, query, prevalenceThreshold)]).pipe(
-    map((total, results) => {
+  return forkJoin([getMutationsByLineage(apiurl, query, prevalenceThreshold, false), addTotals2Mutations(apiurl)]).pipe(
+    map(([lineagesByMutation, totals]) => {
       // sort by codon num, then alpha
       let curated = orderBy(MUTATIONS, ["codon_num", "mutation_name"]);
 
       // Merge in the lineages
-      let lineages = nest()
-        .key(d => d.mutation_string)
-        .rollup(values => {
-          const lineages = values.map(d => d.pangolin_lineage);
-          lineages.sort()
-          return (lineages)
-        })
-        .entries(results);
-
       curated.forEach(mutation => {
-        const filtered = lineages.filter(d => d.key == mutation.mutation_name);
-        if (filtered.length === 1) {
-          mutation["lineages"] = filtered[0].value;
-        }
+        mutation["lineages"] = lineagesByMutation[mutation.mutation_name].map(d => d.pangolin_lineage);
       })
 
       // nest by MOC/MOI
@@ -209,10 +197,8 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
   const query = CURATED.map(d => d.pangolin_lineage).join(",");
 
   return forkJoin([getCharacteristicMutations(apiurl, query, prevalenceThreshold, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
-    map(results => {
+    map(([charMuts, totals]) => {
       // pull out the characteristic mutations and bind to the curated list.
-      const charMuts = results[0];
-
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
       curated.forEach(report => {
         report["mutations"] = charMuts[report.pangolin_lineage] ? charMuts[report.pangolin_lineage] : [];
@@ -446,7 +432,7 @@ export function getMutationDetails(apiurl, mutationString) {
   )
 }
 
-export function getMutationsByLineage(apiurl, mutationString, proportionThreshold = 0) {
+export function getMutationsByLineage(apiurl, mutationString, proportionThreshold = 0, returnFlat = true) {
   if (!mutationString)
     return ( of ([]));
   const timestamp = Math.round(new Date().getTime() / 36e5);
@@ -458,17 +444,21 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
-        d => {
-          d["mutation_string"] = mutation_key;
-          d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
-          d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
-          return (d);
-        }
-      ));
-      return (res);
+      console.log(results)
+      if (returnFlat) {
+        let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
+          d => {
+            d["mutation_string"] = mutation_key;
+            // d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
+            d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
+            return (d);
+          }
+        ));
+        return ([].concat(...res));
+      } else {
+        return (results)
+      }
     }),
-    map(res => [].concat(...res)),
     catchError(e => {
       console.log("%c Error in getting mutations by lineage!", "color: red");
       console.log(e);

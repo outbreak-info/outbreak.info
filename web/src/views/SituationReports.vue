@@ -84,7 +84,7 @@
               <label class="b-contain d-flex align-items-center pr-4 m-0">
                 <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
                 <span>outbreak.info</span>
-                <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOC" @change="filterMOC()" />
+                <input type="checkbox" id="outbreak.info" value="outbreak" v-model.lazy="selectedMOC" @change="filterMOC()" />
                 <div class="b-input"></div>
               </label>
             </div>
@@ -94,7 +94,7 @@
               <label class="b-contain d-flex align-items-center pr-4 m-0">
                 <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
                 <span>outbreak.info</span>
-                <input type="checkbox" id="outbreak.info" value="outbeak" v-model.lazy="selectedMOI" @change="filterMOC()" />
+                <input type="checkbox" id="outbreak.info" value="outbreak" v-model.lazy="selectedMOI" @change="filterMOC()" />
                 <div class="b-input"></div>
               </label>
             </div>
@@ -314,6 +314,18 @@
         </small>
 
         <template v-if="group.values.length">
+          <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
+            <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
+            <label class="b-contain d-flex align-items-center pr-4 m-0">
+              <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
+              <span>outbreak.info</span>
+              <input type="checkbox" id="outbreak.info" value="outbreak" v-if="group.id == 'moc'" v-model.lazy="selectedMOC" @change="filterMOC()" />
+              <input type="checkbox" id="outbreak.info" value="outbreak" v-if="group.id == 'moi'" v-model.lazy="selectedMOI" @change="filterMOC()" />
+              <div class="b-input"></div>
+            </label>
+            <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
+          </div>
+
           <table class="bg-white mt-2 w-100">
             <thead class="text-uppercase bg-dark text-light">
               <tr class="border-bottom border-white">
@@ -446,7 +458,8 @@ import debounce from "lodash/debounce";
 
 import {
   getReportList,
-  getSequenceCount, getBadMutations
+  getSequenceCount,
+  getBadMutations
 } from "@/api/genomics.js";
 
 export default {
@@ -539,6 +552,8 @@ export default {
         this.selectedMOI = [];
       }
 
+      this.filterReports();
+
       this.$router.push({
         name: "SituationReports",
         params: {
@@ -600,12 +615,10 @@ export default {
       this.filteredMutations = cloneDeep(this.mutationReports);
 
       if (this.selectedVOC.length || this.selectedVOI.length || this.searchInput) {
-        // filter the selected VOC/VOI
+        // filter the selected VOC/VOI reports
         this.filteredReports.forEach(group => {
           let filtered = [];
           group.values.forEach(report => {
-            report["sMutations"] = report.mutations.filter(x => x.gene == "S");
-
             if (report.classifications && (this.selectedVOC.length || this.selectedVOI.length)) {
               // filter name filters
               if (this.searchInput) {
@@ -624,7 +637,7 @@ export default {
                 }
               }
             } else {
-              // no report classifications
+              // no report classifications; just filter by name
               if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
                 filtered.push(report);
               }
@@ -633,8 +646,10 @@ export default {
 
           group.values = filtered;
         })
+      }
 
-        // filter mutation reports
+      // filter mutation reports
+      if (this.selectedMOC.length || this.selectedMOI.length || this.searchInput) {
         if (this.searchInput) {
           this.filteredMutations.forEach(group => {
             let mutFiltered = [];
@@ -644,17 +659,60 @@ export default {
               }
             })
             group.values = mutFiltered;
+
+            // filter MOC
+            if (!this.selectedMOC.includes("outbreak")) {
+              if (group.key == "Mutation of Concern") {
+                group.values = [];
+              }
+            }
+
+            // filter MOI
+            if (!this.selectedMOI.includes("outbreak")) {
+              if (group.key == "Mutation of Interest") {
+                group.values = [];
+              }
+            }
+          })
+        } else {
+          this.filteredMutations.forEach(group => {
+            // filter MOC
+            if (!this.selectedMOC.includes("outbreak")) {
+              if (group.key == "Mutation of Concern") {
+                group.values = [];
+              }
+            }
+
+            // filter MOI
+            if (!this.selectedMOI.includes("outbreak")) {
+              if (group.key == "Mutation of Interest") {
+                group.values = [];
+              }
+            }
           })
         }
+      }
 
-      } else {
-        // no filters applied
-        this.filteredReports.forEach(report => {
-          report.values.forEach(d => {
-            d["sMutations"] = d.mutations.filter(x => x.gene == "S");
-          })
+      // MOC || MOI selected but not VOC / VOI
+      if ((this.selectedMOC.length || this.selectedMOI.length) && !this.selectedVOC.length && !this.selectedVOI.length) {
+        this.filteredReports.forEach(group => {
+          group.values = [];
         })
       }
+
+      // VOC || VOI selected but not MOC / MOI
+      if ((this.selectedVOC.length || this.selectedVOI.length) && !this.selectedMOC.length && !this.selectedMOI.length) {
+        this.filteredMutations.forEach(group => {
+          group.values = [];
+        })
+      }
+
+      // filter only the S-gene mutations from all the mutations
+      this.filteredReports.forEach(report => {
+        report.values.forEach(d => {
+          d["sMutations"] = d.mutations.filter(x => x.gene == "S");
+        })
+      })
     }
   },
   data() {
@@ -704,6 +762,8 @@ export default {
   mounted() {
     this.selectedVOC = this.voc ? typeof(this.voc) == "string" ? [this.voc] : this.voc : [];
     this.selectedVOI = this.voi ? typeof(this.voi) == "string" ? [this.voi] : this.voi : [];
+    this.selectedMOC = this.moc ? typeof(this.moc) == "string" ? [this.moc] : this.moc : [];
+    this.selectedMOI = this.moi ? typeof(this.moi) == "string" ? [this.moi] : this.moi : [];
     this.searchInput = this.name;
 
     const ofInterest = getBadMutations(true);
