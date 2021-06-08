@@ -660,17 +660,19 @@ export default {
             })
             group.values = mutFiltered;
 
-            // filter MOC
-            if (!this.selectedMOC.includes("outbreak")) {
-              if (group.key == "Mutation of Concern") {
-                group.values = [];
+            if (this.selectedMOC.length || this.selectedMOI.length) {
+              // filter MOC
+              if (!this.selectedMOC.includes("outbreak")) {
+                if (group.key == "Mutation of Concern") {
+                  group.values = [];
+                }
               }
-            }
 
-            // filter MOI
-            if (!this.selectedMOI.includes("outbreak")) {
-              if (group.key == "Mutation of Interest") {
-                group.values = [];
+              // filter MOI
+              if (!this.selectedMOI.includes("outbreak")) {
+                if (group.key == "Mutation of Interest") {
+                  group.values = [];
+                }
               }
             }
           })
