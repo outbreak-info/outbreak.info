@@ -482,8 +482,8 @@ const state = {
     {
       date: new Date("2021-06-07 0:0"),
       category: "data",
-      title: "Added P.1.1 and P.1.2 as Variants of Interest",
-      description: 'Added P.1.1 and P.1.2, sublineages of the Variant of Concern P.1, as Variants of Interest.',
+      title: "Added P.1.1 and P.1.2 as Variants of Concern",
+      description: 'Added P.1.1 and P.1.2, sublineages of the Variant of Concern P.1, as Variants of Concern.',
       route: {
         name: "MutationReport",
         query: {

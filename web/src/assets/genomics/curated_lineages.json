@@ -419,7 +419,7 @@
     "identifier": "P_1_1",
     "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_2", "label": "P.1.2"}, {"identifier": "P_2", "label": "P.2"}, {"identifier": "P_3", "label": "P.3"}],
     "pangolin_lineage": "P.1.1",
-    "variantType": "Variant of Interest",
+    "variantType": "Variant of Concern",
     "dateModified": "2021-06-07",
     "classifications": [
     ],
@@ -435,7 +435,7 @@
     "identifier": "P_1_2",
     "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_1", "label": "P.1.1"}, {"identifier": "P_2", "label": "P.2"}, {"identifier": "P_3", "label": "P.3"}],
     "pangolin_lineage": "P.1.2",
-    "variantType": "Variant of Interest",
+    "variantType": "Variant of Concern",
     "dateModified": "2021-06-07",
     "classifications": [
     ],
