@@ -448,13 +448,16 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
         let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
           d => {
             d["mutation_string"] = mutation_key;
-            // d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
+            d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
             d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
             return (d);
           }
         ));
         return ([].concat(...res));
       } else {
+        Object.keys(results).forEach(mutation_key => {
+          results[mutation_key].sort((a,b) => a.pangolin_lineage < b.pangolin_lineage ? -1 : 1);
+        })
         return (results)
       }
     }),
