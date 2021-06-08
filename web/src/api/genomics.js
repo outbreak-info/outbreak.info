@@ -163,7 +163,7 @@ export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
   }));
 }
 
-export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
+export function addTotals2Mutations(apiurl, mutation) {
 
   return getMutationsByLineage(apiurl, mutation.mutation_name, prevalenceThreshold).pipe(
     map(lineages => {
@@ -175,32 +175,43 @@ export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
 }
 
 export function getCuratedMutations(apiurl, prevalenceThreshold) {
-const query = MUTATIONS.map(mutation => mutation.mutation_name).join(" AND ");
+  const query = MUTATIONS.map(mutation => mutation.mutation_name).join(" AND ");
 
-return getMutationsByLineage(apiurl, query, prevalenceThreshold).pipe(
-  map(results => {
-    console.log(results);
+  return getMutationsByLineage(apiurl, query, prevalenceThreshold).pipe(
+    map(results => {
+      // sort by codon num, then alpha
+      let curated = orderBy(MUTATIONS, ["codon_num", "mutation_name"]);
 
-  })
-)
+      // Merge in the lineages
+      let lineages = nest()
+        .key(d => d.mutation_string)
+        .rollup(values => {
+          const lineages = values.map(d => d.pangolin_lineage);
+          lineages.sort()
+          return(lineages)
+        })
+        .entries(results);
 
-  // return forkJoin(...MUTATIONS.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
-  //   map(results => {
-  //     // sort by codon num, then alpha
-  //     results = orderBy(results, ["codon_num", "mutation_name"]);
-  //
-  //     let curated = nest()
-  //       .key(d => d.variantType)
-  //       .entries(results);
-  //
-  //     curated.forEach(d => {
-  //       d["id"] = d.key == "Mutation of Concern" ? "moc" : d.key == "Mutation of Interest" ? "moi" : "unknown";
-  //     })
-  //
-  //     curated = orderBy(curated, [reportTypeSorter], ["asc"]);
-  //     return (curated)
-  //   })
-  // )
+      curated.forEach(mutation => {
+        const filtered = lineages.filter(d => d.key == mutation.mutation_name);
+        if (filtered.length === 1) {
+          mutation["lineages"] = filtered[0].value;
+        }
+      })
+
+      // nest by MOC/MOI
+      curated = nest()
+        .key(d => d.variantType)
+        .entries(curated);
+
+      curated.forEach(d => {
+        d["id"] = d.key == "Mutation of Concern" ? "moc" : d.key == "Mutation of Interest" ? "moi" : "unknown";
+      })
+
+      curated = orderBy(curated, [reportTypeSorter], ["asc"]);
+      return (curated)
+    })
+  )
 }
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
@@ -1504,8 +1515,8 @@ export function getBadMutations(returnSimplified = false) {
   const moc = MUTATIONS.filter(d => d.variantType == "Mutation of Concern");
   let moi = MUTATIONS.filter(d => d.variantType == "Mutation of Interest");
 
-  moc.sort((a,b) => a.codon_num - b.codon_num);
-  moi.sort((a,b) => a.codon_num - b.codon_num);
+  moc.sort((a, b) => a.codon_num - b.codon_num);
+  moi.sort((a, b) => a.codon_num - b.codon_num);
 
   if (returnSimplified) {
     return ({
