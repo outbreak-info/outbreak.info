@@ -480,6 +480,18 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-07 0:0"),
+      category: "data",
+      title: "Added P.1.1 and P.1.2 as Variants of Interest",
+      description: 'Added P.1.1 and P.1.2, sublineages of the Variant of Concern P.1, as Variants of Interest.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "P.1.1"
+        }
+      }
+    },
+    {
       date: new Date("2021-06-01 0:0"),
       category: "data",
       title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest",
