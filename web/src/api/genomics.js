@@ -59,8 +59,8 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
   const queryStr = mutationObj.reportQuery.muts ?
     `pangolin_lineage=${mutationObj.reportQuery.pango}&mutations=${mutationObj.reportQuery.muts}` :
     `pangolin_lineage=${mutationObj.reportQuery.pango}`
-  return forkJoin([lookupCharMutations(apiurl, mutationObj, prevalenceThreshold), getVariantTotal(apiurl, queryStr)]).pipe(
-    map(([charMuts, total]) => {
+  return forkJoin([getVariantTotal(apiurl, queryStr)]).pipe(
+    map(([total]) => {
       mutationObj["lineage_count"] = total;
 
       // sort the mutation synonyms
@@ -124,9 +124,6 @@ export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
         mutationObj["classificationTable"] = arr2Obj(mutationObj["classificationTable"], "key", "value");
       }
 
-      // add in characteristic mutations
-      mutationObj["mutations"] = charMuts;
-
     })
   )
 
@@ -152,16 +149,6 @@ function compareMutationLocation(a, b) {
   return (a.codon_num < b.codon_num ? -1 : 0);
 }
 
-export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
-  return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
-
-    charMuts.forEach(d => {
-      d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
-    })
-
-    return (charMuts.sort(compareMutationLocation))
-  }));
-}
 
 function addTotal2Mutation(apiurl, mutation) {
   return (getVariantTotal(apiurl, `mutations=${mutation.mutation_name}`)).pipe(
@@ -216,9 +203,17 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
 }
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
-  return forkJoin(...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))).pipe(
+  const query = CURATED.map(d => d.pangolin_lineage).join(",");
+
+  return forkJoin([getCharacteristicMutations(apiurl, query, prevalenceThreshold, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
     map(results => {
+      // pull out the characteristic mutations and bind to the curated list.
+      const charMuts = results[0];
+
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
+      curated.forEach(report => {
+        report["mutations"] = charMuts[report.pangolin_lineage] ? charMuts[report.pangolin_lineage] : [];
+      })
 
       curated = nest()
         .key(d => d.variantType)
@@ -479,7 +474,7 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   )
 }
 
-export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
+export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
@@ -489,16 +484,29 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
-        d => {
-          d["pangolin_lineage"] = lineage_key;
-          d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
-          return (d);
-        }
-      ));
-      return (res);
+      console.log(results)
+      if (returnFlat) {
+        let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
+          d => {
+            d["pangolin_lineage"] = lineage_key;
+            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
+            return (d);
+          }
+        ));
+        return ([].concat(...res));
+      } else {
+        Object.keys(results).forEach(lineage_key => {
+          results[lineage_key].forEach(d => {
+            d["pangolin_lineage"] = lineage_key;
+            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
+            d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+          })
+          // sort by location
+          results[lineage_key].sort(compareMutationLocation);
+        })
+        return (results)
+      }
     }),
-    map(res => [].concat(...res)),
     catchError(e => {
       console.log("%c Error in getting characteristic mutations!", "color: red");
       console.log(e);
