@@ -444,7 +444,6 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      console.log(results)
       if (returnFlat) {
         let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
           d => {
