@@ -204,6 +204,9 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
         report["mutations"] = charMuts[report.pangolin_lineage] ? charMuts[report.pangolin_lineage] : [];
       })
 
+      const voc = curated.filter(d => d.variantType == "Variant of Concern").map(d => d.pangolin_lineage);
+      const voi = curated.filter(d => d.variantType == "Variant of Interest").map(d => d.pangolin_lineage);
+
       curated = nest()
         .key(d => d.variantType)
         .entries(curated);
@@ -214,7 +217,7 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
 
-      return (curated)
+      return ({md: curated, voc: voc, voi: voi})
     })
   )
 }
@@ -240,11 +243,10 @@ export function getReportList(apiurl, prevalenceThreshold = store.state.genomics
     map(([dateUpdated, md, muts]) => {
 
       // combine all the variant synoynms together
-      getVariantSynonyms(md);
+      getVariantSynonyms(md.md);
 
-      return ({
+      return ({... md,
         dateUpdated: dateUpdated.lastUpdated,
-        md: md,
         mutations: muts
       })
 

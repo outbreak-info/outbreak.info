@@ -365,9 +365,15 @@
                   </td>
 
                   <td>
-                    <router-link class="btn btn-main-outline mx-1 my-1 py-0 px-1" :to="{name: 'MutationReport', query:{pango: lineage}}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
-                      {{lineage}}
-                    </router-link>
+                    <div class="d-flex flex-wrap">
+                      <router-link class="btn btn-grey-outline p-0 m-1 d-flex" :to="{name: 'MutationReport', query:{pango: lineage}}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
+                        <div class="mx-1">
+                          {{lineage}}
+                        </div>
+                        <div class="VOC-badge" v-if="curatedVOC.includes(lineage.toLowerCase())">VOC</div>
+                        <div class="VOI-badge" v-if="curatedVOI.includes(lineage.toLowerCase())">VOI</div>
+                      </router-link>
+                    </div>
                   </td>
 
                   <td>
@@ -729,6 +735,8 @@ export default {
       filteredReports: null,
       filteredMutations: null,
       variantTypes: ["VOC", "VOI", "VUM"],
+      curatedVOC: null,
+      curatedVOI: null,
       curatedMOC: null,
       curatedMOI: null,
       curatorOpts: [{
@@ -773,8 +781,11 @@ export default {
     this.curatedMOI = ofInterest.moi;
 
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
+      console.log(results)
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
+      this.curatedVOC = results.voc.map(d => d.toLowerCase());
+      this.curatedVOI = results.voi.map(d => d.toLowerCase());
       this.mutationReports = results.mutations;
       this.filterReports();
     })
@@ -908,6 +919,22 @@ $voc-height: 20px;
     // border: 2px solid $website-color;
     // color: $website-color;
     // border-left: 4px solid lighten($website-color, 23%);
+}
+
+.VOC-badge, .VOI-badge {
+    color: white;
+    border-radius: 0 3px 3px 0;
+    padding: 0 0.25rem;
+}
+
+.VOC-badge {
+    background: $publication-color;
+    border-left: 4px solid lighten($publication-color, 20%);
+}
+
+.VOI-badge {
+    background: $website-color;
+    border-left: 4px solid lighten($website-color, 23%);
 }
 
 .VOI-bg {
