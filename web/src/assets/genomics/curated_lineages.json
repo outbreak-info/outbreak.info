@@ -417,7 +417,7 @@
   {
     "mutation_name": "P.1.1",
     "identifier": "P_1_1",
-    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_2", "label": "P.1.2"}, {"identifier": "P_2", "label": "P.2"}, {"identifier": "P_3", "label": "P.3"}],
+    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_2", "label": "P.1.2"}],
     "pangolin_lineage": "P.1.1",
     "variantType": "Variant of Concern",
     "dateModified": "2021-06-07",
@@ -433,7 +433,7 @@
   {
     "mutation_name": "P.1.2",
     "identifier": "P_1_2",
-    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_1", "label": "P.1.1"}, {"identifier": "P_2", "label": "P.2"}, {"identifier": "P_3", "label": "P.3"}],
+    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_1", "label": "P.1.1"}],
     "pangolin_lineage": "P.1.2",
     "variantType": "Variant of Concern",
     "dateModified": "2021-06-07",
@@ -449,7 +449,7 @@
   {
     "mutation_name": "P.2",
     "identifier": "P_2",
-    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_1", "label": "P.1.1"}, {"identifier": "P_1_2", "label": "P.1.2"}, {"identifier": "P_3", "label": "P.3"}],
+    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_3", "label": "P.3"}],
     "pangolin_lineage": "P.2",
     "gisaid_clade": "GR",
     "nextstrain_clade": "20B/S.484K",
@@ -474,7 +474,7 @@
   {
     "mutation_name": "P.3",
     "identifier": "P_3",
-    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_1_1", "label": "P.1.1"}, {"identifier": "P_1_2", "label": "P.1.2"}, {"identifier": "P_2", "label": "P.2"}],
+    "related": [{"identifier": "P_1", "label": "P.1"}, {"identifier": "P_2", "label": "P.2"}],
     "pangolin_lineage": "P.3",
     "gisaid_clade": "GR",
     "nextstrain_clade": "20B/S:265C",
