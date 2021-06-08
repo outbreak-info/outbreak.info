@@ -121,7 +121,7 @@ export default Vue.extend({
         top: 72,
         right: 165,
         bottom: 72,
-        left: 100
+        left: 153
       },
       isOverflow: false,
       // UI
