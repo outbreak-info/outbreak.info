@@ -818,7 +818,6 @@ export default {
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
-      console.log(this.reports)
       this.curatedVOC = results.voc.map(d => d.toLowerCase());
       this.curatedVOI = results.voi.map(d => d.toLowerCase());
       this.mutationReports = results.mutations;
