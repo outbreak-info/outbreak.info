@@ -194,14 +194,14 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
 }
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
-  const query = CURATED.map(d => d.pangolin_lineage).join(",");
+  const query = CURATED.map(d => d.mutation_name).join(",");
 
   return forkJoin([getCharacteristicMutations(apiurl, query, prevalenceThreshold, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
     map(([charMuts, totals]) => {
       // pull out the characteristic mutations and bind to the curated list.
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
       curated.forEach(report => {
-        report["mutations"] = charMuts[report.pangolin_lineage] ? charMuts[report.pangolin_lineage] : [];
+        report["mutations"] = charMuts[report.mutation_name.replace(/\+/g, "AND")] ? charMuts[report.mutation_name.replace(/\+/g, "AND")] : [];
       })
 
       const voc = curated.filter(d => d.variantType == "Variant of Concern").map(d => d.pangolin_lineage);
@@ -478,7 +478,8 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
 
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
+  // convert + to AND to specify lineages + mutations
+  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(/\+/g, "AND")}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -489,8 +490,8 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       if (returnFlat) {
         let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
           d => {
-            d["pangolin_lineage"] = lineage_key;
-            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
+            d["pangolin_lineage"] = lineage_key.replace(/AND/g, "+");
+            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--");
             return (d);
           }
         ));
@@ -1358,7 +1359,7 @@ export function getBasicComparisonReportData(apiurl) {
 }
 
 export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
-  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:p681r", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
+  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:p681r", "s:l18f", "s:s494p", "s:l452r", "s:n439k"];
   const mutationsOfConcern = ["s:e484k"];
 
   if (lineages && lineages.length) {
@@ -1470,9 +1471,8 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   if (!lineages) {
     lineages = orderBy(CURATED, ["variantType", "mutation_name"]);
 
-    // At least for now: remove lineages w/ additional mutations
     // Focus on Variants of Concern
-    lineages = lineages.filter(d => !d.additionalMutations && d.variantType == "Variant of Concern");
+    lineages = lineages.filter(d => d.variantType == "Variant of Concern");
     lineages = lineages.map(d => d.mutation_name);
   }
 

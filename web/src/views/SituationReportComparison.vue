@@ -403,11 +403,11 @@ export default {
   props: {
     pango: [Array, String],
     threshold: {
-      type: Number,
+      type: [Number, String],
       default: 75
     },
     gene: {
-      type: Array,
+      type: [Array, String],
       default: () => [
         "ORF1a", "ORF1b", "S"
       ]
