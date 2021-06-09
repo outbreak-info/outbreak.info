@@ -327,7 +327,6 @@ import {
   getLineagesComparison,
   getComparisonByMutations,
   getComparisonByLocation,
-  getMutationsByLineage,
   getBadMutations
 } from "@/api/genomics.js";
 
