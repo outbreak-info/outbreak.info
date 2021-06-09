@@ -367,7 +367,7 @@
 
                   <!-- name + synonyms -->
                   <td class="pt-2">
-                    <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
+                    <router-link :to="{name:'MutationReport', query: {muts: report.mutation_name} }" class="no-underline">
                       <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
                     </router-link>
                   </td>
