@@ -119,7 +119,7 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 165,
+        right: 190,
         bottom: 72,
         left: 153
       },
