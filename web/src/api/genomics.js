@@ -1469,6 +1469,10 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   // if nothing selected, pull out the VOCs/VOIs
   if (!lineages) {
     lineages = orderBy(CURATED, ["variantType", "mutation_name"]);
+
+    // At least for now: remove lineages w/ additional mutations
+    // Focus on Variants of Concern
+    lineages = lineages.filter(d => !d.additionalMutations && d.variantType == "Variant of Concern");
     lineages = lineages.map(d => d.mutation_name);
   }
 
