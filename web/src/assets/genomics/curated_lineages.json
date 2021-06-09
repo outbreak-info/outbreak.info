@@ -349,7 +349,7 @@
   {
     "mutation_name": "B.1.617.3",
     "identifier": "B_1_617_3",
-    "related": [{"identifier": "B_1_617", "label": "B.1.617"}, {"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}],
+    "related": [{"identifier": "B_1_617_1", "label": "B.1.617.1"}, {"identifier": "B_1_617_2", "label": "B.1.617.2"}],
     "pangolin_lineage": "B.1.617.3",
     "searchTerms": ["B.1.617.3", "B16173", "VUI-21APR-03"],
     "phe_name": "VUI-21APR-03",
