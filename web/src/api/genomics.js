@@ -231,7 +231,7 @@ function getVariantSynonyms(md) {
       } else {
         report["mutation_synonyms"] = [report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade]
       }
-      report.mutation_synonyms = report.mutation_synonyms.filter(d => d);
+      report.mutation_synonyms = uniq(report.mutation_synonyms).filter(d => d);
     })
   })
 }

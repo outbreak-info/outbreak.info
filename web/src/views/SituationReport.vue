@@ -102,7 +102,7 @@
               </div>
             </div>
             <div class="d-flex my-1 align-items-center">
-              <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
+              <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms && reportMetadata.mutation_synonyms.length > 1"><span>a.k.a. </span>
                 <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
                   <b>{{ synonym }}</b>
                   <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
