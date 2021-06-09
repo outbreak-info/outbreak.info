@@ -217,7 +217,11 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
 
-      return ({md: curated, voc: voc, voi: voi})
+      return ({
+        md: curated,
+        voc: voc,
+        voi: voi
+      })
     })
   )
 }
@@ -245,7 +249,8 @@ export function getReportList(apiurl, prevalenceThreshold = store.state.genomics
       // combine all the variant synoynms together
       getVariantSynonyms(md.md);
 
-      return ({... md,
+      return ({
+        ...md,
         dateUpdated: dateUpdated.lastUpdated,
         mutations: muts
       })
@@ -458,7 +463,7 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
         return ([].concat(...res));
       } else {
         Object.keys(results).forEach(mutation_key => {
-          results[mutation_key].sort((a,b) => a.pangolin_lineage < b.pangolin_lineage ? -1 : 1);
+          results[mutation_key].sort((a, b) => a.pangolin_lineage < b.pangolin_lineage ? -1 : 1);
         })
         return (results)
       }
@@ -978,7 +983,12 @@ export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, n
       results.sort((a, b) => b.prevalence - a.prevalence);
 
       results.forEach(d => {
-        wideData[d.lineage.toUpperCase()] = d.prevalence
+        if (d.lineage == "other") {
+          wideData["Other"] = d.prevalence
+        } else {
+          wideData[d.lineage.toUpperCase()] = d.prevalence
+        }
+
       })
 
       return ([wideData])
@@ -1007,7 +1017,12 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
     map(results => {
 
       results.forEach(d => {
-        d["pangolin_lineage"] = d.lineage.toUpperCase();
+        if (d.lineage == "other") {
+          d["pangolin_lineage"] = "Other";
+        } else {
+          d["pangolin_lineage"] = d.lineage.toUpperCase();
+        }
+
       })
 
       let nested = nest()
