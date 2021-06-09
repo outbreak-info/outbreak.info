@@ -570,6 +570,27 @@ const state = {
         }
       }
     }, {
+      date: new Date("2021-06-08 0:0"),
+      category: "data",
+      title: "Removed S:Y453F as a Mutation of Interest",
+      description: "Removed S:Y453F as a Mutation of Interest.",
+      route: {
+        name: "MutationReport",
+        query: {
+          muts: "S:Y453F",
+          loc: "DNK",
+          selected: "DNK"
+        }
+      }
+    }, {
+      date: new Date("2021-06-09 0:0"),
+      category: "feature",
+      title: "Added Variant of Concern and Interest classifications from the CDC, ECDC, PHE, and WHO",
+      description: "Added curated classifications of the Variants of Concern and Interest, based on data from the <a href='https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fcoronavirus%2F2019-ncov%2Fcases-updates%2Fvariant-surveillance%2Fvariant-info.html' target='_blank'>Centers for Disease Control and Prevention</a>, <a href='https://www.ecdc.europa.eu/en/covid-19/variants-concern' target='_blank'>European Centre for Disease Prevention and Cotnrol</a>, <a href='https://www.gov.uk/government/publications/investigation-of-novel-sars-cov-2-variant-variant-of-concern-20201201' target='_blank'>Public Health England</a>, and the <a href='https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/' target='_blank'>World Health Organization</a>. Redesigned the Lineage | Mutation Tracker homepage, including adding new WHO nomenclature for VOCs and VOIs.",
+      route: {
+        name: "SituationReports"
+      }
+    }, {
     date: new Date("2021-05-03 0:0"),
     category: "data",
     title: "Added B.1.617.1 as a Variant of Interest",

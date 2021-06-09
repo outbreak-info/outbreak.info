@@ -69,13 +69,6 @@
     "dateModified": "2021-02-01"
   },
   {
-    "mutation_name": "S:Y453F",
-    "identifier": "S_Y453F",
-    "codon_num": 453,
-    "variantType": "Mutation of Interest",
-    "dateModified": "2021-03-16"
-  },
-  {
     "mutation_name": "S:N439K",
     "identifier": "S_N439K",
     "codon_num": 439,
