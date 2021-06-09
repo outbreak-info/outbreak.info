@@ -591,6 +591,14 @@ const state = {
         name: "SituationReports"
       }
     }, {
+      date: new Date("2021-06-09 0:0"),
+      category: "feature",
+      title: "Added buttons to select VOCs and VOIs in Lineage Comparison tool",
+      description: "Added buttons to pre-select Variants of Concern and Interest to easily compare mutations within those lineages.",
+      route: {
+        name: "SituationReportComparison"
+      }
+    }, {
     date: new Date("2021-05-03 0:0"),
     category: "data",
     title: "Added B.1.617.1 as a Variant of Interest",
