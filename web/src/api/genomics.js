@@ -450,7 +450,7 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
         let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
           d => {
             d["mutation_string"] = mutation_key;
-            d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
+            d["pangolin_lineage"] = d["pangolin_lineage"].toUpperCase();
             d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
             return (d);
           }
@@ -907,7 +907,7 @@ export function findPangolin(apiurl, queryString) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d.name = capitalize(d.name);
+        d.name = d.name.toUpperCase();
       })
 
       return (results)
@@ -978,7 +978,7 @@ export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, n
       results.sort((a, b) => b.prevalence - a.prevalence);
 
       results.forEach(d => {
-        wideData[capitalize(d.lineage)] = d.prevalence
+        wideData[d.lineage.toUpperCase()] = d.prevalence
       })
 
       return ([wideData])
@@ -1007,7 +1007,7 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
     map(results => {
 
       results.forEach(d => {
-        d["pangolin_lineage"] = capitalize(d.lineage);
+        d["pangolin_lineage"] = d.lineage.toUpperCase();
       })
 
       let nested = nest()

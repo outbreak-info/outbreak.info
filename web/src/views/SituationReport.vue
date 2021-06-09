@@ -549,7 +549,7 @@ export default {
       if (this.$route.query.pango) {
         if (this.$route.query.muts && this.$route.query.muts.length) {
           // Lineage + Mutation report
-          this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
+          this.lineageName = this.$route.query.pango.toUpperCase();
           this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
           this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
           this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
@@ -564,7 +564,7 @@ export default {
 
         } else {
           // Lineage report
-          this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
+          this.lineageName = this.$route.query.pango.toUpperCase();
           this.reportName = this.lineageName;
           this.mutationID = null;
           this.reportType = "lineage";
