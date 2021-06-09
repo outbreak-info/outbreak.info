@@ -83,9 +83,34 @@
       <div class="border-top pt-3 my-3 mb-1">
         <h4 class="mb-3">Add lineages</h4>
         <div class="d-flex flex-wrap justify-content-between">
-          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded">
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center">
               <div class="mr-2 circle">1</div>
+              <span class="mr-1">By Variants of Concern &amp; Interest</span>
+            </h6>
+            <div class="d-flex flex-column align-items-center">
+              <div class="d-flex mt-2 mb-2">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(false)" >
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOCs</b>
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(true)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add <b>VOCs</b>
+                </button>
+              </div>
+              <div class="d-flex pt-2 border-top">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(false)" >
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOIs</b>
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(true)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add <b>VOIs</b>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
+            <h6 class="d-flex align-items-center">
+              <div class="mr-2 circle">2</div>
               <span class="mr-1">By</span><a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>
             </h6>
             <div class="line-height-1" style="width: 200px">
@@ -98,9 +123,9 @@
             </div>
           </div>
 
-          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">2</div>
+              <div class="mr-2 circle">3</div>
               Containing a mutation(s)
             </h6>
 
@@ -155,9 +180,9 @@
             </div>
           </div>
 
-          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">3</div>
+              <div class="mr-2 circle">4</div>
               Prevalent in a location
             </h6>
             <div class="d-flex">
@@ -514,6 +539,56 @@ export default {
     }
   },
   methods: {
+    addVOCs(clear = true) {
+      // remove lineages w/ additional mutations
+      this.selectedPango = clear ? this.voc.filter(d => !d.includes("+")) :
+      this.voc.filter(d => !d.includes("+")).concat(this.pango);
+      this.selectedPango = uniq(this.selectedPango);
+
+      this.showSnackbar = true;
+      this.snackbarText = "Variants of Concern added"
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.selectedPango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
+        }
+      })
+      this.getData();
+    },
+    addVOIs(clear = true) {
+      // remove lineages w/ additional mutations
+      this.selectedPango = clear ? this.voi.filter(d => !d.includes("+")) :
+      this.voi.filter(d => !d.includes("+")).concat(this.pango);
+      this.selectedPango = uniq(this.selectedPango);
+
+      this.showSnackbar = true;
+      this.snackbarText = "Variants of Interest added"
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.selectedPango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
+        }
+      })
+      this.getData();
+    },
     updateGenes() {
       this.$router.push({
         name: "SituationReportComparison",
@@ -649,6 +724,7 @@ export default {
           threshold: this.prevalenceThreshold
         }
       })
+
       this.getData();
     },
     clearPango() {
