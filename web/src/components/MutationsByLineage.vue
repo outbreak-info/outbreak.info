@@ -145,16 +145,20 @@ export default Vue.extend({
         this.preprocessData();
         this.updatePlot();
       } else {
+        var max_log_mutation_count = this.data.length == 0 ? 1 : this.data.reduce((a,b) => a.mutation_count > b.mutation_count ? a:b).mutation_count;
+        var weight_mutation_count = 0.25/Math.log(2+max_log_mutation_count);
         this.processedData = cloneDeep(this.data).sort((a, b) => {
-          return b.proportion - a.proportion;
+          return b.proportion + Math.log(2+b.mutation_count)*weight_mutation_count - a.proportion-Math.log(2+a.mutation_count)*weight_mutation_count;
         })
         this.updatePlot();
       }
       this.otherExpanded = !this.otherExpanded;
     },
     preprocessData() {
+      var max_log_mutation_count = this.data.length == 0 ? 1 : this.data.reduce((a,b) => a.mutation_count > b.mutation_count ? a:b).mutation_count;
+      var weight_mutation_count = 0.25/Math.log(2+max_log_mutation_count);
       var sortedData = cloneDeep(this.data).sort((a, b) => {
-        return b.proportion - a.proportion;
+        return b.proportion + Math.log(2+b.mutation_count)*weight_mutation_count - a.proportion-Math.log(2+a.mutation_count)*weight_mutation_count;
       })
 
       this.processedData = sortedData.filter(d => d.proportion >= this.characteristicThreshold);
