@@ -236,6 +236,13 @@ const routes = [{
   {
     path: "/situation-reports",
     name: "SituationReports",
+    props: route => ({
+      voc: route.query.voc,
+      voi: route.query.voi,
+      moc: route.query.moc,
+      moi: route.query.moi,
+      name: route.query.name
+    }),
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */

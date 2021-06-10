@@ -10,7 +10,7 @@ import {
   catchError,
   pluck,
   map,
-  mergeMap
+  mergeMap,
 } from "rxjs/operators";
 import {
   timeParse,
@@ -27,7 +27,9 @@ import {
   getEpiTraces
 } from "@/api/epi-traces.js";
 
-import CURATED from "@/assets/genomics/curated_mutations.json";
+import CURATED from "@/assets/genomics/curated_lineages.json";
+import MUTATIONS from "@/assets/genomics/curated_mutations.json";
+import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
@@ -53,74 +55,204 @@ function titleCase(value) {
   }
 }
 
+export function lookupLineageDetails(apiurl, mutationObj, prevalenceThreshold) {
+  const queryStr = mutationObj.reportQuery.muts ?
+    `pangolin_lineage=${mutationObj.reportQuery.pango}&mutations=${mutationObj.reportQuery.muts}` :
+    `pangolin_lineage=${mutationObj.reportQuery.pango}`
+  return forkJoin([getVariantTotal(apiurl, queryStr)]).pipe(
+    map(([total]) => {
+      mutationObj["lineage_count"] = total;
 
-export function lookupCharMutations(apiurl, mutationObj, prevalenceThreshold) {
-  if (mutationObj.reportType == "mutation") {
-    mutationObj["mutations"] = mutationObj.additionalMutations;
+      // sort the mutation synonyms
+      if (mutationObj.mutation_synonyms) {
+        mutationObj.mutation_synonyms.sort();
+      }
 
-    const queryStr = mutationObj["additionalMutations"].map(d => d.mutation).join(",");
-    return getMutationsByLineage(apiurl, queryStr, prevalenceThreshold).pipe(
-      map(lineages => {
-        mutationObj["lineages"] = lineages.map(d => d.pangolin_lineage);
-        return (mutationObj)
-      })
-    )
-  } else {
-    return getCharacteristicMutations(apiurl, mutationObj.pangolin_lineage, prevalenceThreshold).pipe(map(charMuts => {
-      mutationObj["mutations"] = charMuts;
-    }));
-  }
+      // translate dates into human readable formats
+      if (mutationObj.dateModified) {
+        const parsedDate = parseDate(mutationObj.dateModified);
+        mutationObj["dateModifiedFormatted"] = formatDateShort(parsedDate);
+      }
+
+      // sort the classifications, format the dates
+      if (mutationObj.classifications) {
+        mutationObj.classifications = orderBy(mutationObj.classifications, ["author"], ["asc"]);
+        // mutationObj.classifications = orderBy(mutationObj.classifications, [reportIDSorter, "dateModified", "author"], ["asc"]);
+
+        mutationObj.classifications.forEach(d => {
+          const parsedDate = parseDate(d.dateModified);
+          d["dateModifiedFormatted"] = parsedDate ? formatDateShort(parsedDate) : null;
+        })
+
+        // Add outbreak's classification on the first instance
+        if (!mutationObj.classifications.filter(d => d.author == "outbreak").length) {
+          const outbreakVariantType = mutationObj.variantType == "Variant of Concern" ? "VOC" : mutationObj.variantType == "Variant of Interest" ? "VOI" : "VUM";
+          mutationObj.classifications.push({
+            author: "outbreak",
+            dateModified: mutationObj.dateModified,
+            dateModifiedFormatted: formatDateShort(parseDate(mutationObj.dateModified)),
+            variantType: outbreakVariantType
+          })
+        }
+
+        // create classification table
+        mutationObj["classificationTable"] = nest()
+          .key(d => d.variantType)
+          // .key(d => d.author)
+          .rollup(values => {
+            let obj = {};
+            // WARNING: this assumes that there aren't duplicate author keys.
+            // should be okay if the curation is okay.
+            values.forEach(d => {
+              const reportLink = d.url && d.dateModifiedFormatted ? `<a href="${d.url}" target="_blank">${d.dateModifiedFormatted}</a>` :
+                d.url ? `<a href="${d.url}" target="_blank">report</a>` :
+                d.dateModifiedFormatted ? d.dateModifiedFormatted :
+                null;
+
+              const reportType = d.variantType == "VOC" ? "Variant of Concern" : d.variantType == "VOI" ? "Variant of Interest" : d.variantType == "VUI" ? "Variants under Investigation" : d.variantType == "VUM" ? "Variants under Monitoring" : null;
+
+              const ttip = reportLink ? d.author == "outbreak" ? `<b>${reportType}</b> classification by <b>outbreak.info</b>` : `View <b>${reportType}</b> classification by <b>${d.author}</b>` : null;
+
+              obj[d.author] = {
+                dateModified: d.dateModifiedFormatted,
+                url: d.url,
+                report: reportLink,
+                ttip: ttip
+              };
+            })
+            return (obj)
+          })
+          .entries(mutationObj.classifications);
+
+        mutationObj["classificationTable"] = arr2Obj(mutationObj["classificationTable"], "key", "value");
+      }
+
+    })
+  )
+
 }
 
-export function addLineages2Mutations(apiurl, mutation, prevalenceThreshold) {
+function arr2Obj(arr, keyVar, valVar) {
+  const transformed = arr.reduce((r, e) => {
+    r[e[keyVar]] = e[valVar];
+    return (r)
+  }, {});
 
-  return getMutationsByLineage(apiurl, mutation.mutation_str, prevalenceThreshold).pipe(
-    map(lineages => {
-      mutation["lineages"] = lineages.map(d => d.pangolin_lineage);
-      return (mutation)
+  return (transformed)
+}
+
+// sort the mutations by position within the genes
+function compareMutationLocation(a, b) {
+  if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
+    return 0;
+  if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
+    return -1;
+  if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
+    return 0;
+  return (a.codon_num < b.codon_num ? -1 : 0);
+}
+
+
+function addTotal2Mutation(apiurl, mutation) {
+  return (getVariantTotal(apiurl, `mutations=${mutation.mutation_name}`)).pipe(
+    map(total => {
+      mutation["lineage_count"] = total;
     })
   )
 }
 
-export function getCuratedList(apiurl, prevalenceThreshold) {
-  // const mutations = CURATED.filter(d => d.reportType.toLowerCase() == "mutation");
+export function addTotals2Mutations(apiurl) {
+  return forkJoin(...MUTATIONS.map(mutation => addTotal2Mutation(apiurl, mutation)))
+}
 
-  return forkJoin(...CURATED.map(mutation => lookupCharMutations(apiurl, mutation, prevalenceThreshold))).pipe(
-    map(results => {
-      let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
+export function getCuratedMutations(apiurl, prevalenceThreshold) {
+  const query = MUTATIONS.map(mutation => mutation.mutation_name).join(" AND ");
 
+  return forkJoin([getMutationsByLineage(apiurl, query, prevalenceThreshold, false), addTotals2Mutations(apiurl)]).pipe(
+    map(([lineagesByMutation, totals]) => {
+      // sort by codon num, then alpha
+      let curated = orderBy(MUTATIONS, ["codon_num", "mutation_name"]);
+
+      // Merge in the lineages
+      curated.forEach(mutation => {
+        mutation["lineages"] = lineagesByMutation[mutation.mutation_name].map(d => d.pangolin_lineage);
+      })
+
+      // nest by MOC/MOI
       curated = nest()
-        .key(d => d.reportType)
+        .key(d => d.variantType)
         .entries(curated);
 
-      curated = orderBy(curated, [reportTypeSorter], ["asc"])
+      curated.forEach(d => {
+        d["id"] = d.key == "Mutation of Concern" ? "moc" : d.key == "Mutation of Interest" ? "moi" : "unknown";
+      })
 
+      curated = orderBy(curated, [reportTypeSorter], ["asc"]);
       return (curated)
     })
   )
 }
 
-export function getAllLineagesForMutations(apiurl, mutations, prevalenceThreshold) {
-  return forkJoin(...mutations.map(mutation => addLineages2Mutations(apiurl, mutation, prevalenceThreshold))).pipe(
-    map(results => {
-      mutations.forEach((d, i) => {
-        d["gene"] = d.mutation_str.split(":")[0];
+export function getCuratedList(apiurl, prevalenceThreshold) {
+  const query = CURATED.map(d => d.mutation_name).join(",");
 
-      });
+  return forkJoin([getCharacteristicMutations(apiurl, query, prevalenceThreshold, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
+    map(([charMuts, totals]) => {
+      // pull out the characteristic mutations and bind to the curated list.
+      let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
+      curated.forEach(report => {
+        report["mutations"] = charMuts[report.mutation_name.replace(/\+/g, "AND")] ? charMuts[report.mutation_name.replace(/\+/g, "AND")] : [];
+      })
 
-      return (mutations)
+      const voc = curated.filter(d => d.variantType == "Variant of Concern").map(d => d.pangolin_lineage);
+      const voi = curated.filter(d => d.variantType == "Variant of Interest").map(d => d.pangolin_lineage);
+
+      curated = nest()
+        .key(d => d.variantType)
+        .entries(curated);
+
+      curated.forEach(d => {
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : "unknown";
+      })
+
+      curated = orderBy(curated, [reportTypeSorter], ["asc"]);
+
+      return ({
+        md: curated,
+        voc: voc,
+        voi: voi
+      })
     })
   )
+}
+
+function getVariantSynonyms(md) {
+  md.forEach(group => {
+    group.values.forEach(report => {
+      // merge mutation synonyms
+      if (report["mutation_synonyms"]) {
+        report["mutation_synonyms"] = report["mutation_synonyms"].concat(report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade)
+      } else {
+        report["mutation_synonyms"] = [report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade]
+      }
+      report.mutation_synonyms = uniq(report.mutation_synonyms).filter(d => d);
+    })
+  })
 }
 
 export function getReportList(apiurl, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   store.state.admin.reportloading = true;
 
-  return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold)]).pipe(
-    map(([dateUpdated, md]) => {
+  return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold), getCuratedMutations(apiurl, prevalenceThreshold)]).pipe(
+    map(([dateUpdated, md, muts]) => {
+
+      // combine all the variant synoynms together
+      getVariantSynonyms(md.md);
+
       return ({
+        ...md,
         dateUpdated: dateUpdated.lastUpdated,
-        md: md
+        mutations: muts
       })
 
     }),
@@ -307,11 +439,11 @@ export function getMutationDetails(apiurl, mutationString) {
   )
 }
 
-export function getMutationsByLineage(apiurl, mutationString, proportionThreshold = 0) {
+export function getMutationsByLineage(apiurl, mutationString, proportionThreshold = 0, returnFlat = true) {
   if (!mutationString)
     return ( of ([]));
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}mutations-by-lineage?mutations=${mutationString}&timestamp=${timestamp}`;
+  const url = `${apiurl}mutations-by-lineage?mutations=${mutationString}&timestamp=${timestamp}&frequency=${proportionThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -319,14 +451,22 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   })).pipe(
     pluck("data", "results"),
     map(results => {
-
-      results = results.filter(d => d.proportion >= proportionThreshold);
-
-      results.forEach(d => {
-        d["pangolin_lineage"] = capitalize(d["pangolin_lineage"]);
-        d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
-      })
-      return (results)
+      if (returnFlat) {
+        let res = Object.keys(results).map(mutation_key => results[mutation_key].map(
+          d => {
+            d["mutation_string"] = mutation_key;
+            d["pangolin_lineage"] = d["pangolin_lineage"].toUpperCase();
+            d["proportion_formatted"] = d.proportion >= 0.005 ? formatPercent(d["proportion"]) : "< 0.5%";
+            return (d);
+          }
+        ));
+        return ([].concat(...res));
+      } else {
+        Object.keys(results).forEach(mutation_key => {
+          results[mutation_key].sort((a, b) => a.pangolin_lineage < b.pangolin_lineage ? -1 : 1);
+        })
+        return (results)
+      }
     }),
     catchError(e => {
       console.log("%c Error in getting mutations by lineage!", "color: red");
@@ -336,9 +476,13 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
   )
 }
 
-export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
+export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage}&frequency=${prevalenceThreshold}`;
+  if (!lineage)
+    return ( of ([]));
+
+  // convert + to AND to specify lineages + mutations
+  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(/\+/g, "AND")}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -346,11 +490,27 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      results.forEach(d => {
-        d["pangolin_lineage"] = lineage;
-        d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
-      })
-      return (results)
+      if (returnFlat) {
+        let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
+          d => {
+            d["pangolin_lineage"] = lineage_key.replace(/AND/g, "+");
+            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--");
+            return (d);
+          }
+        ));
+        return ([].concat(...res));
+      } else {
+        Object.keys(results).forEach(lineage_key => {
+          results[lineage_key].forEach(d => {
+            d["pangolin_lineage"] = lineage_key;
+            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
+            d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+          })
+          // sort by location
+          results[lineage_key].sort(compareMutationLocation);
+        })
+        return (results)
+      }
     }),
     catchError(e => {
       console.log("%c Error in getting characteristic mutations!", "color: red");
@@ -400,6 +560,30 @@ export function getCumPrevalences(apiurl, queryStr, locations, totalThreshold) {
       return ( of ([]));
     })
   )
+}
+
+export function getVariantTotal(apiurl, queryStr, formatted = true) {
+  const timestamp = Math.round(new Date().getTime() / 36e5);
+  const url = `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}`;
+  return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })).pipe(
+    pluck("data", "results"),
+    map(results => {
+      if (formatted) {
+        return (format(",")(results.lineage_count))
+      }
+      return (results.lineage_count);
+    }),
+    catchError(e => {
+      console.log(`%c Error in getting total cumulative prevalence data for ${queryStr}!`, "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+
 }
 
 export function getCumPrevalence(apiurl, queryStr, location, totalThreshold) {
@@ -732,7 +916,7 @@ export function findPangolin(apiurl, queryString) {
     pluck("data", "results"),
     map(results => {
       results.forEach(d => {
-        d.name = capitalize(d.name);
+        d.name = d.name.toUpperCase();
       })
 
       return (results)
@@ -803,7 +987,12 @@ export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, n
       results.sort((a, b) => b.prevalence - a.prevalence);
 
       results.forEach(d => {
-        wideData[capitalize(d.lineage)] = d.prevalence
+        if (d.lineage == "other") {
+          wideData["Other"] = d.prevalence
+        } else {
+          wideData[d.lineage.toUpperCase()] = d.prevalence
+        }
+
       })
 
       return ([wideData])
@@ -832,7 +1021,12 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
     map(results => {
 
       results.forEach(d => {
-        d["pangolin_lineage"] = capitalize(d.lineage);
+        if (d.lineage == "other") {
+          d["pangolin_lineage"] = "Other";
+        } else {
+          d["pangolin_lineage"] = d.lineage.toUpperCase();
+        }
+
       })
 
       let nested = nest()
@@ -1035,8 +1229,15 @@ function geneSorter(a) {
 }
 
 function reportTypeSorter(a) {
-  const sortingArr = ["lineage", "lineage + mutation", "mutation"];
-  return sortingArr.indexOf(a.key.toLowerCase());
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Investigation", "Mutation of Concern", "Mutation of Interest", "undefined"];
+  // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
+  return sortingArr.indexOf(a.key);
+}
+
+function reportIDSorter(a) {
+  const sortingArr = ["VOC", "VOI", "VUI", "VUM", "unknown"];
+  // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
+  return sortingArr.indexOf(a.variantType);
 }
 
 export function getLocationTable(apiurl, location, mutations, totalThreshold) {
@@ -1118,8 +1319,8 @@ export function getSequenceCount(apiurl, location = null, cumulative = true, rou
   })).pipe(
     pluck("data", "results"),
     map(results => {
-      if(rounded) {
-        return(Math.floor(results.total_count/1e5) / 10)
+      if (rounded) {
+        return (Math.floor(results.total_count / 1e5) / 10)
       }
       if (cumulative) {
         return (results.total_count.toLocaleString())
@@ -1161,7 +1362,7 @@ export function getBasicComparisonReportData(apiurl) {
 }
 
 export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
-  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:p681r", "s:l18f", "s:s494p", "s:l452r", "s:y453f", "s:n439k"];
+  const mutationsOfInterest = ["s:s477n", "s:n501y", "s:k417n", "s:k417t", "s:p681h", "s:p681r", "s:l18f", "s:s494p", "s:l452r", "s:n439k"];
   const mutationsOfConcern = ["s:e484k"];
 
   if (lineages && lineages.length) {
@@ -1272,7 +1473,10 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   // if nothing selected, pull out the VOCs/VOIs
   if (!lineages) {
     lineages = orderBy(CURATED, ["variantType", "mutation_name"]);
-    lineages = lineages.filter(d => d.reportType == "lineage" && (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest")).map(d => d.mutation_name);
+
+    // Focus on Variants of Concern
+    lineages = lineages.filter(d => d.variantType == "Variant of Concern");
+    lineages = lineages.map(d => d.mutation_name);
   }
 
   const voc = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.mutation_name);
@@ -1335,72 +1539,21 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 
 
 export function getBadMutations(returnSimplified = false) {
-  // let moc = CURATED.filter(d => d.variantType && d.variantType.toLowerCase() == "mutation of concern");
-  // moc.forEach(d => {
-  //   d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
-  //     d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
-  // })
+  const moc = MUTATIONS.filter(d => d.variantType == "Mutation of Concern");
+  let moi = MUTATIONS.filter(d => d.variantType == "Mutation of Interest");
 
-  const moc = [{
-    mutation: "S:E484K",
-    mutation_simplified: "E484K"
-  }]
-
-  const moi = [{
-      mutation: "S:S477N",
-      mutation_simplified: "S477N"
-    },
-    {
-      mutation: "S:N501Y",
-      mutation_simplified: "N501Y"
-    },
-    {
-      mutation: "S:K417N",
-      mutation_simplified: "K417N"
-    },
-    {
-      mutation: "S:K417T",
-      mutation_simplified: "K417T"
-    },
-    {
-      mutation: "S:P681H",
-      mutation_simplified: "P681H"
-    },
-    {
-      mutation: "S:P681R",
-      mutation_simplified: "P681R"
-    },
-    {
-      mutation: "S:L18F",
-      mutation_simplified: "L18F"
-    },
-    {
-      mutation: "S:S494P",
-      mutation_simplified: "S494P"
-    },
-    {
-      mutation: "S:L452R",
-      mutation_simplified: "L452R"
-    },
-    {
-      mutation: "S:Y453F",
-      mutation_simplified: "Y453F"
-    },
-    {
-      mutation: "S:N439K",
-      mutation_simplified: "N439K"
-    }
-  ];
+  moc.sort((a, b) => a.codon_num - b.codon_num);
+  moi.sort((a, b) => a.codon_num - b.codon_num);
 
   if (returnSimplified) {
     return ({
-      moc: moc.map(d => d.mutation_simplified),
-      moi: moi.map(d => d.mutation_simplified)
+      moc: moc.map(d => d.mutation_name.split(":")[1]),
+      moi: moi.map(d => d.mutation_name.split(":")[1])
     })
   } else {
     return ({
-      moc: moc.map(d => d.mutation),
-      moi: moi.map(d => d.mutation)
+      moc: moc.map(d => d.mutation_name),
+      moi: moi.map(d => d.mutation_name)
     })
   }
 }

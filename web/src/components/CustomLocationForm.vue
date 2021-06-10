@@ -73,7 +73,6 @@ import Vue from "vue";
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import VariantForm from "@/components/VariantForm.vue";
 
-import debounce from "lodash/debounce";
 import uniq from "lodash/uniq";
 
 import {

@@ -102,7 +102,7 @@
               </div>
             </div>
             <div class="d-flex my-1 align-items-center">
-              <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms"><span>a.k.a. </span>
+              <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms && reportMetadata.mutation_synonyms.length > 1"><span>a.k.a. </span>
                 <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
                   <b>{{ synonym }}</b>
                   <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
@@ -427,8 +427,8 @@ export default {
     ThresholdSlider
   },
   props: {
-    loc: Array,
-    muts: Array,
+    loc: [Array, String],
+    muts: [Array, String],
     pango: String,
     selected: {
       type: String,
@@ -549,7 +549,7 @@ export default {
       if (this.$route.query.pango) {
         if (this.$route.query.muts && this.$route.query.muts.length) {
           // Lineage + Mutation report
-          this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
+          this.lineageName = this.$route.query.pango.toUpperCase();
           this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
           this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
           this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
@@ -564,7 +564,7 @@ export default {
 
         } else {
           // Lineage report
-          this.lineageName = this.$options.filters.capitalize(this.$route.query.pango);
+          this.lineageName = this.$route.query.pango.toUpperCase();
           this.reportName = this.lineageName;
           this.mutationID = null;
           this.reportType = "lineage";

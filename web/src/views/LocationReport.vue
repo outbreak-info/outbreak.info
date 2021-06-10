@@ -430,7 +430,8 @@ import {
   getLocationMaps,
   getBasicLocationReportData,
   getLocationTable,
-  findLocation
+  findLocation,
+  getBadMutations
 } from "@/api/genomics.js";
 
 import cloneDeep from "lodash/cloneDeep";
@@ -510,24 +511,24 @@ export default {
         this.seqCounts.filter(d => d.dateTime >= this.recentMin) : null;
     },
     formValid() {
-      return(this.newMuts.length > 0 || this.newPango)
+      return (this.newMuts.length > 0 || this.newPango)
     },
     newVariant() {
       let newVariantObj = null;
       if (this.newPango && this.newMuts.length) {
-	newVariantObj = {
+        newVariantObj = {
           label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
           qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
           type: "variant"
         }
       } else if (this.newPango) {
-	newVariantObj = {
+        newVariantObj = {
           label: this.newPango,
           qParam: this.newPango,
           type: "pango"
         }
       } else if (this.newMuts.length) {
-	newVariantObj = {
+        newVariantObj = {
           label: this.newMuts.map(d => d.mutation).join(", "),
           qParam: this.newMuts.map(d => d.mutation).join(","),
           type: "mutation"
@@ -637,6 +638,10 @@ export default {
     this.debounceWindowChange = debounce(this.updateWindow, 700);
   },
   mounted() {
+    const ofInterest = getBadMutations(true);
+    this.moc = ofInterest.moc;
+    this.moi = ofInterest.moi;
+
     this.queryLocation = findLocation;
     this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
       .domain(this.choroColorDomain);
@@ -870,8 +875,8 @@ export default {
       customMutations: [],
       submitCount: 0,
       // data
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
-      moc: ["E484K"],
+      moi: [],
+      moc: [],
       voi: null,
       voc: null,
       dateUpdated: null,

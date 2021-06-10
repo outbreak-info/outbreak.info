@@ -104,7 +104,11 @@ export default Vue.extend({
       type: String,
       default: "pangolin_lineage"
     },
-    yDomain: Array
+    yDomain: Array,
+    onlyTopAxis: {
+      type: Boolean,
+      default: false
+    }
   },
   watch: {
     data() {
@@ -115,9 +119,9 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 165,
+        right: 190,
         bottom: 72,
-        left: 100
+        left: 153
       },
       isOverflow: false,
       // UI
@@ -159,6 +163,13 @@ export default Vue.extend({
 
     },
     setupPlot() {
+      if (this.onlyTopAxis) {
+        this.margin.top = 62;
+        this.margin.left = 5;
+        this.margin.right = 27;
+        this.margin.bottom = 5;
+      }
+
       this.svg = select(this.$refs.svg);
       this.heatmap = select(this.$refs.heatmap);
       this.heatmapBase = select(this.$refs.heatmapBase);
@@ -182,12 +193,13 @@ export default Vue.extend({
       this.height = this.yDomain.length * this.bandWidth;
       this.y.range([0, this.height]);
 
-      this.xAxisBottom = axisBottom(this.x).tickSizeOuter(0);
-      select(this.$refs.xAxisBottom).call(this.xAxisBottom);
+      if (!this.onlyTopAxis) {
+        this.xAxisBottom = axisBottom(this.x).tickSizeOuter(0);
+        select(this.$refs.xAxisBottom).call(this.xAxisBottom);
 
-      this.yAxisLeft = axisLeft(this.y).tickSizeOuter(0);
-      select(this.$refs.yAxisLeft).call(this.yAxisLeft);
-
+        this.yAxisLeft = axisLeft(this.y).tickSizeOuter(0);
+        select(this.$refs.yAxisLeft).call(this.yAxisLeft);
+      }
       this.xAxisTop = axisTop(this.x).tickSizeOuter(0);
       select(this.$refs.xAxisTop).call(this.xAxisTop);
 
@@ -459,61 +471,63 @@ export default Vue.extend({
         .rollup(values => values[0].lineage_count)
         .entries(this.data);
 
-      const yAxisRightSelector = this.heatmap
-        .selectAll(".y-axis-right")
-        .data(yDomainFull, d => d.key);
+      if (!this.onlyTopAxis) {
+        const yAxisRightSelector = this.heatmap
+          .selectAll(".y-axis-right")
+          .data(yDomainFull, d => d.key);
 
-      yAxisRightSelector.join(enter => {
-          const grp = enter.append("text")
-            .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
-            .attr("x", this.width)
-            .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
-            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-            .style("fill", "#efefef")
-            .style("dominant-baseline", "central")
-            .on("mouseover", d => this.highlightRow(d.key))
-            .on("mouseout", this.highlightOff);
+        yAxisRightSelector.join(enter => {
+            const grp = enter.append("text")
+              .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
+              .attr("x", this.width)
+              .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("fill", "#efefef")
+              .style("dominant-baseline", "central")
+              .on("mouseover", d => this.highlightRow(d.key))
+              .on("mouseout", this.highlightOff);
 
-          grp.append("tspan")
-            .attr("class", "y-axis-lineage")
-            .classed("hover-underline", "true")
-            .classed("pointer", "true")
-            .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor)
-            .style("font-size", 18)
-            .attr("dx", 10)
-            .text(d => d.key)
-            .on("click", d => this.route2Lineage(d.key));
+            grp.append("tspan")
+              .attr("class", "y-axis-lineage")
+              .classed("hover-underline", "true")
+              .classed("pointer", "true")
+              .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor)
+              .style("font-size", 18)
+              .attr("dx", 10)
+              .text(d => d.key)
+              .on("click", d => this.route2Lineage(d.key));
 
-          grp.append("tspan")
-            .attr("class", "y-axis-count")
-            // .attr("x", this.width + this.margin.right)
-            // .style("text-anchor", "end")
-            .style("font-size", 14)
-            .style("fill", "#d2d2d2")
-            .attr("dx", 7)
-            // .attr("dx", -5)
-            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
-        },
-        update => {
-          update
-            .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
-            .attr("x", this.width)
-            .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
+            grp.append("tspan")
+              .attr("class", "y-axis-count")
+              // .attr("x", this.width + this.margin.right)
+              // .style("text-anchor", "end")
+              .style("font-size", 14)
+              .style("fill", "#d2d2d2")
+              .attr("dx", 7)
+              // .attr("dx", -5)
+              .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+          },
+          update => {
+            update
+              .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
+              .attr("x", this.width)
+              .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
 
-          update.select(".y-axis-lineage")
-            .text(d => d.key)
-            .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor);
+            update.select(".y-axis-lineage")
+              .text(d => d.key)
+              .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor);
 
-          update.select(".y-axis-count")
-            .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
-        },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition()
-          .style("opacity", 1e-5)
-          .remove()
-        ))
+            update.select(".y-axis-count")
+              .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          ))
+      }
 
       // turn on tooltips
       this.svg

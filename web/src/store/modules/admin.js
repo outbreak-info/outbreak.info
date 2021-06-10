@@ -480,6 +480,18 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-07 0:0"),
+      category: "data",
+      title: "Added P.1.1 and P.1.2 as Variants of Concern",
+      description: 'Added P.1.1 and P.1.2, sublineages of the Variant of Concern P.1, as Variants of Concern.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "P.1.1"
+        }
+      }
+    },
+    {
       date: new Date("2021-06-01 0:0"),
       category: "data",
       title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest",
@@ -556,6 +568,35 @@ const state = {
           loc: "IND",
           selected: "IND"
         }
+      }
+    }, {
+      date: new Date("2021-06-08 0:0"),
+      category: "data",
+      title: "Removed S:Y453F as a Mutation of Interest",
+      description: "Removed S:Y453F as a Mutation of Interest.",
+      route: {
+        name: "MutationReport",
+        query: {
+          muts: "S:Y453F",
+          loc: "DNK",
+          selected: "DNK"
+        }
+      }
+    }, {
+      date: new Date("2021-06-10 0:0"),
+      category: "feature",
+      title: "Added Variant of Concern and Interest classifications from the CDC, ECDC, PHE, and WHO",
+      description: "Added curated classifications of the Variants of Concern and Interest, based on data from the <a href='https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fcoronavirus%2F2019-ncov%2Fcases-updates%2Fvariant-surveillance%2Fvariant-info.html' target='_blank'>Centers for Disease Control and Prevention</a>, <a href='https://www.ecdc.europa.eu/en/covid-19/variants-concern' target='_blank'>European Centre for Disease Prevention and Cotnrol</a>, <a href='https://www.gov.uk/government/publications/investigation-of-novel-sars-cov-2-variant-variant-of-concern-20201201' target='_blank'>Public Health England</a>, and the <a href='https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/' target='_blank'>World Health Organization</a>. Redesigned the Lineage | Mutation Tracker homepage, including adding new WHO nomenclature for VOCs and VOIs.",
+      route: {
+        name: "SituationReports"
+      }
+    }, {
+      date: new Date("2021-06-10 0:0"),
+      category: "feature",
+      title: "Added buttons to select VOCs and VOIs in Lineage Comparison tool",
+      description: "Added buttons to pre-select Variants of Concern and Interest to easily compare mutations within those lineages.",
+      route: {
+        name: "SituationReportComparison"
       }
     }, {
     date: new Date("2021-05-03 0:0"),

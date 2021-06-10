@@ -190,46 +190,54 @@ export default Vue.extend({
       this.badBulkDeletion = false;
       this.badBulkGene = false;
 
-        this.selectedBulkMutations = bulk.map(d => {
-          const splitted = d.split(":");
-          if (splitted.length == 2) {
-            const aaChange = splitted[1];
-            const mutationType = aaChange.toLowerCase().includes("del") ? "deletion" : "substitution";
-            const changeSplitted = aaChange.split(/(\d+)/g).filter(d => d != "");
-            if (mutationType == "substitution") {
-              if (changeSplitted.length == 3) {
-                return ({
-                  mutation: d,
-                  gene: splitted[0],
-                  type: mutationType,
-                  ref_aa: changeSplitted[0],
-                  codon_num: +changeSplitted[1],
-                  alt_aa: changeSplitted[2]
-                })
-              } else {
-                this.badBulkSubstitution = true;
-              }
-            } else if (mutationType == "deletion") {
-              if (changeSplitted.length == 4) {
-                return ({
-                  mutation: d,
-                  gene: splitted[0],
-                  type: mutationType,
-                  codon_num: +changeSplitted[1],
-                  change_length_nt: (Number(changeSplitted[3]) - Number(changeSplitted[1]) + 1) * 3
-                })
-              } else {
-                this.badBulkDeletion = true;
-              }
+      this.selectedBulkMutations = bulk.map(d => {
+        const splitted = d.split(":");
+        if (splitted.length == 2) {
+          const aaChange = splitted[1];
+          const mutationType = aaChange.toLowerCase().includes("del") ? "deletion" : "substitution";
+          const changeSplitted = aaChange.split(/(\d+)/g).filter(d => d != "");
+          if (mutationType == "substitution") {
+            if (changeSplitted.length == 3) {
+              return ({
+                mutation: d,
+                gene: splitted[0],
+                type: mutationType,
+                ref_aa: changeSplitted[0],
+                codon_num: +changeSplitted[1],
+                alt_aa: changeSplitted[2]
+              })
+            } else {
+              this.badBulkSubstitution = true;
             }
-          } else {
-            this.badBulkGene = true;
+          } else if (mutationType == "deletion") {
+            if (changeSplitted.length == 4) {
+              return ({
+                mutation: d,
+                gene: splitted[0],
+                type: mutationType,
+                codon_num: +changeSplitted[1],
+                change_length_nt: (Number(changeSplitted[3]) - Number(changeSplitted[1]) + 1) * 3
+              })
+            } else if (changeSplitted.length == 2) {
+              return ({
+                mutation: d,
+                gene: splitted[0],
+                type: mutationType,
+                codon_num: +changeSplitted[1],
+                change_length_nt: 3
+              })
+            } else {
+              this.badBulkDeletion = true;
+            }
           }
-        })
+        } else {
+          this.badBulkGene = true;
+        }
+      })
 
-        const newMutations = this.selectedBulkMutations.filter(d => d);
+      const newMutations = this.selectedBulkMutations.filter(d => d);
 
-        this.$emit("update:selectedMutations", newMutations);
+      this.$emit("update:selectedMutations", newMutations);
     },
     deleteMutation(idx) {
       const removed = this.selectedMutations.splice(idx, 1);

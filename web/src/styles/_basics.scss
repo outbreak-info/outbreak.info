@@ -346,6 +346,9 @@ p.focustext {
 
 .text-highlight {
   color: $warning-color;
+  & a {
+    color: $warning-color;
+  }
 }
 
 .bg-white {
