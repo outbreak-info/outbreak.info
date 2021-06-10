@@ -427,8 +427,8 @@ export default {
     ThresholdSlider
   },
   props: {
-    loc: Array,
-    muts: Array,
+    loc: [Array, String],
+    muts: [Array, String],
     pango: String,
     selected: {
       type: String,
