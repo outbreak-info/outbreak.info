@@ -541,8 +541,8 @@ export default {
   methods: {
     addVOCs(clear = true) {
       // remove lineages w/ additional mutations
-      this.selectedPango = clear ? this.voc.filter(d => !d.includes("+")) :
-      this.voc.filter(d => !d.includes("+")).concat(this.pango);
+      this.selectedPango = clear ? this.voc :
+      this.voc.concat(this.pango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
@@ -566,8 +566,8 @@ export default {
     },
     addVOIs(clear = true) {
       // remove lineages w/ additional mutations
-      this.selectedPango = clear ? this.voi.filter(d => !d.includes("+")) :
-      this.voi.filter(d => !d.includes("+")).concat(this.pango);
+      this.selectedPango = clear ? this.voi :
+      this.voi.concat(this.pango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
