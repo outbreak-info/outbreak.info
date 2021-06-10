@@ -42,14 +42,17 @@
 
     <div class="border-bottom py-2">
       <h5 class="m-0 mb-1">Selective sampling</h5>
-<p>The samples submitted for sequencing are often not a random sample of all cases. These samples are often from:</p>
-<ul>
-<li>An investigation of a single cluster in an outbreak</li>
-<li>Unique cases, such as patients with severe disease or breakthrough cases of patients who had been vaccinated</li>
-<li>Imported cases from travel</li>
-<li>S-gene target failure during PCR amplification (see below)</li>
-</ul>
-<p>Selective sampling skews the estimated prevalence of a lineage in a location. For instance, a higher proportion of breakthrough cases sequenced will lead to an overestimation of the prevalence of Variants of Concern (VOC) or Interest (VOI), which have a greater likelihood of showing immune escape in vaccinated people.</p>
+      <p>The samples submitted for sequencing are often not a random sample of all cases. These samples are often from:</p>
+      <ul>
+        <li>An investigation of a single cluster in an outbreak</li>
+        <li>
+          Unique cases, such as patients with severe disease or breakthrough cases of patients who had been vaccinated
+        </li>
+        <li>Imported cases from travel</li>
+        <li>S-gene target failure during PCR amplification (see below)</li>
+      </ul>
+      <p>Selective sampling skews the estimated prevalence of a lineage in a location. For instance, a higher proportion of breakthrough cases sequenced will lead to an overestimation of the prevalence of Variants of Concern (VOC) or Interest (VOI),
+        which have a greater likelihood of showing immune escape in vaccinated people.</p>
     </div>
 
     <div class="border-bottom py-2">
