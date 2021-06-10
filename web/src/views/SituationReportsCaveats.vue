@@ -7,7 +7,8 @@
     <h3>Caveats &amp; Limitations</h3>
     <p class="mt-3">
       To describe the prevalence of sets of mutations in our <router-link :to="{name: 'SituationReports'}">Mutation Situation Reports</router-link>, we rely on shared virus sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID
-        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences and sample metadata deposited in GISAID.
+        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences
+      and sample metadata deposited in GISAID.
     </p>
 
     <p>
@@ -30,12 +31,21 @@
     <div class="border-bottom py-2">
       <h5 class="m-0 mb-1">Greater sequencing of older samples</h5>
       <p>
-        For all sequencing data, there is a lag between when the sample was acquired from the patient, when the sample was processed and sequenced, and when the data is released to the public. This gap means that the most recent data often contains very few samples, severely limiting its reliability.
+        For all sequencing data, there is a lag between when the sample was acquired from the patient, when the sample was processed and sequenced, and when the data is released to the public. This gap means that the most recent data often contains
+        very few samples, severely limiting its reliability.
       </p>
       <!-- <p>
         View the lag between sample collection date and sequence submission date:
       </p>
       <div class="text-highlight">&lt; changable plot showing the distribution of sequencing gaps by global/country/state &gt;</div> -->
+    </div>
+
+    <div class="border-bottom py-2">
+      <h5 class="m-0 mb-1">More sampling from unique cases</h5>
+      <p>
+        Often, the samples submitted for sequencing tend to be from unique cases &mdash; such as breakthrough cases of patients who has previously been vaccinated. When the sampling is biased, this will skew the estimates of prevalence for a
+        given lineage. For instance, a higher proportion of breakthrough cases being sequenced will likely lead to an overestimation of the prevalence of Variants of Concern and Interest, which have a greater likelihood of showing immune escape in vaccinated people. One other example of biased sampling comes from S-gene target failures (below).
+      </p>
     </div>
 
     <div class="border-bottom py-2">
