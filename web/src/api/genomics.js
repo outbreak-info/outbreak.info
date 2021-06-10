@@ -478,6 +478,9 @@ export function getMutationsByLineage(apiurl, mutationString, proportionThreshol
 
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
+  if (!lineage)
+    return ( of ([]));
+
   // convert + to AND to specify lineages + mutations
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(/\+/g, "AND")}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
