@@ -43,8 +43,24 @@
     <div class="border-bottom py-2">
       <h5 class="m-0 mb-1">More sampling from unique cases</h5>
       <p>
-        Often, the samples submitted for sequencing tend to be from unique cases &mdash; such as breakthrough cases of patients who has previously been vaccinated. When the sampling is biased, this will skew the estimates of prevalence for a
-        given lineage. For instance, a higher proportion of breakthrough cases being sequenced will likely lead to an overestimation of the prevalence of Variants of Concern and Interest, which have a greater likelihood of showing immune escape in vaccinated people. One other example of biased sampling comes from S-gene target failures (below).
+        The samples submitted for sequencing are often not a random sample of all the cases. They can be biased by:
+      <ul>
+        <li>
+          an investigation of a single cluster in an outbreak
+        </li>
+        <li>
+          unique cases, such as patients with severe disease or breakthrough cases of vaccinated patients
+        </li>
+        <li>
+          imported cases from travel
+        </li>
+        <li>
+          S-gene target failure during PCR amplification (see below)
+        </li>
+      </ul>
+
+      Selective sampling skews the estimated prevalence of a lineage in a location. For instance, a higher proportion of breakthrough cases sequenced will lead to an overestimation of the prevalence of Variants of Concern (VOC) or Interest (VOI),
+      which have a greater likelihood of showing immune escape in vaccinated people.
       </p>
     </div>
 
