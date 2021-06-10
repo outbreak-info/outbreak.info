@@ -583,7 +583,7 @@ const state = {
         }
       }
     }, {
-      date: new Date("2021-06-09 0:0"),
+      date: new Date("2021-06-10 0:0"),
       category: "feature",
       title: "Added Variant of Concern and Interest classifications from the CDC, ECDC, PHE, and WHO",
       description: "Added curated classifications of the Variants of Concern and Interest, based on data from the <a href='https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fcoronavirus%2F2019-ncov%2Fcases-updates%2Fvariant-surveillance%2Fvariant-info.html' target='_blank'>Centers for Disease Control and Prevention</a>, <a href='https://www.ecdc.europa.eu/en/covid-19/variants-concern' target='_blank'>European Centre for Disease Prevention and Cotnrol</a>, <a href='https://www.gov.uk/government/publications/investigation-of-novel-sars-cov-2-variant-variant-of-concern-20201201' target='_blank'>Public Health England</a>, and the <a href='https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/' target='_blank'>World Health Organization</a>. Redesigned the Lineage | Mutation Tracker homepage, including adding new WHO nomenclature for VOCs and VOIs.",
@@ -591,7 +591,7 @@ const state = {
         name: "SituationReports"
       }
     }, {
-      date: new Date("2021-06-09 0:0"),
+      date: new Date("2021-06-10 0:0"),
       category: "feature",
       title: "Added buttons to select VOCs and VOIs in Lineage Comparison tool",
       description: "Added buttons to pre-select Variants of Concern and Interest to easily compare mutations within those lineages.",
