@@ -468,7 +468,7 @@ const state = {
     },
     {
       date: new Date("2021-03-16 0:0"),
-      category: "data",
+      category: "variants",
       title: "Reclassified B.1.427 and B.1.429 as Variants of Concern",
       description: 'Based on the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification, lineages B.1.427 and B.1.429 have been upgraded from <b>Variants of Interest</b> to <b>Variants of Concern</b>.',
       route: {
@@ -481,7 +481,7 @@ const state = {
     },
     {
       date: new Date("2021-06-07 0:0"),
-      category: "data",
+      category: "variants",
       title: "Added P.1.1 and P.1.2 as Variants of Concern",
       description: 'Added P.1.1 and P.1.2, sublineages of the Variant of Concern P.1, as Variants of Concern.',
       route: {
@@ -493,7 +493,7 @@ const state = {
     },
     {
       date: new Date("2021-06-11 0:0"),
-      category: "data",
+      category: "variants",
       title: "Removed A.23.1 + S:E484K as a VUI",
       description: "Removed A.23.1 with S:E484K as a Variant of Interest, based on the 11 June 2021 Public Health England's <a href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/993198/Variants_of_Concern_VOC_Technical_Briefing.pdf' target='_blank'>Technical Briefing 15</a>.",
       route: {
@@ -502,7 +502,7 @@ const state = {
     },
     {
       date: new Date("2021-06-01 0:0"),
-      category: "data",
+      category: "variants",
       title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest",
       description: 'Based on the <a href="https://www.gov.uk/government/publications/covid-19-variants-genomically-confirmed-case-numbers/variants-distribution-of-cases-data" target="_blank">PHE</a> classification, added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest (VOIs). Also removed B.1.617 as a VOI, due to the expansion of the B.1.617 sublineages.',
       route: {
@@ -559,7 +559,7 @@ const state = {
       }
     }, {
       date: new Date("2021-04-01 0:0"),
-      category: "data",
+      category: "variants",
       title: "Added B.1.526.1, B.1.526.2, and P.2 as Variants of Interest",
       description: "Based on the split of the B.1.526 lineage into B.1.526, B.1.526.1, and B.1.526.2 lineages, added the two new lineages as Variants of Interest, as well as the P.2 lineage circulating in Brazil.",
       route: {
@@ -567,7 +567,7 @@ const state = {
       }
     }, {
       date: new Date("2021-04-15 0:0"),
-      category: "data",
+      category: "variants",
       title: "Added B.1.617 as a Variant of Interest",
       description: "Based on the expansion of B.1.617 in India, added B.1.617 as a Variant of Interest.",
       route: {
@@ -580,7 +580,7 @@ const state = {
       }
     }, {
       date: new Date("2021-06-08 0:0"),
-      category: "data",
+      category: "variants",
       title: "Removed S:Y453F as a Mutation of Interest",
       description: "Removed S:Y453F as a Mutation of Interest.",
       route: {
@@ -608,212 +608,224 @@ const state = {
         name: "SituationReportComparison"
       }
     }, {
-    date: new Date("2021-05-03 0:0"),
-    category: "data",
-    title: "Added B.1.617.1 as a Variant of Interest",
-    description: "Based on split of B.1.617 into sublineages, added B.1.617.1 as a Variant of Interest based on its expansion in India and presence of S:E484Q mutation.",
-    route: {
-      name: "MutationReport",
-      query: {
-        pango: "B.1.617.1",
-        loc: "IND",
-        selected: "IND"
+      date: new Date("2021-05-03 0:0"),
+      category: "variants",
+      title: "Added B.1.617.1 as a Variant of Interest",
+      description: "Based on split of B.1.617 into sublineages, added B.1.617.1 as a Variant of Interest based on its expansion in India and presence of S:E484Q mutation.",
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.617.1",
+          loc: "IND",
+          selected: "IND"
+        }
       }
-    }
     }, {
-    date: new Date("2021-05-07 0:0"),
-    category: "data",
-    title: "Added B.1.617.2 as a Variant of Concern, and B.1.617.3 as a Variant of Interest. B.1.427 and B.1.429 downgraded to VOI.",
-    description: "Based on the report, <a href=\"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf\">Technical Briefing 10<a/> from PHE.",
-    route: {
-      name: "MutationReport",
-      query: {
-        pango: "B.1.617.2",
-        loc: "IND",
-        selected: "IND"
+      date: new Date("2021-05-07 0:0"),
+      category: "variants",
+      title: "Added B.1.617.2 as a Variant of Concern, and B.1.617.3 as a Variant of Interest. B.1.427 and B.1.429 downgraded to VOI.",
+      description: "Based on the report, <a href=\"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf\">Technical Briefing 10<a/> from PHE.",
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.617.2",
+          loc: "IND",
+          selected: "IND"
+        }
+      }
+    }, {
+      date: new Date("2021-06-11 0:1"),
+      category: "variants",
+      title: "Added AY.1 as a VOC",
+      description: 'Based on the reclassification of some B.1.617.2/Delta lineages with mutation S:K417N, the <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/993198/Variants_of_Concern_VOC_Technical_Briefing.pdf">PHE Technical Briefing 15<a/>, and its mutational similarity as a sublineage of B.1.617.2/Delta, added AY.1 as a Variant of Concern.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "AY.1",
+          loc: ["IND", "GBR"]
+        }
+      }
+    },
+    {
+      date: new Date("2021-01-21 0:0"),
+      category: "data",
+      title: "Added SARS-CoV-2 Mutation Situation Reports",
+      description: 'Added situation reports describing the prevalence of certain sets of mutations in SARS-CoV-2 sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-02-10 0:0"),
+      category: "data",
+      title: "Released customizable, interactive SARS-CoV-2 Lineage Situation Reports",
+      description: 'Released customizable, interactive SARS-CoV-2 Lineage Situation Reports',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.1.7"
+        }
+      }
+    },
+    {
+      date: new Date("2021-02-23 0:0"),
+      category: "data",
+      title: "Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports",
+      description: 'Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports',
+      route: {
+        name: "MutationReport",
+        query: {
+          muts: "S:E484K"
+        }
+      }
+    },
+    {
+      date: new Date("2021-03-17 0:0"),
+      category: "feature",
+      title: "Released customizable, interactive SARS-CoV-2 Location Tracker",
+      description: 'Released customizable, interactive SARS-CoV-2 Situation Reports for countries, states, and U.S. counties',
+      route: {
+        name: "LocationReport",
+        query: {
+          loc: "USA"
+        }
+      }
+    },
+    {
+      date: new Date("2020-07-06 0:1"),
+      category: "feature",
+      title: "Copyable visualizations",
+      description: 'All visualizations can now be copied to the clipboard (Chrome/Edge/Opera/Android/Samsung) and downloaded as .pngs',
+      route: {
+        name: "Maps",
+      }
+    },
+    {
+      date: new Date("2020-07-23 0:1"),
+      category: "feature",
+      title: "Added per capita normalization",
+      description: 'Added normalization of case and death counts by population for countries and U.S. states, metropolitan areas, and counties.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "KOR;USA_US-CA;AUS",
+          variable: "confirmed_rolling",
+          percapita: "true"
+        }
+      }
+    },
+    {
+      date: new Date("2020-07-14 0:0"),
+      category: "data",
+      title: "Access all data through our API",
+      description: 'All of our data, including epidemiology data and resource metadata, can be accessed at <a href="https://api.outbreak.info/">api.outbreak.info</a>',
+      route: {
+        name: "Sources",
+      }
+    },
+    {
+      date: new Date("2020-05-19 0:0"),
+      category: "data",
+      title: "Added searchable resources",
+      description: 'Added resource metadata for publications from <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a> and <a href="https://connect.biorxiv.org/relate/content/181" target="_blank" rel="noreferrer">bioRxiv and medRxiv</a>; clinical trials from <a href="https://clinicaltrials.gov/ct2/results?cond=COVID-19" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and  <a href="https://www.who.int/ictrp/en/" target="_blank" rel="noreferrer">WHO International Clinical Trials Registry Platform</a>; and datasets from <a href="https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true" target="_blank" rel="noreferrer">The Protein Data Bank</a> and <a href="https://zenodo.org/communities/covid-19/" target="_blank" rel="noreferrer">Zenodo</a>. <a href="/sources#resources">View more about sources</a>',
+      route: {
+        name: "Resource Summary",
+      }
+    },
+    {
+      date: new Date("2020-04-06 0:0"),
+      category: "data",
+      title: "Changed United States epidemiology data source",
+      description: 'Switched the data source for U.S. epidemiological data from <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank" rel="noreferrer">Johns Hopkins</a> to the <a href="https://github.com/nytimes/covid-19-data" target="_blank" rel="noreferrer">New York Times</a>.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "USA;USA_US-CA;METRO_41940;USA_US-CA_06085",
+          variable: "confirmed"
+        }
+      }
+    },
+    {
+      date: new Date("2020-04-06 0:0"),
+      category: "feature",
+      title: "Added United States Metropolitan Areas aggregations",
+      description: "Using the U.S. Census Bureau's Core Based Statistical Areas, calculated case and death totals for metropolitan areas, which are groups of U.S. counties.",
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "METRO_28140;METRO_41180",
+          variable: "confirmed"
+        }
+      }
+    },
+    {
+      date: new Date("2020-03-31 0:0"),
+      category: "feature",
+      title: "Added daily case and death counts",
+      description: "Created daily histograms of confirmed cases or deaths pre day by location.",
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "METRO_35620;ITA;ESP;USA",
+          variable: "dead"
+        }
+      }
+    },
+    {
+      date: new Date("2020-03-31 0:0"),
+      category: "feature",
+      title: "Created iframe-embeddable summary boxes",
+      description: "Added customizable summary boxes, which can be embedded within iframes. Locations should be specified by `location_id` (usually the ISO3 or FIPS code) and should be separated by semicolons.",
+      route: {
+        name: "Summary",
+        query: {
+          location: "USA;USA_US-CA;USA_US-CA_06037;USA_US-CA_06073"
+        }
+      }
+    },
+    {
+      date: new Date("2020-03-24 0:0"),
+      category: "feature",
+      title: "Added doubling rates",
+      description: "Created summary of the doubling rates for a location in the last five days compared to the previous five days.",
+      route: {
+        name: "Doubling Rates",
+        query: {
+          location: "USA"
+        }
+      }
+    },
+    {
+      date: new Date("2020-04-10 0:0"),
+      category: "feature",
+      title: "Normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
+      description: "For epidemiology plots over time, allow the x-axis to shift to a normalized timepoint: when the location had 100 cumulative confirmed cases, 10 cumulative deaths, or 50 cumulative deaths.",
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "METRO_12060;METRO_35380;METRO_26420",
+          log: "false",
+          variable: "dead",
+          xVariable: "daysSince10Deaths"
+        }
+      }
+    },
+    {
+      date: new Date("2020-04-21 0:0"),
+      category: "data",
+      title: "Add testing and hospitalization data for states in the United States",
+      description: 'Incorporate testing and hospitalzation data from the <a href="https://covidtracking.com/" target="_blank" rel="noreferrer">The COVID Tracking Project</a>.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "USA_US-MA;USA_US-NY;USA_US-KS;USA_US-NJ",
+          log: "false",
+          variable: "testing_positivity",
+          xVariable: "date"
+        }
       }
     }
-  },
-  {
-    date: new Date("2021-01-21 0:0"),
-    category: "data",
-    title: "Added SARS-CoV-2 Mutation Situation Reports",
-    description: 'Added situation reports describing the prevalence of certain sets of mutations in SARS-CoV-2 sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>.',
-    route: {
-      name: "SituationReports"
-    }
-  },
-  {
-    date: new Date("2021-02-10 0:0"),
-    category: "data",
-    title: "Released customizable, interactive SARS-CoV-2 Lineage Situation Reports",
-    description: 'Released customizable, interactive SARS-CoV-2 Lineage Situation Reports',
-    route: {
-      name: "MutationReport",
-      query: {
-        pango: "B.1.1.7"
-      }
-    }
-  },
-  {
-    date: new Date("2021-02-23 0:0"),
-    category: "data",
-    title: "Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports",
-    description: 'Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports',
-    route: {
-      name: "MutationReport",
-      query: {
-        muts: "S:E484K"
-      }
-    }
-  },
-  {
-    date: new Date("2021-03-17 0:0"),
-    category: "feature",
-    title: "Released customizable, interactive SARS-CoV-2 Location Tracker",
-    description: 'Released customizable, interactive SARS-CoV-2 Situation Reports for countries, states, and U.S. counties',
-    route: {
-      name: "LocationReport",
-      query: {
-        loc: "USA"
-      }
-    }
-  },
-  {
-    date: new Date("2020-07-06 0:1"),
-    category: "feature",
-    title: "Copyable visualizations",
-    description: 'All visualizations can now be copied to the clipboard (Chrome/Edge/Opera/Android/Samsung) and downloaded as .pngs',
-    route: {
-      name: "Maps",
-    }
-  },
-  {
-    date: new Date("2020-07-23 0:1"),
-    category: "feature",
-    title: "Added per capita normalization",
-    description: 'Added normalization of case and death counts by population for countries and U.S. states, metropolitan areas, and counties.',
-    route: {
-      name: "Epidemiology",
-      query: {
-        location: "KOR;USA_US-CA;AUS",
-        variable: "confirmed_rolling",
-        percapita: "true"
-      }
-    }
-  },
-  {
-    date: new Date("2020-07-14 0:0"),
-    category: "data",
-    title: "Access all data through our API",
-    description: 'All of our data, including epidemiology data and resource metadata, can be accessed at <a href="https://api.outbreak.info/">api.outbreak.info</a>',
-    route: {
-      name: "Sources",
-    }
-  },
-  {
-    date: new Date("2020-05-19 0:0"),
-    category: "data",
-    title: "Added searchable resources",
-    description: 'Added resource metadata for publications from <a href="https://www.ncbi.nlm.nih.gov/research/coronavirus/" target="_blank" rel="noreferrer">LitCovid</a> and <a href="https://connect.biorxiv.org/relate/content/181" target="_blank" rel="noreferrer">bioRxiv and medRxiv</a>; clinical trials from <a href="https://clinicaltrials.gov/ct2/results?cond=COVID-19" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and  <a href="https://www.who.int/ictrp/en/" target="_blank" rel="noreferrer">WHO International Clinical Trials Registry Platform</a>; and datasets from <a href="https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true" target="_blank" rel="noreferrer">The Protein Data Bank</a> and <a href="https://zenodo.org/communities/covid-19/" target="_blank" rel="noreferrer">Zenodo</a>. <a href="/sources#resources">View more about sources</a>',
-    route: {
-      name: "Resource Summary",
-    }
-  },
-  {
-    date: new Date("2020-04-06 0:0"),
-    category: "data",
-    title: "Changed United States epidemiology data source",
-    description: 'Switched the data source for U.S. epidemiological data from <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank" rel="noreferrer">Johns Hopkins</a> to the <a href="https://github.com/nytimes/covid-19-data" target="_blank" rel="noreferrer">New York Times</a>.',
-    route: {
-      name: "Epidemiology",
-      query: {
-        location: "USA;USA_US-CA;METRO_41940;USA_US-CA_06085",
-        variable: "confirmed"
-      }
-    }
-  },
-  {
-    date: new Date("2020-04-06 0:0"),
-    category: "feature",
-    title: "Added United States Metropolitan Areas aggregations",
-    description: "Using the U.S. Census Bureau's Core Based Statistical Areas, calculated case and death totals for metropolitan areas, which are groups of U.S. counties.",
-    route: {
-      name: "Epidemiology",
-      query: {
-        location: "METRO_28140;METRO_41180",
-        variable: "confirmed"
-      }
-    }
-  },
-  {
-    date: new Date("2020-03-31 0:0"),
-    category: "feature",
-    title: "Added daily case and death counts",
-    description: "Created daily histograms of confirmed cases or deaths pre day by location.",
-    route: {
-      name: "Epidemiology",
-      query: {
-        location: "METRO_35620;ITA;ESP;USA",
-        variable: "dead"
-      }
-    }
-  },
-  {
-    date: new Date("2020-03-31 0:0"),
-    category: "feature",
-    title: "Created iframe-embeddable summary boxes",
-    description: "Added customizable summary boxes, which can be embedded within iframes. Locations should be specified by `location_id` (usually the ISO3 or FIPS code) and should be separated by semicolons.",
-    route: {
-      name: "Summary",
-      query: {
-        location: "USA;USA_US-CA;USA_US-CA_06037;USA_US-CA_06073"
-      }
-    }
-  },
-  {
-    date: new Date("2020-03-24 0:0"),
-    category: "feature",
-    title: "Added doubling rates",
-    description: "Created summary of the doubling rates for a location in the last five days compared to the previous five days.",
-    route: {
-      name: "Doubling Rates",
-      query: {
-        location: "USA"
-      }
-    }
-  },
-  {
-    date: new Date("2020-04-10 0:0"),
-    category: "feature",
-    title: "Normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
-    description: "For epidemiology plots over time, allow the x-axis to shift to a normalized timepoint: when the location had 100 cumulative confirmed cases, 10 cumulative deaths, or 50 cumulative deaths.",
-    route: {
-      name: "Epidemiology",
-      query: {
-        location: "METRO_12060;METRO_35380;METRO_26420",
-        log: "false",
-        variable: "dead",
-        xVariable: "daysSince10Deaths"
-      }
-    }
-  },
-  {
-    date: new Date("2020-04-21 0:0"),
-    category: "data",
-    title: "Add testing and hospitalization data for states in the United States",
-    description: 'Incorporate testing and hospitalzation data from the <a href="https://covidtracking.com/" target="_blank" rel="noreferrer">The COVID Tracking Project</a>.',
-    route: {
-      name: "Epidemiology",
-      query: {
-        location: "USA_US-MA;USA_US-NY;USA_US-KS;USA_US-NJ",
-        log: "false",
-        variable: "testing_positivity",
-        xVariable: "date"
-      }
-    }
-  }
-]
+  ]
 };
 
 // getters
