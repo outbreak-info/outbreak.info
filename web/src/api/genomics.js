@@ -494,7 +494,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
         let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
           d => {
             d["pangolin_lineage"] = lineage_key.replace(/AND/g, "+");
-            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--");
+            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_");
             return (d);
           }
         ));
@@ -503,7 +503,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
         Object.keys(results).forEach(lineage_key => {
           results[lineage_key].forEach(d => {
             d["pangolin_lineage"] = lineage_key;
-            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_");
+            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_");
             d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
           })
           // sort by location
@@ -1374,7 +1374,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
 
 
         characteristic.forEach(d => {
-          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_").replace(/:/g, "_").replace(/\s\+\s/g, "--")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
           d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
             d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
           d["isMOI"] = mutationsOfInterest.includes(d.mutation);
@@ -1382,7 +1382,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
         })
 
         moi.forEach(d => {
-          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_").replace(/:/g, "_").replace(/\s\+\s/g, "--")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
           d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
             d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
           d["isMOI"] = mutationsOfInterest.includes(d.mutation);
@@ -1509,7 +1509,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
       // filtered = filtered.concat(avgByMutation);
 
       filtered.forEach(d => {
-        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_").replace(/:/g, "_").replace(/\s\+\s/g, "--")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
         d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
           d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })

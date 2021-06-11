@@ -208,7 +208,7 @@ export default Vue.extend({
           const obj = {};
           obj[this.xVar] = x;
           obj[this.yVar] = y;
-          obj["id"] = `base_${x.replace(/\//g, "_")}-${y.replace(/\./g, "_")}`;
+          obj["id"] = `base_${x.replace(/\//g, "_")}-${y.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`;
           return (obj)
         })
       }).flatMap(d => d)
@@ -316,7 +316,7 @@ export default Vue.extend({
         .selectAll("rect")
         .style("fill-opacity", 0.2);
 
-      this.svg.selectAll(`.${d.replace(/\./g, "_")}`)
+      this.svg.selectAll(`.${d.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
         .style("fill-opacity", 1)
         .style("opacity", 1)
     },
@@ -436,7 +436,7 @@ export default Vue.extend({
         enter => {
           enter
             .append("rect")
-            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\./g, "_")}`)
+            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
             .attr("id", d => d.id)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
@@ -450,7 +450,7 @@ export default Vue.extend({
         },
         update => {
           update.attr("id", d => d.id)
-            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\./g, "_")}`)
+            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
@@ -478,7 +478,7 @@ export default Vue.extend({
 
         yAxisRightSelector.join(enter => {
             const grp = enter.append("text")
-              .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
+              .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`)
               .attr("x", this.width)
               .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
@@ -509,7 +509,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_")}`)
+              .attr("class", d => `y-axis-right ${d.key.replace(/\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
               .attr("x", this.width)
               .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
 
@@ -566,7 +566,7 @@ export default Vue.extend({
       select(this.$refs.yAxisLeft)
         .selectAll("text")
         .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
-        .attr("class", d => `hover-underline pointer ${d.replace(/\./g, "_")}`)
+        .attr("class", d => `hover-underline pointer ${d.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
         .on("click", d => this.route2Lineage(d))
         .on("mouseover", d => this.highlightRow(d))
         .on("mouseout", this.highlightOff);
