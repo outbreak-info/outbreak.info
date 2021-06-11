@@ -492,6 +492,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-11 0:0"),
+      category: "data",
+      title: "Removed A.23.1 + S:E484K as a VUI",
+      description: "Removed A.23.1 with S:E484K as a Variant of Interest, based on the 11 June 2021 Public Health England's <a href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/993198/Variants_of_Concern_VOC_Technical_Briefing.pdf' target='_blank'>Technical Briefing 15</a>.",
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-06-01 0:0"),
       category: "data",
       title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest",

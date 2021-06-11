@@ -1,35 +1,5 @@
 [
   {
-    "mutation_name": "A.23.1 + S:E484K",
-    "identifier":"A_23_1_SE484K",
-    "pangolin_lineage": "A.23.1",
-    "phe_name": "VUI-21FEB-01, VUI-202102/01",
-    "searchTerms": ["A.23.1", "VUI-202102/01", "VUI-21FEB-01"],
-    "dateModified": "2021-06-01",
-    "variantType": "Variant of Interest",
-    "classifications": [
-      {"author": "CDC", "variantType": "none"},
-      {"author": "WHO", "variantType": "none"},
-      {"author": "PHE", "dateModified": "2021-02-05", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf", "variantType": "VOI"},
-      {"author": "ECDC", "url":"https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
-    ],
-    "location_first_identified": "England",
-    "reportQuery": {
-      "pango": "A.23.1",
-      "muts": ["S:E484K"],
-      "selected": "GBR",
-      "loc": ["GBR"]
-    },
-    "additionalMutations": [{
-      "mutation": "S:E484K",
-      "type": "substitution",
-      "gene": "S",
-      "ref_aa": "E",
-      "codon_num": 484,
-      "alt_aa": "K"
-    }]
-  },
-  {
     "mutation_name": "AV.1",
     "identifier": "AV_1",
     "pangolin_lineage": "AV.1",
