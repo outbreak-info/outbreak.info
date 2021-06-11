@@ -542,7 +542,7 @@ export default {
     addVOCs(clear = true) {
       // remove lineages w/ additional mutations
       this.selectedPango = clear ? this.voc :
-      this.voc.concat(this.pango);
+      this.voc.concat(this.selectedPango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
@@ -567,7 +567,7 @@ export default {
     addVOIs(clear = true) {
       // remove lineages w/ additional mutations
       this.selectedPango = clear ? this.voi :
-      this.voi.concat(this.pango);
+      this.voi.concat(this.selectedPango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
