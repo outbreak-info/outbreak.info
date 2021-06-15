@@ -513,7 +513,7 @@ const state = {
       date: new Date("2021-06-15 0:0"),
       category: "variants",
       title: "Updated the CDC classification of B.1.617.2/Delta to VOC",
-      description: 'Updated the <a href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html" target="_blank">CDC</a> classification of B.1.617.2/Delta to a Variant of Concern.',
+      description: 'Updated the <a href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html" target="_blank">CDC</a> classification of B.1.617.2/Delta and AY.1/Delta to a Variant of Concern.',
       route: {
         name: "MutationReport",
         query: {
