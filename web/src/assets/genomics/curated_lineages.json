@@ -380,6 +380,29 @@
     }
   },
   {
+    "mutation_name": "C.37",
+    "identifier": "C_37",
+    "pangolin_lineage": "C.37",
+    "who_name": "Lambda",
+    "gisaid_clade": "GR/452Q.V1",
+    "nextstrain_clade": "20D",
+    "searchTerms": ["20D","GR/452Q.V1","C.37"],
+    "dateModified": "2021-06-15",
+    "variantType": "Variant of Interest",
+    "location_first_identified": "Peru",
+    "classifications": [
+      {"author": "CDC", "variantType": "none"},
+      {"author": "WHO", "dateModified": "2021-06-14", "url": "https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
+      {"author": "ECDC", "variantType": "none"},
+      {"author": "PHE", "variantType": "none"}
+    ],
+    "reportQuery": {
+      "pango": "C.37",
+      "loc": ["PER"],
+      "selected": "PER"
+    }
+  },
+  {
     "mutation_name": "P.1",
     "identifier": "P_1",
     "related": [{"identifier": "P_1_1", "label": "P.1.1"}, {"identifier": "P_1_2", "label": "P.1.2"}, {"identifier": "P_2", "label": "P.2"}, {"identifier": "P_3", "label": "P.3"}],

@@ -524,6 +524,20 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-15 0:1"),
+      category: "variants",
+      title: "Added C.37/Lambda as a VOI",
+      description: 'Added C.37/Lambda as a Variant of Interest, based on the <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/">WHO</a> classification',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "C.37",
+          loc: ["PER"],
+          selected: "PER"
+        }
+      }
+    },
+    {
       date: new Date("2021-03-16 0:0"),
       category: "data",
       title: "Redefined characteristic mutations of a lineage",
