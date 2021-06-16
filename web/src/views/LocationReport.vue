@@ -963,6 +963,8 @@ export default {
     })
   },
   destroyed() {
+    window.removeEventListener("resize", this.setDims);
+    
     if (this.basicSubscription) {
       this.basicSubscription.unsubscribe();
     }
@@ -987,10 +989,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.gisaid {
-    height: 25px;
-}
-
 .font-size-small {
     font-size: small;
 }

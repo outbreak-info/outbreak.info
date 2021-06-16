@@ -166,7 +166,7 @@ import {
 library.add(faSearchPlus, faCompressArrowsAlt);
 
 export default Vue.extend({
-  name: "ReportPrevalence",
+  name: "ReportPrevalenceOverlay",
   props: {
     data: Array,
     seqCounts: Array,
@@ -254,7 +254,7 @@ export default Vue.extend({
       yEpiAxis: null,
       yCountsAxisLeft: null,
       yCountsAxisRight: null,
-      numXTicks: 5,
+      numXTicks: 4,
       numYTicks: 6,
       zoomAllowed: false,
       plottedData: null,
@@ -291,7 +291,6 @@ export default Vue.extend({
 
       this.updateBrush();
     })
-
     // set initial dimensions for the plots.
     this.setDims();
     this.setupPlot();
@@ -343,7 +342,7 @@ export default Vue.extend({
         this.numXTicks = 2;
         this.numYTicks = 4;
       } else {
-        this.numXTicks = 6;
+        this.numXTicks = 4;
         this.numYTicks = 5;
       }
     },
@@ -424,6 +423,7 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     setupPlot() {
+      console.log("setup")
       this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
       this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
       this.svg = select(this.$refs.svg);

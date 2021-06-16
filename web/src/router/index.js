@@ -298,6 +298,19 @@ const routes = [{
         /* webpackChunkName: "situation-reports-comparison" */
         "../views/SituationReportComparison.vue"
       )
+  }, {
+    path: "/compare-locations",
+    name: "LocationComparison",
+    props: route => ({
+      loc: route.query.loc,
+      pango: route.query.pango,
+      muts: route.query.muts
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "locations-comparison" */
+        "../views/CompareLocations.vue"
+      )
   },
   {
     path: "/situation-reports/caveats",

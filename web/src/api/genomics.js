@@ -1557,3 +1557,32 @@ export function getBadMutations(returnSimplified = false) {
     })
   }
 }
+
+export function getLocationData(apiurl, location, queryStr) {
+return getTemporalPrevalence(apiurl, location, queryStr).pipe(
+  map(results => {
+    return({data: results, label: location, route: {loc: "USA", pango: "B.1.1.7"}, query:"query", variantType: "none"})
+  })
+)
+}
+
+// Location comparison function
+export function getLocationComparison(apiurl, locations, pango, muts) {
+  store.state.genomics.locationLoading2 = true;
+  const locArr = typeof(locations) == "string" ? [locations] : locations;
+  const mutations = muts ? typeof(muts) == "string" ? muts : muts.join(",") : null;
+  const queryStr = buildQueryStr(pango, mutations);
+  console.log(queryStr)
+
+  return(forkJoin([... locArr.map(location => getLocationData(apiurl, location, queryStr))])).pipe(
+    map(results => {
+      return(results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting location comparison report data!", "color: pink");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading2 = false)
+  )
+}

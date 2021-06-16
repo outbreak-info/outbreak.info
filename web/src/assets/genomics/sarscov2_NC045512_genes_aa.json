@@ -1,4 +1,4 @@
-GENE2AACOORDS = {
+ {
     'ORF1a': 0,
     'ORF1b': 4399,
     'S': 7094,

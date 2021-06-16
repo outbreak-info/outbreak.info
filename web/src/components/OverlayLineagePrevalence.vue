@@ -96,11 +96,13 @@ export default {
     },
     updateMutations() {
       this.prevalenceSubscription = getAllTemporalPrevalences(this.$genomicsurl, this.locationID, this.selectedMutations).subscribe(results => {
+        console.log(results)
         this.prevalences = results;
       })
     },
     updateData() {
       this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl, this.$apiurl, this.locationID, this.selectedMutations).subscribe(results => {
+        console.log(results)
         this.epi = results.epi;
         this.prevalences = results.mutations;
       })
