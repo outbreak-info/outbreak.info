@@ -1,6 +1,6 @@
 const state = {
 press: [
-  "https://www.nytimes.com/2021/02/24/health/coronavirus-variant-nyc.html",
+  {url: "https://www.nytimes.com/2021/02/24/health/coronavirus-variant-nyc.html", img:"nyt.svg", order: 0},
   "https://www.sciencemag.org/news/2021/02/coronavirus-strain-first-identified-california-may-be-more-infectious-and-cause-more",
   "https://www.pressdemocrat.com/article/news/california-variant-of-the-coronavirus-identified-in-marin-lake-counties/",
   "https://nymag.com/intelligencer/2021/02/new-york-city-coronavirus-variant-b-1-526-what-we-know.html",
@@ -52,7 +52,7 @@ press: [
   "https://www.nextbigfuture.com/2021/03/world-covid-mostly-uk-variant-in-march.html",
   "https://www.derstandard.at/consent/tcf/story/2000125963316/nee-variante-b1-617-infektionstsunami-ueberrollt-indien",
   "https://nyheder.tv2.dk/samfund/2021-04-19-indisk-mutation-fundet-i-danmark-derfor-bliver-vi-ved-med-at-finde-nye-varianter"
-  
+
 ],
 publications: [
     "https://doi.org/10.1101/2020.07.15.20154823",
