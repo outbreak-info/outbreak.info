@@ -319,7 +319,7 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
 }
 
 export function getVOCs(genomicsUrl, locations, totalThreshold) {
-  const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest") && d.reportType == "lineage").map(d => {
+  const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern")).map(d => {
     // const mutations = CURATED.filter(d => d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest").map(d => {
     return ({
       label: d.mutation_name,
