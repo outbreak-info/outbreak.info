@@ -487,9 +487,18 @@ const state = {
       route: {
         name: "SituationReports",
         query: {
-          voc: ["phe"],
-          voi: ["phe"]
+          voc: ["PHE"],
+          voi: ["PHE"]
         }
+      }
+    },
+    {
+      date: new Date("2021-06-18 0:0"),
+      category: "variants",
+      title: "Added C.37 as a VUM by the ECDC",
+      description: 'Based on the weekly <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC update</a>, added C.37 as a Variant Under Monitoring',
+      route: {
+        name: "SituationReports"
       }
     },
     {
