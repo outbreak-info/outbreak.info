@@ -4,9 +4,9 @@ const state = {
   dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   reportloading: false, // separate loader for reports
   outbreak: {
-    authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
+    authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
   },
-  mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
+  mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
   team: [{
       name: "Manar Alkuzweny",
       img: "manar.jpg"
@@ -32,6 +32,10 @@ const state = {
       img: "emily.jpg"
     },
     {
+      name: "Emory Hufbauer",
+      img: "emory.jpg"
+    },
+    {
       name: "Laura Hughes",
       img: "laura.jpg",
       twitter: "https://twitter.com/flaneuseks",
@@ -47,10 +51,6 @@ const state = {
       img: "julia.jpg"
     },
     {
-      name: "Ginger Tsueng",
-      img: "ginger.jpg"
-    },
-    {
       name: "Andrew Su",
       img: "andrew.jpg",
       email: "asu@scripps.edu",
@@ -58,11 +58,19 @@ const state = {
       linkedin: "http://www.linkedin.com/in/andrewsu"
     },
     {
+      name: "Ginger Tsueng",
+      img: "ginger.jpg"
+    },
+    {
       name: "Chunlei Wu",
       img: "chunlei.jpg",
       email: "cwu@scripps.edu",
       twitter: "https://twitter.com/chunleiwu",
       linkedin: "https://www.linkedin.com/in/chunleiwu"
+    },
+    {
+      name: "Mark Zeller",
+      img: "mark.jpg"
     },
     {
       name: "Jerry Zhou",
