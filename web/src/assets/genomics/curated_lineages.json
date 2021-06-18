@@ -107,7 +107,7 @@
     "classifications": [
       {"author": "WHO", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOC"},
       {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
-      {"author": "PHE", "dateModified": "2021-02-05", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf", "variantType": "VOC"},
+      {"author": "PHE", "dateModified": "2021-06-18", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/994839/Variants_of_Concern_VOC_Technical_Briefing_16.pdf", "variantType": "VUM"},
       {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOC"}
     ],
     "location_first_identified": "United Kingdom",
@@ -394,7 +394,7 @@
       {"author": "CDC", "variantType": "none"},
       {"author": "WHO", "dateModified": "2021-06-14", "url": "https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOI"},
       {"author": "ECDC", "variantType": "none"},
-      {"author": "PHE", "variantType": "none"}
+      {"author": "PHE", "variantType": "VUM", "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/994839/Variants_of_Concern_VOC_Technical_Briefing_16.pdf", "dateModified": "2021-06-18"}
     ],
     "reportQuery": {
       "pango": "C.37",

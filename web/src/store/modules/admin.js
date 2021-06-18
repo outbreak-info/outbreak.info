@@ -480,6 +480,19 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-18 0:0"),
+      category: "variants",
+      title: "Updated PHE classifications: AY.2 (VOC), B.1.1.7 with S:E484K and C.37 (VUMs)",
+      description: 'Based on the weekly <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/994839/Variants_of_Concern_VOC_Technical_Briefing_16.pdf" target="_blank">PHE report</a>, added new classifications: AY.2 as a Variant of Concern as a sublineage to the B.1.617.2/Delta lineage and C.37 as a Variant Under Monitoring. B.1.1.7 with S:E484K was downgraded to a Variant Under Monitoring, since no new cases have been observed in England since 1 March 2021.',
+      route: {
+        name: "SituationReports",
+        query: {
+          voc: ["phe"],
+          voi: ["phe"]
+        }
+      }
+    },
+    {
       date: new Date("2021-06-07 0:0"),
       category: "variants",
       title: "Added P.1.1 and P.1.2 as Variants of Concern",
