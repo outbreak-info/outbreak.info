@@ -488,6 +488,19 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-20 0:0"),
+      category: "variants",
+      title: "Reclassified VOI B.1.427 and B.1.429 as B.1.427/429",
+      description: 'Based on the PANGO reclassification of lineages B.1.427 and B.1.429 into a combined lineage, redefining Variant of Interest as B.1.427/429.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.427/429",
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
       date: new Date("2021-06-18 0:0"),
       category: "variants",
       title: "Updated PHE classifications: AY.2 (VOC), B.1.1.7 with S:E484K and C.37 (VUMs)",
