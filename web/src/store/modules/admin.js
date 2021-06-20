@@ -490,8 +490,8 @@ const state = {
     {
       date: new Date("2021-06-20 0:0"),
       category: "variants",
-      title: "Reclassified VOI B.1.427 and B.1.429 as B.1.427/429",
-      description: 'Based on the PANGO reclassification of lineages B.1.427 and B.1.429 into a combined lineage, redefining Variant of Interest as B.1.427/429.',
+      title: "Added B.1.427/429 as a VOI",
+      description: 'Based on the PANGO classification of lineages into B.1.427/429 (pangolin <i>v3.1.1</i>) in addition to B.1.427 and B.1.429, added B.1.427/429 as Variant of Interest.',
       route: {
         name: "MutationReport",
         query: {
@@ -503,8 +503,8 @@ const state = {
     {
       date: new Date("2021-06-20 0:0"),
       category: "variants",
-      title: "Removed B.1.526.1 and B.1.526.2 as VOIs due to PANGO reclassification",
-      description: 'Based on the PANGO reclassification of lineages B.1.526.1 and B.1.526.2 as Variant of Interest B.1.526, removing B.1.526.1 and B.1.526.2 as VOIs.',
+      title: "Removed B.1.526.1 and B.1.526.2 as VOIs due to PANGO reassignment into B.1.526",
+      description: 'Based on the PANGO reassignment of lineages B.1.526.1 and B.1.526.2 as Variant of Interest B.1.526, removing B.1.526.1 and B.1.526.2 as VOIs.',
       route: {
         name: "MutationReport",
         query: {
