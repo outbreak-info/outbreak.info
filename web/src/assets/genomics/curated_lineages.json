@@ -203,7 +203,6 @@
     "gisaid_clade": "GH",
     "who_name": "Iota",
     "identifier": "B_1_526",
-    "related": [{"identifier": "B_1_526_1", "label": "B.1.526.1"}, {"identifier": "B_1_526_2", "label": "B.1.526.2"}],
     "searchTerms": ["B.1.526", "B1526", "20C/S:484K", "GH"],
     "variantType": "Variant of Interest",
     "dateModified": "2021-02-26",
@@ -216,48 +215,6 @@
     "location_first_identified": "New York",
     "reportQuery": {
       "pango": "B.1.526",
-      "loc": ["USA", "USA_US-NY"],
-      "selected": "USA_US-NY"
-    }
-  },
-  {
-    "mutation_name": "B.1.526.1",
-    "identifier": "B_1_526_1",
-    "related": [{"identifier": "B_1_526", "label": "B.1.526"}, {"identifier": "B_1_526_2", "label": "B.1.526.2"}],
-    "pangolin_lineage": "B.1.526.1",
-    "searchTerms": ["B.1.526.1", "B15261"],
-    "variantType": "Variant of Interest",
-    "dateModified": "2021-04-01",
-    "classifications": [
-      {"author": "PHE", "variantType": "none"},
-      {"author": "WHO", "variantType": "none"},
-      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
-      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
-    ],
-    "location_first_identified": "New York",
-    "reportQuery": {
-      "pango": "B.1.526.1",
-      "loc": ["USA", "USA_US-NY"],
-      "selected": "USA_US-NY"
-    }
-  },
-  {
-    "mutation_name": "B.1.526.2",
-    "pangolin_lineage": "B.1.526.2",
-    "identifier": "B_1_526_2",
-    "related": [{"identifier": "B_1_526", "label": "B.1.526"}, {"identifier": "B_1_526_1", "label": "B.1.526.1"}],
-    "searchTerms": ["B.1.526.2", "B15262"],
-    "variantType": "Variant of Interest",
-    "dateModified": "2021-04-01",
-    "classifications": [
-      {"author": "CDC", "variantType": "none"},
-      {"author": "WHO", "variantType": "none"},
-      {"author": "PHE", "variantType": "none"},
-      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
-    ],
-    "location_first_identified": "New York",
-    "reportQuery": {
-      "pango": "B.1.526.2",
       "loc": ["USA", "USA_US-NY"],
       "selected": "USA_US-NY"
     }

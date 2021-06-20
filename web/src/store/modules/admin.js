@@ -501,6 +501,19 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-20 0:0"),
+      category: "variants",
+      title: "Removed B.1.526.1 and B.1.526.2 as VOIs due to PANGO reclassification",
+      description: 'Based on the PANGO reclassification of lineages B.1.526.1 and B.1.526.2 as Variant of Interest B.1.526, removing B.1.526.1 and B.1.526.2 as VOIs.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.526",
+          selected: "USA_US-NY"
+        }
+      }
+    },
+    {
       date: new Date("2021-06-18 0:0"),
       category: "variants",
       title: "Updated PHE classifications: AY.2 (VOC), B.1.1.7 with S:E484K and C.37 (VUMs)",
