@@ -536,6 +536,19 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-25 0:0"),
+      category: "variants",
+      title: "Added C.37 as a VOI by PHE",
+      description: 'Based on the weekly <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/996740/Variants_of_Concern_VOC_Technical_Briefing_17.pdf" target="_blank">PHE update</a>, upgraded C.37 from a Variant Under Monitoring to a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "C.37",
+          selected: "PER"
+        }
+      }
+    },
+    {
       date: new Date("2021-06-07 0:0"),
       category: "variants",
       title: "Added P.1.1 and P.1.2 as Variants of Concern",
