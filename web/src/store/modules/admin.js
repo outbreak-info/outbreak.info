@@ -536,6 +536,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-29 0:0"),
+      category: "variants",
+      title: "B.1.427/429 downgraded by CDC to VOIs",
+      description: 'Based on the <a href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fcoronavirus%2F2019-ncov%2Fcases-updates%2Fvariant-surveillance%2Fvariant-info.html" target="_blank">CDC update</a>, downgraded B.1.427/429/Epsilon from Variants of Concern to Variants of Interest.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-06-25 0:0"),
       category: "variants",
       title: "Added C.37 as a VOI by PHE",
