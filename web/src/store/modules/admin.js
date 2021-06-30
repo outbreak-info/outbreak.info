@@ -488,6 +488,19 @@ const state = {
       }
     },
     {
+      date: new Date("2021-06-30 0:0"),
+      category: "variants",
+      title: "Added B.1.351.1, B.1.351.2, and B.1.351.3 as a VOCs",
+      description: 'Added B.1.351.1, B.1.351.2, and B.1.351.3, sublineages of the Variant of Concern B.1.351, as Variants of Concern.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.351.2",
+          selected: "Mayotte"
+        }
+      }
+    },
+    {
       date: new Date("2021-06-20 0:0"),
       category: "variants",
       title: "Added B.1.427/429 as a VOI",
