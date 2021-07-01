@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :class="{'footer': isFooter}">
   <!-- Begin Mailchimp Signup Form -->
   <link href="//cdn-images.mailchimp.com/embedcode/slim-10_7.css" rel="stylesheet" type="text/css">
   <div id="mc_embed_signup">
