@@ -56,7 +56,7 @@
             <a href="https://github.com/outbreak-info" target="_blank">Code</a>
           </button>
 
-          <div class="mx-3">
+          <div class="mx-3" id="subscribe">
             <EmailSubscription />
           </div>
 

@@ -428,6 +428,16 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-01 0:0"),
+      category: "feature",
+      title: "Added email subscription",
+      description: "Added the option to subscribe to outbreak.info email updates.",
+      route: {
+        name: "About",
+        hash: "#subscribe"
+      }
+    },
+    {
       date: new Date("2020-07-06 0:0"),
       category: "feature",
       title: "Overlaid 7-day rolling averages for case counts",
