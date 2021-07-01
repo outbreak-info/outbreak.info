@@ -250,6 +250,7 @@
           <li class="nav-item px-0 py-1">
             <a class="nav-link p-0" href="https://github.com/outbreak-info/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
           </li>
+          <EmailSubscription :isFooter="true"/>
         </ul>
       </div>
     </div>
@@ -288,11 +289,13 @@
 
 <script>
 import Logos from "@/components/Logos.vue";
+import EmailSubscription from "@/components/EmailSubscription.vue";
 
 export default {
   name: "App",
   components: {
-    Logos
+    Logos,
+    EmailSubscription
   },
   data() {
     return {

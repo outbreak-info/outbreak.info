@@ -14,15 +14,23 @@
           <li class="large">Integrate publications, preprints, clinical trials, datasets, protocols, and other resources into one searchable library of COVID-19 research</li>
         </ul>
         <div class="text-left focustext ml-4">
-          <router-link :to="{name: 'Epidemiology'}"><h4 class="mb-0">COVID-19 Cases &amp; Deaths</h4></router-link>
-          <p>Outbreak.info serves as a data integration tool to make COVID-19 data more usable. The platform tracks case and death trends around the world and across states/counties with interactive maps, location comparison tools, data tables, and more.
+          <router-link :to="{name: 'Epidemiology'}">
+            <h4 class="mb-0">COVID-19 Cases &amp; Deaths</h4>
+          </router-link>
+          <p>Outbreak.info serves as a data integration tool to make COVID-19 data more usable. The platform tracks case and death trends around the world and across states/counties with interactive maps, location comparison tools, data tables, and
+            more.
           </p>
 
-          <router-link :to="{name: 'SituationReports'}"><h4 class="mb-0">SARS-CoV-2 Variants</h4></router-link>
-          <p>Outbreak.info collects and visualizes genomic data from the <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>. With over {{ gisaidCount }} million SARS-CoV-2 sequences uploaded to GISAID, Outbreak.info makes this data more accessible, providing daily surveillance reports about lineages and mutations, countries,
+          <router-link :to="{name: 'SituationReports'}">
+            <h4 class="mb-0">SARS-CoV-2 Variants</h4>
+          </router-link>
+          <p>Outbreak.info collects and visualizes genomic data from the <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>. With over {{ gisaidCount }} million SARS-CoV-2 sequences uploaded to GISAID, Outbreak.info makes this
+            data more accessible, providing daily surveillance reports about lineages and mutations, countries,
             states, and counties.</p>
 
-          <router-link :to="{name: 'Resource Summary'}"><h4 class="mb-0">Research Library</h4></router-link>
+          <router-link :to="{name: 'Resource Summary'}">
+            <h4 class="mb-0">Research Library</h4>
+          </router-link>
           <p>Outbreak.info aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. The platform standardizes the metadata describing these resources, providing a web interface to easily search
             over {{ resourceCount }} resources.</p>
         </div>
@@ -35,17 +43,24 @@
             </span>.</span>
         </p>
 
-        <button class="btn btn-main-outline mx-3">
-          <router-link :to="{ name: 'Sources' }" class="text-left">data sources</router-link>
-        </button>
+        <div class="d-flex flex-wrap align-items-center justify-content-center">
+          <button class="btn btn-main-outline mx-3">
+            <router-link :to="{ name: 'Sources' }" class="text-left">data sources</router-link>
+          </button>
 
-        <button class="btn btn-main-outline mx-3">
-          <router-link :to="{ name: 'Latest' }" class="text-left">latest changes</router-link>
-        </button>
+          <button class="btn btn-main-outline mx-3">
+            <router-link :to="{ name: 'Latest' }" class="text-left">latest changes</router-link>
+          </button>
 
-        <button class="btn btn-main-outline mx-3">
-          <a href="https://github.com/outbreak-info" target="_blank">Code</a>
-        </button>
+          <button class="btn btn-main-outline mx-3">
+            <a href="https://github.com/outbreak-info" target="_blank">Code</a>
+          </button>
+
+          <div class="mx-3">
+            <EmailSubscription />
+          </div>
+
+        </div>
       </div>
     </div>
 
@@ -173,8 +188,14 @@ import {
 
 library.add(faAt, faTwitter, faLinkedinIn);
 
-import { getResourceTotal } from "@/api/resources.js";
-import { getSequenceCount } from "@/api/genomics.js";
+import {
+  getResourceTotal
+} from "@/api/resources.js";
+import {
+  getSequenceCount
+} from "@/api/genomics.js";
+
+import EmailSubscription from "@/components/EmailSubscription.vue";
 
 
 export default Vue.extend({
@@ -183,14 +204,15 @@ export default Vue.extend({
     ...mapState("admin", ["funding", "team"])
   },
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    EmailSubscription
   },
   data() {
-    return({
-    resourceCount: null,
-    gisaidCount: null,
-    resourceSubscription: null,
-    genomicsSubscription: null
+    return ({
+      resourceCount: null,
+      gisaidCount: null,
+      resourceSubscription: null,
+      genomicsSubscription: null
     })
   },
   mounted() {
@@ -207,10 +229,10 @@ export default Vue.extend({
     })
   },
   destroyed() {
-    if(this.resourceSubscription) {
+    if (this.resourceSubscription) {
       this.resourceSubscription.unsubscribe();
     }
-    if(this.genomicsSubscription) {
+    if (this.genomicsSubscription) {
       this.genomicsSubscription.unsubscribe();
     }
   }
@@ -234,6 +256,6 @@ export default Vue.extend({
 }
 
 .large {
-  font-size: large;
+    font-size: large;
 }
 </style>
