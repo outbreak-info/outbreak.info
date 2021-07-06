@@ -550,6 +550,28 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-06 0:0"),
+      category: "variants",
+      title: "Updated WHO classifications: downgraded B.1.427, B.1.429, P.2, & P.3",
+      description: 'Based on the <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/" target="_blank">WHO report</a>, reclassified Variants of Interest as Variants Under Monitoring: B.1.427/Epsilon, B.1.429/Epsilon, P.2/Zeta, P.3/Theta, and added AV.1, B.1.1.318, and C.36.3 as WHO VUMs. Also updated P.1.1 and P.1.2 classifications to reflect its status as a sublineage of P.1.',
+      route: {
+        name: "SituationReports",
+        query: {
+          voc: ["WHO"],
+          voi: ["WHO"]
+        }
+      }
+    },
+    {
+      date: new Date("2021-07-06 0:0"),
+      category: "variants",
+      title: "Reclassified B.1.427/429 as B.1.427 or B.1.429",
+      description: 'Removed B.1.427/429 as a VOI due to PANGO classification update as either B.1.427 or B.1.429.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-06-18 0:0"),
       category: "variants",
       title: "Added C.37 as a VUM by the ECDC",
