@@ -243,30 +243,6 @@
     }
   },
   {
-    "mutation_name": "B.1.427/429",
-    "identifier": "B_1_427_429",
-    "pangolin_lineage": "B.1.427/429",
-    "gisaid_clade": "GH/452R.V1",
-    "nextstrain_clade": "20C/S.452R",
-    "who_name": "Epsilon",
-    "mutation_synonyms": ["CA VUI1", "CAL.20C", "B.1.427", "B.1.429"],
-    "searchTerms": ["20C/S.452R", "GH/452R.V1", "B.1.427", "B.1.429", "CAVUI1", "CA VUI1", "b1427", "b1429", "cal.20C", "cal20c"],
-    "variantType": "Variant of Interest",
-    "dateModified": "2021-06-20",
-    "classifications": [
-      {"author": "PHE", "dateModified": "2021-03-10", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf", "variantType": "VUM"},
-      {"author": "WHO", "dateModified": "2021-07-06", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VUM"},
-      {"author": "CDC", "dateModified": "2021-06-29", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
-      {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
-    ],
-    "location_first_identified": "California",
-    "reportQuery": {
-      "pango": "B.1.427/429",
-      "loc": ["USA", "USA_US-CA"],
-      "selected": "USA_US-CA"
-    }
-  },
-  {
     "mutation_name": "B.1.427",
     "identifier": "B_1_427",
     "related": [{"identifier": "B_1_429", "label": "B.1.429"}],
