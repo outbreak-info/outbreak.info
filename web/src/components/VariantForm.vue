@@ -27,7 +27,7 @@
 
         <!-- PANGO Lineage -->
         <div id="pango" class="ml-5" :class="[minimalistic ? 'mb-2' : 'mb-4']" v-if="selectedType && (selectedType.id == 'pango' || selectedType.id == 'variant')">
-          <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
+          <small>Based on <a href="https://cov-lineages.org/lineage_list.html" target="_blank">PANGO lineages</a></small>
 
           <div class="flew-row d-flex w-350px">
             <TypeaheadSelect :queryFunction="queryPangolin" :selectedValue="selectedLineage" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />

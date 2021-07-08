@@ -111,7 +111,7 @@
           <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center">
               <div class="mr-2 circle">2</div>
-              <span class="mr-1">By</span><a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>
+              <span class="mr-1">By</span><a href='https://cov-lineages.org/lineage_list.html' target='_blank'>PANGO lineage</a>
             </h6>
             <div class="line-height-1" style="width: 200px">
               <div class="fa-sm mt-2 ml-2">&gt;&gt; Add a specific lineage</div>

@@ -99,7 +99,7 @@ impact on available diagnostics, vaccines, therapeutics or public health and soc
               Within a lineage, there may be additional <a href="#mutation">mutations</a> which revert some changes or accumulate new ones
             </li>
             <li>
-              We primarily rely on PANGO lineages (<a href="https://cov-lineages.org/pangolin.html" target="_blank">Phylogenetic Assignment of Named Global Outbreak</a>)
+              We primarily rely on PANGO lineages (<a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Phylogenetic Assignment of Named Global Outbreak</a>)
             </li>
           </ul>
         </li>

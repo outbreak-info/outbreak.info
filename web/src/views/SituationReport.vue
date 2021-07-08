@@ -450,7 +450,7 @@ export default {
         `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> ${this.reportType} in the world, how it is changing over time, and how its prevalence varies across different locations.`
     },
     pangoLink() {
-      return this.lineageName ? `https://cov-lineages.org/lineages/lineage_${this.lineageName}.html` : null
+      return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
     },
     choroplethLocations() {
       return (this.selectedLocations.filter(d => d.admin_level < 2))
