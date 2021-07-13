@@ -87,7 +87,7 @@
         </router-link>
         <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-mutations-modal">
           <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
-          add mutations
+          add variants
         </button>
         <ShareReport title="title" url="url" />
       </div>
@@ -253,7 +253,7 @@
         <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
           <div class="d-flex flex-wrap align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -265,7 +265,7 @@
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
           <div class="d-flex flex-wrap align-items-center justify-content-center mb-3">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -278,7 +278,7 @@
           <div class="d-flex flex-wrap justify-content-between align-items-center">
             <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
             <div class="d-flex align-items-center">
-              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
                 <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
               </button>
               <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
