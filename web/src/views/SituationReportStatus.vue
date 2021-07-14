@@ -304,7 +304,6 @@ export default Vue.extend({
     },
     updateLocationMd() {
       this.longitudinalSubscription = getStatusLocation(this.$genomicsurl, this.loc).subscribe(results => {
-        console.log(results)
         this.locTotal = results.total;
         this.selectedLocation = results.location;
       })
@@ -323,7 +322,6 @@ export default Vue.extend({
     },
     updateMap() {
       this.mapSubscription = getSeqMap(this.$genomicsurl, this.$apiurl, this.loc).subscribe(results => {
-        console.log(results)
         this.seqMap = results;
       })
     },
