@@ -5,6 +5,7 @@ import admin from "./modules/admin";
 import genomics from "./modules/genomics";
 import geo from "./modules/geo";
 import colors from "./modules/colors";
+import press from "./modules/press";
 
 Vue.use(Vuex);
 
@@ -17,6 +18,7 @@ export default new Vuex.Store({
     admin,
     geo,
     genomics,
-    colors
+    colors,
+    press
   }
 });

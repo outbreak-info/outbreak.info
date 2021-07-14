@@ -95,6 +95,7 @@
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/latest" :class="{ active: $route.name == 'Latest' }">Latest changes</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Citation' }" :to="{name: 'Citation'}">How to cite</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Videos' }" :to="{name: 'Videos'}">Video demos</router-link>
+              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Press' }" :to="{name: 'Press'}">In the media</router-link>
             </div>
           </li>
 
@@ -231,6 +232,10 @@
 
           <li class="nav-item px-0 py-1">
             <router-link class="nav-link p-0" :to="{name: 'Videos'}">Video demos</router-link>
+          </li>
+
+          <li class="nav-item px-0 py-1">
+            <router-link class="nav-link p-0" :to="{name: 'Press'}">In the media</router-link>
           </li>
         </ul>
       </div>
