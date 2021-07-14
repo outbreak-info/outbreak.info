@@ -17,11 +17,21 @@ import {
   timeFormat,
   format,
   timeDay,
+  timeMonday,
   nest,
   mean,
+  min,
+  max,
+  median,
+  quantile,
   sum,
+  range,
   scaleOrdinal
 } from "d3";
+
+import {
+  bin
+} from "d3-array";
 
 import {
   getEpiTraces
@@ -37,6 +47,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 const parseDate = timeParse("%Y-%m-%d");
 const formatDate = timeFormat("%e %B %Y");
+const formatDateTime = timeFormat("%e %B %Y %I:%M %p");
 const formatDateShort = timeFormat("%e %b %Y");
 const formatPercent = format(".0%");
 
@@ -831,25 +842,28 @@ export function getLineageResources(apiurl, queryString, size, page, sort = "-da
 export function findLocationMetadata(apiurl, location) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const url = `${apiurl}location-lookup?id=${location}&timestamp=${timestamp}`
-
-  return from(
-    axios.get(url, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-  ).pipe(
-    pluck("data", "results"),
-    map(results => {
-      results["id"] = location;
-      return (results)
-    }),
-    catchError(e => {
-      console.log("%c Error in getting location metadata!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
+  if (location) {
+    return from(
+      axios.get(url, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    ).pipe(
+      pluck("data", "results"),
+      map(results => {
+        results["id"] = location;
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting location metadata!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      })
+    )
+  } else {
+    return ( of (null))
+  }
 }
 
 export function findAllLocationMetadata(apiurl, locations, selected) {
@@ -959,7 +973,7 @@ export function getDateUpdated(apiurl) {
       }
 
       return ({
-        dateUpdated: formatDate(dateUpdated),
+        dateUpdated: formatDateTime(dateUpdated),
         lastUpdated: lastUpdated
       })
     }),
@@ -1556,4 +1570,167 @@ export function getBadMutations(returnSimplified = false) {
       moi: moi.map(d => d.mutation_name)
     })
   }
+}
+
+// Lag functions
+export function getStatusBasics(apiurl, location) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl), findLocationMetadata(apiurl, location)]).pipe(
+    map(([total, dateUpdated, location]) => {
+      return ({
+        dateUpdated: dateUpdated.dateUpdated,
+        lastUpdated: dateUpdated.lastUpdated,
+        total: total
+      })
+
+    }),
+    catchError(e => {
+      console.log("%c Error in getting status overview data!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function getStatusLocation(apiurl, location) {
+  store.state.admin.reportloading = true;
+
+  return forkJoin([getSequenceCount(apiurl, location, true), findLocationMetadata(apiurl, location)]).pipe(
+    map(([total, location]) => {
+      return ({
+        total: total,
+        location: location
+      })
+
+    }),
+    catchError(e => {
+      console.log("%c Error in getting status location data!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function getSeqGaps(apiurl, location) {
+  store.state.genomics.locationLoading1 = true;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  let url = `${apiurl}collection-submission?timestamp=${timestamp}`;
+
+  if (location) {
+    url += `&location_id=${location}`;
+  }
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "results"),
+    map(results => {
+      results.forEach(d => {
+        d["dateCollected"] = parseDate(d.date_collected);
+        d["dateSubmitted"] = parseDate(d.date_submitted);
+        const gap = timeDay.count(d.dateCollected, d.dateSubmitted);
+        // duplicate the gap by the number of sequences with the same collection / submission date
+        d["gap"] = Array(d.total_count).fill(gap);
+      });
+
+      const firstDate = min(results, d => d.dateSubmitted);
+
+      results.forEach(d => {
+        // number of weeks between the submitted date and the first date.
+        // Monday-based week.
+        d["week"] = timeMonday.count(firstDate, d.dateSubmitted);
+      })
+
+      // calculations
+      const gaps = results.flatMap(d => d.gap);
+      const medianGap = median(gaps);
+      const weeklyThresholds = range(0, max(gaps) + 7, 7);
+      const binFunc = bin()
+        .thresholds(weeklyThresholds)
+      const binned = binFunc(gaps);
+
+      // weekly summary of median submission date
+      const weeklyMedian = nest()
+        .key(d => d.week)
+        .rollup(values => {
+          return ({
+            // values: values,
+            week: values[0].week,
+            total_count: values.flatMap(d => d.gap).length,
+            minDate: min(values, d => d.dateSubmitted),
+            maxDate: max(values, d => d.dateSubmitted),
+            median: median(values.flatMap(d => d.gap)),
+            quartile25: quantile(values.flatMap(d => d.gap), 0.25),
+            quartile75: quantile(values.flatMap(d => d.gap), 0.75)
+          })
+        })
+        .entries(results)
+        .map(d => d.value);
+
+      weeklyMedian.sort((a, b) => a.week - b.week);
+
+      return ({
+        data: results,
+        gapHist: binned,
+        weeklyMedian: weeklyMedian,
+        median: medianGap
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting sequencing gap data!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading1 = false)
+  )
+}
+
+
+export function checkGisaidID(apiurl, id) {
+  store.state.genomics.locationLoading2 = true;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+  const url = `${apiurl}gisaid-id-lookup?id=${id}&timestamp=${timestamp}`;
+
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data", "exists"),
+    map(results => {
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error looking up GISAID ID!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading2 = false)
+  )
+}
+
+export function getSeqMap(apiurl, epiurl, location) {
+  store.state.genomics.locationLoading3 = true;
+  const timestamp = Math.round(new Date().getTime() / 8.64e7);
+
+  return (forkJoin([getSequenceCount(apiurl, location, true, true)])).pipe(
+    map(([results]) => {
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error grabbing sequence counts map!", "color: turquoise");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.genomics.locationLoading3 = false)
+  )
 }
