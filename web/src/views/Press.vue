@@ -3,12 +3,12 @@
   <h1 class="d-block">outbreak.info in the media</h1>
   <div id="press" class="text-left w-75">
     <div v-for="(article, aIdx) in press" :key="aIdx" class="my-4">
-      <a :href="article.url" target="_blank" class="font-size-2 line-height-1">
+      <a :href="article.url" target="_blank" class="font-size-2 line-height-1 no-underline">
         <div class="d-flex align-items-center">
           <img :src="require(`@/assets/press/${article.img}`)" class="article-logo mr-3" />
           <div class="d-flex flex-column">
-            {{article.title}}
-            <small class="text-muted no-underline">{{article.date}}</small>
+            <span class="hover-underline">{{article.title}}</span>
+            <small class="text-muted">{{article.date}}</small>
           </div>
 
         </div>
@@ -50,7 +50,8 @@ export default Vue.extend({
     height: 100%;
 }
 
-.no-underline:hover {
-  text-decoration: none !important;
+.hover-underline:hover {
+  text-decoration: underline !important;
 }
+
 </style>
