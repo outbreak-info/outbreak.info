@@ -61,11 +61,11 @@
 
       <!-- MINI-NAV -->
       <div class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center">
-        <a href="#geographic">
+        <!-- <a href="#geographic">
           <button class="btn btn-grey mx-3 py-2">
             <small>Geographic distribution</small>
           </button>
-        </a>
+        </a> -->
 
         <a href="#longitudinal">
           <button class="btn btn-grey mx-3 py-2">
@@ -86,12 +86,12 @@
         </a>
       </div>
 
-      <section id="geographic" class="border-bottom py-4">
+      <!-- <section id="geographic" class="border-bottom py-4">
         <h4>Submitted sequences by country</h4>
         <div class="bg-main text-light p-5">
           MAP MAP MAP
         </div>
-      </section>
+      </section> -->
 
       <section id="longitudinal" class="border-bottom py-4">
         <div class="d-flex justify-content-between align-items-center w-100">
