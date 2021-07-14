@@ -222,7 +222,10 @@ export default Vue.extend({
     var: String
   },
   computed: {
-    ...mapState("admin", ["reportloading"]),
+    ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3"]),
+    reportloading() {
+      return (this.locationLoading1 || this.locationLoading2 || this.locationLoading3)
+    },
     locationTitle() {
       if (this.selectedLocation) {
         return `in ${this.selectedLocation.label}`
