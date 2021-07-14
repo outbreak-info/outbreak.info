@@ -79,7 +79,7 @@
 
       <!-- EPI TRACE -->
       <div :class="{'hidden' : !epi.length}">
-        <h5 class="">Daily COVID-19 cases in {{ locationName }}</h5>
+        <h5 class="">Daily COVID-19 cases in <router-link :to="{name:'Epidemiology', query:{location: locationID}}">{{ locationName }}</router-link></h5>
         <div class="d-flex">
           <svg width="15" height="15" class="mr-2">
             <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
