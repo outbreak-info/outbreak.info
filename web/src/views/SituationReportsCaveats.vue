@@ -1,13 +1,14 @@
 <template>
 <div class="container text-left my-5">
   <h1 class="m-0">
-    How to interpret SARS-CoV-2 Mutation Situation Reports
+    How to interpret SARS-CoV-2 Variant Reports
   </h1>
   <section id="caveat-overview" class="my-4 w-75">
     <h3>Caveats &amp; Limitations</h3>
     <p class="mt-3">
       To describe the prevalence of sets of mutations in our <router-link :to="{name: 'SituationReports'}">Mutation Situation Reports</router-link>, we rely on shared virus sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID
-        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences and sample metadata deposited in GISAID.
+        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences
+      and sample metadata deposited in GISAID.
     </p>
 
     <p>
@@ -30,12 +31,28 @@
     <div class="border-bottom py-2">
       <h5 class="m-0 mb-1">Greater sequencing of older samples</h5>
       <p>
-        For all sequencing data, there is a lag between when the sample was acquired from the patient, when the sample was processed and sequenced, and when the data is released to the public. This gap means that the most recent data often contains very few samples, severely limiting its reliability.
+        For all sequencing data, there is a lag between when the sample was acquired from the patient, when the sample was processed and sequenced, and when the data is released to the public. This gap means that the most recent data often contains
+        very few samples, severely limiting its reliability.
       </p>
       <!-- <p>
         View the lag between sample collection date and sequence submission date:
       </p>
       <div class="text-highlight">&lt; changable plot showing the distribution of sequencing gaps by global/country/state &gt;</div> -->
+    </div>
+
+    <div class="border-bottom py-2">
+      <h5 class="m-0 mb-1">Selective sampling</h5>
+      <p>The samples submitted for sequencing are often not a random sample of all cases. These samples are often from:</p>
+      <ul>
+        <li>An investigation of a single cluster in an outbreak</li>
+        <li>
+          Unique cases, such as patients with severe disease or breakthrough cases of patients who had been vaccinated
+        </li>
+        <li>Imported cases from travel</li>
+        <li>S-gene target failure during PCR amplification (see below)</li>
+      </ul>
+      <p>Selective sampling skews the estimated prevalence of a lineage in a location. For instance, a higher proportion of breakthrough cases sequenced will lead to an overestimation of the prevalence of Variants of Concern (VOC) or Interest (VOI),
+        which have a greater likelihood of showing immune escape in vaccinated people.</p>
     </div>
 
     <div class="border-bottom py-2">
@@ -46,7 +63,7 @@
         identified by S-gene target failures (SGTF)
         in community-based diagnostic PCR testing.
         SGTF indicates a deletion mutation that is one of several mutations able to distinguish the B.1.1.7 from other SARS-CoV-2 strains.
-        Estimates of true prevalence in the U.S. are discussed in the <a href="https://blog.helix.com/b117-variant-updated-data/ target='_blank'">Helix Research blog</a>.
+        Estimates of true prevalence in the U.S. are discussed in the <a href="https://blog.helix.com/b117-variant-updated-data/" target="_blank">Helix Research blog</a>.
       </p>
     </div>
 

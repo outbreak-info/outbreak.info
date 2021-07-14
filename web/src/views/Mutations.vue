@@ -50,7 +50,7 @@
 
 <div class="my-3">
     <h5 class="text-left m-0">Phylogenetic lineages</h5>
-    <p class="text-left text-helper text-muted m-0">Based on <a href="https://cov-lineages.org/pangolin.html" target="_blank" rel="noreferrer">PANGO assignments</a></p>
+    <p class="text-left text-helper text-muted m-0">Based on <a href="https://cov-lineages.org/lineage_list.html" target="_blank" rel="noreferrer">PANGO assignments</a></p>
     <div class="row  d-flex align-items-center">
       <div class="input-group col-sm-6 col-md-4">
         <div class="input-group-prepend">

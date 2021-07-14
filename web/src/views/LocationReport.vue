@@ -49,9 +49,12 @@
             </button>
           </div>
           <div class="modal-body">
-            <div class="mx-4 border-bottom pb-3" v-if="customMutations.length">
+            <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
+            <VariantForm :minimalistic="false" :selectedLineage.sync="newPango" :selectedMutations.sync="newMuts" :submitted="submitCount" />
+
+            <div class="mx-4 border-top pt-3" v-if="customMutations.length">
               <h6 class="font-weight-bold text-muted">
-                Current additions:
+                Already selected:
               </h6>
               <div class="d-flex flex-wrap">
                 <button role="button" class="btn chip bg-main__darker text-light d-flex align-items-center py-1 px-2 line-height-1" v-for="(mutation, mIdx) in customMutations" :key="mIdx" @click="deleteMutation(mIdx)">
@@ -60,12 +63,12 @@
                 </button>
               </div>
             </div>
-
-            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" />
           </div>
 
           <div class="modal-footer border-secondary">
-            <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Create report</button>
+            <button type="button" class="btn btn-outline-secondary" @click="clearMutations">Clear selections</button>
+            <button type="button" :disabled="!formValid" class="btn btn-main" @click="addMutations">Add another lineage/mutation</button>
+            <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Go</button>
 
           </div>
         </div>
@@ -84,7 +87,7 @@
         </router-link>
         <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-mutations-modal">
           <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
-          add mutations
+          add variants
         </button>
         <ShareReport title="title" url="url" />
       </div>
@@ -198,56 +201,59 @@
 
             <template v-else>
               <section id="most-recent-lineages" :class="{'flex-shrink-0': !mediumScreen}" v-if="mostRecentLineages">
-                <h5>Most commonly found lineages over the past {{recentWindow}} days</h5>
+                <h5 class="mb-0">Common lineages</h5>
+                <small class="text-muted">Prevalence over last {{recentWindow}} days</small>
                 <div class="d-flex align-items-start" :class="{'flex-wrap' : mediumScreen}">
                   <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
-
-                  <!-- HEATMAP + LEGEND -->
-                  <div class="d-flex flex-column" v-if="recentHeatmap && recentHeatmap.length">
-                    <h6 class="m-0">Characteristic S-gene mutations in common lineages</h6>
-                    <div class="d-flex flex-wrap justify-content-between">
-                      <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-                      <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
-                    </div>
-
-                    <div class="d-flex flex-column align-items-center bg-dark">
-
-                      <!-- HEATMAP LEGEND -->
-                      <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
-                        <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
-                        <div class="d-flex align-items-center">
-                          <svg width="24" height="24">
-                            <defs>
-                              <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                                <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
-                              </pattern>
-                            </defs>
-                            <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
-                          </svg>
-                          <small class="text-light ml-2">not detected</small>
-                        </div>
-                        <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
-                          Variant / Mutation of Concern
-                        </span>
-                        <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
-                          Variant / Mutation of Interest
-                        </span>
-                      </div>
-                      <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
-                    </div>
-                    <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
-                  </div>
                 </div>
               </section>
             </template>
           </div>
         </div>
 
+        <!-- HEATMAP + LEGEND -->
+        <div class="d-flex flex-column align-items-center mt-3" v-if="recentHeatmap && recentHeatmap.length">
+          <h5 class="m-0">Characteristic S-gene mutations in common lineages over the last {{recentWindow}} days</h5>
+          <div class="d-flex flex-wrap justify-content-between">
+            <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+            <small class="mb-2 ml-3">
+              <router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link>
+            </small>
+          </div>
+
+          <div class="d-flex flex-column align-items-center bg-dark">
+
+            <!-- HEATMAP LEGEND -->
+            <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
+              <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+              <div class="d-flex align-items-center">
+                <svg width="24" height="24">
+                  <defs>
+                    <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                      <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:#AAA; stroke-width:0.75`" />
+                    </pattern>
+                  </defs>
+                  <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
+                </svg>
+                <small class="text-light ml-2">not detected</small>
+              </div>
+              <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
+                Variant / Mutation of Concern
+              </span>
+              <span class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px" style="color: #feb56c">
+                Variant / Mutation of Interest
+              </span>
+            </div>
+            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+          </div>
+          <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
+        </div>
+
         <!-- TRACKED LINEAGES TABLE -->
         <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
           <div class="d-flex flex-wrap align-items-center justify-content-center">
             <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -259,7 +265,7 @@
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
           <div class="d-flex flex-wrap align-items-center justify-content-center mb-3">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -272,7 +278,7 @@
           <div class="d-flex flex-wrap justify-content-between align-items-center">
             <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
             <div class="d-flex align-items-center">
-              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
                 <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
               </button>
               <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -424,11 +430,13 @@ import {
   getLocationMaps,
   getBasicLocationReportData,
   getLocationTable,
-  findLocation
+  findLocation,
+  getBadMutations
 } from "@/api/genomics.js";
 
 import cloneDeep from "lodash/cloneDeep";
 import uniq from "lodash/uniq";
+import uniqBy from "lodash/uniqBy";
 
 export default {
   name: "LocationReport",
@@ -437,7 +445,10 @@ export default {
     muts: [Array, String],
     pango: [Array, String],
     variant: [Array, String],
-    selected: [Array, String]
+    selected: {
+      type: [Array, String],
+      default: () => []
+    }
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
@@ -451,7 +462,8 @@ export default {
     HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
     LocationTable: () => import( /* webpackPrefetch: true */ "@/components/LocationTable.vue"),
     OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
-    CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    // CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    VariantForm: () => import( /* webpackPrefetch: true */ "@/components/VariantForm.vue"),
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
     SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
@@ -498,6 +510,32 @@ export default {
       return this.recentMin && this.seqCounts ?
         this.seqCounts.filter(d => d.dateTime >= this.recentMin) : null;
     },
+    formValid() {
+      return (this.newMuts.length > 0 || this.newPango)
+    },
+    newVariant() {
+      let newVariantObj = null;
+      if (this.newPango && this.newMuts.length) {
+        newVariantObj = {
+          label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
+          qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
+          type: "variant"
+        }
+      } else if (this.newPango) {
+        newVariantObj = {
+          label: this.newPango,
+          qParam: this.newPango,
+          type: "pango"
+        }
+      } else if (this.newMuts.length) {
+        newVariantObj = {
+          label: this.newMuts.map(d => d.mutation).join(", "),
+          qParam: this.newMuts.map(d => d.mutation).join(","),
+          type: "mutation"
+        }
+      }
+      return newVariantObj;
+    },
     selectedMutations() {
       let tracked = this.curatedLineages;
       if (this.pango) {
@@ -532,7 +570,7 @@ export default {
           const mutations = this.muts.split(",");
           tracked.push({
             type: "mutation",
-            label: mutations.length === 1 ? `${this.muts} mutation` : `${mutations.join(", ")} variant`,
+            label: this.muts,
             qParam: this.muts,
             query: `mutations=${this.muts}`,
             variantType: "Custom Lineages & Mutations",
@@ -545,7 +583,7 @@ export default {
             const mutations = d.split(",");
             return ({
               type: "mutation",
-              label: mutations.length === 1 ? `${d} mutation` : `${mutations.join(", ")} variant`,
+              label: mutations.join(", "),
               qParam: d,
               query: `mutations=${d}`,
               variantType: "Custom Lineages & Mutations",
@@ -592,6 +630,7 @@ export default {
           })
         }
       }
+      tracked = uniqBy(tracked, "label");
       return (tracked)
     }
   },
@@ -599,6 +638,10 @@ export default {
     this.debounceWindowChange = debounce(this.updateWindow, 700);
   },
   mounted() {
+    const ofInterest = getBadMutations(true);
+    this.moc = ofInterest.moc;
+    this.moi = ofInterest.moi;
+
     this.queryLocation = findLocation;
     this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
       .domain(this.choroColorDomain);
@@ -699,7 +742,7 @@ export default {
           const label = this.variant.split("|");
           variant = [{
             type: "variant",
-            label: `${label[0]} with ${label[1]}`,
+            label: `${label[0]} + ${label[1]}`,
             qParam: this.variant
           }]
         } else {
@@ -707,7 +750,7 @@ export default {
             const label = d.split("|");
             return ({
               type: "variant",
-              label: `${label[0]} with ${label[1]}`,
+              label: `${label[0]} + ${label[1]}`,
               qParam: d
             })
           })
@@ -731,20 +774,40 @@ export default {
     deleteMutation(idx) {
       this.customMutations.splice(idx, 1);
     },
+    addMutations() {
+      if (this.newVariant) {
+        this.customMutations.push(this.newVariant);
+      }
+      // this.customMutations.push(this.newVariant);
+      this.customMutations = uniqBy(this.customMutations, "qParam");
+      this.submitCount += 1;
+    },
+    clearMutations() {
+      this.submitCount += 1;
+      this.customMutations = [];
+      this.selected = [];
+    },
     submitNewMutations() {
-      let selected = this.selected ? this.selected : [];
+      if (this.newVariant) {
+        this.customMutations.push(this.newVariant);
+      }
+      let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
 
-      let pango = this.newPango.map(d => d.route);
-      selected = selected.concat(pango);
-      pango = pango.concat(this.customMutations.filter(d => d.type == "pango").map(d => d.qParam));
+      const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
+      const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
-      let mutation = this.newMuts.map(d => d.route);
-      selected = selected.concat(mutation);
-      mutation = mutation.concat(this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam));
+      let selected = this.customMutations.map(d => d.label).concat(this.selected);
 
-      let variant = this.newVariants.map(d => d.route);
-      selected = selected.concat(variant);
-      variant = variant.concat(this.customMutations.filter(d => d.type == "variant").map(d => d.qParam));
+      if (this.newVariant) {
+        if (typeof(this.selected) == "string") {
+          selected = [this.selected, this.newVariant.label];
+        } else {
+          selected.push(this.newVariant.label);
+        }
+      };
+
+      // clear new additions
+      this.submitCount += 1;
 
       this.$router.push({
         name: "LocationReport",
@@ -756,9 +819,6 @@ export default {
           selected: uniq(selected)
         }
       })
-      this.newPango = [];
-      this.newMuts = [];
-      this.newVariants = [];
     },
     updateWindow() {
       this.setupReport();
@@ -811,12 +871,12 @@ export default {
       newLocation: null,
       // update mutations
       newMuts: [],
-      newPango: [],
-      newVariants: [],
+      newPango: null,
       customMutations: [],
+      submitCount: 0,
       // data
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
-      moc: ["E484K"],
+      moi: [],
+      moc: [],
       voi: null,
       voc: null,
       dateUpdated: null,

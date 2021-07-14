@@ -4,9 +4,9 @@ const state = {
   dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   reportloading: false, // separate loader for reports
   outbreak: {
-    authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
+    authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
   },
-  mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
+  mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
   team: [{
       name: "Manar Alkuzweny",
       img: "manar.jpg"
@@ -23,11 +23,17 @@ const state = {
     },
     {
       name: "Karthik Gangavarapu",
-      img: "karthik.jpg"
+      img: "karthik.jpg",
+      email: "gkarthik@scripps.edu",
+      twitter: "https://twitter.com/gkay92"
     },
     {
       name: "Emily Haag",
       img: "emily.jpg"
+    },
+    {
+      name: "Emory Hufbauer",
+      img: "emory.jpg"
     },
     {
       name: "Laura Hughes",
@@ -45,10 +51,6 @@ const state = {
       img: "julia.jpg"
     },
     {
-      name: "Ginger Tsueng",
-      img: "ginger.jpg"
-    },
-    {
       name: "Andrew Su",
       img: "andrew.jpg",
       email: "asu@scripps.edu",
@@ -56,11 +58,19 @@ const state = {
       linkedin: "http://www.linkedin.com/in/andrewsu"
     },
     {
+      name: "Ginger Tsueng",
+      img: "ginger.jpg"
+    },
+    {
       name: "Chunlei Wu",
       img: "chunlei.jpg",
       email: "cwu@scripps.edu",
       twitter: "https://twitter.com/chunleiwu",
       linkedin: "https://www.linkedin.com/in/chunleiwu"
+    },
+    {
+      name: "Mark Zeller",
+      img: "mark.jpg"
     },
     {
       name: "Jerry Zhou",
@@ -120,7 +130,7 @@ const state = {
       name: "The COVID Tracking Project",
       scope: "testing data",
       img: "ustesting.svg",
-      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>.',
+      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>. The COVID Tracking Project stopped collecting data on <a href="https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done" target="_blank">7 March 2021</a>.',
       url: "https://covidtracking.com/",
       license: {
         url: "https://covidtracking.com/license",
@@ -418,6 +428,16 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-01 0:0"),
+      category: "feature",
+      title: "Added email subscription",
+      description: "Added the option to subscribe to outbreak.info email updates.",
+      route: {
+        name: "About",
+        hash: "#subscribe"
+      }
+    },
+    {
       date: new Date("2020-07-06 0:0"),
       category: "feature",
       title: "Overlaid 7-day rolling averages for case counts",
@@ -466,7 +486,7 @@ const state = {
     },
     {
       date: new Date("2021-03-16 0:0"),
-      category: "data",
+      category: "variants",
       title: "Reclassified B.1.427 and B.1.429 as Variants of Concern",
       description: 'Based on the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification, lineages B.1.427 and B.1.429 have been upgraded from <b>Variants of Interest</b> to <b>Variants of Concern</b>.',
       route: {
@@ -474,6 +494,169 @@ const state = {
         query: {
           pango: "B.1.429",
           selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-06-30 0:0"),
+      category: "variants",
+      title: "Added B.1.351.1, B.1.351.2, and B.1.351.3 as a VOCs",
+      description: 'Added B.1.351.1, B.1.351.2, and B.1.351.3, sublineages of the Variant of Concern B.1.351, as Variants of Concern.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.351.2",
+          selected: "Mayotte"
+        }
+      }
+    },
+    {
+      date: new Date("2021-06-20 0:0"),
+      category: "variants",
+      title: "Added B.1.427/429 as a VOI",
+      description: 'Based on the PANGO classification of lineages into B.1.427/429 (pangolin <i>v3.1.1</i>) in addition to B.1.427 and B.1.429, added B.1.427/429 as Variant of Interest.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.427/429",
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-06-20 0:0"),
+      category: "variants",
+      title: "Removed B.1.526.1 and B.1.526.2 as VOIs due to PANGO reassignment into B.1.526",
+      description: 'Based on the PANGO reassignment of lineages B.1.526.1 and B.1.526.2 as Variant of Interest B.1.526, removing B.1.526.1 and B.1.526.2 as VOIs.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.526",
+          selected: "USA_US-NY"
+        }
+      }
+    },
+    {
+      date: new Date("2021-06-18 0:0"),
+      category: "variants",
+      title: "Updated PHE classifications: AY.2 (VOC), B.1.1.7 with S:E484K and C.37 (VUMs)",
+      description: 'Based on the weekly <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/994839/Variants_of_Concern_VOC_Technical_Briefing_16.pdf" target="_blank">PHE report</a>, added new classifications: AY.2 as a Variant of Concern as a sublineage to the B.1.617.2/Delta lineage and C.37 as a Variant Under Monitoring. B.1.1.7 with S:E484K was downgraded to a Variant Under Monitoring, since no new cases have been observed in England since 1 March 2021.',
+      route: {
+        name: "SituationReports",
+        query: {
+          voc: ["PHE"],
+          voi: ["PHE"]
+        }
+      }
+    },
+    {
+      date: new Date("2021-07-06 0:0"),
+      category: "variants",
+      title: "Updated WHO classifications: downgraded B.1.427, B.1.429, P.2, & P.3",
+      description: 'Based on the <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/" target="_blank">WHO report</a>, reclassified Variants of Interest as Variants Under Monitoring: B.1.427/Epsilon, B.1.429/Epsilon, P.2/Zeta, P.3/Theta, and added AV.1, B.1.1.318, and C.36.3 as WHO VUMs. Also updated P.1.1 and P.1.2 classifications to reflect its status as a sublineage of P.1.',
+      route: {
+        name: "SituationReports",
+        query: {
+          voc: ["WHO"],
+          voi: ["WHO"]
+        }
+      }
+    },
+    {
+      date: new Date("2021-07-06 0:0"),
+      category: "variants",
+      title: "Reclassified B.1.427/429 as B.1.427 or B.1.429",
+      description: 'Removed B.1.427/429 as a VOI due to PANGO classification update as either B.1.427 or B.1.429.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-06-18 0:0"),
+      category: "variants",
+      title: "Added C.37 as a VUM by the ECDC",
+      description: 'Based on the weekly <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC update</a>, added C.37 as a Variant Under Monitoring',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-06-29 0:0"),
+      category: "variants",
+      title: "B.1.427/429 downgraded by CDC to VOIs",
+      description: 'Based on the <a href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fcoronavirus%2F2019-ncov%2Fcases-updates%2Fvariant-surveillance%2Fvariant-info.html" target="_blank">CDC update</a>, downgraded B.1.427/429/Epsilon from Variants of Concern to Variants of Interest.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-06-25 0:0"),
+      category: "variants",
+      title: "Added C.37 as a VOI by PHE",
+      description: 'Based on the weekly <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/996740/Variants_of_Concern_VOC_Technical_Briefing_17.pdf" target="_blank">PHE update</a>, upgraded C.37 from a Variant Under Monitoring to a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "C.37",
+          selected: "PER"
+        }
+      }
+    },
+    {
+      date: new Date("2021-06-07 0:0"),
+      category: "variants",
+      title: "Added P.1.1 and P.1.2 as Variants of Concern",
+      description: 'Added P.1.1 and P.1.2, sublineages of the Variant of Concern P.1, as Variants of Concern.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "P.1.1"
+        }
+      }
+    },
+    {
+      date: new Date("2021-06-11 0:0"),
+      category: "variants",
+      title: "Removed A.23.1 + S:E484K as a VUI",
+      description: "Removed A.23.1 with S:E484K as a Variant of Interest, based on the 11 June 2021 Public Health England's <a href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/993198/Variants_of_Concern_VOC_Technical_Briefing.pdf' target='_blank'>Technical Briefing 15</a>.",
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-06-01 0:0"),
+      category: "variants",
+      title: "Added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest",
+      description: 'Based on the <a href="https://www.gov.uk/government/publications/covid-19-variants-genomically-confirmed-case-numbers/variants-distribution-of-cases-data" target="_blank">PHE</a> classification, added A23.1 + S:E484K, AV.1, B.1.1.318, B.1.525, C.36.3, and P.3 as Variants of Interest (VOIs). Also removed B.1.617 as a VOI, due to the expansion of the B.1.617 sublineages.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-06-15 0:0"),
+      category: "variants",
+      title: "Updated the CDC classification of B.1.617.2/Delta to VOC",
+      description: 'Updated the <a href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html" target="_blank">CDC</a> classification of B.1.617.2/Delta and AY.1/Delta to a Variant of Concern.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.617.2",
+          loc: ["IND", "GBR"],
+          selected: "IND"
+        }
+      }
+    },
+    {
+      date: new Date("2021-06-15 0:1"),
+      category: "variants",
+      title: "Added C.37/Lambda as a VOI",
+      description: 'Added C.37/Lambda as a Variant of Interest, based on the <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/">WHO</a> classification',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "C.37",
+          loc: ["PER"],
+          selected: "PER"
         }
       }
     },
@@ -526,6 +709,95 @@ const state = {
         }
       }
     }, {
+      date: new Date("2021-04-01 0:0"),
+      category: "variants",
+      title: "Added B.1.526.1, B.1.526.2, and P.2 as Variants of Interest",
+      description: "Based on the split of the B.1.526 lineage into B.1.526, B.1.526.1, and B.1.526.2 lineages, added the two new lineages as Variants of Interest, as well as the P.2 lineage circulating in Brazil.",
+      route: {
+        name: "SituationReports"
+      }
+    }, {
+      date: new Date("2021-04-15 0:0"),
+      category: "variants",
+      title: "Added B.1.617 as a Variant of Interest",
+      description: "Based on the expansion of B.1.617 in India, added B.1.617 as a Variant of Interest.",
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.617",
+          loc: "IND",
+          selected: "IND"
+        }
+      }
+    }, {
+      date: new Date("2021-06-08 0:0"),
+      category: "variants",
+      title: "Removed S:Y453F as a Mutation of Interest",
+      description: "Removed S:Y453F as a Mutation of Interest.",
+      route: {
+        name: "MutationReport",
+        query: {
+          muts: "S:Y453F",
+          loc: "DNK",
+          selected: "DNK"
+        }
+      }
+    }, {
+      date: new Date("2021-06-10 0:0"),
+      category: "feature",
+      title: "Added Variant of Concern and Interest classifications from the CDC, ECDC, PHE, and WHO",
+      description: "Added curated classifications of the Variants of Concern and Interest, based on data from the <a href='https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fcoronavirus%2F2019-ncov%2Fcases-updates%2Fvariant-surveillance%2Fvariant-info.html' target='_blank'>Centers for Disease Control and Prevention</a>, <a href='https://www.ecdc.europa.eu/en/covid-19/variants-concern' target='_blank'>European Centre for Disease Prevention and Cotnrol</a>, <a href='https://www.gov.uk/government/publications/investigation-of-novel-sars-cov-2-variant-variant-of-concern-20201201' target='_blank'>Public Health England</a>, and the <a href='https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/' target='_blank'>World Health Organization</a>. Redesigned the Lineage | Mutation Tracker homepage, including adding new WHO nomenclature for VOCs and VOIs.",
+      route: {
+        name: "SituationReports"
+      }
+    }, {
+      date: new Date("2021-06-10 0:0"),
+      category: "feature",
+      title: "Added buttons to select VOCs and VOIs in Lineage Comparison tool",
+      description: "Added buttons to pre-select Variants of Concern and Interest to easily compare mutations within those lineages.",
+      route: {
+        name: "SituationReportComparison"
+      }
+    }, {
+      date: new Date("2021-05-03 0:0"),
+      category: "variants",
+      title: "Added B.1.617.1 as a Variant of Interest",
+      description: "Based on split of B.1.617 into sublineages, added B.1.617.1 as a Variant of Interest based on its expansion in India and presence of S:E484Q mutation.",
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.617.1",
+          loc: "IND",
+          selected: "IND"
+        }
+      }
+    }, {
+      date: new Date("2021-05-07 0:0"),
+      category: "variants",
+      title: "Added B.1.617.2 as a Variant of Concern, and B.1.617.3 as a Variant of Interest. B.1.427 and B.1.429 downgraded to VOI.",
+      description: "Based on the report, <a href=\"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf\">Technical Briefing 10<a/> from PHE.",
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.617.2",
+          loc: ["IND", "GBR"],
+          selected: "IND"
+        }
+      }
+    }, {
+      date: new Date("2021-06-11 0:1"),
+      category: "variants",
+      title: "Added AY.1 as a VOC",
+      description: 'Based on the reclassification of some B.1.617.2/Delta lineages with mutation S:K417N, the <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/993198/Variants_of_Concern_VOC_Technical_Briefing.pdf">PHE Technical Briefing 15<a/>, and its mutational similarity as a sublineage of B.1.617.2/Delta, added AY.1 as a Variant of Concern.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "AY.1",
+          loc: ["IND", "GBR"]
+        }
+      }
+    },
+    {
       date: new Date("2021-01-21 0:0"),
       category: "data",
       title: "Added SARS-CoV-2 Mutation Situation Reports",
@@ -533,7 +805,8 @@ const state = {
       route: {
         name: "SituationReports"
       }
-    }, {
+    },
+    {
       date: new Date("2021-02-10 0:0"),
       category: "data",
       title: "Released customizable, interactive SARS-CoV-2 Lineage Situation Reports",
@@ -544,7 +817,8 @@ const state = {
           pango: "B.1.1.7"
         }
       }
-    }, {
+    },
+    {
       date: new Date("2021-02-23 0:0"),
       category: "data",
       title: "Released customizable, interactive SARS-CoV-2 Mutation & Variant Situation Reports",
@@ -555,7 +829,8 @@ const state = {
           muts: "S:E484K"
         }
       }
-    }, {
+    },
+    {
       date: new Date("2021-03-17 0:0"),
       category: "feature",
       title: "Released customizable, interactive SARS-CoV-2 Location Tracker",
@@ -566,7 +841,8 @@ const state = {
           loc: "USA"
         }
       }
-    }, {
+    },
+    {
       date: new Date("2020-07-06 0:1"),
       category: "feature",
       title: "Copyable visualizations",
@@ -574,7 +850,8 @@ const state = {
       route: {
         name: "Maps",
       }
-    }, {
+    },
+    {
       date: new Date("2020-07-23 0:1"),
       category: "feature",
       title: "Added per capita normalization",
@@ -587,7 +864,8 @@ const state = {
           percapita: "true"
         }
       }
-    }, {
+    },
+    {
       date: new Date("2020-07-14 0:0"),
       category: "data",
       title: "Access all data through our API",
@@ -595,7 +873,8 @@ const state = {
       route: {
         name: "Sources",
       }
-    }, {
+    },
+    {
       date: new Date("2020-05-19 0:0"),
       category: "data",
       title: "Added searchable resources",
@@ -665,6 +944,15 @@ const state = {
         query: {
           location: "USA"
         }
+      }
+    },
+    {
+      date: new Date("2021-07-14 0:0"),
+      category: "feature",
+      title: "Added outbreak.info in the media",
+      description: "Press mentions of outbreak.info",
+      route: {
+        name: "Press"
       }
     },
     {

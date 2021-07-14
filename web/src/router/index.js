@@ -18,6 +18,12 @@ const routes = [{
       import( /* webpackChunkName: "privacy" */ "../views/Privacy.vue")
   },
   {
+    path: "/faq",
+    name: "FAQ",
+    component: () =>
+      import( /* webpackChunkName: "faq" */ "../views/Faq.vue")
+  },
+  {
     path: "/terms",
     name: "Terms",
     component: () =>
@@ -112,6 +118,11 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import( /* webpackChunkName: "data" */ "../views/Data.vue")
+  },
+  {
+    path: "/press",
+    name: "Press",
+    component: () => import( /* webpackChunkName: "press" */ "../views/Press.vue")
   },
   {
     path: "/sources",
@@ -230,6 +241,13 @@ const routes = [{
   {
     path: "/situation-reports",
     name: "SituationReports",
+    props: route => ({
+      voc: route.query.voc,
+      voi: route.query.voi,
+      moc: route.query.moc,
+      moi: route.query.moi,
+      name: route.query.name
+    }),
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */

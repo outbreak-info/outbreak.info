@@ -10,7 +10,7 @@
     <div class="col-sm-12 col-md-8">
       <ul>
         <li id="mutation">
-          <b>Mutant</b>: an error introduced during viral replication
+          <b>Mutation</b>: an error introduced during viral replication
           <ul>
             <li>
               Without experimental testing, we don't know what effect the mutation has on the virus. The effect could lead to better outcomes (e.g. the mutation decreases the transmissibility of the virus), worse (e.g. the mutation increases its
@@ -99,7 +99,7 @@ impact on available diagnostics, vaccines, therapeutics or public health and soc
               Within a lineage, there may be additional <a href="#mutation">mutations</a> which revert some changes or accumulate new ones
             </li>
             <li>
-              We primarily rely on PANGO lineages (<a href="https://cov-lineages.org/pangolin.html" target="_blank">Phylogenetic Assignment of Named Global Outbreak</a>)
+              We primarily rely on PANGO lineages (<a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Phylogenetic Assignment of Named Global Outbreak</a>)
             </li>
           </ul>
         </li>

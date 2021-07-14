@@ -17,82 +17,57 @@
     </div>
   </section>
 
-  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest hero">
-    <div class="row d-flex align-items-center p-3">
-      <div class="col-sm-9 d-flex flex-column align-items-center justify-content-center px-4">
-        <p class="larger">
-          During the COVID-19 pandemic, researchers have been sharing thousands of datasets, papers, and tools each week.
-        </p>
-        <p class="text-dark larger">
-          <b class="text-highlight">outbreak.info</b> compiles a database of COVID-19 and SARS-CoV-2 resources and epidemiology data to easily discover this information.
-        </p>
-        <small>
-          <button class="btn btn-main-outline mt-3">
-            <router-link :to="{ name: 'Latest' }" class="no-underline">View latest changes</router-link>
-          </button>
-        </small>
-      </div>
-
-      <div class="col-sm-3">
-        <video class="w-100 mb-3" controls>
-          <source src="@/assets/home/resources_demo.mp4" type="video/mp4">
-          <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
-          Your browser does not support the video tag.
-        </video>
-      </div>
-    </div>
-  </div>
 
   <!-- SEARCH  -->
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
     <div class="row m-0 w-100 d-flex justify-content-center">
-      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
+
+      <!-- EPI INTRO -->
+      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro">
         <div class="mb-3">
-          <router-link :to="{name: 'Resource Summary'}" class="text-light">
-            <h3 class="my-3">
-              Resources</h3>
+          <router-link :to="{name: 'Epidemiology'}" class="text-light">
+            <h3 class="my-3">COVID-19 Cases &amp; Deaths</h3>
           </router-link>
 
-          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
+          <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
+            metropolitan area, or U.S. county</div>
         </div>
 
         <div>
-          <form autocomplete="off" class="w-100">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text bg-grey text-muted border-0" id="sb">
-                  <font-awesome-icon :icon="['fas', 'search']" />
-                </span>
-              </div>
-              <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
-            </div>
-          </form>
-          <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
+          <SearchBar routeTo="/epidemiology?" placeholder="Search location" class="w-100" :darkMode="false"></SearchBar>
+          <small id="sBar-example" class="form-text d-block text-left ml-5">
+            <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">
-                remdesivir
+              <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
-            <router-link :to="{name: 'NIAID'} " class="text-light">
-              NIAID-related
+
+            <span class="mr-3">
+              <router-link :to="{name: 'Epidemiology', query: {location: 'CITY_US-NY_NYC'}} " class="text-light">New York City
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+
+            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </small>
         </div>
       </div>
 
+      <!-- VARIANTS -->
       <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro">
-        <div  class="mb-3">
+        <div class="mb-3">
           <router-link :to="{name: 'SituationReports'}" class="text-light">
             <h3 class="my-3">Variants</h3>
           </router-link>
 
-          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Explore SARS-CoV-2 lineage, variant, and mutation situation reports</div>
+          <div id="resourceBar-text" class="form-text d-block text-light-highlight line-height-1">Explore SARS-CoV-2 lineage, variant, and mutation situation reports</div>
         </div>
 
-        <div class="">
-          <form autocomplete="off" class="w-100">
+        <div id="search-lineage">
+          <form autocomplete="off" class="w-100" id="search-lineage-input">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb">
@@ -102,7 +77,7 @@
               <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Search PANGO lineage" />
             </div>
           </form>
-          <small id="sBar-example" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
+          <small id="sBar-example-variant-lineage" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
               <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
@@ -120,234 +95,417 @@
             </span>
           </small>
         </div>
-      </div>
 
-
-      <!-- EPI INTRO -->
-      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro">
-        <div class="mb-3">
-          <router-link :to="{name: 'Epidemiology'}" class="text-light">
-            <h3 class="my-3">Epidemiology</h3>
-          </router-link>
-
-          <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
-            metropolitan area, or U.S. county</div>
-        </div>
-
-        <div>
-          <SearchBar routeTo="/epidemiology?" placeholder="Search locations" class="w-100" :darkMode="false"></SearchBar>
-          <small id="sBar-example" class="form-text d-block text-left ml-5">
-            <span class="mr-2">Try:</span>
+        <div id="search-variant-location" class="mt-3">
+          <form autocomplete="off" class="w-100" id="search-variant-location-input">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
+              </div>
+              <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryLocation" @selected="submitLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location"
+                totalLabel="total sequences" />
+            </div>
+          </form>
+          <small id="sBar-example-variant-location" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
+              <router-link :to="{name: 'LocationReport', query: {loc: 'USA'}} " class="text-light">USA
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
-            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
-              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-            </router-link>
+            <span class="mr-3">
+              <router-link :to="{name: 'LocationReport', query: {loc: 'GBR'}} " class="text-light">U.K.
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'LocationReport', query: {loc: 'USA_US-NY'}} " class="text-light">New York
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'LocationReport', query: {loc: 'USA_US-CA_06073'}} " class="text-light">San Diego
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
           </small>
         </div>
 
       </div>
+
+      <!-- resources -->
+      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro">
+        <div class="mb-3">
+          <router-link :to="{name: 'Resource Summary'}" class="text-light">
+            <h3 class="my-3">
+              Research Library</h3>
+          </router-link>
+
+          <div id="resourceBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">Find COVID-19 and SARS-CoV-2 publications, clinical trials, datasets, protocols, and more</div>
+        </div>
+
+        <div>
+          <form autocomplete="off" class="w-100" id="search-resources">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
+              </div>
+              <input id="resourceBar" class="form-control border" placeholder="Search resources" aria-label="search" aria-describedby="sb" type="text" v-model="searchQuery" @keydown.enter.prevent="submitSearch" />
+            </div>
+          </form>
+          <small id="sBar-example" class="form-text d-block  text-left ml-5"> <span class="mr-2">Try:</span>
+
+            <span class="mr-3">
+              <router-link :to="{name: 'Resources', query: {q: 'E484K'}} " class="text-light">E484K
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'Resources', query: {q: 'Moderna'}} " class="text-light">Moderna
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'Resources', query: {q: 'remdesivir'}} " class="text-light">remdesivir
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <router-link :to="{name: 'NIAID'} " class="text-light">NIAID-funded
+              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+            </router-link>
+          </small>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- RESOURCE EXAMPLES -->
-  <section id="resource-examples" class="container my-3">
-    <h3>Find COVID-19 resources</h3>
-    <div class="row d-flex flex-wrap">
+  <!-- INTRO + VIDEO -->
+  <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest">
+    <div class="row d-flex align-items-center p-3">
+      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 larger">
+        <p>
+          Outbreak.info is a project from the <a href="http://sulab.org/" target="_blank">Su</a>, <a href="https://wulab.io/" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" target="_blank">Andersen</a> labs at Scripps Research to
+          unify COVID-19 and SARS-CoV-2 epidemiology and genomic data, published research, and other resources.
+        </p>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Search Resource Library</h5>
-            <img src="@/assets/home/resources_search.png" alt="Search Outbreak.info resources" class="w-100 mb-3" />
-          </router-link>
-        </div>
+        <p>Researchers, health officials, and the public can track the pandemic using data on cases, deaths, and genomic variants, and stay updated on related research through interactive visualizations, a searchable library, and downloadable raw
+          data.
+        </p>
       </div>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <h5 class="text-uppercase">Download metadata</h5>
-          <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
-            <h6>API</h6>
-            <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
-          </a>
-          <router-link :to="{name: 'Sources', hash: '#resources'}">
-            <h6>.tsv files</h6>
-            <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">View & adapt schema</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- GENOMICS -->
-  <section id="epi-examples" class="container my-3">
-    <h3>View SARS-CoV-2 Mutation Reports</h3>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'SituationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Curated Lineage | Mutation reports</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Custom Lineage | Mutation Tracker</h5>
-          </router-link>
-          <CustomReportForm :minimalistic="true" />
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'LocationReports'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Location Tracker</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'SituationReportComparison'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Lineage Comparison</h5>
-            <div class="h-100 d-flex align-items-center">
-              <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
-            </div>
-          </router-link>
-        </div>
+      <div class="col-sm-12 col-lg-6">
+        <video class="w-100 mb-3" controls @play="videoClick">
+          <source src="@/assets/home/outbreak_video_v3.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- EPI EXAMPLES -->
-  <section id="epi-examples" class="container my-3">
-    <h3>Explore epidemiology data</h3>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Epidemiology'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Compare locations over time</h5>
-            <img src="@/assets/home/epi_example.svg" alt="Outbreak.info epidemiology data over time" class="w-100" />
-          </router-link>
+  <div id="features" class="d-flex flex-wrap align-items-center justify-content-center py-5 my-5">
+    <button class="btn btn-main-outline m-4" data-toggle="collapse" href="#collapsedFeatures">
+      What can I do with outbreak.info?
+    </button>
+    <router-link :to="{ name: 'Sources' }" class="no-underline m-4">
+      <button class="btn btn-main-outline">
+        Where do we get our data?
+      </button>
+    </router-link>
+
+    <router-link :to="{ name: 'Latest' }" class="no-underline m-4">
+      <button class="btn btn-main-outline">
+        What's new at outbreak.info?
+      </button>
+    </router-link>
+
+    <router-link :to="{ name: 'About', hash: '#jobs' }" class="no-underline m-4">
+      <button class="btn btn-main">We're hiring!</button>
+    </router-link>
+  </div>
+
+  <div class="collapse" id="collapsedFeatures">
+    <h1 class="text-center">What can I do with outbreak.info?</h1>
+
+    <!-- EPI EXAMPLES -->
+    <section id="epi-examples" class="container my-3">
+      <h3 class="mb-1">Explore cases &amp; deaths</h3>
+      <p class="text-muted">
+        Track how reported COVID-19 cases and deaths are changing over time, how they compare between locations, and where locations have similar case loads.
+      </p>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Epidemiology'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Compare locations over time</h5>
+              <img src="@/assets/home/epi_example.svg" alt="Outbreak.info epidemiology data over time" class="w-100" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Maps'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">View by geography</h5>
+              <img src="@/assets/home/map_example.svg" alt="Outbreak.info U.S. epidemiology data by metro area" class="w-100" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Compare'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Find similar regions</h5>
+              <img src="@/assets/home/compare_example.png" alt="Outbreak.info compare regions" class="w-100" />
+            </router-link>
+          </div>
+        </div>
+
+        <!-- EPI CURVE SUMMARIES -->
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <section class="w-100 p-3 card" id="regional-epi-curves">
+            <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Explore regions</h5>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <img src="@/assets/home/regions_example.svg" alt="Outbreak.info regional data" class="w-100" />
+              </div>
+            </router-link>
+          </section>
+        </div>
+
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Doubling Rates'}" class="text-dark h-100 d-flex flex-column">
+              <h5 class="text-uppercase">View doubling rates</h5>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <img src="@/assets/home/doubling_example.svg" alt="Outbreak.info doubling rates" class="w-100" />
+              </div>
+            </router-link>
+          </div>
+
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Data'}" class="text-dark h-100 d-flex flex-column">
+              <h5 class="text-uppercase">View tables</h5>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <img src="@/assets/home/data_table.png" alt="Outbreak.info doubling rates" class="w-100" />
+              </div>
+            </router-link>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Maps'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">View by geography</h5>
-            <img src="@/assets/home/map_example.svg" alt="Outbreak.info U.S. epidemiology data by metro area" class="w-100" />
-          </router-link>
-        </div>
-      </div>
-
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Compare'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Find similar regions</h5>
-            <img src="@/assets/home/compare_example.png" alt="Outbreak.info compare regions" class="w-100" />
-          </router-link>
-        </div>
-      </div>
-
-      <!-- EPI CURVE SUMMARIES -->
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <section class="w-100 p-3 card" id="regional-epi-curves">
-          <router-link :to="{name: 'Regions'}" class="text-dark h-100 d-flex flex-column justify-content-between">
-            <h5 class="text-uppercase">Explore regions</h5>
+    <!-- GENOMICS -->
+    <section id="epi-examples" class="container my-3">
+      <h3 class="mb-1">View SARS-CoV-2 Variant Reports</h3>
+      <p class="text-muted">
+        SARS-CoV-2 variants have been shown to have increased transmissibility, virulence, and/or decreased efficacy of vaccines and therapeutics and have been associated with resurgences of COVID-19 cases and deaths across the world. Our Variant
+        Reports are <b>real-time surveillance reports</b> to track the prevalence of these variants or any arbitrary combination of mutations to understand how they're changing.
+      </p>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReports'}" class="text-dark d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Track Variants of Concern &amp; Interest</h5>
+            </router-link>
             <div class="h-100 d-flex flex-column justify-content-center">
-              <img src="@/assets/home/regions_example.svg" alt="Outbreak.info regional data" class="w-100" />
+              <router-link :to="{name: 'SituationReports'}" class="text-dark d-flex flex-column justify-content-between">
+                <img src="@/assets/home/b117_sitrep.png" alt="B.1.1.7 Report" class="w-100" />
+              </router-link>
+              <a data-toggle="collapse" href="#lineage-report-questions" aria-expanded="false" aria-controls="lineage-report-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with Lineage | Mutation Tracker
+                Reports?</a>
+              <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="lineage-report-questions">
+                <li class="mb-2">
+                  How many sequences of a lineage /set of mutations have been detected?
+                </li>
+                <li class="mb-2">
+                  What mutations are characteristic of a lineage?
+                </li>
+                <li class="mb-2">
+                  How is its prevalence changing?
+                </li>
+                <li class="mb-2">
+                  Where is the lineage / set of mutations prominent?
+                </li>
+                <li class="mb-2">
+                  What is known about the lineage / mutations in the literature?
+                </li>
+              </ul>
             </div>
-          </router-link>
-        </section>
-      </div>
 
+          </div>
+        </div>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Doubling Rates'}" class="text-dark h-100 d-flex flex-column">
-            <h5 class="text-uppercase">View doubling rates</h5>
-            <div class="h-100 d-flex flex-column justify-content-center">
-              <img src="@/assets/home/doubling_example.svg" alt="Outbreak.info doubling rates" class="w-100" />
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReports', hash:'#custom-report'}" class="text-dark d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Create custom lineage and/or mutation reports</h5>
+            </router-link>
+            <CustomReportForm :minimalistic="true" />
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'LocationReports'}" class="text-dark d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Discover lineages within a location</h5>
+            </router-link>
+            <div class="h-100 d-flex flex-column justify-content-start">
+              <router-link :to="{name: 'LocationReports'}" class="text-dark d-flex flex-column justify-content-between">
+                <img src="@/assets/home/usa_locrep.png" alt="USA Mutation Report" class="w-100" />
+              </router-link>
+
+              <a data-toggle="collapse" href="#location-report-questions" aria-expanded="false" aria-controls="location-report-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with Location Tracker
+                Reports?</a>
+              <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="location-report-questions">
+                <li class="mb-2">
+                  What are the most prevalent lineages in a location recently?
+                </li>
+                <li class="mb-2">
+                  What mutations are contained within these lineages?
+                </li>
+                <li class="mb-2">
+                  What Variants of Concern / Interest have been detected here?
+                </li>
+                <li class="mb-2">
+                  Where are the Variants of Concern / Interest most prevalent within the location?
+                </li>
+                <li class="mb-2">
+                  How do the prevalence of lineages or sets of mutations over time compare to daily reported cases?
+                </li>
+              </ul>
             </div>
-          </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'SituationReportComparison'}" class="text-dark d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Compare PANGO Lineages</h5>
+              </router-link>
+              <div class="h-100 d-flex flex-column justify-content-center">
+                <router-link :to="{name: 'SituationReportComparison'}" class="text-dark d-flex flex-column justify-content-between">
+                <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
+                </router-link>
+                <a data-toggle="collapse" href="#compare-lineage-questions" aria-expanded="false" aria-controls="compare-lineage-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with the Lineage Comparison Tool?</a>
+
+                <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="compare-lineage-questions">
+                  <li class="mb-2">
+                    What mutations are shared between lineages?
+                  </li>
+                  <li class="mb-2">
+                    How prevalent are Mutations of Interest with lineages?
+                  </li>
+                  <li class="mb-2">
+                    Which lineages contain a particular mutation like S:E484K?
+                  </li>
+                  <li class="mb-2">
+                    Which lineages are prominent in a location recently?
+                  </li>
+                </ul>
+              </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESOURCE EXAMPLES -->
+    <section id="resource-examples" class="container my-3">
+      <h3 class="mb-1">Search COVID-19 research library</h3>
+      <p class="text-muted">
+        Keeping track of rapidly changing COVID-19 research is a daunting task. We assembled a searchable library of COVID-19 and SARS-CoV-2 publications, datasets, clinical trials, protocols, and more, updated daily.
+      </p>
+      <div class="row d-flex flex-wrap">
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Resources'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">Search Resource Library</h5>
+              <img src="@/assets/home/resources_search.png" alt="Search Outbreak.info resources" class="w-100 mb-3" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <h5 class="text-uppercase">Download metadata</h5>
+            <a href="https://api.outbreak.info/try/resources" target="_blank" rel="noreferrer">
+              <h6>API</h6>
+              <img src="@/assets/home/api_resources.png" alt="Outbreak.info" class="w-100 mb-3" />
+            </a>
+            <router-link :to="{name: 'Sources', hash: '#resources'}">
+              <h6>.tsv files</h6>
+              <img src="@/assets/home/download_data.png" alt="Download Outbreak.info metadata" class="w-100 mb-3" />
+            </router-link>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <router-link :to="{name: 'Schema'}" class="text-dark h-100 d-flex flex-column justify-content-between">
+              <h5 class="text-uppercase">View &amp; adapt schema</h5>
+              <div class="h-100 d-flex align-items-center">
+                <img src="@/assets/home/schema_example.png" alt="Outbreak.info schema" class="w-100" />
+              </div>
+            </router-link>
+          </div>
         </div>
 
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <router-link :to="{name: 'Data'}" class="text-dark h-100 d-flex flex-column">
-            <h5 class="text-uppercase">View tables</h5>
-            <div class="h-100 d-flex flex-column justify-content-center">
-              <img src="@/assets/home/data_table.png" alt="Outbreak.info doubling rates" class="w-100" />
-            </div>
-          </router-link>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Access data -->
-  <section id="epi-examples" class="container my-3">
-    <h3>Access data</h3>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
-            <h5 class="text-dark">API</h5>
-            <img src="@/assets/home/api.png" alt="Outbreak.info" class="w-100 mb-3" />
-          </a>
+    <!-- ACCESS DATA -->
+    <section id="epi-examples" class="container my-3">
+      <h3 class="mb-1">Access data</h3>
+      <p class="text-muted">
+        All the data we aggregate and standardized can be accessed through our API and R package.
+      </p>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <a href="https://api.outbreak.info/try/covid19" target="_blank" rel="noreferrer">
+              <h5 class="text-dark">API</h5>
+              <img src="@/assets/home/api.png" alt="Outbreak.info" class="w-100 mb-3" />
+            </a>
+          </div>
         </div>
-      </div>
 
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-        <div class="w-100 p-3 card">
-          <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
-            <h5 class="text-dark">R package</h5>
-            <img src="@/assets/home/R_package.png" alt="Outbreak.info" class="w-100" />
-          </a>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+          <div class="w-100 p-3 card">
+            <a href="https://github.com/outbreak-info/R-outbreak-info" target="_blank" rel="noreferrer">
+              <h5 class="text-dark">R package</h5>
+              <img src="@/assets/home/R_package.png" alt="Outbreak.info" class="w-100" />
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+
+  </div>
 
 
   <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
-    <div class="d-flex justify-content-center align-items-center mb-2">
-      <div>
-        <h5 class="at-a-glance-header m-0">At a glance</h5>
-        <p class="ml-3 mb-0">
-          View the three locations with the largest increase in cases in the
-          past day, or select your own locations
-        </p>
-        <button class="btn btn-main-outline router-link no-underline bg-white" @click="summaryDeletable = !summaryDeletable">
-          {{ summaryDeletable ? "done" : "change locations" }}
-        </button>
+    <div class="d-flex justify-content-center align-items-center px-5 py-3">
+      <div class="d-flex w-100 justify-content-between">
+        <div>
+          <h4 class="at-a-glance-header m-0">At a glance</h4>
+          <p class="mb-0">
+            View the three locations with the largest increase in COVID-19 cases in the
+            past day, or select your own locations
+          </p>
+        </div>
       </div>
+      <button class="btn btn-main-outline flex-shrink-0 router-link no-underline bg-white" @click="summaryDeletable = !summaryDeletable">
+        {{ summaryDeletable ? "done" : "change locations" }}
+      </button>
     </div>
 
     <div class="row d-flex justify-content-center">
@@ -395,7 +553,8 @@ import {
 library.add(faSpinner, faAngleDoubleRight, faSearch);
 
 import {
-  findPangolin
+  findPangolin,
+  findLocation
 } from "@/api/genomics.js";
 
 export default {
@@ -415,12 +574,27 @@ export default {
       summaryDeletable: false,
       dataSubscription: null,
       queryPangolin: null,
+      queryLocation: null
     };
   },
   computed: {
     ...mapState("admin", ["loading"])
   },
   methods: {
+    videoClick() {
+      this.$gtag.event("video_play", {
+        'event_category': `video_play`,
+        'event_label': `outbreak.info homepage overview`
+      })
+    },
+    submitLocation(selected) {
+      this.$router.push({
+        name: "LocationReport",
+        query: {
+          loc: selected.id
+        }
+      })
+    },
     submitSearch() {
       this.$router.push({
         name: "Resources",
@@ -442,7 +616,7 @@ export default {
       Vue.$cookies.set("custom_locations", this.glanceLocations);
       if (this.glanceLocations.length > 0) {
         this.updatedSubscription = getGlanceSummary(
-          this.$apiurl,
+          this.$apiurl, this.$genomicsurl,
           this.glanceLocations
         ).subscribe(d => {
           this.glanceSummaries = this.sortSummaries(d);
@@ -455,7 +629,7 @@ export default {
       this.glanceLocations = this.glanceLocations.concat(location_id);
       Vue.$cookies.set("custom_locations", this.glanceLocations);
       this.updatedSubscription = getGlanceSummary(
-        this.$apiurl,
+        this.$apiurl, this.$genomicsurl,
         this.glanceLocations
       ).subscribe(d => {
         this.glanceSummaries = this.sortSummaries(d);
@@ -483,9 +657,10 @@ export default {
     this.glanceLocations = locations ? locations.split(",") : [];
 
     this.queryPangolin = findPangolin;
+    this.queryLocation = findLocation;
 
     this.dataSubscription = getGlanceSummary(
-      this.$apiurl,
+      this.$apiurl, this.$genomicsurl,
       this.glanceLocations
     ).subscribe(d => {
       this.glanceSummaries = this.sortSummaries(d);
@@ -498,7 +673,8 @@ export default {
 
 <style lang="scss" scoped>
 .resources-intro {
-    background: $primary-color;
+    background: #507192;
+    border-left: 3px solid white;
 }
 
 .variants-intro {
@@ -507,8 +683,8 @@ export default {
 }
 
 .epi-intro {
-    background: #507192;
-    border-left: 3px solid white;
+    background: $primary-color;
+
 }
 
 @media (max-width:767px) {
@@ -540,6 +716,6 @@ export default {
 }
 
 .larger {
-    font-size: larger;
+    font-size: x-large;
 }
 </style>

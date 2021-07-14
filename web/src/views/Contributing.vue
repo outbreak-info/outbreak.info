@@ -15,10 +15,10 @@
           <router-link :to="{ name: 'Sources' }" class="text-left">Learn more about our data sources</router-link>.
         </p>
         <p class="text-left">
-          Since are resources come from so many different sources, we ensure
+          Since our resources come from so many different sources, we ensure
           that their metadata (a description of what's contained within the
-          data source) complies to common schema to promote finadbility and
-          interoperabilty. Each resource's schema is based on schemas
+          data source) complies to common schema to promote findability and
+          interoperability. Each resource's schema is based on schemas
           developed by
           <a href="https://schema.org" target="_blank" rel="noreferrer">schema.org</a>, a project which provides web standards to describe different
           types of data.

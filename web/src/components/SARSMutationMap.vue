@@ -46,10 +46,10 @@ import {
   select,
   selectAll,
   scaleLinear,
+  scaleOrdinal,
   min,
   max,
   map,
-  scaleOrdinal,
   brushX,
   event,
   transition,
@@ -126,8 +126,8 @@ export default Vue.extend({
       deletionRef: null,
       // scales
       x: scaleLinear(),
-      xAxis: null,
-      geneColorScale: scaleOrdinal(
+      geneColorScale: null,
+      colorDomain:
         ["#bab0ab", // lt grey -- UTRs
           "#1f77b4", // dk blue
           "#aec7e8", // lt blue
@@ -142,7 +142,8 @@ export default Vue.extend({
           "#555555", // grey
           "#bcbd22", // puce
           "#bab0ab"
-        ]),
+        ],
+      xAxis: null
     }
   },
   mounted() {
@@ -154,6 +155,11 @@ export default Vue.extend({
         end: d[1].end
       }
     })
+
+    let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
+
+    this.geneColorScale = scaleOrdinal(this.colorDomain)
+    .domain(geneNames);
 
     this.setupMutationArr();
     this.setupPlot();
@@ -219,10 +225,6 @@ export default Vue.extend({
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, max(this.ntMapArr, d => d.end)]);
-
-      let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
-
-      this.geneColorScale = this.geneColorScale.domain(geneNames);
 
       // Update brush so it spans the whole of the area
       this.brush = brushX()

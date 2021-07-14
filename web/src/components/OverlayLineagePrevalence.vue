@@ -16,7 +16,8 @@
 import Vue from "vue";
 
 import {
-  getEpiMutationPrevalence
+  getEpiMutationPrevalence,
+  getAllTemporalPrevalences
 } from "@/api/genomics.js";
 import {
   getEpiTraces
@@ -33,7 +34,7 @@ export default {
     seqCounts: Array,
     locationID: String,
     locationName: String,
-    selected: Array
+    selected: [Array, String]
   },
   components: {
     ReportPrevalenceOverlay
@@ -42,6 +43,10 @@ export default {
     locationID() {
       this.setMutations();
       this.updateData();
+    },
+    selected() {
+      this.setMutations();
+      this.updateMutations();
     }
   },
   data() {
@@ -80,14 +85,19 @@ export default {
           selected: this.selectedMutations.map(d => d.label)
         }
       })
-      this.updateData();
+      // this.updateMutations();
     },
     setMutations() {
-      if (this.selected) {
-        this.selectedMutations = this.options.filter(d => uniq(this.selected).includes(d.label));
+      if (this.selected.length) {
+        this.selectedMutations = typeof(this.selected) == "string" ? this.options.filter(d => this.selected == d.label) : this.options.filter(d => uniq(this.selected).includes(d.label));
       } else {
         this.selectedMutations = this.options.slice(0, this.numPreselected);
       }
+    },
+    updateMutations() {
+      this.prevalenceSubscription = getAllTemporalPrevalences(this.$genomicsurl, this.locationID, this.selectedMutations).subscribe(results => {
+        this.prevalences = results;
+      })
     },
     updateData() {
       this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl, this.$apiurl, this.locationID, this.selectedMutations).subscribe(results => {

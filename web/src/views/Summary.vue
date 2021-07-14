@@ -78,7 +78,7 @@ export default {
   methods: {
     getData() {
       this.dataSubscription = getGlanceSummary(
-        this.$apiurl,
+        this.$apiurl, this.$genomicsurl,
         this.glanceLocations
       ).subscribe(d => {
         this.glanceSummaries = this.sortSummaries(d);

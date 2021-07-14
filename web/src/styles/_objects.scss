@@ -90,6 +90,7 @@ button.chip.to-add:hover {
 
 .btn-main {
   background: $primary-color !important;
+  border: $primary-color 2px solid !important;
   color: white;
   transition: all 0.5s;
   text-transform: uppercase;
@@ -258,6 +259,21 @@ button.chip.to-add:hover {
   color: $website-color;
   border-color: $website-color;
 }
+
+.VOC, .MOC {
+  background: lighten($publication-color, 35%);
+  color: $publication-color;
+  border-color: $publication-color;
+}
+
+.VOC-color {
+  color: $publication-color;
+}
+
+.VOI-color {
+  color: $website-color;
+}
+
 
 .voc, .moc {
   background: lighten($publication-color, 35%);

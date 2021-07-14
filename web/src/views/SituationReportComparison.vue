@@ -83,10 +83,35 @@
       <div class="border-top pt-3 my-3 mb-1">
         <h4 class="mb-3">Add lineages</h4>
         <div class="d-flex flex-wrap justify-content-between">
-          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded">
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center">
               <div class="mr-2 circle">1</div>
-              <span class="mr-1">By</span><a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>
+              <span class="mr-1">By Variants of Concern &amp; Interest</span>
+            </h6>
+            <div class="d-flex flex-column align-items-center">
+              <div class="d-flex mt-2 mb-2">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(false)" >
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOCs</b>
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(true)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add <b>VOCs</b>
+                </button>
+              </div>
+              <div class="d-flex pt-2 border-top">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(false)" >
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOIs</b>
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(true)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add <b>VOIs</b>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
+            <h6 class="d-flex align-items-center">
+              <div class="mr-2 circle">2</div>
+              <span class="mr-1">By</span><a href='https://cov-lineages.org/lineage_list.html' target='_blank'>PANGO lineage</a>
             </h6>
             <div class="line-height-1" style="width: 200px">
               <div class="fa-sm mt-2 ml-2">&gt;&gt; Add a specific lineage</div>
@@ -98,9 +123,9 @@
             </div>
           </div>
 
-          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">2</div>
+              <div class="mr-2 circle">3</div>
               Containing a mutation(s)
             </h6>
 
@@ -155,16 +180,17 @@
             </div>
           </div>
 
-          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">3</div>
+              <div class="mr-2 circle">4</div>
               Prevalent in a location
             </h6>
             <div class="d-flex">
               <div class="d-flex flex-column" style="width: 250px">
                 <label for="add-mutation" class="fa-sm line-height-1 mt-2 ml-2">&gt;&gt; Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
                     {{selectedLocation.label}}</span></label>
-                <TypeaheadSelect :queryFunction="queryLocation" :selectedValue="selectedLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+                <TypeaheadSelect :queryFunction="queryLocation" :selectedValue="selectedLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location"
+                  totalLabel="total sequences" />
               </div>
               <div class="d-flex flex-column ml-3">
                 <div class="d-flex flex-column">
@@ -293,6 +319,27 @@
     </div>
 
   </div>
+  <div class="mx-5 text-left">
+
+    <!-- METHODOLOGY -->
+    <section class="mt-3 mb-5 border-top pt-3" id="methods">
+      <h4>Methodology</h4>
+      <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
+      <Warning class="mt-2" :text="disclaimer" />
+    </section>
+
+    <!-- CITATION -->
+    <section class="my-3 border-top pt-3">
+      <h4 class="">Citing this report</h4>
+      <p class="m-0">
+        <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
+      </p>
+      <ShareReport :title="title" :url="url" />
+    </section>
+
+    <!-- ACKNOWLEDGEMENTS -->
+    <ReportAcknowledgements class="border-top pt-3" />
+  </div>
 </div>
 </template>
 
@@ -305,7 +352,7 @@ import {
   getLineagesComparison,
   getComparisonByMutations,
   getComparisonByLocation,
-  getMutationsByLineage
+  getBadMutations
 } from "@/api/genomics.js";
 
 // --- font awesome --
@@ -344,7 +391,8 @@ import {
 
 import {
   scaleSequential,
-  format
+  format,
+  timeFormat
 } from "d3";
 
 import debounce from "lodash/debounce";
@@ -353,23 +401,23 @@ import uniq from "lodash/uniq";
 export default {
   name: "SituationReportComparison",
   props: {
-    pango: Array,
+    pango: [Array, String],
     threshold: {
-      type: Number,
+      type: [Number, String],
       default: 75
     },
     gene: {
-      type: Array,
+      type: [Array, String],
       default: () => [
-        "S"
+        "ORF1a", "ORF1b", "S"
       ]
     }
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
-    // ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
-    // Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
-    // ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
+    ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
+    Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
+    ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
     ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     GradientLegend: () => import( /* webpackPrefetch: true */ "@/components/GradientLegend.vue"),
@@ -377,6 +425,7 @@ export default {
     FontAwesomeIcon
   },
   computed: {
+    ...mapState("admin", ["mutationAuthors"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2"]),
     loading() {
       return (this.locationLoading1 || this.locationLoading2)
@@ -396,6 +445,10 @@ export default {
   },
   data() {
     return {
+      today: null,
+      url: null,
+      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+      title: "Lineage Comparison",
       queryPangolin: null,
       mutationHeatmap: null,
       downloadableHeatmap: null,
@@ -421,8 +474,8 @@ export default {
       queryLocation: null,
       voi: null,
       voc: null,
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "L18F", "S494P", "L452R", "Y453F", "N439K"],
-      moc: ["E484K"],
+      moi: null,
+      moc: null,
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -440,6 +493,10 @@ export default {
     }
   },
   mounted() {
+    const formatDate = timeFormat("%e %B %Y");
+    this.currentTime = new Date();
+    this.today = formatDate(this.currentTime);
+
     this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = typeof(this.gene) === "string" ? [this.gene] : this.gene;
@@ -447,6 +504,12 @@ export default {
     if (this.pango) {
       this.selectedPango = typeof(this.pango) === "string" ? [this.pango] : this.pango;
     }
+
+    this.$nextTick(function() {
+      // set URL for sharing, etc.
+      const location = window.location;
+      this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
+    })
 
     // load the initial data
     this.getData();
@@ -476,6 +539,56 @@ export default {
     }
   },
   methods: {
+    addVOCs(clear = true) {
+      // remove lineages w/ additional mutations
+      this.selectedPango = clear ? this.voc :
+      this.voc.concat(this.selectedPango);
+      this.selectedPango = uniq(this.selectedPango);
+
+      this.showSnackbar = true;
+      this.snackbarText = "Variants of Concern added"
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.selectedPango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
+        }
+      })
+      this.getData();
+    },
+    addVOIs(clear = true) {
+      // remove lineages w/ additional mutations
+      this.selectedPango = clear ? this.voi :
+      this.voi.concat(this.selectedPango);
+      this.selectedPango = uniq(this.selectedPango);
+
+      this.showSnackbar = true;
+      this.snackbarText = "Variants of Interest added"
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.selectedPango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold
+        }
+      })
+      this.getData();
+    },
     updateGenes() {
       this.$router.push({
         name: "SituationReportComparison",
@@ -510,6 +623,10 @@ export default {
       this.selectedLocation = location;
     },
     getData() {
+      const ofInterest = getBadMutations(true);
+      this.moc = ofInterest.moc;
+      this.moi = ofInterest.moi;
+
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.downloadableHeatmap = results.dataFlat;
@@ -607,6 +724,7 @@ export default {
           threshold: this.prevalenceThreshold
         }
       })
+
       this.getData();
     },
     clearPango() {
