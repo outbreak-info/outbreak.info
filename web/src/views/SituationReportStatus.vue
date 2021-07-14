@@ -79,11 +79,11 @@
           </button>
         </a>
 
-        <a href="#search">
+        <!-- <a href="#search">
           <button class="btn btn-grey mx-3 py-2">
             <small>Find a sequence</small>
           </button>
-        </a>
+        </a> -->
       </div>
 
       <!-- <section id="geographic" class="border-bottom py-4">
@@ -133,7 +133,7 @@
 
       </section>
 
-      <section id="search" class="d-flex flex-column align-items-center border-bottom py-4 w-100">
+      <!-- <section id="search" class="d-flex flex-column align-items-center border-bottom py-4 w-100">
         <h4>Find if a GISAID ID is included</h4>
         <div class="input-group max-width-50 my-3">
           <div class="input-group-prepend">
@@ -164,7 +164,7 @@
 
           </div>
         </div>
-      </section>
+      </section> -->
 
     </div>
   </div>
