@@ -947,6 +947,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-14 0:0"),
+      category: "feature",
+      title: "Added outbreak.info in the media",
+      description: "Press mentions of outbreak.info",
+      route: {
+        name: "Press"
+      }
+    },
+    {
       date: new Date("2020-04-10 0:0"),
       category: "feature",
       title: "Normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
