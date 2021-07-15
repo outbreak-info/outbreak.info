@@ -280,8 +280,8 @@
 
       <!-- LEGEND -->
       <div class="d-flex w-100 justify-content-end">
-        <div id="legend" class="d-flex bg-dark px-2 py-1 my-2">
-          <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+        <div id="legend" class="d-flex px-2 py-1 my-2" :class="{'bg-dark' : dark == 'true'}">
+          <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="dark" label="Mutation prevalence in lineage" class="mr-3" />
           <div class="d-flex align-items-center">
             <svg width="24" height="24">
               <defs>
@@ -291,7 +291,7 @@
               </defs>
               <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
             </svg>
-            <small class="text-light ml-2">not detected</small>
+            <small class="ml-2" :class="[dark == 'true' ? 'text-light' : 'text-muted']">not detected</small>
           </div>
           <div class="d-flex justify-content-center align-items-center ml-3">
             <span class="mr-3 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
@@ -310,11 +310,11 @@
         <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
           <template v-if="selectedGenes.includes(geneData.key)">
             <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
-            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" />
+            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :dark="dark" />
           </template>
         </div>
       </div>
-      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="true" />
+      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="dark=='true'" />
 
     </div>
 
@@ -405,6 +405,10 @@ export default {
     threshold: {
       type: [Number, String],
       default: 75
+    },
+    dark: {
+      type: String,
+      default: "true"
     },
     gene: {
       type: [Array, String],

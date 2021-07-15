@@ -1,10 +1,16 @@
 <template>
 <div class="overflow-auto" :class="{'w-75': isOverflow}">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap" name="Mutations by lineage" :subtitle="gene" style="background: #343a40;">
+  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap" name="Mutations by lineage" :subtitle="gene" :style="{background: bgColor}">
     <defs>
-      <pattern id="diagonalHatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+      <pattern id="diagonalHatchDark" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
       </pattern>
+      <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <rect x="-2" y="-2" width="10" height="10" fill="#efefef"/>
+        <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
+      </pattern>
+
+
     </defs>
     <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
     <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
@@ -76,6 +82,10 @@ export default Vue.extend({
     data: Array,
     gene: String,
     locationID: String,
+    dark: {
+      type: String,
+      default: "true"
+    },
     moc: {
       type: Array,
       default: () => []
@@ -115,6 +125,17 @@ export default Vue.extend({
       this.updatePlot();
     }
   },
+  computed: {
+    darkMode() {
+      return this.dark == "true";
+    },
+    bgColor() {
+      return this.darkMode ? "#343a40" : "none";
+    },
+    textColor() {
+      return this.darkMode ? "#efefef" : "#555555";
+    }
+  },
   data() {
     return {
       margin: {
@@ -133,7 +154,6 @@ export default Vue.extend({
       interestColor: "#feb56c",
       concernColorDark: "#e15759",
       interestColorDark: "#f28e2c",
-      defaultColor: "#efefef",
       // scales
       x: scaleBand(),
       y: scaleBand(),
@@ -245,7 +265,7 @@ export default Vue.extend({
       ttip
         .select("#lineageOfInterest")
         .html(this.voc.includes(d.pangolin_lineage) ? "<sup>*</sup> VOC" : this.voi.includes(d.pangolin_lineage) ? "<sup>*</sup> VOI" : "")
-        .style("color", this.voc.includes(d.pangolin_lineage) ? this.concernColorDark : this.voi.includes(d.pangolin_lineage) ? this.interestColorDark : this.defaultColor)
+        .style("color", this.voc.includes(d.pangolin_lineage) ? this.concernColorDark : this.voi.includes(d.pangolin_lineage) ? this.interestColorDark : this.textColor)
 
       ttip
         .select("#mutation")
@@ -254,7 +274,7 @@ export default Vue.extend({
       ttip
         .select("#mutationOfInterest")
         .html(this.moc.includes(d.mutation_simplified) ? "<sup>*</sup> MOC" : this.moi.includes(d.mutation_simplified) ? "<sup>*</sup> MOI" : "")
-        .style("color", this.moc.includes(d.mutation_simplified) ? this.concernColorDark : this.moi.includes(d.mutation_simplified) ? this.interestColorDark : this.defaultColor)
+        .style("color", this.moc.includes(d.mutation_simplified) ? this.concernColorDark : this.moi.includes(d.mutation_simplified) ? this.interestColorDark : this.textColor)
 
       if (d.prevalence) {
         ttip
@@ -406,7 +426,7 @@ export default Vue.extend({
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
             .attr("height", this.y.bandwidth())
-            .style("fill", "url(#diagonalHatch)")
+            .style("fill", this.darkMode ? "url(#diagonalHatchDark)" : "url(#diagonalHatchLight)")
             .style("stroke", "#888")
             .style("stroke-width", 0.5)
             .style("rx", this.rx)
@@ -482,7 +502,7 @@ export default Vue.extend({
               .attr("x", this.width)
               .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-              .style("fill", "#efefef")
+              .style("fill", this.textColor)
               .style("dominant-baseline", "central")
               .on("mouseover", d => this.highlightRow(d.key))
               .on("mouseout", this.highlightOff);
@@ -491,7 +511,7 @@ export default Vue.extend({
               .attr("class", "y-axis-lineage")
               .classed("hover-underline", "true")
               .classed("pointer", "true")
-              .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor)
+              .style("fill", d => this.voc.includes(d.key) ? (this.darkMode? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor)
               .style("font-size", 18)
               .attr("dx", 10)
               .text(d => d.key)
@@ -502,7 +522,7 @@ export default Vue.extend({
               // .attr("x", this.width + this.margin.right)
               // .style("text-anchor", "end")
               .style("font-size", 14)
-              .style("fill", "#d2d2d2")
+              .style("fill", this.darkMode ? "#d2d2d2" : "#999")
               .attr("dx", 7)
               // .attr("dx", -5)
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
@@ -515,7 +535,7 @@ export default Vue.extend({
 
             update.select(".y-axis-lineage")
               .text(d => d.key)
-              .style("fill", d => this.voc.includes(d.key) ? this.concernColor : this.voi.includes(d.key) ? this.interestColor : this.defaultColor);
+              .style("fill", d => this.voc.includes(d.key) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor);
 
             update.select(".y-axis-count")
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
@@ -536,6 +556,11 @@ export default Vue.extend({
         .on("mousemove", d => this.tooltipOn(d))
         .on("mouseleave", () => this.tooltipOff());
 
+      // stylize the axis lines
+      selectAll(".mutation-heatmap")
+        .selectAll(".axis line")
+        .style("stroke", this.textColor)
+
       // rotate and color axes :(
       select(this.$refs.xAxisTop)
         .selectAll("text")
@@ -544,7 +569,7 @@ export default Vue.extend({
         .attr("dy", "-0.75em")
         .attr("transform", "rotate(-35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
+        .style("fill", d => this.moc.includes(d) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor)
         .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
@@ -557,7 +582,7 @@ export default Vue.extend({
         .attr("dy", "1.25em")
         .attr("transform", "rotate(35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? this.concernColor : this.moi.includes(d) ? this.interestColor : this.defaultColor)
+        .style("fill", d => this.moc.includes(d) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor)
         .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
@@ -565,7 +590,7 @@ export default Vue.extend({
 
       select(this.$refs.yAxisLeft)
         .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? this.concernColor : this.voi.includes(d) ? this.interestColor : this.defaultColor)
+        .style("fill", d => this.voc.includes(d) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.voi.includes(d) ? (this.darkMode ? this.interestColor : this.interestColorDark): this.textColor)
         .attr("class", d => `hover-underline pointer ${d.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
         .on("click", d => this.route2Lineage(d))
         .on("mouseover", d => this.highlightRow(d))
@@ -576,12 +601,9 @@ export default Vue.extend({
 </script>
 
 <style lang = "scss">
-.mutation-heatmap {
-    background: #343a40!important;
-}
 .mutation-heatmap .axis--x text,
 .mutation-heatmap .axis--y text {
-    fill: #efefef;
+    /* fill: #efefef; */
     /* fill: #555; */
 }
 
@@ -600,9 +622,7 @@ export default Vue.extend({
 .mutation-heatmap .axis--y line {
     display: none;
 }
-.mutation-heatmap .axis line {
-    stroke: #efefef;
-}
+
 .tooltip-dark {
     background: #ffffffeb !important;
 }

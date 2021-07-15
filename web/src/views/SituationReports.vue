@@ -256,9 +256,9 @@
 
                   <!-- s-gene mutations heatmap -->
                   <td>
-                    <div class="d-flex flex-column align-items-center bg-dark">
-                      <MutationHeatmap :data="report.sMutations" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
-                      <router-link class="text-light" :to="{name:'SituationReportComparison', query: { pango: report.mutation_name }}" v-if="report.sMutations.length">
+                    <div class="d-flex flex-column align-items-center">
+                      <MutationHeatmap :data="report.sMutations" dark="false" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
+                      <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.mutation_name }}" v-if="report.sMutations.length">
                         <small>Explore all genes
                         </small>
                       </router-link>

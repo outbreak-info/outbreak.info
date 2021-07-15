@@ -1,6 +1,6 @@
 <template>
 <div class="d-flex flex-column">
-  <small :class="[dark? 'text-light' : 'text-muted']">{{label}}</small>
+  <small :class="[dark == 'true' ? 'text-light' : 'text-muted']">{{label}}</small>
   <svg :width="legendWidth" height="30" transform="translate(0,0)">
     <defs>
       <linearGradient id="linear-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
@@ -24,8 +24,8 @@ export default Vue.extend({
   props: {
     label: String,
     dark: {
-      type: Boolean,
-      default: false
+      type: String,
+      default: 'true'
     },
     legendWidth: {
       type: Number,

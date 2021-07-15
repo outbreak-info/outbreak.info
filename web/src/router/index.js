@@ -309,6 +309,7 @@ const routes = [{
       location: route.query.location,
       pango: route.query.pango,
       gene: route.query.gene,
+      dark: route.query.dark,
       threshold: route.query.threshold
     }),
     component: () =>
