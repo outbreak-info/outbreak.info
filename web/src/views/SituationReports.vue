@@ -858,6 +858,7 @@ export default {
       animation: "fade",
       theme: "light",
       allowHTML: true,
+      interactive: true,
       onShow(instance) {
         let info = instance.reference.dataset.tippyInfo;
         instance.setContent(info);
