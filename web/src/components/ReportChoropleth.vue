@@ -539,7 +539,8 @@ export default {
     route2Location(id) {
       if (this.report == "variant") {
         const query = this.$route.query;
-        query.loc.push(id);
+        let locs = query.loc ? query.loc : [];
+        locs.push(id);
         this.$router.push({
           name: "MutationReport",
           params: {
@@ -549,7 +550,7 @@ export default {
             pango: query.pango,
             muts: query.muts,
             selected: id,
-            loc: query.loc
+            loc: locs
           }
         })
       } else if (this.report == "location") {
