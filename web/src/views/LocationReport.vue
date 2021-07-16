@@ -692,7 +692,7 @@ export default {
     tippy(".dark-mode-helper", {
       content: "Loading...",
       maxWidth: "200px",
-      placement: "right",
+      placement: "bottom",
       animation: "fade",
       theme: "material",
       allowHTML: true,

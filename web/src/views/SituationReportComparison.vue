@@ -364,7 +364,7 @@ import {
 } from "@/api/genomics.js";
 
 import tippy from "tippy.js";
-import 'tippy.js/themes/material.css';
+import 'tippy.js/themes/light.css';
 
 
 // --- font awesome --
@@ -531,6 +531,19 @@ export default {
       // set URL for sharing, etc.
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
+
+      tippy(".dark-mode-helper", {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "right",
+        animation: "fade",
+        theme: "light",
+        allowHTML: true,
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
     })
 
     // load the initial data
@@ -545,20 +558,6 @@ export default {
   },
   created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
-  },
-  updated() {
-    tippy(".dark-mode-helper", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "right",
-      animation: "fade",
-      theme: "material",
-      allowHTML: true,
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      }
-    });
   },
   destroyed() {
     if (this.basicSubscription) {
