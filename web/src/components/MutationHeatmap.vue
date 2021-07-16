@@ -6,7 +6,7 @@
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
       </pattern>
       <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-        <rect x="-2" y="-2" width="10" height="10" fill="#efefef"/>
+        <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
         <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
       </pattern>
 
@@ -83,8 +83,8 @@ export default Vue.extend({
     gene: String,
     locationID: String,
     dark: {
-      type: String,
-      default: "true"
+      type: Boolean,
+      default: true
     },
     moc: {
       type: Array,
@@ -123,24 +123,24 @@ export default Vue.extend({
   watch: {
     data() {
       this.updatePlot();
+    },
+    dark() {
+      this.updatePlot();
     }
   },
   computed: {
-    darkMode() {
-      return this.dark == "true";
-    },
     bgColor() {
-      return this.darkMode ? "#343a40" : "none";
+      return this.dark ? "#343a40" : "none";
     },
     textColor() {
-      return this.darkMode ? "#efefef" : "#555555";
+      return this.dark ? "#efefef" : "#555555";
     }
   },
   data() {
     return {
       margin: {
         top: 72,
-        right: 190,
+        right: 195,
         bottom: 72,
         left: 153
       },
@@ -426,7 +426,7 @@ export default Vue.extend({
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
             .attr("height", this.y.bandwidth())
-            .style("fill", this.darkMode ? "url(#diagonalHatchDark)" : "url(#diagonalHatchLight)")
+            .style("fill", this.dark ? "url(#diagonalHatchDark)" : "url(#diagonalHatchLight)")
             .style("stroke", "#888")
             .style("stroke-width", 0.5)
             .style("rx", this.rx)
@@ -437,6 +437,7 @@ export default Vue.extend({
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
             .attr("height", this.y.bandwidth())
+            .style("fill", this.dark ? "url(#diagonalHatchDark)" : "url(#diagonalHatchLight)")
         },
         exit =>
         exit.call(exit =>
@@ -511,7 +512,7 @@ export default Vue.extend({
               .attr("class", "y-axis-lineage")
               .classed("hover-underline", "true")
               .classed("pointer", "true")
-              .style("fill", d => this.voc.includes(d.key) ? (this.darkMode? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor)
+              .style("fill", d => this.voc.includes(d.key) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
               .style("font-size", 18)
               .attr("dx", 10)
               .text(d => d.key)
@@ -522,7 +523,7 @@ export default Vue.extend({
               // .attr("x", this.width + this.margin.right)
               // .style("text-anchor", "end")
               .style("font-size", 14)
-              .style("fill", this.darkMode ? "#d2d2d2" : "#999")
+              .style("fill", this.dark ? "#d2d2d2" : "#999")
               .attr("dx", 7)
               // .attr("dx", -5)
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
@@ -535,9 +536,10 @@ export default Vue.extend({
 
             update.select(".y-axis-lineage")
               .text(d => d.key)
-              .style("fill", d => this.voc.includes(d.key) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor);
+              .style("fill", d => this.voc.includes(d.key) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor);
 
             update.select(".y-axis-count")
+              .style("fill", this.dark ? "#d2d2d2" : "#999")
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
           },
           exit =>
@@ -569,7 +571,7 @@ export default Vue.extend({
         .attr("dy", "-0.75em")
         .attr("transform", "rotate(-35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor)
+        .style("fill", d => this.moc.includes(d) ? (this.dark ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
         .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
@@ -582,7 +584,7 @@ export default Vue.extend({
         .attr("dy", "1.25em")
         .attr("transform", "rotate(35)")
         .style("text-anchor", "start")
-        .style("fill", d => this.moc.includes(d) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.darkMode ? this.interestColor : this.interestColorDark) : this.textColor)
+        .style("fill", d => this.moc.includes(d) ? (this.dark ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
         .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
@@ -590,7 +592,7 @@ export default Vue.extend({
 
       select(this.$refs.yAxisLeft)
         .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? (this.darkMode ? this.concernColor : this.concernColorDark) : this.voi.includes(d) ? (this.darkMode ? this.interestColor : this.interestColorDark): this.textColor)
+        .style("fill", d => this.voc.includes(d) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
         .attr("class", d => `hover-underline pointer ${d.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
         .on("click", d => this.route2Lineage(d))
         .on("mouseover", d => this.highlightRow(d))

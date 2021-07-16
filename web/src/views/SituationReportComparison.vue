@@ -90,7 +90,7 @@
             </h6>
             <div class="d-flex flex-column align-items-center">
               <div class="d-flex mt-2 mb-2">
-                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(false)" >
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(false)">
                   <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOCs</b>
                 </button>
                 <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(true)">
@@ -98,7 +98,7 @@
                 </button>
               </div>
               <div class="d-flex pt-2 border-top">
-                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(false)" >
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(false)">
                   <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOIs</b>
                 </button>
                 <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(true)">
@@ -279,9 +279,19 @@
       </div>
 
       <!-- LEGEND -->
-      <div class="d-flex w-100 justify-content-end">
-        <div id="legend" class="d-flex px-2 py-1 my-2" :class="{'bg-dark' : dark == 'true'}">
-          <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="dark" label="Mutation prevalence in lineage" class="mr-3" />
+      <div class="d-flex w-100 justify-content-between">
+        <div class="d-flex my-2">
+          <label class="switch">
+            <input type="checkbox" v-model="darkMode">
+            <span class="slider round"></span>
+          </label>
+          <div class="ml-2">
+            dark mode
+          </div>
+        </div>
+
+        <div id="legend" class="d-flex px-2 py-1 my-2" :class="{'bg-dark' : darkMode}">
+          <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="darkMode" label="Mutation prevalence in lineage" class="mr-3" />
           <div class="d-flex align-items-center">
             <svg width="24" height="24">
               <defs>
@@ -291,7 +301,7 @@
               </defs>
               <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
             </svg>
-            <small class="ml-2" :class="[dark == 'true' ? 'text-light' : 'text-muted']">not detected</small>
+            <small class="ml-2" :class="[darkMode ? 'text-light' : 'text-muted']">not detected</small>
           </div>
           <div class="d-flex justify-content-center align-items-center ml-3">
             <span class="mr-3 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
@@ -310,11 +320,11 @@
         <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
           <template v-if="selectedGenes.includes(geneData.key)">
             <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
-            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :dark="dark" />
+            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :dark="darkMode" />
           </template>
         </div>
       </div>
-      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="dark=='true'" />
+      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="darkMode" />
 
     </div>
 
@@ -408,7 +418,7 @@ export default {
     },
     dark: {
       type: String,
-      default: "true"
+      default: "false"
     },
     gene: {
       type: [Array, String],
@@ -451,6 +461,7 @@ export default {
     return {
       today: null,
       url: null,
+      darkMode: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
       title: "Lineage Comparison",
       queryPangolin: null,
@@ -501,6 +512,8 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
+    this.darkMode = this.dark == "true";
+
     this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = typeof(this.gene) === "string" ? [this.gene] : this.gene;
@@ -524,8 +537,7 @@ export default {
       this.totalSequences = results.total;
       this.lastUpdated = results.dateUpdated.lastUpdated;
     })
-  },
-  created() {
+  },  created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
   },
   destroyed() {
@@ -546,7 +558,7 @@ export default {
     addVOCs(clear = true) {
       // remove lineages w/ additional mutations
       this.selectedPango = clear ? this.voc :
-      this.voc.concat(this.selectedPango);
+        this.voc.concat(this.selectedPango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
@@ -571,7 +583,7 @@ export default {
     addVOIs(clear = true) {
       // remove lineages w/ additional mutations
       this.selectedPango = clear ? this.voi :
-      this.voi.concat(this.selectedPango);
+        this.voi.concat(this.selectedPango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
