@@ -282,7 +282,7 @@
       <div class="d-flex w-100 justify-content-between">
         <div class="d-flex my-2">
           <label class="switch">
-            <input type="checkbox" v-model="darkMode">
+            <input type="checkbox" v-model.lazy="darkMode" @change="routeDark">
             <span class="slider round"></span>
           </label>
           <div class="ml-2">
@@ -418,7 +418,7 @@ export default {
     },
     dark: {
       type: String,
-      default: "false"
+      default: "true"
     },
     gene: {
       type: [Array, String],
@@ -537,7 +537,8 @@ export default {
       this.totalSequences = results.total;
       this.lastUpdated = results.dateUpdated.lastUpdated;
     })
-  },  created() {
+  },
+  created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
   },
   destroyed() {
@@ -575,7 +576,8 @@ export default {
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
       this.getData();
@@ -600,7 +602,8 @@ export default {
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
       this.getData();
@@ -614,7 +617,8 @@ export default {
         query: {
           pango: this.pango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
     },
@@ -628,7 +632,8 @@ export default {
           query: {
             pango: this.pango,
             gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode
           }
         })
 
@@ -649,6 +654,20 @@ export default {
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
         this.voi = results.voi;
+      })
+    },
+    routeDark() {
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.pango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
+        }
       })
     },
     addMutations() {
@@ -673,7 +692,8 @@ export default {
           query: {
             pango: results.yDomain,
             gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode
           }
         })
 
@@ -703,7 +723,8 @@ export default {
           query: {
             pango: results.yDomain,
             gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode
           }
         })
 
@@ -737,7 +758,8 @@ export default {
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
 
@@ -750,7 +772,8 @@ export default {
         query: {
           pango: [],
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
       this.mutationHeatmap = null;
@@ -765,7 +788,8 @@ export default {
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
       this.getData();
