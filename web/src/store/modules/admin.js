@@ -545,6 +545,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-16 0:0"),
+      category: "variants",
+      title: "Removed B.1.351.1 as a VOC",
+      description: 'Based on reassignment of B.1.351.1 lineages by PANGO, resulting in no sequences assigned, removing B.1.351.1 as a Variant of Concern.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-06-20 0:0"),
       category: "variants",
       title: "Removed B.1.526.1 and B.1.526.2 as VOIs due to PANGO reassignment into B.1.526",
