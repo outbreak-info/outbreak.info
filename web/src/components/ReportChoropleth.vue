@@ -61,6 +61,7 @@ export default {
   props: {
     data: Array,
     mutationName: String,
+    report: String,
     fillMax: Number,
     location: {
       type: String,
@@ -371,6 +372,8 @@ export default {
                 .attr("d", this.path
                   .projection(this.projection)
                 )
+                .classed("pointer", true)
+                .on("click", d => this.route2Location(d.properties.location_id))
                 .style("fill", d => d.fill ? d.fill : this.nullColor)
                 .style("stroke", this.strokeColor)
                 .style("stroke-width", 0.5)
@@ -378,6 +381,7 @@ export default {
             update => update
             .attr("class", d => `${d.properties.location_id} region region-fill`)
             .attr("id", d => d.properties.location_id)
+            .on("click", d => this.route2Location(d.properties.location_id))
             // draw each region
             .attr("d", this.path
               .projection(this.projection)
@@ -531,6 +535,39 @@ export default {
         .style("opacity", 1)
         .style("stroke-opacity", 1);
 
+    },
+    route2Location(id) {
+      if (this.report == "variant") {
+        const query = this.$route.query;
+        query.loc.push(id);
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: query.pango,
+            muts: query.muts,
+            selected: id,
+            loc: query.loc
+          }
+        })
+      } else if (this.report == "location") {
+        const query = this.$route.query;
+        this.$router.push({
+          name: "LocationReport",
+          query: {
+            loc: id,
+            muts: query.muts,
+            pango: query.pango,
+            variant: query.variant,
+            selected: query.selected,
+            dark: query.dark,
+            xmax: query.xmax,
+            xmin: query.xmin
+          }
+        })
+      }
     },
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this

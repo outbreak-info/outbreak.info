@@ -325,7 +325,7 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
+                <ReportChoropleth report="location" :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
                   :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
