@@ -269,7 +269,7 @@
         <div v-if="selectedLocation && selectedLocation.admin_level < 2">
           <template v-if="selectedLocation.admin_level < 1">
             <div class="d-flex align-items-center justify-content-end mb-3 mt-2">
-              <router-link v-if="selectedLocation.id" class="mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
+              <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
               <Warning text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
             </div>
             <div class="d-flex flex-wrap">
