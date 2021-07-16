@@ -282,7 +282,7 @@
               <div>
                 <div class = "border-bottom pb-2">
                   <sup class="text-muted mr-1">*</sup>
-                  <small class="text-muted line-height-1">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link>. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For applications like reagent design which require stringent accuracy, we recommend downloading the consequence sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
+                  <small class="text-muted line-height-1">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link>. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
                   </small>
                 </div>
                 <div v-for="(variant, vIdx) in variantTypes" :key="vIdx" class="line-height-1 my-2">
