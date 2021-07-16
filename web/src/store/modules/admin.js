@@ -385,6 +385,27 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-15 0:0"),
+      category: "feature",
+      title: "Added warning for the characteristic mutations of lineages with few sequences",
+      description: 'To alert users that characteristic mutations of lineages with few sequences may change as new data is collected, added a warning message.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-07-15 0:0"),
+      category: "feature",
+      title: "Added a light mode to Lineage Comparison",
+      description: 'To focus on commonalities between lineages when comparing their mutations, we added a light mode that allows you to focus on the high prevalence mutations.',
+      route: {
+        name: "SituationReportComparison",
+        query: {
+          dark: false
+        }
+      }
+    },
+    {
       date: new Date("2020-12-04 0:0"),
       category: "data",
       title: "Added COVID-19 Literature Surveillance Team Reports",
