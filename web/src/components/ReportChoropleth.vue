@@ -541,7 +541,7 @@ export default {
     route2Location(id) {
       if (this.report == "variant") {
         const query = this.$route.query;
-        let locs = query.loc ? query.loc : [];
+        let locs = query.loc ? (typeof(query.loc) == "string" ? [query.loc] : query.loc) : [];
         locs.push(id);
         this.$router.push({
           name: "MutationReport",
