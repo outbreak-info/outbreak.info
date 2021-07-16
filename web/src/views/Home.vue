@@ -79,17 +79,17 @@
           </form>
           <small id="sBar-example-variant-lineage" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.617.2'}} " class="text-light">B.1.617.2 / Delta
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.526', muts: 'S:E484K', selected:'USA_US-NY'}} " class="text-light">B.1.526 with S:E484K
+              <router-link :to="{name: 'MutationReport', query: {muts: ['S:T19R','S:DEL157/158','S:L452R','S:T478K','S:P681R','S:D950N']}} " class="text-light">Delta+ variants
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: { muts: ['S:S13I','S:L452R'], selected:'USA_US-CA'}} " class="text-light">S:S13I &amp; S:L452R
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7 / Alpha
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
