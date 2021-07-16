@@ -128,7 +128,7 @@
         <small>
           <div class="line-height-1">
             <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
-            <a class='ml-2 d-inline' href='http://localhost:8080/situation-reports/caveats#variant'>Read more</a>
+            <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
           </div>
         </small>
 
@@ -258,10 +258,16 @@
                   <td>
                     <div class="d-flex flex-column align-items-center">
                       <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
-                      <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.mutation_name }}" v-if="report.sMutations.length">
-                        <small>Explore all genes
-                        </small>
-                      </router-link>
+                      <div class="d-flex">
+                        <div v-if="report.lineage_count < lineageWarningThreshold">
+                          <font-awesome-icon class="warning mr-2 low-count" :data-tippy-info="`<span class='text-underline'>Warning</span>: currently, there are only <b>${report.lineage_count} sequences</b> reported for <b>${report.mutation_name}</b>. The characteristic mutations for ${report.mutation_name} might change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`" :icon="['fas', 'exclamation-circle']" />
+                        </div>
+                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.mutation_name }}" v-if="report.sMutations.length">
+                          <small>Explore all genes
+                          </small>
+                        </router-link>
+                      </div>
+
                     </div>
                   </td>
                 </tr>
@@ -276,9 +282,7 @@
               <div>
                 <div class = "border-bottom pb-2">
                   <sup class="text-muted mr-1">*</sup>
-                  <small class="text-muted">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read
-                      more)
-                    </router-link>
+                  <small class="text-muted line-height-1">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link>. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For applications like reagent design which require stringent accuracy, we recommend downloading the consequence sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
                   </small>
                 </div>
                 <div v-for="(variant, vIdx) in variantTypes" :key="vIdx" class="line-height-1 my-2">
@@ -317,7 +321,7 @@
         <small>
           <div class="line-height-1">
             <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
-            <a class='ml-2 d-inline' href='http://localhost:8080/situation-reports/caveats#variant'>Read more</a>
+            <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
           </div>
         </small>
 
@@ -454,10 +458,10 @@ import {
 import {
   faSpinner,
   faInfoCircle,
-  faSearch
+  faSearch, faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faClock, faSpinner, faInfoCircle, faSearch);
+library.add(faClock, faSpinner, faInfoCircle, faSearch, faExclamationCircle);
 
 import {
   mapState
@@ -743,6 +747,7 @@ export default {
       mutationReports: null,
       filteredReports: null,
       filteredMutations: null,
+      lineageWarningThreshold: 1000,
       variantTypes: [{
           id: "VOC",
           label: "Variant of Concern",
@@ -836,6 +841,19 @@ export default {
     tippy(".tracked-variant-badge", {
       content: "Loading...",
       maxWidth: "250px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+
+    tippy(".low-count", {
+      content: "Loading...",
+      maxWidth: "200px",
       placement: "bottom",
       animation: "fade",
       theme: "light",
