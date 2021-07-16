@@ -61,6 +61,7 @@ export default {
   props: {
     data: Array,
     mutationName: String,
+    report: String,
     fillMax: Number,
     location: {
       type: String,
@@ -298,12 +299,14 @@ export default {
             d[this.variable] = seq[this.variable];
             // filter values with too few values
             d["fill"] = seq.cum_total_count >= this.countThreshold ? this.colorScale(d[this.variable]) : this.filteredColor;
+            d["id"] = seq.id;
             d["lower"] = seq.proportion_ci_lower;
             d["upper"] = seq.proportion_ci_upper;
             d["cum_lineage_count"] = seq["cum_lineage_count"];
             d["cum_total_count"] = seq["cum_total_count"];
             d["proportion_formatted"] = seq.proportion_formatted;
           } else {
+            d["id"] = null;
             d["fill"] = null;
             d["lower"] = null
             d["upper"] = null
@@ -371,6 +374,8 @@ export default {
                 .attr("d", this.path
                   .projection(this.projection)
                 )
+                .classed("pointer", true)
+                .on("click", d => this.route2Location(d.id))
                 .style("fill", d => d.fill ? d.fill : this.nullColor)
                 .style("stroke", this.strokeColor)
                 .style("stroke-width", 0.5)
@@ -378,6 +383,7 @@ export default {
             update => update
             .attr("class", d => `${d.properties.location_id} region region-fill`)
             .attr("id", d => d.properties.location_id)
+            .on("click", d => this.route2Location(d.id))
             // draw each region
             .attr("d", this.path
               .projection(this.projection)
@@ -531,6 +537,40 @@ export default {
         .style("opacity", 1)
         .style("stroke-opacity", 1);
 
+    },
+    route2Location(id) {
+      if (this.report == "variant") {
+        const query = this.$route.query;
+        let locs = query.loc ? (typeof(query.loc) == "string" ? [query.loc] : query.loc) : [];
+        locs.push(id);
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: query.pango,
+            muts: query.muts,
+            selected: id,
+            loc: locs
+          }
+        })
+      } else if (this.report == "location") {
+        const query = this.$route.query;
+        this.$router.push({
+          name: "LocationReport",
+          query: {
+            loc: id,
+            muts: query.muts,
+            pango: query.pango,
+            variant: query.variant,
+            selected: query.selected,
+            dark: query.dark,
+            xmax: query.xmax,
+            xmin: query.xmin
+          }
+        })
+      }
     },
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this

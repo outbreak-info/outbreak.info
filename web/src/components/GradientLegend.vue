@@ -20,7 +20,7 @@ import {
   range
 } from "d3";
 export default Vue.extend({
-  name: "ReportPrevalenceByLocation",
+  name: "GradientLegend",
   props: {
     label: String,
     dark: {

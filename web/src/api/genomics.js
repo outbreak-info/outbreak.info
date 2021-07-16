@@ -392,6 +392,10 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
+  if(!locations || !locations.length) {
+    locations = [location];
+  }
+
   locations.push("Worldwide");
 
   // ensure locations are unique
