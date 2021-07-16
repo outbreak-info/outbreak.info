@@ -286,7 +286,6 @@
             <span class="on">dark mode</span>
             <span class="off">light mode</span>
           </label>
-
         </div>
 
         <div id="legend" class="d-flex px-2 py-1 my-2" :class="{'bg-dark' : darkMode}">
@@ -420,8 +419,8 @@ export default {
       default: 75
     },
     dark: {
-      type: String,
-      default: "true"
+      type: [String, Boolean],
+      default: true
     },
     gene: {
       type: [Array, String],
@@ -518,7 +517,7 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
-    this.darkMode = this.dark == "true";
+    this.darkMode = this.dark == "true" || !!(this.dark);
 
     this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);

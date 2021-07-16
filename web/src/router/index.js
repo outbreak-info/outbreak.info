@@ -473,6 +473,7 @@ const routes = [{
       pango: route.query.pango,
       variant: route.query.variant,
       selected: route.query.selected,
+      dark: route.query.dark,
       xmax: route.query.xmax,
       xmin: route.query.xmin
     }),

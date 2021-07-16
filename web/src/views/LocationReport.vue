@@ -221,11 +221,19 @@
             </small>
           </div>
 
-          <div class="d-flex flex-column align-items-center bg-dark">
+          <div class="d-flex flex-column align-items-center" :class="{'bg-dark': darkMode}">
 
             <!-- HEATMAP LEGEND -->
-            <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
-              <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+            <div id="legend" class="d-flex justify-content-between align-items-center px-2 py-1 border-bottom">
+              <div class="d-flex align-items-center dark-mode-helper my-2" :data-tippy-info="darkModeHelper" style="margin-left: 85px; margin-right: 100px;">
+                <input class="checkbox" id="checkbox1" type="checkbox" v-model.lazy="darkMode" @change="routeDark" />
+                <label for="checkbox1" class="checkbox-label">
+                  <span class="on">dark mode</span>
+                  <span class="off">light mode</span>
+                </label>
+              </div>
+
+              <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="darkMode" label="Mutation prevalence in lineage" class="mr-3" />
               <div class="d-flex align-items-center">
                 <svg width="24" height="24">
                   <defs>
@@ -235,7 +243,7 @@
                   </defs>
                   <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
                 </svg>
-                <small class="text-light ml-2">not detected</small>
+                <small class="ml-2" :class="[darkMode ? 'text-light' : 'text-muted']">not detected</small>
               </div>
               <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
                 Variant / Mutation of Concern
@@ -244,7 +252,7 @@
                 Variant / Mutation of Interest
               </span>
             </div>
-            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" :dark="darkMode" />
           </div>
           <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
         </div>
@@ -369,6 +377,8 @@
 <script>
 import Vue from "vue";
 
+import tippy from "tippy.js";
+
 // --- font awesome --
 import {
   FontAwesomeIcon
@@ -445,6 +455,10 @@ export default {
     muts: [Array, String],
     pango: [Array, String],
     variant: [Array, String],
+    dark: {
+      type: [String, Boolean],
+      default: true
+    },
     selected: {
       type: [Array, String],
       default: () => []
@@ -512,6 +526,9 @@ export default {
     },
     formValid() {
       return (this.newMuts.length > 0 || this.newPango)
+    },
+    darkModeHelper() {
+      return (this.darkMode ? "Switch to <b>light mode</b> to focus on similarities between lineages" : "Switch to <b>dark mode</b> to emphasize mutations with low prevalence")
     },
     newVariant() {
       let newVariantObj = null;
@@ -638,6 +655,8 @@ export default {
     this.debounceWindowChange = debounce(this.updateWindow, 700);
   },
   mounted() {
+    this.darkMode = this.dark == "true" || !!(this.dark);
+
     const ofInterest = getBadMutations(true);
     this.moc = ofInterest.moc;
     this.moi = ofInterest.moi;
@@ -667,6 +686,20 @@ export default {
     this.setDims();
 
     this.setupReport();
+  },
+  updated() {
+    tippy(".dark-mode-helper", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "right",
+      animation: "fade",
+      theme: "light",
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
   },
   methods: {
     setDims() {
@@ -717,6 +750,7 @@ export default {
           pango: this.pango,
           variant: this.variant,
           muts: this.muts,
+          dark: this.darkMode,
           selected: this.selected
         }
       })
@@ -816,7 +850,24 @@ export default {
           pango: uniq(pango),
           variant: uniq(variant),
           muts: uniq(mutation),
+          dark: this.darkMode,
           selected: uniq(selected)
+        }
+      })
+    },
+    routeDark() {
+      this.$router.push({
+        name: "LocationReport",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          loc: this.loc,
+          pango: this.pango,
+          variant: this.variant,
+          muts: this.muts,
+          dark: this.darkMode,
+          selected: this.selected
         }
       })
     },
@@ -848,6 +899,7 @@ export default {
     return ({
       smallScreen: false,
       mediumScreen: false,
+      darkMode: null,
       currentTime: null,
       today: null,
       url: null,
