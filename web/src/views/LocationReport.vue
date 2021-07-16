@@ -656,7 +656,7 @@ export default {
     this.debounceWindowChange = debounce(this.updateWindow, 700);
   },
   mounted() {
-    this.darkMode = this.dark == "true" || !!(this.dark);
+    this.darkMode = this.dark == "true" || !!(this.dark) && this.dark != "false";
 
     const ofInterest = getBadMutations(true);
     this.moc = ofInterest.moc;

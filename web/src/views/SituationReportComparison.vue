@@ -517,7 +517,7 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
-    this.darkMode = this.dark == "true" || !!(this.dark);
+    this.darkMode = this.dark == "true" || !!(this.dark) && this.dark != "false";
 
     this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);
