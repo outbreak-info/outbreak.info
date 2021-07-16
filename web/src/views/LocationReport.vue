@@ -873,6 +873,7 @@ export default {
       })
     },
     updateWindow() {
+      this.dayThresh = +this.recentWindow;
       this.setupReport();
       this.updateMaps();
     },
