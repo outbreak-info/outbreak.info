@@ -280,14 +280,13 @@
 
       <!-- LEGEND -->
       <div class="d-flex w-100 justify-content-between">
-        <div class="d-flex my-2">
-          <label class="switch">
-            <input type="checkbox" v-model.lazy="darkMode" @change="routeDark">
-            <span class="slider round"></span>
+        <div class="d-flex align-items-center dark-mode-helper my-2" :data-tippy-info="darkModeHelper" style="margin-left: 85px;">
+          <input class="checkbox" id="checkbox1" type="checkbox" v-model.lazy="darkMode" @change="routeDark" />
+          <label for="checkbox1" class="checkbox-label">
+            <span class="on">dark mode</span>
+            <span class="off">light mode</span>
           </label>
-          <div class="ml-2">
-            dark mode
-          </div>
+
         </div>
 
         <div id="legend" class="d-flex px-2 py-1 my-2" :class="{'bg-dark' : darkMode}">
@@ -364,6 +363,10 @@ import {
   getComparisonByLocation,
   getBadMutations
 } from "@/api/genomics.js";
+
+import tippy from "tippy.js";
+// import "tippy.js/themes/light.css";
+
 
 // --- font awesome --
 import {
@@ -455,6 +458,9 @@ export default {
     },
     mutationValid() {
       return /\w+:[A-z]\d+[A-z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
+    },
+    darkModeHelper() {
+      return (this.darkMode ? "Switch to <b>light mode</b> to focus on similarities between lineages" : "Switch to <b>dark mode</b> to emphasize mutations with low prevalence")
     }
   },
   data() {
@@ -540,6 +546,20 @@ export default {
   },
   created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
+  },
+  updated() {
+    tippy(".dark-mode-helper", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "right",
+      animation: "fade",
+      theme: "light",
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
   },
   destroyed() {
     if (this.basicSubscription) {
