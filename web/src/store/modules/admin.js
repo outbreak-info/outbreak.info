@@ -394,6 +394,18 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-16 0:0"),
+      category: "feature",
+      title: "Enabled navigation from Variant Report maps",
+      description: 'On the choropleth maps in the Lineage|Mutation Tracker and Location Tracker, clicking on a country or state/province in the map will redirect you to data for that location.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.1.7"
+        }
+      }
+    },
+    {
       date: new Date("2021-07-15 0:0"),
       category: "feature",
       title: "Added a light mode to Lineage Comparison",

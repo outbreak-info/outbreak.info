@@ -268,8 +268,9 @@
 
         <div v-if="selectedLocation && selectedLocation.admin_level < 2">
           <template v-if="selectedLocation.admin_level < 1">
-            <div class="d-flex align-items-center justify-content-end mb-3">
-              <Warning class="mt-2" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            <div class="d-flex align-items-center justify-content-end mb-3 mt-2">
+              <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
+              <Warning text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
             </div>
             <div class="d-flex flex-wrap">
               <!-- Legend -->
@@ -280,10 +281,10 @@
               <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
             </div>
 
-            <ReportChoropleth class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" />
+            <ReportChoropleth report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" />
           </template>
 
-          <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" class="mt-2" :colorScale="choroColorScale" />
+          <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
         </div>
 
         <div class="text-muted my-5" v-else>
