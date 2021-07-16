@@ -410,7 +410,6 @@ export default Vue.extend({
       })
     },
     drawPlot() {
-
       // base: no values
       const heatmapBaseSelector = this.heatmapBase
         .selectAll(".heatmap-base")
@@ -437,6 +436,12 @@ export default Vue.extend({
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
             .attr("height", this.y.bandwidth())
+            .transition()
+            .duration(250)
+            .style("fill-opacity", 0)
+            .transition()
+            .duration(250)
+            .style("fill-opacity", 1)
             .style("fill", this.dark ? "url(#diagonalHatchDark)" : "url(#diagonalHatchLight)")
         },
         exit =>
