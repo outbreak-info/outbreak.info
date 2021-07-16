@@ -364,7 +364,7 @@ import {
 } from "@/api/genomics.js";
 
 import tippy from "tippy.js";
-// import "tippy.js/themes/light.css";
+import 'tippy.js/themes/material.css';
 
 
 // --- font awesome --
@@ -552,7 +552,7 @@ export default {
       maxWidth: "200px",
       placement: "right",
       animation: "fade",
-      theme: "light",
+      theme: "material",
       allowHTML: true,
       onShow(instance) {
         let info = instance.reference.dataset.tippyInfo;

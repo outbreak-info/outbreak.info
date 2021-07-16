@@ -378,6 +378,7 @@
 import Vue from "vue";
 
 import tippy from "tippy.js";
+import 'tippy.js/themes/material.css';
 
 // --- font awesome --
 import {
@@ -693,7 +694,7 @@ export default {
       maxWidth: "200px",
       placement: "right",
       animation: "fade",
-      theme: "light",
+      theme: "material",
       allowHTML: true,
       onShow(instance) {
         let info = instance.reference.dataset.tippyInfo;
