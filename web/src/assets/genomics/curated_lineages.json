@@ -26,7 +26,7 @@
     "phe_name": "VOC-21APR-02",
     "variantType": "Variant of Concern",
     "dateModified": "2021-06-11",
-    "related": [{"identifier": "B_1_617_2","label": "B.1.617.2"}, {"identifier": "AY_2","label": "AY.2"}],
+    "related": [{"identifier": "B_1_617_2","label": "B.1.617.2"}, {"identifier": "AY_2","label": "AY.2"}, {"identifier": "AY_1","label": "AY.3"}],
     "classifications": [
       {"author": "WHO", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOC"},
       {"author": "CDC", "dateModified": "2021-07-06", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
@@ -47,7 +47,7 @@
     "phe_name": "VOC-21APR-02",
     "variantType": "Variant of Concern",
     "dateModified": "2021-06-18",
-    "related": [{"identifier": "B_1_617_2","label": "B.1.617.2"}, {"identifier": "AY_1","label": "AY.1"}],
+    "related": [{"identifier": "B_1_617_2","label": "B.1.617.2"}, {"identifier": "AY_1","label": "AY.1"}, {"identifier": "AY_1","label": "AY.3"}],
     "classifications": [
       {"author": "WHO", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VOC"},
       {"author": "CDC", "dateModified": "2021-07-06", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"},
@@ -57,6 +57,22 @@
     "reportQuery": {
       "pango": "AY.2",
       "loc": ["IND", "GBR", "USA"]
+    }
+  },
+  {
+    "mutation_name": "AY.3",
+    "identifier": "AY_3",
+    "pangolin_lineage": "AY.3",
+    "searchTerms": ["AY.3"],
+    "variantType": "Variant of Concern",
+    "dateModified": "2021-07-21",
+    "related": [{"identifier": "B_1_617_2","label": "B.1.617.2"}, {"identifier": "AY_1","label": "AY.1"}, {"identifier": "AY_2","label": "AY.2"}],
+    "classifications": [
+      {"author": "CDC", "dateModified": "2021-07-20", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOC"}
+    ],
+    "reportQuery": {
+      "pango": "AY.3",
+      "loc": ["USA", "GBR"]
     }
   },
   {
