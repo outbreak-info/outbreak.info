@@ -526,7 +526,6 @@
     "dateModified": "2021-04-01",
     "classifications": [
       {"author": "WHO", "dateModified": "2021-07-06", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/", "variantType": "VUM"},
-      {"author": "CDC", "url":"https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html", "variantType": "VOI"},
       {"author": "PHE", "dateModified": "2021-01-13", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf", "variantType": "VOI"},
       {"author": "ECDC",   "url": "https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VUM"}
     ],
