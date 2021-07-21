@@ -568,7 +568,7 @@ const state = {
     {
       date: new Date("2021-07-21 0:0"),
       category: "variants",
-      title: "Added AY.3 as a VOC",
+      title: "Added AY.3 as a VOC.",
       description: 'Based on the <a target="_blank" href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html">CDC classification</a> of AY.3 as a VOC.',
       route: {
         name: "MutationReport",
@@ -577,6 +577,12 @@ const state = {
           loc: ["USA", "GBR"]
         }
       }
+    },
+    {
+      date: new Date("2021-07-21 0:1"),
+      category: "variants",
+      title: "Removed P.2 as a VOI by CDC.",
+      description: 'Based on the <a target="_blank" href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html">CDC report</a> removing P.2 as VOI'
     },
     {
       date: new Date("2021-06-20 0:0"),
