@@ -566,6 +566,19 @@ const state = {
       }
     },
     {
+      date: new Date("2021-07-21 0:0"),
+      category: "variants",
+      title: "Added AY.3 as a VOC",
+      description: 'Based on the <a target="_blank" href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html">CDC classification</a> of AY.3 as a VOC.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "AY.3",
+          loc: ["USA", "GBR"]
+        }
+      }
+    },
+    {
       date: new Date("2021-06-20 0:0"),
       category: "variants",
       title: "Removed B.1.526.1 and B.1.526.2 as VOIs due to PANGO reassignment into B.1.526",
