@@ -51,6 +51,10 @@ const state = {
       img: "julia.jpg"
     },
     {
+      name: "Rachel Sattler",
+      img: "rachel.jpg"
+    },
+    {
       name: "Andrew Su",
       img: "andrew.jpg",
       email: "asu@scripps.edu",
