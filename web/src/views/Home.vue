@@ -906,20 +906,20 @@
         mb-5
       "
     >
-      <div class="d-flex justify-content-center align-items-center px-5 py-3">
+      <div
+        class="
+          d-flex
+          flex-wrap
+          justify-content-center
+          align-items-center
+          px-3
+          py-3
+        "
+      >
         <div class="d-flex w-100 justify-content-between">
           <div>
-            <h4 class="at-a-glance-header m-0">
-              At a glance
-              <font-awesome-icon
-                :icon="['fas', 'info-circle']"
-                v-b-tooltip.hover
-                title=" View the three locations with the largest increase in COVID-19
-              cases in the past day, or select your own locations"
-              />
-            </h4>
-
-            <p class="mb-0">
+            <h4 class="at-a-glance-header m-0">At a glance</h4>
+            <p class="mb-4">
               View the three locations with the largest increase in COVID-19
               cases in the past day, or select your own locations
             </p>
@@ -971,6 +971,7 @@
     </section>
   </div>
 </template>
+
 <script>
 // @ is an alias to /src
 // import Vue from "vue";
@@ -991,10 +992,9 @@ import {
   faSpinner,
   faAngleDoubleRight,
   faSearch,
-  faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faSpinner, faAngleDoubleRight, faSearch, faInfoCircle);
+library.add(faSpinner, faAngleDoubleRight, faSearch);
 
 import { findPangolin, findLocation } from "@/api/genomics.js";
 
@@ -1114,6 +1114,7 @@ export default {
   },
 };
 </script>
+
 
 
 
