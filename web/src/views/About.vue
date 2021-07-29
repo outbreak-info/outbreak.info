@@ -92,53 +92,7 @@
     <div class="bg-light d-flex justify-content-center align-items-center">
       <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top pt-3 pb-5" id="jobs">
         <h4 class="mb-4">Open positions</h4>
-        <div class="d-flex justify-content-center">
-          <div class="card w-30 py-2 px-4 text-left mr-4">
-            <div class="border-bottom pt-3 pb-1 mb-2">
-              <h5>Front-end Developer</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
-            </div>
-            <div class="wpb_text_column wpb_content_element ">
-              <div class="wpb_wrapper">
-                <p>We are looking for a <strong>Front-end Developer</strong> to build interfaces to explore, visualize, and analyze biomedical data, including current data from the ongoing COVID-19 pandemic. Current projects include <a
-                    href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.</p>
-                <p>For further details, please contact <a href="mailto:lhughes@scripps.edu">lhughes@scripps.edu</a>.</p>
-                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178a3c4765d45b8" target="_blank" rel="noopener noreferrer">here</a>. Qualification: BSc or equivalent.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="card w-30 py-2 px-4 text-left mr-4">
-            <div class="border-bottom pt-3 pb-1 mb-2">
-              <h5>Research Programmer</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
-            </div>
-            <div class="wpb_text_column wpb_content_element ">
-              <div class="wpb_wrapper">
-                <p>We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including <a
-                    href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">iVar</a> and <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, can be seen on
-                  our <a href="https://github.com/andersen-lab/" target="_blank" rel="noopener">Github account</a>.</p>
-                <p>For further details, please contact <a href="mailto:gkarthik@scripps.edu">gkarthik@scripps.edu</a>.</p>
-                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&amp;gni=8a78879f7823d1090178240894ba01f1" target="_blank" rel="noopener noreferrer">here</a>. Qualification: BSc or equivalent.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="card w-30 py-2 px-4 text-left mr-4">
-            <div class="border-bottom pt-3 pb-1 mb-2">
-              <h5>Postdoctoral Associate</h5><span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
-            </div>
-            <div class="wpb_text_column wpb_content_element ">
-              <div class="wpb_wrapper">
-                <p>The <a href="https://andersen-lab.com/">Andersen lab</a> is looking for a <strong>computational Postdoctoral Associate</strong> interested in phylogenetics and data science of emerging outbreaks. Together with a large group of
-                  collaborators we recently created outbreak.info, which has become a major resource for genomic, epidemiological, clinical, and article data for outbreak response. Our <a href="https://github.com/andersen-lab/">tools</a> are being
-                  widely used by public health departments and labs across the world to process sequencing data and gain up-to-date information on the COVID-19 pandemic. We are looking for a dedicated individual who is interested in developing new
-                  tools and investigating more basic principles of how viruses - and their variants - emerge, evolve, and spread. The initial focus will be on SARS-CoV-2, however, we expect the role to expand significantly beyond that.</p>
-
-                <p>Read more and apply <a href="https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178d2084c3b0b63" target="_blank" rel="noopener noreferrer">here</a>. Qualification: Ph.D. in computational biology, computer science,
-                  mathematics, physics, or equivalent.</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Jobs />
       </div>
     </div>
 
@@ -196,6 +150,7 @@ import {
 } from "@/api/genomics.js";
 
 import EmailSubscription from "@/components/EmailSubscription.vue";
+import Jobs from "@/components/Jobs.vue";
 
 
 export default Vue.extend({
@@ -204,6 +159,7 @@ export default Vue.extend({
     ...mapState("admin", ["funding", "team"])
   },
   components: {
+    Jobs,
     FontAwesomeIcon,
     EmailSubscription
   },
