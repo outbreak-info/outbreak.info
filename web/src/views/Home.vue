@@ -68,7 +68,7 @@
 
     <!-- SEARCH  -->
     <section
-      class="d-flex justify-content-center align-items-center mb-4 text-light"
+      class="d-flex justify-content-center align-items-center text-light"
     >
       <div class="row m-0 w-100 d-flex justify-content-center">
         <!-- EPI INTRO -->
@@ -403,8 +403,8 @@
         flex-wrap
         align-items-center
         justify-content-center
-        py-5
-        my-5
+        py-2
+        my-2
       "
     >
       <button
@@ -909,7 +909,16 @@
       <div class="d-flex justify-content-center align-items-center px-5 py-3">
         <div class="d-flex w-100 justify-content-between">
           <div>
-            <h4 class="at-a-glance-header m-0">At a glance</h4>
+            <h4 class="at-a-glance-header m-0">
+              At a glance
+              <font-awesome-icon
+                :icon="['fas', 'info-circle']"
+                v-b-tooltip.hover
+                title=" View the three locations with the largest increase in COVID-19
+              cases in the past day, or select your own locations"
+              />
+            </h4>
+
             <p class="mb-0">
               View the three locations with the largest increase in COVID-19
               cases in the past day, or select your own locations
@@ -982,9 +991,10 @@ import {
   faSpinner,
   faAngleDoubleRight,
   faSearch,
+  faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faSpinner, faAngleDoubleRight, faSearch);
+library.add(faSpinner, faAngleDoubleRight, faSearch, faInfoCircle);
 
 import { findPangolin, findLocation } from "@/api/genomics.js";
 
@@ -1104,6 +1114,8 @@ export default {
   },
 };
 </script>
+
+
 
 <style lang="scss" scoped>
 .resources-intro {
