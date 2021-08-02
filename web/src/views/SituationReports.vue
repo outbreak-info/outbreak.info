@@ -260,7 +260,7 @@
                       <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
                       <div class="d-flex">
                         <div v-if="report.lineage_count < lineageWarningThreshold">
-                          <font-awesome-icon class="warning mr-2 low-count" :data-tippy-info="`<span class='text-underline'>Warning</span>: currently, there are only <b>${report.lineage_count} sequences</b> reported for <b>${report.mutation_name}</b>. The characteristic mutations for ${report.mutation_name} might change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`" :icon="['fas', 'exclamation-circle']" />
+                          <font-awesome-icon class="warning mr-2 low-count" :data-tippy-info="`<span class='text-underline'>Warning</span>: currently, there are only <b>${report.lineage_count} sequences</b> reported for <b>${report.mutation_name}</b>. The characteristic mutations for ${report.mutation_name} may change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`" :icon="['fas', 'exclamation-circle']" />
                         </div>
                         <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.mutation_name }}" v-if="report.sMutations.length">
                           <small>Explore all genes
