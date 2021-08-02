@@ -1,6 +1,6 @@
 <template>
-<div class="d-flex flex-wrap justify-content-center">
-  <div class="card w-30 py-2 px-4 text-left mr-4 mb-4" v-for="(job, jIdx) in jobs" :key="jIdx">
+<div class="d-flex flex-wrap justify-content-center row">
+  <div class="card w-30 py-2 px-4 text-left mr-4 mb-4 col-sm-11 col-md-5 col-lg-3" v-for="(job, jIdx) in jobs" :key="jIdx">
     <div class="border-bottom pt-3 pb-1 mb-2">
       <h5>{{job.title}}</h5>
       <span class="vc_sep_holder vc_sep_holder_r">

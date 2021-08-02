@@ -90,7 +90,7 @@
     </div>
 
     <div class="bg-light d-flex justify-content-center align-items-center">
-      <div class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top pt-3 pb-5" id="jobs">
+      <div class="bg-light border-top pt-3 pb-5" id="jobs">
         <h4 class="mb-4">Open positions</h4>
         <Jobs />
       </div>
