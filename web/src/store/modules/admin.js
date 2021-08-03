@@ -572,13 +572,37 @@ const state = {
     {
       date: new Date("2021-07-21 0:0"),
       category: "variants",
-      title: "Added AY.3 as a VOC.",
+      title: "Added AY.3 as a VOC",
       description: 'Based on the <a target="_blank" href="https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html">CDC classification</a> of AY.3 as a VOC.',
       route: {
         name: "MutationReport",
         query: {
           pango: "AY.3",
           loc: ["USA", "GBR"]
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-03 0:0"),
+      category: "variants",
+      title: "Added AY.3.1 as a VOC",
+      description: 'Based on the split of Variant of Concern AY.3 into the AY.3.1 sublineage.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "AY.3.1"
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-03 0:0"),
+      category: "variants",
+      title: "Added B.1.621.1 as a VOI",
+      description: 'Based on the split of Variant of Interest B.1.621 into the B.1.621.1 sublineage.',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "B.1.621.1"
         }
       }
     },
