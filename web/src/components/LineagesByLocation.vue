@@ -13,7 +13,15 @@
   </div>
 
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
+    <defs>
+      <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+        <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
+      </pattern>
+    </defs>
+
     <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
+      <rect :width="width - margin.left - margin.right" :height="height - margin.top - margin.bottom" fill="url(#diagonalHatchLight)"/>
     </g>
     <g class="stream-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
     <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
@@ -75,6 +83,7 @@ import {
   event,
   brushX,
   extent,
+  min,
   max,
   format
 } from "d3";
@@ -94,6 +103,10 @@ export default Vue.extend({
     recentWindow: String,
     location: String,
     recentMin: Date,
+    includeToday: {
+      type: Boolean,
+      default: true
+    },
     colorScale: Function
   },
   computed: {
@@ -203,9 +216,11 @@ export default Vue.extend({
         .y1(d => this.y(d[1]));
     },
     updateScales() {
+      const today = new Date();
+      const xDomain = this.includeToday ? [min(this.data, d => d.date_time), today]: extent(this.data.map(d => d.date_time));
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d.date_time)))
+        .domain(xDomain)
         .clamp(true);
 
       this.y = this.y
@@ -217,6 +232,7 @@ export default Vue.extend({
       this.lineages = Object.keys(this.data[0]).filter(d => d != "date_time");
 
       this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
         .ticks(this.numXTicks);
 
       select(this.$refs.xAxis).call(this.xAxis);
