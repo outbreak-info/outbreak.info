@@ -187,9 +187,24 @@
                     <router-link :to="{name:'MutationReport', query: report.reportQuery }" class="no-underline">
                       <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
                       <!-- <router-link class="btn btn-main" :to="{ name: 'MutationReport', query: report.reportQuery }">View report</router-link> -->
-
                     </router-link>
 
+                    <!-- sublineages -->
+                    <div class="sublineage text-muted">
+                      <h5 class="m-0">
+                        <span>Parent: </span>
+                        <router-link :to="{name:'MutationReport', query: {pango: report.pango_lineage }}" class="font-weight-bold no-underline">{{report.pango_lineage}}</router-link>
+                      </h5>
+                      <h5 class="">
+                        <span>Sublineages: </span>
+                        <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx">
+                          <router-link :to="{name:'MutationReport', query: {pango: sublineage }}" class="font-weight-bold no-underline">{{sublineage}}</router-link>
+                          <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
+                        </span>
+                      </h5>
+                    </div>
+
+                    <!-- synonyms -->
                     <small class="d-flex flex-column text-muted">
                       <div v-if="report.who_name">
                         WHO: <span class="font-weight-bold">{{report.who_name}}</span>
@@ -211,6 +226,7 @@
                         </span>
                       </div>
                     </small>
+
                   </td>
 
                   <!-- classifications -->
@@ -257,10 +273,12 @@
                   <!-- s-gene mutations heatmap -->
                   <td>
                     <div class="d-flex flex-column align-items-center">
-                      <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="[report.mutation_name]" :onlyTopAxis="true" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
+                      <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="report.pango_sublineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
                       <div class="d-flex">
                         <div v-if="report.lineage_count < lineageWarningThreshold">
-                          <font-awesome-icon class="warning mr-2 low-count" :data-tippy-info="`<span class='text-underline'>Warning</span>: currently, there are only <b>${report.lineage_count} sequences</b> reported for <b>${report.mutation_name}</b>. The characteristic mutations for ${report.mutation_name} may change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`" :icon="['fas', 'exclamation-circle']" />
+                          <font-awesome-icon class="warning mr-2 low-count"
+                            :data-tippy-info="`<span class='text-underline'>Warning</span>: currently, there are only <b>${report.lineage_count} sequences</b> reported for <b>${report.mutation_name}</b>. The characteristic mutations for ${report.mutation_name} may change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`"
+                            :icon="['fas', 'exclamation-circle']" />
                         </div>
                         <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.mutation_name }}" v-if="report.sMutations.length">
                           <small>Explore all genes
@@ -280,9 +298,11 @@
 
             <div class="mt-2 d-flex justify-content-between align-items-center">
               <div>
-                <div class = "border-bottom pb-2">
+                <div class="border-bottom pb-2">
                   <sup class="text-muted mr-1">*</sup>
-                  <small class="text-muted line-height-1">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link>. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
+                  <small class="text-muted line-height-1">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)
+                    </router-link>. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For
+                    applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
                   </small>
                 </div>
                 <div v-for="(variant, vIdx) in variantTypes" :key="vIdx" class="line-height-1 my-2">
@@ -458,7 +478,8 @@ import {
 import {
   faSpinner,
   faInfoCircle,
-  faSearch, faExclamationCircle
+  faSearch,
+  faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faClock, faSpinner, faInfoCircle, faSearch, faExclamationCircle);
