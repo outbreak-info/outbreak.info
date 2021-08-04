@@ -3,13 +3,13 @@
   <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
     <h5 class="m-0">Lineage prevalence over time</h5>
     <div class="d-flex justify-content-end">
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
-  </div>
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+      </button>
+    </div>
   </div>
 
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
@@ -21,8 +21,8 @@
     </defs>
 
     <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
-      <rect :width="width - margin.left - margin.right" :height="height - margin.top - margin.bottom" fill="url(#diagonalHatchLight)"/>
     </g>
+
     <g class="stream-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
     <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
@@ -148,6 +148,7 @@ export default Vue.extend({
       y: scaleLinear(),
       xAxis: null,
       yAxis: null,
+      maxDate: null,
       numXTicks: 5,
       numYTicks: 5,
       // methods
@@ -199,7 +200,7 @@ export default Vue.extend({
       let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
       const pageContainer = document.getElementById('location-report')
       let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
-      const idealWidth = (maxWidth - containerWidth)*0.95;
+      const idealWidth = (maxWidth - containerWidth) * 0.95;
       this.width = idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
 
       this.numXTicks = this.width < 500 ? 2 : 5;
@@ -217,7 +218,9 @@ export default Vue.extend({
     },
     updateScales() {
       const today = new Date();
-      const xDomain = this.includeToday ? [min(this.data, d => d.date_time), today]: extent(this.data.map(d => d.date_time));
+      this.maxDate = max(this.data, d => d.date_time);
+
+      const xDomain = this.includeToday ? [min(this.data, d => d.date_time), today] : extent(this.data.map(d => d.date_time));
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain)
@@ -340,6 +343,38 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     drawPlot() {
+      if (this.includeToday) {
+        const noDataSelector = this.chart
+          .selectAll(".no-data")
+          .data([0]);
+
+        noDataSelector.join(
+          enter => {
+            enter.append("rect")
+              .attr("class", "no-data")
+              .attr("x", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+              .attr("width", this.width - this.x(this.maxDate))
+              .attr("height", this.height - this.margin.top - this.margin.bottom)
+              .style("fill", "url(#diagonalHatchLight)")
+          },
+          update => {
+            update
+              .attr("x", this.x(this.maxDate))
+              .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+              .attr("height", this.height - this.margin.top - this.margin.bottom)
+              .style("fill", "url(#diagonalHatchLight)")
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
+      }
+
+
       const areaSelector = this.chart
         .selectAll(".stacked-area-chart")
         .data(this.series);
