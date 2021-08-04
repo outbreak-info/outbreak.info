@@ -529,7 +529,7 @@ import TypeaheadSelect from "@/components/TypeaheadSelect";
 import GlanceSummary from "@/components/GlanceSummary";
 import {
   getGlanceSummary
-} from "@/api/epi-basics.js";
+} from "@/api/genomics.js";
 import Vue from "vue";
 import {
   mapState
