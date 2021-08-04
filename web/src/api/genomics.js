@@ -53,6 +53,16 @@ const formatPercent = format(".0%");
 
 import store from "@/store";
 
+axios.interceptors.request.use(function(config) {
+  config.headers.Authorization = process.env.VUE_APP_API_ACCESS
+  // Do something before request is sent
+  return config;
+}, function(error) {
+  // Do something with request error
+  return Promise.reject(error);
+});
+
+
 function capitalize(value) {
   if (!value) return ''
   value = value.toString()
@@ -392,7 +402,7 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
-  if(!locations || !locations.length) {
+  if (!locations || !locations.length) {
     locations = [location];
   }
 
