@@ -113,36 +113,35 @@
     <!-- sitemap -->
     <div class="w-100 d-flex justify-content-between text-left text-muted row border-bottom navbar-dark m-0 px-3 pb-3" id="footer-sitemap">
       <!-- epi group -->
-      <div class="text-light px-4">
-        <div>
-          COVID-19 Cases &amp; Deaths
-        </div>
+      <div class="text-light px-4 footer-section">
+        <div class="navbar-footer-title">COVID-19 Cases &amp; Deaths</div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Epidemiology' }" :to="{
-                  name: 'Epidemiology'}">
+                  name: 'Epidemiology',
+                }">
               Compare locations over time
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Maps' }" :to="{
-                  name: 'Maps'
+                  name: 'Maps',
                 }">Explore interactive maps</router-link>
           </li>
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Compare' }" :to="{
-                  name: 'Compare'
+                  name: 'Compare',
                 }">Find similar locations</router-link>
           </li>
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Regions' }" :to="{
-                  name: 'Regions'
+                  name: 'Regions',
                 }">Explore regions</router-link>
           </li>
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :class="{ active: $route.name == 'Doubling Rates' }" :to="{
                   name: 'Doubling Rates',
-                  query: { location: 'USA', variable: 'confirmed' }
+                  query: { location: 'USA', variable: 'confirmed' },
                 }">View doubling rates</router-link>
           </li>
           <li class="nav-item px-0 py-1">
@@ -153,42 +152,38 @@
       </div>
 
       <!-- genomics group -->
-      <div class="text-light px-4">
-        <div>
-          Variants
-        </div>
+      <div class="text-light px-4 footer-section">
+        <div class="navbar-footer-title">Variants</div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReports'}" :class="{ active: $route.name == 'SituationReports' }">Lineage | Mutation Tracker
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{ name: 'SituationReports' }" :class="{ active: $route.name == 'SituationReports' }">Lineage | Mutation Tracker
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'LocationReports'}" :class="{ active: $route.name == 'LocationReports' }">Location Tracker
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{ name: 'LocationReports' }" :class="{ active: $route.name == 'LocationReports' }">Location Tracker
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReportComparison'}" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{ name: 'SituationReportComparison' }" :class="{ active: $route.name == 'SituationReportComparison' }">Lineage Comparison
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'SituationReportCaveats'}" :class="{ active: $route.name == 'SituationReportCaveats' }">Interpreting Reports
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{ name: 'SituationReportCaveats' }" :class="{ active: $route.name == 'SituationReportCaveats' }">Interpreting Reports
             </router-link>
           </li>
         </ul>
       </div>
 
       <!-- resources group -->
-      <div class="text-light px-4">
-        <div>
-          Research Library
-        </div>
+      <div class="text-light px-4 footer-section">
+        <div class="navbar-footer-title">Research Library</div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/resources" :class="{ active: $route.name == 'Resources' }">Find research
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
-            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{name: 'Sources', hash: '#resources'}" :class="{ active: $route.name == 'Sources' }">Download metadata
+            <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" :to="{ name: 'Sources', hash: '#resources' }" :class="{ active: $route.name == 'Sources' }">Download metadata
             </router-link>
           </li>
           <li class="nav-item px-0 py-1">
@@ -198,12 +193,9 @@
         </ul>
       </div>
 
-
       <!-- about group -->
-      <div class="text-light px-4">
-        <div>
-          About
-        </div>
+      <div class="text-light px-4 footer-section">
+        <div class="navbar-footer-title">About</div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
             <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link p-0" to="/about" :class="{ active: $route.name == 'About' }">About us</router-link>
@@ -227,24 +219,22 @@
           </li>
 
           <li class="nav-item px-0 py-1">
-            <router-link class="nav-link p-0" :to="{name: 'Citation'}">How to cite</router-link>
+            <router-link class="nav-link p-0" :to="{ name: 'Citation' }">How to cite</router-link>
           </li>
 
           <li class="nav-item px-0 py-1">
-            <router-link class="nav-link p-0" :to="{name: 'Videos'}">Video demos</router-link>
+            <router-link class="nav-link p-0" :to="{ name: 'Videos' }">Video demos</router-link>
           </li>
 
           <li class="nav-item px-0 py-1">
-            <router-link class="nav-link p-0" :to="{name: 'Press'}">In the media</router-link>
+            <router-link class="nav-link p-0" :to="{ name: 'Press' }">In the media</router-link>
           </li>
         </ul>
       </div>
 
       <!-- contact us group -->
-      <div class="text-light px-4">
-        <div>
-          Contact us
-        </div>
+      <div class="text-light px-4 footer-section">
+        <div class="navbar-footer-title">Contact us</div>
         <ul class="navbar-nav navbar-footer">
           <li class="nav-item px-0 py-1">
             <a href="mailto:help@outbreak.info" target="_blank" class="nav-link p-0">
@@ -255,7 +245,7 @@
           <li class="nav-item px-0 py-1">
             <a class="nav-link p-0" href="https://github.com/outbreak-info/outbreak.info/issues" rel="noreferrer" target="_blank">Submit an issue on Github</a>
           </li>
-          <EmailSubscription :isFooter="true"/>
+          <EmailSubscription :isFooter="true" />
         </ul>
       </div>
     </div>
@@ -263,11 +253,19 @@
     <!-- LOGO FOOTER -->
     <Logos class="bg-grey" />
 
-    <div class="row m-0 bg-main__darker d-flex justify-content-center align-items-center py-1" id="terms">
+    <div class="
+          row
+          m-0
+          bg-main__darker
+          d-flex
+          justify-content-center
+          align-items-center
+          py-1
+        " id="terms">
       <div class="d-flex text-light xsmall">
         <ul class="m-0">
           <li class="d-inline m-3">
-            <router-link class="text-light" :to="{name: 'Citation'}">How to Cite</router-link>
+            <router-link class="text-light" :to="{ name: 'Citation' }">How to Cite</router-link>
           </li>
           <li class="d-inline m-3">
             <router-link class="text-light" to="/privacy">Privacy Policy</router-link>
@@ -281,13 +279,10 @@
               SuLab</a>
             &copy; <span v-text="year"></span>
           </li>
-          <li class="d-inline m-3">
-            All rights reserved
-          </li>
+          <li class="d-inline m-3">All rights reserved</li>
         </ul>
       </div>
     </div>
-
   </footer>
 </div>
 </template>
@@ -336,5 +331,37 @@ export default {
 
 .navbar-footer {
     font-size: small;
+}
+
+.navbar-footer-title {
+    font-size: medium;
+    margin-top: 15px;
+}
+@media (max-width: 667px) {
+    .navbar-footer-title {
+        line-height: 1.2rem;
+        font-size: medium;
+        margin-top: 15px;
+    }
+}
+.navbar-footer {
+    font-size: small;
+}
+@media (max-width: 667px) {
+    .navbar-footer {
+        line-height: 0.95rem;
+    }
+}
+.footer-section {
+    width: 255px;
+}
+@media (max-width: 667px) {
+    .footer-section {
+        width: 170px;
+    }
+}
+
+.nav-link {
+    color: #a9a9a9 !important;
 }
 </style>

@@ -22,5 +22,25 @@
     "reportQuery": {
       "muts": ["S:T19R", "S:L452R", "S:T478K", "S:P681R", "S:D950N"]
     }
+  },
+  {
+    "mutation_name": "B.1.621.1",
+    "identifier": "B_1_621_1",
+    "pangolin_lineage": "B.1.621.1",
+    "phe_name": "VUI-21JUL-01",
+    "searchTerms": ["VUI-21JUL-01"],
+    "dateModified": "2021-08-03",
+    "variantType": "Variant of Interest",
+    "related": [{"identifier": "B_1_621", "label": "B.1.621"}],
+    "classifications": [
+      {"author": "WHO", "variantType": "VUM", "dateModified": "2021-05-26", "url":"https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/"},
+      {"author": "PHE", "dateModified": "2021-07-23", "url":"https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1005517/Technical_Briefing_19.pdf", "variantType": "VOI"},
+      {"author": "ECDC", "url":"https://www.ecdc.europa.eu/en/covid-19/variants-concern", "variantType": "VOI"}
+    ],
+    "reportQuery": {
+      "pango": "B.1.621.1",
+      "loc": ["COL", "GBR"],
+      "selected": "COL"
+    }
   }
 ]

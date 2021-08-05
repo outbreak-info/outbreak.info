@@ -9,7 +9,7 @@
       <div class="col-sm-12 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
         <div class="d-flex flex-column w-100 align-items-center my-2">
           <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-20" />
-          <p class="text-light my-1">
+          <p class="text-light my-1 mx-3">
             a standardized, open-source database of COVID-19 resources and epidemiology data
           </p>
         </div>
@@ -692,6 +692,9 @@ export default {
         border: none !important;
     }
     .variants-intro {
+        border: none !important;
+    }
+    .resources-intro {
         border: none !important;
     }
 }
