@@ -205,10 +205,13 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
 }
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
-  const query = CURATED.flatMap(d => d.pango_sublineages).join(",");
+  CURATED.forEach(d => {
+    d["lineages"] = [d.pango_lineage].concat(d.pango_sublineages);
+  })
+  const query = CURATED.map(d => d.lineages).join(",");
   console.log(query)
 
-  return forkJoin([getCharacteristicMutations(apiurl, query, prevalenceThreshold, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
+  return forkJoin([getCharacteristicMutations(apiurl, query, 0.5, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
     map(([charMuts, totals]) => {
       console.log(charMuts)
       const test = Object.keys(charMuts).flatMap(key => {

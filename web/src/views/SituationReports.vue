@@ -273,7 +273,7 @@
                   <!-- s-gene mutations heatmap -->
                   <td>
                     <div class="d-flex flex-column align-items-center">
-                      <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="report.pango_sublineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
+                      <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="report.lineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
                       <div class="d-flex">
                         <div v-if="report.lineage_count < lineageWarningThreshold">
                           <font-awesome-icon class="warning mr-2 low-count"
@@ -768,7 +768,6 @@ export default {
       mutationReports: null,
       filteredReports: null,
       filteredMutations: null,
-      lineageWarningThreshold: 1000,
       variantTypes: [{
           id: "VOC",
           label: "Variant of Concern",
