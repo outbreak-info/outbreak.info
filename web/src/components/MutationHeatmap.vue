@@ -154,6 +154,7 @@ export default Vue.extend({
       interestColor: "#feb56c",
       concernColorDark: "#e15759",
       interestColorDark: "#f28e2c",
+      lineageWarningThreshold: 1000,
       // scales
       x: scaleBand(),
       y: scaleBand(),
@@ -532,6 +533,16 @@ export default Vue.extend({
               .attr("dx", 7)
               // .attr("dx", -5)
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+
+            grp.append("tspan")
+              .attr("class", "fa fa-exclamation-circle")
+              .attr('font-family', "FontAwesome")
+              .attr("dx", 7)
+              .classed("hidden", d => d.value >= this.lineageWarningThreshold)
+              .style("font-size", 14)
+              .style("fill", "#D13B62")
+              .text("\uf06a");
+
           },
           update => {
             update
