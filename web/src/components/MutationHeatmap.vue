@@ -75,6 +75,9 @@ import {
 
 
 import chroma from "chroma-js";
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 
 export default Vue.extend({
   name: "MutationHeatmap",
@@ -178,6 +181,22 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.updatePlot();
+    this.$nextTick(function() {
+      tippy(".low-count", {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "bottom",
+        animation: "fade",
+        theme: "light",
+        allowHTML: true,
+        // interactive: true,
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
+    })
+
   },
   methods: {
     setupDims() {
@@ -535,9 +554,10 @@ export default Vue.extend({
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
 
             grp.append("tspan")
-              .attr("class", "fa fa-exclamation-circle")
+              .attr("class", "fa fa-exclamation-circle low-count")
               .attr('font-family', "FontAwesome")
               .attr("dx", 7)
+              .attr("data-tippy-info", d => `<span class='text-underline'>Warning</span>: currently, there are only <b>${d.value} sequences</b> reported for <b>${d.key}</b>. The characteristic mutations for ${d.key} may change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`)
               .classed("hidden", d => d.value >= this.lineageWarningThreshold)
               .style("font-size", 14)
               .style("fill", "#D13B62")
