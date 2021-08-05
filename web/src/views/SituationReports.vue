@@ -171,9 +171,6 @@
                   first identified
                 </th>
                 <th>
-                  total found
-                </th>
-                <th>
                   S-gene Mutations<sup>*</sup>
                 </th>
               </tr>
@@ -262,12 +259,9 @@
                     </table>
                   </td>
 
+                  <!-- location found -->
                   <td class="text-center line-height-1">
                     {{ report.location_first_identified }}
-                  </td>
-
-                  <td class="text-center">
-                    {{ report.lineage_count }}
                   </td>
 
                   <!-- s-gene mutations heatmap -->
