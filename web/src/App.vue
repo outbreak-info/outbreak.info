@@ -361,7 +361,7 @@ export default {
     }
 }
 
-.nav-link {
-    color: #a9a9a9 !important;
+.navbar-footer .nav-link {
+    color: rgba(255,255,255, 0.7) !important;
 }
 </style>
