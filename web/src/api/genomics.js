@@ -214,14 +214,15 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
   return forkJoin([getCharacteristicMutations(apiurl, query, 0.5, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
     map(([charMuts, totals]) => {
       console.log(charMuts)
-      const test = Object.keys(charMuts).flatMap(key => {
-return(charMuts[key])
-})
+
       // pull out the characteristic mutations and bind to the curated list.
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
       curated.forEach(report => {
-        report["mutations"] = test;
-        // report["mutations"] = charMuts[report.mutation_name.replace(/\+/g, "AND")] ? charMuts[report.mutation_name.replace(/\+/g, "AND")] : [];
+        report["mutations"] = [];
+        report.lineages.forEach(lineage => {
+          if(Object.keys(charMuts).includes(lineage)){
+          report.mutations = report.mutations.concat(report.mutations, charMuts[lineage])}
+        })
       })
 
       const voc = curated.filter(d => d.variantType == "Variant of Concern").map(d => d.pangolin_lineage);
@@ -402,7 +403,7 @@ export function updateLocationData(apiurl, mutationString, lineageString, locati
   var queryStr = buildQueryStr(lineageString, mutationString);
   store.state.admin.reportloading = true;
 
-  if(!locations || !locations.length) {
+  if (!locations || !locations.length) {
     locations = [location];
   }
 
