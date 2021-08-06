@@ -206,22 +206,28 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
   CURATED.forEach(d => {
-    d["lineages"] = [d.pango_lineage].concat(d.pango_sublineages);
+    d["lineages"] = [d.pangolin_lineage].concat(d.pango_sublineages);
   })
   const query = CURATED.map(d => d.lineages).join(",");
   console.log(query)
 
-  return forkJoin([getCharacteristicMutations(apiurl, query, 0.5, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
+  return forkJoin([getCharacteristicMutations(apiurl, query, 0, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
     map(([charMuts, totals]) => {
-      console.log(charMuts)
-
       // pull out the characteristic mutations and bind to the curated list.
       let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
       curated.forEach(report => {
         report["mutations"] = [];
         report.lineages.forEach(lineage => {
-          if(Object.keys(charMuts).includes(lineage)){
-          report.mutations = report.mutations.concat(report.mutations, charMuts[lineage])}
+          // flat map the mutations within the lineages associated with that group
+          if (Object.keys(charMuts).includes(lineage)) {
+            report.mutations = report.mutations.concat(report.mutations, charMuts[lineage])
+          }
+          // remove mutations outside the characteristicThreshold
+          const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+          // console.log(report.mutation_name)
+          // console.log(report.mutations)
+
+          report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
         })
       })
 
