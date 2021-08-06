@@ -206,7 +206,7 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
 
 export function getCuratedList(apiurl, prevalenceThreshold) {
   CURATED.forEach(d => {
-    d["lineages"] = [d.pangolin_lineage].concat(d.pango_sublineages);
+    d["lineages"] = [d.pangolin_lineage].concat(d.pango_sublineages).filter(d => d);
   })
   const query = CURATED.map(d => d.lineages).join(",");
   console.log(query)
