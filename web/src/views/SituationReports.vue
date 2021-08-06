@@ -187,12 +187,12 @@
                     </router-link>
 
                     <!-- sublineages -->
-                    <div class="sublineage text-muted">
-                      <h5 class="m-0">
+                    <div class="sublineages text-muted" v-if="report.lineages.length > 1">
+                      <h5 class="m-0 parent-lineage" v-if="report.pangolin_lineage">
                         <span>Parent: </span>
-                        <router-link :to="{name:'MutationReport', query: {pango: report.pango_lineage }}" class="font-weight-bold no-underline">{{report.pango_lineage}}</router-link>
+                        <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage }}" class="font-weight-bold no-underline">{{report.pangolin_lineage}}</router-link>
                       </h5>
-                      <h5 class="">
+                      <h5 class="sublineage" v-if="report.pango_sublineages">
                         <span>Sublineages: </span>
                         <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx">
                           <router-link :to="{name:'MutationReport', query: {pango: sublineage }}" class="font-weight-bold no-underline">{{sublineage}}</router-link>
