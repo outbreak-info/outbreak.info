@@ -719,7 +719,7 @@
       }
     ],
     "pangolin_lineage": "P.1",
-    "pango_sublineages": ["P.1.1", "P.1.2"],
+    "pango_sublineages": ["P.1.1", "P.1.2", "P.1.3", "P.1.4", "P.1.5", "P.1.6", "P.1.7"],
     "nextstrain_clade": "20J/501Y.V3",
     "gisaid_clade": "GR/501Y.V3",
     "who_name": "Gamma",

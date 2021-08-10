@@ -539,6 +539,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-08-10 0:0"),
+      category: "variants",
+      title: "Added P.1 sublineages as VOCs",
+      description: "Added P.1.3, P.1.4, P.1.5, P.1.6, and P.1.7 as Variants of Concern, sublineages of P.1.",
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-06-30 0:0"),
       category: "variants",
       title: "Added B.1.351.1, B.1.351.2, and B.1.351.3 as a VOCs",
