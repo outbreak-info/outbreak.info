@@ -181,21 +181,24 @@
                 <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
                   <!-- name + synonyms -->
                   <td class="pt-2  border-bottom">
-                      <h3 class="m-0 border-bottom pb-1 mb-2" v-if="report.pango_sublineages.length">{{ report.mutation_name }}</h3>
+                    <!-- contains sublineages -->
+                    <h3 class="m-0 border-bottom pb-1 mb-2" v-if="report.pango_sublineages.length" :id="anchorLink(report.mutation_name)">{{ report.mutation_name }}</h3>
+
                     <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
-                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2">{{ report.mutation_name }}</h3>
+                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.mutation_name)">{{ report.mutation_name }}</h3>
                     </router-link>
 
                     <!-- sublineages -->
                     <div class="sublineages text-muted" v-if="report.lineages.length > 1">
                       <h5 class="m-0 parent-lineage" v-if="report.pangolin_lineage">
                         <span>Parent: </span>
-                        <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">{{report.pangolin_lineage}}</router-link>
+                        <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(report.pangolin_lineage)">
+                          {{report.pangolin_lineage}}</router-link>
                       </h5>
                       <h5 class="sublineage d-flex flex-wrap  border-bottom pb-2 mb-2" v-if="report.pango_sublineages">
                         <span class="mr-2">Sublineages: </span>
                         <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx">
-                          <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">{{sublineage}}</router-link>
+                          <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
                           <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
                         </span>
                       </h5>
@@ -218,7 +221,7 @@
                       <div class="text-highlight d-flex flex-wrap" v-if="report.related">
                         <span class="mr-1">related:</span>
                         <span v-for="(related, rIdx) in report.related" :key="rIdx">
-                          <router-link :to="{hash: related.identifier}" class="font-weight-bold">{{related.label}}</router-link>
+                          <router-link :to="{hash: related}" class="font-weight-bold">{{related}}</router-link>
                           <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
                         </span>
                       </div>
@@ -744,6 +747,9 @@ export default {
           d["sMutations"] = d.mutations.filter(x => x.gene == "S");
         })
       })
+    },
+    anchorLink(link) {
+      return(link.replace(/\./g, "_"))
     }
   },
   data() {
