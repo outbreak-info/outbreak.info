@@ -192,8 +192,8 @@
                         <span>Parent: </span>
                         <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage }}" class="font-weight-bold no-underline">{{report.pangolin_lineage}}</router-link>
                       </h5>
-                      <h5 class="sublineage" v-if="report.pango_sublineages">
-                        <span>Sublineages: </span>
+                      <h5 class="sublineage d-flex flex-wrap" v-if="report.pango_sublineages">
+                        <span class="mr-2">Sublineages: </span>
                         <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx">
                           <router-link :to="{name:'MutationReport', query: {pango: sublineage }}" class="font-weight-bold no-underline">{{sublineage}}</router-link>
                           <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
