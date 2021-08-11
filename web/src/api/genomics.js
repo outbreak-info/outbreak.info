@@ -214,7 +214,7 @@ export function getCuratedList(apiurl, prevalenceThreshold) {
   return forkJoin([getCharacteristicMutations(apiurl, query, 0, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
     map(([charMuts, totals]) => {
       // pull out the characteristic mutations and bind to the curated list.
-      let curated = orderBy(CURATED, ["variantType", "mutation_name"]);
+      let curated = orderBy(CURATED, ["variantType"]);
       curated.forEach(report => {
         report["mutations"] = [];
         report.lineages.forEach(lineage => {
