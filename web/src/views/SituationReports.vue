@@ -182,10 +182,15 @@
                   <!-- name + synonyms -->
                   <td class="pt-2  border-bottom">
                     <!-- contains sublineages -->
-                    <h3 class="m-0 border-bottom pb-1 mb-2" v-if="report.pango_sublineages.length" :id="anchorLink(report.mutation_name)">{{ report.mutation_name }}</h3>
+                    <h3 class="m-0 border-bottom pb-1 mb-2" v-if="report.pango_sublineages.length && report.who_name" :id="anchorLink(report.who_name)">{{ report.who_name }}</h3>
+                    <h3 class="m-0 border-bottom pb-1 mb-2" v-else-if="report.pango_sublineages.length" :id="anchorLink(report.pangolin_lineage)">{{report.pangolin_lineage}}-related</h3>
+
+                    <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.who_name">
+                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.who_name }}</h3>
+                    </router-link>
 
                     <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
-                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.mutation_name)">{{ report.mutation_name }}</h3>
+                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h3>
                     </router-link>
 
                     <!-- sublineages -->
@@ -272,7 +277,7 @@
                     <div class="d-flex flex-column align-items-center">
                       <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="report.lineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
                       <div class="d-flex">
-                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.mutation_name }}" v-if="report.sMutations.length">
+                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.who_name }}" v-if="report.sMutations.length">
                           <small>Explore all genes
                           </small>
                         </router-link>
