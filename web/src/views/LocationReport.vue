@@ -257,17 +257,6 @@
           <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
         </div>
 
-        <!-- TRACKED LINEAGES TABLE -->
-        <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
-          <div class="d-flex flex-wrap align-items-center justify-content-center">
-            <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
-              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-            </button>
-            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
-          </div>
-          <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
-        </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
@@ -349,6 +338,19 @@
 
         </section>
       </div>
+
+
+              <!-- TRACKED LINEAGES TABLE -->
+              <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
+                <div class="d-flex flex-wrap align-items-center justify-content-center">
+                  <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+                  <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
+                    <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+                  </button>
+                  <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+                </div>
+                <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
+              </section>
 
 
       <!-- METHODOLOGY -->
