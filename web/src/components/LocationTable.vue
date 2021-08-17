@@ -53,7 +53,7 @@
             {{ lineage.label }}
           </router-link>
           <small class="text-muted">expand
-            <font-awesome-icon class="fa-xs" :icon="['fas', 'caret-down']" />
+            <font-awesome-icon class="fa-sm" :icon="['far', 'plus-square']" />
           </small>
         </td>
         <td>
@@ -98,10 +98,10 @@ import {
   library
 } from "@fortawesome/fontawesome-svg-core";
 import {
-  faCaretDown
-} from "@fortawesome/free-solid-svg-icons/faCaretDown";
+  faPlusSquare
+} from "@fortawesome/free-regular-svg-icons/faPlusSquare";
 
-library.add(faCaretDown);
+library.add(faPlusSquare);
 
 export default {
   name: "LocationTable",
