@@ -1105,7 +1105,9 @@ export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday
 // LOCATION REPORTS
 export function getBasicLocationReportData(apiurl, location) {
   store.state.genomics.locationLoading1 = true;
-  let filtered = CURATED.filter(d => d.variantType).filter(d => filterCuratedTypes(d));
+
+  // pull out just the Variants of Concern
+  let filtered = CURATED.filter(d => d.variantType == "Variant of Concern").filter(d => filterCuratedTypes(d));
   filtered = orderBy(filtered, ["variantType", "mutation_name"]);
 
   const curatedLineages = filtered.map(d => {
@@ -1114,7 +1116,7 @@ export function getBasicLocationReportData(apiurl, location) {
     reportQuery.selected = location;
 
     return ({
-      label: d.mutation_name,
+      label: d.label,
       query: buildQueryStr(reportQuery.pango, reportQuery.muts),
       variantType: d.variantType,
       route: reportQuery

@@ -35,9 +35,6 @@ vois["variantType"] = "Variant of Interest"
 # merge the two back together
 curated = pd.concat([vocs, vois])
 
-# calculated values
-curated["reportQuery"] = curated.pangolin_lineage.apply(lambda x: {"pango": x})
-
 
 # --- DESCENDANTS ---
 # pull out the sublineages / descendants for all of the parent lineages
@@ -59,6 +56,19 @@ curated["pango_descendants"] = curated.pangolin_lineage.apply(lambda x: getDesce
 curated["pango_sublineages"] = curated.apply(lambda row: list(filter(lambda x: x != row.pangolin_lineage, row.pango_descendants)), axis=1)
 
 
+# --- CALCULATED ---
+def getLabel(row):
+    if(row.who_name == row.who_name):
+        return(row.who_name)
+    elif(len(row.pango_descendants) > 1):
+        return(f"{row.pangolin_lineage}-related")
+    elif (isinstance(row.pangolin_lineage, str)):
+        return(row.pangolin_lineage)
+    else:
+        return(", ".join(row.pangolin_lineage))
+curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": ",".join(x)})
+curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
+
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
 
@@ -66,12 +76,12 @@ curated.to_json(output_file, orient="records")
 def getName(row):
     if(isinstance(row.pangolin_lineage, str)):
         if(row.who_name == row.who_name):
-            return(f"{row.who_name} | {row.pangolin_lineage}")
+            return(f"{row.who_name} ({row.pangolin_lineage})")
         else:
             return(row.pangolin_lineage)
     else:
         if(row.who_name == row.who_name):
-            return(f"{row.who_name} | {', '.join(row.pangolin_lineage)}")
+            return(f"{row.who_name} ({', '.join(row.pangolin_lineage)})")
         else:
             return(", ".join(row.pangolin_lineage))
 
