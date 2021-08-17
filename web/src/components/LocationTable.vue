@@ -39,7 +39,8 @@
 
         </td>
       </tr>
-      <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
+      <tr class="border-top border-bottom"
+        :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
         <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'voi': lineageGroup.key == 'Variant of Interest'}">
           {{lineageGroup.key}}
           <!-- <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" /> -->
@@ -47,17 +48,20 @@
 
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
-        <td class="d-flex flex-column">
-              <router-link :to="{name: 'MutationReport', query: lineage.route }">
-              {{ lineage.label }}
-              </router-link>
-              <small>expand</small>
+        <td class="d-flex flex-column text-left line-height-1">
+          <router-link :to="{name: 'MutationReport', query: lineage.route }">
+            {{ lineage.label }}
+          </router-link>
+          <small class="text-muted">expand
+            <font-awesome-icon class="fa-xs" :icon="['fas', 'caret-down']" />
+          </small>
         </td>
         <td>
           {{ lineage.lineage_count_formatted }}
         </td>
         <td :class="{'text-muted' : lineage.proportion_formatted == 'no estimate' || lineage.proportion_formatted == 'not detected'}">
-          <span :class="{'no-estimate' : lineage.proportion_formatted == 'no estimate'}" :data-tippy-info="`Prevalence estimates are unreliable since only ${lineage.total_count} ${lineage.total_count === 1 ? 'sample has' : 'samples have'} been sequenced since ${lineage.label} detection in ${locationName}`">{{ lineage.proportion_formatted }}</span>
+          <span :class="{'no-estimate' : lineage.proportion_formatted == 'no estimate'}"
+            :data-tippy-info="`Prevalence estimates are unreliable since only ${lineage.total_count} ${lineage.total_count === 1 ? 'sample has' : 'samples have'} been sequenced since ${lineage.label} detection in ${locationName}`">{{ lineage.proportion_formatted }}</span>
         <td class="spacer">
 
         </td>
@@ -86,21 +90,24 @@ import Warning from "@/components/Warning.vue";
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
-// // --- font awesome --
-// import {
-//   FontAwesomeIcon
-// } from "@fortawesome/vue-fontawesome";
-// import {
-//   library
-// } from "@fortawesome/fontawesome-svg-core";
-// import {
-//   faSync
-// } from "@fortawesome/free-solid-svg-icons/faSync";
-//
-// library.add(faSync);
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faCaretDown
+} from "@fortawesome/free-solid-svg-icons/faCaretDown";
+
+library.add(faCaretDown);
 
 export default {
   name: "LocationTable",
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     data: Array,
     locationID: String,
@@ -134,9 +141,11 @@ th.padded {
 
 .checkbook td,
 .custom td,
+.moc,
+.moi,
 .padding,
 .voc,
-.voi, .moc, .moi {
+.voi {
     padding: 0.5rem;
     text-align: center;
 }
