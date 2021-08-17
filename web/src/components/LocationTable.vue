@@ -47,10 +47,11 @@
 
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
-        <td>
-          <router-link :to="{name: 'MutationReport', query: lineage.route }">
-            {{ lineage.label }}
-          </router-link>
+        <td class="d-flex flex-column">
+              <router-link :to="{name: 'MutationReport', query: lineage.route }">
+              {{ lineage.label }}
+              </router-link>
+              <small>expand</small>
         </td>
         <td>
           {{ lineage.lineage_count_formatted }}
