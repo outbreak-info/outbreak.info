@@ -80,3 +80,4 @@ log_msg = curated.groupby("variantType").name.value_counts()
 
 logging.info(f"{curated.shape[0]} Variants of Concern/Interest added:")
 logging.info(log_msg)
+logging.info("-"*50)
