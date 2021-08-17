@@ -1117,11 +1117,16 @@ export function getBasicLocationReportData(apiurl, location) {
 
     return ({
       label: d.label,
+      pango_descendants: d.pango_descendants,
+      tooltip: `${d.pango_descendants.join(", ")}`,
+      table_expanded: false,
       query: buildQueryStr(reportQuery.pango, reportQuery.muts),
       variantType: d.variantType,
       route: reportQuery
     })
   })
+
+  console.log(curatedLineages)
 
   return forkJoin([
     findLocationMetadata(apiurl, location),

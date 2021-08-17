@@ -1,11 +1,12 @@
 <template>
 <div>
   <div class="d-flex flex-wrap justify-content-center mt-2">
-    <label class="b-contain m-0 mr-3 mb-2" v-for="option in options" :key="option.label">
+    <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in options" :key="option.label" :data-tippy-info="option.tooltip">
       <small>{{option.label}}</small>
       <input type="checkbox" :value="option" v-model.lazy="selectedMutations" @change="debounceSelectMutation" />
       <div class="b-input"></div>
     </label>
+    <font-awesome-icon class="fa-lg text-sec pointer" :icon="['far', 'plus-square']" />
   </div>
   <ReportPrevalenceOverlay :data="prevalences" :seqCounts="seqCounts" :epi="epi" v-if="prevalences && epi" :locationID="locationID" :locationName="locationName" />
 
@@ -27,6 +28,22 @@ import ReportPrevalenceOverlay from "@/components/ReportPrevalenceOverlay.vue";
 import uniq from "lodash/uniq";
 import debounce from "lodash/debounce";
 
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faPlusSquare
+} from "@fortawesome/free-regular-svg-icons/faPlusSquare";
+
+library.add(faPlusSquare);
+
 export default {
   name: "LocationReport",
   props: {
@@ -37,7 +54,8 @@ export default {
     selected: [Array, String]
   },
   components: {
-    ReportPrevalenceOverlay
+    ReportPrevalenceOverlay,
+    FontAwesomeIcon
   },
   watch: {
     locationID() {
@@ -65,6 +83,18 @@ export default {
   mounted() {
     this.setMutations();
     this.updateData();
+
+    tippy(".variant-checkbox", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
   },
   methods: {
     selectMutation() {

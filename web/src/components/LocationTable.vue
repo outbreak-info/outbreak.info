@@ -48,12 +48,12 @@
 
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
-        <td class="d-flex flex-column text-left line-height-1">
-          <router-link :to="{name: 'MutationReport', query: lineage.route }">
+        <td class="text-left line-height-1">
+          <router-link class="variant-table" :to="{name: 'MutationReport', query: lineage.route }" :data-tippy-info="lineage.tooltip">
             {{ lineage.label }}
           </router-link>
-          <small class="text-muted">expand
-            <font-awesome-icon class="fa-sm" :icon="['far', 'plus-square']" />
+          <small class="text-muted pointer variant-expand" :data-tippy-info="`show ${lineage.label} sublineages`" @click="showSublineages(lineage)">
+            <font-awesome-icon class="fa-sm ml-1" :icon="['far', 'plus-square']" />
           </small>
         </td>
         <td>
@@ -114,6 +114,30 @@ export default {
     locationName: String
   },
   mounted() {
+    tippy(".variant-table", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+
+    tippy(".variant-expand", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+
     tippy(".no-estimate", {
       content: "Loading...",
       maxWidth: "200px",
@@ -125,6 +149,11 @@ export default {
         instance.setContent(info);
       }
     });
+  },
+  methods: {
+    showSublineages(lineage) {
+      console.log(lineage)
+    }
   }
 }
 </script>
