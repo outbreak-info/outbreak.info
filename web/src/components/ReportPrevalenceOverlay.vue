@@ -101,6 +101,7 @@
   <!-- TOOLTIPS -->
   <div ref="tooltip_mutations" class="tooltip-basic box-shadow" id="tooltip-mutations">
     <h5 id="mutation" class="p-2 m-0"></h5>
+    <small id="sublineages" class="line-height-sm"></small>
   </div>
   <!-- <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
     <h5 id="date"></h5>
@@ -564,7 +565,6 @@ export default Vue.extend({
         .style("opacity", 1);
     },
     tooltipOnMutation(d) {
-      console.log(d)
       const ttipShift = 20;
       const ttip = select(this.$refs.tooltip_mutations);
 
@@ -579,6 +579,10 @@ export default Vue.extend({
       // edit text
       ttip.select("h5")
         .text(d.label)
+        .style("color", this.colorScale(d.label))
+
+      ttip.select("#sublineages")
+        .text(d.pango_descendants.length > 1 ? d.pango_descendants.join(", ") : "")
         .style("color", this.colorScale(d.label))
 
       // fix location
@@ -634,6 +638,7 @@ export default Vue.extend({
         const endLabels = this.plottedData.map(d => {
           return ({
             label: d[this.fillVariable],
+            pango_descendants: d.pango_descendants,
             route: d.route,
             fx: 0,
             targetY: this.y(d.data.slice(-1)[0][this.yVariable])
@@ -678,6 +683,7 @@ export default Vue.extend({
               .attr("x", this.width - this.margin.left - this.margin.right)
               .attr("dx", 5)
               .attr("y", d => d.y)
+              .style("font-size", 22)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", d => this.colorScale(d.label))
               .text(d => d.label);
