@@ -40,10 +40,16 @@ curated = pd.concat([vocs, vois])
 # pull out the sublineages / descendants for all of the parent lineages
 def getDescendants(lineage):
     if(isinstance(lineage, str)):
-        return(lineage_descendants[lineage])
+        # list the parent first
+        descendants = [lineage]
+        descendants.extend(lineage_descendants[lineage])
+        return(list(dict.fromkeys(descendants)))
     else:
+        descendants = lineage.copy()
         # dealing with the B.1.427/B.1.429 case
-        return([item for sublist in lineage for item in lineage_descendants[sublist]])
+        sublineages = [item for sublist in lineage for item in lineage_descendants[sublist]]
+        descendants.extend(sublineages)
+        return(list(dict.fromkeys(descendants)))
 
 # Pull the Pango lineages, reshape the descendants into a dict
 lineage_file = request.urlopen(lineage_url)
