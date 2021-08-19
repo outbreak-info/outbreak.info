@@ -222,6 +222,8 @@
                         </span>
                       </h5>
                     </div>
+                    <!-- DELTA WARNING! -->
+                    <Warning v-if="report.who_name == 'Delta'" text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' style='max-width: 470px;' class='text-light text-underline'>(read more)</a>" />
 
                     <!-- synonyms -->
                     <small class="d-flex flex-column text-muted">
@@ -471,6 +473,7 @@ import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import MutationHeatmap from "@/components/MutationHeatmap.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
+import Warning from "@/components/Warning.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -526,7 +529,8 @@ export default {
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon,
-    MutationHeatmap
+    MutationHeatmap,
+    Warning
   },
   computed: {
     ...mapState("admin", ["reportloading"]),
