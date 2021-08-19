@@ -281,6 +281,21 @@ const routes = [{
       )
   },
   {
+    path: "/situation-reports/:who",
+    name: "CombinedLineageReport",
+    props: route => ({
+      loc: route.query.loc,
+      muts: route.query.muts,
+      pango: route.query.pango,
+      selected: route.query.selected
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "combined-lineage-report" */
+        "../views/CombinedLineageReport.vue"
+      )
+  },
+  {
     path: "/situation-reports/methods",
     name: "SituationReportMethodology",
     component: () =>

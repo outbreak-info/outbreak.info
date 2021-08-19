@@ -11,6 +11,7 @@
       <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
     </div>
 
+    <!-- Header info -->
     <div class="mb-1">
       <img src="@/assets/sars-virus.svg" alt="map" class="bg-image" />
       <div class="d-flex flex-column justify-content-center align-items-center">
@@ -23,6 +24,7 @@
           </div>
         </div>
 
+        <!-- Select custom reports -->
         <div class="w-75 mt-2 text-left">The <a href="https://cvisb.org/" rel="noreferrer" target="_blank">CViSB Team</a> at Scripps Research is tracking the prevalence of SARS-CoV-2 (hCoV-19) variants with lineage and mutation reports, updated
           daily.
           Access curated reports below, or create your own <a href="#custom-report">custom reports</a> with any combination of lineages and/or mutations.
@@ -134,6 +136,7 @@
 
 
         <template v-if="group.values.length">
+          <!-- filter to hide VOCs / VOIs -->
           <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
             <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
             <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
@@ -146,9 +149,11 @@
             <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
           </div>
 
+          <!-- LINEAGE TABLE -->
           <table class="bg-white my-2">
             <thead class="text-uppercase bg-dark text-light">
               <tr class="border-bottom border-white">
+                <!-- table header -->
                 <th>
                   <div class="d-flex align-items-center">
                     variant
@@ -176,29 +181,38 @@
               </tr>
             </thead>
 
+            <!-- table body -->
             <tbody>
               <template v-for="(report, rIdx) in group.values">
                 <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
                   <!-- name + synonyms -->
                   <td class="pt-2  border-bottom">
-                    <!-- contains sublineages -->
-                    <h3 class="m-0 border-bottom pb-1 mb-2" v-if="report.pango_sublineages.length && report.who_name" :id="anchorLink(report.who_name)">{{ report.who_name }}</h3>
-                    <h3 class="m-0 border-bottom pb-1 mb-2" v-else-if="report.pango_sublineages.length" :id="anchorLink(report.pangolin_lineage)">{{report.pangolin_lineage}}-related</h3>
+                    <!-- WHO reports -->
+                    <template v-if="report.who_name">
+                      <!-- with sublineages -->
+                      <router-link :to="{name:'CombinedLineageReport', params: {who: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline"
+                        v-if="report.pango_sublineages.length || Array.isArray(report.pangolin_lineage)">
+                        <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
+                      </router-link>
+                      <!-- WHO named lineage, no sublineages -->
+                      <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
+                        <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
+                      </router-link>
+                    </template>
 
-                    <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.who_name">
-                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.who_name }}</h3>
-                    </router-link>
+                    <h3 class="m-0 border-bottom pb-1 mb-2" v-else-if="report.pango_sublineages.length" :id="anchorLink(report.pangolin_lineage)">{{report.label}}</h3>
 
                     <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
                       <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h3>
                     </router-link>
 
-                    <!-- sublineages -->
+                    <!-- list of parent / sublineages -->
                     <div class="sublineages text-muted" v-if="report.lineages.length > 1">
                       <h5 class="m-0 parent-lineage" v-if="report.pangolin_lineage">
                         <span>Parent: </span>
                         <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(report.pangolin_lineage)">
-                          {{report.pangolin_lineage}}</router-link>
+                          {{report.pangolin_lineage}}
+                        </router-link>
                       </h5>
                       <h5 class="sublineage d-flex flex-wrap  border-bottom pb-2 mb-2" v-if="report.pango_sublineages">
                         <span class="mr-2">Sublineages: </span>
@@ -754,7 +768,7 @@ export default {
       })
     },
     anchorLink(link) {
-      return(link.replace(/\./g, "_"))
+      return (link.replace(/\./g, "_"))
     }
   },
   data() {
