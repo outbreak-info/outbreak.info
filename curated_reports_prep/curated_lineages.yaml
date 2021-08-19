@@ -33,7 +33,7 @@ VOC:
     nextstrain_clade: 20I/501Y.V1, 20B/501Y.V1
     gisaid_clade: GRY, GR/501Y.V1
     phe_name: VOC-20DEC-01, VOC-202012/01
-    searchTerms:
+    mutation_synonyms:
       - Variant of Concern 202012/01
       - 202012/01
       - 501Y.V1
@@ -100,7 +100,7 @@ VOC:
     nextstrain_clade: 20J/501Y.V3
     gisaid_clade: GR/501Y.V3
     phe_name: VOC-21JAN-02, VOC-202101/02
-    searchTerms:
+    mutation_synonyms:
       - B.1.1.28.1
     dateModified: 2021-02-01
     classifications:
@@ -193,7 +193,7 @@ VOI:
     gisaid_clade: G/484K.V3
     nextstrain_clade: 20A/S484K
     phe_name: VUI-21FEB-03, VUI-202102/03
-    searchTerms:
+    mutation_synonyms:
       - UK1188
     dateModified: 2021-06-01
     classifications:
@@ -223,7 +223,7 @@ VOI:
       - B.1.429
     gisaid_clade: GH/452R.V1
     nextstrain_clade: 20C/S.452R
-    searchTerms:
+    mutation_synonyms:
       - CA VUI1
       - CAL.20C
     dateModified: 2021-05-07

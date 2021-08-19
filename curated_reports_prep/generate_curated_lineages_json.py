@@ -72,8 +72,31 @@ def getLabel(row):
         return(row.pangolin_lineage)
     else:
         return(", ".join(row.pangolin_lineage))
+
+def getSynonyms(row):
+    if(row.mutation_synonyms == row.mutation_synonyms):
+        synonyms = row.mutation_synonyms
+    else:
+        synonyms = []
+    if(row.who_name == row.who_name):
+        synonyms.append(row.who_name)
+    if(row.pangolin_lineage == row.pangolin_lineage):
+        if (isinstance(row.pangolin_lineage, str)):
+            synonyms.append(row.pangolin_lineage)
+        else:
+            synonyms.extend(row.pangolin_lineage)
+    if(row.nextstrain_clade == row.nextstrain_clade):
+        synonyms.extend(row.nextstrain_clade.split(","))
+    if(row.gisaid_clade == row.gisaid_clade):
+        synonyms.extend(row.gisaid_clade.split(","))
+    if(row.phe_name == row.phe_name):
+        synonyms.extend(row.phe_name.split(","))
+    synonyms.sort()
+    return(synonyms)
+
 curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
 curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
+curated["mutation_synonyms"] = curated.apply(lambda x: getSynonyms(x), axis = 1)
 
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
