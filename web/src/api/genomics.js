@@ -213,8 +213,6 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
 
       // pull out the characteristic mutations and bind to the curated list.
       let curated = orderBy(CURATED, ["variantType"]);
-      console.log(curated)
-      console.log(charMuts)
       // loop over each curated report; attach the associated lineages / characteristic mutations with it.
       curated.forEach(report => {
         let mutations_in_report = [];
@@ -249,7 +247,6 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
-      console.log(curated)
 
       return ({
         md: curated,
@@ -277,16 +274,15 @@ function getVariantSynonyms(md) {
 export function getReportList(apiurl, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   store.state.admin.reportloading = true;
 
-  return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold), getCuratedMutations(apiurl, prevalenceThreshold)]).pipe(
-    map(([dateUpdated, md, muts]) => {
+  return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold)]).pipe(
+    map(([dateUpdated, md]) => {
 
       // combine all the variant synoynms together
       getVariantSynonyms(md.md);
 
       return ({
         ...md,
-        dateUpdated: dateUpdated.lastUpdated,
-        mutations: muts
+        dateUpdated: dateUpdated.lastUpdated
       })
 
     }),

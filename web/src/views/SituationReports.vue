@@ -856,7 +856,6 @@ export default {
       this.reports = results.md;
       this.curatedVOC = results.voc.map(d => d.toLowerCase());
       this.curatedVOI = results.voi.map(d => d.toLowerCase());
-      this.mutationReports = results.mutations;
       this.filterReports();
     })
 
