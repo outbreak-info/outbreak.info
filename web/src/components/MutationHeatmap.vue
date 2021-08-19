@@ -478,8 +478,6 @@ export default Vue.extend({
         .selectAll(".heatmap")
         .data(this.plottedData, d => d.id);
 
-        console.log(this.data)
-
       heatmapSelector.join(
         enter => {
           enter

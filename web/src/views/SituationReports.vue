@@ -207,7 +207,7 @@
                     </router-link>
 
                     <!-- list of parent / sublineages -->
-                    <div class="sublineages text-muted" v-if="report.lineages.length > 1">
+                    <div class="sublineages text-muted" v-if="report.pango_descendants.length > 1">
                       <h5 class="m-0 parent-lineage" v-if="report.pangolin_lineage">
                         <span>Parent: </span>
                         <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(report.pangolin_lineage)">
@@ -291,7 +291,7 @@
                   <!-- s-gene mutations heatmap -->
                   <td>
                     <div class="d-flex flex-column align-items-center">
-                      <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.lineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
+                      <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.pango_descendants" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
                       <div class="d-flex">
                         <router-link class="text-muted" :to="{name:'SituationReportComparison', query: report.reportQuery }" v-if="report.mutations.length">
                           <small>Explore all genes
