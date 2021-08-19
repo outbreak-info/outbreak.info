@@ -9,6 +9,7 @@ import yaml
 import pandas as pd
 from urllib import request
 import logging
+from datetime import datetime
 
 # --- LOGGING ---
 logging.basicConfig(filename = "curated_lineages_json.log", filemode="a", format="%(asctime)s : %(name)s - %(levelname)s - %(message)s", datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
@@ -97,6 +98,7 @@ def getSynonyms(row):
 curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
 curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
 curated["mutation_synonyms"] = curated.apply(lambda x: getSynonyms(x), axis = 1)
+curated["dateModifiedFormatted"] = curated.dateModified.apply(lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%d %b %Y"))
 
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
