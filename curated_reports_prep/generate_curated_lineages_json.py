@@ -66,7 +66,7 @@ def getLabel(row):
         return(row.pangolin_lineage)
     else:
         return(", ".join(row.pangolin_lineage))
-curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": ",".join(x)})
+curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
 curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
 
 # --- EXPORT ---

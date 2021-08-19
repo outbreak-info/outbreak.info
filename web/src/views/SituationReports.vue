@@ -293,7 +293,7 @@
                     <div class="d-flex flex-column align-items-center">
                       <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="report.lineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
                       <div class="d-flex">
-                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.who_name }}" v-if="report.sMutations.length">
+                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: report.reportQuery }" v-if="report.sMutations.length">
                           <small>Explore all genes
                           </small>
                         </router-link>
