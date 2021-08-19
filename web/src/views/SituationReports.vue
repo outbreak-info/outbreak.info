@@ -291,9 +291,9 @@
                   <!-- s-gene mutations heatmap -->
                   <td>
                     <div class="d-flex flex-column align-items-center">
-                      <MutationHeatmap :data="report.sMutations" :dark="false" gene="S" :yDomain="report.lineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.sMutations.length" />
+                      <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.lineages" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
                       <div class="d-flex">
-                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: report.reportQuery }" v-if="report.sMutations.length">
+                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: report.reportQuery }" v-if="report.mutations.length">
                           <small>Explore all genes
                           </small>
                         </router-link>
@@ -763,13 +763,6 @@ export default {
           group.values = [];
         })
       }
-
-      // filter only the S-gene mutations from all the mutations
-      this.filteredReports.forEach(report => {
-        report.values.forEach(d => {
-          d["sMutations"] = d.mutations.filter(x => x.gene == "S");
-        })
-      })
     },
     anchorLink(link) {
       return (link.replace(/\./g, "_"))

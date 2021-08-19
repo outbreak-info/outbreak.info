@@ -204,31 +204,37 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
   )
 }
 
-export function getCuratedList(apiurl, prevalenceThreshold) {
-  CURATED.forEach(d => {
-    d["lineages"] = [d.pangolin_lineage].concat(d.pango_sublineages).filter(d => d);
-  })
-  const query = CURATED.map(d => d.lineages).join(",");
-  console.log(query)
+export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
+  const query = CURATED.map(d => d.pango_descendants).join(",");
 
   return forkJoin([getCharacteristicMutations(apiurl, query, 0, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
     map(([charMuts, totals]) => {
+
+
       // pull out the characteristic mutations and bind to the curated list.
       let curated = orderBy(CURATED, ["variantType"]);
+      console.log(curated)
+      console.log(charMuts)
+      // loop over each curated report; attach the associated lineages / characteristic mutations with it.
       curated.forEach(report => {
-        report["mutations"] = [];
-        report.lineages.forEach(lineage => {
+        let mutations_in_report = [];
+
+        report.pango_descendants.forEach(lineage => {
           // flat map the mutations within the lineages associated with that group
           if (Object.keys(charMuts).includes(lineage)) {
-            report.mutations = report.mutations.concat(report.mutations, charMuts[lineage])
+            mutations_in_report.push(charMuts[lineage])
           }
-          // remove mutations outside the characteristicThreshold
-          const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-          // console.log(report.mutation_name)
-          // console.log(report.mutations)
-
-          report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
         })
+
+        // flat map the mutations to collapse the sublineages down into a long list.
+        report["mutations"] = mutations_in_report.flatMap(d => d);
+
+        if (sMutationsOnly) {
+          report.mutations = report.mutations.filter(d => d.gene == "S");
+        }
+
+        const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+        report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
       })
 
       const voc = curated.filter(d => d.variantType == "Variant of Concern").map(d => d.pangolin_lineage);
@@ -526,7 +532,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
         let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
           d => {
             d["pangolin_lineage"] = lineage_key.replace(/AND/g, "+");
-            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_");
+            d["id"] = `${d.pangolin_lineage}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
             return (d);
           }
         ));
@@ -535,7 +541,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
         Object.keys(results).forEach(lineage_key => {
           results[lineage_key].forEach(d => {
             d["pangolin_lineage"] = lineage_key;
-            d["id"] = d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_");
+            d["id"] = `${d.pangolin_lineage.replace(/\./g, "-")}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
             d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
           })
           // sort by location
