@@ -204,11 +204,12 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
   )
 }
 
+
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
   const query = CURATED.map(d => d.pango_descendants).join(",");
 
-  return forkJoin([getCharacteristicMutations(apiurl, query, 0, false), ...CURATED.map(mutation => lookupLineageDetails(apiurl, mutation, prevalenceThreshold))]).pipe(
-    map(([charMuts, totals]) => {
+  return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
+    map(charMuts => {
 
 
       // pull out the characteristic mutations and bind to the curated list.
