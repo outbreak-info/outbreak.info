@@ -68,7 +68,7 @@
     </div>
 
   <div class="my-5">
-    <h3 id="delta">Delta variant lineages</h3>
+    <h3 id="delta">Delta variant lineages &amp; how lineages are assigned</h3>
     <p>
       Classifications of Delta lineages by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are in flux. While underlying sequence data remains the same, reports for specific lineages may change. Read more from the Pango team on <a href="https://cov-lineages.org/FAQ.html" target="_blank">why a lineage assignment might change</a> and an explanation about the <a href="https://www.pango.network/new-ay-lineages/" target="_blank">AY lineage series</a>.
     </p>
