@@ -205,7 +205,7 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
 }
 
 
-export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
+export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOnly = true) {
   const query = CURATED.map(d => d.pango_descendants).join(",");
 
   return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
@@ -253,6 +253,47 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
         md: curated,
         voc: voc,
         voi: voi
+      })
+    })
+  )
+}
+
+
+export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
+  const query = CURATED.map(d => d.char_muts_query).join(",");
+
+  return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
+    map(charMuts => {
+
+      // pull out the characteristic mutations and bind to the curated list.
+      let curated = orderBy(CURATED, ["variantType"]);
+      // loop over each curated report; attach the associated lineages / characteristic mutations with it.
+      curated.forEach(report => {
+        let mutations_in_report = [];
+
+        report["mutations"] = charMuts[report.char_muts_query];
+        report["mutationsYDomain"] = [report.label];
+
+        if (sMutationsOnly) {
+          report.mutations = report.mutations.filter(d => d.gene == "S");
+        }
+
+        const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+        report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
+      })
+
+      curated = nest()
+        .key(d => d.variantType)
+        .entries(curated);
+
+      curated.forEach(d => {
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : "unknown";
+      })
+
+      curated = orderBy(curated, [reportTypeSorter], ["asc"]);
+
+      return ({
+        md: curated
       })
     })
   )

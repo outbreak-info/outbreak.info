@@ -96,6 +96,7 @@ def getSynonyms(row):
     return(synonyms)
 
 curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
+curated["char_muts_query"] = curated.pango_descendants.apply(lambda x: " OR ".join(x))
 curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
 curated["mutation_synonyms"] = curated.apply(lambda x: getSynonyms(x), axis = 1)
 curated["dateModifiedFormatted"] = curated.dateModified.apply(lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%d %b %Y"))
