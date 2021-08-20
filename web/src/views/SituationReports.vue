@@ -207,24 +207,27 @@
                     </router-link>
 
                     <!-- list of parent / sublineages -->
-                    <div class="sublineages text-muted" v-if="report.pango_descendants.length > 1">
-                      <h5 class="m-0 parent-lineage" v-if="report.pangolin_lineage">
-                        <span>Parent: </span>
+                    <div class="sublineages text-muted border-bottom pb-2 mb-2" v-if="report.pango_descendants.length > 1  || report.who_name">
+                      <h4 class="m-0 parent-lineage" v-if="report.pangolin_lineage">
                         <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(report.pangolin_lineage)">
                           {{report.pangolin_lineage}}
                         </router-link>
-                      </h5>
-                      <h5 class="sublineage d-flex flex-wrap  border-bottom pb-2 mb-2" v-if="report.pango_sublineages">
-                        <span class="mr-2">Sublineages: </span>
-                        <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx">
-                          <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
-                          <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
-                        </span>
-                      </h5>
+                      </h4>
+
+                      <div v-if="report.pango_sublineages.length">
+                        <h5 class="sublineage d-flex flex-wrap">
+                          <span class="mr-2">Sublineages: </span>
+                          <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx">
+                            <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
+                            <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
+                          </span>
+                        </h5>
+                        <!-- DELTA WARNING! -->
+                        <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Delta'">
+                          <Warning text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
+                        </div>
+                      </div>
                     </div>
-                    <!-- DELTA WARNING! -->
-                    <Warning v-if="report.who_name == 'Delta'"
-                      text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' style='max-width: 470px;' class='text-light text-underline'>(read more)</a>" />
 
                     <!-- synonyms -->
                     <small class="d-flex flex-column text-muted">
