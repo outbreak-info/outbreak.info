@@ -260,7 +260,7 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 
 
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
-  const query = CURATED.map(d => d.char_muts_parent_query).join(",");
+  const query = CURATED.map(d => d.label);
 
   return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
     map(charMuts => {
@@ -271,8 +271,8 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
       curated.forEach(report => {
         let mutations_in_report = [];
 
-        report["mutations"] = charMuts[report.char_muts_parent_query];
-        report["mutationsYDomain"] = [report.label];
+        report["mutations"] = Object.keys(charMuts).includes(report.char_muts_parent_query) ? charMuts[report.char_muts_parent_query] : [];
+        report["mutationsYDomain"] = uniq(report.mutations.map(d => d.pangolin_lineage));
 
         if (sMutationsOnly) {
           report.mutations = report.mutations.filter(d => d.gene == "S");
@@ -556,6 +556,18 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
     return ( of ([]));
+
+  // convert named curated lineages to OR queries
+  if (Array.isArray(lineage)) {
+    lineage = lineage.map(d => {
+      const filtered = CURATED.filter(report => report.label == d);
+      return (filtered.length === 1 ? filtered[0].char_muts_parent_query : d)
+    })
+    lineage = lineage.join(",");
+  } else {
+    const filtered = CURATED.filter(report => report.label == lineage);
+    lineage = filtered.length === 1 ? filtered[0].char_muts_parent_query : lineage;
+  }
 
   // convert + to AND to specify lineages + mutations
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(/\+/g, "AND")}&frequency=${prevalenceThreshold}`;
@@ -1576,7 +1588,6 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
-      console.log(results)
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
 
       let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)));

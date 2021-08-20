@@ -97,15 +97,15 @@ def getSynonyms(row):
 
 # Returns query string for the combined
 def getCharMutQuery(row):
-    queries = [row.char_muts_parent_query]
+    queries = [row.label]
     queries.extend(row.pango_descendants)
     queries = list(dict.fromkeys(queries))
     return(queries)
 
+curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
 curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
 curated["char_muts_parent_query"] = curated.pango_descendants.apply(lambda x: " OR ".join(x))
 curated["char_muts_query"] = curated.apply(lambda x: getCharMutQuery(x), axis = 1)
-curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
 curated["mutation_synonyms"] = curated.apply(lambda x: getSynonyms(x), axis = 1)
 curated["dateModifiedFormatted"] = curated.dateModified.apply(lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%d %b %Y"))
 

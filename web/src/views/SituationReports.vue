@@ -295,7 +295,7 @@
                       <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.mutationsYDomain" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
                       <div class="d-flex">
                         <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-if="report.mutations.length">
-                          <small v-if="report.pango_sublineages">Compare sublineages
+                          <small v-if="report.pango_sublineages.length">Compare sublineages
                           </small>
                           <small v-else>Explore all genes
                           </small>
