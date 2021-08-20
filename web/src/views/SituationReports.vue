@@ -208,7 +208,7 @@
 
                     <!-- list of parent / sublineages -->
                     <div class="sublineages text-muted border-bottom pb-2 mb-2" v-if="report.pango_descendants.length > 1  || report.who_name">
-                      <h4 class="m-0 parent-lineage" v-if="report.pangolin_lineage">
+                      <h4 class="m-0 parent-lineage" v-if="report.pangolin_lineage" :id="anchorLink(report.pangolin_lineage)">
                         <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(report.pangolin_lineage)">
                           {{report.pangolin_lineage}}
                         </router-link>
@@ -217,7 +217,7 @@
                       <div v-if="report.pango_sublineages.length">
                         <h5 class="sublineage d-flex flex-wrap">
                           <span class="mr-2">Sublineages: </span>
-                          <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx">
+                          <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx" :id="anchorLink(sublineage)">
                             <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
                             <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
                           </span>
@@ -246,7 +246,7 @@
                       <div class="text-highlight d-flex flex-wrap" v-if="report.related">
                         <span class="mr-1">related:</span>
                         <span v-for="(related, rIdx) in report.related" :key="rIdx">
-                          <router-link :to="{hash: related}" class="font-weight-bold">{{related}}</router-link>
+                          <router-link :to="{hash: anchorLink(related)}" class="font-weight-bold">{{related}}</router-link>
                           <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
                         </span>
                       </div>
