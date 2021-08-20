@@ -269,13 +269,13 @@
                             <!-- <span :class="'tracked-variant-badge ' + variant.id + '-logo'" :data-tippy-info="`<b>${variant.label}</b><div class='fa-sm line-height-1'>${variant.def}</div>`">{{variant.id}}</span> -->
                           </th>
 
-                          <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant.id] && report.classificationTable[variant.id][curator.id] ? variant.id + '-bg' : 'no-classification']">
+                          <!-- <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant.id] && report.classificationTable[variant.id][curator.id] ? variant.id + '-bg' : 'no-classification']">
                             <div v-if="report.classificationTable[variant.id]" class="border-inset">
                               <small class="line-height-1 tracked-variant-report" v-if="report.classificationTable[variant.id][curator.id] && report.classificationTable[variant.id][curator.id].report"
                                 :data-tippy-info="report.classificationTable[variant.id][curator.id].ttip" v-html="report.classificationTable[variant.id][curator.id].report"></small>
                             </div>
 
-                          </td>
+                          </td> -->
                         </tr>
 
                       </tbody>
@@ -291,10 +291,12 @@
                   <!-- s-gene mutations heatmap -->
                   <td>
                     <div class="d-flex flex-column align-items-center">
-                      <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.pango_descendants" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
+                      <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.mutationsYDomain" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
                       <div class="d-flex">
                         <router-link class="text-muted" :to="{name:'SituationReportComparison', query: report.reportQuery }" v-if="report.mutations.length">
-                          <small>Explore all genes
+                          <small v-if="report.pango_sublineages">Compare sublineages
+                          </small>
+                          <small v-else>Explore all genes
                           </small>
                         </router-link>
                       </div>
@@ -854,8 +856,6 @@ export default {
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
-      this.curatedVOC = results.voc.map(d => d.toLowerCase());
-      this.curatedVOI = results.voi.map(d => d.toLowerCase());
       this.filterReports();
     })
 
