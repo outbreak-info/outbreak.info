@@ -60,7 +60,7 @@ for lineage in lineages:
     lineage_descendants[lineage["name"]] = lineage["children"]
 
 curated["pango_descendants"] = curated.pangolin_lineage.apply(lambda x: getDescendants(x))
-curated["pango_sublineages"] = curated.apply(lambda row: list(filter(lambda x: x != row.pangolin_lineage, row.pango_descendants)), axis=1)
+curated["pango_sublineages"] = curated.apply(lambda row: list(filter(lambda x: (x != row.pangolin_lineage) & (x not in row.pangolin_lineage), row.pango_descendants)), axis=1)
 
 
 # --- CALCULATED ---

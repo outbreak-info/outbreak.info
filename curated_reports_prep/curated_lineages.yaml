@@ -6,6 +6,10 @@ VOC:
     phe_name: VOC-21APR-02
     dateModified: 2021-05-07
     location_first_identified: India
+    loc:
+      - IND
+      - GBR
+      - USA
     variantType: Variant of Concern
     related:
       - B.1.617.1

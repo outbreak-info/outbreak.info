@@ -208,11 +208,21 @@
 
                     <!-- list of parent / sublineages -->
                     <div class="sublineages text-muted border-bottom pb-2 mb-2" v-if="report.pango_descendants.length > 1  || report.who_name">
-                      <h4 class="m-0 parent-lineage" v-if="report.pangolin_lineage" :id="anchorLink(report.pangolin_lineage)">
-                        <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(report.pangolin_lineage)">
-                          {{report.pangolin_lineage}}
-                        </router-link>
-                      </h4>
+                      <template v-if="report.pangolin_lineage">
+                        <div v-if="Array.isArray(report.pangolin_lineage)" class="d-flex">
+                          <h4 class="m-0 parent-lineage" :id="anchorLink(parentLineage)" v-for="(parentLineage, pIdx) in report.pangolin_lineage" :key="pIdx">
+                            <router-link :to="{name:'MutationReport', query: {pango: parentLineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">
+                              {{parentLineage}}
+                            </router-link>
+                            <span class="mx-1" v-if="pIdx < report.pangolin_lineage.length - 1">&bull;</span>
+                          </h4>
+                        </div>
+                        <h4 class="m-0 parent-lineage" :id="anchorLink(report.pangolin_lineage)" v-else>
+                          <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">
+                            {{report.pangolin_lineage}}
+                          </router-link>
+                        </h4>
+                      </template>
 
                       <div v-if="report.pango_sublineages.length">
                         <h5 class="sublineage d-flex flex-wrap">
