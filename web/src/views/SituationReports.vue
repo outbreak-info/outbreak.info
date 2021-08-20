@@ -223,7 +223,8 @@
                       </h5>
                     </div>
                     <!-- DELTA WARNING! -->
-                    <Warning v-if="report.who_name == 'Delta'" text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' style='max-width: 470px;' class='text-light text-underline'>(read more)</a>" />
+                    <Warning v-if="report.who_name == 'Delta'"
+                      text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' style='max-width: 470px;' class='text-light text-underline'>(read more)</a>" />
 
                     <!-- synonyms -->
                     <small class="d-flex flex-column text-muted">
@@ -293,7 +294,7 @@
                     <div class="d-flex flex-column align-items-center">
                       <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.mutationsYDomain" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
                       <div class="d-flex">
-                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: report.reportQuery }" v-if="report.mutations.length">
+                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-if="report.mutations.length">
                           <small v-if="report.pango_sublineages">Compare sublineages
                           </small>
                           <small v-else>Explore all genes

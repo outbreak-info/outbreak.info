@@ -260,7 +260,7 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 
 
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
-  const query = CURATED.map(d => d.char_muts_query).join(",");
+  const query = CURATED.map(d => d.char_muts_parent_query).join(",");
 
   return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
     map(charMuts => {
@@ -271,7 +271,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
       curated.forEach(report => {
         let mutations_in_report = [];
 
-        report["mutations"] = charMuts[report.char_muts_query];
+        report["mutations"] = charMuts[report.char_muts_parent_query];
         report["mutationsYDomain"] = [report.label];
 
         if (sMutationsOnly) {
