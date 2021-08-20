@@ -569,7 +569,10 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       if (returnFlat) {
         let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
           d => {
-            d["pangolin_lineage"] = lineage_key.replace(/AND/g, "+");
+            // Convert to the VOC/VOI synoyms.
+            const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
+
+            d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
             d["id"] = `${d.pangolin_lineage}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
             return (d);
           }
@@ -578,7 +581,10 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       } else {
         Object.keys(results).forEach(lineage_key => {
           results[lineage_key].forEach(d => {
-            d["pangolin_lineage"] = lineage_key;
+            // Convert to the VOC/VOI synoyms.
+            const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
+
+            d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
             d["id"] = `${d.pangolin_lineage.replace(/\./g, "-")}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
             d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
           })
@@ -1573,7 +1579,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
       console.log(results)
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
 
-      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)))
+      let filtered = results.flatMap(d => d.filter(x => prevalentMutations.includes(x.mutation)));
 
       // const avgByMutation = nest()
       //   .key(d => d.mutation)
@@ -1600,6 +1606,9 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
         d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
           d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })
+
+      // update lineages to be the "fixed" names, to account for WHO / grouped names.
+      lineages = uniq(results.flatMap(d => d).map(d => d.pangolin_lineage));
 
       let nestedByGenes = nest()
         .key(d => d.gene)

@@ -669,6 +669,7 @@ export default {
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.downloadableHeatmap = results.dataFlat;
+        console.log(results.yDomain)
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
         this.voi = results.voi;
