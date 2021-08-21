@@ -102,12 +102,27 @@ def getCharMutQuery(row):
     queries = list(dict.fromkeys(queries))
     return(queries)
 
+# Converts array of classification items to a dict with some calculated values for display in table
+# 1. Adds outbreak.info classification
+# 2. Calculates for each: dateModified, tooltip, report, url
+def formatClassifications(row):
+    classifications = {}
+    # Add outbreak.info classification:
+    if(row.variantType == "Variant of Concern"):
+        classifications = {"VOC": {"outbreak": {"dateModified": row.dateModifiedFormatted}}}
+    elif(row.variantType == "Variant of Interest"):
+        classifications = {"VOI": {"outbreak": {"dateModified": row.dateModifiedFormatted}}}
+    return(classifications)
+
 curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
 curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
 curated["char_muts_parent_query"] = curated.pango_descendants.apply(lambda x: " OR ".join(x))
 curated["char_muts_query"] = curated.apply(lambda x: getCharMutQuery(x), axis = 1)
 curated["mutation_synonyms"] = curated.apply(lambda x: getSynonyms(x), axis = 1)
 curated["dateModifiedFormatted"] = curated.dateModified.apply(lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%d %b %Y"))
+curated["classificationTable"] = curated.apply(lambda x: formatClassifications(x), axis = 1)
+# Remove variables that aren't needed
+curated.drop(["classifications", "dateModified", "dateModifiedFormatted"], axis = 1, inplace=True)
 
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
