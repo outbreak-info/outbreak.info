@@ -104,15 +104,47 @@ def getCharMutQuery(row):
 
 # Converts array of classification items to a dict with some calculated values for display in table
 # 1. Adds outbreak.info classification
-# 2. Calculates for each: dateModified, tooltip, report, url
+# 2. Calculates for each: label, tooltip, url
 def formatClassifications(row):
-    classifications = {}
+    formatted_classifications = {}
     # Add outbreak.info classification:
     if(row.variantType == "Variant of Concern"):
-        classifications = {"VOC": {"outbreak": {"dateModified": row.dateModifiedFormatted}}}
+        formatted_classifications = {"VOC": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant of Concern</b> classification by <b>outbreak.info</b>"}}}
     elif(row.variantType == "Variant of Interest"):
-        classifications = {"VOI": {"outbreak": {"dateModified": row.dateModifiedFormatted}}}
-    return(classifications)
+        formatted_classifications = {"VOC": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant of Interest</b> classification by <b>outbreak.info</b>"}}}
+
+    # loop over the classifications and reformat:
+    for classification in row.classifications:
+        if("url" in classification.keys()):
+            if("dateModified" in classification.keys()):
+                label = f'<a href={classification["url"]} target="_blank">{datetime.strptime(classification["dateModified"], "%Y-%m-%d").strftime("%d %b %Y")}</a>'
+            else:
+                label = f'<a href={classification["url"]} target="_blank">report</a>'
+        else:
+            if("dateModified" in classification.keys()):
+                label = datetime.strptime(classification["dateModified"], "%Y-%m-%d").strftime("%d %b %Y")
+            else:
+                label = "report"
+
+        if(classification["variantType"] == "VOC"):
+            variantType = "Variant of Concern"
+        elif(classification["variantType"] == "VOI"):
+            variantType = "Variant of Interest"
+        elif(classification["variantType"] == "VUM"):
+            variantType = "Variant under Monitoring"
+        else:
+            variantType = "none"
+
+        ttip = f"View <b>{variantType}</b> classification by <b>{classification['author']}</b>"
+        to_add = {"label": label, "ttip": ttip}
+
+        if(classification["variantType"] in formatted_classifications.keys()):
+            formatted_classifications[classification["variantType"]][classification["author"]] = to_add
+        else:
+            formatted_classifications[classification["variantType"]] = { classification["author"]: to_add }
+
+
+    return(formatted_classifications)
 
 curated["label"] = curated.apply(lambda x: getLabel(x), axis = 1)
 curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
