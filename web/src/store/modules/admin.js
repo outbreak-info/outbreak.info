@@ -539,6 +539,19 @@ const state = {
       }
     },
     {
+      date: new Date("2021-03-16 0:0"),
+      category: "variants",
+      title: "CDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
+      description: 'Updated the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
+      route: {
+        name: "MutationReport",
+        query: {
+          who: "epsilon",
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
       date: new Date("2021-08-10 0:0"),
       category: "variants",
       title: "Added P.1 sublineages as VOCs",

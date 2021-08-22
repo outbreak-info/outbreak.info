@@ -870,7 +870,6 @@ export default {
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
-      console.log(this.reports)
       this.filterReports();
     })
 
