@@ -225,9 +225,11 @@ export default Vue.extend({
         .ticks(this.numXTicks);
       select(this.$refs.xAxis).call(this.xAxis);
 
+      const yTickFormat = this.y.domain()[1] < 0.02 ? ".1%" : ".0%";
+
       this.yAxis = axisLeft(this.y).tickSizeOuter(0)
         .ticks(this.numYTicks)
-        .tickFormat(format(".0%"));
+        .tickFormat(format(yTickFormat));
 
       select(this.$refs.yAxis).call(this.yAxis);
     },

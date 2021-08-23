@@ -79,7 +79,8 @@
 
       <!-- EPI TRACE -->
       <div :class="{'hidden' : !epi.length}">
-        <h5 class="">Daily COVID-19 cases in <router-link :to="{name:'Epidemiology', query:{location: locationID}}">{{ locationName }}</router-link></h5>
+        <h5 class="">Daily COVID-19 cases in <router-link :to="{name:'Epidemiology', query:{location: locationID}}">{{ locationName }}</router-link>
+        </h5>
         <div class="d-flex">
           <svg width="15" height="15" class="mr-2">
             <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
@@ -508,9 +509,11 @@ export default Vue.extend({
       select(this.$refs.xAxis).call(this.xAxis);
       select(this.$refs.xEpiAxis).call(this.xAxis);
 
+      const yTickFormat = this.y.domain()[1] < 0.02 ? ".1%" : ".0%";
+
       this.yAxis = axisLeft(this.y).tickSizeOuter(0)
         .ticks(this.numYTicks)
-        .tickFormat(format(".0%"));
+        .tickFormat(format(yTickFormat));
 
       this.yEpiAxis = axisLeft(this.yEpi).tickSizeOuter(0)
         .ticks(this.numYTicks);
@@ -771,7 +774,8 @@ export default Vue.extend({
     route2Mutation(d) {
       this.$router.push({
         name: "MutationReport",
-        query: { ... d.route,
+        query: {
+          ...d.route,
           loc: this.locationID,
           selected: this.locationID
         }

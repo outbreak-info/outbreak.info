@@ -510,6 +510,15 @@ const routes = [{
         /* webpackChunkName: "watch-list" */
         "../views/WatchList.vue"
       )
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: "NotFound",
+    component: () =>
+      import(
+        /* webpackChunkName: "404" */
+        "../views/PageNotFound.vue"
+      )
   }
 ];
 
