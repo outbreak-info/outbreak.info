@@ -255,7 +255,15 @@ const routes = [{
       ),
     // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
-      if (to.query && ((to.query.pango) || (to.query.muts))) {
+      if(to.params && to.params.alias) {
+        // redirect to route below
+        next({
+          name: 'MutationReport',
+          params: to.params,
+          query: to.query
+        })
+      }
+      else if (to.query && ((to.query.pango) || (to.query.muts))) {
         // redirect to route below
         next({
           name: 'MutationReport',
@@ -265,21 +273,21 @@ const routes = [{
         next()
     }
   },
-  {
-    path: "/situation-reports",
-    name: "MutationReport",
-    props: route => ({
-      loc: route.query.loc,
-      muts: route.query.muts,
-      pango: route.query.pango,
-      selected: route.query.selected
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SituationReport.vue"
-      )
-  },
+  // {
+  //   path: "/situation-reports",
+  //   name: "MutationReport",
+  //   props: route => ({
+  //     loc: route.query.loc,
+  //     muts: route.query.muts,
+  //     pango: route.query.pango,
+  //     selected: route.query.selected
+  //   }),
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "situation-report" */
+  //       "../views/SituationReport.vue"
+  //     )
+  // },
   {
     path: "/situation-reports/methods",
     name: "SituationReportMethodology",
@@ -428,9 +436,10 @@ const routes = [{
     })
   },
   {
-    path: "/situation-reports/:who",
-    name: "CombinedLineageReport",
+    path: "/situation-reports/:alias?",
+    name: "MutationReport",
     props: route => ({
+      alias: route.params.alias,
       loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
@@ -439,7 +448,7 @@ const routes = [{
     component: () =>
       import(
         /* webpackChunkName: "combined-lineage-report" */
-        "../views/CombinedLineageReport.vue"
+        "../views/SituationReport.vue"
       )
   },
   {

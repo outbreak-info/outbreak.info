@@ -381,7 +381,9 @@ export function buildQueryStr(lineageString, mutationString) {
 }
 
 
-export function getReportData(apiurl, locations, mutationString, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
+export function getReportData(apiurl, alias, locations, mutationString, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
+  store.state.admin.reportloading = true;
+
   // clean up the locations data
   // ensure it's an array
   locations = typeof(locations) == "string" ? [locations] : locations;
@@ -399,9 +401,20 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
   // ensure locations are unique
   locations = uniq(locations);
 
-  var queryStr = buildQueryStr(lineageString, mutationString);
-  store.state.admin.reportloading = true;
-  const md = lineageString ? getCuratedMetadata(lineageString) : getCuratedMetadata(mutationString);
+
+  // lookup WHO name in curated dictionary
+  const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
+  var md;
+  var queryStr;
+
+  // Check if the value exists within the curated list
+  if (filtered.length === 1) {
+    md = filtered[0];
+    console.log(md)
+    queryStr = `pangolin_lineage=${md.reportQuery.pango.join(",")}`;
+  } else {
+    queryStr = buildQueryStr(lineageString, mutationString);
+  }
 
   return forkJoin([
     getDateUpdated(apiurl),
@@ -449,8 +462,22 @@ export function getReportData(apiurl, locations, mutationString, lineageString, 
   )
 }
 
-export function updateLocationData(apiurl, mutationString, lineageString, locations, location, totalThreshold) {
-  var queryStr = buildQueryStr(lineageString, mutationString);
+
+export function updateLocationData(apiurl, alias, mutationString, lineageString, locations, location, totalThreshold) {
+  // lookup WHO name in curated dictionary
+  const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
+  var md;
+  var queryStr;
+
+  // Check if the value exists within the curated list
+  if (filtered.length === 1) {
+    md = filtered[0];
+    console.log(md)
+    queryStr = `pangolin_lineage=${md.reportQuery.pango.join(",")}`;
+  } else {
+    queryStr = buildQueryStr(lineageString, mutationString);
+  }
+  
   store.state.admin.reportloading = true;
 
   if (!locations || !locations.length) {

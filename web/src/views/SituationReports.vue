@@ -190,7 +190,7 @@
                     <!-- WHO reports -->
                     <template v-if="report.who_name">
                       <!-- with sublineages -->
-                      <router-link :to="{name:'CombinedLineageReport', params: {who: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline"
+                      <router-link :to="{name:'CombinedLineageReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline"
                         v-if="report.pango_sublineages.length || Array.isArray(report.pangolin_lineage)">
                         <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
                       </router-link>

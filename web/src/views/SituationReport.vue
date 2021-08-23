@@ -198,7 +198,7 @@
 
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
-          <div class="my-4" v-if="mutationsByLineage.length">
+          <div class="my-4" v-if="mutationsByLineage && mutationsByLineage.length">
             <div v-if="reportType == 'lineage with added mutations'" class="mx-2 mb-1">
               <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#collapsePangoBreakdown" aria-expanded="true" aria-controls="collapsePangoBreakdown">
                 <small><span class="if-collapsed">Show</span>
@@ -235,8 +235,8 @@
 
         <!-- RIGHT: SUMMARY BOX -->
         <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :locationQueryParams="locationQueryParams" :reportType="reportType" :selected="selected" :locationTotals="locationTotals" :countries="countries"
-            :states="states" />
+          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :locationQueryParams="locationQueryParams" :reportType="reportType" :selected="selected"
+            :locationTotals="locationTotals" :countries="countries" :states="states" />
         </section>
       </div>
 
@@ -428,6 +428,7 @@ export default {
     ThresholdSlider
   },
   props: {
+    alias: String,
     loc: [Array, String],
     muts: [Array, String],
     pango: String,
@@ -547,72 +548,86 @@ export default {
   },
   methods: {
     setLineageAndMutationStr() {
-      if (this.$route.query.pango) {
-        if (this.$route.query.muts && this.$route.query.muts.length) {
-          // Lineage + Mutation report
-          this.lineageName = this.$route.query.pango.toUpperCase();
-          this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
-          this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
-          this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
-          this.reportType = "lineage with added mutations";
-          this.searchTerms = `${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`
-          this.title = `${this.reportName} Report`;
-          const qParam = typeof(this.$route.query.muts) == "string" ? `${this.lineageName}|${this.$route.query.muts}` : `${this.lineageName}|${this.$route.query.muts.join(",")}`;
-          this.locationQueryParams = { variant: [qParam] };
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
-
-
-        } else {
-          // Lineage report
-          this.lineageName = this.$route.query.pango.toUpperCase();
-          this.reportName = this.lineageName;
-          this.mutationID = null;
-          this.reportType = "lineage";
-          this.title = `${this.reportName} Lineage Report`;
-          this.searchTerms = [this.lineageName];
-          this.locationQueryParams = { pango: [this.lineageName] };
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
-
-        }
-
+      // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
+      if (this.alias) {
+        this.lineageName = this.$options.filters.capitalize(this.alias.toLowerCase());
+        this.title = `${this.lineageName} Report`;
+        this.reportType = "combined lineage";
       } else {
-        if (typeof(this.$route.query.muts) == "string") {
-          // Single mutation report
-          this.lineageName = null;
-          this.mutationID = this.$route.query.muts;
-          this.reportName = this.mutationID;
-          this.mutationName = this.reportName;
-          this.reportType = "mutation";
-          this.searchTerms = [this.mutationName.split(":").slice(-1)];
-          this.locationQueryParams = { muts: [this.$route.query.muts] };
-          this.title = `${this.reportName} Mutation Report`;
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+
+        if (this.$route.query.pango) {
+          if (this.$route.query.muts && this.$route.query.muts.length) {
+            // Lineage + Mutation report
+            this.lineageName = this.$route.query.pango.toUpperCase();
+            this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
+            this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
+            this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
+            this.reportType = "lineage with added mutations";
+            this.searchTerms = `${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`
+            this.title = `${this.reportName} Report`;
+            const qParam = typeof(this.$route.query.muts) == "string" ? `${this.lineageName}|${this.$route.query.muts}` : `${this.lineageName}|${this.$route.query.muts.join(",")}`;
+            this.locationQueryParams = {
+              variant: [qParam]
+            };
+            this.disclaimer =
+              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+
+
+          } else {
+            // Lineage report
+            this.lineageName = this.$route.query.pango.toUpperCase();
+            this.reportName = this.lineageName;
+            this.mutationID = null;
+            this.reportType = "lineage";
+            this.title = `${this.reportName} Lineage Report`;
+            this.searchTerms = [this.lineageName];
+            this.locationQueryParams = {
+              pango: [this.lineageName]
+            };
+            this.disclaimer =
+              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+
+          }
 
         } else {
-          // Variant (multiple mutation) report
-          this.lineageName = null;
-          this.reportName = this.$route.query.muts.join(", ");
-          this.mutationName = this.reportName;
-          this.searchTerms = [this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')];
-          this.mutationID = this.$route.query.muts.join(",");
-          this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
-          this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
-          this.locationQueryParams = { muts: [this.$route.query.muts.join(",")] };
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+          if (typeof(this.$route.query.muts) == "string") {
+            // Single mutation report
+            this.lineageName = null;
+            this.mutationID = this.$route.query.muts;
+            this.reportName = this.mutationID;
+            this.mutationName = this.reportName;
+            this.reportType = "mutation";
+            this.searchTerms = [this.mutationName.split(":").slice(-1)];
+            this.locationQueryParams = {
+              muts: [this.$route.query.muts]
+            };
+            this.title = `${this.reportName} Mutation Report`;
+            this.disclaimer =
+              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+
+          } else {
+            // Variant (multiple mutation) report
+            this.lineageName = null;
+            this.reportName = this.$route.query.muts.join(", ");
+            this.mutationName = this.reportName;
+            this.searchTerms = [this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')];
+            this.mutationID = this.$route.query.muts.join(",");
+            this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
+            this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
+            this.locationQueryParams = {
+              muts: [this.$route.query.muts.join(",")]
+            };
+            this.disclaimer =
+              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+          }
         }
       }
     },
     setupReport() {
       this.setLineageAndMutationStr();
-
-      if (this.lineageName || this.mutationID) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
-          // console.log(results)
-
+      if (this.lineageName || this.mutationID || this.alias) {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+          console.log(results)
           // selected locations
           this.selectedLocations = results.locations;
           this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
@@ -688,6 +703,9 @@ export default {
 
       this.$router.push({
         name: "MutationReport",
+        params: {
+          alias: this.alias
+        },
         query: {
           pango: this.pango,
           muts: this.muts,
@@ -718,12 +736,13 @@ export default {
           selected: location.id
         },
         params: {
+          alias: this.alias,
           disableScroll: true
         }
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
