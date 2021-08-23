@@ -111,7 +111,7 @@ def formatClassifications(row):
     if(row.variantType == "Variant of Concern"):
         formatted_classifications = {"VOC": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant of Concern</b> classification by <b>outbreak.info</b>"}}}
     elif(row.variantType == "Variant of Interest"):
-        formatted_classifications = {"VOC": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant of Interest</b> classification by <b>outbreak.info</b>"}}}
+        formatted_classifications = {"VOI": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant of Interest</b> classification by <b>outbreak.info</b>"}}}
 
     # loop over the classifications and reformat:
     for classification in row.classifications:
