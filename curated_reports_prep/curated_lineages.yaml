@@ -131,39 +131,6 @@ VOC:
 
 
 VOI:
-
-  - who_name: Epsilon
-    pangolin_lineage:
-      - B.1.427
-      - B.1.429
-    gisaid_clade: GH/452R.V1
-    nextstrain_clade: 20C/S.452R
-    mutation_synonyms:
-      - CA VUI1
-      - CAL.20C
-    dateModified: 2021-05-07
-    location_first_identified: California
-    loc:
-        - USA
-        - USA_US-CA
-    selected: USA_US-CA
-    classifications:
-        - author: WHO
-          dateModified: 2021-07-06
-          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VUM
-        - author: CDC
-          dateModified: 2021-08-17
-          url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-          variantType: VUM
-        - author: PHE
-          dateModified: 2021-06-03
-          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/991343/Variants_of_Concern_VOC_Technical_Briefing_14.pdf
-          variantType: VUM
-        - author: ECDC
-          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-          variantType: VOI
-
   - who_name: Eta
     pangolin_lineage: B.1.525
     gisaid_clade: G/484K.V3
@@ -441,3 +408,37 @@ VOI:
         dateModified: 2021-05-24
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/990339/Variants_of_Concern_VOC_Technical_Briefing_13_England.pdf
         variantType: VOI
+
+VUM:
+  - who_name: Epsilon
+    pangolin_lineage:
+      - B.1.427
+      - B.1.429
+    gisaid_clade: GH/452R.V1
+    nextstrain_clade: 20C/S.452R
+    mutation_synonyms:
+      - CA VUI1
+      - CAL.20C
+    dateModified: 2021-08-17
+    location_first_identified: California
+    loc:
+        - USA
+        - USA_US-CA
+    selected: USA_US-CA
+    classifications:
+        - author: WHO
+          dateModified: 2021-07-06
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VUM
+        - author: CDC
+          dateModified: 2021-08-17
+          url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
+          variantType: VUM
+        - author: PHE
+          dateModified: 2021-06-03
+          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/991343/Variants_of_Concern_VOC_Technical_Briefing_14.pdf
+          variantType: VUM
+        - author: ECDC
+          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+          dateModified: 2021-07-27
+          variantType: VUM

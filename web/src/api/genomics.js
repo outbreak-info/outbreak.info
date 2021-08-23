@@ -477,7 +477,7 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
   } else {
     queryStr = buildQueryStr(lineageString, mutationString);
   }
-  
+
   store.state.admin.reportloading = true;
 
   if (!locations || !locations.length) {
@@ -1338,7 +1338,7 @@ export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
 }
 
 function locationTableSorter(a) {
-  const sortingArr = ["Variant of Concern", "Mutation of Concern", "Variant of Interest", "Custom Lineages & Mutations"];
+  const sortingArr = ["Variant of Concern", "Mutation of Concern", "Variant of Interest", "Custom Lineages & Mutations", "Variant under Monitoring"];
   return sortingArr.indexOf(a.variantType);
 }
 
@@ -1360,7 +1360,7 @@ function geneSorter(a) {
 }
 
 function reportTypeSorter(a) {
-  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Investigation", "Mutation of Concern", "Mutation of Interest", "undefined"];
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Monitoring", "Mutation of Concern", "Mutation of Interest", "undefined"];
   // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key);
 }

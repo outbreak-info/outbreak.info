@@ -31,10 +31,12 @@ curated_data = yaml.load(open(curated_filename), Loader=yaml.BaseLoader)
 # VOCs / VOIs are nested within the yaml to avoid having to type this every time.
 vocs = pd.DataFrame(curated_data["VOC"])
 vois = pd.DataFrame(curated_data["VOI"])
+vums = pd.DataFrame(curated_data["VUM"])
 vocs["variantType"] = "Variant of Concern"
 vois["variantType"] = "Variant of Interest"
+vums["variantType"] = "Variant under Monitoring"
 # merge the two back together
-curated = pd.concat([vocs, vois])
+curated = pd.concat([vocs, vois, vums])
 
 
 # --- DESCENDANTS ---
@@ -112,6 +114,8 @@ def formatClassifications(row):
         formatted_classifications = {"VOC": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant of Concern</b> classification by <b>outbreak.info</b>"}}}
     elif(row.variantType == "Variant of Interest"):
         formatted_classifications = {"VOI": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant of Interest</b> classification by <b>outbreak.info</b>"}}}
+    elif(row.variantType == "Variant under Monitoring"):
+        formatted_classifications = {"VUM": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant under Monitoring</b> classification by <b>outbreak.info</b>"}}}
 
     # loop over the classifications and reformat:
     for classification in row.classifications:
