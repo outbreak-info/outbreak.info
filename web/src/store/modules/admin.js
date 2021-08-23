@@ -539,15 +539,27 @@ const state = {
       }
     },
     {
-      date: new Date("2021-03-16 0:0"),
+      date: new Date("2021-08-23 0:0"),
       category: "variants",
-      title: "CDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
-      description: 'Updated the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
+      title: "Outbreak.info, CDC, and ECDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
+      description: 'Updated the outbreak.info, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a>, and <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
       route: {
         name: "MutationReport",
         query: {
           who: "epsilon",
           selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-23 0:0"),
+      category: "variants",
+      title: "ECDC reclassified C.37/Lambda as Variants of Interest",
+      description: 'Updated the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
+      route: {
+        name: "MutationReport",
+        query: {
+          who: "lambda"
         }
       }
     },
