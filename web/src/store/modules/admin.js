@@ -555,12 +555,21 @@ const state = {
       date: new Date("2021-08-23 0:0"),
       category: "variants",
       title: "ECDC reclassified C.37/Lambda as Variants of Interest",
-      description: 'Updated the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
+      description: 'Updated the <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineage C.37 / Lambda from <b>Variant under Monitoring</b> to <b>Variant of Interest</b>.',
       route: {
         name: "MutationReport",
         query: {
           who: "lambda"
         }
+      }
+    },
+    {
+      date: new Date("2021-08-23 1:0"),
+      category: "variants",
+      title: "Released combined reports for Delta and other lineages",
+      description: 'Based on the proliferation of sublineages associated with Variants of Concern and Interest, we created combined reports that provide aggregate statistics for variants and their descendants. These reports will be updated as new sublineages are classified by the Pango team. Read more about <a href="https://outbreak.info/situation-reports/caveats#delta">sublineages</a>.',
+      route: {
+        name: "SituationReports"
       }
     },
     {
