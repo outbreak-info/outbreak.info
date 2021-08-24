@@ -320,11 +320,12 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
 
 export function getVOCs(genomicsUrl, locations, totalThreshold) {
   const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern")).map(d => {
+    console.log(d)
     // const mutations = CURATED.filter(d => d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest").map(d => {
     return ({
-      label: d.mutation_name,
+      label: d.label,
       type: d.variantType == "Variant of Concern" ? "VOC" : d.variantType == "Variant of Interest" ? "VOI" : null,
-      query: `pangolin_lineage=${d.mutation_name}`
+      query: `pangolin_lineage=${d.reportQuery.pango.join(",")}`
     })
   });
 

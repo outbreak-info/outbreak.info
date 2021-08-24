@@ -115,7 +115,7 @@
     <router-link :to="{name: 'LocationReport', query:{ loc: data.location_id }}" class="no-underline">
       <div class="d-flex flex-column router-link-black mini-graphs mt-2 p-1">
         <div class="d-flex justify-content-between align-items-center">
-          Variants of Concern &amp; Interest
+          Variants of Concern
           <small class="text-muted" v-if="data.voc">Cumulative prevalence since detection</small>
         </div>
         <div class="d-flex flex-wrap" v-if="data.voc">
