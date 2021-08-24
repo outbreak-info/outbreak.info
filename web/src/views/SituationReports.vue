@@ -176,6 +176,9 @@
                   first identified
                 </th>
                 <th>
+                  total
+                </th>
+                <th>
                   S-gene Mutations<sup>*</sup>
                 </th>
               </tr>
@@ -300,6 +303,10 @@
                   <!-- location found -->
                   <td class="text-center line-height-1">
                     {{ report.location_first_identified }}
+                  </td>
+
+                  <td class="text-center">
+                    {{report.lineage_count}}
                   </td>
 
                   <!-- s-gene mutations heatmap -->
@@ -693,7 +700,7 @@ export default {
             if (report.classifications && (this.selectedVOC.length || this.selectedVOI.length)) {
               // filter name filters
               if (this.searchInput) {
-                if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())) &&
+                if (report.searchTerms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())) &&
                   (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length ||
                     report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") &&
                       this.selectedVOI.includes(x.author)).length)) {
@@ -709,7 +716,7 @@ export default {
               }
             } else {
               // no report classifications; just filter by name
-              if (report.mutation_synonyms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+              if (report.searchTerms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
                 filtered.push(report);
               }
             }
