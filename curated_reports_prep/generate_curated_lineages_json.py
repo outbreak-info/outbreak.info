@@ -97,6 +97,12 @@ def getSynonyms(row):
     synonyms.sort()
     return(synonyms)
 
+# combines synonyms and descendant names:
+def getSearchTerms(row):
+    terms = row.mutation_synonyms.copy()
+    terms.extend(row.pango_descendants)
+    return(terms)
+
 # Returns query string for the combined
 def getCharMutQuery(row):
     queries = [row.label]
@@ -155,6 +161,7 @@ curated["reportQuery"] = curated.pango_descendants.apply(lambda x: {"pango": x})
 curated["char_muts_parent_query"] = curated.pango_descendants.apply(lambda x: " OR ".join(x))
 curated["char_muts_query"] = curated.apply(lambda x: getCharMutQuery(x), axis = 1)
 curated["mutation_synonyms"] = curated.apply(lambda x: getSynonyms(x), axis = 1)
+curated["searchTerms"] = curated.apply(lambda x: getSearchTerms(x), axis = 1)
 curated["dateModifiedFormatted"] = curated.dateModified.apply(lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%d %b %Y"))
 curated["classificationTable"] = curated.apply(lambda x: formatClassifications(x), axis = 1)
 # Remove variables that aren't needed
