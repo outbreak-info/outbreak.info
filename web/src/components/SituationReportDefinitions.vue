@@ -77,6 +77,9 @@ impact on available diagnostics, vaccines, therapeutics or public health and soc
               </ul>
             </li>
             <li>
+              <b>Variant under Monitoring (VUM)</b>: A variant which is being monitored by a public health agency to detect if it meets the conditions of a Variant of Concern or Interest. It may also be used for variants which have previously been designated as VOCs or VOIs but have been downgraded by the public health agencies based on recent data.
+            </li>
+            <li>
               We follow Public Health Agencies in designating Variants of Concern and Interest, including the <a href="https://www.who.int/csr/don/31-december-2020-sars-cov2-variants/en/" target="_blank">World Health Organization</a>, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">Centers for Disease Control and Prevention</a>, and <a href="https://www.gov.uk/government/publications/investigation-of-novel-sars-cov-2-variant-variant-of-concern-20201201" target="_blank">Public Health England</a>.
             </li>
             <li>
