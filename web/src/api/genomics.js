@@ -246,7 +246,7 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
         .entries(curated);
 
       curated.forEach(d => {
-        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : "unknown";
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : "unknown";
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
@@ -291,7 +291,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
         .entries(curated);
 
       curated.forEach(d => {
-        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : "unknown";
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : "unknown";
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);

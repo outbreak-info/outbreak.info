@@ -137,7 +137,7 @@
 
         <template v-if="group.values.length">
           <!-- filter to hide VOCs / VOIs -->
-          <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
+          <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center" v-if="group.id != 'vum'">
             <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
             <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
               <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
@@ -792,9 +792,9 @@ export default {
       lastUpdated: null,
       total: null,
       reports: null,
-      mutationReports: null,
+      mutationReports: [],
       filteredReports: null,
-      filteredMutations: null,
+      filteredMutations: [],
       variantTypes: [{
           id: "VOC",
           label: "Variant of Concern",
