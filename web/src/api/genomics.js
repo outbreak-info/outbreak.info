@@ -1610,11 +1610,11 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 
     // Focus on Variants of Concern
     lineages = lineages.filter(d => d.variantType == "Variant of Concern");
-    lineages = lineages.map(d => d.mutation_name);
+    lineages = lineages.map(d => d.label);
   }
 
-  const voc = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.mutation_name);
-  const voi = CURATED.filter(d => d.variantType == "Variant of Interest").map(d => d.mutation_name);
+  const voc = CURATED.filter(d => d.variantType == "Variant of Concern").flatMap(d => d.char_muts_query);
+  const voi = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.char_muts_query);
 
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
