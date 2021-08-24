@@ -303,29 +303,11 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
   )
 }
 
-function getVariantSynonyms(md) {
-  md.forEach(group => {
-    group.values.forEach(report => {
-      // merge mutation synonyms
-      if (report["mutation_synonyms"]) {
-        report["mutation_synonyms"] = report["mutation_synonyms"].concat(report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade)
-      } else {
-        report["mutation_synonyms"] = [report.mutation_name, report.who_name, report.phe_name, report.nextstrain_clade, report.gisaid_clade]
-      }
-      report.mutation_synonyms = uniq(report.mutation_synonyms).filter(d => d);
-    })
-  })
-}
-
 export function getReportList(apiurl, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   store.state.admin.reportloading = true;
 
   return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold)]).pipe(
     map(([dateUpdated, md]) => {
-
-      // combine all the variant synoynms together
-      getVariantSynonyms(md.md);
-
       return ({
         ...md,
         dateUpdated: dateUpdated.lastUpdated
