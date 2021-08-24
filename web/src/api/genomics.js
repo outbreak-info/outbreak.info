@@ -236,8 +236,10 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
         report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
       })
 
-      const voc = curated.filter(d => d.variantType == "Variant of Concern").map(d => d.pangolin_lineage);
-      const voi = curated.filter(d => d.variantType == "Variant of Interest").map(d => d.pangolin_lineage);
+      const voc = CURATED.filter(d => d.variantType == "Variant of Concern").flatMap(d => d.char_muts_query);
+      const voc_parent = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.label);
+      const voi = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.char_muts_query);
+      const voi_parent = CURATED.filter(d => d.variantType == "Variant of Interest").map(d => d.label);
 
       curated = nest()
         .key(d => d.variantType)
@@ -252,7 +254,9 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
       return ({
         md: curated,
         voc: voc,
-        voi: voi
+        voc_parent: voc_parent,
+        voi: voi,
+        voi_parent: voi_parent
       })
     })
   )
@@ -1614,7 +1618,9 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   }
 
   const voc = CURATED.filter(d => d.variantType == "Variant of Concern").flatMap(d => d.char_muts_query);
+  const voc_parent = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.label);
   const voi = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.char_muts_query);
+  const voi_parent = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.label);
 
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
@@ -1661,7 +1667,9 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
         data: nestedByGenes,
         dataFlat: filtered,
         voc: voc,
+        voc_parent: voc_parent,
         voi: voi,
+        voi_parent: voi_parent,
         yDomain: lineages
       })
     }),
