@@ -165,7 +165,7 @@ curated["searchTerms"] = curated.apply(lambda x: getSearchTerms(x), axis = 1)
 curated["dateModifiedFormatted"] = curated.dateModified.apply(lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%d %b %Y"))
 curated["classificationTable"] = curated.apply(lambda x: formatClassifications(x), axis = 1)
 # Remove variables that aren't needed
-curated.drop(["classifications", "dateModified", "dateModifiedFormatted"], axis = 1, inplace=True)
+curated.drop(["dateModified", "dateModifiedFormatted"], axis = 1, inplace=True)
 
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
