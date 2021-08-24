@@ -49,7 +49,7 @@
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
         <td class="text-left line-height-1">
-          <router-link class="variant-table" :to="{name: 'MutationReport', query: lineage.route }" :data-tippy-info="lineage.tooltip">
+          <router-link class="variant-table" :to="{name: 'MutationReport', params: lineage.params, query: lineage.route }" :data-tippy-info="lineage.tooltip">
             {{ lineage.label }}
           </router-link>
           <small class="text-muted pointer variant-expand" :data-tippy-info="`show ${lineage.label} sublineages`" @click="showSublineages(lineage)">

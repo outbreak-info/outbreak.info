@@ -305,7 +305,7 @@
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="my-3" :class="[mediumScreen ? 'w-100' : 'w-33']">
               <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
-                  <router-link :to="{name: 'MutationReport', query: { ... choro.route, loc: [loc], selected: loc }}">
+                  <router-link :to="{name: 'MutationReport', params: choro.params, query: { ... choro.route, loc: [loc], selected: loc }}">
                     <h5>{{ choro.key }}</h5>
                   </router-link>
 

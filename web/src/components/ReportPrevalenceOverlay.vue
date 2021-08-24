@@ -643,6 +643,7 @@ export default Vue.extend({
             label: d[this.fillVariable],
             pango_descendants: d.pango_descendants,
             route: d.route,
+            params: d.params,
             fx: 0,
             targetY: this.y(d.data.slice(-1)[0][this.yVariable])
           })
@@ -774,6 +775,7 @@ export default Vue.extend({
     route2Mutation(d) {
       this.$router.push({
         name: "MutationReport",
+        params: d.params,
         query: {
           ...d.route,
           loc: this.locationID,

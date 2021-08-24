@@ -802,10 +802,12 @@ export function getNewToday(apiurl, queryStr, location) {
 export function getAllLocationPrevalence(apiurl, mutation, location, ndays = null) {
   return (getLocationPrevalence(apiurl, mutation.query, location, ndays).pipe(
     map(results => {
+      console.log(mutation)
       return ({
         key: mutation.label,
         variantType: mutation.variantType,
         route: mutation.route,
+        params: mutation.params,
         values: results
       })
     })
@@ -1211,7 +1213,8 @@ export function getBasicLocationReportData(apiurl, location) {
       table_expanded: false,
       query: buildQueryStr(reportQuery.pango, reportQuery.muts),
       variantType: d.variantType,
-      route: reportQuery
+      route: d.who_name ? null : reportQuery,
+      params: d.who_name ? {alias: d.who_name.toLowerCase()} : null
     })
   })
 
