@@ -248,25 +248,6 @@
             </div>
           </div>
 
-          <!-- NEW TODAY -->
-          <!-- <div class="my-4">
-          <h4>What's new today</h4>
-          <table>
-            <tr class="border-bottom">
-              <th colspan="2">
-                New sequences submitted to GISAID
-              </th>
-            </tr>
-            <tr v-for="(location, lIdx2) in newToday" :key="lIdx2">
-              <td>
-                {{ location.name }}
-              </td>
-              <td>
-                {{ location.date_count_today }}
-              </td>
-            </tr>
-          </table>
-        </div> -->
         </section>
 
         <!-- RIGHT: SUMMARY BOX -->
@@ -288,6 +269,21 @@
           </button>
         </div>
         <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" />
+      </section>
+
+      <!-- DAILY SUBLINEAGE PREVALENCE -->
+      <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage">
+        <h4 class="mb-0">Average daily {{reportName}} prevalence by lineage</h4>
+        <small class="text-muted mb-2">Based on reported sample collection date</small>
+        <div id="location-buttons" class="d-flex flex-wrap">
+          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
+          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+        </div>
+        <!-- <ReportSublineagePrevalence :data="sublineagePrevalence" :mutationName="reportName" :location="selectedLocation.label" /> -->
+        <!-- <ReportSublineagePercentage :data="sublineagePrevalence" :mutationName="reportName" :location="selectedLocation.label" /> -->
+        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" />
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
@@ -450,6 +446,7 @@ export default {
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     SublineageTotals: () => import( /* webpackPrefetch: true */ "@/components/SublineageTotals.vue"),
+    ReportPrevalenceOverlay: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceOverlay.vue"),
   },
   props: {
     alias: String,
@@ -485,7 +482,6 @@ export default {
         this.reportMetadata = null;
         this.setupReport();
       } else {
-        console.log("updating location")
         this.updateLocations();
       }
     }
@@ -540,6 +536,7 @@ export default {
       countries: null,
       states: null,
       sublineages: null,
+      sublineageLongitudinal: null,
       locationTotals: null,
       totalLineage: null,
       newToday: null,
@@ -675,6 +672,7 @@ export default {
 
           // longitudinal data: prevalence over time
           this.prevalence = results.longitudinal;
+          this.sublineageLongitudinal = results.longitudinalSublineages;
 
           // recent data by country & countries with that lineage.
           this.countries = results.countries;
@@ -774,6 +772,7 @@ export default {
     },
     updateLocations() {
       this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
+        console.log(results)
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
@@ -782,6 +781,7 @@ export default {
 
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
+        this.sublineageLongitudinal = results.longitudinalSublineages;
 
         // cumulative totals for table
         this.locationTotals = results.locPrev;

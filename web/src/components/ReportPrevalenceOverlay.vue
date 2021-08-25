@@ -65,10 +65,10 @@
       </svg>
 
       <!-- Histogram of sequencing counts -->
-      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts" />
+      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts && seqCounts.length" />
 
       <!-- zoom btns -->
-      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}"  :class="{'hidden' : !epi.length}">
         <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
           <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
         </button>
