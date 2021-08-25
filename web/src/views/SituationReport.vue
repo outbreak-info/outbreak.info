@@ -173,8 +173,7 @@
             </div>
 
           </div>
-          <!-- INTRO TEXT - OVERVIEW -->
-          <span v-html="reportDescription" class="font-size-2"></span>
+
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
             <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
@@ -446,11 +445,6 @@ export default {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
         this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
     },
-    genericDescription() {
-      return this.reportType == "lineage with added mutations" ?
-        `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> in the world, how it is changing over time, and how its prevalence varies across different locations.` :
-        `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> ${this.reportType} in the world, how it is changing over time, and how its prevalence varies across different locations.`
-    },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
     },
@@ -502,7 +496,6 @@ export default {
 
       // curated values
       searchTerms: null,
-      reportDescription: null,
 
       // methods
       choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
@@ -670,11 +663,9 @@ export default {
           if (results.md) {
             this.reportMetadata = results.md;
             this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
-            this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
             this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
           } else {
             this.searchTerms = [this.searchTerms];
-            this.reportDescription = this.genericDescription;
           }
         })
       }
