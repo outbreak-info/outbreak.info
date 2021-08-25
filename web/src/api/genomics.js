@@ -330,12 +330,12 @@ function filterCuratedTypes(d) {
 
 export function getLocationBasics(apiurl) {
   store.state.admin.reportloading = true;
-  let ofInterest = CURATED.filter(d => d.variantType).filter(d => filterCuratedTypes(d));
+  let ofInterest = CURATED.filter(d => d.variantType == "Variant of Concern").filter(d => filterCuratedTypes(d));
   ofInterest = orderBy(ofInterest, [locationTableSorter, "mutation_name"]);
 
   const curated = nest()
     .key(d => d.variantType)
-    .rollup(values => values.map(d => d.mutation_name))
+    .rollup(values => values.map(d => d.label))
     .entries(ofInterest);
 
   return forkJoin([getSequenceCount(apiurl, null, true), getDateUpdated(apiurl)]).pipe(
