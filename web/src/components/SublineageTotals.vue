@@ -28,8 +28,6 @@
   </svg>
 
   <div class="d-flex align-items-center mt-3">
-    {{areZerosFiltered}}
-    {{hideZeros}}
     <button id="zeros-filtered" v-if="areZerosFiltered || (!areZerosFiltered && !hideZeros)" class="btn btn-main-outline m-0 btn-sublineages mr-3" @click="showZeros">
       <small>
         {{ hideZeros ? "show" : "hide"}} lineages with zero sequences
