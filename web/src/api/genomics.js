@@ -493,9 +493,10 @@ export function getSublineageTotals(apiurl, md, location) {
       findAllLocationMetadata(apiurl, locations, location),
       getTemporalPrevalence(apiurl, location, queryStr, null),
       getLocationPrevalence(apiurl, queryStr, location),
-      getCumPrevalences(apiurl, queryStr, locations, totalThreshold)
+      getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
+      getSublineageTotals(apiurl, md, location)
     ]).pipe(
-      map(([locations, longitudinal, byLocation, locPrev]) => {
+      map(([locations, longitudinal, byLocation, locPrev, sublineages]) => {
         // attach names to cum prevalences
         locPrev.forEach(d => {
           const filtered = locations.filter(loc => loc.id === d.id);
@@ -508,7 +509,8 @@ export function getSublineageTotals(apiurl, md, location) {
           locations: locations,
           longitudinal: longitudinal,
           byCountry: byLocation,
-          locPrev: locPrev
+          locPrev: locPrev,
+          sublineages: sublineages
         })
       }),
       catchError(e => {

@@ -36,11 +36,8 @@ import {
   selectAll,
   scaleLinear,
   scaleBand,
-  sum,
   axisLeft,
-  axisBottom,
-  format,
-  event
+  sum
 } from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
@@ -110,6 +107,7 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
+      console.log("DATA")
       this.setupPlot();
       this.updatePlot();
     }
@@ -191,7 +189,7 @@ export default Vue.extend({
     drawBars() {
       const rectSelector =
         this.svg
-        .selectAll(".rect-by-lineage")
+        .selectAll(".lineage-group")
         .data(this.processedData, d => d.pangolin_lineage);
 
       rectSelector.join(
@@ -231,7 +229,7 @@ export default Vue.extend({
         },
         update => {
           update
-            .attr("id", d => d.id)
+            .attr("id", d => d.id + this.location)
 
           update.select(".variant-total")
             .attr("y", d => this.y(d.pangolin_lineage))
