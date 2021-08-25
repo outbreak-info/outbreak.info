@@ -728,7 +728,6 @@ export default {
     },
     updateLocations() {
       this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
-        console.log(results)
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");

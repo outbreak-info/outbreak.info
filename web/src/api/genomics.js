@@ -456,7 +456,6 @@ export function getSublineageTotals(apiurl, md, location) {
     console.log(md)
     return (forkJoin(...md.pango_descendants.map(lineage => getCumSublineagePrevalence(apiurl, lineage, location)))).pipe(
         map(results => {
-          console.log(results)
           return (results)
         })
       )
