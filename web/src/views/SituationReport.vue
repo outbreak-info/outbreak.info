@@ -574,6 +574,7 @@ export default {
         this.lineageName = this.$options.filters.capitalize(this.alias.toLowerCase());
         this.title = `${this.lineageName} Variant Report`;
         this.reportType = "combined lineage";
+        this.reportName = this.lineageName;
       } else {
 
         if (this.$route.query.pango) {

@@ -3,7 +3,7 @@
   <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
     <div class="d-flex flex-column">
       <h4 class="mb-0">{{ definitionLabel }}</h4>
-      <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+      <small class="text-muted">Mutations in at least {{charMutThreshold}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
     </div>
 
     <div class="d-flex flex-column align-items-end">
