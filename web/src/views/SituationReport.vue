@@ -179,6 +179,8 @@
             <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
           </div>
 
+          <SublineageTotals :data="sublineages" v-if="sublineages.length"/>
+
           <!-- KEY INSIGHTS -->
           <!-- <div class="mt-4">
           <h4>Key Insights</h4>
@@ -424,7 +426,8 @@ export default {
     CustomReportForm,
     MutationsByLineage,
     ClassedLegend,
-    ThresholdSlider
+    ThresholdSlider,
+    SublineageTotals: () => import( /* webpackPrefetch: true */ "@/components/SublineageTotals.vue"),
   },
   props: {
     alias: String,
@@ -512,6 +515,7 @@ export default {
       choroData: null,
       countries: null,
       states: null,
+      sublineages: null,
       locationTotals: null,
       totalLineage: null,
       newToday: null,
@@ -638,6 +642,8 @@ export default {
           // newly added sequences
           this.newToday = results.newToday;
 
+          // sublineages
+          this.sublineages = results.sublineages;
 
           // location prevalence
           this.locationTotals = results.locPrev;
