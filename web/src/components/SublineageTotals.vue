@@ -26,8 +26,25 @@
       <text :x="width-margin.right-10" :y="height-margin.top" text-anchor="end" :fill="fill">all {{lineageName}} lineages</text>
     </g>
   </svg>
-  <div class="w-50">
-    <DownloadReportData :data="data" figureRef="sublineage_counts" dataType="Sublineage breakdown" class="mt-3" />'
+
+  <div class="d-flex align-items-center mt-3">
+    {{areZerosFiltered}}
+    {{hideZeros}}
+    <button id="zeros-filtered" v-if="areZerosFiltered || (!areZerosFiltered && !hideZeros)" class="btn btn-main-outline m-0 btn-sublineages mr-3" @click="showZeros">
+      <small>
+        {{ hideZeros ? "show" : "hide"}} lineages with zero sequences
+      </small>
+    </button>
+
+    <DownloadReportData :data="data" figureRef="sublineage_counts" dataType="Sublineage breakdown" :fullWidth="false" />'
+  </div>
+
+  <div v-if="areZerosFiltered" class="text-muted mt-2 line-height-sm">
+    <small>
+      <font-awesome-icon class="mr-1" :icon="['far', 'question-circle']" />
+      Lineages may show zero sequences when <a href="https://www.pango.network/how-does-the-system-work/genome-designation-versus-assignation/" target="_blank">Pango designates a new lineage</a> but the tools to assign these lineages like
+      <a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Pangolin</a> haven't been updated yet.
+    </small>
   </div>
 
 </div>
@@ -54,11 +71,15 @@ import {
 } from "@fortawesome/fontawesome-svg-core";
 
 import {
+  faQuestionCircle
+} from "@fortawesome/free-regular-svg-icons";
+
+import {
   faSync
 } from "@fortawesome/free-solid-svg-icons";
 
 
-library.add(faSync);
+library.add(faSync, faQuestionCircle);
 
 import cloneDeep from "lodash/cloneDeep";
 import Warning from "@/components/Warning.vue";
@@ -102,7 +123,7 @@ export default Vue.extend({
   },
   computed: {
     geographicName() {
-      return this.location == "Worldwide" ? "globally" : this.location ? `in ${this.location}`: null
+      return this.location == "Worldwide" ? "globally" : this.location ? `in ${this.location}` : null
     },
     title() {
       return this.geographicName ? `${this.lineageName} ${this.geographicName}` : this.lineageName
@@ -117,6 +138,10 @@ export default Vue.extend({
       bandwidth: 25,
       height: null,
 
+      // forms
+      hideZeros: true,
+      areZerosFiltered: false,
+
       // refs
       svg: null,
       // axes
@@ -128,8 +153,7 @@ export default Vue.extend({
   },
   watch: {
     data: function() {
-      console.log("DATA")
-      this.setupPlot();
+      this.preprocessData();
       this.updatePlot();
     }
   },
@@ -150,6 +174,13 @@ export default Vue.extend({
     },
     preprocessData() {
       this.processedData = cloneDeep(this.data);
+
+      if (this.hideZeros) {
+        this.processedData = this.processedData.filter(d => d.lineage_count);
+        this.areZerosFiltered = this.data.length != this.processedData.length;
+      } else {
+        this.areZerosFiltered = false;
+      }
 
       this.processedData.sort((a, b) => {
         return b.lineage_count - a.lineage_count;
@@ -186,6 +217,11 @@ export default Vue.extend({
       select(this.$refs.yAxis)
         .selectAll("text")
         .style("opacity", 1);
+    },
+    showZeros() {
+      this.hideZeros = !this.hideZeros;
+      this.preprocessData();
+      this.updatePlot();
     },
     updateAxes() {
       const paddingInner = 0.25;
@@ -309,5 +345,9 @@ export default Vue.extend({
 
 .horizontal-bargraph-y line {
     stroke: #888;
+}
+
+.btn-sublineages {
+    line-height: 1 !important;
 }
 </style>
