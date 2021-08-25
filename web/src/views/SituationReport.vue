@@ -179,7 +179,8 @@
             <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
           </div>
 
-          <SublineageTotals :data="sublineages" v-if="sublineages.length"/>
+          <!-- SUBLINEAGE BREAKDOWN -->
+          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineages" v-if="sublineages.length" />
 
           <!-- KEY INSIGHTS -->
           <!-- <div class="mt-4">
@@ -548,7 +549,7 @@ export default {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
       if (this.alias) {
         this.lineageName = this.$options.filters.capitalize(this.alias.toLowerCase());
-        this.title = `${this.lineageName} Report`;
+        this.title = `${this.lineageName} Variant Report`;
         this.reportType = "combined lineage";
       } else {
 

@@ -756,6 +756,7 @@ export function getSublineageTotals(apiurl, md, location) {
       pluck("data", "results"),
       map(results => {
         results["pangolin_lineage"] = lineage;
+        results["id"] = lineage.replace(/\./g, "_");
         results["lineage_count_formatted"] = format(",")(results.lineage_count);
         return (results)
       }),
