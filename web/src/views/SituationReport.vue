@@ -50,6 +50,40 @@
       </div>
     </div>
 
+    <!-- CHANGE SELECTED LOCATION MODAL -->
+    <div id="change-selected-location" class="modal fade">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="exampleModalLabel">Change selected location</h5>
+            <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 py-3 border-bottom border-secondary">
+              <h6 class="text-muted text-underline m-0">Current locations</h6>
+              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" @click="switchLocation()" data-dismiss="modal">
+                Worldwide
+              </button>
+              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx3) in currentLocs" :key="lIdx3" @click="switchLocation(location)" data-dismiss="modal">
+                {{ location.label }}
+              </button>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
+              <TypeaheadSelect :queryFunction="queryLocation" @selected="updateSelectedLoc" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences" />
+            </div>
+          </div>
+
+
+          <div class="modal-footer border-secondary">
+            <!-- <button type="button" class="btn btn-accent" @click="switchLocationSubmit" data-dismiss="modal">Save changes</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CHANGE PANGOLIN LINEAGE MODAL -->
     <div id="change-pangolin-modal" class="modal fade">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -451,6 +485,7 @@ export default {
         this.reportMetadata = null;
         this.setupReport();
       } else {
+        console.log("updating location")
         this.updateLocations();
       }
     }
@@ -477,6 +512,7 @@ export default {
       newPangolin: null,
       currentLocs: null, // placeholder for current locations
       loc2Add: [], // array to store new locations to add
+      newSelectedLocation: null, // stores location data when change the selected value
 
       // subscriptions
       dataSubscription: null,
@@ -670,6 +706,11 @@ export default {
     addLoc2Add(selected) {
       this.loc2Add.push(selected);
     },
+    updateSelectedLoc(selected) {
+      this.selectedLocations.push(selected);
+      this.closeLocModal();
+      this.switchLocation(selected)
+    },
     removeLoc2Add(idx) {
       this.loc2Add.splice(idx, 1);
     },
@@ -705,9 +746,13 @@ export default {
         d.isActive = false;
       })
 
-      location.isActive = true;
+      if (!location) {
+        this.selectedLocation = "Worldwide";
+      } else {
+        location.isActive = true;
 
-      this.selectedLocation = location.id;
+        this.selectedLocation = location.id;
+      }
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
@@ -718,7 +763,7 @@ export default {
           pango: this.pango,
           muts: this.muts,
           loc: ids,
-          selected: location.id
+          selected: this.selectedLocation
         },
         params: {
           alias: this.alias,
@@ -763,6 +808,9 @@ export default {
           selected: this.selected
         }
       })
+    },
+    closeLocModal() {
+      $("#change-selected-location").modal("hide");
     },
     closeModal() {
       $("#change-pangolin-modal").modal("hide");

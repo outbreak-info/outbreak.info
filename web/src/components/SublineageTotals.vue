@@ -1,6 +1,11 @@
 <template>
 <div class="mt-4" id="sublineage-totals">
-  <h5 class="m-0">Lineage breakdown of {{title}}</h5>
+  <div class="d-flex align-items-center">
+    <h5 class="m-0">Lineage breakdown of {{title}}</h5>
+    <button class="btn btn-main-outline d-flex align-items-center my-2 px-2 ml-2" data-toggle="modal" data-target="#change-selected-location">
+      <font-awesome-icon class="fa-sm" :icon="['fas', 'sync']" />
+    </button>
+  </div>
 
   <!-- DELTA WARNING! -->
   <div style='max-width: 420px;' class="my-2 fa-sm" v-if="lineageName == 'Delta'">
@@ -40,6 +45,21 @@ import {
   sum
 } from "d3";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+
+import {
+  faSync
+} from "@fortawesome/free-solid-svg-icons";
+
+
+library.add(faSync);
+
 import cloneDeep from "lodash/cloneDeep";
 import Warning from "@/components/Warning.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
@@ -53,7 +73,8 @@ export default Vue.extend({
   name: "SublineageTotals",
   components: {
     DownloadReportData,
-    Warning
+    Warning,
+    FontAwesomeIcon
   },
   props: {
     data: Array,
@@ -81,10 +102,10 @@ export default Vue.extend({
   },
   computed: {
     geographicName() {
-      return this.location == "Worldwide" ? "globally" : `in ${this.location}`
+      return this.location == "Worldwide" ? "globally" : this.location ? `in ${this.location}`: null
     },
     title() {
-      return `${this.lineageName} ${this.geographicName}`
+      return this.geographicName ? `${this.lineageName} ${this.geographicName}` : this.lineageName
     },
     swoopyPosition() {
       return `M ${this.width - this.margin.left - 20} ${this.height - this.margin.top-5} c 0 0, 15 0, 0 -25`

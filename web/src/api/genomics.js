@@ -453,7 +453,6 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
 
 export function getSublineageTotals(apiurl, md, location) {
   if (md) {
-    console.log(md)
     return (forkJoin(...md.pango_descendants.map(lineage => getCumSublineagePrevalence(apiurl, lineage, location)))).pipe(
         map(results => {
           return (results)
