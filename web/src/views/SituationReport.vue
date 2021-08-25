@@ -350,21 +350,8 @@ import Vue from "vue";
 import uniq from "lodash/uniq";
 import isEqual from "lodash/isEqual";
 
-import ReportMethodology from "@/components/ReportMethodology.vue";
-import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
-import Warning from "@/components/Warning.vue";
-import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
-import ReportPrevalence from "@/components/ReportPrevalence.vue";
-import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
-import ReportChoropleth from "@/components/ReportChoropleth.vue";
 import ReportResources from "@/components/ReportResources.vue";
-import ShareReport from "@/components/ShareReport.vue";
-import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
-import CustomReportForm from "@/components/CustomReportForm.vue";
-import MutationsByLineage from "@/components/MutationsByLineage.vue";
-import ClassedLegend from "@/components/ClassedLegend.vue";
-import ThresholdSlider from "@/components/ThresholdSlider.vue";
 
 // --- font awesome --
 import {
@@ -412,22 +399,22 @@ import {
 export default {
   name: "SituationReport",
   components: {
-    ReportMethodology,
-    CharacteristicMutations,
     FontAwesomeIcon,
-    Warning,
-    ReportAcknowledgements,
-    ReportPrevalence,
-    ReportPrevalenceByLocation,
-    ReportChoropleth,
-    ReportResources,
-    ShareReport,
-    ReportSummary,
-    TypeaheadSelect,
-    CustomReportForm,
-    MutationsByLineage,
-    ClassedLegend,
-    ThresholdSlider,
+    ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
+    CharacteristicMutations: () => import( /* webpackPrefetch: true */ "@/components/CharacteristicMutations.vue"),
+    Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
+    ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
+    ReportPrevalence: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalence.vue"),
+    ReportPrevalenceByLocation: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceByLocation.vue"),
+    ReportChoropleth: () => import( /* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
+    ReportResources: () => import( /* webpackPrefetch: true */ "@/components/ReportResources.vue"),
+    ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
+    ReportSummary: () => import( /* webpackPrefetch: true */ "@/components/ReportSummary.vue"),
+    TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
+    CustomReportForm: () => import( /* webpackPrefetch: true */ "@/components/CustomReportForm.vue"),
+    MutationsByLineage: () => import( /* webpackPrefetch: true */ "@/components/MutationsByLineage.vue"),
+    ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
+    ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     SublineageTotals: () => import( /* webpackPrefetch: true */ "@/components/SublineageTotals.vue"),
   },
   props: {
@@ -741,6 +728,7 @@ export default {
     },
     updateLocations() {
       this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
+        console.log(results)
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
@@ -755,6 +743,9 @@ export default {
 
         // recent data by country.
         this.choroData = results.byCountry;
+
+        // sublineage breakdown
+        this.sublineages = results.sublineages;
 
       })
     },
