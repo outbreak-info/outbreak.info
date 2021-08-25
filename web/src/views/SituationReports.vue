@@ -369,6 +369,12 @@
         </div>
       </div>
 
+      <template v-if="!filteredMutations.length">
+        <h2 id="moc">Mutation of Concern &amp; Interest Reports</h2>
+        <button id="moi" class="btn btn-main" @click="getCuratedMutations">show mutation reports</button>
+      </template>
+
+  <template v-else>
       <!-- mutation groups -->
       <div class="mutation-group my-10" v-for="(group, i) in filteredMutations" :key="'mutation' + i" :id="group.id + '-reports'">
         <div class="d-flex justify-content-between">
@@ -480,9 +486,10 @@
         </div>
 
       </div>
+    </template>
     </section>
 
-    <ReportAcknowledgements />
+    <ReportAcknowledgements class="border-top pt-3" />
   </div>
 </div>
 </template>
@@ -525,6 +532,8 @@ import {
   mapState
 } from "vuex";
 
+import store from "@/store";
+
 import {
   format
 } from "d3";
@@ -535,6 +544,7 @@ import debounce from "lodash/debounce";
 import {
   getReportList,
   getSequenceCount,
+  getCuratedMutations,
   getBadMutations
 } from "@/api/genomics.js";
 
@@ -789,6 +799,16 @@ export default {
     },
     anchorLink(link) {
       return (link.replace(/\./g, "_"))
+    },
+    getCuratedMutations() {
+      store.commit("admin/setReportLoading", true);
+      this.curatedMutationsSubscription = getCuratedMutations(this.$genomicsurl, this.characteristicThreshold).subscribe(results => {
+        this.curatedVOC = this.reports.filter(d => d.id === "voc")[0]["values"].flatMap(d => d.pango_descendants).map(d => d.toLowerCase())
+        this.curatedVOI = this.reports.filter(d => d.id === "voi")[0]["values"].flatMap(d => d.pango_descendants).map(d => d.toLowerCase());
+        this.mutationReports = results;
+        store.commit("admin/setReportLoading", false);
+        this.filterReports();
+      })
     }
   },
   data() {
@@ -918,6 +938,10 @@ export default {
   beforeDestroyed() {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
+    }
+
+    if (this.curatedMutationsSubscription) {
+      this.curatedMutationsSubscription.unsubscribe();
     }
 
     if (this.totalSubscription) {
@@ -1113,6 +1137,6 @@ $vum-color: #edc949;
 }
 
 .sublineages {
-  max-width: 500px;
+    max-width: 500px;
 }
 </style>

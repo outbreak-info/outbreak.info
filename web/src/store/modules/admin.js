@@ -1148,6 +1148,10 @@ const actions = {};
 const mutations = {
   setLoading(state, isLoading) {
     state.loading = isLoading;
+  },
+  
+  setReportLoading(state, isLoading) {
+    state.reportloading = isLoading;
   }
 };
 
