@@ -203,8 +203,12 @@
                       </router-link>
                     </template>
 
-                    <h3 class="m-0 border-bottom pb-1 mb-2" v-else-if="report.pango_sublineages.length" :id="anchorLink(report.pangolin_lineage)">{{report.label}}</h3>
+                    <!-- multiple sublineages, unnamed -->
+                    <router-link :to="{name:'MutationReport', params: {alias: report.label.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.pango_sublineages.length">
+                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.label)">{{ report.label }}</h3>
+                    </router-link>
 
+                    <!-- single lineage -->
                     <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
                       <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h3>
                     </router-link>
@@ -374,119 +378,119 @@
         <button id="moi" class="btn btn-main" @click="getCuratedMutations">show mutation reports</button>
       </template>
 
-  <template v-else>
-      <!-- mutation groups -->
-      <div class="mutation-group my-10" v-for="(group, i) in filteredMutations" :key="'mutation' + i" :id="group.id + '-reports'">
-        <div class="d-flex justify-content-between">
-          <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
-        </div>
-        <small>
-          <div class="line-height-1">
-            <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
-            <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
+      <template v-else>
+        <!-- mutation groups -->
+        <div class="mutation-group my-10" v-for="(group, i) in filteredMutations" :key="'mutation' + i" :id="group.id + '-reports'">
+          <div class="d-flex justify-content-between">
+            <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
           </div>
-        </small>
+          <small>
+            <div class="line-height-1">
+              <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
+              <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
+            </div>
+          </small>
 
-        <template v-if="group.values.length">
-          <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
-            <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
-            <label class="b-contain d-flex align-items-center pr-4 m-0">
-              <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
-              <span>outbreak.info</span>
-              <input type="checkbox" id="outbreak.info" value="outbreak" v-if="group.id == 'moc'" v-model.lazy="selectedMOC" @change="filterMOC()" />
-              <input type="checkbox" id="outbreak.info" value="outbreak" v-if="group.id == 'moi'" v-model.lazy="selectedMOI" @change="filterMOC()" />
-              <div class="b-input"></div>
-            </label>
-            <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
-          </div>
+          <template v-if="group.values.length">
+            <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center">
+              <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-4 m-0">
+                <img :src="require(`@/assets/icon-01.svg`)" class="variant-logo mr-1" />
+                <span>outbreak.info</span>
+                <input type="checkbox" id="outbreak.info" value="outbreak" v-if="group.id == 'moc'" v-model.lazy="selectedMOC" @change="filterMOC()" />
+                <input type="checkbox" id="outbreak.info" value="outbreak" v-if="group.id == 'moi'" v-model.lazy="selectedMOI" @change="filterMOC()" />
+                <div class="b-input"></div>
+              </label>
+              <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
+            </div>
 
-          <table class="bg-white mt-2 w-100">
-            <thead class="text-uppercase bg-dark text-light">
-              <tr class="border-bottom border-white">
-                <th>
-                  <div class="d-flex align-items-center">
-                    mutation
-                    <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-                      <div class="input-group">
-                        <input :id="'sBar-mutation' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-                        <div class="input-group-prepend">
-                          <span class="input-group-text text-muted border-0" id="sb">
-                            <font-awesome-icon :icon="['fas', 'search']" />
-                          </span>
+            <table class="bg-white mt-2 w-100">
+              <thead class="text-uppercase bg-dark text-light">
+                <tr class="border-bottom border-white">
+                  <th>
+                    <div class="d-flex align-items-center">
+                      mutation
+                      <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                        <div class="input-group">
+                          <input :id="'sBar-mutation' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                          <div class="input-group-prepend">
+                            <span class="input-group-text text-muted border-0" id="sb">
+                              <font-awesome-icon :icon="['fas', 'search']" />
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </form>
-                  </div>
-                </th>
-                <th>
-                  prominent in <sup>**</sup>
-                </th>
-                <th>
-                  total found
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <template v-for="(report, rIdx) in group.values">
-                <tr :key="rIdx" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
-
-                  <!-- name + synonyms -->
-                  <td class="pt-2">
-                    <router-link :to="{name:'MutationReport', query: {muts: report.mutation_name} }" class="no-underline">
-                      <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
-                    </router-link>
-                  </td>
-
-                  <td>
-                    <div class="d-flex flex-wrap">
-                      <router-link class="btn btn-grey-outline p-0 m-1 d-flex" :to="{name: 'MutationReport', query:{pango: lineage}}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
-                        <div class="mx-1">
-                          {{lineage}}
-                        </div>
-                        <div class="VOC-badge" v-if="curatedVOC.includes(lineage.toLowerCase())">VOC</div>
-                        <div class="VOI-badge" v-if="curatedVOI.includes(lineage.toLowerCase())">VOI</div>
-                      </router-link>
+                      </form>
                     </div>
-                  </td>
-
-                  <td>
-                    {{ report.lineage_count }}
-                  </td>
+                  </th>
+                  <th>
+                    prominent in <sup>**</sup>
+                  </th>
+                  <th>
+                    total found
+                  </th>
                 </tr>
+              </thead>
 
-              </template>
-            </tbody>
-          </table>
+              <tbody>
+                <template v-for="(report, rIdx) in group.values">
+                  <tr :key="rIdx" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
 
-          <div class="mt-2 d-flex justify-content-between align-items-center">
-            <div class="flex-shrink-0">
-              <sup class="text-muted mr-1">**</sup>
-              <small class="text-muted">Lineages with the mutation in at least {{charMutThreshold}} of sequences
-              </small>
-            </div>
+                    <!-- name + synonyms -->
+                    <td class="pt-2">
+                      <router-link :to="{name:'MutationReport', query: {muts: report.mutation_name} }" class="no-underline">
+                        <h3 class="m-0"><b>{{ report.mutation_name }}</b></h3>
+                      </router-link>
+                    </td>
 
-            <DownloadReportData :data="group.values" dataType="Curated Mutation List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
-          </div>
-        </template>
-        <div class="d-flex align-items-center my-3" v-else>
-          <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
-          <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-            <div class="input-group">
-              <input :id="'sBar-clear-mut' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-              <div class="input-group-prepend">
-                <span class="input-group-text text-muted border-0" id="sb">
-                  <font-awesome-icon :icon="['fas', 'search']" />
-                </span>
+                    <td>
+                      <div class="d-flex flex-wrap">
+                        <router-link class="btn btn-grey-outline p-0 m-1 d-flex" :to="{name: 'MutationReport', query:{pango: lineage}}" v-for="(lineage, lIdx) in report.lineages" :key="lIdx">
+                          <div class="mx-1">
+                            {{lineage}}
+                          </div>
+                          <div class="VOC-badge" v-if="curatedVOC.includes(lineage.toLowerCase())">VOC</div>
+                          <div class="VOI-badge" v-if="curatedVOI.includes(lineage.toLowerCase())">VOI</div>
+                        </router-link>
+                      </div>
+                    </td>
+
+                    <td>
+                      {{ report.lineage_count }}
+                    </td>
+                  </tr>
+
+                </template>
+              </tbody>
+            </table>
+
+            <div class="mt-2 d-flex justify-content-between align-items-center">
+              <div class="flex-shrink-0">
+                <sup class="text-muted mr-1">**</sup>
+                <small class="text-muted">Lineages with the mutation in at least {{charMutThreshold}} of sequences
+                </small>
               </div>
+
+              <DownloadReportData :data="group.values" dataType="Curated Mutation List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
             </div>
-          </form>
+          </template>
+          <div class="d-flex align-items-center my-3" v-else>
+            <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
+            <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+              <div class="input-group">
+                <input :id="'sBar-clear-mut' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                <div class="input-group-prepend">
+                  <span class="input-group-text text-muted border-0" id="sb">
+                    <font-awesome-icon :icon="['fas', 'search']" />
+                  </span>
+                </div>
+              </div>
+            </form>
 
-          <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
+            <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
+          </div>
+
         </div>
-
-      </div>
-    </template>
+      </template>
     </section>
 
     <ReportAcknowledgements class="border-top pt-3" />
