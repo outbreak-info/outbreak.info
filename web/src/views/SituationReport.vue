@@ -210,27 +210,11 @@
 
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
+            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" v-if="additionalMutations" />
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN -->
-          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineages" v-if="sublineages.length" />
-
-          <!-- KEY INSIGHTS -->
-          <!-- <div class="mt-4">
-          <h4>Key Insights</h4>
-          <ul>
-            <li>
-              XXXX {{ reportName }} has been <b>increasing/decreasing</b> in prevalence over the past two weeks.
-            </li>
-            <li>
-              XXXX Its apparent prevalence is higher in rest of the world compared to the United States or San Diego.
-            </li>
-            <li>
-              XXXX Experimental data suggests it is more transmissable than other SARS-CoV-2 variants.
-            </li>
-          </ul>
-        </div> -->
+          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineages" v-if="sublineages && sublineages.length" />
 
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
@@ -540,6 +524,7 @@ export default {
       choroData: null,
       countries: null,
       states: null,
+      additionalMutations: null,
       sublineages: null,
       sublineageLongitudinal: null,
       lineagesByDay: null,
@@ -568,7 +553,6 @@ export default {
       ],
       locationTotals: null,
       totalLineage: null,
-      newToday: null,
       prevalence: [],
       mutationsByLineage: []
     }
@@ -676,6 +660,8 @@ export default {
       if (this.lineageName || this.mutationID || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
           console.log(results)
+          this.hasData = true;
+
           // selected locations
           this.selectedLocations = results.locations;
           this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
@@ -689,9 +675,6 @@ export default {
           // worldwide stats
           const global = results.locPrev.filter(d => d.id == "Worldwide")
           this.totalLineage = global.length === 1 ? global[0].lineage_count_formatted : null;
-
-          // newly added sequences
-          this.newToday = results.newToday;
 
           // sublineages
           this.sublineages = results.sublineages;
@@ -713,7 +696,6 @@ export default {
           this.choroData = results.byCountry;
           this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
 
-          this.hasData = true;
           this.mutations = results.mutations;
 
           // Mutation details for queried mutations
