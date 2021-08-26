@@ -265,8 +265,18 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <LineagesByLocation :data="lineagesByDay" :setWidth="width" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" :plotTitle="`Percentage of ${reportName} sequences by lineage`"/>
-        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
+        <LineagesByLocation :data="lineagesByDay" :setWidth="width" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+
+        <div class="d-flex flex-wrap justify-content-center mt-2">
+          <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
+            <small :style="`color: ${sublineageColorScale(option)}`" v-if="sublineageColorScale">{{option}}</small>
+            <input type="checkbox" :value="option" v-model.lazy="selectedSublineages" @change="debounceSelectSublineage" />
+            <div class="b-input" :style="[selectedSublineages.includes(option) ? {'background': sublineageColorScale(option), 'border-color': '#555'} : 'background:none']"></div>
+          </label>
+        </div>
+
+        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label"
+          :setColorScale="sublineageColorScale" />
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
@@ -526,10 +536,12 @@ export default {
       reportMetadata: null,
       choroLocation: "country",
       choroData: null,
+      choroMaxCount: null,
       countries: null,
       states: null,
       additionalMutations: null,
       sublineagePrev: null,
+      sublineageLongitudinalAll: null,
       sublineageLongitudinal: null,
       lineagesByDay: null,
       sublineageColorScale: null,
@@ -555,6 +567,9 @@ export default {
         "#bcbd22", // puce
         "#79706E", // grey
       ],
+      sublineageOptions: [],
+      selectedSublineages: [],
+      sublineages2Plot: 5,
       locationTotals: null,
       totalLineage: null,
       prevalence: [],
@@ -563,6 +578,7 @@ export default {
   },
   created: function() {
     this.debounceSetDims = debounce(this.setDims, 150);
+    this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
   },
   mounted() {
     this.setDims();
@@ -686,7 +702,7 @@ export default {
 
           // longitudinal data: prevalence over time
           this.prevalence = results.longitudinal;
-          this.sublineageLongitudinal = results.longitudinalSublineages;
+          this.sublineageLongitudinalAll = results.longitudinalSublineages;
           // stream graph of lineages by day
           this.lineagesByDay = results.lineagesByDay;
           this.setSublineageColorScale();
@@ -717,14 +733,23 @@ export default {
         })
       }
     },
+    selectSublineage() {
+      this.sublineageLongitudinal = this.sublineageLongitudinalAll.filter(d => this.selectedSublineages.includes(d.label));
+    },
     setSublineageColorScale() {
-      const lineageDomain = this.sublineagePrev
+      this.sublineageOptions = this.sublineagePrev
         .filter(d => d.lineage_count)
         .map(d => d.mutation_string)
         .slice(0, this.sublineageColorPalette.length);
 
+      // only show the top 5 most prevalent sublineages
+      if (!this.selectedSublineages.length) {
+        this.selectedSublineages = this.sublineageOptions.slice(0, this.sublineages2Plot);
+      }
+      this.selectSublineage();
+
       this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)
-        .domain(lineageDomain)
+        .domain(this.sublineageOptions)
         .unknown("#bab0ab");
     },
     removeLocation(idx) {
@@ -811,7 +836,7 @@ export default {
 
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
-        this.sublineageLongitudinal = results.longitudinalSublineages;
+        this.sublineageLongitudinalAll = results.longitudinalSublineages;
         // stream graph of lineages by day
         this.lineagesByDay = results.lineagesByDay;
         this.setSublineageColorScale();
