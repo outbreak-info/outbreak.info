@@ -184,7 +184,6 @@ export default Vue.extend({
         .on("dblclick", this.resetZoom);
     },
     setDims() {
-      console.log(this.setWidth)
         const svgContainer = document.getElementById('most-recent-lineages');
         let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
         const pageContainer = document.getElementById('location-report')
