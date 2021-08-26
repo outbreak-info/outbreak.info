@@ -256,7 +256,7 @@
       </section>
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->
-      <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage">
+      <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage" v-if="lineagesByDay">
         <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
 
@@ -770,20 +770,22 @@ export default {
       this.sublineageLongitudinal = this.sublineageLongitudinalAll.filter(d => this.selectedSublineages.includes(d.label));
     },
     setSublineageColorScale() {
-      this.sublineageOptions = this.sublineagePrev
-        .filter(d => d.lineage_count)
-        .map(d => d.mutation_string)
-        .slice(0, this.sublineageColorPalette.length);
+      if (this.sublineagePrev) {
+        this.sublineageOptions = this.sublineagePrev
+          .filter(d => d.lineage_count)
+          .map(d => d.mutation_string)
+          .slice(0, this.sublineageColorPalette.length);
 
-      // only show the top 5 most prevalent sublineages
-      if (!this.selectedSublineages.length) {
-        this.selectedSublineages = this.sublineageOptions.slice(0, this.sublineages2Plot);
+        // only show the top 5 most prevalent sublineages
+        if (!this.selectedSublineages.length) {
+          this.selectedSublineages = this.sublineageOptions.slice(0, this.sublineages2Plot);
+        }
+        this.selectSublineage();
+
+        this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)
+          .domain(this.sublineageOptions)
+          .unknown("#bab0ab");
       }
-      this.selectSublineage();
-
-      this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)
-        .domain(this.sublineageOptions)
-        .unknown("#bab0ab");
     },
     removeLocation(idx) {
       this.currentLocs.splice(idx, 1);

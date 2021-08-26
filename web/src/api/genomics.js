@@ -470,8 +470,9 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
 }
 
 export function getSublineageTotals(apiurl, md, location) {
-  const queryStr = `pangolin_lineage=${md.pango_descendants.join(",")}`;
-  if (md) {
+  if (md && md.pango_descendants) {
+    const queryStr = `pangolin_lineage=${md.pango_descendants.join(",")}`;
+
     return (getCumPrevalence(apiurl, queryStr, location, 0)).pipe(
       map(results => {
         // sort in descending order of frequency
