@@ -440,6 +440,9 @@ const routes = [{
     name: "MutationReport",
     props: route => ({
       alias: route.params.alias,
+      overlay: route.query.overlay,
+      xmin: route.query.xmin,
+      xmax: route.query.xmax,
       loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,

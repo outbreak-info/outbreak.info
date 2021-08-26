@@ -259,36 +259,46 @@
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage">
         <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
+
         <!-- change location selectors for sublineage prevalences -->
-        <div id="location-buttons" class="d-flex flex-wrap">
+        <div id="location-buttons" class="d-flex flex-wrap align-items-center">
           <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
+
+          <!-- change selection for streamgraph or overlay -->
+          <div id="sublineage-overlay-selector ml-4">
+            <div class="radio-item mr-3">
+              <input type="radio" id="stack" :value="false" v-model="sublineageOverlay" @change="changeSublineageOverlay">
+              <label for="stack">stack lineages</label>
+            </div>
+            <div class="radio-item mr-3">
+              <input type="radio" id="overlay" :value="true" v-model="sublineageOverlay" @change="changeSublineageOverlay">
+              <label for="overlay">overlay lineages</label>
+            </div>
+          </div>
         </div>
+
+        <div id="sublinege-prevalence-overlay" v-if="sublineageOverlay">
+          <div class="d-flex flex-wrap justify-content-center mt-2">
+            <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
+              <small :style="`color: ${sublineageColorScale(option)}`" v-if="sublineageColorScale">{{option}}</small>
+              <input type="checkbox" :value="option" v-model.lazy="selectedSublineages" @change="debounceSelectSublineage" />
+              <div class="b-input" :style="[selectedSublineages.includes(option) ? {'background': sublineageColorScale(option), 'border-color': '#555'} : 'background:none']"></div>
+            </label>
+          </div>
+
+          <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
+            :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
+        </div>
+
         <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
-        <div id="sublineage-streamgraph">
-          <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" />
+        <div id="sublineage-streamgraph" v-else>
+          <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale"  class="p-2 pt-3 bg-grey__lightest justify-content-center" />
 
           <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale"
             :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
-        </div>
-
-        <div id="sublinege-prevalence-overlay">
-        <div class="d-flex flex-wrap justify-content-center mt-2">
-          <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
-            <small :style="`color: ${sublineageColorScale(option)}`" v-if="sublineageColorScale">{{option}}</small>
-            <input type="checkbox" :value="option" v-model.lazy="selectedSublineages" @change="debounceSelectSublineage" />
-            <div class="b-input" :style="[selectedSublineages.includes(option) ? {'background': sublineageColorScale(option), 'border-color': '#555'} : 'background:none']"></div>
-          </label>
-        </div>
-
-        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]"
-        :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false"
-        :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
-          :locationID="selectedLocation.id" :locationName="selectedLocation.label"
-          :setColorScale="sublineageColorScale" />
-
         </div>
       </section>
 
@@ -468,7 +478,10 @@ export default {
     pango: String,
     xmin: String,
     xmax: String,
-    overlay: Boolean,
+    overlay: {
+      type: [String, Boolean],
+      default: "false"
+    },
     selected: {
       type: String,
       default: "Worldwide"
@@ -543,6 +556,9 @@ export default {
       choroCountThreshold: 25,
       totalThresh: 25, // threshold for "unreliable estimate" in the table
 
+      // forms
+      sublineageOverlay: null,
+
       // data
       selectedLocations: null,
       selectedLocation: null,
@@ -596,6 +612,7 @@ export default {
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
   },
   mounted() {
+    this.sublineageOverlay = this.overlay === "true";
     this.setDims();
     this.queryLocation = findLocation;
     this.queryPangolin = findPangolin;
@@ -867,6 +884,24 @@ export default {
         // sublineage breakdown
         this.sublineagePrev = results.sublineagePrev;
 
+      })
+    },
+    changeSublineageOverlay(selected) {
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          pango: this.pango,
+          muts: this.muts,
+          loc: this.loc,
+          selected: this.selected,
+          xmin: this.selectedXMin,
+          xmax: this.selectedXMax,
+          overlay: this.sublineageOverlay
+        },
+        params: {
+          alias: this.alias,
+          disableScroll: true
+        }
       })
     },
     updatePangolin(selected) {
