@@ -541,7 +541,7 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
   // Check if the value exists within the curated list
   if (filtered.length === 1) {
     md = filtered[0];
-    queryStr = `pangolin_lineage=${md.reportQuery.pango.join(",")}`;
+    queryStr =  buildQueryStr(lineageString, mutationString, md);
   } else {
     queryStr = buildQueryStr(lineageString, mutationString);
   }
@@ -565,7 +565,7 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
     getSublineageTotals(apiurl, md, location),
     getSublineagePrevalence(apiurl, md, location)
   ]).pipe(
-    map(([locations, longitudinal, byLocation, locPrev, sublineages, longitudinalSublineages]) => {
+    map(([locations, longitudinal, byLocation, locPrev, sublineagePrev, longitudinalSublineages]) => {
       // attach names to cum prevalences
       locPrev.forEach(d => {
         const filtered = locations.filter(loc => loc.id === d.id);
@@ -576,12 +576,12 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
 
       return ({
         locations: locations,
-        longitudinal: longitudinal,
+        longitudinal: longitudinal[0]["data"],
         longitudinalSublineages: longitudinalSublineages.longitudinal,
         lineagesByDay: longitudinalSublineages.streamgraph,
         byCountry: byLocation,
         locPrev: locPrev,
-        sublineages: sublineages
+        sublineagePrev: sublineagePrev
       })
     }),
     catchError(e => {
