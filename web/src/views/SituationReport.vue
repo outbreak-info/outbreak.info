@@ -259,15 +259,22 @@
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage">
         <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
+        <!-- change location selectors for sublineage prevalences -->
         <div id="location-buttons" class="d-flex flex-wrap">
           <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
           <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale"
-          :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+        <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
+        <div id="sublineage-streamgraph">
+          <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" />
 
+          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale"
+            :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+        </div>
+
+        <div id="sublinege-prevalence-overlay">
         <div class="d-flex flex-wrap justify-content-center mt-2">
           <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
             <small :style="`color: ${sublineageColorScale(option)}`" v-if="sublineageColorScale">{{option}}</small>
@@ -276,8 +283,13 @@
           </label>
         </div>
 
-        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
-          :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
+        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]"
+        :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false"
+        :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
+          :locationID="selectedLocation.id" :locationName="selectedLocation.label"
+          :setColorScale="sublineageColorScale" />
+
+        </div>
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
@@ -445,6 +457,7 @@ export default {
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     SublineageTotals: () => import( /* webpackPrefetch: true */ "@/components/SublineageTotals.vue"),
+    HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
     ReportPrevalenceOverlay: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceOverlay.vue"),
     LineagesByLocation: () => import( /* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
   },
