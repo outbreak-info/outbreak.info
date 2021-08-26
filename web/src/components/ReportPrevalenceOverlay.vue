@@ -593,10 +593,11 @@ export default Vue.extend({
         .text(d.label)
         .style("color", this.colorScale(d.label))
 
-      ttip.select("#sublineages")
-        .text(d.pango_descendants.length > 1 ? d.pango_descendants.join(", ") : "")
-        .style("color", this.colorScale(d.label))
-
+      if (d.pango_descendants) {
+        ttip.select("#sublineages")
+          .text(d.pango_descendants.length > 1 ? d.pango_descendants.join(", ") : "")
+          .style("color", this.colorScale(d.label))
+      }
       // fix location
       ttip
         .style("left", `${event.clientX + ttipShift}px`)
