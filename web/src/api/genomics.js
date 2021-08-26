@@ -413,6 +413,9 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
+    getCharacteristicMutations(apiurl, lineageString),
+    getMutationDetails(apiurl, mutationString),
+    getMutationsByLineage(apiurl, mutationString),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
     getSublineageTotals(apiurl, md, location),
     // getTemporalPrevalence(apiurl, location, queryStr, null),
@@ -420,11 +423,9 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
     // getPositiveLocations(apiurl, queryStr, "Worldwide"),
     // getPositiveLocations(apiurl, queryStr, "USA"),
     // getLocationPrevalence(apiurl, queryStr, location),
-    // getCharacteristicMutations(apiurl, lineageString),
-    // getMutationDetails(apiurl, mutationString),
-    // getMutationsByLineage(apiurl, mutationString)
+
   ]).pipe(
-    map(([dateUpdated, locations, locPrev, sublineagePrev]) => {
+    map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev]) => {
       // map(([dateUpdated, locations, sublineages, longitudinal, longitudinalSublineages, locPrev, countries, states, byCountry, mutations, mutationDetails, mutationsByLineage]) => {
       // const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
@@ -447,10 +448,10 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
         // byCountry: byCountry,
         // countries: countries,
         // states: states,
-        // md: md,
-        // mutations: characteristicMuts,
-        // mutationDetails: mutationDetails,
-        // mutationsByLineage: mutationsByLineage
+        md: md,
+        mutations: characteristicMuts,
+        mutationDetails: mutationDetails,
+        mutationsByLineage: mutationsByLineage
       })
     }),
     catchError(e => {

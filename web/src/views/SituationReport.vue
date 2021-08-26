@@ -210,7 +210,7 @@
 
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" v-if="additionalMutations" />
+            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" v-if="mutations" />
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN -->
@@ -489,7 +489,7 @@ export default {
       locationQueryParams: null,
       title: null,
       lastUpdated: null,
-      disclaimer: null,
+      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
 
       // Changing locations
       queryLocation: null,
@@ -601,10 +601,6 @@ export default {
             this.locationQueryParams = {
               variant: [qParam]
             };
-            this.disclaimer =
-              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
-
-
           } else {
             // Lineage report
             this.lineageName = this.$route.query.pango.toUpperCase();
@@ -616,9 +612,6 @@ export default {
             this.locationQueryParams = {
               pango: [this.lineageName]
             };
-            this.disclaimer =
-              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
-
           }
 
         } else {
@@ -634,9 +627,6 @@ export default {
               muts: [this.$route.query.muts]
             };
             this.title = `${this.reportName} Mutation Report`;
-            this.disclaimer =
-              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
-
           } else {
             // Variant (multiple mutation) report
             this.lineageName = null;
@@ -649,8 +639,6 @@ export default {
             this.locationQueryParams = {
               muts: [this.$route.query.muts.join(",")]
             };
-            this.disclaimer =
-              `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
           }
         }
       }
@@ -695,22 +683,23 @@ export default {
           // this.states = results.states;
           // this.choroData = results.byCountry;
           // this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
-          //
-          // this.mutations = results.mutations;
-          //
-          // // Mutation details for queried mutations
-          // this.additionalMutations = results.mutationDetails;
-          //
-          // // Mutation distribution by lineage
-          // this.mutationsByLineage = results.mutationsByLineage;
-          //
-          // if (results.md) {
-          //   this.reportMetadata = results.md;
-          //   this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
-          //   this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
-          // } else {
-          //   this.searchTerms = [this.searchTerms];
-          // }
+
+          // characteristic mutations
+          this.mutations = results.mutations;
+
+          // Mutation details for queried mutations -- to add to the characteristic mutation maps for things like Alpha + E484K
+          this.additionalMutations = results.mutationDetails;
+
+          // Mutation distribution by lineage
+          this.mutationsByLineage = results.mutationsByLineage;
+
+          if (results.md) {
+            this.reportMetadata = results.md;
+            this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
+            this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
+          } else {
+            this.searchTerms = [this.searchTerms];
+          }
         })
       }
     },

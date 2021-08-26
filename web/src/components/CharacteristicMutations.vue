@@ -30,7 +30,7 @@
       <div class="col" v-if="lineageName">
         <MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
       </div>
-      <div class="col" v-if="additionalMutations.length > 0">
+      <div class="col" v-if="additionalMutations && additionalMutations.length > 0">
         <MutationTable :mutations="additionalMutations" tableTitle="Additional Mutations" />
       </div>
     </div>
