@@ -568,7 +568,7 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
     map(([locations, longitudinal, byLocation, locPrev, sublineagePrev, longitudinalSublineages]) => {
       // attach names to cum prevalences
       locPrev.forEach(d => {
-        const filtered = locations.filter(loc => loc.id === d.id);
+        const filtered = locations.filter(loc => loc.id === d.location_id);
         if (filtered.length === 1) {
           d["name"] = filtered[0].label;
         }
