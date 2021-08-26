@@ -395,9 +395,10 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
   var queryStr;
 
   // Check if the value exists within the curated list
+  // pull out the sublineage queries
   if (filtered.length === 1) {
     md = filtered[0];
-    queryStr = `pangolin_lineage=${md.reportQuery.pango.join(",")}`;
+    queryStr = `pangolin_lineage=${md.reportQuery.pango.join(" OR ")}`;
   } else {
     queryStr = buildQueryStr(lineageString, mutationString);
   }
@@ -405,19 +406,22 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
-    getSublineageTotals(apiurl, md, location),
-    getTemporalPrevalence(apiurl, location, queryStr, null),
-    getSublineagePrevalence(apiurl, md, location),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
-    getPositiveLocations(apiurl, queryStr, "Worldwide"),
-    getPositiveLocations(apiurl, queryStr, "USA"),
-    getLocationPrevalence(apiurl, queryStr, location),
-    getCharacteristicMutations(apiurl, lineageString),
-    getMutationDetails(apiurl, mutationString),
-    getMutationsByLineage(apiurl, mutationString)
+    // getSublineageTotals(apiurl, md, location),
+    // getTemporalPrevalence(apiurl, location, queryStr, null),
+    // getSublineagePrevalence(apiurl, md, location),
+
+    // getPositiveLocations(apiurl, queryStr, "Worldwide"),
+    // getPositiveLocations(apiurl, queryStr, "USA"),
+    // getLocationPrevalence(apiurl, queryStr, location),
+    // getCharacteristicMutations(apiurl, lineageString),
+    // getMutationDetails(apiurl, mutationString),
+    // getMutationsByLineage(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, locations, sublineages, longitudinal, longitudinalSublineages, locPrev, countries, states, byCountry, mutations, mutationDetails, mutationsByLineage]) => {
-      const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
+    map(([dateUpdated, locations, locPrev]) => {
+      console.log(locPrev)
+      // map(([dateUpdated, locations, sublineages, longitudinal, longitudinalSublineages, locPrev, countries, states, byCountry, mutations, mutationDetails, mutationsByLineage]) => {
+      // const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
       // attach names to cum prevalences
       locPrev.forEach(d => {
@@ -430,18 +434,18 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
       return ({
         dateUpdated: dateUpdated,
         locations: locations,
-        sublineages: sublineages,
-        longitudinal: longitudinal,
-        longitudinalSublineages: longitudinalSublineages.longitudinal,
-        lineagesByDay: longitudinalSublineages.streamgraph,
         locPrev: locPrev,
-        byCountry: byCountry,
-        countries: countries,
-        states: states,
-        md: md,
-        mutations: characteristicMuts,
-        mutationDetails: mutationDetails,
-        mutationsByLineage: mutationsByLineage
+        // sublineages: sublineages,
+        // longitudinal: longitudinal,
+        // longitudinalSublineages: longitudinalSublineages.longitudinal,
+        // lineagesByDay: longitudinalSublineages.streamgraph,
+        // byCountry: byCountry,
+        // countries: countries,
+        // states: states,
+        // md: md,
+        // mutations: characteristicMuts,
+        // mutationDetails: mutationDetails,
+        // mutationsByLineage: mutationsByLineage
       })
     }),
     catchError(e => {
@@ -759,6 +763,9 @@ export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
 export function getCumPrevalences(apiurl, queryStr, locations, totalThreshold) {
   return forkJoin(...locations.map(d => getCumPrevalence(apiurl, queryStr, d, totalThreshold))).pipe(
     map(results => {
+      // flatten from array of arrays with single object to a single array of objects.
+      results = results.flatMap(d => d);
+
       results.sort((a, b) => b.global_prevalence - a.global_prevalence);
 
       return (results)
@@ -795,32 +802,46 @@ export function getVariantTotal(apiurl, queryStr, formatted = true) {
 
 }
 
-export function getCumPrevalence(apiurl, queryStr, location, totalThreshold) {
+export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = location == "Worldwide" ?
-    `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}` :
+    `${apiurl}prevalence-by-location?cumulative=true&${queryStr}&timestamp=${timestamp}` :
     `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&timestamp=${timestamp}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
     }
   })).pipe(
-    pluck("data", "results"),
+    pluck("data"),
     map(results => {
-      const first = parseDate(results.first_detected);
-      const last = parseDate(results.last_detected);
+      console.log(results)
+      if (returnFlat) {
+        let res = Object.keys(results).map(
+          mutation_key => {
+            let d = results[mutation_key]["results"];
+            const first = parseDate(d.first_detected);
+            const last = parseDate(d.last_detected);
 
-      results["id"] = location;
-      results["first_detected"] = first ? formatDateShort(first) : null;
-      results["last_detected"] = last ? formatDateShort(last) : null;
-      if (results.total_count >= totalThreshold) {
-        results["proportion_formatted"] = results.lineage_count ? (results.global_prevalence < 0.005 ? "< 0.5%" : formatPercent(results.global_prevalence)) : "not detected";
+            d["mutation_string"] = mutation_key;
+            d["id"] = location;
+            d["first_detected"] = first ? formatDateShort(first) : null;
+            d["last_detected"] = last ? formatDateShort(last) : null;
+            if (d.total_count >= totalThreshold) {
+              d["proportion_formatted"] = d.lineage_count ? (d.global_prevalence < 0.005 ? "< 0.5%" : formatPercent(d.global_prevalence)) : "not detected";
+            } else {
+              d["proportion_formatted"] = d.lineage_count ? "no estimate" : "not detected";
+            }
+
+            d["lineage_count_formatted"] = format(",")(d.lineage_count);
+            return (d);
+          });
+        return ([].concat(...res));
       } else {
-        results["proportion_formatted"] = results.lineage_count ? "no estimate" : "not detected";
+        Object.keys(results).forEach(mutation_key => {
+          results[mutation_key].sort((a, b) => a.pangolin_lineage < b.pangolin_lineage ? -1 : 1);
+        })
+        return (results)
       }
-
-      results["lineage_count_formatted"] = format(",")(results.lineage_count);
-      return (results)
     }),
     catchError(e => {
       console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
