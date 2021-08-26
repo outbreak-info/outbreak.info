@@ -295,7 +295,7 @@
 
         <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
         <div id="sublineage-streamgraph" v-else>
-          <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale"  class="p-2 pt-3 bg-grey__lightest justify-content-center" />
+          <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" class="p-2 pt-3 bg-grey__lightest justify-content-center" />
 
           <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale"
             :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
@@ -821,7 +821,8 @@ export default {
           pango: this.pango,
           muts: this.muts,
           selected: newSelected,
-          loc: locationIDs
+          loc: locationIDs,
+          overlay: this.sublineageOverlay
         }
       })
     },
@@ -850,7 +851,8 @@ export default {
           loc: ids,
           selected: this.selectedLocation,
           xmin: this.selectedXMin,
-          xmax: this.selectedXMax
+          xmax: this.selectedXMax,
+          overlay: this.sublineageOverlay
         },
         params: {
           alias: this.alias,
@@ -916,7 +918,8 @@ export default {
           loc: this.loc,
           pango: this.newPangolin,
           muts: this.muts,
-          selected: this.selected
+          selected: this.selected,
+          overlay: this.sublineageOverlay
         }
       })
     },
