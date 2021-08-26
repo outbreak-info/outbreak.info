@@ -265,7 +265,7 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <LineagesByLocation :data="lineagesByDay" :setWidth="width" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" />
+        <LineagesByLocation :data="lineagesByDay" :setWidth="width" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" :plotTitle="`Percentage of ${reportName} sequences by lineage`"/>
         <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
       </section>
 

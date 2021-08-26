@@ -1,7 +1,7 @@
 <template>
 <div id="streamgraph">
   <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
-    <h5 class="m-0">Lineage prevalence over time</h5>
+    <h5 class="m-0">{{plotTitle}}</h5>
     <div class="d-flex justify-content-end">
       <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
         <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
@@ -96,7 +96,11 @@ export default Vue.extend({
     location: String,
     recentMin: Date,
     colorScale: Function,
-    setWidth: Number
+    setWidth: Number,
+    plotTitle: {
+      type: String,
+      default: "Lineage prevalence over time"
+    }
   },
   computed: {
     title() {
