@@ -21,7 +21,7 @@
   </svg>
 
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab"
+  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="mutationName" className="lineages-by-location" :onlyTotals="onlyTotals" detectedColor="#79706E" notDetectedColor="#bab0ab"
     v-if="seqCounts && seqCounts.length && x" />
 
   <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
@@ -101,9 +101,14 @@ export default Vue.extend({
     recentMin: Date,
     colorScale: Function,
     setWidth: Number,
+    mutationName: String,
     plotTitle: {
       type: String,
       default: "Lineage prevalence over time"
+    },
+    onlyTotals: {
+      type: Boolean,
+      default: true
     },
     tooltipTotal: {
       type: Boolean,

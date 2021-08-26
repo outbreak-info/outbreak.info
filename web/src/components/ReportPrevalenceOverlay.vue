@@ -65,8 +65,8 @@
       </svg>
 
       <!-- Histogram of sequencing counts -->
-      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence"
-        v-if="seqCounts && seqCounts.length" />
+      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="mutationName" :onlyTotals="onlyTotals" notDetectedColor="#bab0ab" detectedColor="#79706E"
+        className="mutation-epi-prevalence" v-if="seqCounts && seqCounts.length" />
 
       <!-- zoom btns -->
       <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}" :class="{'hidden' : !epi.length}">
@@ -177,7 +177,12 @@ export default Vue.extend({
     locationName: String,
     locationID: String,
     setWidth: Number,
-    setColorScale: Function
+    setColorScale: Function,
+    mutationName: String,
+    onlyTotals: {
+      type: Boolean,
+      default: true
+    }
   },
   components: {
     DownloadReportData,

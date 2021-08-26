@@ -265,10 +265,8 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked"
-         :setWidth="width" :location="selectedLocation.label" :seqCounts="[]"
-         :colorScale="sublineageColorScale" :tooltipTotal="true"
-         :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+        <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale"
+          :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
 
         <div class="d-flex flex-wrap justify-content-center mt-2">
           <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
@@ -278,8 +276,8 @@
           </label>
         </div>
 
-        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label"
-          :setColorScale="sublineageColorScale" />
+        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
+          :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
