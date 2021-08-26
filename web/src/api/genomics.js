@@ -465,6 +465,8 @@ export function getSublineageTotals(apiurl, md, location) {
   if (md) {
     return (getCumPrevalence(apiurl, queryStr, location, 0)).pipe(
       map(results => {
+        // sort in descending order of frequency
+        results.sort((a,b) => b.lineage_count - a.lineage_count);
         return (results)
       }),
       catchError(e => {

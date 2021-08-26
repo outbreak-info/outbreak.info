@@ -257,7 +257,7 @@
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage">
-        <h4 class="mb-0">Average daily lineage prevalence within {{reportName}}</h4>
+        <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
         <div id="location-buttons" class="d-flex flex-wrap">
           <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
@@ -265,9 +265,8 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <!-- <ReportSublineagePrevalence :data="sublineagePrevalence" :mutationName="reportName" :location="selectedLocation.label" /> -->
         <LineagesByLocation :data="lineagesByDay" :setWidth="width" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" />
-        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" />
+        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
@@ -443,6 +442,9 @@ export default {
     loc: [Array, String],
     muts: [Array, String],
     pango: String,
+    xmin: String,
+    xmax: String,
+    overlay: Boolean,
     selected: {
       type: String,
       default: "Worldwide"
@@ -788,7 +790,9 @@ export default {
           pango: this.pango,
           muts: this.muts,
           loc: ids,
-          selected: this.selectedLocation
+          selected: this.selectedLocation,
+          xmin: this.selectedXMin,
+          xmax: this.selectedXMax
         },
         params: {
           alias: this.alias,

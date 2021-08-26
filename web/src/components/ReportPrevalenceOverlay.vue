@@ -176,7 +176,8 @@ export default Vue.extend({
     epi: Array,
     locationName: String,
     locationID: String,
-    setWidth: Number
+    setWidth: Number,
+    setColorScale: Function
   },
   components: {
     DownloadReportData,
@@ -493,7 +494,7 @@ export default Vue.extend({
       this.plottedData = this.plottedData.filter(d => d.data.length);
       this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > xDomain[0] && d[this.xEpiVariable] < xDomain[1]);
 
-      this.colorScale = this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
+      this.colorScale = this.setColorScale ? this.setColorScale : this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },
     updateScales() {
       const avgMax = max(this.plottedData.flatMap(d => d.data), d => d[this.yVariable]);
