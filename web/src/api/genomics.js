@@ -376,6 +376,14 @@ export function buildQueryStr(lineageString, mutationString, md = null) {
 }
 
 
+// go back from query string into parameters.
+function parseStrQuery(query) {
+  return ({
+    pango: query
+  })
+}
+
+
 export function getReportData(apiurl, alias, locations, mutationString, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
   store.state.admin.reportloading = true;
 
@@ -1008,7 +1016,8 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
             })
             return ({
               label: mutation_key,
-              data: d
+              data: d,
+              route: parseStrQuery(mutation_key)
             });
           });
         return ([].concat(...res));
