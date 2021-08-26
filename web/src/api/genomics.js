@@ -364,12 +364,13 @@ export function buildQueryStr(lineageString, mutationString, md = null) {
     if (mutationString) {
       queryStr += `&mutations=${mutationString.replace(",", " AND ")}`;
     }
-  }
-  if (lineageString) {
-    queryStr += `pangolin_lineage=${lineageString}`;
-  }
-  if (mutationString) {
-    queryStr += `&mutations=${mutationString}`;
+  } else {
+    if (lineageString) {
+      queryStr += `pangolin_lineage=${lineageString}`;
+    }
+    if (mutationString) {
+      queryStr += `&mutations=${mutationString}`;
+    }
   }
   return queryStr;
 }
