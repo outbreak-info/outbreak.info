@@ -302,6 +302,8 @@ export default Vue.extend({
             .attr("height", d => this.y.bandwidth())
 
           update.select(".lineage-count-annotation")
+            .transition().duration(250)
+            .attr("y", d => this.y(d[this.yVar]) + this.y.bandwidth() / 2)
             .text(d => d.lineage_count_formatted)
         },
         exit => {
