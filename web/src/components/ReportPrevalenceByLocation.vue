@@ -586,6 +586,11 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+
+.prevalence-location-axis {
+  font-size: 16px;
+}
+
 .prevalence-location-axis.axis--y g.tick line,
 .prevalence-location-axis.axis--y path {
     display: none;
