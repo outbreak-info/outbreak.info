@@ -421,15 +421,11 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
     getSublineageTotals(apiurl, md, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
     getSublineagePrevalence(apiurl, md, location),
-    // getPositiveLocations(apiurl, queryStr, "Worldwide"),
-    // getPositiveLocations(apiurl, queryStr, "USA"),
-    // getLocationPrevalence(apiurl, queryStr, location),
-
+    getPositiveLocations(apiurl, queryStr, "Worldwide"),
+    getPositiveLocations(apiurl, queryStr, "USA"),
+    getLocationPrevalence(apiurl, queryStr, location)
   ]).pipe(
-    map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev, longitudinal, longitudinalSublineages]) => {
-      // map(([dateUpdated, locations, sublineages, longitudinal, longitudinalSublineages, locPrev, countries, states, byCountry, mutations, mutationDetails, mutationsByLineage]) => {
-      // const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
-
+    map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev, longitudinal, longitudinalSublineages, countries, states, choroData]) => {
       // attach names to cum prevalences
       locPrev.forEach(d => {
         const filtered = locations.filter(loc => loc.id === d.location_id);
@@ -446,9 +442,9 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
         longitudinal: longitudinal[0]["data"],
         longitudinalSublineages: longitudinalSublineages.longitudinal,
         lineagesByDay: longitudinalSublineages.streamgraph,
-        // byCountry: byCountry,
-        // countries: countries,
-        // states: states,
+        choroData: choroData,
+        countries: countries,
+        states: states,
         md: md,
         mutations: characteristicMuts,
         mutationDetails: mutationDetails,

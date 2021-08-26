@@ -677,12 +677,12 @@ export default {
           this.lineagesByDay = results.lineagesByDay;
           this.setSublineageColorScale();
 
-          
+
           // // recent data by country & countries with that lineage.
           // this.countries = results.countries;
           // this.states = results.states;
-          // this.choroData = results.byCountry;
-          // this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
+          this.choroData = results.choroData;
+          this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
 
           // characteristic mutations
           this.mutations = results.mutations;
