@@ -184,13 +184,13 @@ export default Vue.extend({
         .on("dblclick", this.resetZoom);
     },
     setDims() {
-        const svgContainer = document.getElementById('most-recent-lineages');
-        let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
-        const pageContainer = document.getElementById('location-report')
-        let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
-        const idealWidth = (maxWidth - containerWidth) * 0.95;
+      const svgContainer = document.getElementById('most-recent-lineages');
+      let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
+      const pageContainer = document.getElementById('location-report')
+      let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
+      const idealWidth = (maxWidth - containerWidth) * 0.95;
 
-        this.width = this.setWidth ? this.setWidth : idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
+      this.width = this.setWidth ? this.setWidth : idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
 
       this.numXTicks = this.width < 500 ? 2 : 5;
     },
@@ -365,71 +365,73 @@ export default Vue.extend({
         )
 
       // annotation for the most recent date
-      const recentSelector = this.chart
-        .selectAll(".recent-date-annotation")
-        .data([this.recentMin]);
+      if (this.recentMin) {
+        const recentSelector = this.chart
+          .selectAll(".recent-date-annotation")
+          .data([this.recentMin]);
 
-      const t1 = transition().duration(500);
+        const t1 = transition().duration(500);
 
-      recentSelector.join(
-        enter => {
-          const grp = enter.append("g")
-            .attr("class", "recent-date-annotation");
+        recentSelector.join(
+          enter => {
+            const grp = enter.append("g")
+              .attr("class", "recent-date-annotation");
 
-          grp.append("line")
-            .attr("class", "annotation-line")
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d))
-            .attr("y1", 0)
-            .attr("y2", this.height)
-            .style("stroke", "white")
-            .style("stroke-dasharray", "6,6");
+            grp.append("line")
+              .attr("class", "annotation-line")
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
+              .attr("y1", 0)
+              .attr("y2", this.height)
+              .style("stroke", "white")
+              .style("stroke-dasharray", "6,6");
 
-          grp.append("line")
-            .attr("class", "text-line")
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d))
-            .attr("y1", 0)
-            .attr("y2", -5)
-            .style("stroke", "#2c3e50")
+            grp.append("line")
+              .attr("class", "text-line")
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
+              .attr("y1", 0)
+              .attr("y2", -5)
+              .style("stroke", "#2c3e50")
 
-          grp.append("text")
-            .attr("x", d => this.x(d))
-            .attr("y", 0)
-            .attr("dy", -8)
-            .text(`${this.recentWindow} days`)
-            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
-            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-            .style("dominant-baseline", "text-top")
-            .style("font-size", "9pt");
-        },
-        update => {
-          update.select(".annotation-line")
-            .attr("y1", 0)
-            .attr("y2", this.height)
-            .transition(t1)
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d));
+            grp.append("text")
+              .attr("x", d => this.x(d))
+              .attr("y", 0)
+              .attr("dy", -8)
+              .text(`${this.recentWindow} days`)
+              .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("dominant-baseline", "text-top")
+              .style("font-size", "9pt");
+          },
+          update => {
+            update.select(".annotation-line")
+              .attr("y1", 0)
+              .attr("y2", this.height)
+              .transition(t1)
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d));
 
-          update.select(".text-line")
-            .transition(t1)
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d))
+            update.select(".text-line")
+              .transition(t1)
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
 
-          update.select("text")
-            .text(`${this.recentWindow} days`)
-            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
-            .transition(t1)
-            .attr("x", d => this.x(d));
-        },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition()
-          .style("opacity", 1e-5)
-          .remove()
+            update.select("text")
+              .text(`${this.recentWindow} days`)
+              .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+              .transition(t1)
+              .attr("x", d => this.x(d));
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
         )
-      )
+      }
 
       this.chart
         .selectAll(".stacked-area-chart")
