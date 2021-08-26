@@ -265,7 +265,10 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <LineagesByLocation :data="lineagesByDay" :setWidth="width" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+        <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked"
+         :setWidth="width" :location="selectedLocation.label" :seqCounts="[]"
+         :colorScale="sublineageColorScale" :tooltipTotal="true"
+         :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
 
         <div class="d-flex flex-wrap justify-content-center mt-2">
           <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
@@ -543,6 +546,7 @@ export default {
       sublineagePrev: null,
       sublineageLongitudinalAll: null,
       sublineageLongitudinal: null,
+      sublineageTotalStacked: null,
       lineagesByDay: null,
       sublineageColorScale: null,
       sublineageColorPalette: [
@@ -705,6 +709,7 @@ export default {
           this.sublineageLongitudinalAll = results.longitudinalSublineages;
           // stream graph of lineages by day
           this.lineagesByDay = results.lineagesByDay;
+          this.sublineageTotalStacked = results.sublineageTotalStacked;
           this.setSublineageColorScale();
 
 
@@ -839,6 +844,7 @@ export default {
         this.sublineageLongitudinalAll = results.longitudinalSublineages;
         // stream graph of lineages by day
         this.lineagesByDay = results.lineagesByDay;
+        this.sublineageTotalStacked = results.sublineageTotalStacked;
         this.setSublineageColorScale();
 
         // cumulative totals for table

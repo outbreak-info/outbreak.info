@@ -438,7 +438,8 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
         dateUpdated: dateUpdated,
         locations: locations,
         locPrev: locPrev,
-        sublineagePrev: sublineagePrev,
+        sublineagePrev: sublineagePrev.data,
+        sublineageTotalStacked: sublineagePrev.stacked,
         longitudinal: longitudinal[0]["data"],
         longitudinalSublineages: longitudinalSublineages.longitudinal,
         lineagesByDay: longitudinalSublineages.streamgraph,
@@ -466,8 +467,16 @@ export function getSublineageTotals(apiurl, md, location) {
     return (getCumPrevalence(apiurl, queryStr, location, 0)).pipe(
       map(results => {
         // sort in descending order of frequency
-        results.sort((a,b) => b.lineage_count - a.lineage_count);
-        return (results)
+        results.sort((a, b) => b.lineage_count - a.lineage_count);
+        const stacked = results.map(d => {
+          const obj = {};
+          obj[d.mutation_string] = d.lineage_count
+          return (obj)
+        });
+        return ({
+          data: results,
+          stacked: Object.assign(...stacked)
+        })
       }),
       catchError(e => {
         console.log(`%c Error in getting sublineage cumulative prevalence data!`, "color: red");
@@ -583,7 +592,8 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
         lineagesByDay: longitudinalSublineages.streamgraph,
         byCountry: byLocation,
         locPrev: locPrev,
-        sublineagePrev: sublineagePrev
+        sublineagePrev: sublineagePrev.data,
+        sublineageTotalStacked: sublineagePrev.stacked
       })
     }),
     catchError(e => {

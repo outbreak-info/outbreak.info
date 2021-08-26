@@ -28,7 +28,11 @@
 
   <div ref="tooltip_streamgraph" class="tooltip-basic box-shadow" id="tooltip-streamgraph">
     <h5 id="lineage" class="my-1"></h5>
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center" v-if="tooltipTotal">
+      Total found:
+      <b id="proportion" class="ml-1"></b>
+    </div>
+    <div class="d-flex align-items-center" v-else>
       Prevalence in the last {{ recentWindow }} days:
       <b id="proportion" class="ml-1"></b>
     </div>
@@ -100,6 +104,10 @@ export default Vue.extend({
     plotTitle: {
       type: String,
       default: "Lineage prevalence over time"
+    },
+    tooltipTotal: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -270,12 +278,22 @@ export default Vue.extend({
         .text(key)
 
       const recentPrev = this.recentData[key];
-      if (recentPrev) {
-        ttip.select("#proportion")
-          .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+      if (this.tooltipTotal) {
+        if (recentPrev) {
+          ttip.select("#proportion")
+            .text(format(",")(recentPrev))
+        } else {
+          ttip.select("#proportion")
+            .text('')
+        }
       } else {
-        ttip.select("#proportion")
-          .text('Grouped into "other" category')
+        if (recentPrev) {
+          ttip.select("#proportion")
+            .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+        } else {
+          ttip.select("#proportion")
+            .text('Grouped into "other" category')
+        }
       }
 
       // fix location
