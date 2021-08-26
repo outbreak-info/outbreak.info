@@ -706,7 +706,7 @@ export default {
     setSublineageColorScale() {
       const lineageDomain = this.sublineagePrev
         .filter(d => d.lineage_count)
-        .map(d => d.pangolin_lineage)
+        .map(d => d.mutation_string)
         .slice(0, this.sublineageColorPalette.length);
 
       this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)

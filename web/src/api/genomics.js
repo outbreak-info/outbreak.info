@@ -492,7 +492,7 @@ export function getSublineagePrevalence(apiurl, md, location) {
             return values.map(value => {
               let obj = {};
               // calculate the percent total of that given day
-              obj[value.pangolin_lineage] = total ? value.lineage_count_rolling / total : 0;
+              obj[value.mutation_string] = total ? value.lineage_count_rolling / total : 0;
               return (obj)
             })
           })
@@ -541,7 +541,7 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
   // Check if the value exists within the curated list
   if (filtered.length === 1) {
     md = filtered[0];
-    queryStr =  buildQueryStr(lineageString, mutationString, md);
+    queryStr = buildQueryStr(lineageString, mutationString, md);
   } else {
     queryStr = buildQueryStr(lineageString, mutationString);
   }
@@ -992,13 +992,13 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
             let d = results[mutation_key]["results"];
             d.forEach(datum => {
               datum["dateTime"] = parseDate(datum.date);
+              datum["mutation_string"] = mutation_key;
             })
             return ({
               label: mutation_key,
               data: d
             });
           });
-        console.log(res)
         return ([].concat(...res));
       } else {
         Object.keys(results).forEach(mutation_key => {
