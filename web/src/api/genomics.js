@@ -356,8 +356,15 @@ export function getLocationBasics(apiurl) {
   )
 }
 
-export function buildQueryStr(lineageString, mutationString) {
+export function buildQueryStr(lineageString, mutationString, md = null) {
   var queryStr = "";
+  if (md) {
+    // curated sequences, which should contain an array of pangolin lineages to join
+    queryStr += `pangolin_lineage=${md.reportQuery.pango.join(" OR ")}`;
+    if (mutationString) {
+      queryStr += `&mutations=${mutationString.replace(",", " AND ")}`;
+    }
+  }
   if (lineageString) {
     queryStr += `pangolin_lineage=${lineageString}`;
   }
@@ -398,7 +405,7 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
   // pull out the sublineage queries
   if (filtered.length === 1) {
     md = filtered[0];
-    queryStr = `pangolin_lineage=${md.reportQuery.pango.join(" OR ")}`;
+    queryStr = buildQueryStr(lineageString, mutationString, md);
   } else {
     queryStr = buildQueryStr(lineageString, mutationString);
   }
@@ -407,10 +414,9 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
-    // getSublineageTotals(apiurl, md, location),
+    getSublineageTotals(apiurl, md, location),
     // getTemporalPrevalence(apiurl, location, queryStr, null),
     // getSublineagePrevalence(apiurl, md, location),
-
     // getPositiveLocations(apiurl, queryStr, "Worldwide"),
     // getPositiveLocations(apiurl, queryStr, "USA"),
     // getLocationPrevalence(apiurl, queryStr, location),
@@ -418,8 +424,7 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
     // getMutationDetails(apiurl, mutationString),
     // getMutationsByLineage(apiurl, mutationString)
   ]).pipe(
-    map(([dateUpdated, locations, locPrev]) => {
-      console.log(locPrev)
+    map(([dateUpdated, locations, locPrev, sublineagePrev]) => {
       // map(([dateUpdated, locations, sublineages, longitudinal, longitudinalSublineages, locPrev, countries, states, byCountry, mutations, mutationDetails, mutationsByLineage]) => {
       // const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
@@ -435,7 +440,7 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
         dateUpdated: dateUpdated,
         locations: locations,
         locPrev: locPrev,
-        // sublineages: sublineages,
+        sublineagePrev: sublineagePrev,
         // longitudinal: longitudinal,
         // longitudinalSublineages: longitudinalSublineages.longitudinal,
         // lineagesByDay: longitudinalSublineages.streamgraph,
@@ -457,12 +462,17 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
   )
 }
 
-
 export function getSublineageTotals(apiurl, md, location) {
+  const queryStr = `pangolin_lineage=${md.pango_descendants.join(",")}`;
   if (md) {
-    return (forkJoin(...md.pango_descendants.map(lineage => getCumSublineagePrevalence(apiurl, lineage, location)))).pipe(
+    return (getCumPrevalence(apiurl, queryStr, location, 0)).pipe(
       map(results => {
         return (results)
+      }),
+      catchError(e => {
+        console.log(`%c Error in getting sublineage cumulative prevalence data!`, "color: red");
+        console.log(e);
+        return ( of ([]));
       })
     )
   }
@@ -814,7 +824,6 @@ export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, ret
   })).pipe(
     pluck("data"),
     map(results => {
-      console.log(results)
       if (returnFlat) {
         let res = Object.keys(results).map(
           mutation_key => {
@@ -823,7 +832,7 @@ export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, ret
             const last = parseDate(d.last_detected);
 
             d["mutation_string"] = mutation_key;
-            d["id"] = location;
+            d["id"] = `${d.mutation_string.replace(/\./g, "-")}_${location}`;
             d["first_detected"] = first ? formatDateShort(first) : null;
             d["last_detected"] = last ? formatDateShort(last) : null;
             if (d.total_count >= totalThreshold) {
@@ -842,32 +851,6 @@ export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, ret
         })
         return (results)
       }
-    }),
-    catchError(e => {
-      console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
-}
-
-export function getCumSublineagePrevalence(apiurl, lineage, location) {
-  const queryStr = `pangolin_lineage=${lineage}`;
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = location == "Worldwide" || !location ?
-    `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}` :
-    `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&timestamp=${timestamp}`;
-  return from(axios.get(url, {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })).pipe(
-    pluck("data", "results"),
-    map(results => {
-      results["pangolin_lineage"] = lineage;
-      results["id"] = lineage.replace(/\./g, "_");
-      results["lineage_count_formatted"] = format(",")(results.lineage_count);
-      return (results)
     }),
     catchError(e => {
       console.log(`%c Error in getting recent local cumulative prevalence data for location ${location}!`, "color: red");

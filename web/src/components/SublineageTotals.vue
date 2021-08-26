@@ -140,6 +140,9 @@ export default Vue.extend({
       hideZeros: true,
       areZerosFiltered: false,
 
+      // variables
+      yVar: "mutation_string",
+
       // refs
       svg: null,
       // axes
@@ -202,7 +205,7 @@ export default Vue.extend({
 
       select(this.$refs.yAxis)
         .selectAll("text")
-        .filter(axis_label => axis_label == d.pangolin_lineage)
+        .filter(axis_label => axis_label == d[this.yVar])
         .style("opacity", 1);
 
       this.svg.select(`#${d.id}`)
@@ -234,7 +237,7 @@ export default Vue.extend({
       this.y = scaleBand()
         .paddingInner(paddingInner)
         .range([0, this.height - this.margin.top - this.margin.bottom])
-        .domain(this.processedData.map(d => d.pangolin_lineage));
+        .domain(this.processedData.map(d => d[this.yVar]));
 
       this.yAxis = axisLeft(this.y)
         .tickSizeOuter(0);
@@ -245,7 +248,7 @@ export default Vue.extend({
       const rectSelector =
         this.svg
         .selectAll(".lineage-group")
-        .data(this.processedData, d => d.pangolin_lineage);
+        .data(this.processedData, d => d[this.yVar]);
 
       rectSelector.join(
         enter => {
@@ -256,7 +259,7 @@ export default Vue.extend({
           grp.append("rect")
             .attr("class", "variant-total")
             .attr("x", d => this.x(0))
-            .attr("y", d => this.y(d.pangolin_lineage))
+            .attr("y", d => this.y(d[this.yVar]))
             .attr("height", d => this.y.bandwidth())
             .style("fill", this.fill)
             .style("fill-opacity", 0.05)
@@ -266,7 +269,7 @@ export default Vue.extend({
           grp.append("rect")
             .attr("class", "rect-by-lineage")
             .attr("x", d => this.x(0))
-            .attr("y", d => this.y(d.pangolin_lineage))
+            .attr("y", d => this.y(d[this.yVar]))
             .attr("height", d => this.y.bandwidth())
             .style("fill", this.fill)
             .attr("width", d => this.x(d.lineage_count) - this.x(0))
@@ -275,7 +278,7 @@ export default Vue.extend({
             .attr("class", "lineage-count-annotation")
             .attr("x", d => this.width - this.margin.left - this.margin.right)
             .attr("dx", 10)
-            .attr("y", d => this.y(d.pangolin_lineage) + this.y.bandwidth() / 2)
+            .attr("y", d => this.y(d[this.yVar]) + this.y.bandwidth() / 2)
             .text(d => d.lineage_count_formatted)
             .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
             .style("fill", this.fill)
@@ -287,7 +290,7 @@ export default Vue.extend({
             .attr("id", d => d.id + this.location)
 
           update.select(".variant-total")
-            .attr("y", d => this.y(d.pangolin_lineage))
+            .attr("y", d => this.y(d[this.yVar]))
             .attr("height", d => this.y.bandwidth())
             .attr("width", this.x(this.combinedTotal) - this.x(0))
 
@@ -295,7 +298,7 @@ export default Vue.extend({
             .attr("x", d => this.x(0))
             .transition().duration(250)
             .attr("width", d => this.x(d.lineage_count) - this.x(0))
-            .attr("y", d => this.y(d.pangolin_lineage))
+            .attr("y", d => this.y(d[this.yVar]))
             .attr("height", d => this.y.bandwidth())
 
           update.select(".lineage-count-annotation")
@@ -322,7 +325,7 @@ export default Vue.extend({
         .classed("pointer", true)
         .on("mousemove", d => this.tooltipOn(d))
         .on("mouseleave", () => this.tooltipOff())
-        .on("click", d => this.handleLineageClick(d.pangolin_lineage));
+        .on("click", d => this.handleLineageClick(d[this.yVar]));
     }
   },
   mounted() {

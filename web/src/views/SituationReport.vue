@@ -214,7 +214,7 @@
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN -->
-          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineages" v-if="sublineages && sublineages.length" />
+          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
 
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
@@ -525,7 +525,7 @@ export default {
       countries: null,
       states: null,
       additionalMutations: null,
-      sublineages: null,
+      sublineagePrev: null,
       sublineageLongitudinal: null,
       lineagesByDay: null,
       sublineageColorScale: null,
@@ -676,46 +676,46 @@ export default {
           const global = results.locPrev.filter(d => d.id == "Worldwide")
           this.totalLineage = global.length === 1 ? global[0].lineage_count_formatted : null;
 
-          // sublineages
-          this.sublineages = results.sublineages;
+          // sublineagePrev
+          this.sublineagePrev = results.sublineagePrev;
 
           // location prevalence
           this.locationTotals = results.locPrev;
 
-          // longitudinal data: prevalence over time
-          this.prevalence = results.longitudinal;
-          this.sublineageLongitudinal = results.longitudinalSublineages;
-          // stream graph of lineages by day
-          this.lineagesByDay = results.lineagesByDay;
-          this.setSublineageColorScale();
-
-
-          // recent data by country & countries with that lineage.
-          this.countries = results.countries;
-          this.states = results.states;
-          this.choroData = results.byCountry;
-          this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
-
-          this.mutations = results.mutations;
-
-          // Mutation details for queried mutations
-          this.additionalMutations = results.mutationDetails;
-
-          // Mutation distribution by lineage
-          this.mutationsByLineage = results.mutationsByLineage;
-
-          if (results.md) {
-            this.reportMetadata = results.md;
-            this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
-            this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
-          } else {
-            this.searchTerms = [this.searchTerms];
-          }
+          // // longitudinal data: prevalence over time
+          // this.prevalence = results.longitudinal;
+          // this.sublineageLongitudinal = results.longitudinalSublineages;
+          // // stream graph of lineages by day
+          // this.lineagesByDay = results.lineagesByDay;
+          // this.setSublineageColorScale();
+          //
+          //
+          // // recent data by country & countries with that lineage.
+          // this.countries = results.countries;
+          // this.states = results.states;
+          // this.choroData = results.byCountry;
+          // this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
+          //
+          // this.mutations = results.mutations;
+          //
+          // // Mutation details for queried mutations
+          // this.additionalMutations = results.mutationDetails;
+          //
+          // // Mutation distribution by lineage
+          // this.mutationsByLineage = results.mutationsByLineage;
+          //
+          // if (results.md) {
+          //   this.reportMetadata = results.md;
+          //   this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
+          //   this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
+          // } else {
+          //   this.searchTerms = [this.searchTerms];
+          // }
         })
       }
     },
     setSublineageColorScale() {
-      const lineageDomain = this.sublineages
+      const lineageDomain = this.sublineagePrev
         .filter(d => d.lineage_count)
         .map(d => d.pangolin_lineage)
         .slice(0, this.sublineageColorPalette.length);
@@ -818,7 +818,7 @@ export default {
         this.choroData = results.byCountry;
 
         // sublineage breakdown
-        this.sublineages = results.sublineages;
+        this.sublineagePrev = results.sublineagePrev;
 
       })
     },
