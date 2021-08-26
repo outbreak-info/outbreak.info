@@ -273,7 +273,7 @@
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage">
-        <h4 class="mb-0">Average daily {{reportName}} prevalence by lineage</h4>
+        <h4 class="mb-0">Average daily lineage prevalence within {{reportName}}</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
         <div id="location-buttons" class="d-flex flex-wrap">
           <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
@@ -282,7 +282,7 @@
           </button>
         </div>
         <!-- <ReportSublineagePrevalence :data="sublineagePrevalence" :mutationName="reportName" :location="selectedLocation.label" /> -->
-        <!-- <ReportSublineagePercentage :data="sublineagePrevalence" :mutationName="reportName" :location="selectedLocation.label" /> -->
+        <LineagesByLocation :data="lineagesByDay" :setWidth="1200" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" />
         <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" />
       </section>
 
@@ -380,6 +380,10 @@ import Vue from "vue";
 import uniq from "lodash/uniq";
 import isEqual from "lodash/isEqual";
 
+import {
+  scaleOrdinal
+} from "d3";
+
 import ReportResources from "@/components/ReportResources.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
 
@@ -447,6 +451,7 @@ export default {
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
     SublineageTotals: () => import( /* webpackPrefetch: true */ "@/components/SublineageTotals.vue"),
     ReportPrevalenceOverlay: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceOverlay.vue"),
+    LineagesByLocation: () => import( /* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
   },
   props: {
     alias: String,
@@ -537,6 +542,30 @@ export default {
       states: null,
       sublineages: null,
       sublineageLongitudinal: null,
+      lineagesByDay: null,
+      sublineageColorScale: null,
+      sublineageColorPalette: [
+        "#4E79A7", // dk blue
+        "#f28e2b", // orange
+        "#59a14f", // green
+        "#e15759", // red
+        "#499894", // teal
+        "#B6992D", // dk yellow
+        "#D37295", // dk pink
+        "#B07AA1", // dk purple
+        "#9D7660", // brown
+        "#aecBe8", // lt blue
+        "#FFBE7D", // lt. orange
+        "#8CD17D", // lt. green
+        "#FF9D9A", // lt. red
+        "#86BCB6", // lt. teal
+        "#F1CE63", // yellow
+        "#FABFD2", // lt. pink,
+        "#D4A6C8", // lt. purple
+        "#D7B5A6", // lt. brown
+        "#bcbd22", // puce
+        "#79706E", // grey
+      ],
       locationTotals: null,
       totalLineage: null,
       newToday: null,
@@ -673,6 +702,10 @@ export default {
           // longitudinal data: prevalence over time
           this.prevalence = results.longitudinal;
           this.sublineageLongitudinal = results.longitudinalSublineages;
+          // stream graph of lineages by day
+          this.lineagesByDay = results.lineagesByDay;
+          this.setSublineageColorScale();
+
 
           // recent data by country & countries with that lineage.
           this.countries = results.countries;
@@ -698,6 +731,16 @@ export default {
           }
         })
       }
+    },
+    setSublineageColorScale() {
+      const lineageDomain = this.sublineages
+        .filter(d => d.lineage_count)
+        .map(d => d.pangolin_lineage)
+        .slice(0, this.sublineageColorPalette.length);
+
+      this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)
+        .domain(lineageDomain)
+        .unknown("#bab0ab");
     },
     removeLocation(idx) {
       this.currentLocs.splice(idx, 1);
@@ -782,6 +825,9 @@ export default {
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
         this.sublineageLongitudinal = results.longitudinalSublineages;
+        // stream graph of lineages by day
+        this.lineagesByDay = results.lineagesByDay;
+        this.setSublineageColorScale();
 
         // cumulative totals for table
         this.locationTotals = results.locPrev;

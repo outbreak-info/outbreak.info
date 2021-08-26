@@ -3,13 +3,13 @@
   <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
     <h5 class="m-0">Lineage prevalence over time</h5>
     <div class="d-flex justify-content-end">
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
-  </div>
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+      </button>
+    </div>
   </div>
 
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
@@ -21,7 +21,8 @@
   </svg>
 
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts && x" />
+  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab"
+    v-if="seqCounts && seqCounts.length && x" />
 
   <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
@@ -94,7 +95,8 @@ export default Vue.extend({
     recentWindow: String,
     location: String,
     recentMin: Date,
-    colorScale: Function
+    colorScale: Function,
+    setWidth: Number
   },
   computed: {
     title() {
@@ -182,12 +184,14 @@ export default Vue.extend({
         .on("dblclick", this.resetZoom);
     },
     setDims() {
-      const svgContainer = document.getElementById('most-recent-lineages');
-      let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
-      const pageContainer = document.getElementById('location-report')
-      let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
-      const idealWidth = (maxWidth - containerWidth)*0.95;
-      this.width = idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
+      console.log(this.setWidth)
+        const svgContainer = document.getElementById('most-recent-lineages');
+        let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
+        const pageContainer = document.getElementById('location-report')
+        let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
+        const idealWidth = (maxWidth - containerWidth) * 0.95;
+
+        this.width = this.setWidth ? this.setWidth : idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
 
       this.numXTicks = this.width < 500 ? 2 : 5;
     },

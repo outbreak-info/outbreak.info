@@ -432,7 +432,8 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
         locations: locations,
         sublineages: sublineages,
         longitudinal: longitudinal,
-        longitudinalSublineages: longitudinalSublineages,
+        longitudinalSublineages: longitudinalSublineages.longitudinal,
+        lineagesByDay: longitudinalSublineages.streamgraph,
         locPrev: locPrev,
         byCountry: byCountry,
         countries: countries,
@@ -469,11 +470,16 @@ export function getTemporalSublineagePrevalence(apiurl, location, lineage) {
   return (getTemporalPrevalence(apiurl, location, queryStr)).pipe(
     map(results => {
       if (results.length) {
+        results.forEach(d => {
+          d["pangolin_lineage"] = lineage;
+        })
         let obj = {};
         obj["data"] = results;
         obj["label"] = lineage;
-        obj["route"] = {pango: lineage};
-        // obj["query"] = queryStr; 
+        obj["route"] = {
+          pango: lineage
+        };
+        // obj["query"] = queryStr;
         return (obj)
       }
     }),
@@ -489,7 +495,47 @@ export function getSublineagePrevalence(apiurl, md, location) {
   if (md) {
     return (forkJoin(...md.pango_descendants.map(lineage => getTemporalSublineagePrevalence(apiurl, location, lineage)))).pipe(
       map(results => {
-        return (results.filter(d => d))
+        results = results.filter(d => d);
+        console.log(results)
+
+
+        const nested = nest()
+          .key(d => d.date)
+          .rollup(values => {
+            const total = sum(values, d => d.lineage_count_rolling);
+            // loop over the values for each day
+            return values.map(value => {
+              let obj = {};
+              // calculate the percent total of that given day
+              obj[value.pangolin_lineage] = total ? value.lineage_count_rolling / total : 0;
+              return (obj)
+            })
+          })
+          .entries(results.flatMap(d => d.data))
+          .map(d => {
+            return ({
+              date_time: parseDate(d.key),
+              ...Object.assign(...d.value)
+            })
+          })
+
+        // fill in the zeros, or the streamgraph will look busted
+        // and will only show the lineages appearing on the first date.
+        const lineageDomain = results.map(d => d.label);
+
+        nested.forEach(date_obj => {
+          lineageDomain.forEach(lineage => {
+            if (!Object.keys(date_obj).includes(lineage)) {
+              date_obj[lineage] = 0;
+            }
+          })
+        })
+
+        nested.sort((a, b) => a.date_time - b.date_time);
+        return ({
+          longitudinal: results,
+          streamgraph: nested
+        })
       }),
       catchError(e => {
         console.log("%c Error in getting prevalence of sublineages over time!", "color: red");
@@ -546,7 +592,8 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
       return ({
         locations: locations,
         longitudinal: longitudinal,
-        longitudinalSublineages: longitudinalSublineages,
+        longitudinalSublineages: longitudinalSublineages.longitudinal,
+        lineagesByDay: longitudinalSublineages.streamgraph,
         byCountry: byLocation,
         locPrev: locPrev,
         sublineages: sublineages
