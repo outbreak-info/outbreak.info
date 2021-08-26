@@ -21,7 +21,7 @@
     </div>
 
     <!-- SVGs -->
-    <div class="d-flex flex-column align-items-start mt-2">
+    <div class="d-flex flex-column align-items-start mt-2" id="report-prevalence-svg">
       <!-- TIME TRACE -->
       <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
         <defs>
@@ -98,7 +98,8 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    location: String
+    location: String,
+    setWidth: Number
   },
   components: {
     SequencingHistogram,
@@ -119,8 +120,8 @@ export default Vue.extend({
       margin: {
         top: 10,
         bottom: 40,
-        left: 70,
-        right: 70
+        left: 85,
+        right: 135
       },
       lengthThreshold: 5,
       CIColor: "#df4ab7",
@@ -151,10 +152,11 @@ export default Vue.extend({
     },
   },
   mounted() {
-    this.$nextTick(function() {
-      window.addEventListener("resize", this.debounceSetDims);
-    })
-
+    if (!this.setWidth) {
+      this.$nextTick(function() {
+        window.addEventListener("resize", this.debounceSetDims);
+      })
+    }
     // set initial dimensions for the plots.
     this.setDims();
     this.setupPlot();
@@ -168,19 +170,24 @@ export default Vue.extend({
       const mx = 0.7;
       const my = 0.9;
       const hwRatio = 0.525;
-      const svgContainer = document.getElementById('report-prevalence');
+      if (!this.setWidth) {
+        const svgContainer = document.getElementById('report-prevalence');
 
-      let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
-      maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
-      const maxHeight = window.innerHeight * my;
+        let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
+        maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
+        const maxHeight = window.innerHeight * my;
 
-      const idealHeight = hwRatio * maxWidth;
-      if (idealHeight <= maxHeight) {
-        this.height = idealHeight;
-        this.width = maxWidth;
+        const idealHeight = hwRatio * maxWidth;
+        if (idealHeight <= maxHeight) {
+          this.height = idealHeight;
+          this.width = maxWidth;
+        } else {
+          this.height = maxHeight;
+          this.width = this.height / this.hwRatio;
+        }
       } else {
-        this.height = maxHeight;
-        this.width = this.height / this.hwRatio;
+        this.width = this.setWidth;
+        this.height = hwRatio * this.width;
       }
 
       if (this.width < 600) {
@@ -361,14 +368,16 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.count-axis,
-.prevalence-axis {
-    font-size: 16px;
-    text {
-        fill: $grey-90;
+#report-prevalence-svg {
+    & .prevalence-axis,
+    & .mutation-axis {
+        font-size: 16pt !important;
+        text {
+            fill: $grey-90;
+        }
     }
-
 }
+
 .ci-legend {
     width: 15px;
     height: 15px;

@@ -65,10 +65,11 @@
       </svg>
 
       <!-- Histogram of sequencing counts -->
-      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts && seqCounts.length" />
+      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence"
+        v-if="seqCounts && seqCounts.length" />
 
       <!-- zoom btns -->
-      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}"  :class="{'hidden' : !epi.length}">
+      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}" :class="{'hidden' : !epi.length}">
         <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
           <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
         </button>
@@ -174,7 +175,8 @@ export default Vue.extend({
     seqCounts: Array,
     epi: Array,
     locationName: String,
-    locationID: String
+    locationID: String,
+    setWidth: Number
   },
   components: {
     DownloadReportData,
@@ -289,8 +291,9 @@ export default Vue.extend({
   },
   mounted() {
     this.$nextTick(function() {
-      window.addEventListener("resize", this.debounceSetDims);
-
+      if (!this.setWidth) {
+        window.addEventListener("resize", this.debounceSetDims);
+      }
       this.updateBrush();
     })
 
@@ -325,20 +328,25 @@ export default Vue.extend({
       const mx = 0.85;
       const my = 0.4;
       const hwRatio = 0.4;
-      const svgContainer = document.getElementById('location-report-prevalence');
+      if (!this.setWidth) {
+        const svgContainer = document.getElementById('location-report-prevalence');
 
-      let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
-      maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
-      const maxHeight = window.innerHeight * my;
+        let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
+        maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
+        const maxHeight = window.innerHeight * my;
 
 
-      const idealHeight = hwRatio * maxWidth;
-      if (idealHeight <= maxHeight) {
-        this.height = idealHeight;
-        this.width = maxWidth;
+        const idealHeight = hwRatio * maxWidth;
+        if (idealHeight <= maxHeight) {
+          this.height = idealHeight;
+          this.width = maxWidth;
+        } else {
+          this.height = maxHeight;
+          this.width = this.height / hwRatio;
+        }
       } else {
-        this.height = maxHeight;
-        this.width = this.height / hwRatio;
+        this.width = this.setWidth;
+        this.height = hwRatio * this.width;
       }
 
       if (this.width < 600) {

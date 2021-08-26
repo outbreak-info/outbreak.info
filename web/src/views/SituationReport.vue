@@ -252,7 +252,7 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" />
+        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" :setWidth="width" />
       </section>
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->
@@ -266,8 +266,8 @@
           </button>
         </div>
         <!-- <ReportSublineagePrevalence :data="sublineagePrevalence" :mutationName="reportName" :location="selectedLocation.label" /> -->
-        <LineagesByLocation :data="lineagesByDay" :setWidth="1200" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" />
-        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" />
+        <LineagesByLocation :data="lineagesByDay" :setWidth="width" :location="selectedLocation.label" :seqCounts="[]" :colorScale="sublineageColorScale" />
+        <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="[]" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :locationID="selectedLocation.id" :locationName="selectedLocation.label" />
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
@@ -297,7 +297,7 @@
               <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
             </div>
 
-            <ReportChoropleth report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" />
+            <ReportChoropleth report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
           </template>
 
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
@@ -363,6 +363,7 @@ import Vue from "vue";
 
 import uniq from "lodash/uniq";
 import isEqual from "lodash/isEqual";
+import debounce from "lodash/debounce";
 
 import {
   scaleOrdinal
@@ -490,6 +491,7 @@ export default {
       title: null,
       lastUpdated: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+      width: 800,
 
       // Changing locations
       queryLocation: null,
@@ -557,7 +559,11 @@ export default {
       mutationsByLineage: []
     }
   },
+  created: function() {
+    this.debounceSetDims = debounce(this.setDims, 150);
+  },
   mounted() {
+    this.setDims();
     this.queryLocation = findLocation;
     this.queryPangolin = findPangolin;
 
@@ -572,12 +578,18 @@ export default {
 
     // set URL for sharing, etc.
     this.$nextTick(function() {
+      window.addEventListener("resize", this.debounceSetDims);
+
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
     this.setupReport();
   },
   methods: {
+    setDims() {
+      const widthRatio = 0.9;
+      this.width = window.innerWidth * widthRatio;
+    },
     setLineageAndMutationStr() {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
       if (this.alias) {

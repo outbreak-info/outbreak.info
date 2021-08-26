@@ -118,14 +118,14 @@ export default Vue.extend({
       margin: {
         top: 18,
         bottom: 30,
-        left: 55,
-        right: 55
+        left: 85,
+        right: 135
       },
       marginHist: {
         top: 5,
         bottom: 10,
-        left: 55,
-        right: 55
+        left: 85,
+        right: 135
       },
       width: null,
       minWidth: 450,
@@ -460,7 +460,7 @@ export default Vue.extend({
 <style lang="scss">
 .lineages-by-location {
     .axis--x text {
-        font-size: 16pt;
+        font-size: 16pt !important;
     }
     .axis--y text {
         font-size: 9pt;
