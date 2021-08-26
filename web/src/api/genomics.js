@@ -431,7 +431,7 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
 
       // attach names to cum prevalences
       locPrev.forEach(d => {
-        const filtered = locations.filter(loc => loc.id === d.id);
+        const filtered = locations.filter(loc => loc.id === d.location_id);
         if (filtered.length === 1) {
           d["name"] = filtered[0].label;
         }
@@ -834,6 +834,7 @@ export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, ret
 
             d["mutation_string"] = mutation_key;
             d["id"] = `${d.mutation_string.replace(/\./g, "-")}_${location}`;
+            d["location_id"] = location;
             d["first_detected"] = first ? formatDateShort(first) : null;
             d["last_detected"] = last ? formatDateShort(last) : null;
             if (d.total_count >= totalThreshold) {
