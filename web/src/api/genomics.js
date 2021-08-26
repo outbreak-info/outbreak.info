@@ -419,14 +419,14 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
     getMutationsByLineage(apiurl, mutationString),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
     getSublineageTotals(apiurl, md, location),
-    // getTemporalPrevalence(apiurl, location, queryStr, null),
-    // getSublineagePrevalence(apiurl, md, location),
+    getTemporalPrevalence(apiurl, location, queryStr, null),
+    getSublineagePrevalence(apiurl, md, location),
     // getPositiveLocations(apiurl, queryStr, "Worldwide"),
     // getPositiveLocations(apiurl, queryStr, "USA"),
     // getLocationPrevalence(apiurl, queryStr, location),
 
   ]).pipe(
-    map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev]) => {
+    map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev, longitudinal, longitudinalSublineages]) => {
       // map(([dateUpdated, locations, sublineages, longitudinal, longitudinalSublineages, locPrev, countries, states, byCountry, mutations, mutationDetails, mutationsByLineage]) => {
       // const characteristicMuts = md && md.mutations && md.mutations.length && md.mutations.flatMap(Object.keys).length ? md.mutations : mutations;
 
@@ -443,9 +443,9 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
         locations: locations,
         locPrev: locPrev,
         sublineagePrev: sublineagePrev,
-        // longitudinal: longitudinal,
-        // longitudinalSublineages: longitudinalSublineages.longitudinal,
-        // lineagesByDay: longitudinalSublineages.streamgraph,
+        longitudinal: longitudinal[0]["data"],
+        longitudinalSublineages: longitudinalSublineages.longitudinal,
+        lineagesByDay: longitudinalSublineages.streamgraph,
         // byCountry: byCountry,
         // countries: countries,
         // states: states,
@@ -481,39 +481,12 @@ export function getSublineageTotals(apiurl, md, location) {
   return ( of ([]))
 }
 
-export function getTemporalSublineagePrevalence(apiurl, location, lineage) {
-  const queryStr = `pangolin_lineage=${lineage}`;
-  return (getTemporalPrevalence(apiurl, location, queryStr)).pipe(
-    map(results => {
-      if (results.length) {
-        results.forEach(d => {
-          d["pangolin_lineage"] = lineage;
-        })
-        let obj = {};
-        obj["data"] = results;
-        obj["label"] = lineage;
-        obj["route"] = {
-          pango: lineage
-        };
-        // obj["query"] = queryStr;
-        return (obj)
-      }
-    }),
-    catchError(e => {
-      console.log("%c Error in getting individual sublineage prevalence over time!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
-}
-
 export function getSublineagePrevalence(apiurl, md, location) {
   if (md) {
-    return (forkJoin(...md.pango_descendants.map(lineage => getTemporalSublineagePrevalence(apiurl, location, lineage)))).pipe(
+    const queryStr = `pangolin_lineage=${md.pango_descendants.join(",")}`;
+    return (getTemporalPrevalence(apiurl, location, queryStr)).pipe(
       map(results => {
         results = results.filter(d => d);
-        console.log(results)
-
 
         const nested = nest()
           .key(d => d.date)
@@ -1000,12 +973,12 @@ export function getPositiveLocations(apiurl, queryStr, location) {
   )
 }
 
-export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = false) {
+export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = false, returnFlat = true) {
   store.state.admin.reportloading = true;
   const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
   if (location == "Worldwide") {
-    url = `${apiurl}global-prevalence?${queryStr}&timestamp=${timestamp}`;
+    url = `${apiurl}prevalence-by-location?${queryStr}&timestamp=${timestamp}`;
   } else {
     url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&timestamp=${timestamp}`;
   }
@@ -1015,12 +988,28 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
       "Content-Type": "application/json"
     }
   })).pipe(
-    pluck("data", "results"),
+    pluck("data"),
     map(results => {
-      results.forEach(d => {
-        d["dateTime"] = parseDate(d.date);
-      })
-      return (results)
+      if (returnFlat) {
+        let res = Object.keys(results).map(
+          mutation_key => {
+            let d = results[mutation_key]["results"];
+            d.forEach(datum => {
+              datum["dateTime"] = parseDate(datum.date);
+            })
+            return ({
+              label: mutation_key,
+              data: d
+            });
+          });
+        console.log(res)
+        return ([].concat(...res));
+      } else {
+        Object.keys(results).forEach(mutation_key => {
+          results[mutation_key].sort((a, b) => a.pangolin_lineage < b.pangolin_lineage ? -1 : 1);
+        })
+        return (results)
+      }
     }),
     catchError(e => {
       console.log("%c Error in getting temporal data by location!", "color: red");

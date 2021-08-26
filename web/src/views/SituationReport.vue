@@ -670,14 +670,14 @@ export default {
           // location prevalence
           this.locationTotals = results.locPrev;
 
-          // // longitudinal data: prevalence over time
-          // this.prevalence = results.longitudinal;
-          // this.sublineageLongitudinal = results.longitudinalSublineages;
-          // // stream graph of lineages by day
-          // this.lineagesByDay = results.lineagesByDay;
-          // this.setSublineageColorScale();
-          //
-          //
+          // longitudinal data: prevalence over time
+          this.prevalence = results.longitudinal;
+          this.sublineageLongitudinal = results.longitudinalSublineages;
+          // stream graph of lineages by day
+          this.lineagesByDay = results.lineagesByDay;
+          this.setSublineageColorScale();
+
+          
           // // recent data by country & countries with that lineage.
           // this.countries = results.countries;
           // this.states = results.states;
