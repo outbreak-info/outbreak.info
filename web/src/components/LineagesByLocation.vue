@@ -277,11 +277,12 @@ export default Vue.extend({
       } else {
         if (this.includeToday) {
           const today = new Date();
-          this.maxDate = max(this.data, d => d.date_time);
-          xDomain = this.includeToday ? [min(this.data, d => d.date_time), today] : extent(this.data.map(d => d.date_time));
+          this.maxDate = max(this.data, d => d[this.xVariable]);
+          xDomain = [min(this.data, d => d[this.xVariable]), today];
         } else {
           xDomain = extent(this.data.map(d => d[this.xVariable]));
         }
+
         if (this.xMin && this.xMin < xDomain[1]) {
           xDomain[0] = this.xMin;
         }
@@ -294,7 +295,6 @@ export default Vue.extend({
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
-      console.log(this.x.domain())
 
       this.xAxis = axisBottom(this.x)
         .tickSizeOuter(0)
@@ -345,6 +345,9 @@ export default Vue.extend({
       selectAll(".stacked-bar-chart")
         .style("fill-opacity", 0.2);
 
+      this.chart.selectAll(".no-data")
+        .style("fill-opacity", 0);
+
       // turn on the selected region
       this.chart.select(`#area_${key.replace(/\./g, "-")}`)
         .style("fill-opacity", 1);
@@ -383,6 +386,9 @@ export default Vue.extend({
         .style("display", "block");
     },
     tooltipOff() {
+      this.chart.selectAll(".no-data")
+        .style("fill-opacity", 1);
+
       this.chart
         .selectAll(".stacked-area-chart")
         .style("stroke", "#555")

@@ -22,11 +22,13 @@
       </div>
 
       <!-- legend: confidence interval -->
-      <div class="d-flex">
-        <div class="ci-legend mr-2" :style="{background: CIColor}">
-
-        </div>
+      <div class="d-flex align-items-center">
+        <div class="ci-legend mr-2" :style="{background: CIColor}"></div>
         <small class="text-muted">95% confidence interval</small>
+        <svg width="15" height="15" class="ml-4 mr-2">
+          <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
+        </svg>
+        <small class="text-muted">missing recent data</small>
       </div>
     </div>
 
@@ -38,6 +40,11 @@
           <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
             <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
           </marker>
+
+          <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+            <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
+          </pattern>
         </defs>
 
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
@@ -52,8 +59,8 @@
             sequencing data</text>
         </g>
         <g id="weird-last values" :hidden="data.length < lengthThreshold">
-          <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
-          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
+          <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing delays</text>
+          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
         <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
       </svg>
@@ -96,6 +103,7 @@ import {
   timeParse,
   timeFormat,
   event,
+  min,
   max,
   format,
   line,
@@ -132,6 +140,10 @@ export default Vue.extend({
     xmin: String,
     xmax: String,
     setWidth: Number,
+    includeToday: {
+      type: Boolean,
+      default: true
+    },
     routeName: {
       type: String,
       default: "MutationReport"
@@ -172,6 +184,7 @@ export default Vue.extend({
       x: null,
       y: scaleLinear(),
       xAxis: null,
+      maxDate: null,
       yAxis: null,
       numXTicks: 5,
       numYTicks: 6,
@@ -288,7 +301,13 @@ export default Vue.extend({
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
       } else {
-        xDomain = extent(this.data.map(d => d[this.xVariable]));
+        if (this.includeToday) {
+          const today = new Date();
+          this.maxDate = max(this.data, d => d[this.xVariable]);
+          xDomain = [min(this.data, d => d[this.xVariable]), today];
+        } else {
+          xDomain = extent(this.data.map(d => d[this.xVariable]));
+        }
 
         if (this.xMin && this.xMin < xDomain[1]) {
           xDomain[0] = this.xMin;
@@ -376,6 +395,38 @@ export default Vue.extend({
       if (this.plottedData) {
         this.updateScales();
 
+        // hash to highlight the gap between today
+        if (this.includeToday) {
+          const noDataSelector = this.chart
+            .selectAll(".no-data")
+            .data([0]);
+
+          noDataSelector.join(
+            enter => {
+              enter.append("rect")
+                .attr("class", "no-data")
+                .attr("x", this.x(this.maxDate))
+                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+            },
+            update => {
+              update
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+                .transition(100)
+                .attr("x", this.x(this.maxDate))
+                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+            },
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+        }
 
         const CISelector = this.chart
           .selectAll(".confidence-interval")
@@ -555,6 +606,12 @@ export default Vue.extend({
 }
 
 .ci-legend {
+    width: 15px;
+    height: 15px;
+    opacity: 0.3;
+}
+
+.no-data-legend {
     width: 15px;
     height: 15px;
     opacity: 0.3;

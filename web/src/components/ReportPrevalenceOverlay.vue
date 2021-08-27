@@ -37,6 +37,10 @@
         <div class="ci-legend mr-2" :style="{background: '#999'}">
         </div>
         <small class="text-muted">95% confidence interval</small>
+        <svg width="15" height="15" class="ml-4 mr-2">
+          <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
+        </svg>
+        <small class="text-muted">missing recent data</small>
       </div>
 
       <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="svg" :name="title">
@@ -44,6 +48,11 @@
           <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
             <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
           </marker>
+
+          <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+            <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
+          </pattern>
         </defs>
 
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="mutation-axis axis--x" ref="xAxis"></g>
@@ -59,8 +68,8 @@
             sequencing data</text>
         </g> -->
         <g id="weird-last values" :hidden="data && data.length < lengthThreshold">
-          <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
-          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
+          <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing delays</text>
+          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
       </svg>
 
@@ -181,6 +190,10 @@ export default Vue.extend({
     xmax: String,
     setColorScale: Function,
     mutationName: String,
+    includeToday: {
+      type: Boolean,
+      default: true
+    },
     routeName: {
       type: String,
       default: "LocationReport"
@@ -265,6 +278,7 @@ export default Vue.extend({
       xBandwidth: 1,
       xMin: null,
       xMax: null,
+      maxDate: null,
       xAxis: null,
       yAxis: null,
       yEpiAxis: null,
@@ -528,9 +542,24 @@ export default Vue.extend({
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
       } else {
-        const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
+
         const mutExtent = extent(this.data.flatMap(d => d.data).map(d => d[this.xVariable]));
-        xDomain = extent(epiExtent.concat(mutExtent));
+        let minDate;
+        if (this.epi && this.epi.length) {
+          const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
+          this.maxDate = Math.max(epiExtent[1], mutExtent[1]);
+          minDate = Math.min(epiExtent[0], mutExtent[0]);
+        } else {
+          this.maxDate = mutExtent[1];
+          minDate = mutExtent[0];
+        }
+
+        if (this.includeToday) {
+          const today = new Date();
+          xDomain = [minDate, today];
+        } else {
+          xDomain = [minDate, this.maxDate];
+        }
 
         if (this.xMin && this.xMin < xDomain[1]) {
           xDomain[0] = this.xMin;
@@ -700,11 +729,48 @@ export default Vue.extend({
             exit
             .transition()
             .style("opacity", 1e-5)
+            .style("opacity", 1e-5)
             .remove()
           )
         )
 
         // MUTATION TRACES
+        // hashed area to highlight the gap between today
+        if (this.includeToday) {
+          const noDataSelector = this.chart
+            .selectAll(".no-data")
+            .data([0]);
+
+          // console.log(this.maxDate)
+          // console.log(this.x)
+
+          noDataSelector.join(
+            enter => {
+              enter.append("rect")
+                .attr("class", "no-data")
+                .attr("x", this.x(this.maxDate))
+                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+            },
+            update => {
+              update
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+                .transition(100)
+                .attr("x", this.x(this.maxDate))
+                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+            },
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+        }
+
         // calculate the end point labels
         // Create nodes of the text labels for force direction
         const labelHeight = 18;
