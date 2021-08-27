@@ -55,6 +55,7 @@
           <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
+        <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
       </svg>
 
       <SequencingHistogram :data="data" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="mutationName" className="prevalence-curve prevalence-curve-counts" />
@@ -93,6 +94,7 @@ import {
   extent,
   brushX,
   timeParse,
+  timeFormat,
   event,
   max,
   format,
@@ -129,7 +131,11 @@ export default Vue.extend({
     location: String,
     xmin: String,
     xmax: String,
-    setWidth: Number
+    setWidth: Number,
+    routeName: {
+      type: String,
+      default: "MutationReport"
+    }
   },
   components: {
     SequencingHistogram,
@@ -192,6 +198,18 @@ export default Vue.extend({
       this.setXScale();
       this.updatePlot();
     },
+    xmin: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmax: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    }
   },
   mounted() {
     if (!this.setWidth) {
@@ -286,9 +304,6 @@ export default Vue.extend({
         .domain(xDomain);
 
       this.plottedData = cloneDeep(this.data);
-      console.log(this.plottedData)
-      console.log(this.xVariable)
-      console.log(xDomain)
 
       this.plottedData = this.plottedData.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
     },
@@ -456,48 +471,53 @@ export default Vue.extend({
         this.zoomAllowed = false;
         this.updatePlot();
 
-
         // update route
         const queryParams = this.$route.query;
 
-        this.$router.push({
-          name: "LocationReport",
-          params: {
-            disableScroll: true
-          },
-          query: {
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-            xmin: timeFormat("%Y-%m-%d")(newMin),
-            xmax: timeFormat("%Y-%m-%d")(newMax)
-          }
-        })
+        if (this.routeName == "MutationReport") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: this.routeName,
+            params: {
+              disableScroll: true,
+              alias: params.alias
+            },
+            query: {
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        }
       }
     },
     resetZoom() {
       this.brushRef.call(this.brush.move, null);
       const queryParams = this.$route.query;
+      const params = this.$route.params;
 
       this.xMin = null;
       this.xMax = null;
       this.setXScale();
 
-      this.$router.push({
-        name: "LocationReport",
-        params: {
-          disableScroll: true
-        },
-        query: {
-          loc: queryParams.loc,
-          muts: queryParams.muts,
-          pango: queryParams.pango,
-          variant: queryParams.variant,
-          selected: queryParams.selected
-        }
-      })
+      if (this.routeName == "MutationReport") {
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected
+          }
+        })
+      }
 
       this.updatePlot();
     },

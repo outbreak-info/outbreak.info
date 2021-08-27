@@ -181,6 +181,10 @@ export default Vue.extend({
     xmax: String,
     setColorScale: Function,
     mutationName: String,
+    routeName: {
+      type: String,
+      default: "LocationReport"
+    },
     onlyTotals: {
       type: Boolean,
       default: true
@@ -296,6 +300,18 @@ export default Vue.extend({
       this.setXScale();
       this.updatePlot();
     },
+    xmin: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmax: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    }
   },
   mounted() {
     this.$nextTick(function() {
@@ -395,21 +411,41 @@ export default Vue.extend({
         // update route
         const queryParams = this.$route.query;
 
-        this.$router.push({
-          name: "LocationReport",
-          params: {
-            disableScroll: true
-          },
-          query: {
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-            xmin: timeFormat("%Y-%m-%d")(newMin),
-            xmax: timeFormat("%Y-%m-%d")(newMax)
-          }
-        })
+        if (this.routeName == "MutationReport") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: this.routeName,
+            params: {
+              disableScroll: true,
+              alias: params.alias
+            },
+            query: {
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        }
+        if (this.routeName == "LocationReport") {
+          this.$router.push({
+            name: "LocationReport",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              variant: queryParams.variant,
+              selected: queryParams.selected,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax)
+            }
+          })
+        }
       }
     },
     resetZoom() {
@@ -421,19 +457,37 @@ export default Vue.extend({
       this.xMax = null;
       this.setXScale();
 
-      this.$router.push({
-        name: "LocationReport",
-        params: {
-          disableScroll: true
-        },
-        query: {
-          loc: queryParams.loc,
-          muts: queryParams.muts,
-          pango: queryParams.pango,
-          variant: queryParams.variant,
-          selected: queryParams.selected
-        }
-      })
+      if (this.routeName == "MutationReport") {
+        const params = this.$route.params;
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected
+          }
+        })
+      }
+      if (this.routeName == "LocationReport") {
+        this.$router.push({
+          name: "LocationReport",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected
+          }
+        })
+      }
 
       this.updatePlot();
     },
