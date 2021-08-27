@@ -5,8 +5,8 @@
   <div>
     <div class="d-flex align-items-center my-4 w-100">
       <div>
-        <button type="submit" class="btn btn-outline-secondary mx-5"  @click="clearQuery">Clear selection</button>
-        <button :disabled="!formValid" type="submit" class="btn btn-accent"  @click="submitQuery">Go</button>
+        <button type="submit" class="btn btn-outline-secondary mx-5" @click="clearQuery">Clear selection</button>
+        <button :disabled="!formValid" type="submit" class="btn btn-accent" @click="submitQuery">Go</button>
       </div>
 
     </div>
@@ -43,16 +43,35 @@ export default Vue.extend({
     },
     submitQuery() {
       this.$emit("exit", true);
+      const routeQuery = this.$route.query;
 
       this.submitCount += 1;
-
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          pango: this.selectedLineage,
-          muts: this.selectedMutations.map(d => d.mutation)
-        }
-      });
+      console.log(this.selectedLineage)
+      if (this.selectedLineage.alias) {
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: this.selectedLineage.name
+          },
+          query: {
+            muts: this.selectedMutations.map(d => d.mutation),
+            loc: routeQuery.loc,
+            overlay: routeQuery.overlay,
+            selected: routeQuery.selected
+          }
+        });
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            pango: this.selectedLineage.name,
+            muts: this.selectedMutations.map(d => d.mutation),
+            loc: routeQuery.loc,
+            overlay: routeQuery.overlay,
+            selected: routeQuery.selected
+          }
+        });
+      }
     }
   },
   data() {

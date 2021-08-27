@@ -975,7 +975,7 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
       const keys = Object.keys(hits);
       let results;
 
-      if(returnFlat) {
+      if (returnFlat) {
         results = keys.map(key => {
           hits[key]["results"].forEach(d => {
             d["proportion_formatted"] = formatPercent(d.proportion);
@@ -986,12 +986,12 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
             d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
             d["mutation_string"] = key;
           })
-          return(hits[key]["results"])
+          return (hits[key]["results"])
         })
-          return(results.flatMap(d => d))
+        return (results.flatMap(d => d))
       } else {
 
-      return (hits)
+        return (hits)
       }
     }),
     catchError(e => {
@@ -1005,7 +1005,7 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
   // }
 }
 
-export function getPositiveLocations(apiurl, queryStr, location, returnFlat=true) {
+export function getPositiveLocations(apiurl, queryStr, location, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
   if (location == "Worldwide") {
@@ -1021,19 +1021,19 @@ export function getPositiveLocations(apiurl, queryStr, location, returnFlat=true
   })).pipe(
     pluck("data"),
     map(hits => {
-      if(returnFlat){
+      if (returnFlat) {
         const keys = Object.keys(hits);
-        if(keys.length > 1){
-        const results = keys.map(key =>{
-          return({
-            mutation_string:key,
-            names: hits[key]["results"]["names"]
-          });
-        })
-      } else {
-        return(hits[keys[0]]["results"]["names"])
+        if (keys.length > 1) {
+          const results = keys.map(key => {
+            return ({
+              mutation_string: key,
+              names: hits[key]["results"]["names"]
+            });
+          })
+        } else {
+          return (hits[keys[0]]["results"]["names"])
+        }
       }
-    }
       return hits
     }),
     catchError(e => {
@@ -1219,6 +1219,11 @@ export function findPangolin(apiurl, queryString) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const url = `${apiurl}lineage?name=*${queryString}*&timestamp=${timestamp}`;
 
+  const vocs = CURATED.filter(d => d.who_name).map(d => ({
+    name: d.who_name,
+    alias: true
+  }))
+
   return from(
     axios.get(url, {
       headers: {
@@ -1231,6 +1236,8 @@ export function findPangolin(apiurl, queryString) {
       results.forEach(d => {
         d.name = d.name.toUpperCase();
       })
+      const filteredVocs = vocs.filter(d => d.name.toLowerCase().includes(queryString.toLowerCase()));
+      results = results.concat(filteredVocs);
 
       return (results)
     }),

@@ -513,6 +513,14 @@ export default {
       } else {
         this.updateLocations();
       }
+    },
+    alias: function(newVal, oldVal) {
+      if (newVal!= oldVal) {
+        this.newPangolin = null;
+        this.lineageName = null;
+        this.reportMetadata = null;
+        this.setupReport();
+      }
     }
   },
   data() {
