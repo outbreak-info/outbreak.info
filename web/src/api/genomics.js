@@ -954,7 +954,7 @@ export function getAllLocationPrevalence(apiurl, mutation, location, ndays = nul
   ))
 }
 
-export function getLocationPrevalence(apiurl, queryStr, location, ndays = null) {
+export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
 
   let url;
@@ -970,17 +970,29 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null) 
       "Content-Type": "application/json"
     }
   })).pipe(
-    pluck("data", "results"),
-    map(results => {
-      results.forEach(d => {
-        d["proportion_formatted"] = formatPercent(d.proportion);
-        // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
-        d["date_last_detected"] = d.date;
-        delete d.date;
-        // fixes the Georgia (state) / Georgia (country) problem
-        d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
-      })
-      return (results)
+    pluck("data"),
+    map(hits => {
+      const keys = Object.keys(hits);
+      let results;
+
+      if(returnFlat) {
+        results = keys.map(key => {
+          hits[key]["results"].forEach(d => {
+            d["proportion_formatted"] = formatPercent(d.proportion);
+            // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
+            d["date_last_detected"] = d.date;
+            delete d.date;
+            // fixes the Georgia (state) / Georgia (country) problem
+            d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
+            d["mutation_string"] = key;
+          })
+          return(hits[key]["results"])
+        })
+          return(results.flatMap(d => d))
+      } else {
+
+      return (hits)
+      }
     }),
     catchError(e => {
       console.log("%c Error in getting recent prevalence data by country!", "color: red");
@@ -993,7 +1005,7 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null) 
   // }
 }
 
-export function getPositiveLocations(apiurl, queryStr, location) {
+export function getPositiveLocations(apiurl, queryStr, location, returnFlat=true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
   if (location == "Worldwide") {
@@ -1007,9 +1019,22 @@ export function getPositiveLocations(apiurl, queryStr, location) {
       "Content-Type": "application/json"
     }
   })).pipe(
-    pluck("data", "results", "names"),
-    map(results => {
-      return results
+    pluck("data"),
+    map(hits => {
+      if(returnFlat){
+        const keys = Object.keys(hits);
+        if(keys.length > 1){
+        const results = keys.map(key =>{
+          return({
+            mutation_string:key,
+            names: hits[key]["results"]["names"]
+          });
+        })
+      } else {
+        return(hits[keys[0]]["results"]["names"])
+      }
+    }
+      return hits
     }),
     catchError(e => {
       console.log("%c Error in getting list of positive country names!", "color: red");

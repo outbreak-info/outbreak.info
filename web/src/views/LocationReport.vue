@@ -593,7 +593,6 @@ export default {
       if (this.muts) {
         if (typeof(this.muts) == "string") {
           const mutations = this.muts.split(" AND ");
-
           tracked.push({
             type: "mutation",
             label: this.muts,

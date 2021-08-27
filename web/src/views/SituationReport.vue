@@ -742,8 +742,8 @@ export default {
 
 
           // // recent data by country & countries with that lineage.
-          // this.countries = results.countries;
-          // this.states = results.states;
+          this.countries = results.countries;
+          this.states = results.states;
           this.choroData = results.choroData;
           this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
 
