@@ -789,23 +789,23 @@ export function getCumPrevalences(apiurl, queryStr, locations, totalThreshold) {
 // Loops over queries to return the cumulative prevalence for a particular location
 // Used in the Location Report tables for custom mutations.
 export function getCumPrevalenceQueryLoop(apiurl, queries, location, totalThreshold) {
-  if(queries.length){
-  return forkJoin(...queries.map(queryStr => getCumPrevalence(apiurl, queryStr, location, totalThreshold))).pipe(
-    map(results => {
-      // flatten from array of arrays with single object to a single array of objects.
-      results = results.flatMap(d => d);
+  if (queries.length) {
+    return forkJoin(...queries.map(queryStr => getCumPrevalence(apiurl, queryStr, location, totalThreshold))).pipe(
+      map(results => {
+        // flatten from array of arrays with single object to a single array of objects.
+        results = results.flatMap(d => d);
 
-      return (results)
-    }),
-    catchError(e => {
-      console.log("%c Error in getting recent local cumulative prevalence data for all queries!", "color: red");
-      console.log(e);
-      return ( of ([]));
-    })
-  )
-} else {
-  return(of([]))
-}
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in getting recent local cumulative prevalence data for all queries!", "color: red");
+        console.log(e);
+        return ( of ([]));
+      })
+    )
+  } else {
+    return ( of ([]))
+  }
 }
 
 
@@ -1532,20 +1532,16 @@ function reportIDSorter(a) {
 // Used in Location Report Table
 export function getLocationTable(apiurl, location, mutations, totalThreshold) {
   store.state.genomics.locationLoading3 = true;
-  console.log(mutations)
   const pangos = mutations.filter(d => d.type && d.type == "pango").map(d => d.qParam);
   const vocs = mutations.map(d => d.bulkQuery);
   const pangoQuery = `pangolin_lineage=${pangos.concat(vocs).filter(d => d).join(",")}`;
 
   const variantQueries = mutations.filter(d => d.type && d.type == "variant" || d.type == "mutation").map(d => d.query);
-  console.log(variantQueries)
 
   return forkJoin([getCumPrevalence(apiurl, pangoQuery, location, totalThreshold),
     getCumPrevalenceQueryLoop(apiurl, variantQueries, location, totalThreshold)
   ]).pipe(
     map(([lineages, variants]) => {
-      console.log(lineages)
-      console.log(variants)
       let results = lineages.concat(variants);
       // add in the labels and the type (VOC, VOI, etc.)
       results.forEach(d => {

@@ -133,7 +133,6 @@ export default {
           mutation_string: this.selectedMutations.map(d => d.mutation).join(" AND ")
         })
       }
-      console.log(this.muts)
 
       this.submitCount += 1;
     },
