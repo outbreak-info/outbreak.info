@@ -79,6 +79,7 @@ import {
   transition,
   event,
   brushX,
+  timeParse,
   extent,
   max,
   format
@@ -102,6 +103,8 @@ export default Vue.extend({
     colorScale: Function,
     setWidth: Number,
     mutationName: String,
+    xmin: String,
+    xmax: String,
     plotTitle: {
       type: String,
       default: "Lineage prevalence over time"
@@ -122,10 +125,14 @@ export default Vue.extend({
   },
   watch: {
     width: function() {
+      this.setXScale();
       this.updateBrush();
       this.updatePlot();
     },
     data: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
       this.updatePlot();
     }
   },
@@ -212,6 +219,10 @@ export default Vue.extend({
       this.numXTicks = this.width < 500 ? 2 : 5;
     },
     setupPlot() {
+      // read in the limits from the route params
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+
       this.svg = select(this.$refs.svg);
       this.legend = select(this.$refs.legend);
       this.chart = select(this.$refs.chart);
@@ -221,13 +232,32 @@ export default Vue.extend({
         .x(d => this.x(d.data.date_time))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]));
+
+      this.setXScale();
     },
-    updateScales() {
+    setXScale() {
+      let xDomain;
+
+      if (this.xMin && this.xMax && this.xMin < this.xMax) {
+        xDomain = [this.xMin, this.xMax];
+      } else {
+        xDomain = extent(this.data.map(d => d[this.xVariable]));
+
+        if (this.xMin && this.xMin < xDomain[1]) {
+          xDomain[0] = this.xMin;
+        }
+
+        if (this.xMax && this.xMax > xDomain[0]) {
+          xDomain[1] = this.xMax;
+        }
+      }
+
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d.date_time)))
+        .domain(xDomain)
         .clamp(true);
-
+    },
+    updateScales() {
       this.y = this.y
         // .range([0, this.height - this.margin.top - this.margin.bottom])
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -346,8 +376,26 @@ export default Vue.extend({
 
     },
     resetZoom() {
-      this.x = this.x.domain(extent(this.data.map(d => d.date_time)));
       this.brushRef.call(this.brush.move, null);
+      const queryParams = this.$route.query;
+
+      this.xMin = null;
+      this.xMax = null;
+      this.setXScale();
+
+      this.$router.push({
+        name: "LocationReport",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          loc: queryParams.loc,
+          muts: queryParams.muts,
+          pango: queryParams.pango,
+          variant: queryParams.variant,
+          selected: queryParams.selected
+        }
+      })
       this.updatePlot();
     },
     enableZoom() {
