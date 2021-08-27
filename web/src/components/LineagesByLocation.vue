@@ -486,7 +486,10 @@ export default Vue.extend({
               .attr("fill", ({
                 key
               }) => this.colorScale(key))
-              .attr("class", "stacked-area-chart pointer")
+              .attr("class", "stacked-area-chart")
+              .classed("pointer", ({
+                  key
+                }) => key.toLowerCase() != "other")
               .attr("id", ({
                 key
               }) => `area_${key.replace(/\./g, "-")}`)
@@ -593,16 +596,18 @@ export default Vue.extend({
         .on("mouseleave", this.tooltipOff);
     },
     route2Mutation(d) {
-      const queryParams = this.$route.query;
-      const selected = this.routeName == "LocationReport" ? queryParams.loc : queryParams.selected;
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          pango: d,
-          loc: queryParams.loc,
-          selected: selected
-        }
-      })
+      if (d.toLowerCase() != "other") {
+        const queryParams = this.$route.query;
+        const selected = this.routeName == "LocationReport" ? queryParams.loc : queryParams.selected;
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            pango: d,
+            loc: queryParams.loc,
+            selected: selected
+          }
+        })
+      }
     },
     debounce(fn, delay) {
       var timer = null;
