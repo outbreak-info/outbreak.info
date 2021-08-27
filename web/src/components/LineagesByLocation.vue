@@ -13,8 +13,16 @@
   </div>
 
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
+    <defs>
+      <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+        <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
+      </pattern>
+    </defs>
+
     <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
     </g>
+
     <g class="stream-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
     <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
@@ -82,6 +90,7 @@ import {
   timeParse,
   timeFormat,
   extent,
+  min,
   max,
   format
 } from "d3";
@@ -180,6 +189,7 @@ export default Vue.extend({
       y: scaleLinear(),
       xAxis: null,
       yAxis: null,
+      maxDate: null,
       numXTicks: 5,
       numYTicks: 5,
       // methods
@@ -290,6 +300,7 @@ export default Vue.extend({
       this.lineages = Object.keys(this.data[0]).filter(d => d != this.xVariable);
 
       this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
         .ticks(this.numXTicks);
 
       select(this.$refs.xAxis).call(this.xAxis);
@@ -487,6 +498,38 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     drawPlot() {
+      if (this.includeToday) {
+        const noDataSelector = this.chart
+          .selectAll(".no-data")
+          .data([0]);
+
+        noDataSelector.join(
+          enter => {
+            enter.append("rect")
+              .attr("class", "no-data")
+              .attr("x", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+              .attr("width", this.width - this.x(this.maxDate))
+              .attr("height", this.height - this.margin.top - this.margin.bottom)
+              .style("fill", "url(#diagonalHatchLight)")
+          },
+          update => {
+            update
+              .attr("x", this.x(this.maxDate))
+              .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+              .attr("height", this.height - this.margin.top - this.margin.bottom)
+              .style("fill", "url(#diagonalHatchLight)")
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
+      }
+
+
       const areaSelector = this.chart
         .selectAll(".stacked-area-chart")
         .data(this.series);
