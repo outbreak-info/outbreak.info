@@ -96,6 +96,10 @@
             <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
           </svg>
           <small class="text-muted">7 day rolling average of confirmed cases</small>
+          <svg width="15" height="15" class="ml-4 mr-2">
+            <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
+          </svg>
+          <small class="text-muted">missing recent data</small>
         </div>
 
         <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
