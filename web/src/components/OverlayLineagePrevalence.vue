@@ -8,7 +8,7 @@
     </label>
     <font-awesome-icon class="fa-lg text-sec pointer" :icon="['far', 'plus-square']" data-toggle="modal" data-target="#change-mutations-modal" />
   </div>
-  <ReportPrevalenceOverlay :data="prevalences" :seqCounts="seqCounts" :epi="epi" v-if="prevalences && epi" :locationID="locationID" :locationName="locationName" />
+  <ReportPrevalenceOverlay :data="prevalences" :seqCounts="seqCounts" :epi="epi"  :xmin="xmin" :xmax="xmax" v-if="prevalences && epi" :locationID="locationID" :locationName="locationName" />
 
 </div>
 </template>
@@ -51,6 +51,8 @@ export default {
     seqCounts: Array,
     locationID: String,
     locationName: String,
+    xmin: String,
+    xmax: String,
     selected: [Array, String]
   },
   components: {

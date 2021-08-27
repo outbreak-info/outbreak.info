@@ -284,6 +284,7 @@ export default Vue.extend({
       xMax: null,
       maxDate: null,
       maxEpiDate: null,
+      today: null,
       xAxis: null,
       yAxis: null,
       yEpiAxis: null,
@@ -410,7 +411,8 @@ export default Vue.extend({
 
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax]);
+          .domain([newMin, newMax])
+          .clamp(true);
 
         // update plotted data
         this.plottedData = cloneDeep(this.data);
@@ -561,8 +563,8 @@ export default Vue.extend({
         }
 
         if (this.includeToday) {
-          const today = new Date();
-          xDomain = [minDate, today];
+          this.today = new Date();
+          xDomain = [minDate, this.today];
         } else {
           xDomain = [minDate, math.Max(this.maxDate, this.maxEpiDate)];
         }
@@ -578,7 +580,8 @@ export default Vue.extend({
 
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(xDomain);
+        .domain(xDomain)
+        .clamp(true);
 
       this.plottedData = cloneDeep(this.data);
       this.plottedEpi = this.epi;
@@ -724,7 +727,7 @@ export default Vue.extend({
               enter.append("rect")
                 .attr("class", "no-data-epi")
                 .attr("x", this.x(this.maxEpiDate))
-                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxEpiDate))
+                .attr("width", this.x(this.today) - this.x(this.maxEpiDate))
                 .attr("height", this.height - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
             },
@@ -733,7 +736,7 @@ export default Vue.extend({
                 .attr("height", this.height - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
                 .attr("x", this.x(this.maxEpiDate))
-                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxEpiDate))
+                .attr("width", this.x(this.today) - this.x(this.maxEpiDate))
             },
             exit =>
             exit.call(exit =>
@@ -783,7 +786,7 @@ export default Vue.extend({
               enter.append("rect")
                 .attr("class", "no-data")
                 .attr("x", this.x(this.maxDate))
-                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+                .attr("width", this.x(this.today) - this.x(this.maxDate))
                 .attr("height", this.height - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
             },
@@ -792,7 +795,7 @@ export default Vue.extend({
                 .attr("height", this.height - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
                 .attr("x", this.x(this.maxDate))
-                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+                .attr("width", this.x(this.today) - this.x(this.maxDate))
             },
             exit =>
             exit.call(exit =>
