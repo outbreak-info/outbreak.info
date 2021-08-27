@@ -279,6 +279,7 @@ export default Vue.extend({
       xMin: null,
       xMax: null,
       maxDate: null,
+      maxEpiDate: null,
       xAxis: null,
       yAxis: null,
       yEpiAxis: null,
@@ -547,7 +548,8 @@ export default Vue.extend({
         let minDate;
         if (this.epi && this.epi.length) {
           const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
-          this.maxDate = Math.max(epiExtent[1], mutExtent[1]);
+          this.maxDate = mutExtent[1];
+          this.maxEpiDate = epiExtent[1]
           minDate = Math.min(epiExtent[0], mutExtent[0]);
         } else {
           this.maxDate = mutExtent[1];
@@ -558,7 +560,7 @@ export default Vue.extend({
           const today = new Date();
           xDomain = [minDate, today];
         } else {
-          xDomain = [minDate, this.maxDate];
+          xDomain = [minDate, math.Max(this.maxDate, this.maxEpiDate)];
         }
 
         if (this.xMin && this.xMin < xDomain[1]) {
@@ -707,6 +709,39 @@ export default Vue.extend({
         this.updateScales();
 
         // EPI DATA
+        // hashed area to highlight the gap between today
+        if (this.includeToday) {
+          const noDataSelectorEpi = this.epiChart
+            .selectAll(".no-data-epi")
+            .data([0]);
+
+          noDataSelectorEpi.join(
+            enter => {
+              enter.append("rect")
+                .attr("class", "no-data-epi")
+                .attr("x", this.x(this.maxEpiDate))
+                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxEpiDate))
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+            },
+            update => {
+              update
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+                .transition(100)
+                .attr("x", this.x(this.maxEpiDate))
+                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxEpiDate))
+            },
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+        }
+
         const epiSelector = this.epiChart
           .selectAll(".epi-curve")
           .data([this.plottedEpi]);
@@ -740,9 +775,6 @@ export default Vue.extend({
           const noDataSelector = this.chart
             .selectAll(".no-data")
             .data([0]);
-
-          // console.log(this.maxDate)
-          // console.log(this.x)
 
           noDataSelector.join(
             enter => {
