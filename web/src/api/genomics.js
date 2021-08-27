@@ -913,7 +913,6 @@ export function getNewToday(apiurl, queryStr, location) {
 export function getAllLocationPrevalence(apiurl, mutation, location, ndays = null) {
   return (getLocationPrevalence(apiurl, mutation.query, location, ndays).pipe(
     map(results => {
-      console.log(mutation)
       return ({
         key: mutation.label,
         variantType: mutation.variantType,
@@ -1460,15 +1459,6 @@ export function getMutationCumPrevalence(apiurl, mutationObj, location, totalThr
   )
 }
 
-export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
-  return (getTemporalPrevalence(apiurl, location, mutationObj.query)).pipe(
-    map(results => {
-      let data = cloneDeep(mutationObj)
-      data["data"] = results;
-      return (data)
-    })
-  )
-}
 
 function locationTableSorter(a) {
   const sortingArr = ["Variant of Concern", "Mutation of Concern", "Variant of Interest", "Custom Lineages & Mutations", "Variant under Monitoring"];
@@ -1549,6 +1539,7 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
 }
 
 export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
+  console.log(mutations)
   if (mutations.length) {
     return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, locationID, mutation))).pipe(
       map(results => {
@@ -1564,6 +1555,17 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   } else {
     return of([]);
   }
+}
+
+
+export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
+  return (getTemporalPrevalence(apiurl, location, mutationObj.query)).pipe(
+    map(results => {
+      let data = cloneDeep(mutationObj)
+      data["data"] = results;
+      return (data)
+    })
+  )
 }
 
 export function getSequenceCount(apiurl, location = null, cumulative = true, rounded = false) {
