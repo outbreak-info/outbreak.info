@@ -116,6 +116,10 @@ export default Vue.extend({
     mutationName: String,
     xmin: String,
     xmax: String,
+    includeToday: {
+      type: Boolean,
+      default: true
+    },
     routeName: {
       type: String,
       default: "LocationReport"
@@ -271,8 +275,13 @@ export default Vue.extend({
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
       } else {
-        xDomain = extent(this.data.map(d => d[this.xVariable]));
-
+        if (this.includeToday) {
+          const today = new Date();
+          this.maxDate = max(this.data, d => d.date_time);
+          xDomain = this.includeToday ? [min(this.data, d => d.date_time), today] : extent(this.data.map(d => d.date_time));
+        } else {
+          xDomain = extent(this.data.map(d => d[this.xVariable]));
+        }
         if (this.xMin && this.xMin < xDomain[1]) {
           xDomain[0] = this.xMin;
         }
@@ -285,12 +294,20 @@ export default Vue.extend({
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
+      console.log(this.x.domain())
+
+      this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
+        .ticks(this.numXTicks);
+
+      select(this.$refs.xAxis).call(this.xAxis);
 
       this.plottedData = cloneDeep(this.data);
 
       this.plottedData = this.plottedData.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
     },
     updateScales() {
+
       this.y = this.y
         // .range([0, this.height - this.margin.top - this.margin.bottom])
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -298,12 +315,6 @@ export default Vue.extend({
         .domain([0, 1]);
 
       this.lineages = Object.keys(this.data[0]).filter(d => d != this.xVariable);
-
-      this.xAxis = axisBottom(this.x)
-        .tickSizeOuter(0)
-        .ticks(this.numXTicks);
-
-      select(this.$refs.xAxis).call(this.xAxis);
 
       this.yAxis = axisLeft(this.y).tickSizeOuter(0)
         .ticks(this.numYTicks)
@@ -507,15 +518,15 @@ export default Vue.extend({
           enter => {
             enter.append("rect")
               .attr("class", "no-data")
-              .attr("x", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
-              .attr("width", this.width - this.x(this.maxDate))
+              .attr("x", 0)
+              .attr("width", this.width - this.margin.left - this.margin.right)
               .attr("height", this.height - this.margin.top - this.margin.bottom)
               .style("fill", "url(#diagonalHatchLight)")
           },
           update => {
             update
-              .attr("x", this.x(this.maxDate))
-              .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+              .attr("x", 0)
+              .attr("width", this.width - this.margin.left - this.margin.right)
               .attr("height", this.height - this.margin.top - this.margin.bottom)
               .style("fill", "url(#diagonalHatchLight)")
           },
