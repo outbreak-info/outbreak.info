@@ -52,9 +52,9 @@
           <router-link class="variant-table" :to="{name: 'MutationReport', params: lineage.params, query: lineage.route }" :data-tippy-info="lineage.tooltip">
             {{ lineage.label }}
           </router-link>
-          <small class="text-muted pointer variant-expand" :data-tippy-info="`show ${lineage.label} sublineages`" @click="showSublineages(lineage)">
+          <!-- <small class="text-muted pointer variant-expand" :data-tippy-info="`show ${lineage.label} sublineages`" @click="showSublineages(lineage)">
             <font-awesome-icon class="fa-sm ml-1" :icon="['far', 'plus-square']" />
-          </small>
+          </small> -->
         </td>
         <td>
           {{ lineage.lineage_count_formatted }}
@@ -90,23 +90,23 @@ import Warning from "@/components/Warning.vue";
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
-// --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faPlusSquare
-} from "@fortawesome/free-regular-svg-icons/faPlusSquare";
-
-library.add(faPlusSquare);
+// // --- font awesome --
+// import {
+//   FontAwesomeIcon
+// } from "@fortawesome/vue-fontawesome";
+// import {
+//   library
+// } from "@fortawesome/fontawesome-svg-core";
+// import {
+//   faPlusSquare
+// } from "@fortawesome/free-regular-svg-icons/faPlusSquare";
+//
+// library.add(faPlusSquare);
 
 export default {
   name: "LocationTable",
   components: {
-    FontAwesomeIcon
+    // FontAwesomeIcon
   },
   props: {
     data: Array,

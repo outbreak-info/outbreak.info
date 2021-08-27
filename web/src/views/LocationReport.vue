@@ -539,18 +539,21 @@ export default {
         newVariantObj = {
           label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
           qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
+          mutation_string: `(${this.newPango}) AND (${this.newMuts.map(d => d.mutation).join(" AND")})`,
           type: "variant"
         }
       } else if (this.newPango) {
         newVariantObj = {
           label: this.newPango,
           qParam: this.newPango,
+          mutation_string: this.newPango,
           type: "pango"
         }
       } else if (this.newMuts.length) {
         newVariantObj = {
           label: this.newMuts.map(d => d.mutation).join(", "),
-          qParam: this.newMuts.map(d => d.mutation).join(","),
+          qParam: this.newMuts.map(d => d.mutation).join(" AND "),
+          mutation_string: this.newMuts.map(d => d.mutation).join(" AND "),
           type: "mutation"
         }
       }
@@ -564,6 +567,7 @@ export default {
             type: "pango",
             label: this.pango,
             qParam: this.pango,
+            mutation_string: this.pango,
             query: `pangolin_lineage=${this.pango}`,
             variantType: "Custom Lineages & Mutations",
             route: {
@@ -576,6 +580,7 @@ export default {
               type: "pango",
               label: d,
               qParam: d,
+              mutation_string: d,
               query: `pangolin_lineage=${d}`,
               variantType: "Custom Lineages & Mutations",
               route: {
@@ -587,11 +592,13 @@ export default {
       }
       if (this.muts) {
         if (typeof(this.muts) == "string") {
-          const mutations = this.muts.split(",");
+          const mutations = this.muts.split(" AND ");
+
           tracked.push({
             type: "mutation",
             label: this.muts,
             qParam: this.muts,
+            mutation_string: this.muts,
             query: `mutations=${this.muts}`,
             variantType: "Custom Lineages & Mutations",
             route: {
@@ -600,15 +607,16 @@ export default {
           })
         } else {
           tracked = tracked.concat(this.muts.map(d => {
-            const mutations = d.split(",");
+            const mutations = d.split(" AND ");
             return ({
               type: "mutation",
               label: mutations.join(", "),
               qParam: d,
+              mutation_string: d,
               query: `mutations=${d}`,
               variantType: "Custom Lineages & Mutations",
               route: {
-                muts: d.split(",")
+                muts: d.split(" AND ")
               }
             })
           }))
@@ -623,6 +631,7 @@ export default {
               type: "variant",
               label: `${variant[0]} + ${variant[1]}`,
               qParam: this.variant,
+              mutation_string: `(${variant[0]}) AND (${variant[1]})`,
               query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
               variantType: "Custom Lineages & Mutations",
               route: {
@@ -639,6 +648,7 @@ export default {
                 type: "variant",
                 label: `${variant[0]} + ${variant[1]}`,
                 qParam: d,
+                mutation_string: `(${variant[0]}) AND (${variant[1]})`,
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
                 variantType: "Custom Lineages & Mutations",
                 route: {
@@ -895,6 +905,7 @@ export default {
     },
     updateTable() {
       this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations, this.totalThresh).subscribe(results => {
+        console.log(results)
         this.lineageTable = results;
       })
     }
