@@ -486,7 +486,7 @@ export default Vue.extend({
               .attr("fill", ({
                 key
               }) => this.colorScale(key))
-              .attr("class", "stacked-area-chart")
+              .attr("class", "stacked-area-chart pointer")
               .attr("id", ({
                 key
               }) => `area_${key.replace(/\./g, "-")}`)
@@ -587,7 +587,22 @@ export default Vue.extend({
         .on("mousemove", ({
           key
         }) => this.tooltipOn(key))
-        .on("mouseleave", this.tooltipOff)
+        .on("click", ({
+          key
+        }) => this.route2Mutation(key))
+        .on("mouseleave", this.tooltipOff);
+    },
+    route2Mutation(d) {
+      const queryParams = this.$route.query;
+      const selected = this.routeName == "LocationReport" ? queryParams.loc : queryParams.selected;
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          pango: d,
+          loc: queryParams.loc,
+          selected: selected
+        }
+      })
     },
     debounce(fn, delay) {
       var timer = null;
