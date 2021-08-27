@@ -1347,7 +1347,7 @@ export function getBasicLocationReportData(apiurl, location) {
     })
   })
 
-  console.log(curatedLineages)
+  const ofInterest = getVOCs();
 
   return forkJoin([
     findLocationMetadata(apiurl, location),
@@ -1359,6 +1359,8 @@ export function getBasicLocationReportData(apiurl, location) {
         location: location,
         dateUpdated: dateUpdated,
         curated: curatedLineages,
+        voc: ofInterest.voc,
+        voi: ofInterest.voi,
         total: total
       })
     }),
@@ -1733,6 +1735,20 @@ export function getComparisonByLocation(apiurl, lineages, prevalenceThreshold, l
   )
 }
 
+export function getVOCs() {
+  const voc = CURATED.filter(d => d.variantType == "Variant of Concern").flatMap(d => d.char_muts_query);
+  const voc_parent = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.label);
+  const voi = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.char_muts_query);
+  const voi_parent = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.label);
+
+  return ({
+    voc: voc,
+    voc_parent: voc_parent,
+    voi: voi,
+    voi_parent: voi_parent
+  })
+}
+
 export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   store.state.genomics.locationLoading2 = true;
 
@@ -1745,10 +1761,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
     lineages = lineages.map(d => d.label);
   }
 
-  const voc = CURATED.filter(d => d.variantType == "Variant of Concern").flatMap(d => d.char_muts_query);
-  const voc_parent = CURATED.filter(d => d.variantType == "Variant of Concern").map(d => d.label);
-  const voi = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.char_muts_query);
-  const voi_parent = CURATED.filter(d => d.variantType == "Variant of Interest").flatMap(d => d.label);
+  const ofInterest = getVOCs();
 
   return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
     map((results, idx) => {
@@ -1794,10 +1807,10 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
       return ({
         data: nestedByGenes,
         dataFlat: filtered,
-        voc: voc,
-        voc_parent: voc_parent,
-        voi: voi,
-        voi_parent: voi_parent,
+        voc: ofInterest.voc,
+        voc_parent: ofInterest.voc_parent,
+        voi: ofInterest.voi,
+        voi_parent: ofInterest.voi_parent,
         yDomain: lineages
       })
     }),

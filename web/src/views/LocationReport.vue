@@ -715,13 +715,13 @@ export default {
         this.lastUpdated = results.dateUpdated.lastUpdated;
         this.totalSequences = results.total;
         this.curatedLineages = results.curated;
-        this.voc = results.curated.filter(d => d.variantType == "Variant of Concern").map(d => d.label);
-        this.voi = results.curated.filter(d => d.variantType == "Variant of Interest").map(d => d.label);
+        this.voc = results.voc;
+        this.voi = results.voi;
         this.selectedLocation = results.location;
       })
 
       this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentWindow).subscribe(results => {
-        // console.log(results)
+        console.log(results)
         this.lineagesByDay = results.lineagesByDay;
         this.noRecentData = results.mostRecentLineages && results.mostRecentLineages.length ? false : true;
 
