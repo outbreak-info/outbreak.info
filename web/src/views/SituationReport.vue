@@ -294,7 +294,7 @@
         </div>
 
         <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
-        <div id="sublineage-streamgraph">
+        <div id="sublineage-streamgraph" v-else>
           <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" class="p-2 pt-3 bg-grey__lightest justify-content-center" />
 
           <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax" routeName="MutationReport" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName"
