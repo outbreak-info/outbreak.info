@@ -730,7 +730,6 @@ export default {
       })
 
       this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentWindow).subscribe(results => {
-        console.log(results)
         this.lineagesByDay = results.lineagesByDay;
         this.noRecentData = results.mostRecentLineages && results.mostRecentLineages.length ? false : true;
 
@@ -904,7 +903,6 @@ export default {
     },
     updateTable() {
       this.tableSubscription = getLocationTable(this.$genomicsurl, this.loc, this.selectedMutations, this.totalThresh).subscribe(results => {
-        console.log(results)
         this.lineageTable = results;
       })
     }

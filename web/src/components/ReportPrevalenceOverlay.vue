@@ -673,7 +673,7 @@ export default Vue.extend({
       this.chart.selectAll(".mutation-trace")
         .style("opacity", 0.3);
 
-      this.chart.select(`#${d.label.replace(/:/g, "_").replace(/\./g, "_")}`)
+      this.chart.select(`#${d.id}`)
         .style("opacity", 1);
 
 
@@ -777,6 +777,7 @@ export default Vue.extend({
         const endLabels = this.plottedData.map(d => {
           return ({
             label: d[this.fillVariable],
+            id: d.id,
             pango_descendants: d.pango_descendants,
             route: d.route,
             params: d.params,
@@ -859,7 +860,7 @@ export default Vue.extend({
           enter => {
             const mutGrp = enter.append("g")
               .attr("class", "mutation-trace")
-              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
+              .attr("id", d => d.id);
 
             mutGrp.append("path")
               .attr("class", "confidence-interval")
@@ -877,7 +878,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
+              .attr("id", d => d.id);
 
             update.select(".confidence-interval")
               .style("fill", d => this.colorScale(d[this.fillVariable]))

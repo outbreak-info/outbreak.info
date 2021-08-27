@@ -1064,13 +1064,18 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
       if (returnFlat) {
         let res = Object.keys(results).map(
           mutation_key => {
+            const filtered = CURATED.filter(d => d.char_muts_parent_query == mutation_key);
+            const label = filtered.length === 1 ? filtered[0].label : mutation_key;
+            // look up if the mutation key is a variant of concerned/named
             let d = results[mutation_key]["results"];
             d.forEach(datum => {
               datum["dateTime"] = parseDate(datum.date);
               datum["mutation_string"] = mutation_key;
             })
             return ({
-              label: mutation_key,
+              label: label,
+              pango_descendants: filtered.length === 1 ? filtered[0].pango_descendants : null,
+              id: label.replace(/\(/g, "").replace(/\)/g, "").replace(/:/g, "").replace(/\//g, "-").replace(/\./g, "-").replace(/\s/g, "_"),
               data: d,
               route: parseStrQuery(mutation_key)
             });
@@ -1624,9 +1629,9 @@ export function getEpiMutationPrevalence(apiurl, epiurl, locationID, mutations, 
 
 export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   if (mutations.length) {
-    return forkJoin(...mutations.map(mutation => getAllTemporalPrevalence(apiurl, locationID, mutation))).pipe(
+    return forkJoin(...mutations.map(mutation => getTemporalPrevalence(apiurl, locationID, mutation.query))).pipe(
       map(results => {
-        return (results)
+        return (results.flatMap(d => d))
       }),
       catchError(e => {
         console.log("%c Error in getting mutations over time data!", "color: orange");
@@ -1638,17 +1643,6 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   } else {
     return of([]);
   }
-}
-
-
-export function getAllTemporalPrevalence(apiurl, location, mutationObj) {
-  return (getTemporalPrevalence(apiurl, location, mutationObj.query)).pipe(
-    map(results => {
-      let data = cloneDeep(mutationObj)
-      data["data"] = results;
-      return (data)
-    })
-  )
 }
 
 export function getSequenceCount(apiurl, location = null, cumulative = true, rounded = false) {
