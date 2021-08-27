@@ -852,8 +852,6 @@ export default {
           muts: this.muts,
           loc: ids,
           selected: this.selectedLocation,
-          xmin: this.selectedXMin,
-          xmax: this.selectedXMax,
           overlay: this.sublineageOverlay
         },
         params: {
@@ -898,8 +896,8 @@ export default {
           muts: this.muts,
           loc: this.loc,
           selected: this.selected,
-          xmin: this.selectedXMin,
-          xmax: this.selectedXMax,
+          xmin: this.xmin,
+          xmax: this.xmax,
           overlay: this.sublineageOverlay
         },
         params: {
