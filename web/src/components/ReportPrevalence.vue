@@ -305,7 +305,7 @@ export default Vue.extend({
 
       this.plottedData = cloneDeep(this.data);
 
-      this.plottedData = this.plottedData.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
+      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1]);
     },
     updateScales() {
       const avgMax = max(this.plottedData, d => d[this.yVariable]);
@@ -464,7 +464,7 @@ export default Vue.extend({
 
         // update plotted data
         this.plottedData = cloneDeep(this.data);
-        this.plottedData = this.plottedData.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
+        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
 
         // move the brush
         this.brushRef.call(this.brush.move, null);

@@ -396,11 +396,11 @@ export default Vue.extend({
         // update plotted data
         this.plottedData = cloneDeep(this.data);
         this.plottedData.forEach(mutation => {
-          mutation.data = mutation.data.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
+          mutation.data = mutation.data.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
         });
 
         this.plottedData = this.plottedData.filter(d => d.data.length);
-        this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > newMin && d[this.xEpiVariable] < newMax);
+        this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] >= newMin && d[this.xEpiVariable] <= newMax);
         // move the brush
         this.brushRef.call(this.brush.move, null);
         this.brushRef2.call(this.brush.move, null);
@@ -548,11 +548,11 @@ export default Vue.extend({
       this.plottedData = cloneDeep(this.data);
       this.plottedEpi = this.epi;
       this.plottedData.forEach(mutation => {
-        mutation.data = mutation.data.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
+        mutation.data = mutation.data.filter(d => d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1]);
       });
 
       this.plottedData = this.plottedData.filter(d => d.data.length);
-      this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > xDomain[0] && d[this.xEpiVariable] < xDomain[1]);
+      this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] >= xDomain[0] && d[this.xEpiVariable] <= xDomain[1]);
 
       this.colorScale = this.setColorScale ? this.setColorScale : this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },

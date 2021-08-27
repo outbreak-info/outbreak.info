@@ -304,7 +304,7 @@ export default Vue.extend({
 
       this.plottedData = cloneDeep(this.data);
 
-      this.plottedData = this.plottedData.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
+      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1]);
     },
     updateScales() {
 
@@ -409,7 +409,7 @@ export default Vue.extend({
 
         this.plottedData = cloneDeep(this.data);
 
-        this.plottedData = this.plottedData.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
+        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
 
         // reset the axis
         this.xAxis = axisBottom(this.x)
