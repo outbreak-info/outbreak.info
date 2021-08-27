@@ -86,6 +86,7 @@ import {
   format
 } from "d3";
 
+import cloneDeep from "lodash/cloneDeep";
 
 export default Vue.extend({
   name: "LineagesByLocation",
@@ -187,6 +188,7 @@ export default Vue.extend({
       // data
       series: null,
       lineages: null,
+      plottedData: null,
       // refs
       chart: null,
       brushRef: null,
@@ -273,6 +275,10 @@ export default Vue.extend({
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
+
+      this.plottedData = cloneDeep(this.data);
+
+      this.plottedData = this.plottedData.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
     },
     updateScales() {
       this.y = this.y
@@ -296,12 +302,12 @@ export default Vue.extend({
       this.series = stack()
         .keys(this.lineages)
         .order(stackOrderInsideOut)
-        (this.data)
+        (this.plottedData)
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
     updatePlot() {
-      if (this.data && this.colorScale) {
+      if (this.plottedData && this.colorScale) {
         this.updateScales();
         this.drawPlot();
       }
@@ -377,6 +383,11 @@ export default Vue.extend({
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain([newMin, newMax]);
+
+
+        this.plottedData = cloneDeep(this.data);
+
+        this.plottedData = this.plottedData.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
 
         // reset the axis
         this.xAxis = axisBottom(this.x)
@@ -488,8 +499,8 @@ export default Vue.extend({
               }) => this.colorScale(key))
               .attr("class", "stacked-area-chart")
               .classed("pointer", ({
-                  key
-                }) => key.toLowerCase() != "other")
+                key
+              }) => key.toLowerCase() != "other")
               .attr("id", ({
                 key
               }) => `area_${key.replace(/\./g, "-")}`)
