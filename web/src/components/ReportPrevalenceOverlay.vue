@@ -177,6 +177,8 @@ export default Vue.extend({
     locationName: String,
     locationID: String,
     setWidth: Number,
+    xmin: String,
+    xmax: String,
     setColorScale: Function,
     mutationName: String,
     onlyTotals: {
@@ -289,8 +291,8 @@ export default Vue.extend({
       this.updatePlot();
     },
     data: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
@@ -409,7 +411,6 @@ export default Vue.extend({
           }
         })
       }
-
     },
     resetZoom() {
       this.brushRef.call(this.brush.move, null);
@@ -440,8 +441,8 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     setupPlot() {
-      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.counts = select(this.$refs.counts);

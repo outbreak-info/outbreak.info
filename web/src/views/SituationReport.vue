@@ -252,7 +252,7 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" :setWidth="width" />
+        <ReportPrevalence :data="prevalence" :mutationName="reportName" :xmin="xmin" :xmax="xmax" :location="selectedLocation.label" :setWidth="width" />
       </section>
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->
@@ -289,16 +289,16 @@
             </label>
           </div>
 
-          <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
-            :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
+          <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :xmin="xmin"
+            :xmax="xmax" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
         </div>
 
         <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
-        <div id="sublineage-streamgraph" v-else>
+        <div id="sublineage-streamgraph">
           <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" class="p-2 pt-3 bg-grey__lightest justify-content-center" />
 
-          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale"
-            :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false"
+            :colorScale="sublineageColorScale" :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
         </div>
       </section>
 
