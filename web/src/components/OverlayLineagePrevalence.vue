@@ -6,7 +6,7 @@
       <input type="checkbox" :value="option" v-model.lazy="selectedMutations" @change="debounceSelectMutation" />
       <div class="b-input"></div>
     </label>
-    <font-awesome-icon class="fa-lg text-sec pointer" :icon="['far', 'plus-square']" />
+    <font-awesome-icon class="fa-lg text-sec pointer" :icon="['far', 'plus-square']" data-toggle="modal" data-target="#change-mutations-modal" />
   </div>
   <ReportPrevalenceOverlay :data="prevalences" :seqCounts="seqCounts" :epi="epi" v-if="prevalences && epi" :locationID="locationID" :locationName="locationName" />
 
