@@ -732,7 +732,6 @@ export default Vue.extend({
               update
                 .attr("height", this.height - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
-                .transition(100)
                 .attr("x", this.x(this.maxEpiDate))
                 .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxEpiDate))
             },
@@ -760,7 +759,6 @@ export default Vue.extend({
           },
           update => {
             update
-              .transition(t1)
               .attr("d", this.epiLine)
           },
           exit =>
@@ -793,7 +791,6 @@ export default Vue.extend({
               update
                 .attr("height", this.height - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
-                .transition(100)
                 .attr("x", this.x(this.maxDate))
                 .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
             },

@@ -262,7 +262,7 @@ export default Vue.extend({
           exit =>
           exit.call(exit =>
             exit
-            .transition(10)
+            .transition()
             .style("opacity", 1e-5)
             .remove()
           )
@@ -297,7 +297,7 @@ export default Vue.extend({
           exit =>
           exit.call(exit =>
             exit
-            .transition(10)
+            .transition()
             .style("opacity", 1e-5)
             .remove()
           )

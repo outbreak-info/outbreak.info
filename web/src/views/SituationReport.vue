@@ -637,8 +637,9 @@ export default {
   },
   methods: {
     setDims() {
-      const widthRatio = 0.9;
-      this.width = window.innerWidth * widthRatio;
+      const windowWidth = window.innerWidth;
+      const widthRatio = windowWidth > 1000 ? 0.7: 0.9;
+      this.width = windowWidth * widthRatio;
     },
     setLineageAndMutationStr() {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
