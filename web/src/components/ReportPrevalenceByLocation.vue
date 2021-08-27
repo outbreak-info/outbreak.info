@@ -2,7 +2,7 @@
 <div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
   <div class="">
     <div class="d-flex align-items-center justify-content-end">
-      <router-link v-if="location" class="mr-3" :to="{name:'LocationReport', query:{loc: location}}">View {{locationName}} report</router-link>
+      <router-link v-if="location != 'Worldwide'" class="mr-3 btn btn-sec" :to="{name:'LocationReport', query:{loc: location}}">View {{locationName}} report</router-link>
       <button class="btn btn-main-outline px-2 py-1 mr-3" @click="includeNotDetected = !includeNotDetected"><small>{{includeNotDetected ? "hide" : "show"}} not detected</small></button>
       <div class="d-flex align-items-center justify-content-end">
         sort by
