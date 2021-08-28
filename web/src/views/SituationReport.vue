@@ -515,7 +515,7 @@ export default {
       }
     },
     alias: function(newVal, oldVal) {
-      if (newVal!= oldVal) {
+      if (newVal != oldVal) {
         this.newPangolin = null;
         this.lineageName = null;
         this.reportMetadata = null;
@@ -621,7 +621,7 @@ export default {
   },
   mounted() {
     // set default, if needed.
-    if(!this.selected) {
+    if (!this.selected) {
       this.selected = "Worldwide";
     }
     this.sublineageOverlay = this.overlay === "true";
@@ -650,7 +650,7 @@ export default {
   methods: {
     setDims() {
       const windowWidth = window.innerWidth;
-      const widthRatio = windowWidth > 1000 ? 0.7: 0.9;
+      const widthRatio = windowWidth > 1000 ? 0.7 : 0.9;
       this.width = windowWidth * widthRatio;
     },
     setLineageAndMutationStr() {
