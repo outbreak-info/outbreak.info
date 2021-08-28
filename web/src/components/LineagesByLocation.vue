@@ -460,6 +460,7 @@ export default Vue.extend({
               xmax: timeFormat("%Y-%m-%d")(newMax),
               loc: queryParams.loc,
               muts: queryParams.muts,
+              alias: queryParams.alias,
               pango: queryParams.pango,
               variant: queryParams.variant,
               selected: queryParams.selected
@@ -503,6 +504,7 @@ export default Vue.extend({
           query: {
             loc: queryParams.loc,
             muts: queryParams.muts,
+            alias: queryParams.alias,
             pango: queryParams.pango,
             variant: queryParams.variant,
             selected: queryParams.selected

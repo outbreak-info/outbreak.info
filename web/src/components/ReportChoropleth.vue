@@ -562,6 +562,7 @@ export default {
           query: {
             loc: id,
             muts: query.muts,
+            alias: query.alias,
             pango: query.pango,
             variant: query.variant,
             selected: query.selected,

@@ -45,7 +45,7 @@ import {
 library.add(faPlusSquare);
 
 export default {
-  name: "LocationReport",
+  name: "OverlayLineagePrevalence",
   props: {
     options: Array,
     seqCounts: Array,
@@ -112,6 +112,7 @@ export default {
           xmin: queryParams.xmin,
           xmax: queryParams.xmax,
           muts: queryParams.muts,
+          alias: queryParams.alias,
           pango: queryParams.pango,
           variant: queryParams.variant,
           selected: this.selectedMutations.map(d => d.label)

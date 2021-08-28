@@ -181,7 +181,8 @@
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
-              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" :xmin="xmin" :xmax="xmax"/>
+              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" :xmin="xmin"
+                :xmax="xmax" />
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
@@ -215,7 +216,9 @@
         <div class="d-flex flex-column align-items-center mt-3" v-if="recentHeatmap && recentHeatmap.length">
           <h5 class="m-0">S-gene mutations in &gt; {{charMutThreshold}} of global sequences for lineages found in {{selectedLocation.label}} in the last {{recentWindow}} days</h5>
           <div class="d-flex flex-wrap justify-content-between">
-            <small class="text-muted mb-2"><router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">Read more about characteristic mutations</router-link></small>
+            <small class="text-muted mb-2">
+              <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">Read more about characteristic mutations</router-link>
+            </small>
             <small class="mb-2 ml-3">
               <router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link>
             </small>
@@ -340,17 +343,17 @@
       </div>
 
 
-              <!-- TRACKED LINEAGES TABLE -->
-              <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
-                <div class="d-flex flex-wrap align-items-center justify-content-center">
-                  <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-                  <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
-                    <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-                  </button>
-                  <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
-                </div>
-                <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
-              </section>
+      <!-- TRACKED LINEAGES TABLE -->
+      <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
+        <div class="d-flex flex-wrap align-items-center justify-content-center">
+          <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+          <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+          <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+        </div>
+        <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
+      </section>
 
 
       <!-- METHODOLOGY -->
@@ -444,7 +447,8 @@ import {
   getBasicLocationReportData,
   getLocationTable,
   findLocation,
-  getBadMutations
+  getBadMutations,
+  findWHOLineage
 } from "@/api/genomics.js";
 
 import cloneDeep from "lodash/cloneDeep";
@@ -457,6 +461,7 @@ export default {
     loc: String,
     muts: [Array, String],
     pango: [Array, String],
+    alias: [Array, String],
     variant: [Array, String],
     xmin: String,
     xmax: String,
@@ -535,34 +540,50 @@ export default {
     darkModeHelper() {
       return (this.darkMode ? "Switch to <b>light mode</b> to focus on similarities between lineages" : "Switch to <b>dark mode</b> to emphasize mutations with low prevalence")
     },
+    // object to store the temporary additions to the custom mutations form BEFORE submission
+    // should consist of label + route param (qParam) + type (alias, pango, variant, mutation)
     newVariant() {
       let newVariantObj = null;
       if (this.newPango && this.newMuts.length) {
         newVariantObj = {
-          label: `${this.newPango} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
-          qParam: `${this.newPango}|${this.newMuts.map(d => d.mutation).join(",")}`,
-          mutation_string: `(${this.newPango}) AND (${this.newMuts.map(d => d.mutation).join(" AND")})`,
+          label: `${this.newPango.name} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
+          qParam: `${this.newPango.name}|${this.newMuts.map(d => d.mutation).join(",")}`,
           type: "variant"
         }
       } else if (this.newPango) {
-        newVariantObj = {
-          label: this.newPango,
-          qParam: this.newPango,
-          mutation_string: this.newPango,
-          type: "pango"
+        if (this.newPango.alias) {
+          newVariantObj = {
+            label: this.newPango.name,
+            qParam: this.newPango.name,
+            type: "alias"
+          }
+        } else {
+          newVariantObj = {
+            label: this.newPango.name,
+            qParam: this.newPango.name,
+            type: "pango"
+          }
         }
       } else if (this.newMuts.length) {
         newVariantObj = {
           label: this.newMuts.map(d => d.mutation).join(", "),
           qParam: this.newMuts.map(d => d.mutation).join(" AND "),
-          mutation_string: this.newMuts.map(d => d.mutation).join(" AND "),
           type: "mutation"
         }
       }
       return newVariantObj;
     },
+    // parses the route information to track what custom mutations should be queryable.
     selectedMutations() {
       let tracked = this.curatedLineages;
+      // WHO Aliases
+      if (this.alias) {
+        const curatedQuery = findWHOLineage(this.alias);
+        if (curatedQuery) {
+          tracked.push(...curatedQuery);
+        }
+      }
+
       if (this.pango) {
         if (typeof(this.pango) == "string") {
           tracked.push({
@@ -623,7 +644,6 @@ export default {
           }))
         }
       }
-      //
       if (this.variant) {
         if (typeof(this.variant) == "string") {
           const variant = this.variant.split("|");
@@ -760,6 +780,7 @@ export default {
         name: "LocationReport",
         query: {
           loc: this.newLocation.id,
+          alias: this.alias,
           pango: this.pango,
           variant: this.variant,
           muts: this.muts,
@@ -838,6 +859,7 @@ export default {
       if (this.newVariant) {
         this.customMutations.push(this.newVariant);
       }
+      let alias = this.customMutations.filter(d => d.type == "alias").map(d => d.qParam);
       let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
 
       const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
@@ -860,6 +882,7 @@ export default {
         name: "LocationReport",
         query: {
           loc: this.loc,
+          alias: uniq(alias),
           pango: uniq(pango),
           variant: uniq(variant),
           muts: uniq(mutation),
@@ -876,6 +899,7 @@ export default {
         },
         query: {
           loc: this.loc,
+          alias: this.alias,
           pango: this.pango,
           variant: this.variant,
           muts: this.muts,

@@ -1893,6 +1893,29 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
   )
 }
 
+export function findWHOLineage(alias) {
+  const filtered = typeof(alias) == "string" ?
+    CURATED.filter(d => d.label.toLowerCase() == alias.toLowerCase()) :
+    CURATED.filter(d => alias.map(a => a.toLowerCase()).includes(d.label.toLowerCase()));
+
+  if (filtered.length >= 1) {
+    const results = filtered.map(curated => {
+      return ({
+        type: "pango",
+        label: curated.label,
+        bulkQuery: curated.char_muts_parent_query,
+        params: {
+          alias: curated.label
+        },
+        query: `pangolin_lineage=${curated.char_muts_parent_query}`,
+        pango_descendants: curated.pango_descendants,
+        tooltip: curated.pango_descendants.join(", "),
+        variantType: curated.variantType
+      })
+    })
+    return(results)
+  }
+}
 
 // Returns an array of variant of concern / interest names (inlcuding WHO aliases)
 export function getVOCs() {

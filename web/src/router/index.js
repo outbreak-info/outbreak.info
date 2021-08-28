@@ -486,6 +486,7 @@ const routes = [{
     path: "/location-reports",
     name: "LocationReport",
     props: route => ({
+      alias: route.query.alias,
       loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
