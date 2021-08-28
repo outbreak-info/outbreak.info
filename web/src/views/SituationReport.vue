@@ -620,6 +620,10 @@ export default {
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
   },
   mounted() {
+    // set default, if needed.
+    if(!this.selected) {
+      this.selected = "Worldwide";
+    }
     this.sublineageOverlay = this.overlay === "true";
     this.setDims();
     this.queryLocation = findLocation;
@@ -718,7 +722,6 @@ export default {
       this.setLineageAndMutationStr();
       if (this.lineageName || this.mutationID || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
-          console.log(results)
           this.hasData = true;
 
           // selected locations
