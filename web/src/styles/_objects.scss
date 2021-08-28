@@ -23,18 +23,18 @@ button {
     outline: none !important;
   }
 
-    &.chip {
-      border-radius: 1em;
-      display: flex;
-      align-items: center;
-      padding: 2px 8px;
-      white-space: nowrap;
-      cursor: pointer;
+  &.chip {
+    border-radius: 1em;
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+    white-space: nowrap;
+    cursor: pointer;
 
-      & .remove-btn {
-        margin-left: 0.25em;
-        font-size: 0.75em;
-      }
+    & .remove-btn {
+      margin-left: 0.25em;
+      font-size: 0.75em;
+    }
   }
 }
 
@@ -233,8 +233,11 @@ button.chip.to-add:hover {
   cursor: default;
 }
 
+.MOC,
+.MOI,
 .VOC,
-.VOI, .MOC, .MOI {
+.VOI,
+.VUM {
   padding: 0.35rem;
   border-radius: 0.25rem;
   border-style: solid;
@@ -247,23 +250,26 @@ button.chip.to-add:hover {
   align-items: center;
   // font-weight: 700;
 }
+$vum-color: #edc949;
 
-.VOC, .MOC {
+.MOC,
+.VOC {
   background: lighten($publication-color, 35%);
   color: $publication-color;
   border-color: $publication-color;
 }
 
-.VOI, .MOI {
+.MOI,
+.VOI {
   background: lighten($website-color, 40%);
   color: $website-color;
   border-color: $website-color;
 }
 
-.VOC, .MOC {
-  background: lighten($publication-color, 35%);
-  color: $publication-color;
-  border-color: $publication-color;
+.VUM {
+  background: lighten($vum-color, 35%);
+  color: darken($vum-color, 20%);
+  border-color: darken($vum-color, 20%);
 }
 
 .VOC-color {
@@ -274,101 +280,118 @@ button.chip.to-add:hover {
   color: $website-color;
 }
 
+.VUM-color {
+  color: darken($vum-color, 20%);
+}
 
-.voc, .moc {
+.moc,
+.voc {
   background: lighten($publication-color, 35%);
   color: $publication-color;
   border-color: $publication-color;
   text-align: center;
 }
 
-.voi, .moi {
+.moi,
+.voi {
   background: lighten($website-color, 40%);
   color: $website-color;
   border-color: $website-color;
+}
+
+.vum {
+  background: lighten($vum-color, 35%);
+  color: darken($vum-color, 20%);
+  border-color: darken($vum-color, 20%);
 }
 
 .custom {
   background: lighten($primary-color, 70%);
   color: $secondary-color;
 }
-
 // toggle button
 $toggle-color: $warning-color;
 $toggle-height: 16px;
 $toggle-height2: 24px;
 
-
-
-*,*:before,*:after {
-  transition:.25s ease-in-out;
+*,
+*:after,
+*:before {
+  transition: 0.25s ease-in-out;
 }
 
 .checkbox-label {
-  display:block;
-  background:#f3f3f3;
+  display: block;
+  background: #f3f3f3;
   height: $toggle-height2;
   width: $toggle-height2 * 2;
   border-radius: $toggle-height2;
   margin: $toggle-height2 auto;
-  position:relative;
-  box-shadow:0 0 0 2px #dddddd;
+  position: relative;
+  box-shadow: 0 0 0 2px #dddddd;
+
   .on {
-    display:block;
-    position:absolute;
-    z-index:0;
-    left:0;
-    opacity:1;
-    min-width:300px;
+    display: block;
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    opacity: 1;
+    min-width: 300px;
     line-height: $toggle-height2;
-    opacity:0;
-    color:$toggle-color;
+    opacity: 0;
+    color: $toggle-color;
   }
+
   .off {
-    display:block;
-    position:absolute;
-    z-index:0;
+    display: block;
+    position: absolute;
+    z-index: 0;
     right: 55px;
-    text-align:right;
-    opacity:1;
-    min-width:300px;
+    text-align: right;
+    opacity: 1;
+    min-width: 300px;
     line-height: $toggle-height2;
-    opacity:1;
-    color:#bbbbbb;
+    opacity: 1;
+    color: #bbbbbb;
   }
+
   &:before {
-    content:'';
-    display:block;
-    position:absolute;
-    z-index:1;
-    top:0;
-    left:0;
-    border-radius:$toggle-height2;
+    content: '';
+    display: block;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    border-radius: $toggle-height2;
     height: $toggle-height2;
     width: $toggle-height2;
-    background:white;
-    box-shadow:0 3px 3px rgba(0,0,0,.2),0 0 0 2px #dddddd;
+    background: white;
+    box-shadow: 0 3px 3px rgba(0,0,0,.2),0 0 0 2px #dddddd;
   }
 }
 
 .checkbox {
-  position:absolute;
-  left:-5000px;
+  position: absolute;
+  left: -5000px;
+
   &:checked {
     + .checkbox-label {
-      background:$toggle-color;
-      box-shadow:0 0 0 2px $toggle-color;
+      background: $toggle-color;
+      box-shadow: 0 0 0 2px $toggle-color;
+
       .on {
         left: 60px;
-        opacity:1;
+        opacity: 1;
       }
+
       .off {
-        right:0px;
-        opacity:0;
+        right: 0;
+        opacity: 0;
       }
+
       &:before {
-        left:30px;
-        box-shadow:0 3px 3px rgba(0,0,0,.2),0 0 0 2px $toggle-color;
+        left: 30px;
+        box-shadow: 0 3px 3px rgba(0,0,0,.2),0 0 0 2px $toggle-color;
       }
     }
   }

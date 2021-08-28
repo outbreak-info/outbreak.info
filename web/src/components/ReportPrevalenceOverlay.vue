@@ -102,8 +102,8 @@
           <small class="text-muted">missing recent data</small>
         </div>
 
-        <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
-          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis epi-x axis--x" ref="xEpiAxis"></g>
+        <svg :width="width" :height="epiHeight" class="mutation-epi-prevalence" ref="epi" :name="title">
+          <g :transform="`translate(${margin.left}, ${epiHeight - margin.bottom })`" class="epi-axis epi-x axis--x" ref="xEpiAxis"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis epi-y axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
           <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
@@ -227,6 +227,7 @@ export default Vue.extend({
     return {
       width: 800,
       height: 400,
+      epiHeight: 300,
       margin: {
         top: 15,
         bottom: 25,
@@ -606,13 +607,13 @@ export default Vue.extend({
         .domain([0, (avgMax + CIMax) * 0.5]);
 
       this.yEpi = scaleLinear()
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
+        .range([this.epiHeight - this.margin.top - this.margin.bottom, 0])
         .domain([0, max(this.plottedEpi, d => d[this.yEpiVariable])])
         .nice();
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
-        .tickSize(-this.height)
+        .tickSize(-this.epiHeight)
         .tickSizeOuter(0);
 
       select(this.$refs.xAxis).call(this.xAxis);
@@ -730,12 +731,12 @@ export default Vue.extend({
                 .attr("class", "no-data-epi")
                 .attr("x", this.x(this.maxEpiDate))
                 .attr("width", this.x(this.today) - this.x(this.maxEpiDate))
-                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .attr("height", this.epiHeight - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
             },
             update => {
               update
-                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .attr("height", this.epiHeight - this.margin.top - this.margin.bottom)
                 .style("fill", "url(#diagonalHatchLight)")
                 .attr("x", this.x(this.maxEpiDate))
                 .attr("width", this.x(this.today) - this.x(this.maxEpiDate))

@@ -312,8 +312,8 @@
                     <h5>{{ choro.key }}</h5>
                   </router-link>
 
-                  <small v-if="choro.variantType.includes('of')"
-                    :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
+                  <small v-if="choro.variantType.includes('Variant') || choro.variantType.includes('Mutation')"
+                    :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'VUM': choro.variantType == 'Variant under Monitoring', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
                     {{ choro.variantType }}
                   </small>
                 </div>

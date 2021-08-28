@@ -40,8 +40,8 @@
         </td>
       </tr>
       <tr class="border-top border-bottom"
-        :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
-        <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'voi': lineageGroup.key == 'Variant of Interest'}">
+        :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'vum': lineageGroup.key == 'Variant under Monitoring',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
+        <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'vum': lineageGroup.key == 'Variant under Monitoring',  'voi': lineageGroup.key == 'Variant of Interest'}">
           {{lineageGroup.key}}
           <!-- <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" /> -->
         </td>
@@ -149,11 +149,6 @@ export default {
         instance.setContent(info);
       }
     });
-  },
-  methods: {
-    showSublineages(lineage) {
-      console.log(lineage)
-    }
   }
 }
 </script>
@@ -174,7 +169,8 @@ th.padded {
 .moi,
 .padding,
 .voc,
-.voi {
+.voi,
+.vum {
     padding: 0.5rem;
     text-align: center;
 }
