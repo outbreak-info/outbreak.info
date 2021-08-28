@@ -1913,7 +1913,7 @@ export function findWHOLineage(alias) {
         variantType: curated.variantType
       })
     })
-    return(results)
+    return (results)
   }
 }
 
