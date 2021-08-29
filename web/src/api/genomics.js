@@ -382,8 +382,25 @@ export function buildQueryStr(lineageString, mutationString, md = null, bulkQuer
 
 // go back from query string into parameters.
 function parseStrQuery(query) {
+  console.log(query)
+  var pango = null;
+  var muts = [];
+  const queryPieces = query.split("&");
+
+  queryPieces.forEach(d => {
+    if (d.includes("pangolin_lineage=")) {
+      const pango_portion = d.split("pangolin_lineage=")
+      pango = pango_portion[1];
+    }
+    if (d.includes("mutations=")) {
+      const muts_portion = d.split("mutations=")
+      muts.push(muts_portion[1].split(" AND "))
+    }
+  })
+
   return ({
-    pango: query
+    pango: pango,
+    muts: muts
   })
 }
 
@@ -1065,6 +1082,7 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
         let res = Object.keys(results).map(
           mutation_key => {
             const filtered = CURATED.filter(d => d.char_muts_parent_query == mutation_key);
+            console.log(filtered)
             const label = filtered.length === 1 ? filtered[0].label : mutation_key;
             // look up if the mutation key is a variant of concerned/named
             let d = results[mutation_key]["results"];
@@ -1077,7 +1095,10 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
               pango_descendants: filtered.length === 1 ? filtered[0].pango_descendants : null,
               id: label.replace(/\(/g, "").replace(/\)/g, "").replace(/:/g, "").replace(/\//g, "-").replace(/\./g, "-").replace(/\s/g, "_"),
               data: d,
-              route: parseStrQuery(mutation_key)
+              route: filtered.length === 1 ? null : parseStrQuery(queryStr),
+              params: filtered.length === 1 ? {
+                alias: filtered[0].label.toLowerCase()
+              } : null
             });
           });
         return ([].concat(...res));
