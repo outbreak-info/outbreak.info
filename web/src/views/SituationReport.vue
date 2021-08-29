@@ -664,6 +664,8 @@ export default {
 
         if (this.$route.query.pango) {
           if (this.$route.query.muts && this.$route.query.muts.length) {
+            console.log("this.$route.query.pango")
+            console.log(this.$route.query.pango)
             // Lineage + Mutation report
             this.lineageName = this.$route.query.pango.toUpperCase();
             this.selectedMutationArr = typeof(this.$route.query.muts) == "string" ? [this.$route.query.muts] : this.$route.query.muts;
@@ -703,6 +705,9 @@ export default {
             };
             this.title = `${this.reportName} Mutation Report`;
           } else {
+            console.log("V")
+            console.log(this.$route.query.muts)
+            console.log(typeof(this.$route.query.muts))
             // Variant (multiple mutation) report
             this.lineageName = null;
             this.reportName = this.$route.query.muts.join(", ");

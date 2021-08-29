@@ -386,7 +386,6 @@ export function buildQueryStr(lineageString, mutationArr, md = null, bulkQuery =
 
 // go back from query string into parameters.
 function parseStrQuery(query) {
-  console.log(query)
   var pango = null;
   var muts = [];
   const queryPieces = query.split("&");
@@ -398,7 +397,7 @@ function parseStrQuery(query) {
     }
     if (d.includes("mutations=")) {
       const muts_portion = d.split("mutations=")
-      muts.push(muts_portion[1].split(" AND "))
+      muts = muts.concat(muts_portion[1].split(" AND "))
     }
   })
 
