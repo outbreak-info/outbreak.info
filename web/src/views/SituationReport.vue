@@ -297,7 +297,9 @@
         <div id="sublineage-streamgraph" v-else>
           <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" class="p-2 pt-3 bg-grey__lightest justify-content-center" />
 
-          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax" routeName="MutationReport" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName"
+          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax"
+          class="d-flex flex-column align-items-center"
+          routeName="MutationReport" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName"
             :onlyTotals="false" :colorScale="sublineageColorScale" :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
         </div>
       </section>
