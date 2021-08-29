@@ -34,7 +34,7 @@
       </small>
     </button>
 
-    <DownloadReportData :data="data" figureRef="sublineage_counts" dataType="Sublineage breakdown" :fullWidth="false" />'
+    <DownloadReportData :data="data" figureRef="sublineage_counts" dataType="Sublineage breakdown" :fullWidth="false" />
   </div>
 
   <div v-if="areZerosFiltered" class="text-muted mt-2 line-height-sm">
