@@ -941,10 +941,10 @@ export default Vue.extend({
 
         // event listener for tooltips
         this.chart.selectAll(".confidence-interval")
-          .on("mousemove", () => this.tooltipOn())
+          .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
         this.counts.selectAll(".raw-counts")
-          .on("mousemove", () => this.tooltipOn())
+          .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
       }
     },
