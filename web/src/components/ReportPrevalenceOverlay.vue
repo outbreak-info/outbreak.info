@@ -613,7 +613,7 @@ export default Vue.extend({
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
-        .tickSize(-this.epiHeight)
+        .tickSize(-this.height)
         .tickSizeOuter(0);
 
       select(this.$refs.xAxis).call(this.xAxis);
