@@ -40,8 +40,7 @@
   <div v-if="areZerosFiltered" class="text-muted mt-2 line-height-sm">
     <small>
       <font-awesome-icon class="mr-1" :icon="['far', 'question-circle']" />
-      Lineages may show zero sequences when <a href="https://www.pango.network/how-does-the-system-work/genome-designation-versus-assignation/" target="_blank">Pango designates a new lineage</a> but the tools to assign these lineages like
-      <a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Pangolin</a> haven't been updated yet.
+      Lineages may show zero sequences immediately after the <a href="https://www.pango.network/how-does-the-system-work/genome-designation-versus-assignation/" target="_blank">Pango network designates a new lineage</a> since lineage assignment models used by <a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Pangolin</a> have to be retrained, followed by sequence classification with the updated models.
     </small>
   </div>
 
