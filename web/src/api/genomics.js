@@ -444,7 +444,6 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
     queryStr = buildQueryStr(lineageString, mutationArr);
   }
 
-  console.log(queryStr)
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
@@ -596,6 +595,10 @@ export function updateLocationData(apiurl, alias, mutationArr, lineageString, lo
 
   if (!locations || !locations.length) {
     locations = [location];
+  }
+
+  if(typeof(locations) == "string") {
+    locations = [locations];
   }
 
   locations.push("Worldwide");
@@ -1086,7 +1089,6 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
         let res = Object.keys(results).map(
           mutation_key => {
             const filtered = CURATED.filter(d => d.char_muts_parent_query == mutation_key);
-            console.log(filtered)
             const label = filtered.length === 1 ? filtered[0].label : mutation_key;
             // look up if the mutation key is a variant of concerned/named
             let d = results[mutation_key]["results"];

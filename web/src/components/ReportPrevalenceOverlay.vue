@@ -949,7 +949,6 @@ export default Vue.extend({
       }
     },
     route2Mutation(d) {
-      console.log(d.route)
       this.$router.push({
         name: "MutationReport",
         params: d.params,
