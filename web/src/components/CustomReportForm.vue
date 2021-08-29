@@ -46,8 +46,7 @@ export default Vue.extend({
       const routeQuery = this.$route.query;
 
       this.submitCount += 1;
-      console.log(this.selectedLineage)
-      if (this.selectedLineage.alias) {
+      if (this.selectedLineage && this.selectedLineage.alias) {
         this.$router.push({
           name: "MutationReport",
           params: {
@@ -61,10 +60,11 @@ export default Vue.extend({
           }
         });
       } else {
+        const selectedPango = this.selectedLineage ? this.selectedLineage.name : null;
         this.$router.push({
           name: "MutationReport",
           query: {
-            pango: this.selectedLineage.name,
+            pango: selectedPango,
             muts: this.selectedMutations.map(d => d.mutation),
             loc: routeQuery.loc,
             overlay: routeQuery.overlay,
