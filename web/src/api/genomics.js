@@ -356,7 +356,7 @@ export function getLocationBasics(apiurl) {
   )
 }
 
-export function buildQueryStr(lineageString, mutationString, md = null, bulkQuery = false) {
+export function buildQueryStr(lineageString, mutationArr, md = null, bulkQuery = false) {
   var queryStr = "";
   if (md) {
     if (bulkQuery) {
@@ -365,15 +365,19 @@ export function buildQueryStr(lineageString, mutationString, md = null, bulkQuer
     } else {
       queryStr += `pangolin_lineage=${md.reportQuery.pango.join(" OR ")}`;
     }
-    if (mutationString) {
-      queryStr += `&mutations=${mutationString.replace(",", " AND ")}`;
+    if (mutationArr) {
+      queryStr += `&mutations=${mutationArr.join(" AND ")}`;
     }
   } else {
     if (lineageString) {
       queryStr += `pangolin_lineage=${lineageString}`;
     }
-    if (mutationString) {
-      queryStr += `&mutations=${mutationString}`;
+    // variant reports, e.g. B.1.1.7 + S:E484K
+    if (lineageString && mutationArr) {
+      queryStr += `&`;
+    }
+    if (mutationArr) {
+      queryStr += `mutations=${mutationArr.join(" AND ")}`;
     }
   }
   return queryStr;
@@ -406,7 +410,7 @@ function parseStrQuery(query) {
 
 // Report data for a Situation Report page.
 // Returns: date updated, location dictionary metadata, characteristic mutations, lineage/sublineage totals, lineage/sublineage prevalences over time, subnational data for choropleths.
-export function getReportData(apiurl, alias, locations, mutationString, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
+export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
   store.state.admin.reportloading = true;
 
   // clean up the locations data
@@ -436,17 +440,18 @@ export function getReportData(apiurl, alias, locations, mutationString, lineageS
   // pull out the sublineage queries
   if (filtered.length === 1) {
     md = filtered[0];
-    queryStr = buildQueryStr(lineageString, mutationString, md);
+    queryStr = buildQueryStr(lineageString, mutationArr, md);
   } else {
-    queryStr = buildQueryStr(lineageString, mutationString);
+    queryStr = buildQueryStr(lineageString, mutationArr);
   }
 
+  console.log(queryStr)
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
     getCharacteristicMutations(apiurl, lineageString),
-    getMutationDetails(apiurl, mutationString),
-    getMutationsByLineage(apiurl, mutationString),
+    getMutationDetails(apiurl, mutationArr),
+    getMutationsByLineage(apiurl, mutationArr),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
     getSublineageTotals(apiurl, md, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
@@ -574,7 +579,7 @@ export function getSublineagePrevalence(apiurl, md, location) {
   return ( of ([]))
 }
 
-export function updateLocationData(apiurl, alias, mutationString, lineageString, locations, location, totalThreshold) {
+export function updateLocationData(apiurl, alias, mutationArr, lineageString, locations, location, totalThreshold) {
   // lookup WHO name in curated dictionary
   const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
   var md;
@@ -583,9 +588,9 @@ export function updateLocationData(apiurl, alias, mutationString, lineageString,
   // Check if the value exists within the curated list
   if (filtered.length === 1) {
     md = filtered[0];
-    queryStr = buildQueryStr(lineageString, mutationString, md);
+    queryStr = buildQueryStr(lineageString, mutationArr, md);
   } else {
-    queryStr = buildQueryStr(lineageString, mutationString);
+    queryStr = buildQueryStr(lineageString, mutationArr);
   }
 
   store.state.admin.reportloading = true;
@@ -658,11 +663,11 @@ export function getMutationDetails(apiurl, mutationString) {
   )
 }
 
-export function getMutationsByLineage(apiurl, mutationString, proportionThreshold = 0, returnFlat = true) {
-  if (!mutationString)
+export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold = 0, returnFlat = true) {
+  if (!mutationArr)
     return ( of ([]));
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}mutations-by-lineage?mutations=${mutationString}&timestamp=${timestamp}&frequency=${proportionThreshold}`;
+  const url = `${apiurl}mutations-by-lineage?mutations=${mutationArr.join(",")}&timestamp=${timestamp}&frequency=${proportionThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"

@@ -666,7 +666,7 @@ export default {
           if (this.$route.query.muts && this.$route.query.muts.length) {
             // Lineage + Mutation report
             this.lineageName = this.$route.query.pango.toUpperCase();
-            this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
+            this.selectedMutationArr = typeof(this.$route.query.muts) == "string" ? [this.$route.query.muts] : this.$route.query.muts;
             this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
             this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
             this.reportType = "lineage with added mutations";
@@ -680,7 +680,7 @@ export default {
             // Lineage report
             this.lineageName = this.$route.query.pango.toUpperCase();
             this.reportName = this.lineageName;
-            this.mutationID = null;
+            this.selectedMutationArr = null;
             this.reportType = "lineage";
             this.title = `${this.reportName} Lineage Report`;
             this.searchTerms = [this.lineageName];
@@ -693,8 +693,8 @@ export default {
           if (typeof(this.$route.query.muts) == "string") {
             // Single mutation report
             this.lineageName = null;
-            this.mutationID = this.$route.query.muts;
-            this.reportName = this.mutationID;
+            this.selectedMutationArr = [this.$route.query.muts];
+            this.reportName = this.selectedMutationArr;
             this.mutationName = this.reportName;
             this.reportType = "mutation";
             this.searchTerms = [this.mutationName.split(":").slice(-1)];
@@ -708,11 +708,11 @@ export default {
             this.reportName = this.$route.query.muts.join(", ");
             this.mutationName = this.reportName;
             this.searchTerms = [this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')];
-            this.mutationID = this.$route.query.muts.join(",");
+            this.selectedMutationArr = this.$route.query.muts;
             this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
             this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
             this.locationQueryParams = {
-              muts: [this.$route.query.muts.join(",")]
+              muts: [this.$route.query.muts]
             };
           }
         }
@@ -720,8 +720,8 @@ export default {
     },
     setupReport() {
       this.setLineageAndMutationStr();
-      if (this.lineageName || this.mutationID || this.alias) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+      if (this.lineageName || this.selectedMutationArr || this.alias) {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
           this.hasData = true;
 
           // selected locations
@@ -873,7 +873,7 @@ export default {
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
         console.log(results)
         // selected locations
         this.selectedLocations = results.locations;
