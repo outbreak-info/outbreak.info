@@ -59,7 +59,8 @@
             sequencing data</text>
         </g>
         <g id="weird-last values" :hidden="data.length < lengthThreshold">
-          <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing delays</text>
+          <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing
+            delays</text>
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
         <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
@@ -204,6 +205,9 @@ export default Vue.extend({
       this.setXScale();
       this.updateBrush();
       this.updatePlot();
+    },
+    setWidth: function() {
+      this.setDims();
     },
     data: function() {
       this.xMin = timeParse("%Y-%m-%d")(this.xmin);
