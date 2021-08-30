@@ -210,7 +210,8 @@
 
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions" v-if="mutations" />
+            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions"
+              v-if="mutations" />
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN -->
@@ -297,10 +298,8 @@
         <div id="sublineage-streamgraph" v-else>
           <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" class="p-2 pt-3 bg-grey__lightest justify-content-center" />
 
-          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax"
-          class="d-flex flex-column align-items-center"
-          routeName="MutationReport" :setWidth="width" :location="selectedLocation.label" :seqCounts="prevalence" :mutationName="reportName"
-            :onlyTotals="false" :colorScale="sublineageColorScale" :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax" class="d-flex flex-column align-items-center" routeName="MutationReport" :setWidth="width" :location="selectedLocation.label"
+            :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale" :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
         </div>
       </section>
 
@@ -662,6 +661,7 @@ export default {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
       if (this.alias) {
         this.lineageName = this.$options.filters.capitalize(this.alias.toLowerCase());
+        this.selectedMutationArr = null;
         this.title = `${this.lineageName} Variant Report`;
         this.reportType = "combined lineage";
         this.reportName = this.lineageName;
@@ -675,7 +675,7 @@ export default {
             this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
             this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
             this.reportType = "lineage with added mutations";
-            this.searchTerms = `${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`
+            this.searchTerms = [`${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`]
             this.title = `${this.reportName} Report`;
             const qParam = typeof(this.$route.query.muts) == "string" ? `${this.lineageName}|${this.$route.query.muts}` : `${this.lineageName}|${this.$route.query.muts.join(",")}`;
             this.locationQueryParams = {
