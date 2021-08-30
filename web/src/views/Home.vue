@@ -79,17 +79,22 @@
           </form>
           <small id="sBar-example-variant-lineage" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.617.2'}} " class="text-light">B.1.617.2 / Delta
+              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {muts: ['S:T19R','S:DEL157/158','S:L452R','S:T478K','S:P681R','S:D950N']}} " class="text-light">Delta+ variants
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.617.2'}} " class="text-light">B.1.617.2
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7 / Alpha
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.621'}} " class="text-light">B.1.621
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', params: {alias: 'alpha'}} " class="text-light">Alpha / B.1.1.7
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>

@@ -228,8 +228,6 @@ export default Vue.extend({
         .style("opacity", 1);
     },
     updatePlot() {
-      const t1 = transition().duration(2500);
-
       if (this.data) {
         this.updateScales();
 
@@ -264,7 +262,7 @@ export default Vue.extend({
           exit =>
           exit.call(exit =>
             exit
-            .transition(10)
+            .transition()
             .style("opacity", 1e-5)
             .remove()
           )
@@ -299,7 +297,7 @@ export default Vue.extend({
           exit =>
           exit.call(exit =>
             exit
-            .transition(10)
+            .transition()
             .style("opacity", 1e-5)
             .remove()
           )

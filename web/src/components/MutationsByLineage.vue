@@ -132,11 +132,9 @@ export default Vue.extend({
       this.$router.push({
         name: "MutationReport",
         query: {
-          country: queryParams.country,
-          division: queryParams.division,
           pango: lineage,
           selected: queryParams.selected,
-          selectedType: queryParams.selectedType
+          loc: queryParams.loc
         }
       })
     },

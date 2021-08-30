@@ -114,19 +114,23 @@ export default {
     },
     addVariant() {
       if (this.selectedLineage && this.selectedMutations.length) {
+
         this.variant.push({
           label: `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}`,
-          qParam: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`
+          qParam: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`,
+          mutation_string: `(${this.selectedLineage}) AND (${this.selectedMutations.map(d => d.mutation).join(" AND ")})`
         })
       } else if (this.selectedLineage) {
         this.pango.push({
           label: this.selectedLineage,
-          qParam: this.selectedLineage
+          qParam: this.selectedLineage,
+          mutation_string: this.selectedLineage
         })
       } else if (this.selectedMutations.length) {
         this.muts.push({
           label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
-          qParam: this.selectedMutations.map(d => d.mutation).join(",")
+          qParam: this.selectedMutations.map(d => d.mutation).join(" AND "),
+          mutation_string: this.selectedMutations.map(d => d.mutation).join(" AND ")
         })
       }
 

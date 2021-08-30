@@ -47,9 +47,9 @@
 
 
     </div>
-    <section id="report-list" class="text-left">
+    <!-- <section id="report-list" class="text-left">
       <CustomLocationForm :curated="curated" />
-    </section>
+    </section> -->
 
     <ReportAcknowledgements />
   </div>
@@ -62,7 +62,7 @@ import Vue from "vue";
 // import ReportLogos from "@/components/ReportLogos.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 
-import CustomLocationForm from "@/components/CustomLocationForm.vue";
+// import CustomLocationForm from "@/components/CustomLocationForm.vue";
 
 import {
   nest
@@ -99,7 +99,7 @@ export default {
   components: {
     // ReportLogos,
     ReportAcknowledgements,
-    CustomLocationForm,
+    // CustomLocationForm,
     FontAwesomeIcon
   },
   data() {

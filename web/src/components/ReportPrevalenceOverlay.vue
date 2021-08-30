@@ -37,6 +37,10 @@
         <div class="ci-legend mr-2" :style="{background: '#999'}">
         </div>
         <small class="text-muted">95% confidence interval</small>
+        <svg width="15" height="15" class="ml-4 mr-2">
+          <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
+        </svg>
+        <small class="text-muted">missing recent data</small>
       </div>
 
       <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="svg" :name="title">
@@ -44,6 +48,11 @@
           <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
             <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
           </marker>
+
+          <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+            <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
+          </pattern>
         </defs>
 
         <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="mutation-axis axis--x" ref="xAxis"></g>
@@ -59,16 +68,18 @@
             sequencing data</text>
         </g> -->
         <g id="weird-last values" :hidden="data && data.length < lengthThreshold">
-          <text :x="width - margin.left" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples</text>
-          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.left - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
+          <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing
+            delays</text>
+          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
         </g>
       </svg>
 
       <!-- Histogram of sequencing counts -->
-      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" :onlyTotals="true" notDetectedColor="#bab0ab" className="mutation-epi-prevalence" v-if="seqCounts" />
+      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="mutationName" :onlyTotals="onlyTotals" notDetectedColor="#bab0ab" detectedColor="#79706E"
+        className="mutation-epi-prevalence" v-if="seqCounts && seqCounts.length" />
 
       <!-- zoom btns -->
-      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}" :class="{'hidden' : !epi.length}">
         <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
           <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
         </button>
@@ -86,10 +97,14 @@
             <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
           </svg>
           <small class="text-muted">7 day rolling average of confirmed cases</small>
+          <svg width="15" height="15" class="ml-4 mr-2">
+            <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
+          </svg>
+          <small class="text-muted">missing recent data</small>
         </div>
 
-        <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="epi" :name="title">
-          <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="epi-axis epi-x axis--x" ref="xEpiAxis"></g>
+        <svg :width="width" :height="epiHeight" class="mutation-epi-prevalence" ref="epi" :name="title">
+          <g :transform="`translate(${margin.left}, ${epiHeight - margin.bottom })`" class="epi-axis epi-x axis--x" ref="xEpiAxis"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis epi-y axis--y" ref="yEpiAxis"></g>
           <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
           <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
@@ -102,6 +117,7 @@
   <!-- TOOLTIPS -->
   <div ref="tooltip_mutations" class="tooltip-basic box-shadow" id="tooltip-mutations">
     <h5 id="mutation" class="p-2 m-0"></h5>
+    <small id="sublineages" class="line-height-sm"></small>
   </div>
   <!-- <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
     <h5 id="date"></h5>
@@ -173,7 +189,24 @@ export default Vue.extend({
     seqCounts: Array,
     epi: Array,
     locationName: String,
-    locationID: String
+    locationID: String,
+    setWidth: Number,
+    xmin: String,
+    xmax: String,
+    setColorScale: Function,
+    mutationName: String,
+    includeToday: {
+      type: Boolean,
+      default: true
+    },
+    routeName: {
+      type: String,
+      default: "LocationReport"
+    },
+    onlyTotals: {
+      type: Boolean,
+      default: true
+    }
   },
   components: {
     DownloadReportData,
@@ -195,8 +228,9 @@ export default Vue.extend({
     return {
       width: 800,
       height: 400,
+      epiHeight: 300,
       margin: {
-        top: 10,
+        top: 15,
         bottom: 25,
         left: 85,
         right: 135
@@ -250,6 +284,9 @@ export default Vue.extend({
       xBandwidth: 1,
       xMin: null,
       xMax: null,
+      maxDate: null,
+      maxEpiDate: null,
+      today: null,
       xAxis: null,
       yAxis: null,
       yEpiAxis: null,
@@ -280,16 +317,29 @@ export default Vue.extend({
       this.updatePlot();
     },
     data: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
+    xmin: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmax: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    }
   },
   mounted() {
     this.$nextTick(function() {
-      window.addEventListener("resize", this.debounceSetDims);
-
+      if (!this.setWidth) {
+        window.addEventListener("resize", this.debounceSetDims);
+      }
       this.updateBrush();
     })
 
@@ -324,20 +374,25 @@ export default Vue.extend({
       const mx = 0.85;
       const my = 0.4;
       const hwRatio = 0.4;
-      const svgContainer = document.getElementById('location-report-prevalence');
+      if (!this.setWidth) {
+        const svgContainer = document.getElementById('location-report-prevalence');
 
-      let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
-      maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
-      const maxHeight = window.innerHeight * my;
+        let maxWidth = svgContainer ? svgContainer.offsetWidth : 800;
+        maxWidth = maxWidth < 500 ? maxWidth * 0.98 : maxWidth * mx;
+        const maxHeight = window.innerHeight * my;
 
 
-      const idealHeight = hwRatio * maxWidth;
-      if (idealHeight <= maxHeight) {
-        this.height = idealHeight;
-        this.width = maxWidth;
+        const idealHeight = hwRatio * maxWidth;
+        if (idealHeight <= maxHeight) {
+          this.height = idealHeight;
+          this.width = maxWidth;
+        } else {
+          this.height = maxHeight;
+          this.width = this.height / hwRatio;
+        }
       } else {
-        this.height = maxHeight;
-        this.width = this.height / hwRatio;
+        this.width = this.setWidth;
+        this.height = hwRatio * this.width;
       }
 
       if (this.width < 600) {
@@ -358,16 +413,17 @@ export default Vue.extend({
 
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax]);
+          .domain([newMin, newMax])
+          .clamp(true);
 
         // update plotted data
         this.plottedData = cloneDeep(this.data);
         this.plottedData.forEach(mutation => {
-          mutation.data = mutation.data.filter(d => d[this.xVariable] > newMin && d[this.xVariable] < newMax);
+          mutation.data = mutation.data.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
         });
 
         this.plottedData = this.plottedData.filter(d => d.data.length);
-        this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > newMin && d[this.xEpiVariable] < newMax);
+        this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] >= newMin && d[this.xEpiVariable] <= newMax);
         // move the brush
         this.brushRef.call(this.brush.move, null);
         this.brushRef2.call(this.brush.move, null);
@@ -378,23 +434,43 @@ export default Vue.extend({
         // update route
         const queryParams = this.$route.query;
 
-        this.$router.push({
-          name: "LocationReport",
-          params: {
-            disableScroll: true
-          },
-          query: {
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-            xmin: timeFormat("%Y-%m-%d")(newMin),
-            xmax: timeFormat("%Y-%m-%d")(newMax)
-          }
-        })
+        if (this.routeName == "MutationReport") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: this.routeName,
+            params: {
+              disableScroll: true,
+              alias: params.alias
+            },
+            query: {
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        }
+        if (this.routeName == "LocationReport") {
+          this.$router.push({
+            name: "LocationReport",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              alias: queryParams.alias,
+              pango: queryParams.pango,
+              variant: queryParams.variant,
+              selected: queryParams.selected,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax)
+            }
+          })
+        }
       }
-
     },
     resetZoom() {
       this.brushRef.call(this.brush.move, null);
@@ -405,19 +481,38 @@ export default Vue.extend({
       this.xMax = null;
       this.setXScale();
 
-      this.$router.push({
-        name: "LocationReport",
-        params: {
-          disableScroll: true
-        },
-        query: {
-          loc: queryParams.loc,
-          muts: queryParams.muts,
-          pango: queryParams.pango,
-          variant: queryParams.variant,
-          selected: queryParams.selected
-        }
-      })
+      if (this.routeName == "MutationReport") {
+        const params = this.$route.params;
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected
+          }
+        })
+      }
+      if (this.routeName == "LocationReport") {
+        this.$router.push({
+          name: "LocationReport",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected
+          }
+        })
+      }
 
       this.updatePlot();
     },
@@ -425,8 +520,8 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     setupPlot() {
-      this.xMin = timeParse("%Y-%m-%d")(this.$route.query.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.$route.query.xmax);
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
       this.counts = select(this.$refs.counts);
@@ -458,9 +553,25 @@ export default Vue.extend({
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
       } else {
-        const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
+
         const mutExtent = extent(this.data.flatMap(d => d.data).map(d => d[this.xVariable]));
-        xDomain = extent(epiExtent.concat(mutExtent));
+        let minDate;
+        if (this.epi && this.epi.length) {
+          const epiExtent = extent(this.epi.map(d => d[this.xEpiVariable]));
+          this.maxDate = mutExtent[1];
+          this.maxEpiDate = epiExtent[1]
+          minDate = Math.min(epiExtent[0], mutExtent[0]);
+        } else {
+          this.maxDate = mutExtent[1];
+          minDate = mutExtent[0];
+        }
+
+        if (this.includeToday) {
+          this.today = new Date();
+          xDomain = [minDate, this.today];
+        } else {
+          xDomain = [minDate, math.Max(this.maxDate, this.maxEpiDate)];
+        }
 
         if (this.xMin && this.xMin < xDomain[1]) {
           xDomain[0] = this.xMin;
@@ -473,18 +584,19 @@ export default Vue.extend({
 
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(xDomain);
+        .domain(xDomain)
+        .clamp(true);
 
       this.plottedData = cloneDeep(this.data);
       this.plottedEpi = this.epi;
       this.plottedData.forEach(mutation => {
-        mutation.data = mutation.data.filter(d => d[this.xVariable] > xDomain[0] && d[this.xVariable] < xDomain[1]);
+        mutation.data = mutation.data.filter(d => d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1]);
       });
 
       this.plottedData = this.plottedData.filter(d => d.data.length);
-      this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] > xDomain[0] && d[this.xEpiVariable] < xDomain[1]);
+      this.plottedEpi = this.epi.filter(d => d[this.xEpiVariable] >= xDomain[0] && d[this.xEpiVariable] <= xDomain[1]);
 
-      this.colorScale = this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
+      this.colorScale = this.setColorScale ? this.setColorScale : this.colorScale.domain(map(this.data, d => d[this.fillVariable]));
     },
     updateScales() {
       const avgMax = max(this.plottedData.flatMap(d => d.data), d => d[this.yVariable]);
@@ -496,7 +608,7 @@ export default Vue.extend({
         .domain([0, (avgMax + CIMax) * 0.5]);
 
       this.yEpi = scaleLinear()
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
+        .range([this.epiHeight - this.margin.top - this.margin.bottom, 0])
         .domain([0, max(this.plottedEpi, d => d[this.yEpiVariable])])
         .nice();
 
@@ -567,7 +679,6 @@ export default Vue.extend({
         .style("opacity", 1);
     },
     tooltipOnMutation(d) {
-      console.log(d)
       const ttipShift = 20;
       const ttip = select(this.$refs.tooltip_mutations);
 
@@ -575,13 +686,17 @@ export default Vue.extend({
       this.chart.selectAll(".mutation-trace")
         .style("opacity", 0.3);
 
-      this.chart.select(`#${d.label.replace(/:/g, "_").replace(/\./g, "_")}`)
+      this.chart.select(`#${d.id}`)
         .style("opacity", 1);
 
 
       // edit text
       ttip.select("h5")
         .text(d.label)
+        .style("color", this.colorScale(d.label))
+
+      ttip.select("#sublineages")
+        .text(d.pango_descendants ? d.pango_descendants.join(", ") : "")
         .style("color", this.colorScale(d.label))
 
       // fix location
@@ -604,6 +719,38 @@ export default Vue.extend({
         this.updateScales();
 
         // EPI DATA
+        // hashed area to highlight the gap between today
+        if (this.includeToday) {
+          const noDataSelectorEpi = this.epiChart
+            .selectAll(".no-data-epi")
+            .data([0]);
+
+          noDataSelectorEpi.join(
+            enter => {
+              enter.append("rect")
+                .attr("class", "no-data-epi")
+                .attr("x", this.x(this.maxEpiDate))
+                .attr("width", this.x(this.today) - this.x(this.maxEpiDate))
+                .attr("height", this.epiHeight - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+            },
+            update => {
+              update
+                .attr("height", this.epiHeight - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+                .attr("x", this.x(this.maxEpiDate))
+                .attr("width", this.x(this.today) - this.x(this.maxEpiDate))
+            },
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+        }
+
         const epiSelector = this.epiChart
           .selectAll(".epi-curve")
           .data([this.plottedEpi]);
@@ -618,7 +765,6 @@ export default Vue.extend({
           },
           update => {
             update
-              .transition(t1)
               .attr("d", this.epiLine)
           },
           exit =>
@@ -626,18 +772,54 @@ export default Vue.extend({
             exit
             .transition()
             .style("opacity", 1e-5)
+            .style("opacity", 1e-5)
             .remove()
           )
         )
 
         // MUTATION TRACES
+        // hashed area to highlight the gap between today
+        if (this.includeToday) {
+          const noDataSelector = this.chart
+            .selectAll(".no-data")
+            .data([0]);
+
+          noDataSelector.join(
+            enter => {
+              enter.append("rect")
+                .attr("class", "no-data")
+                .attr("x", this.x(this.maxDate))
+                .attr("width", this.x(this.today) - this.x(this.maxDate))
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+            },
+            update => {
+              update
+                .attr("height", this.height - this.margin.top - this.margin.bottom)
+                .style("fill", "url(#diagonalHatchLight)")
+                .attr("x", this.x(this.maxDate))
+                .attr("width", this.x(this.today) - this.x(this.maxDate))
+            },
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+        }
+
         // calculate the end point labels
         // Create nodes of the text labels for force direction
         const labelHeight = 18;
         const endLabels = this.plottedData.map(d => {
           return ({
             label: d[this.fillVariable],
+            id: d.id,
+            pango_descendants: d.pango_descendants,
             route: d.route,
+            params: d.params,
             fx: 0,
             targetY: this.y(d.data.slice(-1)[0][this.yVariable])
           })
@@ -681,6 +863,7 @@ export default Vue.extend({
               .attr("x", this.width - this.margin.left - this.margin.right)
               .attr("dx", 5)
               .attr("y", d => d.y)
+              .style("font-size", 22)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
               .style("fill", d => this.colorScale(d.label))
               .text(d => d.label);
@@ -716,7 +899,7 @@ export default Vue.extend({
           enter => {
             const mutGrp = enter.append("g")
               .attr("class", "mutation-trace")
-              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
+              .attr("id", d => d.id);
 
             mutGrp.append("path")
               .attr("class", "confidence-interval")
@@ -734,7 +917,7 @@ export default Vue.extend({
           },
           update => {
             update
-              .attr("id", d => d[this.fillVariable].replace(/:/g, "_").replace(/\./g, "_"));
+              .attr("id", d => d.id);
 
             update.select(".confidence-interval")
               .style("fill", d => this.colorScale(d[this.fillVariable]))
@@ -758,16 +941,17 @@ export default Vue.extend({
 
         // event listener for tooltips
         this.chart.selectAll(".confidence-interval")
-          .on("mousemove", () => this.tooltipOn())
+          .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
         this.counts.selectAll(".raw-counts")
-          .on("mousemove", () => this.tooltipOn())
+          .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
       }
     },
     route2Mutation(d) {
       this.$router.push({
         name: "MutationReport",
+        params: d.params,
         query: {
           ...d.route,
           loc: this.locationID,

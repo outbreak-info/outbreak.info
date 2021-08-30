@@ -75,6 +75,9 @@ import {
 
 
 import chroma from "chroma-js";
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 
 export default Vue.extend({
   name: "MutationHeatmap",
@@ -140,7 +143,7 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 195,
+        right: 225,
         bottom: 72,
         left: 153
       },
@@ -154,6 +157,7 @@ export default Vue.extend({
       interestColor: "#feb56c",
       concernColorDark: "#e15759",
       interestColorDark: "#f28e2c",
+      lineageWarningThreshold: 1000,
       // scales
       x: scaleBand(),
       y: scaleBand(),
@@ -177,6 +181,23 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.updatePlot();
+    this.$nextTick(function() {
+      tippy(this.svg.selectAll(".low-count").nodes(), {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "bottom",
+        animation: "fade",
+        theme: "light",
+        allowHTML: true,
+        interactive: true,
+        appendTo: document.body,
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
+    })
+
   },
   methods: {
     setupDims() {
@@ -532,6 +553,20 @@ export default Vue.extend({
               .attr("dx", 7)
               // .attr("dx", -5)
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+
+            grp.append("tspan")
+              .attr("class", "fa fa-exclamation-circle")
+              .attr('font-family', "FontAwesome")
+              .attr("dx", 7)
+              .attr("data-tippy-info", d =>
+                `<span class='text-underline'>Warning</span>: currently, there are only <b>${d.value} sequences</b> reported for <b>${d.key}</b>. The characteristic mutations for ${d.key} may change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`
+                )
+              .classed("hidden", d => d.value >= this.lineageWarningThreshold)
+              .classed("low-count", d => d.value < this.lineageWarningThreshold)
+              .style("font-size", 14)
+              .style("fill", "#D13B62")
+              .text("\uf06a");
+
           },
           update => {
             update
@@ -546,6 +581,10 @@ export default Vue.extend({
             update.select(".y-axis-count")
               .style("fill", this.dark ? "#d2d2d2" : "#999")
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+
+            update.select(".fa-exclamation-circle")
+              .classed("hidden", d => d.value >= this.lineageWarningThreshold)
+              .classed("low-count", d => d.value < this.lineageWarningThreshold);
           },
           exit =>
           exit.call(exit =>

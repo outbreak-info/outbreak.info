@@ -3,11 +3,11 @@
   <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
     <div class="d-flex flex-column">
       <h4 class="mb-0">{{ definitionLabel }}</h4>
-      <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+      <small class="text-muted">Mutations in at least {{charMutThreshold}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
     </div>
 
     <div class="d-flex flex-column align-items-end">
-      <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
+      <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineages }}">Compare to other lineages</router-link>
       <router-link class="mt-n1" v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
     </div>
 
@@ -30,7 +30,7 @@
       <div class="col" v-if="lineageName">
         <MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
       </div>
-      <div class="col" v-if="additionalMutations.length > 0">
+      <div class="col" v-if="additionalMutations && additionalMutations.length > 0">
         <MutationTable :mutations="additionalMutations" tableTitle="Additional Mutations" />
       </div>
     </div>
@@ -73,6 +73,12 @@ export default {
   name: "CharacteristicMutations",
   computed: {
     ...mapState("genomics", ["characteristicThreshold"]),
+    lineages() {
+      if(this.sublineages){
+        return([this.lineageName].concat(this.sublineages))
+      }
+      return(this.lineageName)
+    },
     charMutThreshold() {
       return (format(".0%")(this.characteristicThreshold))
     }
@@ -82,6 +88,7 @@ export default {
     definitionLabel: String,
     mutationName: String,
     lineageName: String,
+    sublineages: [Array, String],
     reportType: String,
     additionalMutations: Array
   },

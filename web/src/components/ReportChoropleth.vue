@@ -500,7 +500,7 @@ export default {
       if (d.proportion || d.proportion === 0) {
         ttip.select("#no-sequencing").classed("hidden", true);
         ttip.select("#proportion")
-          .text(d.proportion_formatted)
+          .text(`${d.proportion_formatted} ${this.mutationName}`)
           .classed("hidden", false);
 
         ttip.select("#confidence-interval")
@@ -508,7 +508,7 @@ export default {
           .classed("hidden", false);
 
         ttip.select("#sequencing-count")
-          .text(`Number of total cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
+          .text(`Number of total ${this.mutationName} cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
           .classed("hidden", false);
 
       } else {
@@ -562,6 +562,7 @@ export default {
           query: {
             loc: id,
             muts: query.muts,
+            alias: query.alias,
             pango: query.pango,
             variant: query.variant,
             selected: query.selected,

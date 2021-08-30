@@ -539,6 +539,49 @@ const state = {
       }
     },
     {
+      date: new Date("2021-08-23 0:0"),
+      category: "variants",
+      title: "Outbreak.info, CDC, and ECDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
+      description: 'Updated the outbreak.info, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a>, and <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
+      route: {
+        name: "MutationReport",
+        query: {
+          who: "epsilon",
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-23 0:0"),
+      category: "variants",
+      title: "ECDC reclassified C.37/Lambda as Variants of Interest",
+      description: 'Updated the <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineage C.37 / Lambda from <b>Variant under Monitoring</b> to <b>Variant of Interest</b>.',
+      route: {
+        name: "MutationReport",
+        query: {
+          who: "lambda"
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-30 1:0"),
+      category: "variants",
+      title: "Released combined reports for Delta and other lineages",
+      description: 'Based on the proliferation of sublineages associated with Variants of Concern and Interest, we created combined reports that provide aggregate statistics for variants and their descendants. These reports will be updated as new sublineages are classified by the Pango team. Read more about <a href="https://outbreak.info/situation-reports/caveats#delta">sublineages</a>.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-08-10 0:0"),
+      category: "variants",
+      title: "Added P.1 sublineages as VOCs",
+      description: "Added P.1.3, P.1.4, P.1.5, P.1.6, and P.1.7 as Variants of Concern, sublineages of P.1.",
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-06-30 0:0"),
       category: "variants",
       title: "Added B.1.351.1, B.1.351.2, and B.1.351.3 as a VOCs",
@@ -1105,6 +1148,10 @@ const actions = {};
 const mutations = {
   setLoading(state, isLoading) {
     state.loading = isLoading;
+  },
+
+  setReportLoading(state, isLoading) {
+    state.reportloading = isLoading;
   }
 };
 

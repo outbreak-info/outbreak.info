@@ -50,6 +50,40 @@
       </div>
     </div>
 
+    <!-- CHANGE SELECTED LOCATION MODAL -->
+    <div id="change-selected-location" class="modal fade">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="exampleModalLabel">Change selected location</h5>
+            <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 py-3 border-bottom border-secondary">
+              <h6 class="text-muted text-underline m-0">Current locations</h6>
+              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" @click="switchLocation()" data-dismiss="modal">
+                Worldwide
+              </button>
+              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx3) in currentLocs" :key="lIdx3" @click="switchLocation(location)" data-dismiss="modal">
+                {{ location.label }}
+              </button>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
+              <TypeaheadSelect :queryFunction="queryLocation" @selected="updateSelectedLoc" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences" />
+            </div>
+          </div>
+
+
+          <div class="modal-footer border-secondary">
+            <!-- <button type="button" class="btn btn-accent" @click="switchLocationSubmit" data-dismiss="modal">Save changes</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CHANGE PANGOLIN LINEAGE MODAL -->
     <div id="change-pangolin-modal" class="modal fade">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -173,32 +207,19 @@
             </div>
 
           </div>
-          <!-- INTRO TEXT - OVERVIEW -->
-          <span v-html="reportDescription" class="font-size-2"></span>
+
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" />
+            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions"
+              v-if="mutations" />
           </div>
 
-          <!-- KEY INSIGHTS -->
-          <!-- <div class="mt-4">
-          <h4>Key Insights</h4>
-          <ul>
-            <li>
-              XXXX {{ reportName }} has been <b>increasing/decreasing</b> in prevalence over the past two weeks.
-            </li>
-            <li>
-              XXXX Its apparent prevalence is higher in rest of the world compared to the United States or San Diego.
-            </li>
-            <li>
-              XXXX Experimental data suggests it is more transmissable than other SARS-CoV-2 variants.
-            </li>
-          </ul>
-        </div> -->
+          <!-- SUBLINEAGE BREAKDOWN -->
+          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
 
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
-          <div class="my-4" v-if="mutationsByLineage.length">
+          <div class="my-4" v-if="mutationsByLineage && mutationsByLineage.length">
             <div v-if="reportType == 'lineage with added mutations'" class="mx-2 mb-1">
               <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#collapsePangoBreakdown" aria-expanded="true" aria-controls="collapsePangoBreakdown">
                 <small><span class="if-collapsed">Show</span>
@@ -212,38 +233,19 @@
             </div>
           </div>
 
-          <!-- NEW TODAY -->
-          <!-- <div class="my-4">
-          <h4>What's new today</h4>
-          <table>
-            <tr class="border-bottom">
-              <th colspan="2">
-                New sequences submitted to GISAID
-              </th>
-            </tr>
-            <tr v-for="(location, lIdx2) in newToday" :key="lIdx2">
-              <td>
-                {{ location.name }}
-              </td>
-              <td>
-                {{ location.date_count_today }}
-              </td>
-            </tr>
-          </table>
-        </div> -->
         </section>
 
         <!-- RIGHT: SUMMARY BOX -->
         <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :locationQueryParams="locationQueryParams" :reportType="reportType" :selected="selected" :locationTotals="locationTotals" :countries="countries"
-            :states="states" />
+          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :locationQueryParams="locationQueryParams" :reportType="reportType" :selected="selected"
+            :locationTotals="locationTotals" :countries="countries" :states="states" />
         </section>
       </div>
 
 
       <!-- DAILY PREVALENCE -->
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
-        <h4 class="mb-0">Average daily {{reportName}} prevalence</h4>
+        <h4 class="mb-0">Average daily {{reportName}} prevalence {{locationLabel}}</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
         <div id="location-buttons" class="d-flex flex-wrap">
           <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
@@ -251,7 +253,54 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <ReportPrevalence :data="prevalence" :mutationName="reportName" :location="selectedLocation.label" />
+        <ReportPrevalence :data="prevalence" :mutationName="reportName" :xmin="xmin" :xmax="xmax" :location="selectedLocation.label" :setWidth="width" />
+      </section>
+
+      <!-- DAILY SUBLINEAGE PREVALENCE -->
+      <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage" v-if="lineagesByDay">
+        <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day {{locationLabel}}</h4>
+        <small class="text-muted mb-2">Based on reported sample collection date</small>
+
+        <!-- change location selectors for sublineage prevalences -->
+        <div id="location-buttons" class="d-flex flex-wrap align-items-center">
+          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
+          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+
+          <!-- change selection for streamgraph or overlay -->
+          <div id="sublineage-overlay-selector ml-4">
+            <div class="radio-item mr-3">
+              <input type="radio" id="stack" :value="false" v-model="sublineageOverlay" @change="changeSublineageOverlay">
+              <label for="stack">stack lineages</label>
+            </div>
+            <div class="radio-item mr-3">
+              <input type="radio" id="overlay" :value="true" v-model="sublineageOverlay" @change="changeSublineageOverlay">
+              <label for="overlay">overlay lineages</label>
+            </div>
+          </div>
+        </div>
+
+        <div id="sublinege-prevalence-overlay" v-if="sublineageOverlay">
+          <div class="d-flex flex-wrap justify-content-center mt-2">
+            <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
+              <small :style="`color: ${sublineageColorScale(option)}`" v-if="sublineageColorScale">{{option}}</small>
+              <input type="checkbox" :value="option" v-model.lazy="selectedSublineages" @change="debounceSelectSublineage" />
+              <div class="b-input" :style="[selectedSublineages.includes(option) ? {'background': sublineageColorScale(option), 'border-color': '#555'} : 'background:none']"></div>
+            </label>
+          </div>
+
+          <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :xmin="xmin"
+            :xmax="xmax" routeName="MutationReport" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
+        </div>
+
+        <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
+        <div id="sublineage-streamgraph" v-else>
+          <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" class="p-2 pt-3 bg-grey__lightest justify-content-center" />
+
+          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax" class="d-flex flex-column align-items-center" routeName="MutationReport" :setWidth="width" :location="selectedLocation.label"
+            :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale" :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
+        </div>
       </section>
 
       <!-- GEOGRAPHIC PREVALENCE -->
@@ -269,7 +318,7 @@
         <div v-if="selectedLocation && selectedLocation.admin_level < 2">
           <template v-if="selectedLocation.admin_level < 1">
             <div class="d-flex align-items-center justify-content-end mb-3 mt-2">
-              <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
+              <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="btn btn-sec mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
               <Warning text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
             </div>
             <div class="d-flex flex-wrap">
@@ -281,7 +330,7 @@
               <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
             </div>
 
-            <ReportChoropleth report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" />
+            <ReportChoropleth report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
           </template>
 
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
@@ -347,22 +396,14 @@ import Vue from "vue";
 
 import uniq from "lodash/uniq";
 import isEqual from "lodash/isEqual";
+import debounce from "lodash/debounce";
 
-import ReportMethodology from "@/components/ReportMethodology.vue";
-import CharacteristicMutations from "@/components/CharacteristicMutations.vue";
-import Warning from "@/components/Warning.vue";
-import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
-import ReportPrevalence from "@/components/ReportPrevalence.vue";
-import ReportPrevalenceByLocation from "@/components/ReportPrevalenceByLocation.vue";
-import ReportChoropleth from "@/components/ReportChoropleth.vue";
+import {
+  scaleOrdinal
+} from "d3";
+
 import ReportResources from "@/components/ReportResources.vue";
-import ShareReport from "@/components/ShareReport.vue";
-import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
 import ReportSummary from "@/components/ReportSummary.vue";
-import CustomReportForm from "@/components/CustomReportForm.vue";
-import MutationsByLineage from "@/components/MutationsByLineage.vue";
-import ClassedLegend from "@/components/ClassedLegend.vue";
-import ThresholdSlider from "@/components/ThresholdSlider.vue";
 
 // --- font awesome --
 import {
@@ -410,27 +451,38 @@ import {
 export default {
   name: "SituationReport",
   components: {
-    ReportMethodology,
-    CharacteristicMutations,
     FontAwesomeIcon,
-    Warning,
-    ReportAcknowledgements,
-    ReportPrevalence,
-    ReportPrevalenceByLocation,
-    ReportChoropleth,
-    ReportResources,
-    ShareReport,
-    ReportSummary,
-    TypeaheadSelect,
-    CustomReportForm,
-    MutationsByLineage,
-    ClassedLegend,
-    ThresholdSlider
+    ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
+    CharacteristicMutations: () => import( /* webpackPrefetch: true */ "@/components/CharacteristicMutations.vue"),
+    Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
+    ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
+    ReportPrevalence: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalence.vue"),
+    ReportPrevalenceByLocation: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceByLocation.vue"),
+    ReportChoropleth: () => import( /* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
+    ReportResources: () => import( /* webpackPrefetch: true */ "@/components/ReportResources.vue"),
+    ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
+    ReportSummary: () => import( /* webpackPrefetch: true */ "@/components/ReportSummary.vue"),
+    TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
+    CustomReportForm: () => import( /* webpackPrefetch: true */ "@/components/CustomReportForm.vue"),
+    MutationsByLineage: () => import( /* webpackPrefetch: true */ "@/components/MutationsByLineage.vue"),
+    ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
+    ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
+    SublineageTotals: () => import( /* webpackPrefetch: true */ "@/components/SublineageTotals.vue"),
+    HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
+    ReportPrevalenceOverlay: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceOverlay.vue"),
+    LineagesByLocation: () => import( /* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
   },
   props: {
+    alias: String,
     loc: [Array, String],
     muts: [Array, String],
     pango: String,
+    xmin: String,
+    xmax: String,
+    overlay: {
+      type: [String, Boolean],
+      default: "false"
+    },
     selected: {
       type: String,
       default: "Worldwide"
@@ -445,10 +497,8 @@ export default {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
         this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
     },
-    genericDescription() {
-      return this.reportType == "lineage with added mutations" ?
-        `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> in the world, how it is changing over time, and how its prevalence varies across different locations.` :
-        `Concerns surrounding new strains of SARS-CoV-2 (hCoV-19), the virus behind the COVID-19 pandemic, have been developing. This report outlines the prevalence of the <b>${this.reportName}</b> ${this.reportType} in the world, how it is changing over time, and how its prevalence varies across different locations.`
+    locationLabel() {
+      return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
@@ -467,6 +517,14 @@ export default {
       } else {
         this.updateLocations();
       }
+    },
+    alias: function(newVal, oldVal) {
+      if (newVal != oldVal) {
+        this.newPangolin = null;
+        this.lineageName = null;
+        this.reportMetadata = null;
+        this.setupReport();
+      }
     }
   },
   data() {
@@ -483,7 +541,8 @@ export default {
       locationQueryParams: null,
       title: null,
       lastUpdated: null,
-      disclaimer: null,
+      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+      width: 800,
 
       // Changing locations
       queryLocation: null,
@@ -491,6 +550,7 @@ export default {
       newPangolin: null,
       currentLocs: null, // placeholder for current locations
       loc2Add: [], // array to store new locations to add
+      newSelectedLocation: null, // stores location data when change the selected value
 
       // subscriptions
       dataSubscription: null,
@@ -501,13 +561,15 @@ export default {
 
       // curated values
       searchTerms: null,
-      reportDescription: null,
 
       // methods
       choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
       choroColorScale: null,
       choroCountThreshold: 25,
       totalThresh: 25, // threshold for "unreliable estimate" in the table
+
+      // forms
+      sublineageOverlay: null,
 
       // data
       selectedLocations: null,
@@ -516,16 +578,58 @@ export default {
       reportMetadata: null,
       choroLocation: "country",
       choroData: null,
+      choroMaxCount: null,
       countries: null,
       states: null,
+      additionalMutations: null,
+      sublineagePrev: null,
+      sublineageLongitudinalAll: null,
+      sublineageLongitudinal: null,
+      sublineageTotalStacked: null,
+      lineagesByDay: null,
+      sublineageColorScale: null,
+      sublineageColorPalette: [
+        "#4E79A7", // dk blue
+        "#f28e2b", // orange
+        "#59a14f", // green
+        "#e15759", // red
+        "#499894", // teal
+        "#B6992D", // dk yellow
+        "#D37295", // dk pink
+        "#B07AA1", // dk purple
+        "#9D7660", // brown
+        "#aecBe8", // lt blue
+        "#FFBE7D", // lt. orange
+        "#8CD17D", // lt. green
+        "#FF9D9A", // lt. red
+        "#86BCB6", // lt. teal
+        "#F1CE63", // yellow
+        "#FABFD2", // lt. pink,
+        "#D4A6C8", // lt. purple
+        "#D7B5A6", // lt. brown
+        "#bcbd22", // puce
+        "#79706E", // grey
+      ],
+      sublineageOptions: [],
+      selectedSublineages: [],
+      sublineages2Plot: 5,
       locationTotals: null,
       totalLineage: null,
-      newToday: null,
       prevalence: [],
       mutationsByLineage: []
     }
   },
+  created: function() {
+    this.debounceSetDims = debounce(this.setDims, 150);
+    this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
+  },
   mounted() {
+    // set default, if needed.
+    if (!this.selected) {
+      this.selected = "Worldwide";
+    }
+    this.sublineageOverlay = this.overlay === "true";
+    this.setDims();
     this.queryLocation = findLocation;
     this.queryPangolin = findPangolin;
 
@@ -540,78 +644,90 @@ export default {
 
     // set URL for sharing, etc.
     this.$nextTick(function() {
+      window.addEventListener("resize", this.debounceSetDims);
+
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
     this.setupReport();
   },
   methods: {
+    setDims() {
+      const windowWidth = window.innerWidth;
+      const widthRatio = windowWidth > 1000 ? 0.7 : 0.9;
+      this.width = windowWidth * widthRatio;
+    },
     setLineageAndMutationStr() {
-      if (this.$route.query.pango) {
-        if (this.$route.query.muts && this.$route.query.muts.length) {
-          // Lineage + Mutation report
-          this.lineageName = this.$route.query.pango.toUpperCase();
-          this.mutationID = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(",");
-          this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
-          this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
-          this.reportType = "lineage with added mutations";
-          this.searchTerms = `${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`
-          this.title = `${this.reportName} Report`;
-          const qParam = typeof(this.$route.query.muts) == "string" ? `${this.lineageName}|${this.$route.query.muts}` : `${this.lineageName}|${this.$route.query.muts.join(",")}`;
-          this.locationQueryParams = { variant: [qParam] };
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
-
-
-        } else {
-          // Lineage report
-          this.lineageName = this.$route.query.pango.toUpperCase();
-          this.reportName = this.lineageName;
-          this.mutationID = null;
-          this.reportType = "lineage";
-          this.title = `${this.reportName} Lineage Report`;
-          this.searchTerms = [this.lineageName];
-          this.locationQueryParams = { pango: [this.lineageName] };
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
-
-        }
-
+      // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
+      if (this.alias) {
+        this.lineageName = this.$options.filters.capitalize(this.alias.toLowerCase());
+        this.selectedMutationArr = null;
+        this.title = `${this.lineageName} Variant Report`;
+        this.reportType = "combined lineage";
+        this.reportName = this.lineageName;
       } else {
-        if (typeof(this.$route.query.muts) == "string") {
-          // Single mutation report
-          this.lineageName = null;
-          this.mutationID = this.$route.query.muts;
-          this.reportName = this.mutationID;
-          this.mutationName = this.reportName;
-          this.reportType = "mutation";
-          this.searchTerms = [this.mutationName.split(":").slice(-1)];
-          this.locationQueryParams = { muts: [this.$route.query.muts] };
-          this.title = `${this.reportName} Mutation Report`;
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+
+        if (this.$route.query.pango) {
+          if (this.$route.query.muts && this.$route.query.muts.length) {
+            // Lineage + Mutation report
+            this.lineageName = this.$route.query.pango.toUpperCase();
+            this.selectedMutationArr = typeof(this.$route.query.muts) == "string" ? [this.$route.query.muts] : this.$route.query.muts;
+            this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
+            this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
+            this.reportType = "lineage with added mutations";
+            this.searchTerms = [`${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`]
+            this.title = `${this.reportName} Report`;
+            const qParam = typeof(this.$route.query.muts) == "string" ? `${this.lineageName}|${this.$route.query.muts}` : `${this.lineageName}|${this.$route.query.muts.join(",")}`;
+            this.locationQueryParams = {
+              variant: [qParam]
+            };
+          } else {
+            // Lineage report
+            this.lineageName = this.$route.query.pango.toUpperCase();
+            this.reportName = this.lineageName;
+            this.selectedMutationArr = null;
+            this.reportType = "lineage";
+            this.title = `${this.reportName} Lineage Report`;
+            this.searchTerms = [this.lineageName];
+            this.locationQueryParams = {
+              pango: [this.lineageName]
+            };
+          }
 
         } else {
-          // Variant (multiple mutation) report
-          this.lineageName = null;
-          this.reportName = this.$route.query.muts.join(", ");
-          this.mutationName = this.reportName;
-          this.searchTerms = [this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')];
-          this.mutationID = this.$route.query.muts.join(",");
-          this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
-          this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
-          this.locationQueryParams = { muts: [this.$route.query.muts.join(",")] };
-          this.disclaimer =
-            `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`;
+          if (typeof(this.$route.query.muts) == "string") {
+            // Single mutation report
+            this.lineageName = null;
+            this.selectedMutationArr = [this.$route.query.muts];
+            this.reportName = this.selectedMutationArr;
+            this.mutationName = this.reportName;
+            this.reportType = "mutation";
+            this.searchTerms = [this.mutationName.split(":").slice(-1)];
+            this.locationQueryParams = {
+              muts: [this.$route.query.muts]
+            };
+            this.title = `${this.reportName} Mutation Report`;
+          } else {
+            // Variant (multiple mutation) report
+            this.lineageName = null;
+            this.reportName = this.$route.query.muts.join(", ");
+            this.mutationName = this.reportName;
+            this.searchTerms = [this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')];
+            this.selectedMutationArr = this.$route.query.muts;
+            this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
+            this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
+            this.locationQueryParams = {
+              muts: [this.$route.query.muts]
+            };
+          }
         }
       }
     },
     setupReport() {
       this.setLineageAndMutationStr();
-
-      if (this.lineageName || this.mutationID) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.loc, this.mutationID, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
-          // console.log(results)
+      if (this.lineageName || this.selectedMutationArr || this.alias) {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+          this.hasData = true;
 
           // selected locations
           this.selectedLocations = results.locations;
@@ -627,26 +743,31 @@ export default {
           const global = results.locPrev.filter(d => d.id == "Worldwide")
           this.totalLineage = global.length === 1 ? global[0].lineage_count_formatted : null;
 
-          // newly added sequences
-          this.newToday = results.newToday;
-
+          // sublineagePrev
+          this.sublineagePrev = results.sublineagePrev;
 
           // location prevalence
           this.locationTotals = results.locPrev;
 
           // longitudinal data: prevalence over time
           this.prevalence = results.longitudinal;
+          this.sublineageLongitudinalAll = results.longitudinalSublineages;
+          // stream graph of lineages by day
+          this.lineagesByDay = results.lineagesByDay;
+          this.sublineageTotalStacked = results.sublineageTotalStacked;
+          this.setSublineageColorScale();
 
-          // recent data by country & countries with that lineage.
+
+          // // recent data by country & countries with that lineage.
           this.countries = results.countries;
           this.states = results.states;
-          this.choroData = results.byCountry;
+          this.choroData = results.choroData;
           this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
 
-          this.hasData = true;
+          // characteristic mutations
           this.mutations = results.mutations;
 
-          // Mutation details for queried mutations
+          // Mutation details for queried mutations -- to add to the characteristic mutation maps for things like Alpha + E484K
           this.additionalMutations = results.mutationDetails;
 
           // Mutation distribution by lineage
@@ -655,13 +776,32 @@ export default {
           if (results.md) {
             this.reportMetadata = results.md;
             this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
-            this.reportDescription = results.md.description ? results.md.description : this.genericDescription;
             this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
           } else {
             this.searchTerms = [this.searchTerms];
-            this.reportDescription = this.genericDescription;
           }
         })
+      }
+    },
+    selectSublineage() {
+      this.sublineageLongitudinal = this.sublineageLongitudinalAll.filter(d => this.selectedSublineages.includes(d.label));
+    },
+    setSublineageColorScale() {
+      if (this.sublineagePrev) {
+        this.sublineageOptions = this.sublineagePrev
+          .filter(d => d.lineage_count)
+          .map(d => d.mutation_string)
+          .slice(0, this.sublineageColorPalette.length);
+
+        // only show the top 5 most prevalent sublineages
+        if (!this.selectedSublineages.length) {
+          this.selectedSublineages = this.sublineageOptions.slice(0, this.sublineages2Plot);
+        }
+        this.selectSublineage();
+
+        this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)
+          .domain(this.sublineageOptions)
+          .unknown("#bab0ab");
       }
     },
     removeLocation(idx) {
@@ -669,6 +809,11 @@ export default {
     },
     addLoc2Add(selected) {
       this.loc2Add.push(selected);
+    },
+    updateSelectedLoc(selected) {
+      this.selectedLocations.push(selected);
+      this.closeLocModal();
+      this.switchLocation(selected)
     },
     removeLoc2Add(idx) {
       this.loc2Add.splice(idx, 1);
@@ -688,11 +833,15 @@ export default {
 
       this.$router.push({
         name: "MutationReport",
+        params: {
+          alias: this.alias
+        },
         query: {
           pango: this.pango,
           muts: this.muts,
           selected: newSelected,
-          loc: locationIDs
+          loc: locationIDs,
+          overlay: this.sublineageOverlay
         }
       })
     },
@@ -702,9 +851,13 @@ export default {
         d.isActive = false;
       })
 
-      location.isActive = true;
+      if (!location) {
+        this.selectedLocation = "Worldwide";
+      } else {
+        location.isActive = true;
 
-      this.selectedLocation = location.id;
+        this.selectedLocation = location.id;
+      }
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
@@ -715,15 +868,17 @@ export default {
           pango: this.pango,
           muts: this.muts,
           loc: ids,
-          selected: location.id
+          selected: this.selectedLocation,
+          overlay: this.sublineageOverlay
         },
         params: {
+          alias: this.alias,
           disableScroll: true
         }
       })
     },
     updateLocations() {
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.mutationID, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
@@ -732,6 +887,11 @@ export default {
 
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
+        this.sublineageLongitudinalAll = results.longitudinalSublineages;
+        // stream graph of lineages by day
+        this.lineagesByDay = results.lineagesByDay;
+        this.sublineageTotalStacked = results.sublineageTotalStacked;
+        this.setSublineageColorScale();
 
         // cumulative totals for table
         this.locationTotals = results.locPrev;
@@ -739,6 +899,27 @@ export default {
         // recent data by country.
         this.choroData = results.byCountry;
 
+        // sublineage breakdown
+        this.sublineagePrev = results.sublineagePrev;
+
+      })
+    },
+    changeSublineageOverlay(selected) {
+      this.$router.push({
+        name: "MutationReport",
+        query: {
+          pango: this.pango,
+          muts: this.muts,
+          loc: this.loc,
+          selected: this.selected,
+          xmin: this.xmin,
+          xmax: this.xmax,
+          overlay: this.sublineageOverlay
+        },
+        params: {
+          alias: this.alias,
+          disableScroll: true
+        }
       })
     },
     updatePangolin(selected) {
@@ -753,9 +934,13 @@ export default {
           loc: this.loc,
           pango: this.newPangolin,
           muts: this.muts,
-          selected: this.selected
+          selected: this.selected,
+          overlay: this.sublineageOverlay
         }
       })
+    },
+    closeLocModal() {
+      $("#change-selected-location").modal("hide");
     },
     closeModal() {
       $("#change-pangolin-modal").modal("hide");
