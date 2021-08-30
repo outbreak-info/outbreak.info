@@ -1153,7 +1153,8 @@ export function getLineageResources(apiurl, queryString, size, page, sort = "-da
 
       return ({
         resources: results["hits"],
-        total: results["total"]
+        total: results["total"],
+        totalFormatted: format(",")(results["total"])
       })
     }),
     catchError(e => {
