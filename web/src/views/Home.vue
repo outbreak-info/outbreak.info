@@ -609,12 +609,20 @@ export default {
       });
     },
     updatePangolin(selected) {
+      if(selected.alias){
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: selected.name
+          }
+        });
+      } else{
       this.$router.push({
         name: "MutationReport",
         query: {
           pango: selected.name
         }
-      });
+      });}
     },
     removeSummary: function(idx) {
       this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
