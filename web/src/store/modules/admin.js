@@ -564,7 +564,7 @@ const state = {
       }
     },
     {
-      date: new Date("2021-08-23 1:0"),
+      date: new Date("2021-08-30 1:0"),
       category: "variants",
       title: "Released combined reports for Delta and other lineages",
       description: 'Based on the proliferation of sublineages associated with Variants of Concern and Interest, we created combined reports that provide aggregate statistics for variants and their descendants. These reports will be updated as new sublineages are classified by the Pango team. Read more about <a href="https://outbreak.info/situation-reports/caveats#delta">sublineages</a>.',
@@ -1149,7 +1149,7 @@ const mutations = {
   setLoading(state, isLoading) {
     state.loading = isLoading;
   },
-  
+
   setReportLoading(state, isLoading) {
     state.reportloading = isLoading;
   }
