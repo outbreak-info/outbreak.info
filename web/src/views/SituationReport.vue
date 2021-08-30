@@ -244,7 +244,7 @@
 
       <!-- DAILY PREVALENCE -->
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
-        <h4 class="mb-0">Average daily {{reportName}} prevalence</h4>
+        <h4 class="mb-0">Average daily {{reportName}} prevalence {{locationLabel}}</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
         <div id="location-buttons" class="d-flex flex-wrap">
           <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
@@ -257,7 +257,7 @@
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage" v-if="lineagesByDay">
-        <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day</h4>
+        <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day {{locationLabel}}</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
 
         <!-- change location selectors for sublineage prevalences -->
@@ -497,6 +497,9 @@ export default {
     definitionLabel() {
       return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
         this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
+    },
+    locationLabel() {
+      return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
