@@ -101,6 +101,7 @@ def getSynonyms(row):
 def getSearchTerms(row):
     terms = row.mutation_synonyms.copy()
     terms.extend(row.pango_descendants)
+    terms = list(dict.fromkeys(terms)) # uniqueify
     return(terms)
 
 # Returns query string for the combined
