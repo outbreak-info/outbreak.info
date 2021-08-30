@@ -94,7 +94,7 @@
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7 / Alpha
+              <router-link :to="{name: 'MutationReport', params: {alias: 'alpha'}} " class="text-light">Alpha / B.1.1.7
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
