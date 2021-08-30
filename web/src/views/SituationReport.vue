@@ -740,7 +740,7 @@ export default {
           this.lastUpdated = results.dateUpdated.lastUpdated;
 
           // worldwide stats
-          const global = results.locPrev.filter(d => d.id == "Worldwide")
+          const global = results.locPrev.filter(d => d.location_id == "Worldwide");
           this.totalLineage = global.length === 1 ? global[0].lineage_count_formatted : null;
 
           // sublineagePrev
