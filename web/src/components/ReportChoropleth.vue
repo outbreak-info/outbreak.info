@@ -294,7 +294,8 @@ export default {
 
         this.filteredData.forEach(d => {
           const filtered = this.data.filter(seq => seq.name.toLowerCase() == d.properties.NAME.toLowerCase());
-          if (filtered.length == 1) {
+          if (filtered.length > 0) {
+            filtered.sort((a,b) => b.cum_total_count - a.cum_total_count)
             const seq = filtered[0];
             d[this.variable] = seq[this.variable];
             // filter values with too few values
@@ -541,12 +542,14 @@ export default {
     route2Location(id) {
       if (this.report == "variant") {
         const query = this.$route.query;
+        const params = this.$route.params;
         let locs = query.loc ? (typeof(query.loc) == "string" ? [query.loc] : query.loc) : [];
         locs.push(id);
         this.$router.push({
           name: "MutationReport",
           params: {
-            disableScroll: true
+            disableScroll: true,
+            alias: params.alias
           },
           query: {
             pango: query.pango,
