@@ -118,10 +118,12 @@ export function getWorldDailyCases(apiUrl, fields = "wb_region,confirmed_numIncr
 export function getEpiTraces(apiUrl, locations, fields = "location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k,sub_parts") {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
-  const locationString = `("${locations.join('","')}")`;
+  const locationString = `("${locations.join('" OR "')}")`;
+  console.log(locationString)
 
   // sort by date so the numbers appear in the right order.
   const queryString = `location_id:${locationString}&sort=date&size=1000&fields=${fields}`;
+  console.log(queryString)
 
   return getAll(apiUrl, queryString).pipe(
     map(results => {
@@ -250,7 +252,7 @@ export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   // trigger no-cache behavior by adding timestamp to request
   const timestamp = Math.round(new Date().getTime() / 36e5);
   var queryString = locations ?
-    `location_id:("${locations.join('","')}")  AND mostRecent:true` :
+    `location_id:("${locations.join('" OR "')}")  AND mostRecent:true` :
     "mostRecent:true";
 
   if (adminLevels && adminLevels.length > 0) {
@@ -330,7 +332,7 @@ export function getSparklineTraces(
   if (locations) {
     const parseDate = timeParse("%Y-%m-%d");
     // trigger no-cache behavior by adding timestamp to request
-    const queryString = `location_id:("${locations.join('","')}")`;
+    const queryString = `location_id:("${locations.join('" OR "')}")`;
 
     return getAll(
       apiUrl,
