@@ -16,7 +16,7 @@
   </div>
 
 
-  <div id="custom-variants" v-if="location">
+  <!-- <div id="custom-variants" v-if="location">
     <h3>Add optional lineages &amp; mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
     <h6 class="text-muted"><em>Optional:</em> specify lineages and mutations to track in addition to the Variants of Concern and Interest</h6>
     <div class="d-flex flex-column align-items-start mb-3">
@@ -63,7 +63,7 @@
       <button :disabled="!formValid" type="submit" class="btn btn-accent ml-3" @click="submitQuery">Go</button>
     </div>
 
-  </div>
+  </div> -->
 </div>
 </template>
 
@@ -71,7 +71,7 @@
 import Vue from "vue";
 
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
-import VariantForm from "@/components/VariantForm.vue";
+// import VariantForm from "@/components/VariantForm.vue";
 
 import uniq from "lodash/uniq";
 
@@ -97,7 +97,7 @@ export default {
   name: "CustomLocationForm",
   components: {
     TypeaheadSelect,
-    VariantForm,
+    // VariantForm,
     FontAwesomeIcon
   },
   props: {
