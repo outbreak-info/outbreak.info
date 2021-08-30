@@ -613,7 +613,7 @@ export default {
         this.$router.push({
           name: "MutationReport",
           params: {
-            alias: selected.name
+            alias: selected.name.toLowerCase()
           }
         });
       } else{
