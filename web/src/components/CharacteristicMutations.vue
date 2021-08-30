@@ -7,7 +7,7 @@
     </div>
 
     <div class="d-flex flex-column align-items-end">
-      <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
+      <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineages }}">Compare to other lineages</router-link>
       <router-link class="mt-n1" v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
     </div>
 
@@ -73,6 +73,12 @@ export default {
   name: "CharacteristicMutations",
   computed: {
     ...mapState("genomics", ["characteristicThreshold"]),
+    lineages() {
+      if(this.sublineages){
+        return([this.lineageName].concat(this.sublineages))
+      }
+      return(this.lineageName)
+    },
     charMutThreshold() {
       return (format(".0%")(this.characteristicThreshold))
     }
@@ -82,6 +88,7 @@ export default {
     definitionLabel: String,
     mutationName: String,
     lineageName: String,
+    sublineages: [Array, String],
     reportType: String,
     additionalMutations: Array
   },
