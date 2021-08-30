@@ -504,7 +504,7 @@ export default {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
     },
     choroplethLocations() {
-      return (this.selectedLocations.filter(d => d.admin_level < 2))
+      return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)
     }
   },
   watch: {
@@ -624,10 +624,6 @@ export default {
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
   },
   mounted() {
-    // set default, if needed.
-    if (!this.selected) {
-      this.selected = "Worldwide";
-    }
     this.sublineageOverlay = this.overlay === "true";
     this.setDims();
     this.queryLocation = findLocation;
@@ -724,6 +720,11 @@ export default {
       }
     },
     setupReport() {
+      // set default, if needed.
+      if (!this.selected) {
+        this.selected = "Worldwide";
+      }
+
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
@@ -878,6 +879,10 @@ export default {
       })
     },
     updateLocations() {
+      // set default, if needed.
+      if (!this.selected) {
+        this.selected = "Worldwide";
+      }
       this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
