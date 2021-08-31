@@ -14,7 +14,6 @@
     </defs>
     <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
     <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
-    <g ref="yAxisLeft" class="axis axis--y" :transform="`translate(${this.margin.left - 5}, ${this.margin.top})`"></g>
     <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
     <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
   </svg>
@@ -62,8 +61,6 @@ import {
   select,
   selectAll,
   scaleBand,
-  axisLeft,
-  axisRight,
   axisBottom,
   axisTop,
   transition,
@@ -164,7 +161,6 @@ export default Vue.extend({
       paddingInner: 0.1,
       xAxisTop: null,
       xAxisBottom: null,
-      yAxisLeft: null,
       width: null,
       height: null,
       colorScale: interpolateRdPu,
@@ -237,10 +233,8 @@ export default Vue.extend({
       if (!this.onlyTopAxis) {
         this.xAxisBottom = axisBottom(this.x).tickSizeOuter(0);
         select(this.$refs.xAxisBottom).call(this.xAxisBottom);
-
-        this.yAxisLeft = axisLeft(this.y).tickSizeOuter(0);
-        select(this.$refs.yAxisLeft).call(this.yAxisLeft);
       }
+
       this.xAxisTop = axisTop(this.x).tickSizeOuter(0);
       select(this.$refs.xAxisTop).call(this.xAxisTop);
 
@@ -348,9 +342,8 @@ export default Vue.extend({
       this.svg
         .selectAll(".y-axis-right")
         .style("opacity", 0.2);
-
-      select(this.$refs.yAxisLeft)
-        .selectAll("text")
+      this.svg
+        .selectAll(".y-axis-left")
         .style("opacity", 0.2);
 
       this.svg
@@ -387,8 +380,8 @@ export default Vue.extend({
         .selectAll("text")
         .style("opacity", 1);
 
-      select(this.$refs.yAxisLeft)
-        .selectAll("text")
+      this.svg
+        .selectAll(".y-axis-left")
         .style("opacity", 1);
 
       this.svg
@@ -556,7 +549,6 @@ export default Vue.extend({
             is_alias: d.value.is_alias
           })
         });
-      console.log(yDomainFull)
 
       if (!this.onlyTopAxis) {
         const yAxisRightSelector = this.heatmap
@@ -633,6 +625,49 @@ export default Vue.extend({
             .style("opacity", 1e-5)
             .remove()
           ))
+
+        const yAxisLeftSelector = this.heatmap
+          .selectAll(".y-axis-left")
+          .data(yDomainFull, d => d.key);
+
+        yAxisLeftSelector.join(enter => {
+            const grp = enter.append("text")
+              .attr("class", d => `y-axis-left ${d.key.replace(/\./g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`)
+              .attr("x", 0)
+              .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("fill", this.textColor)
+              .style("text-anchor", "end")
+              .style("dominant-baseline", "central")
+              .on("mouseover", d => this.highlightRow(d.key))
+              .on("mouseout", this.highlightOff);
+
+            grp.append("tspan")
+              .attr("class", "y-axis-lineage")
+              .classed("hover-underline", "true")
+              .classed("pointer", "true")
+              .style("fill", d => this.voc.includes(d.key) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
+              .style("font-size", 18)
+              .attr("dx", -10)
+              .text(d => d.key)
+              .on("click", d => this.route2Lineage(d.key, d.is_alias));
+          },
+          update => {
+            update
+              .attr("class", d => `y-axis-left ${d.key.replace(/\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
+              .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
+
+            update.select(".y-axis-lineage")
+              .text(d => d.key)
+              .style("fill", d => this.voc.includes(d.key) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor);
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          ))
       }
 
       // turn on tooltips
@@ -673,14 +708,6 @@ export default Vue.extend({
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
         .on("mouseout", this.highlightOff);;
-
-      select(this.$refs.yAxisLeft)
-        .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
-        .attr("class", d => `hover-underline pointer ${d.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
-        .on("click", d => this.route2Lineage(d))
-        .on("mouseover", d => this.highlightRow(d))
-        .on("mouseout", this.highlightOff);
     }
   }
 })
