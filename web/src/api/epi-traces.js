@@ -119,11 +119,9 @@ export function getEpiTraces(apiUrl, locations, fields = "location_id,admin_leve
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
   const locationString = `("${locations.join('" OR "')}")`;
-  console.log(locationString)
 
   // sort by date so the numbers appear in the right order.
   const queryString = `location_id:${locationString}&sort=date&size=1000&fields=${fields}`;
-  console.log(queryString)
 
   return getAll(apiUrl, queryString).pipe(
     map(results => {
