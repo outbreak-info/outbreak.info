@@ -754,7 +754,6 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
           // sort by location
           results[lineage_key].sort(compareMutationLocation);
         })
-        console.log(results)
         return (results)
       }
     }),
