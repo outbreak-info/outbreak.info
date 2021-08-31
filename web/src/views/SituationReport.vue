@@ -686,7 +686,8 @@ export default {
             this.title = `${this.reportName} Lineage Report`;
             this.searchTerms = [this.lineageName];
             this.locationQueryParams = {
-              pango: [this.lineageName]
+              pango: [this.lineageName],
+              selected: this.lineageName
             };
           }
 
@@ -694,13 +695,14 @@ export default {
           if (typeof(this.$route.query.muts) == "string") {
             // Single mutation report
             this.lineageName = null;
-            this.selectedMutationArr = [this.$route.query.muts];
-            this.reportName = this.selectedMutationArr;
+            this.selectedMutationArr = this.$route.query.muts.split(",");
+            this.reportName = this.selectedMutationArr.join(", ");
             this.mutationName = this.reportName;
             this.reportType = "mutation";
             this.searchTerms = [this.mutationName.split(":").slice(-1)];
             this.locationQueryParams = {
-              muts: [this.$route.query.muts]
+              muts: this.selectedMutationArr.join(" AND "),
+              selected: this.selectedMutationArr.join(" AND ")
             };
             this.title = `${this.reportName} Mutation Report`;
           } else {
@@ -713,7 +715,8 @@ export default {
             this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
             this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
             this.locationQueryParams = {
-              muts: [this.$route.query.muts]
+              muts: this.selectedMutationArr.join(" AND "),
+              selected: this.selectedMutationArr.join(" AND ")
             };
           }
         }
