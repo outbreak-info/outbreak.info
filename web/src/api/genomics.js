@@ -747,6 +747,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
             const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
 
             d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
+            d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
             d["id"] = `${d.pangolin_lineage.replace(/\./g, "-")}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
             d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
           })

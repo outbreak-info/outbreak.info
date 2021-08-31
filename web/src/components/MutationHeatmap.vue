@@ -399,26 +399,53 @@ export default Vue.extend({
         .selectAll("rect")
         .style("fill-opacity", 1);
     },
-    route2Lineage(pango) {
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          loc: this.locationID,
-          pango: pango,
-          selected: this.locationID
-        }
-      })
+    route2Lineage(pango, is_alias) {
+      if (is_alias) {
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: pango.toLowerCase()
+          },
+          query: {
+            loc: this.locationID,
+            selected: this.locationID
+          }
+        })
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            loc: this.locationID,
+            pango: pango,
+            selected: this.locationID
+          }
+        })
+      }
     },
     route2LineageMutation(d) {
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          loc: this.locationID,
-          pango: d[this.yVar],
-          muts: d.mutation,
-          selected: this.locationID
-        }
-      })
+      if (d.is_alias) {
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: d[this.yVar].toLowerCase()
+          },
+          query: {
+            loc: this.locationID,
+            muts: d.mutation,
+            selected: this.locationID
+          }
+        })
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            loc: this.locationID,
+            pango: d[this.yVar],
+            muts: d.mutation,
+            selected: this.locationID
+          }
+        })
+      }
     },
     route2Mutation(mut) {
       this.$router.push({
@@ -515,8 +542,21 @@ export default Vue.extend({
 
       const yDomainFull = nest()
         .key(d => d[this.yVar])
-        .rollup(values => values[0].lineage_count)
-        .entries(this.data);
+        .rollup(values => {
+          return ({
+            is_alias: values[0].is_alias,
+            count: values[0].lineage_count
+          })
+        })
+        .entries(this.data)
+        .map(d => {
+          return ({
+            key: d.key,
+            value: d.value.count,
+            is_alias: d.value.is_alias
+          })
+        });
+      console.log(yDomainFull)
 
       if (!this.onlyTopAxis) {
         const yAxisRightSelector = this.heatmap
@@ -542,7 +582,7 @@ export default Vue.extend({
               .style("font-size", 18)
               .attr("dx", 10)
               .text(d => d.key)
-              .on("click", d => this.route2Lineage(d.key));
+              .on("click", d => this.route2Lineage(d.key, d.is_alias));
 
             grp.append("tspan")
               .attr("class", "y-axis-count")
@@ -560,7 +600,7 @@ export default Vue.extend({
               .attr("dx", 7)
               .attr("data-tippy-info", d =>
                 `<span class='text-underline'>Warning</span>: currently, there are only <b>${d.value} sequences</b> reported for <b>${d.key}</b>. The characteristic mutations for ${d.key} may change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`
-                )
+              )
               .classed("hidden", d => d.value >= this.lineageWarningThreshold)
               .classed("low-count", d => d.value < this.lineageWarningThreshold)
               .style("font-size", 14)
