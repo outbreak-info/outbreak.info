@@ -69,7 +69,7 @@ const margin = {
   top: 20,
   right: 100,
   bottom: 10,
-  left: 60,
+  left: 100,
   gap: 10
 };
 const transitionDuration = 3500;
