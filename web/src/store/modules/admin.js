@@ -545,8 +545,10 @@ const state = {
       description: 'Updated the outbreak.info, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a>, and <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
       route: {
         name: "MutationReport",
+        params: {
+          alias: "epsilon",
+        },
         query: {
-          who: "epsilon",
           selected: "USA_US-CA"
         }
       }
@@ -558,8 +560,20 @@ const state = {
       description: 'Updated the <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineage C.37 / Lambda from <b>Variant under Monitoring</b> to <b>Variant of Interest</b>.',
       route: {
         name: "MutationReport",
-        query: {
-          who: "lambda"
+        params: {
+          alias: "lambda"
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-31 0:0"),
+      category: "variants",
+      title: "WHO reclassified B.1.621/Mu as Variants of Interest",
+      description: 'Updated the <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/" target="_blank">WHO</a> classification of lineage B.1.621 as Variant of Interest Mu.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "lambda"
         }
       }
     },

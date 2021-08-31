@@ -242,6 +242,27 @@ VOI:
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/996740/Variants_of_Concern_VOC_Technical_Briefing_17.pdf
         dateModified: 2021-06-25
 
+  - who_name: Mu
+    pangolin_lineage: B.1.621
+    phe_name: VUI-21JUL-01
+    dateModified: 2021-07-23
+    loc:
+      - COL
+      - GBR
+    selected: COL
+    classifications:
+      - author: WHO
+        variantType: VOI
+        dateModified: 2021-08-30
+        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+      - author: PHE
+        dateModified: 2021-07-23
+        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1005517/Technical_Briefing_19.pdf
+        variantType: VOI
+      - author: ECDC
+        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+        variantType: VOI
+
   - who_name: Theta
     pangolin_lineage: P.3
     related:
@@ -367,26 +388,6 @@ VOI:
         dateModified: 2021-06-03
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
         variantType: VUM
-
-  - pangolin_lineage: B.1.621
-    phe_name: VUI-21JUL-01
-    dateModified: 2021-07-23
-    loc:
-      - COL
-      - GBR
-    selected: COL
-    classifications:
-      - author: WHO
-        variantType: VUM
-        dateModified: 2021-05-26
-        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-      - author: PHE
-        dateModified: 2021-07-23
-        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1005517/Technical_Briefing_19.pdf
-        variantType: VOI
-      - author: ECDC
-        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        variantType: VOI
 
   - pangolin_lineage: C.36.3
     loc:
