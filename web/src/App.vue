@@ -101,9 +101,6 @@
 
         </ul>
       </div>
-      <div class="text-light line-height-1 text-left fa-lg">
-        <a class="text-light underline" href="https://forms.gle/A3h4gtqErAiD7XLo6" target="_blank">Provide feedback on new tools to add to outbreak.info</a>
-      </div>
     </nav>
   </header>
   <transition name="fade">
