@@ -597,7 +597,7 @@ export function updateLocationData(apiurl, alias, mutationArr, lineageString, lo
     locations = [location];
   }
 
-  if(typeof(locations) == "string") {
+  if (typeof(locations) == "string") {
     locations = [locations];
   }
 
@@ -702,6 +702,17 @@ export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold =
   )
 }
 
+function cleanCharMutations(d, lineage_key) {
+  // Convert to the VOC/VOI synoyms.
+  const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
+  d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
+  d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
+  d["id"] = `${d.pangolin_lineage}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
+  d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+  d["prevalence_formatted"] = format(".0%")(d.prevalence);
+  return (d)
+}
+
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
@@ -731,11 +742,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       if (returnFlat) {
         let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
           d => {
-            // Convert to the VOC/VOI synoyms.
-            const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
-            d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
-            d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
-            d["id"] = `${d.pangolin_lineage}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
+            cleanCharMutations(d, lineage_key);
             return (d);
           }
         ));
@@ -743,13 +750,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       } else {
         Object.keys(results).forEach(lineage_key => {
           results[lineage_key].forEach(d => {
-            // Convert to the VOC/VOI synoyms.
-            const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
-
-            d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
-            d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
-            d["id"] = `${d.pangolin_lineage.replace(/\./g, "-")}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
-            d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+            cleanCharMutations(d, lineage_key);
           })
           // sort by location
           results[lineage_key].sort(compareMutationLocation);

@@ -116,6 +116,9 @@ export default Vue.extend({
     ...mapState("genomics", ["characteristicThreshold"]),
     title() {
       return (`Global characteristic mutations in ${this.lineageName}`)
+    },
+    characteristicThresholdFormatted() {
+      return (format(".0%")(this.charactersticThreshold))
     }
   },
   data() {
@@ -261,7 +264,7 @@ export default Vue.extend({
 
           textGrp.append("tspan")
             .attr("class", "mutation")
-            .text(d => d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : `${d.mutation.split(":").slice(-1)[0].toUpperCase()}`)
+            .text(d => d.mutation_simplified)
             .style("font-weight", 700);
           // .style("fill", "#555");
 
@@ -270,7 +273,7 @@ export default Vue.extend({
             .attr("x", this.x(1))
             .attr("dx", 37)
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
-            .text(d => format(".0%")(d.prevalence))
+            .text(d => d.prevalence_formatted)
             .style("font-size", 13)
             .style("fill", this.fillColor)
             .style("dominant-baseline", "central")
@@ -355,12 +358,12 @@ export default Vue.extend({
             .text(d => `${d.gene}: `);
 
           update.select(".mutation")
-            .text(d => d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : `${d.mutation.split(":")[-1].toUpperCase()}`);
+            .text(d => d.mutation_simplified);
 
           update
             .select(".annotation")
             .attr("x", this.width - this.margin.left - this.margin.right)
-            .text(d => format(".0%")(d.prevalence))
+            .text(d => d.prevalence_formatted)
             .transition(t1)
             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
 
@@ -473,7 +476,7 @@ export default Vue.extend({
             .attr("x", this.x(this.characteristicThreshold))
             .attr("y", this.height - this.margin.top - this.margin.bottom + thresholdY)
             .attr("dx", -3 + thresholdX)
-            .text(`characteristic threshold (${format(".0%")(this.characteristicThreshold)})`)
+            .text(`characteristic threshold (${this.characteristicThresholdFormatted})`)
             .style("text-anchor", "end")
             .style("font-size", 14)
             .style("dominant-baseline", "central")
@@ -496,7 +499,7 @@ export default Vue.extend({
             .select(".threshold-annotation")
             .attr("x", this.x(this.characteristicThreshold))
             .attr("y", this.height - this.margin.top - this.margin.bottom + thresholdY)
-            .text(`characteristic threshold (${format(".0%")(this.characteristicThreshold)})`);
+            .text(`characteristic threshold (${this.characteristicThresholdFormatted})`);
         },
         exit =>
         exit.call(exit =>
