@@ -115,7 +115,7 @@ export default Vue.extend({
   computed: {
     ...mapState("genomics", ["characteristicThreshold"]),
     title() {
-      return (`Characteristic mutations in ${this.lineageName}`)
+      return (`Global characteristic mutations in ${this.lineageName}`)
     }
   },
   data() {
