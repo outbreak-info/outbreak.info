@@ -210,12 +210,9 @@
 
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions"
-              v-if="mutations" />
+            <CharacteristicMutations :mutationName="reportName" :lineageTotal="totalLineageNumeric" :mutations="mutations" :reportType="reportType" :threshold="threshold" :thresholdFormatted="thresholdFormatted" :definitionLabel="definitionLabel"
+              :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions" v-if="mutations" />
           </div>
-
-          <!-- SUBLINEAGE BREAKDOWN -->
-          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
 
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
@@ -241,6 +238,16 @@
             :locationTotals="locationTotals" :countries="countries" :states="states" />
         </section>
       </div>
+
+      <section class="mt-4 border-top border-bottom py-2"  v-if="sublineagePrev && sublineagePrev.length">
+        <h4 class="m-0">Sublineages within {{lineageName}}</h4>
+        <!-- SUBLINEAGE BREAKDOWN -->
+        <div class="d-flex justify-content-center flex-wrap">
+        <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev"/>
+        </div>
+
+
+      </section>
 
 
       <!-- DAILY PREVALENCE -->
@@ -435,11 +442,13 @@ import {
   updateLocationData,
   findLocation,
   findPangolin,
-  getLocationPrevalence
+  getLocationPrevalence,
+  getCharacteristicMutations
 } from "@/api/genomics.js";
 
 import {
   timeFormat,
+  format,
   max,
   scaleThreshold
 } from "d3";
@@ -477,6 +486,10 @@ export default {
     loc: [Array, String],
     muts: [Array, String],
     pango: String,
+    threshold: {
+      type: [Number, String],
+      default: 0.75
+    },
     xmin: String,
     xmax: String,
     overlay: {
@@ -494,14 +507,16 @@ export default {
       return (window.innerWidth < 500)
     },
     definitionLabel() {
-      return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
-        this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
+      return this.reportType == "mutation" ? "List of mutations" : "Characteristic mutations in variant";
     },
     locationLabel() {
       return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
+    },
+    thresholdFormatted() {
+      return format(".0%")(+this.threshold)
     },
     choroplethLocations() {
       return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)
@@ -514,6 +529,9 @@ export default {
         this.lineageName = null;
         this.reportMetadata = null;
         this.setupReport();
+      }
+      if (newVal.threshold != oldVal.threshold) {
+        this.updateCharacteristicMutations();
       } else {
         this.updateLocations();
       }
@@ -556,6 +574,7 @@ export default {
       dataSubscription: null,
       curatedSubscription: null,
       locationChangeSubscription: null,
+      charMutsSubscription: null,
       choroSubscription: null,
       hasData: false,
 
@@ -615,6 +634,7 @@ export default {
       sublineages2Plot: 5,
       locationTotals: null,
       totalLineage: null,
+      totalLineageNumeric: null,
       prevalence: [],
       mutationsByLineage: []
     }
@@ -730,7 +750,7 @@ export default {
 
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh, this.threshold).subscribe(results => {
           this.hasData = true;
 
           // selected locations
@@ -746,6 +766,7 @@ export default {
           // worldwide stats
           const global = results.locPrev.filter(d => d.location_id == "Worldwide");
           this.totalLineage = global.length === 1 ? global[0].lineage_count_formatted : null;
+          this.totalLineageNumeric = global.length === 1 ? global[0].lineage_count : null;
 
           // sublineagePrev
           this.sublineagePrev = results.sublineagePrev;
@@ -843,6 +864,7 @@ export default {
         query: {
           pango: this.pango,
           muts: this.muts,
+          threshold: this.threshold,
           selected: newSelected,
           loc: locationIDs,
           overlay: this.sublineageOverlay
@@ -864,13 +886,14 @@ export default {
       }
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
-      const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
+      const ids = uniq(this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide"));
 
       this.$router.push({
         name: "MutationReport",
         query: {
           pango: this.pango,
           muts: this.muts,
+          threshold: this.threshold,
           loc: ids,
           selected: this.selectedLocation,
           overlay: this.sublineageOverlay
@@ -879,6 +902,11 @@ export default {
           alias: this.alias,
           disableScroll: true
         }
+      })
+    },
+    updateCharacteristicMutations() {
+      this.charMutsSubscription = getCharacteristicMutations(this.$genomicsurl, this.lineageName, this.threshold, true, true).subscribe(results => {
+        this.mutations = results;
       })
     },
     updateLocations() {
@@ -922,6 +950,7 @@ export default {
           selected: this.selected,
           xmin: this.xmin,
           xmax: this.xmax,
+          threshold: this.threshold,
           overlay: this.sublineageOverlay
         },
         params: {
@@ -965,6 +994,10 @@ export default {
 
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
+    }
+
+    if (this.charMutsSubscription) {
+      this.charMutsSubscription.unsubscribe();
     }
 
     if (this.locationChangeSubscription) {

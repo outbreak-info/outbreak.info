@@ -409,7 +409,7 @@ function parseStrQuery(query) {
 
 // Report data for a Situation Report page.
 // Returns: date updated, location dictionary metadata, characteristic mutations, lineage/sublineage totals, lineage/sublineage prevalences over time, subnational data for choropleths.
-export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
+export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, characteristicThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
   store.state.admin.reportloading = true;
 
   // clean up the locations data
@@ -424,8 +424,9 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
     locations.push(location);
   }
   // add the world
-  locations.push("Worldwide");
-
+  if (!locations.includes("Worldwide")) {
+    locations.push("Worldwide");
+  }
   // ensure locations are unique
   locations = uniq(locations);
 
@@ -447,7 +448,7 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
-    getCharacteristicMutations(apiurl, lineageString),
+    getCharacteristicMutations(apiurl, queryStr, characteristicThreshold),
     getMutationDetails(apiurl, mutationArr),
     getMutationsByLineage(apiurl, mutationArr),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
@@ -597,11 +598,13 @@ export function updateLocationData(apiurl, alias, mutationArr, lineageString, lo
     locations = [location];
   }
 
-  if(typeof(locations) == "string") {
+  if (typeof(locations) == "string") {
     locations = [locations];
   }
 
-  locations.push("Worldwide");
+  if (!locations.includes("Worldwide")) {
+    locations.push("Worldwide");
+  }
 
   // ensure locations are unique
   locations = uniq(locations);
@@ -655,6 +658,14 @@ export function getMutationDetails(apiurl, mutationString) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      // hard coding information to add additional mutations on top of the characteristic mutations
+      console.log(results)
+      results.forEach(d => {
+        d["prevalence"] = 1;
+        d["prevalence_formatted"] = "100%";
+        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+        d["is_additional_mutation"] = true;
+      })
       return (results)
     }),
     catchError(e => {
@@ -702,7 +713,26 @@ export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold =
   )
 }
 
-export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
+function cleanCharMutations(d, lineage_key) {
+  // Convert to the VOC/VOI synoyms.
+  const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
+  d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
+  d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
+  d["id"] = `${d.pangolin_lineage}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
+  d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+  d["prevalence_formatted"] = format(".0%")(d.prevalence);
+  return (d)
+}
+
+export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true, indivCall = false) {
+  if (indivCall) {
+    store.state.admin.reportloading = true;
+  }
+
+  if (typeof(prevalenceThreshold) == "string") {
+    prevalenceThreshold = +prevalenceThreshold;
+  }
+
   const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
     return ( of ([]));
@@ -720,7 +750,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   }
 
   // convert + to AND to specify lineages + mutations
-  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(/\+/g, "AND")}&frequency=${prevalenceThreshold}`;
+  const url = `${apiurl}lineage-mutations?${lineage.replace("&mutations=", " AND ")}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -731,11 +761,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       if (returnFlat) {
         let res = Object.keys(results).map(lineage_key => results[lineage_key].map(
           d => {
-            // Convert to the VOC/VOI synoyms.
-            const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
-            d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
-            d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
-            d["id"] = `${d.pangolin_lineage}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
+            cleanCharMutations(d, lineage_key);
             return (d);
           }
         ));
@@ -743,13 +769,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       } else {
         Object.keys(results).forEach(lineage_key => {
           results[lineage_key].forEach(d => {
-            // Convert to the VOC/VOI synoyms.
-            const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
-
-            d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
-            d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
-            d["id"] = `${d.pangolin_lineage.replace(/\./g, "-")}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
-            d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+            cleanCharMutations(d, lineage_key);
           })
           // sort by location
           results[lineage_key].sort(compareMutationLocation);
@@ -757,6 +777,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
         return (results)
       }
     }),
+    finalize(() => indivCall ? store.state.admin.reportloading = false : null),
     catchError(e => {
       console.log("%c Error in getting characteristic mutations!", "color: red");
       console.log(e);
@@ -2143,4 +2164,50 @@ export function getSeqMap(apiurl, epiurl, location) {
     }),
     finalize(() => store.state.genomics.locationLoading3 = false)
   )
+}
+
+export function lookupMutationInLineage(apiurl, mutationStr, lineage) {
+  if (mutationStr) {
+    store.state.admin.reportloading = true;
+    const timestamp = Math.round(new Date().getTime() / 8.64e7);
+
+    const url = `${apiurl}mutations-by-lineage?mutations=${mutationStr}&pangolin_lineage=${lineage}&timestamp=${timestamp}`;
+
+    return from(
+      axios.get(url, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    ).pipe(
+      pluck("data", "results"),
+      map(hits => {
+        let results = Object.keys(hits).map(key => {
+          hits[key].forEach(d => {
+            d.pangolin_lineage = d.pangolin_lineage.toUpperCase();
+            d.mutation_string = key;
+            d.proportion_formatted = format(".1%")(d.proportion);
+          })
+          return (hits[key])
+        })
+        results = results.flatMap(d => d);
+
+        results.sort((a, b) => b.proportion - a.proportion);
+        console.log(results)
+
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error looking up mutation prevalence in the lineage!", "color: turquoise");
+        console.log(e);
+        return ( of ([{
+          mutation_string: mutationStr,
+          proportion_formatted: "not detected"
+        }]));
+      }),
+      finalize(() => store.state.admin.reportloading = false)
+    )
+  } else {
+    return ( of ([]))
+  }
 }

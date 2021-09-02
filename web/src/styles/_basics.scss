@@ -804,3 +804,15 @@ $status-color: #bab0ab;
 .bright-hyperlink a {
   color: #70d3ff;
 }
+
+.hover-underline:hover {
+    text-decoration: underline;
+}
+
+.font-size-small {
+  font-size: small;
+}
+
+.font-size-smaller {
+  font-size: smaller;
+}

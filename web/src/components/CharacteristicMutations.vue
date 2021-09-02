@@ -3,7 +3,7 @@
   <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
     <div class="d-flex flex-column">
       <h4 class="mb-0">{{ definitionLabel }}</h4>
-      <small class="text-muted">Mutations in at least {{charMutThreshold}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+      <small class="text-muted">Mutations in at least {{thresholdFormatted}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
     </div>
 
     <div class="d-flex flex-column align-items-end">
@@ -16,35 +16,16 @@
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
   <div class="d-flex align-items-center ml-2 mr-3">
-    <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#mutation-table" aria-expanded="true" aria-controls="mutation-table">
-      <small><span class="if-collapsed">View</span>
-        <span class="if-not-collapsed">Hide</span>
-        mutation table</small>
-    </button>
-    <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" />
+    <DownloadReportData :data="data" figureRef="mutation-map" dataType="Mutation Map" />
   </div>
 
-
-  <div class="collapse ml-2" id="mutation-table">
+  <div class="ml-2" id="mutation-table">
     <div class="row">
-      <div class="col" v-if="lineageName">
-        <MutationTable :mutations="mutations" :tableTitle="`Characteristic mutations of ${lineageName}`" />
-      </div>
-      <div class="col" v-if="additionalMutations && additionalMutations.length > 0">
-        <MutationTable :mutations="additionalMutations" tableTitle="Additional Mutations" />
+      <div class="col" v-if="data">
+        <MutationTable :data="data" :lineageTotal="lineageTotal" :moc="moc" :moi="moi" :threshold="threshold" :colorScale="colorScale" :lineageName="mutationName" v-if="colorScale" />
       </div>
     </div>
   </div>
-  <!-- <div class="ml-2" id="mutation-table"> -->
-  <!--   <div class="row"> -->
-  <!--     <div class="col" v-if="lineageName"> -->
-  <!--       <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`"  v-if="colorScale" /> -->
-  <!--     </div> -->
-  <!--     <div class="col" v-if="additionalMutations.length > 0"> -->
-  <!--       <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" /> -->
-  <!--     </div> -->
-  <!--   </div> -->
-  <!-- </div> -->
 </div>
 </template>
 
@@ -72,15 +53,14 @@ import {
 export default {
   name: "CharacteristicMutations",
   computed: {
-    ...mapState("genomics", ["characteristicThreshold"]),
     lineages() {
       if(this.sublineages){
         return([this.lineageName].concat(this.sublineages))
       }
       return(this.lineageName)
     },
-    charMutThreshold() {
-      return (format(".0%")(this.characteristicThreshold))
+    data() {
+      return(this.mutations.concat(this.additionalMutations))
     }
   },
   props: {
@@ -88,6 +68,9 @@ export default {
     definitionLabel: String,
     mutationName: String,
     lineageName: String,
+    lineageTotal: [Number, String],
+    thresholdFormatted: String,
+    threshold: [Number, String],
     sublineages: [Array, String],
     reportType: String,
     additionalMutations: Array
