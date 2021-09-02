@@ -118,7 +118,7 @@ export default Vue.extend({
       return (`Global characteristic mutations in ${this.lineageName}`)
     },
     characteristicThresholdFormatted() {
-      return (format(".0%")(this.charactersticThreshold))
+      return (format(".0%")(this.characteristicThreshold))
     }
   },
   data() {
