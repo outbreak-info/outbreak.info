@@ -22,7 +22,7 @@
   <div class="ml-2" id="mutation-table">
     <div class="row">
       <div class="col" v-if="lineageName">
-        <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`" v-if="colorScale" />
+        <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Global characteristic mutations of ${lineageName}`" v-if="colorScale" />
       </div>
       <div class="col" v-if="additionalMutations && additionalMutations.length > 0">
         <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" />
