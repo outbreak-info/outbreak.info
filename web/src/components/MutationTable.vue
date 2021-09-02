@@ -2,7 +2,9 @@
 <template>
 <div class="d-flex flex-column w-100 align-items-center mt-3">
 
-  <h5 class="">{{ tableTitle }}</h5>
+  <h5 class="">{{ title }}</h5>
+  <Warning :text="warningMsg" class="mb-3 mt-1" v-if="lineageTotal < warningThreshold" />
+
   <div>
     <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" @click="changeSort">sort by {{ isLinearSorted ? "prevalence" : "AA position"}}</button>
     <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" data-toggle="collapse" href="#view-more">view more mutations</button>
@@ -89,9 +91,9 @@ export default Vue.extend({
   name: "MutationTable",
   props: {
     data: Array,
+    lineageTotal: Number,
     colorScale: Function,
     lineageName: String,
-    tableTitle: String,
     moi: Array,
     moc: Array,
     width: {
@@ -107,6 +109,9 @@ export default Vue.extend({
       default: "#e15759"
     }
   },
+  components: {
+    Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),
+  },
   watch: {
     data: function() {
       this.updatePlot();
@@ -116,6 +121,11 @@ export default Vue.extend({
     ...mapState("genomics", ["characteristicThreshold"]),
     title() {
       return (`Global characteristic mutations in ${this.lineageName}`)
+    },
+    warningMsg() {
+      return (
+        `Currently, there are only <b>${this.lineageTotal} sequences</b> reported for <b>${this.lineageName}</b>. The characteristic mutations for ${this.lineageName} may change as more sequences are reported. <a class='text-light' href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`
+        )
     },
     characteristicThresholdFormatted() {
       return (format(".0%")(this.characteristicThreshold))
@@ -136,6 +146,7 @@ export default Vue.extend({
       interestColor: "#f28e2c",
       concernBg: "#fceeef",
       concernColor: "#e15759",
+      warningThreshold: 1000,
       selectedMutationThreshold: 75,
       selectedMutationLookup: null,
       height: null,
@@ -330,9 +341,9 @@ export default Vue.extend({
         },
         update => {
           update
-          .attr("id", d => d.id)
-          .transition(t1)
-          .attr("transform", d => `translate(0,${this.y(d.mutation)})`);
+            .attr("id", d => d.id)
+            .transition(t1)
+            .attr("transform", d => `translate(0,${this.y(d.mutation)})`);
 
           update
             .select(".prevalence")
@@ -372,7 +383,7 @@ export default Vue.extend({
             .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
             .select(".moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
-            .attr("dy",this.y.bandwidth() / 2);
+            .attr("dy", this.y.bandwidth() / 2);
 
           update
             .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
