@@ -4,9 +4,9 @@
 
   <h5 class="">{{ tableTitle }}</h5>
   <div>
+    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" @click="changeSort">sort by {{ isLinearSorted ? "prevalence" : "AA position"}}</button>
     <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" data-toggle="collapse" href="#view-more">view more mutations</button>
     <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1 mr-4" data-toggle="collapse" href="#find-mutation">find a mutation</button>
-    <button class="font-size-small text-uppercase btn btn-outline-secondary px-2 py-1" @click="changeSort">sort by {{ isLinearSorted ? "prevalence" : "AA position"}}</button>
   </div>
 
   <div class="collapse" id="view-more">
