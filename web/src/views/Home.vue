@@ -9,7 +9,7 @@
       <div class="col-sm-12 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
         <div class="d-flex flex-column w-100 align-items-center my-2">
           <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-20" />
-          <p class="text-light my-1">
+          <p class="text-light my-1 mx-3">
             a standardized, open-source database of COVID-19 resources and epidemiology data
           </p>
         </div>
@@ -79,17 +79,22 @@
           </form>
           <small id="sBar-example-variant-lineage" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.1.7', selected:'GBR'}} " class="text-light">B.1.1.7
+              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.526', muts: 'S:E484K', selected:'USA_US-NY'}} " class="text-light">B.1.526 with S:E484K
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.617.2'}} " class="text-light">B.1.617.2
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: { muts: ['S:S13I','S:L452R'], selected:'USA_US-CA'}} " class="text-light">S:S13I &amp; S:L452R
+              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.621'}} " class="text-light">B.1.621
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', params: {alias: 'alpha'}} " class="text-light">Alpha / B.1.1.7
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -604,12 +609,20 @@ export default {
       });
     },
     updatePangolin(selected) {
+      if(selected.alias){
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: selected.name.toLowerCase()
+          }
+        });
+      } else{
       this.$router.push({
         name: "MutationReport",
         query: {
           pango: selected.name
         }
-      });
+      });}
     },
     removeSummary: function(idx) {
       this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
@@ -692,6 +705,9 @@ export default {
         border: none !important;
     }
     .variants-intro {
+        border: none !important;
+    }
+    .resources-intro {
         border: none !important;
     }
 }

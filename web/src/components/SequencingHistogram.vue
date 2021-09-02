@@ -55,8 +55,6 @@ import {
   event,
   max,
   format,
-  line,
-  area,
   transition,
   timeDay
 } from "d3";
@@ -77,6 +75,10 @@ export default Vue.extend({
       default: "sequencing-histogram"
     },
     width: Number,
+    height: {
+      type: Number,
+      default: 80
+    },
     margin: Object,
     notDetectedColor: {
       type: String,
@@ -101,7 +103,6 @@ export default Vue.extend({
   },
   data() {
     return ({
-      height: 80,
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
 
       showDetected: null,
@@ -227,8 +228,6 @@ export default Vue.extend({
         .style("opacity", 1);
     },
     updatePlot() {
-      const t1 = transition().duration(2500);
-
       if (this.data) {
         this.updateScales();
 
@@ -263,7 +262,7 @@ export default Vue.extend({
           exit =>
           exit.call(exit =>
             exit
-            .transition(10)
+            .transition()
             .style("opacity", 1e-5)
             .remove()
           )
@@ -298,7 +297,7 @@ export default Vue.extend({
           exit =>
           exit.call(exit =>
             exit
-            .transition(10)
+            .transition()
             .style("opacity", 1e-5)
             .remove()
           )

@@ -18,6 +18,12 @@ const routes = [{
       import( /* webpackChunkName: "privacy" */ "../views/Privacy.vue")
   },
   {
+    path: "/faq",
+    name: "FAQ",
+    component: () =>
+      import( /* webpackChunkName: "faq" */ "../views/Faq.vue")
+  },
+  {
     path: "/terms",
     name: "Terms",
     component: () =>
@@ -112,6 +118,11 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import( /* webpackChunkName: "data" */ "../views/Data.vue")
+  },
+  {
+    path: "/press",
+    name: "Press",
+    component: () => import( /* webpackChunkName: "press" */ "../views/Press.vue")
   },
   {
     path: "/sources",
@@ -230,6 +241,13 @@ const routes = [{
   {
     path: "/situation-reports",
     name: "SituationReports",
+    props: route => ({
+      voc: route.query.voc,
+      voi: route.query.voi,
+      moc: route.query.moc,
+      moi: route.query.moi,
+      name: route.query.name
+    }),
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */
@@ -237,7 +255,15 @@ const routes = [{
       ),
     // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
-      if (to.query && ((to.query.pango) || (to.query.muts))) {
+      if(to.params && to.params.alias) {
+        // redirect to route below
+        next({
+          name: 'MutationReport',
+          params: to.params,
+          query: to.query
+        })
+      }
+      else if (to.query && ((to.query.pango) || (to.query.muts))) {
         // redirect to route below
         next({
           name: 'MutationReport',
@@ -247,21 +273,21 @@ const routes = [{
         next()
     }
   },
-  {
-    path: "/situation-reports",
-    name: "MutationReport",
-    props: route => ({
-      loc: route.query.loc,
-      muts: route.query.muts,
-      pango: route.query.pango,
-      selected: route.query.selected
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SituationReport.vue"
-      )
-  },
+  // {
+  //   path: "/situation-reports",
+  //   name: "MutationReport",
+  //   props: route => ({
+  //     loc: route.query.loc,
+  //     muts: route.query.muts,
+  //     pango: route.query.pango,
+  //     selected: route.query.selected
+  //   }),
+  //   component: () =>
+  //     import(
+  //       /* webpackChunkName: "situation-report" */
+  //       "../views/SituationReport.vue"
+  //     )
+  // },
   {
     path: "/situation-reports/methods",
     name: "SituationReportMethodology",
@@ -272,12 +298,26 @@ const routes = [{
       )
   },
   {
+    path: "/situation-reports/status",
+    name: "SituationReportStatus",
+    props: route => ({
+      loc: route.query.loc,
+      var: route.query.var
+    }),
+    component: () =>
+      import(
+        /* webpackChunkName: "situation-reports-status" */
+        "../views/SituationReportStatus.vue"
+      )
+  },
+  {
     path: "/compare-lineages",
     name: "SituationReportComparison",
     props: route => ({
       location: route.query.location,
       pango: route.query.pango,
       gene: route.query.gene,
+      dark: route.query.dark,
       threshold: route.query.threshold
     }),
     component: () =>
@@ -396,12 +436,22 @@ const routes = [{
     })
   },
   {
-    path: "/situation-reports/:mutation",
-    name: "SituationReport",
+    path: "/situation-reports/:alias?",
+    name: "MutationReport",
+    props: route => ({
+      alias: route.params.alias,
+      overlay: route.query.overlay,
+      xmin: route.query.xmin,
+      xmax: route.query.xmax,
+      loc: route.query.loc,
+      muts: route.query.muts,
+      pango: route.query.pango,
+      selected: route.query.selected
+    }),
     component: () =>
       import(
-        /* webpackChunkName: "situation-report" */
-        "../views/SitReport.vue"
+        /* webpackChunkName: "combined-lineage-report" */
+        "../views/SituationReport.vue"
       )
   },
   {
@@ -436,11 +486,13 @@ const routes = [{
     path: "/location-reports",
     name: "LocationReport",
     props: route => ({
+      alias: route.query.alias,
       loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
       variant: route.query.variant,
       selected: route.query.selected,
+      dark: route.query.dark,
       xmax: route.query.xmax,
       xmin: route.query.xmin
     }),
@@ -461,6 +513,15 @@ const routes = [{
       import(
         /* webpackChunkName: "watch-list" */
         "../views/WatchList.vue"
+      )
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: "NotFound",
+    component: () =>
+      import(
+        /* webpackChunkName: "404" */
+        "../views/PageNotFound.vue"
       )
   }
 ];

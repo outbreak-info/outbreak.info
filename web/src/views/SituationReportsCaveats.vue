@@ -7,7 +7,8 @@
     <h3>Caveats &amp; Limitations</h3>
     <p class="mt-3">
       To describe the prevalence of sets of mutations in our <router-link :to="{name: 'SituationReports'}">Mutation Situation Reports</router-link>, we rely on shared virus sequences from the <a href="https://www.gisaid.org/" target="_blank">GISAID
-        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences and sample metadata deposited in GISAID.
+        Initiative</a>. While we apply filters to remove some low quality sequences and unreasonable metadata as described in our <router-link :to="{name: 'SituationReportMethodology'}">methods</router-link>, we rely on the accuracy of the sequences
+      and sample metadata deposited in GISAID.
     </p>
 
     <p>
@@ -30,12 +31,28 @@
     <div class="border-bottom py-2">
       <h5 class="m-0 mb-1">Greater sequencing of older samples</h5>
       <p>
-        For all sequencing data, there is a lag between when the sample was acquired from the patient, when the sample was processed and sequenced, and when the data is released to the public. This gap means that the most recent data often contains very few samples, severely limiting its reliability.
+        For all sequencing data, there is a lag between when the sample was acquired from the patient, when the sample was processed and sequenced, and when the data is released to the public. This gap means that the most recent data often contains
+        very few samples, severely limiting its reliability.
       </p>
       <!-- <p>
         View the lag between sample collection date and sequence submission date:
       </p>
       <div class="text-highlight">&lt; changable plot showing the distribution of sequencing gaps by global/country/state &gt;</div> -->
+    </div>
+
+    <div class="border-bottom py-2">
+      <h5 class="m-0 mb-1">Selective sampling</h5>
+      <p>The samples submitted for sequencing are often not a random sample of all cases. These samples are often from:</p>
+      <ul>
+        <li>An investigation of a single cluster in an outbreak</li>
+        <li>
+          Unique cases, such as patients with severe disease or breakthrough cases of patients who had been vaccinated
+        </li>
+        <li>Imported cases from travel</li>
+        <li>S-gene target failure during PCR amplification (see below)</li>
+      </ul>
+      <p>Selective sampling skews the estimated prevalence of a lineage in a location. For instance, a higher proportion of breakthrough cases sequenced will lead to an overestimation of the prevalence of Variants of Concern (VOC) or Interest (VOI),
+        which have a greater likelihood of showing immune escape in vaccinated people.</p>
     </div>
 
     <div class="border-bottom py-2">
@@ -49,6 +66,14 @@
         Estimates of true prevalence in the U.S. are discussed in the <a href="https://blog.helix.com/b117-variant-updated-data/" target="_blank">Helix Research blog</a>.
       </p>
     </div>
+
+  <div class="my-5">
+    <h3 id="delta">Delta variant lineages &amp; how lineages are assigned</h3>
+    <p>
+      Classifications of Delta lineages by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are in flux. While underlying sequence data remains the same, reports for specific lineages may change. Read more from the Pango team on <a href="https://cov-lineages.org/FAQ.html" target="_blank">why a lineage assignment might change</a> and an explanation about the <a href="https://www.pango.network/new-ay-lineages/" target="_blank">AY lineage series</a>.
+    </p>
+  </div>
+
 
   </section>
   <section id="methods" class="d-flex w-75 justify-content-center my-5">

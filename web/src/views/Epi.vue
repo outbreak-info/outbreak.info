@@ -75,6 +75,7 @@
     text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
   </Warning>
   <Warning :animate="true" class="my-4" v-if="noData" text="No results. Testing/hospitalization data are currently only available for U.S. States (not Metro areas or Counties), and recovery data is not available for the U.S."></Warning>
+  <Warning :animate="true" class="my-4" v-if="['testing_positivity', 'testing_totalTestResultsIncrease', 'testing_totalTestResults', 'testing_hospitalizedIncrease', 'testing_hospitalized'].includes(variable)" text="The COVID Tracking Project stopped collecting data on <a class='text-light' href='https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done' target='_blank'>7 March 2021</a>"></Warning>
 
   <div class="d-flex row m-0">
     <!-- bar graph -->
@@ -451,6 +452,8 @@ export default {
     setLocation: function(locationString, nullLocationHandler) {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
+        console.log(locationString)
+        console.log(locations)
         this.selectedPlaces = locations;
         this.dataSubscription = getEpiData(
           this.$apiurl,

@@ -1,80 +1,79 @@
 <template>
-<form class="mx-4" @submit.prevent="submitQuery">
-  <template v-if="includeLocation">
-    <h3>Select location</h3>
-    <div class="d-flex align-items-center my-3">
-      <div class="input-group w-50">
-        <div class="input-group-prepend">
-          <span class="input-group-text bg-grey text-muted border-0" id="sb">
-            <font-awesome-icon :icon="['fas', 'search']" />
-          </span>
-        </div>
-        <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Select location" totalLabel="total sequences"
-          :removeOnSelect="false" @click.prevent="submitQuery" />
+<div class="mx-4">
+  <h3>Select location</h3>
+  <div class="d-flex align-items-center mt-3 mb-5">
+    <div class="input-group w-50">
+      <div class="input-group-prepend">
+        <span class="input-group-text bg-grey text-muted border-0" id="sb">
+          <font-awesome-icon :icon="['fas', 'search']" />
+        </span>
       </div>
+      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Select location" totalLabel="total sequences"
+        :removeOnSelect="false" @click.prevent="submitQuery" />
     </div>
-
-    <div class="d-flex flex-column justify-content-center align-items-center w-100 mt-5">
-      <button :disabled="!location" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @submit.once="submitQuery">Create {{ location ? location.label : null }} report</button>
-    </div>
-  </template>
-
-  <div class="my-5" v-if="includeMutations">
-    <template v-if="includeLocation">
-      <h3>Add lineages &amp; mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
-      <h6 class="text-muted">Optional: specify lineages and mutations to track in addition to the Variants of Concern and Interest we're tracking</h6>
-      <b class="text-muted m-0 p-0" v-if="curated">
-        Default:
-      </b>
-      <div v-for="(type, tIdx) in curated" :key="tIdx" class="d-flex mb-3 align-items-center">
-        <div class="mr-3">
-          <small :class="{ 'VOC': type.key == 'Variant of Concern', 'MOC': type.key == 'Mutation of Concern', 'MOI': type.key == 'Mutation of Interest', 'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
-        </div>
-
-        <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip bg-white text-muted btn-outline-secondary-no-hover">{{variant}}</button>
-      </div>
-    </template>
-
-    <div>
-      <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :selectedMutations.sync="selectedMutations" :submitted="submitCount" :submitLabel.sync="submitLabel" />
-
-      <b class="text-muted m-0 p-0" v-if="pango || variant.length || muts.length">
-        New lineages / mutations:
-      </b>
-      <div class="d-flex flex-wrap align-items-center mb-3">
-        <button class="btn chip bg-main text-light pl-3" @click="deleteVariant(pango)" v-if="pango">
-          {{ pango.label }}
-          <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-        </button>
-        <button v-for="(variant, vIdx) in variant" :key="'variant' + vIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(vIdx, variant)">
-          {{ variant.label }}
-          <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-        </button>
-        <button v-for="(mutation, mIdx) in muts" :key="'mutation' + mIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(mIdx, muts)">
-          {{ mutation.label }}
-          <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
-        </button>
-      </div>
-
-      <!-- <div class="d-flex align-items-center my-4 w-100">
-        <button type="submit" class="btn btn-outline-secondary" :class="{'btn-lg': !minimalistic }" @click="clearSelection">Clear selection</button>
-        <button :disabled="!formValid" type="submit" class="btn btn-sec-outline" :class="{'btn-lg': !minimalistic }" @click="addVariant">Add another lineage/mutation</button>
-        <button :disabled="!formValid" type="submit" class="btn btn-accent" :class="{'btn-lg': !minimalistic }" @click="submitQuery">Go</button>
-      </div> -->
-
-    </div>
+    <button :disabled="!location" type="submit" class="btn btn-accent btn-lg m-0" @click="submitQuery" v-if="!formValid">Go</button>
 
   </div>
-</form>
+
+
+  <!-- <div id="custom-variants" v-if="location">
+    <h3>Add optional lineages &amp; mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
+    <h6 class="text-muted"><em>Optional:</em> specify lineages and mutations to track in addition to the Variants of Concern and Interest</h6>
+    <div class="d-flex flex-column align-items-start mb-3">
+      <div class="bg-grey__lightest border-top border-bottom px-2 py-1">
+        <b class="text-muted m-0 p-0" v-if="curated">
+          Default:
+        </b>
+        <div v-for="(type, tIdx) in curated" :key="tIdx" class="d-flex my-1 align-items-center">
+          <div class="mr-3">
+            <small :class="{ 'VOC': type.key == 'Variant of Concern', 'MOC': type.key == 'Mutation of Concern', 'MOI': type.key == 'Mutation of Interest', 'VOI': type.key == 'Variant of Interest'}">{{type.key}}</small>
+          </div>
+
+          <button v-for="(variant, vIdx) in type.value" :key="vIdx" class="btn chip bg-white text-muted btn-outline-secondary-no-hover">{{variant}}</button>
+        </div>
+      </div>
+    </div>
+
+    <b class="text-muted m-0 p-0" v-if="curated">
+      Custom additions:
+    </b>
+    <VariantForm :minimalistic="false" :selectedLineage.sync="selectedLineage" :submitLabel.sync="submitLabel" :selectedMutations.sync="selectedMutations" :submitted="submitCount" />
+
+    <b class="text-muted m-0 p-0" v-if="pango.length || variant.length || muts.length">
+      Already selected:
+    </b>
+    <div class="d-flex flex-wrap align-items-center mb-3">
+      <button v-for="(lineage, pIdx) in pango" :key="'pango' + pIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(pIdx, pango)">
+        {{ lineage.label }}
+        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+      </button>
+      <button v-for="(variant, vIdx) in variant" :key="'variant' + vIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(vIdx, variant)">
+        {{ variant.label }}
+        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+      </button>
+      <button v-for="(mutation, mIdx) in muts" :key="'mutation' + mIdx" class="btn chip bg-main text-light pl-3" @click="deleteVariant(mIdx, muts)">
+        {{ mutation.label }}
+        <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
+      </button>
+    </div>
+
+    <div class="d-flex align-items-center mt-2 mb-4 w-100">
+      <button type="submit" class="btn btn-outline-secondary" @click="clearSelection">Clear selections</button>
+      <button :disabled="!formValid" type="submit" class="btn btn-sec ml-3" @click="addVariant">Add another lineage/mutation</button>
+      <button :disabled="!formValid" type="submit" class="btn btn-accent ml-3" @click="submitQuery">Go</button>
+    </div>
+
+  </div> -->
+</div>
 </template>
 
 <script>
 import Vue from "vue";
 
 import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
-import VariantForm from "@/components/VariantForm.vue";
+// import VariantForm from "@/components/VariantForm.vue";
 
-import debounce from "lodash/debounce";
+import uniq from "lodash/uniq";
 
 import {
   findLocation
@@ -98,91 +97,62 @@ export default {
   name: "CustomLocationForm",
   components: {
     TypeaheadSelect,
-    VariantForm,
+    // VariantForm,
     FontAwesomeIcon
   },
   props: {
-    minimalistic: {
-      type: Boolean,
-      default: false
-    },
-    includeLocation: {
-      type: Boolean,
-      default: true
-    },
-    includeMutations: {
-      type: Boolean,
-      default: true
-    },
-    curated: Array,
-    variant: {
-      type: Array,
-      default: () => []
-    },
-    muts: {
-      type: Array,
-      default: () => []
-    },
-    pango: {
-      type: Object,
-      default: () => null
-    },
-    // formCount: Number
-  },
-  watch: {
-    selectedLineage() {
-      console.log(this.selectedLineage)
-      this.addVariant();
-    }
+    curated: Array
   },
   computed: {
-    title() {
-      if (this.selectedLineage) {
-        return this.selectedMutations.length ? `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
-      } else {
-        return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
-      }
-    },
     formValid() {
-      return (this.selectedMutations.length > 0 || this.selectedLineage)
+      return ((this.selectedMutations.length > 0 || this.selectedLineage || this.pango.length || this.variant.length || this.muts.length) && this.location)
     }
   },
   methods: {
+    clearSelection() {
+      this.submitCount += 1;
+    },
     addVariant() {
       if (this.selectedLineage && this.selectedMutations.length) {
+
         this.variant.push({
           label: `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}`,
-          route: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`
+          qParam: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`,
+          mutation_string: `(${this.selectedLineage}) AND (${this.selectedMutations.map(d => d.mutation).join(" AND ")})`
         })
       } else if (this.selectedLineage) {
-
-        const newPango = {
-          label: `${this.selectedLineage} lineage`,
+        this.pango.push({
+          label: this.selectedLineage,
           qParam: this.selectedLineage,
-          type: "pango"
-        };
-        this.$emit("update:pango", newPango);
+          mutation_string: this.selectedLineage
+        })
       } else if (this.selectedMutations.length) {
         this.muts.push({
           label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
-          route: this.selectedMutations.map(d => d.mutation).join(",")
+          qParam: this.selectedMutations.map(d => d.mutation).join(" AND "),
+          mutation_string: this.selectedMutations.map(d => d.mutation).join(" AND ")
         })
       }
 
-      this.selectedLineage = null;
-      this.selectedMutations = [];
+      this.submitCount += 1;
     },
     deleteVariant(idx, variantArr) {
       variantArr.splice(idx, 1);
     },
     submitQuery() {
+      this.addVariant();
+      const pango = uniq(this.pango.map(d => d.qParam));
+      const variant = uniq(this.variant.map(d => d.qParam));
+      const muts = uniq(this.muts.map(d => d.qParam));
+
       this.$router.push({
         name: "LocationReport",
         query: {
           loc: this.location.id,
-          pango: this.pango.map(d => d.route),
-          variant: this.variant.map(d => d.route),
-          muts: this.muts.map(d => d.route)
+          pango: pango,
+          variant: variant,
+          muts: muts,
+          selected: pango.concat(variant, muts).filter(d => d.length)
         }
       })
     },
@@ -198,6 +168,10 @@ export default {
       location: null,
       selectedLineage: null,
       selectedMutations: [],
+      pango: [],
+      variant: [],
+      muts: [],
+      variantArr: [],
       submitLabel: null,
       submitCount: 0
     }

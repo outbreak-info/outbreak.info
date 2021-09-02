@@ -3,7 +3,7 @@
   <div class="d-flex align-items-center justify-content-between mb-3">
     <h4>{{mutationName}} Publications &amp; Resources</h4>
     <div class="ml-3 text-highlight font-size-2">
-      {{ total }} results
+      {{ totalFormatted }} results
     </div>
 
     <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown ml-5" v-if="total">
@@ -39,7 +39,7 @@
       <font-awesome-icon :icon="['fas', 'arrow-left']" />
     </button>
     <small>viewing results {{ (lowerLim + 1).toLocaleString() }} &minus; {{ upperLim.toLocaleString() }} of
-      {{ total.toLocaleString() }}</small>
+      {{ totalFormatted }}</small>
     <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
       <font-awesome-icon :icon="['fas', 'arrow-right']" />
     </button>
@@ -88,6 +88,7 @@ export default Vue.extend({
   data() {
     return {
       total: null,
+      totalFormatted: null,
       selectedPage: 0,
       numPerPage: 10,
       resources: null,
@@ -133,6 +134,7 @@ methods: {
     if(this.searchTerms.length) {
     this.resultSubscription = getLineageResources(this.$resourceurl, this.queryString, this.numPerPage, this.selectedPage * this.numPerPage).subscribe(results => {
       this.total = results.total;
+      this.totalFormatted = results.totalFormatted;
       this.resources = results.resources;
     })
   }

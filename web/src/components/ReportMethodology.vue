@@ -63,13 +63,13 @@
       <h2>Lineages</h2>
       <h4 id="lineages">Lineage assignment</h4>
       <p>
-        PANGO lineage classification for each individual sequence was provided by GISAID.
+        PANGO lineage classification for each individual sequence was provided by GISAID. Note that classifications of newer lineages, including Delta, by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are in flux and may change. While underlying sequence data remains the same, reports for specific lineages may change. Read more from the Pango team on <a href="https://cov-lineages.org/FAQ.html" target="_blank">why a lineage assignment might change</a> and an explanation about the <a href="https://www.pango.network/new-ay-lineages/" target="_blank">AY lineage series</a>.
       </p>
 
       <h4 id="characteristic">Characteristic mutations of a lineage</h4>
 
       <p>
-        Characteristic mutations for a lineage were defined as nonsynonymous substitutions or deletions that occurred in > {{charMutThreshold}} of sequences within that lineage.
+        Characteristic mutations for a lineage are defined as nonsynonymous substitutions or deletions that occur in > {{charMutThreshold}} of sequences within that lineage. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
       </p>
     </section>
 

@@ -27,7 +27,7 @@
 
         <!-- PANGO Lineage -->
         <div id="pango" class="ml-5" :class="[minimalistic ? 'mb-2' : 'mb-4']" v-if="selectedType && (selectedType.id == 'pango' || selectedType.id == 'variant')">
-          <small>Based on <a href="https://cov-lineages.org/lineages.html" target="_blank">PANGO lineages</a></small>
+          <small>Based on <a href="https://cov-lineages.org/lineage_list.html" target="_blank">PANGO lineages</a></small>
 
           <div class="flew-row d-flex w-350px">
             <TypeaheadSelect :queryFunction="queryPangolin" :selectedValue="selectedLineage" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="false" placeholder="Select PANGO lineage" />
@@ -71,7 +71,7 @@
 
   </div>
 
-  <div class="d-flex align-items-center circle-header" v-if="formValid">
+  <div class="d-flex align-items-center circle-header" v-if="formValid && selectedType">
     <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">{{selectedType.id == 'variant' ? 4 : 3}}</div>
     <div class="text-sec line-height-1" :class="{'font-size-2': !minimalistic }">
       Add <span class="text-highlight" v-html="title"></span>
@@ -132,7 +132,7 @@ import debounce from "lodash/debounce";
 export default Vue.extend({
   name: "CustomReportForm",
   props: {
-    selectedLineage: String,
+    selectedLineage: Object,
     selectedMutations: Array,
     submitted: Number,
     minimalistic: {
@@ -147,13 +147,12 @@ export default Vue.extend({
   },
   watch: {
     submitted(newVal, oldVal) {
-      console.log("submitted")
       this.clearForm();
     },
     selectedType: {
       immediate: false,
       handler(newVal, oldVal) {
-        if (this.selectedType.id == "variant") {
+        if (this.selectedType && this.selectedType.id == "variant") {
           this.$emit("update:submitLabel", 5);
         } else {
           this.$emit("update:submitLabel", 4);
@@ -164,7 +163,7 @@ export default Vue.extend({
   computed: {
     title() {
       if (this.selectedLineage) {
-        return this.selectedMutations.length ? `${this.selectedLineage} lineage with ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
+        return this.selectedMutations.length ? `${this.selectedLineage.name} lineage with ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage.name} lineage`;
       } else {
         return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
       }
@@ -181,9 +180,8 @@ export default Vue.extend({
   },
   methods: {
     updatePangolin(selected) {
-      console.log("pangolin update")
       selected ?
-        this.$emit("update:selectedLineage", selected.name) :
+        this.$emit("update:selectedLineage", selected) :
         this.$emit("update:selectedLineage", null);
     },
     changeBulk() {
@@ -192,46 +190,54 @@ export default Vue.extend({
       this.badBulkDeletion = false;
       this.badBulkGene = false;
 
-        this.selectedBulkMutations = bulk.map(d => {
-          const splitted = d.split(":");
-          if (splitted.length == 2) {
-            const aaChange = splitted[1];
-            const mutationType = aaChange.toLowerCase().includes("del") ? "deletion" : "substitution";
-            const changeSplitted = aaChange.split(/(\d+)/g).filter(d => d != "");
-            if (mutationType == "substitution") {
-              if (changeSplitted.length == 3) {
-                return ({
-                  mutation: d,
-                  gene: splitted[0],
-                  type: mutationType,
-                  ref_aa: changeSplitted[0],
-                  codon_num: +changeSplitted[1],
-                  alt_aa: changeSplitted[2]
-                })
-              } else {
-                this.badBulkSubstitution = true;
-              }
-            } else if (mutationType == "deletion") {
-              if (changeSplitted.length == 4) {
-                return ({
-                  mutation: d,
-                  gene: splitted[0],
-                  type: mutationType,
-                  codon_num: +changeSplitted[1],
-                  change_length_nt: (Number(changeSplitted[3]) - Number(changeSplitted[1]) + 1) * 3
-                })
-              } else {
-                this.badBulkDeletion = true;
-              }
+      this.selectedBulkMutations = bulk.map(d => {
+        const splitted = d.split(":");
+        if (splitted.length == 2) {
+          const aaChange = splitted[1];
+          const mutationType = aaChange.toLowerCase().includes("del") ? "deletion" : "substitution";
+          const changeSplitted = aaChange.split(/(\d+)/g).filter(d => d != "");
+          if (mutationType == "substitution") {
+            if (changeSplitted.length == 3) {
+              return ({
+                mutation: d,
+                gene: splitted[0],
+                type: mutationType,
+                ref_aa: changeSplitted[0],
+                codon_num: +changeSplitted[1],
+                alt_aa: changeSplitted[2]
+              })
+            } else {
+              this.badBulkSubstitution = true;
             }
-          } else {
-            this.badBulkGene = true;
+          } else if (mutationType == "deletion") {
+            if (changeSplitted.length == 4) {
+              return ({
+                mutation: d,
+                gene: splitted[0],
+                type: mutationType,
+                codon_num: +changeSplitted[1],
+                change_length_nt: (Number(changeSplitted[3]) - Number(changeSplitted[1]) + 1) * 3
+              })
+            } else if (changeSplitted.length == 2) {
+              return ({
+                mutation: d,
+                gene: splitted[0],
+                type: mutationType,
+                codon_num: +changeSplitted[1],
+                change_length_nt: 3
+              })
+            } else {
+              this.badBulkDeletion = true;
+            }
           }
-        })
+        } else {
+          this.badBulkGene = true;
+        }
+      })
 
-        const newMutations = this.selectedBulkMutations.filter(d => d);
+      const newMutations = this.selectedBulkMutations.filter(d => d);
 
-        this.$emit("update:selectedMutations", newMutations);
+      this.$emit("update:selectedMutations", newMutations);
     },
     deleteMutation(idx) {
       const removed = this.selectedMutations.splice(idx, 1);
@@ -248,6 +254,7 @@ export default Vue.extend({
       this.badBulkGene = false;
       this.selectedBulkMutations = [];
       this.selectedBulkString = null;
+      this.selectedType = null;
       this.$emit("update:selectedLineage", null);
       this.$emit("update:selectedMutations", []);
     }

@@ -83,10 +83,35 @@
       <div class="border-top pt-3 my-3 mb-1">
         <h4 class="mb-3">Add lineages</h4>
         <div class="d-flex flex-wrap justify-content-between">
-          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded">
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center">
               <div class="mr-2 circle">1</div>
-              <span class="mr-1">By</span><a href='https://cov-lineages.org/lineages.html' target='_blank'>PANGO lineage</a>
+              <span class="mr-1">By Variants of Concern &amp; Interest</span>
+            </h6>
+            <div class="d-flex flex-column align-items-center">
+              <div class="d-flex mt-2 mb-2">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(false)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOCs</b>
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOCs(true)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add <b>VOCs</b>
+                </button>
+              </div>
+              <div class="d-flex pt-2 border-top">
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(false)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>VOIs</b>
+                </button>
+                <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addVOIs(true)">
+                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add <b>VOIs</b>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
+            <h6 class="d-flex align-items-center">
+              <div class="mr-2 circle">2</div>
+              <span class="mr-1">By</span><a href='https://cov-lineages.org/lineage_list.html' target='_blank'>PANGO lineage</a>
             </h6>
             <div class="line-height-1" style="width: 200px">
               <div class="fa-sm mt-2 ml-2">&gt;&gt; Add a specific lineage</div>
@@ -98,9 +123,9 @@
             </div>
           </div>
 
-          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">2</div>
+              <div class="mr-2 circle">3</div>
               Containing a mutation(s)
             </h6>
 
@@ -155,16 +180,17 @@
             </div>
           </div>
 
-          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded">
+          <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">3</div>
+              <div class="mr-2 circle">4</div>
               Prevalent in a location
             </h6>
             <div class="d-flex">
               <div class="d-flex flex-column" style="width: 250px">
                 <label for="add-mutation" class="fa-sm line-height-1 mt-2 ml-2">&gt;&gt; Find lineages with &gt; {{selectedOtherThreshold}}% total prevalence in the last {{selectedWindow}} days <span v-if="selectedLocation">in
                     {{selectedLocation.label}}</span></label>
-                <TypeaheadSelect :queryFunction="queryLocation" :selectedValue="selectedLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location" totalLabel="total sequences" />
+                <TypeaheadSelect :queryFunction="queryLocation" :selectedValue="selectedLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" :removeOnSelect="false" placeholder="Select location"
+                  totalLabel="total sequences" />
               </div>
               <div class="d-flex flex-column ml-3">
                 <div class="d-flex flex-column">
@@ -253,9 +279,17 @@
       </div>
 
       <!-- LEGEND -->
-      <div class="d-flex w-100 justify-content-end">
-        <div id="legend" class="d-flex bg-dark px-2 py-1 my-2">
-          <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+      <div class="d-flex w-100 justify-content-between">
+        <div class="d-flex align-items-center dark-mode-helper my-2" :data-tippy-info="darkModeHelper" style="margin-left: 85px;">
+          <input class="checkbox" id="checkbox1" type="checkbox" v-model.lazy="darkMode" @change="routeDark" />
+          <label for="checkbox1" class="checkbox-label">
+            <span class="on">dark mode</span>
+            <span class="off">light mode</span>
+          </label>
+        </div>
+
+        <div id="legend" class="d-flex px-2 py-1 my-2" :class="{'bg-dark' : darkMode}">
+          <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="darkMode" label="Mutation prevalence in lineage" class="mr-3" />
           <div class="d-flex align-items-center">
             <svg width="24" height="24">
               <defs>
@@ -265,7 +299,7 @@
               </defs>
               <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
             </svg>
-            <small class="text-light ml-2">not detected</small>
+            <small class="ml-2" :class="[darkMode ? 'text-light' : 'text-muted']">not detected</small>
           </div>
           <div class="d-flex justify-content-center align-items-center ml-3">
             <span class="mr-3 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
@@ -284,36 +318,36 @@
         <div v-for="(geneData, gIdx) in mutationHeatmap" :key="gIdx" class="mr-4 mb-2">
           <template v-if="selectedGenes.includes(geneData.key)">
             <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
-            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" />
+            <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :dark="darkMode" />
           </template>
         </div>
       </div>
-      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="true" />
+      <DownloadReportData class="mt-3" :data="downloadableHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" :darkMode="darkMode" />
 
     </div>
 
   </div>
   <div class="mx-5 text-left">
 
-  <!-- METHODOLOGY -->
-  <section class="mt-3 mb-5 border-top pt-3" id="methods">
-    <h4>Methodology</h4>
-    <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
-    <Warning class="mt-2" :text="disclaimer" />
-  </section>
+    <!-- METHODOLOGY -->
+    <section class="mt-3 mb-5 border-top pt-3" id="methods">
+      <h4>Methodology</h4>
+      <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
+      <Warning class="mt-2" :text="disclaimer" />
+    </section>
 
-  <!-- CITATION -->
-  <section class="my-3 border-top pt-3">
-    <h4 class="">Citing this report</h4>
-    <p class="m-0">
-      <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
-    </p>
-    <ShareReport :title="title" :url="url" />
-  </section>
+    <!-- CITATION -->
+    <section class="my-3 border-top pt-3">
+      <h4 class="">Citing this report</h4>
+      <p class="m-0">
+        <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
+      </p>
+      <ShareReport :title="title" :url="url" />
+    </section>
 
-  <!-- ACKNOWLEDGEMENTS -->
-  <ReportAcknowledgements class="border-top pt-3" />
-</div>
+    <!-- ACKNOWLEDGEMENTS -->
+    <ReportAcknowledgements class="border-top pt-3" />
+  </div>
 </div>
 </template>
 
@@ -326,8 +360,12 @@ import {
   getLineagesComparison,
   getComparisonByMutations,
   getComparisonByLocation,
-  getMutationsByLineage
+  getBadMutations
 } from "@/api/genomics.js";
+
+import tippy from "tippy.js";
+import 'tippy.js/themes/light.css';
+
 
 // --- font awesome --
 import {
@@ -365,7 +403,8 @@ import {
 
 import {
   scaleSequential,
-  format, timeFormat
+  format,
+  timeFormat
 } from "d3";
 
 import debounce from "lodash/debounce";
@@ -374,13 +413,17 @@ import uniq from "lodash/uniq";
 export default {
   name: "SituationReportComparison",
   props: {
-    pango: Array,
+    pango: [Array, String],
     threshold: {
-      type: Number,
+      type: [Number, String],
       default: 75
     },
+    dark: {
+      type: [String, Boolean],
+      default: true
+    },
     gene: {
-      type: Array,
+      type: [Array, String],
       default: () => [
         "ORF1a", "ORF1b", "S"
       ]
@@ -414,12 +457,16 @@ export default {
     },
     mutationValid() {
       return /\w+:[A-z]\d+[A-z]/.test(this.selectedMutationQuery) || /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase());
+    },
+    darkModeHelper() {
+      return (this.darkMode ? "Switch to <b>light mode</b> to focus on similarities between lineages" : "Switch to <b>dark mode</b> to emphasize mutations with low prevalence")
     }
   },
   data() {
     return {
       today: null,
       url: null,
+      darkMode: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
       title: "Lineage Comparison",
       queryPangolin: null,
@@ -445,10 +492,12 @@ export default {
       // selectedNdays: 60,
       selectedWindow: 60,
       queryLocation: null,
-      voi: null,
+      voi: null, // array of all the VOIs, including sublineages
+      voi_parent: null, // just the main lineages -- one lineage per VOI/VOC, such as Alpha, Beta, Gamma, Delta...
       voc: null,
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
-      moc: ["E484K"],
+      voc_parent: null,
+      moi: null,
+      moc: null,
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -470,6 +519,8 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
+    this.darkMode = this.dark == "true" || !!(this.dark) && this.dark != "false";
+
     this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);
     this.selectedGenes = typeof(this.gene) === "string" ? [this.gene] : this.gene;
@@ -482,6 +533,19 @@ export default {
       // set URL for sharing, etc.
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
+
+      tippy(".dark-mode-helper", {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "right",
+        animation: "fade",
+        theme: "light",
+        allowHTML: true,
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
     })
 
     // load the initial data
@@ -512,6 +576,58 @@ export default {
     }
   },
   methods: {
+    addVOCs(clear = true) {
+      // remove lineages w/ additional mutations
+      this.selectedPango = clear ? this.voc_parent :
+        this.voc_parent.concat(this.selectedPango);
+      this.selectedPango = uniq(this.selectedPango);
+
+      this.showSnackbar = true;
+      this.snackbarText = "Variants of Concern added"
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.selectedPango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
+        }
+      })
+      this.getData();
+    },
+    addVOIs(clear = true) {
+      // remove lineages w/ additional mutations
+      this.selectedPango = clear ? this.voi_parent :
+        this.voi_parent.concat(this.selectedPango);
+      this.selectedPango = uniq(this.selectedPango);
+
+      this.showSnackbar = true;
+      this.snackbarText = "Variants of Interest added"
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 3000);
+
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.selectedPango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
+        }
+      })
+      this.getData();
+    },
     updateGenes() {
       this.$router.push({
         name: "SituationReportComparison",
@@ -521,7 +637,8 @@ export default {
         query: {
           pango: this.pango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
     },
@@ -535,7 +652,8 @@ export default {
           query: {
             pango: this.pango,
             gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode
           }
         })
 
@@ -546,12 +664,32 @@ export default {
       this.selectedLocation = location;
     },
     getData() {
+      const ofInterest = getBadMutations(true);
+      this.moc = ofInterest.moc;
+      this.moi = ofInterest.moi;
+
       this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
+        this.voc_parent = results.voc_parent;
         this.voi = results.voi;
+        this.voi_parent = results.voi_parent;
+      })
+    },
+    routeDark() {
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.pango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
+        }
       })
     },
     addMutations() {
@@ -566,7 +704,9 @@ export default {
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
+        this.voc_parent = results.voc_parent;
         this.voi = results.voi;
+        this.voi_parent = results.voi_parent;
 
         this.$router.push({
           name: "SituationReportComparison",
@@ -576,7 +716,8 @@ export default {
           query: {
             pango: results.yDomain,
             gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode
           }
         })
 
@@ -596,7 +737,9 @@ export default {
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
+        this.voc = results.voc_parent;
         this.voi = results.voi;
+        this.voi_parent = results.voi_parent;
 
         this.$router.push({
           name: "SituationReportComparison",
@@ -606,7 +749,8 @@ export default {
           query: {
             pango: results.yDomain,
             gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode
           }
         })
 
@@ -640,9 +784,11 @@ export default {
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
+
       this.getData();
     },
     clearPango() {
@@ -652,7 +798,8 @@ export default {
         query: {
           pango: [],
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
       this.mutationHeatmap = null;
@@ -667,7 +814,8 @@ export default {
         query: {
           pango: this.selectedPango,
           gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold
+          threshold: this.prevalenceThreshold,
+          dark: this.darkMode
         }
       })
       this.getData();

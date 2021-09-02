@@ -2,6 +2,7 @@
 <div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
   <div class="">
     <div class="d-flex align-items-center justify-content-end">
+      <router-link v-if="location != 'Worldwide'" class="mr-3 btn btn-sec" :to="{name:'LocationReport', query:{loc: location}}">View {{locationName}} report</router-link>
       <button class="btn btn-main-outline px-2 py-1 mr-3" @click="includeNotDetected = !includeNotDetected"><small>{{includeNotDetected ? "hide" : "show"}} not detected</small></button>
       <div class="d-flex align-items-center justify-content-end">
         sort by
@@ -134,6 +135,7 @@ export default Vue.extend({
     data: Array,
     mutationName: String,
     location: String,
+    locationName: String,
     colorScale: Function
   },
   watch: {
@@ -584,6 +586,11 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+
+.prevalence-location-axis {
+  font-size: 16px;
+}
+
 .prevalence-location-axis.axis--y g.tick line,
 .prevalence-location-axis.axis--y path {
     display: none;

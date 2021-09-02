@@ -1,9 +1,9 @@
 <template>
-  <div class="w-100 d-flex align-items-center justify-content-end">
+  <div class="d-flex align-items-center justify-content-end" :class="{'w-100': fullWidth}">
     <div class="btn ml-3 py-0 px-2 btn-main-outline" v-if="copyable">
       <font-awesome-icon :icon="['far', 'copy']" @click="copyPng" />
     </div>
-    <DownloadData class="ml-3" id="download-btn" v-if="data" type="report" :figureRef="figureRef" :data="data" :sourceString="sourceString" :isVertical="isVertical" :darkMode="darkMode" />
+    <!-- <DownloadData class="ml-3" id="download-btn" v-if="data" :type="reportType" :downloadLabel="downloadLabel" :figureRef="figureRef" :data="data" :sourceString="sourceString" :isVertical="isVertical" :darkMode="darkMode" /> -->
 
     <p :class="{ snackbar: true, show: showSnackbar }">
       {{ snackbarText }}
@@ -17,7 +17,7 @@ import Vue from "vue";
 import {
   getPng
 } from "@/js/get_svg.js";
-import DownloadData from "@/components/DownloadData.vue";
+// import DownloadData from "@/components/DownloadData.vue";
 import {
   timeFormat
 } from "d3";
@@ -42,6 +42,10 @@ export default Vue.extend({
     ids: Array,
     data: Array,
     dataType: String,
+    reportType: {
+      type: String,
+      default: "report"
+    },
     numSvgs: {
       type: Number,
       default: 1
@@ -50,6 +54,14 @@ export default Vue.extend({
       type: Boolean,
       default: false
     },
+    fullWidth: {
+      type: Boolean,
+      default: true
+    },
+    downloadLabel: {
+      type: String,
+      default: "vis & data"
+    },
     darkMode: {
       type: Boolean,
       default: false
@@ -57,7 +69,7 @@ export default Vue.extend({
     figureRef: String
   },
   components: {
-    DownloadData,
+    // DownloadData,
     FontAwesomeIcon
   },
   computed: {

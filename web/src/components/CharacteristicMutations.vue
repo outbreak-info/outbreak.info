@@ -1,9 +1,16 @@
 <template>
 <div>
-  <h4 class="mb-0">{{ definitionLabel }}</h4>
   <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
-    <small class="text-muted">Mutations in at least {{charMutThreshold}} of sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-    <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
+    <div class="d-flex flex-column">
+      <h4 class="mb-0">{{ definitionLabel }}</h4>
+      <small class="text-muted">Mutations in at least {{charMutThreshold}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+    </div>
+
+    <div class="d-flex flex-column align-items-end">
+      <router-link v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineages }}">Compare to other lineages</router-link>
+      <router-link class="mt-n1" v-if="lineageName" :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
+    </div>
+
   </div>
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
@@ -22,7 +29,7 @@
       <div class="col" v-if="lineageName">
         <MutationTable :data="mutations" :moc="moc" :moi="moi" :colorScale="colorScale" :tableTitle="`Characteristic mutations of ${lineageName}`" v-if="colorScale" />
       </div>
-      <div class="col" v-if="additionalMutations.length > 0">
+      <div class="col" v-if="additionalMutations && additionalMutations.length > 0">
         <MutationTable :data="additionalMutations" :colorScale="colorScale" tableTitle="Additional Mutations" v-if="colorScale" />
       </div>
     </div>
@@ -55,6 +62,12 @@ export default {
   name: "CharacteristicMutations",
   computed: {
     ...mapState("genomics", ["characteristicThreshold"]),
+    lineages() {
+      if(this.sublineages){
+        return([this.lineageName].concat(this.sublineages))
+      }
+      return(this.lineageName)
+    },
     charMutThreshold() {
       return (format(".0%")(this.characteristicThreshold))
     }
@@ -64,6 +77,7 @@ export default {
     definitionLabel: String,
     mutationName: String,
     lineageName: String,
+    sublineages: [Array, String],
     reportType: String,
     additionalMutations: Array
   },
@@ -110,7 +124,7 @@ export default {
     let geneNames = this.ntMapArr.sort((a, b) => a.start - b.start).map(d => d.gene);
 
     this.colorScale = scaleOrdinal(this.colorDomain)
-    .domain(geneNames);
+      .domain(geneNames);
   }
 }
 </script>

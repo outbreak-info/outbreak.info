@@ -49,7 +49,8 @@
             </button>
           </div>
           <div class="modal-body">
-            <CustomLocationForm :curated="null" :includeLocation="false" :variant.sync="newVariants" :muts.sync="newMuts" :pango.sync="newPango" :formCount.sync="formCount" />
+            <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
+            <VariantForm :minimalistic="false" :selectedLineage.sync="newPango" :selectedMutations.sync="newMuts" :submitted="submitCount" />
 
             <div class="mx-4 border-top pt-3" v-if="customMutations.length">
               <h6 class="font-weight-bold text-muted">
@@ -66,7 +67,7 @@
 
           <div class="modal-footer border-secondary">
             <button type="button" class="btn btn-outline-secondary" @click="clearMutations">Clear selections</button>
-            <button type="button" class="btn btn-sec-outline" @click="addMutations">Add another lineage/mutation</button>
+            <button type="button" :disabled="!formValid" class="btn btn-main" @click="addMutations">Add another lineage/mutation</button>
             <button type="button" class="btn btn-accent" @click="submitNewMutations" data-dismiss="modal">Go</button>
 
           </div>
@@ -86,7 +87,7 @@
         </router-link>
         <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-mutations-modal">
           <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
-          add mutations
+          add variants
         </button>
         <ShareReport title="title" url="url" />
       </div>
@@ -141,7 +142,7 @@
 
         <a href="#variants-of-concern">
           <button class="btn btn-grey mx-3 py-2">
-            <small>Variants of Concern & Interest</small>
+            <small>Variants of Concern &amp; Interest</small>
           </button>
         </a>
 
@@ -180,7 +181,8 @@
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
-              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" />
+              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" :xmin="xmin"
+                :xmax="xmax" />
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
@@ -212,17 +214,29 @@
 
         <!-- HEATMAP + LEGEND -->
         <div class="d-flex flex-column align-items-center mt-3" v-if="recentHeatmap && recentHeatmap.length">
-          <h5 class="m-0">Characteristic S-gene mutations in common lineages over the last {{recentWindow}} days</h5>
+          <h5 class="m-0">S-gene mutations in &gt; {{charMutThreshold}} of global sequences for lineages found in {{selectedLocation.label}} in the last {{recentWindow}} days</h5>
           <div class="d-flex flex-wrap justify-content-between">
-            <small class="text-muted mb-2">Mutations in at least {{charMutThreshold}} of global sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
-            <small class="mb-2"><router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link></small>
+            <small class="text-muted mb-2">
+              <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">Read more about characteristic mutations</router-link>
+            </small>
+            <small class="mb-2 ml-3">
+              <router-link :to="{name: 'SituationReportComparison', query:{pango: mostRecentDomain}}">View all genes</router-link>
+            </small>
           </div>
 
-          <div class="d-flex flex-column align-items-center bg-dark">
+          <div class="d-flex flex-column align-items-center" :class="{'bg-dark': darkMode}">
 
             <!-- HEATMAP LEGEND -->
-            <div id="legend" class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom">
-              <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="true" label="Mutation prevalence in lineage" class="mr-3" />
+            <div id="legend" class="d-flex justify-content-between align-items-center px-2 py-1 border-bottom">
+              <div class="d-flex align-items-center dark-mode-helper my-2" :data-tippy-info="darkModeHelper" style="margin-left: 85px; margin-right: 100px;">
+                <input class="checkbox" id="checkbox1" type="checkbox" v-model.lazy="darkMode" @change="routeDark" />
+                <label for="checkbox1" class="checkbox-label">
+                  <span class="on">dark mode</span>
+                  <span class="off">light mode</span>
+                </label>
+              </div>
+
+              <GradientLegend maxValue="100%" :colorScale="heatmapColorScale" :dark="darkMode" label="Mutation prevalence in lineage" class="mr-3" />
               <div class="d-flex align-items-center">
                 <svg width="24" height="24">
                   <defs>
@@ -232,7 +246,7 @@
                   </defs>
                   <rect x="2" y="2" width="20" height="20" fill="url(#diagonalHatch)" rx="4" stroke="#888" stroke-width="0.5"></rect>
                 </svg>
-                <small class="text-light ml-2">not detected</small>
+                <small class="ml-2" :class="[darkMode ? 'text-light' : 'text-muted']">not detected</small>
               </div>
               <span class="ml-3 mr-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px" style="color: #fb5759">
                 Variant / Mutation of Concern
@@ -241,33 +255,22 @@
                 Variant / Mutation of Interest
               </span>
             </div>
-            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" />
+            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" :dark="darkMode" />
           </div>
           <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
         </div>
 
-        <!-- TRACKED LINEAGES TABLE -->
-        <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
-          <div class="d-flex flex-wrap align-items-center justify-content-center">
-            <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
-              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-            </button>
-            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
-          </div>
-          <LocationTable :data="lineageTable" :locationName="selectedLocation.location" :locationID="selectedLocation.id" />
-        </section>
 
         <!-- TRACKED LINEAGES PREVALENCE -->
         <section id="lineages-over-time" class="my-5" py-3 border-top v-if="selectedLocation">
           <div class="d-flex flex-wrap align-items-center justify-content-center mb-3">
             <h3 class="mr-5">Tracked lineages over time <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
-            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+            <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
               <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
-          <OverlayLineagePrevalence :options="selectedMutations" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
+          <OverlayLineagePrevalence :options="selectedMutations" :xmin="xmin" :xmax="xmax" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -275,7 +278,7 @@
           <div class="d-flex flex-wrap justify-content-between align-items-center">
             <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
             <div class="d-flex align-items-center">
-              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change mutations
+              <button class="btn btn-main-outline d-flex align-items-center my-2 flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
                 <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
               </button>
               <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -305,16 +308,16 @@
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="my-3" :class="[mediumScreen ? 'w-100' : 'w-33']">
               <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
-                  <router-link :to="{name: 'MutationReport', query: { ... choro.route, loc: [loc], selected: loc }}">
+                  <router-link :to="{name: 'MutationReport', params: choro.params, query: { ... choro.route, loc: [loc], selected: loc }}">
                     <h5>{{ choro.key }}</h5>
                   </router-link>
 
-                  <small v-if="choro.variantType.includes('of')"
-                    :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
+                  <small v-if="choro.variantType.includes('Variant') || choro.variantType.includes('Mutation')"
+                    :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'VUM': choro.variantType == 'Variant under Monitoring', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
+                <ReportChoropleth report="location" :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
                   :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
@@ -338,6 +341,19 @@
 
         </section>
       </div>
+
+
+      <!-- TRACKED LINEAGES TABLE -->
+      <section id="variants-of-concern" class="my-5 py-3 border-top" v-if="lineageTable">
+        <div class="d-flex flex-wrap align-items-center justify-content-center">
+          <h3 class="mr-5">Tracked lineages <span v-if="selectedLocation">in {{ selectedLocation.label }}</span></h3>
+          <button class="btn btn-main-outline d-flex align-items-center flex-shrink-0" data-toggle="modal" data-target="#change-mutations-modal">Change variants
+            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+          </button>
+          <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+        </div>
+        <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
+      </section>
 
 
       <!-- METHODOLOGY -->
@@ -365,6 +381,9 @@
 
 <script>
 import Vue from "vue";
+
+import tippy from "tippy.js";
+import 'tippy.js/themes/material.css';
 
 // --- font awesome --
 import {
@@ -427,11 +446,14 @@ import {
   getLocationMaps,
   getBasicLocationReportData,
   getLocationTable,
-  findLocation
+  findLocation,
+  getBadMutations,
+  findWHOLineage
 } from "@/api/genomics.js";
 
 import cloneDeep from "lodash/cloneDeep";
 import uniq from "lodash/uniq";
+import uniqBy from "lodash/uniqBy";
 
 export default {
   name: "LocationReport",
@@ -439,8 +461,18 @@ export default {
     loc: String,
     muts: [Array, String],
     pango: [Array, String],
+    alias: [Array, String],
     variant: [Array, String],
-    selected: [Array, String]
+    xmin: String,
+    xmax: String,
+    dark: {
+      type: [String, Boolean],
+      default: true
+    },
+    selected: {
+      type: [Array, String],
+      default: () => []
+    }
   },
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
@@ -454,7 +486,8 @@ export default {
     HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
     LocationTable: () => import( /* webpackPrefetch: true */ "@/components/LocationTable.vue"),
     OverlayLineagePrevalence: () => import( /* webpackPrefetch: true */ "@/components/OverlayLineagePrevalence.vue"),
-    CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    // CustomLocationForm: () => import( /* webpackPrefetch: true */ "@/components/CustomLocationForm.vue"),
+    VariantForm: () => import( /* webpackPrefetch: true */ "@/components/VariantForm.vue"),
     ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
     SequencingHistogram: () => import( /* webpackPrefetch: true */ "@/components/SequencingHistogram.vue"),
     ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
@@ -501,14 +534,63 @@ export default {
       return this.recentMin && this.seqCounts ?
         this.seqCounts.filter(d => d.dateTime >= this.recentMin) : null;
     },
+    formValid() {
+      return (this.newMuts.length > 0 || this.newPango)
+    },
+    darkModeHelper() {
+      return (this.darkMode ? "Switch to <b>light mode</b> to focus on similarities between lineages" : "Switch to <b>dark mode</b> to emphasize mutations with low prevalence")
+    },
+    // object to store the temporary additions to the custom mutations form BEFORE submission
+    // should consist of label + route param (qParam) + type (alias, pango, variant, mutation)
+    newVariant() {
+      let newVariantObj = null;
+      if (this.newPango && this.newMuts.length) {
+        newVariantObj = {
+          label: `${this.newPango.name} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
+          qParam: `${this.newPango.name}|${this.newMuts.map(d => d.mutation).join(",")}`,
+          type: "variant"
+        }
+      } else if (this.newPango) {
+        if (this.newPango.alias) {
+          newVariantObj = {
+            label: this.newPango.name,
+            qParam: this.newPango.name,
+            type: "alias"
+          }
+        } else {
+          newVariantObj = {
+            label: this.newPango.name,
+            qParam: this.newPango.name,
+            type: "pango"
+          }
+        }
+      } else if (this.newMuts.length) {
+        newVariantObj = {
+          label: this.newMuts.map(d => d.mutation).join(", "),
+          qParam: this.newMuts.map(d => d.mutation).join(" AND "),
+          type: "mutation"
+        }
+      }
+      return newVariantObj;
+    },
+    // parses the route information to track what custom mutations should be queryable.
     selectedMutations() {
       let tracked = this.curatedLineages;
+      // WHO Aliases
+      if (this.alias) {
+        const curatedQuery = findWHOLineage(this.alias);
+        if (curatedQuery) {
+          tracked.push(...curatedQuery);
+        }
+      }
+
       if (this.pango) {
         if (typeof(this.pango) == "string") {
           tracked.push({
             type: "pango",
             label: this.pango,
             qParam: this.pango,
+            mutation_string: this.pango,
             query: `pangolin_lineage=${this.pango}`,
             variantType: "Custom Lineages & Mutations",
             route: {
@@ -521,6 +603,7 @@ export default {
               type: "pango",
               label: d,
               qParam: d,
+              mutation_string: d,
               query: `pangolin_lineage=${d}`,
               variantType: "Custom Lineages & Mutations",
               route: {
@@ -532,11 +615,12 @@ export default {
       }
       if (this.muts) {
         if (typeof(this.muts) == "string") {
-          const mutations = this.muts.split(",");
+          const mutations = this.muts.split(" AND ");
           tracked.push({
             type: "mutation",
-            label: mutations.length === 1 ? `${this.muts} mutation` : `${mutations.join(", ")} variant`,
+            label: this.muts,
             qParam: this.muts,
+            mutation_string: this.muts,
             query: `mutations=${this.muts}`,
             variantType: "Custom Lineages & Mutations",
             route: {
@@ -545,21 +629,21 @@ export default {
           })
         } else {
           tracked = tracked.concat(this.muts.map(d => {
-            const mutations = d.split(",");
+            const mutations = d.split(" AND ");
             return ({
               type: "mutation",
-              label: mutations.length === 1 ? `${d} mutation` : `${mutations.join(", ")} variant`,
+              label: mutations.join(", "),
               qParam: d,
+              mutation_string: d,
               query: `mutations=${d}`,
               variantType: "Custom Lineages & Mutations",
               route: {
-                muts: d.split(",")
+                muts: d.split(" AND ")
               }
             })
           }))
         }
       }
-      //
       if (this.variant) {
         if (typeof(this.variant) == "string") {
           const variant = this.variant.split("|");
@@ -568,6 +652,7 @@ export default {
               type: "variant",
               label: `${variant[0]} + ${variant[1]}`,
               qParam: this.variant,
+              mutation_string: `(${variant[0]}) AND (${variant[1]})`,
               query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
               variantType: "Custom Lineages & Mutations",
               route: {
@@ -584,6 +669,7 @@ export default {
                 type: "variant",
                 label: `${variant[0]} + ${variant[1]}`,
                 qParam: d,
+                mutation_string: `(${variant[0]}) AND (${variant[1]})`,
                 query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
                 variantType: "Custom Lineages & Mutations",
                 route: {
@@ -595,6 +681,7 @@ export default {
           })
         }
       }
+      tracked = uniqBy(tracked, "label");
       return (tracked)
     }
   },
@@ -602,6 +689,12 @@ export default {
     this.debounceWindowChange = debounce(this.updateWindow, 700);
   },
   mounted() {
+    this.darkMode = this.dark == "true" || !!(this.dark) && this.dark != "false";
+
+    const ofInterest = getBadMutations(true);
+    this.moc = ofInterest.moc;
+    this.moi = ofInterest.moi;
+
     this.queryLocation = findLocation;
     this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
       .domain(this.choroColorDomain);
@@ -628,6 +721,20 @@ export default {
 
     this.setupReport();
   },
+  updated() {
+    tippy(".dark-mode-helper", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "material",
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+  },
   methods: {
     setDims() {
       this.mediumScreen = window.innerWidth < 900;
@@ -639,13 +746,12 @@ export default {
         this.lastUpdated = results.dateUpdated.lastUpdated;
         this.totalSequences = results.total;
         this.curatedLineages = results.curated;
-        this.voc = results.curated.filter(d => d.variantType == "Variant of Concern").map(d => d.label);
-        this.voi = results.curated.filter(d => d.variantType == "Variant of Interest").map(d => d.label);
+        this.voc = results.voc;
+        this.voi = results.voi;
         this.selectedLocation = results.location;
       })
 
       this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentWindow).subscribe(results => {
-        // console.log(results)
         this.lineagesByDay = results.lineagesByDay;
         this.noRecentData = results.mostRecentLineages && results.mostRecentLineages.length ? false : true;
 
@@ -674,9 +780,11 @@ export default {
         name: "LocationReport",
         query: {
           loc: this.newLocation.id,
+          alias: this.alias,
           pango: this.pango,
           variant: this.variant,
           muts: this.muts,
+          dark: this.darkMode,
           selected: this.selected
         }
       })
@@ -702,7 +810,7 @@ export default {
           const label = this.variant.split("|");
           variant = [{
             type: "variant",
-            label: `${label[0]} with ${label[1]}`,
+            label: `${label[0]} + ${label[1]}`,
             qParam: this.variant
           }]
         } else {
@@ -710,7 +818,7 @@ export default {
             const label = d.split("|");
             return ({
               type: "variant",
-              label: `${label[0]} with ${label[1]}`,
+              label: `${label[0]} + ${label[1]}`,
               qParam: d
             })
           })
@@ -735,46 +843,73 @@ export default {
       this.customMutations.splice(idx, 1);
     },
     addMutations() {
-      console.log("ADDING")
-      console.log(this.customMutations)
-      this.customMutations.push(this.newPango);
-      this.newPango = null;
-      this.newMuts = [];
-      this.newVariants = [];
+      if (this.newVariant) {
+        this.customMutations.push(this.newVariant);
+      }
+      // this.customMutations.push(this.newVariant);
+      this.customMutations = uniqBy(this.customMutations, "qParam");
+      this.submitCount += 1;
     },
     clearMutations() {
-      this.newPango = null;
-      this.newMuts = [];
-      this.newVariants = [];
+      this.submitCount += 1;
       this.customMutations = [];
+      this.selected = [];
     },
     submitNewMutations() {
-      if(this.newPango) {
-        this.customMutations.push(this.newPango);
+      if (this.newVariant) {
+        this.customMutations.push(this.newVariant);
       }
+      let alias = this.customMutations.filter(d => d.type == "alias").map(d => d.qParam);
       let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
 
-      console.log(pango)
       const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
 
+      let selected = this.customMutations.map(d => d.label).concat(this.selected);
+
+      if (this.newVariant) {
+        if (typeof(this.selected) == "string") {
+          selected = [this.selected, this.newVariant.label];
+        } else {
+          selected.push(this.newVariant.label);
+        }
+      };
+
       // clear new additions
-      this.newPango = null;
-      this.formCount += 1;
+      this.submitCount += 1;
 
       this.$router.push({
         name: "LocationReport",
         query: {
           loc: this.loc,
+          alias: uniq(alias),
           pango: uniq(pango),
           variant: uniq(variant),
           muts: uniq(mutation),
-          // selected: uniq(selected)
+          dark: this.darkMode,
+          selected: uniq(selected)
         }
       })
-
+    },
+    routeDark() {
+      this.$router.push({
+        name: "LocationReport",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          loc: this.loc,
+          alias: this.alias,
+          pango: this.pango,
+          variant: this.variant,
+          muts: this.muts,
+          dark: this.darkMode,
+          selected: this.selected
+        }
+      })
     },
     updateWindow() {
+      this.dayThresh = +this.recentWindow;
       this.setupReport();
       this.updateMaps();
     },
@@ -802,6 +937,7 @@ export default {
     return ({
       smallScreen: false,
       mediumScreen: false,
+      darkMode: null,
       currentTime: null,
       today: null,
       url: null,
@@ -826,12 +962,11 @@ export default {
       // update mutations
       newMuts: [],
       newPango: null,
-      newVariants: [],
       customMutations: [],
-      formCount: 0,
+      submitCount: 0,
       // data
-      moi: ["S477N", "N501Y", "K417N", "K417T", "P681H", "P681R", "L18F", "S494P", "L452R", "Y453F", "N439K"],
-      moc: ["E484K"],
+      moi: [],
+      moc: [],
       voi: null,
       voc: null,
       dateUpdated: null,

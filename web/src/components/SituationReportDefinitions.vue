@@ -10,7 +10,7 @@
     <div class="col-sm-12 col-md-8">
       <ul>
         <li id="mutation">
-          <b>Mutant</b>: an error introduced during viral replication
+          <b>Mutation</b>: an error introduced during viral replication
           <ul>
             <li>
               Without experimental testing, we don't know what effect the mutation has on the virus. The effect could lead to better outcomes (e.g. the mutation decreases the transmissibility of the virus), worse (e.g. the mutation increases its
@@ -77,6 +77,9 @@ impact on available diagnostics, vaccines, therapeutics or public health and soc
               </ul>
             </li>
             <li>
+              <b>Variant under Monitoring (VUM)</b>: A variant which is being monitored by a public health agency to detect if it meets the conditions of a Variant of Concern or Interest. It may also be used for variants which have previously been designated as VOCs or VOIs but have been downgraded by the public health agencies based on recent data.
+            </li>
+            <li>
               We follow Public Health Agencies in designating Variants of Concern and Interest, including the <a href="https://www.who.int/csr/don/31-december-2020-sars-cov2-variants/en/" target="_blank">World Health Organization</a>, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">Centers for Disease Control and Prevention</a>, and <a href="https://www.gov.uk/government/publications/investigation-of-novel-sars-cov-2-variant-variant-of-concern-20201201" target="_blank">Public Health England</a>.
             </li>
             <li>
@@ -99,7 +102,7 @@ impact on available diagnostics, vaccines, therapeutics or public health and soc
               Within a lineage, there may be additional <a href="#mutation">mutations</a> which revert some changes or accumulate new ones
             </li>
             <li>
-              We primarily rely on PANGO lineages (<a href="https://cov-lineages.org/pangolin.html" target="_blank">Phylogenetic Assignment of Named Global Outbreak</a>)
+              We primarily rely on PANGO lineages (<a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Phylogenetic Assignment of Named Global Outbreak</a>)
             </li>
           </ul>
         </li>

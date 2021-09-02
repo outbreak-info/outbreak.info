@@ -34,7 +34,7 @@ import {
   getAll
 } from "@/api/biothings.js";
 
-import CURATED from "@/assets/genomics/curated_mutations.json";
+import CURATED from "@/assets/genomics/curated_lineages.json";
 
 import store from "@/store";
 
@@ -265,7 +265,7 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const location_string =
     locations && locations.length ?
-    ` AND location_id:("${locations.join('","')}")` :
+    ` AND location_id:("${locations.join('" OR "')}")` :
     ` AND admin_level:[0 TO *]&sort=-confirmed_numIncrease`;
   const num2Return = locations && locations.length ? locations.length : 3;
 
@@ -294,7 +294,7 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
 
           voc.forEach(variant => {
             if (variant) {
-              const idx = summaryData.findIndex(d => d.location_id === variant[0].id);
+              const idx = summaryData.findIndex(d => d.location_id === variant[0].location_id);
               if (idx > -1) {
                 summaryData[idx]["voc"] = variant;
               }
@@ -319,17 +319,17 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
 }
 
 export function getVOCs(genomicsUrl, locations, totalThreshold) {
-  const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest") && d.reportType == "lineage").map(d => {
-    // const mutations = CURATED.filter(d => d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest").map(d => {
+  const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern")).map(d => {
     return ({
-      label: d.mutation_name,
+      label: d.label,
       type: d.variantType == "Variant of Concern" ? "VOC" : d.variantType == "Variant of Interest" ? "VOI" : null,
-      query: `pangolin_lineage=${d.mutation_name}`
+      bulkQuery: d.char_muts_parent_query
     })
   });
 
   return forkJoin(...locations.map(loc => getLocationTable(genomicsUrl, loc, mutations, totalThreshold))).pipe(
     map(results => {
+
       const flattened = results.flatMap(d => d).map(d => d.values);
       const whiteThreshold = 0.35;
       const colorScale = scaleThreshold(schemeYlGnBu[9])
