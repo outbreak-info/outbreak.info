@@ -16,11 +16,6 @@
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
   <div class="d-flex align-items-center ml-2 mr-3">
-    <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#mutation-table" aria-expanded="true" aria-controls="mutation-table">
-      <small><span class="if-collapsed">View</span>
-        <span class="if-not-collapsed">Hide</span>
-        mutation table</small>
-    </button>
     <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" />
   </div>
 
