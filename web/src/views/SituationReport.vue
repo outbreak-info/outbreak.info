@@ -879,7 +879,7 @@ export default {
       }
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
-      const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
+      const ids = uniq(this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide"));
 
       this.$router.push({
         name: "MutationReport",
