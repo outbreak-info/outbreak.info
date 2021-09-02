@@ -2165,3 +2165,49 @@ export function getSeqMap(apiurl, epiurl, location) {
     finalize(() => store.state.genomics.locationLoading3 = false)
   )
 }
+
+export function lookupMutationInLineage(apiurl, mutationStr, lineage) {
+  if (mutationStr) {
+    store.state.admin.reportloading = true;
+    const timestamp = Math.round(new Date().getTime() / 8.64e7);
+
+    const url = `${apiurl}mutations-by-lineage?mutations=${mutationStr}&pangolin_lineage=${lineage}&timestamp=${timestamp}`;
+
+    return from(
+      axios.get(url, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    ).pipe(
+      pluck("data", "results"),
+      map(hits => {
+        let results = Object.keys(hits).map(key => {
+          hits[key].forEach(d => {
+            d.pangolin_lineage = d.pangolin_lineage.toUpperCase();
+            d.mutation_string = key;
+            d.proportion_formatted = format(".1%")(d.proportion);
+          })
+          return (hits[key])
+        })
+        results = results.flatMap(d => d);
+
+        results.sort((a, b) => b.proportion - a.proportion);
+        console.log(results)
+
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error looking up mutation prevalence in the lineage!", "color: turquoise");
+        console.log(e);
+        return ( of ([{
+          mutation_string: mutationStr,
+          proportion_formatted: "not detected"
+        }]));
+      }),
+      finalize(() => store.state.admin.reportloading = false)
+    )
+  } else {
+    return ( of ([]))
+  }
+}

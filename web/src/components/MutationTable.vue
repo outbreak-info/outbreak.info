@@ -26,7 +26,7 @@
 
   <div class="collapse" id="find-mutation">
     <div class="d-flex my-3 bg-grey__lightest px-3 py-2 border-top border-bottom align-items-center">
-      <h5 class="mr-3">Find a mutation</h5>
+      <h5 class="mr-3">Find a mutation in {{lineageName}}</h5>
       <div class="d-flex flex-column">
         <div class="d-flex align-items-center">
           <div class="d-flex flex-column mr-3">
@@ -37,6 +37,7 @@
           </div>
           <small>
             <button class="btn btn-main" @click="findMutation">Go</button>
+            <button class="btn btn-main" @click="clearFoundMutations">Clear</button>
           </small>
         </div>
 
@@ -47,6 +48,41 @@
           <small class="flex-shrink-0">
             <button class="btn btn-sec" @click="findMutation">View MOC/MOI</button>
           </small>
+        </div>
+
+        <div class="border-top border-bottom py-2 px-2 bg-white mt-2" v-if="mutationLookup && mutationLookup.length">
+          <h5>Mutations in {{lineageName}}</h5>
+          <table id="mutation-prevalence-results" class="mutation-count">
+            <thead>
+              <tr class="border-bottom">
+                <th>
+                  mutation
+                </th>
+                <th>
+                  prevalence
+                </th>
+                <th>
+                  total found
+                </th>
+              </tr>
+            </thead>
+
+            <tbody class="checkbook">
+              <tr v-for="(mutation, mIdx) in mutationLookup" :key="mIdx">
+                <td>{{mutation.mutation_string}}
+                </td>
+                <td>
+                  {{mutation.proportion_formatted}}
+                </td>
+                <td>
+                  <span v-if="mutation.lineage_count">
+                    ({{mutation.mutation_count}}/{{mutation.lineage_count}})
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
         </div>
       </div>
 
@@ -88,6 +124,10 @@ import {
   format,
   transition
 } from "d3";
+
+import {
+  lookupMutationInLineage
+} from "@/api/genomics.js";
 
 export default Vue.extend({
   name: "MutationTable",
@@ -170,9 +210,11 @@ export default Vue.extend({
       annotation: null,
       // data
       plottedData: null,
+      mutationLookup: [],
       // forms
       // interactions
-      isLinearSorted: false
+      isLinearSorted: false,
+      foundMutationSubscription: null
     }
   },
   methods: {
@@ -183,7 +225,6 @@ export default Vue.extend({
     viewMore() {
       const query = this.$route.query;
       const params = this.$route.params;
-      console.log(query.loc)
 
       this.$router.push({
         name: "MutationReport",
@@ -202,7 +243,13 @@ export default Vue.extend({
 
     },
     findMutation() {
-      console.log("mutation")
+      this.foundMutationSubscription = lookupMutationInLineage(this.$genomicsurl, this.selectedMutationLookup, this.lineageName).subscribe(results => {
+        this.mutationLookup = this.mutationLookup.concat(results);
+      })
+    },
+    clearFoundMutations() {
+      this.selectedMutationLookup = "";
+      this.mutationLookup = [];
     },
     route2Mutation(d) {
       const mutation = d.mutation.split(":")[1];
@@ -562,13 +609,24 @@ export default Vue.extend({
     this.selectedMutationThreshold = +this.threshold * 100;
     this.setupPlot();
     this.updatePlot();
+  },
+  destroyed() {
+    if (this.foundMutationSubscription) {
+      this.foundMutationSubscription.unsubscribe();
+    }
   }
 })
 </script>
 
 <style lang="scss" scoped>
+th {
+    padding: 0.25rem 0.5rem;
+    text-align: center;
+}
+
 .checkbook td {
     padding: 0.5rem;
+    text-align: center;
 }
 
 .checkbook tr:nth-child(2n+1) {
