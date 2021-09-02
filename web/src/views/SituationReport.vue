@@ -898,7 +898,7 @@ export default {
       })
     },
     updateCharacteristicMutations() {
-      this.charMutsSubscription = getCharacteristicMutations(this.$genomicsurl, this.lineageName, this.threshold).subscribe(results => {
+      this.charMutsSubscription = getCharacteristicMutations(this.$genomicsurl, this.lineageName, this.threshold, true, true).subscribe(results => {
         this.mutations = results;
       })
     },

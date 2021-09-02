@@ -724,7 +724,11 @@ function cleanCharMutations(d, lineage_key) {
   return (d)
 }
 
-export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
+export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true, indivCall = false) {
+  if (indivCall) {
+    store.state.admin.reportloading = true;
+  }
+
   if (typeof(prevalenceThreshold) == "string") {
     prevalenceThreshold = +prevalenceThreshold;
   }
@@ -773,6 +777,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
         return (results)
       }
     }),
+    finalize(() => indivCall ? store.state.admin.reportloading = false : null),
     catchError(e => {
       console.log("%c Error in getting characteristic mutations!", "color: red");
       console.log(e);
