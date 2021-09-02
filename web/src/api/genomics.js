@@ -409,7 +409,7 @@ function parseStrQuery(query) {
 
 // Report data for a Situation Report page.
 // Returns: date updated, location dictionary metadata, characteristic mutations, lineage/sublineage totals, lineage/sublineage prevalences over time, subnational data for choropleths.
-export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
+export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, characteristicThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
   store.state.admin.reportloading = true;
 
   // clean up the locations data
@@ -447,7 +447,7 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
-    getCharacteristicMutations(apiurl, lineageString),
+    getCharacteristicMutations(apiurl, lineageString, characteristicThreshold),
     getMutationDetails(apiurl, mutationArr),
     getMutationsByLineage(apiurl, mutationArr),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
@@ -722,6 +722,10 @@ function cleanCharMutations(d, lineage_key) {
 }
 
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
+  if (typeof(prevalenceThreshold) == "string") {
+    prevalenceThreshold = +prevalenceThreshold;
+  }
+
   const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
     return ( of ([]));

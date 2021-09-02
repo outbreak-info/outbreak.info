@@ -17,13 +17,10 @@
       <div class="d-flex flex-column mr-3">
         <small class="text-muted">min. prevalence</small>
         <span class="percent-sign border bg-white py-1">
-          <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 65px" v-model="selectedMutationThreshold" placeholder="0-100" />
+          <input type="number" min="0" max="100" step="0.1" class="flex-grow-0 px-2" style="width: 65px" v-model="selectedMutationThreshold" placeholder="0-100" />
           <span class="mr-1">%</span>
         </span>
       </div>
-      <small>
-        <button class="btn btn-main" @click="viewMore">Go</button>
-      </small>
     </div>
   </div>
 
@@ -81,6 +78,7 @@ import {
 
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 
 import {
   select,
@@ -98,6 +96,7 @@ export default Vue.extend({
     lineageTotal: Number,
     colorScale: Function,
     lineageName: String,
+    threshold: [Number, String],
     moi: Array,
     moc: Array,
     width: {
@@ -119,12 +118,17 @@ export default Vue.extend({
   watch: {
     data: function() {
       this.updatePlot();
+    },
+    selectedMutationThreshold(newVal, oldVal) {
+      if (newVal != oldVal && !!oldVal) {
+        this.debounceViewMore();
+      }
     }
   },
   computed: {
     ...mapState("genomics", ["characteristicThreshold"]),
     title() {
-      return (`Global characteristic mutations in ${this.lineageName}`)
+      return (`Characteristic mutations in ${this.lineageName} globally`)
     },
     warningMsg() {
       return (
@@ -154,7 +158,7 @@ export default Vue.extend({
       concernBg: "#fceeef",
       concernColor: "#e15759",
       warningThreshold: 1000,
-      selectedMutationThreshold: 75,
+      selectedMutationThreshold: null,
       selectedMutationLookup: null,
       height: null,
       // axes
@@ -177,7 +181,25 @@ export default Vue.extend({
       this.updatePlot();
     },
     viewMore() {
-      console.log("MORE")
+      const query = this.$route.query;
+      const params = this.$route.params;
+      console.log(query.loc)
+
+      this.$router.push({
+        name: "MutationReport",
+        params: params,
+        query: {
+          overlay: query.overlay,
+          xmin: query.xmin,
+          xmax: query.xmax,
+          loc: query.loc,
+          threshold: this.selectedMutationThreshold / 100,
+          muts: query.muts,
+          pango: query.pango,
+          selected: query.selected
+        }
+      })
+
     },
     findMutation() {
       console.log("mutation")
@@ -213,7 +235,6 @@ export default Vue.extend({
     },
     updateAxes() {
       this.plottedData = cloneDeep(this.data);
-      console.log(this.plottedData)
       if (this.isLinearSorted) {
         this.plottedData.sort(this.linearSorter)
       } else {
@@ -287,7 +308,7 @@ export default Vue.extend({
           // .style("fill", "#555");
 
           const annotGrp = grp.append("text")
-            .attr("class", "annotation")
+            .attr("class", "annotation-group")
             .attr("x", this.x(1))
             .attr("dy", this.y.bandwidth() / 2)
             .style("fill", this.fillColor)
@@ -297,16 +318,15 @@ export default Vue.extend({
 
 
           annotGrp.append("tspan")
+            .attr("class", "annotation-extra-mut")
             .attr("dx", 48)
             .html(d => d.is_additional_mutation ? "&bull;" : null)
             .style("font-size", 25)
 
           annotGrp.append("tspan")
+            .attr("class", "annotation")
             .attr("dx", d => d.is_additional_mutation ? 3 : 48)
             .text(d => d.prevalence_formatted)
-
-
-
 
           grp
             .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
@@ -386,11 +406,16 @@ export default Vue.extend({
           update.select(".mutation")
             .text(d => d.mutation_simplified);
 
-          update
-            .select(".annotation")
-            .attr("x", this.width - this.margin.left - this.margin.right)
-            .text(d => d.prevalence_formatted)
+          update.select(".annotation-group")
             .attr("dy", this.y.bandwidth() / 2);
+
+          update
+            .select(".annotation-extra-mut")
+            .html(d => d.is_additional_mutation ? "&bull;" : null);
+
+          update.select(".annotation")
+            .attr("dx", d => d.is_additional_mutation ? 3 : 48)
+            .text(d => d.prevalence_formatted);
 
           update
             .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
@@ -530,7 +555,11 @@ export default Vue.extend({
       )
     }
   },
+  created() {
+    this.debounceViewMore = debounce(this.viewMore, 350);
+  },
   mounted() {
+    this.selectedMutationThreshold = +this.threshold * 100;
     this.setupPlot();
     this.updatePlot();
   }

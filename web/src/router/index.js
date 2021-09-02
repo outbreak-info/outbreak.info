@@ -444,6 +444,7 @@ const routes = [{
       xmin: route.query.xmin,
       xmax: route.query.xmax,
       loc: route.query.loc,
+      threshold: route.query.threshold,
       muts: route.query.muts,
       pango: route.query.pango,
       selected: route.query.selected

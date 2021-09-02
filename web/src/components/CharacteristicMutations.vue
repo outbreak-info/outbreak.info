@@ -3,7 +3,7 @@
   <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
     <div class="d-flex flex-column">
       <h4 class="mb-0">{{ definitionLabel }}</h4>
-      <small class="text-muted">Mutations in at least {{charMutThreshold}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+      <small class="text-muted">Mutations in at least {{thresholdFormatted}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
     </div>
 
     <div class="d-flex flex-column align-items-end">
@@ -22,7 +22,7 @@
   <div class="ml-2" id="mutation-table">
     <div class="row">
       <div class="col" v-if="data">
-        <MutationTable :data="data" :lineageTotal="lineageTotal" :moc="moc" :moi="moi" :colorScale="colorScale" :lineageName="mutationName" v-if="colorScale" />
+        <MutationTable :data="data" :lineageTotal="lineageTotal" :moc="moc" :moi="moi" :threshold="threshold" :colorScale="colorScale" :lineageName="mutationName" v-if="colorScale" />
       </div>
     </div>
   </div>
@@ -53,7 +53,6 @@ import {
 export default {
   name: "CharacteristicMutations",
   computed: {
-    ...mapState("genomics", ["characteristicThreshold"]),
     lineages() {
       if(this.sublineages){
         return([this.lineageName].concat(this.sublineages))
@@ -62,9 +61,6 @@ export default {
     },
     data() {
       return(this.mutations.concat(this.additionalMutations))
-    },
-    charMutThreshold() {
-      return (format(".0%")(this.characteristicThreshold))
     }
   },
   props: {
@@ -72,7 +68,9 @@ export default {
     definitionLabel: String,
     mutationName: String,
     lineageName: String,
-    lineageTotal: Number,
+    lineageTotal: [Number, String],
+    thresholdFormatted: String,
+    threshold: [Number, String],
     sublineages: [Array, String],
     reportType: String,
     additionalMutations: Array
