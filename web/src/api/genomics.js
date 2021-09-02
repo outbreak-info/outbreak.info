@@ -448,7 +448,7 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
   return forkJoin([
     getDateUpdated(apiurl),
     findAllLocationMetadata(apiurl, locations, location),
-    getCharacteristicMutations(apiurl, lineageString, characteristicThreshold),
+    getCharacteristicMutations(apiurl, queryStr, characteristicThreshold),
     getMutationDetails(apiurl, mutationArr),
     getMutationsByLineage(apiurl, mutationArr),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
@@ -750,7 +750,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   }
 
   // convert + to AND to specify lineages + mutations
-  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(/\+/g, "AND")}&frequency=${prevalenceThreshold}`;
+  const url = `${apiurl}lineage-mutations?${lineage.replace("&mutations=", " AND ")}&frequency=${prevalenceThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"

@@ -214,9 +214,6 @@
               :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions" v-if="mutations" />
           </div>
 
-          <!-- SUBLINEAGE BREAKDOWN -->
-          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
-
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
           <div class="my-4" v-if="mutationsByLineage && mutationsByLineage.length">
@@ -241,6 +238,16 @@
             :locationTotals="locationTotals" :countries="countries" :states="states" />
         </section>
       </div>
+
+      <section class="mt-4 border-top border-bottom py-2"  v-if="sublineagePrev && sublineagePrev.length">
+        <h4 class="m-0">Sublineages within {{lineageName}}</h4>
+        <!-- SUBLINEAGE BREAKDOWN -->
+        <div class="d-flex justify-content-center flex-wrap">
+        <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev"/>
+        </div>
+
+
+      </section>
 
 
       <!-- DAILY PREVALENCE -->

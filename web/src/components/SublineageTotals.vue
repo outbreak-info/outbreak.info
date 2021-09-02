@@ -1,5 +1,5 @@
 <template>
-<div class="mt-4" id="sublineage-totals">
+<div id="sublineage-totals">
   <div class="d-flex align-items-center">
     <h5 class="m-0">Lineage breakdown of {{title}}</h5>
     <button class="btn btn-main-outline d-flex align-items-center my-2 px-2 ml-2" data-toggle="modal" data-target="#change-selected-location">
