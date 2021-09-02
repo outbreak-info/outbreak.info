@@ -226,13 +226,13 @@ export default Vue.extend({
       mutSelector.join(
         enter => {
           const grp = enter.append("g")
+            .attr("transform", d => `translate(0,${this.y(d.mutation)})`)
             .attr("class", "mutation-group")
             .attr("id", d => d.id);
 
           grp.append("rect")
             .attr("class", "hundred-percent")
             .attr("x", this.x(0))
-            .attr("y", d => this.y(d.mutation))
             .attr("width", d => this.x(1) - this.x(0))
             .attr("height", this.y.bandwidth())
             .style("fill", "none")
@@ -243,7 +243,6 @@ export default Vue.extend({
           grp.append("rect")
             .attr("class", "prevalence")
             .attr("x", this.x(0))
-            .attr("y", d => this.y(d.mutation))
             .attr("width", d => this.x(d.prevalence) - this.x(0))
             .attr("height", this.y.bandwidth())
             .style("fill", this.fillColor);
@@ -252,7 +251,7 @@ export default Vue.extend({
             .attr("class", "gene-mutation hover-underline pointer")
             .attr("x", 0)
             .attr("dx", mutationX)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
+            .attr("dy", this.y.bandwidth() / 2)
             .style("fill", d => this.colorScale(d.gene))
             .style("dominant-baseline", "central")
             .style("text-anchor", "end")
@@ -272,7 +271,7 @@ export default Vue.extend({
             .attr("class", "annotation")
             .attr("x", this.x(1))
             .attr("dx", 37)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
+            .attr("dy", this.y.bandwidth() / 2)
             .text(d => d.prevalence_formatted)
             .style("font-size", 13)
             .style("fill", this.fillColor)
@@ -285,7 +284,6 @@ export default Vue.extend({
             .attr("class", "moi")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
             .attr("width", this.interestWidth)
-            .attr("y", d => this.y(d.mutation))
             .attr("height", this.y.bandwidth())
             .style("rx", 4)
             .style("fill", this.interestBg)
@@ -297,7 +295,7 @@ export default Vue.extend({
             .append("text")
             .attr("class", "moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
+            .attr("dy", this.y.bandwidth() / 2)
             .text("MOI")
             .style("fill", this.interestColor)
             .style("font-size", 11)
@@ -311,7 +309,6 @@ export default Vue.extend({
             .attr("class", "moc")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
             .attr("width", this.interestWidth)
-            .attr("y", d => this.y(d.mutation))
             .attr("height", this.y.bandwidth())
             .style("rx", 4)
             .style("fill", this.concernBg)
@@ -323,7 +320,7 @@ export default Vue.extend({
             .append("text")
             .attr("class", "moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2)
+            .attr("dy", this.y.bandwidth() / 2)
             .text("MOC")
             .style("fill", this.concernColor)
             .style("font-size", 11)
@@ -332,27 +329,26 @@ export default Vue.extend({
             .style("text-anchor", "middle");
         },
         update => {
-          update.attr("id", d => d.id);
+          update
+          .attr("id", d => d.id)
+          .transition(t1)
+          .attr("transform", d => `translate(0,${this.y(d.mutation)})`);
 
           update
             .select(".prevalence")
             .attr("height", this.y.bandwidth())
             .transition(t1)
-            .attr("width", d => this.x(d.prevalence) - this.x(0))
-            .attr("y", d => this.y(d.mutation));
+            .attr("width", d => this.x(d.prevalence) - this.x(0));
 
           update
             .select(".hundred-percent")
             .attr("height", this.y.bandwidth())
-            .transition(t1)
             .attr("x", this.x(0))
-            .attr("y", d => this.y(d.mutation))
             .attr("width", d => this.x(1) - this.x(0))
 
           update.select(".gene-mutation")
             .style("fill", d => this.colorScale(d.gene))
-            .transition(t1)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
+            .attr("dy", this.y.bandwidth() / 2);
 
           update.select(".gene")
             .text(d => `${d.gene}: `);
@@ -364,38 +360,31 @@ export default Vue.extend({
             .select(".annotation")
             .attr("x", this.width - this.margin.left - this.margin.right)
             .text(d => d.prevalence_formatted)
-            .transition(t1)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
+            .attr("dy", this.y.bandwidth() / 2);
 
           update
             .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
             .select(".moi")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
-            .attr("height", this.y.bandwidth())
-            .transition(t1)
-            .attr("y", d => this.y(d.mutation));
+            .attr("height", this.y.bandwidth());
 
           update
             .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
             .select(".moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
-            .transition(t1)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
+            .attr("dy",this.y.bandwidth() / 2);
 
           update
             .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
             .select(".moc")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
-            .attr("height", this.y.bandwidth())
-            .transition(t1)
-            .attr("y", d => this.y(d.mutation));
+            .attr("height", this.y.bandwidth());
 
           update
             .filter(d => this.moc.includes(d.mutation))
-            .select(".moi-annotation")
+            .select(".moc-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
-            .transition(t1)
-            .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2);
+            .attr("dy", this.y.bandwidth() / 2);
         },
         exit =>
         exit.call(exit =>
