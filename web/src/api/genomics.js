@@ -655,6 +655,14 @@ export function getMutationDetails(apiurl, mutationString) {
   })).pipe(
     pluck("data", "results"),
     map(results => {
+      // hard coding information to add additional mutations on top of the characteristic mutations
+      console.log(results)
+      results.forEach(d => {
+        d["prevalence"] = 1;
+        d["prevalence_formatted"] = "100%";
+        d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
+        d["is_additional_mutation"] = true;
+      })
       return (results)
     }),
     catchError(e => {

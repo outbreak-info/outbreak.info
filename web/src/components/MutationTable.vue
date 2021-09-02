@@ -56,6 +56,10 @@
     </div>
   </div>
 
+  <div style="color: #9c938e;" class="d-flex align-items-center fa-sm bg-grey__lightest px-3 mt-2" v-if="additionalMutations">
+    <span style="font-size:24px" class="mr-2">&bull;</span> mutations specified in report
+  </div>
+
   <svg :width="width" :height="height" class="characteristic_mutations" :name="title" ref="mut_bars_svg">
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="mut_bars"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" ref="annotation"></g>
@@ -98,7 +102,7 @@ export default Vue.extend({
     moc: Array,
     width: {
       type: Number,
-      default: 450
+      default: 500
     },
     fillColor: {
       type: String,
@@ -125,7 +129,10 @@ export default Vue.extend({
     warningMsg() {
       return (
         `Currently, there are only <b>${this.lineageTotal} sequences</b> reported for <b>${this.lineageName}</b>. The characteristic mutations for ${this.lineageName} may change as more sequences are reported. <a class='text-light' href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`
-        )
+      )
+    },
+    additionalMutations() {
+      return (this.data.filter(d => d.is_additional_mutation).length)
     },
     characteristicThresholdFormatted() {
       return (format(".0%")(this.characteristicThreshold))
@@ -137,7 +144,7 @@ export default Vue.extend({
         top: 30,
         bottom: 30,
         left: 170,
-        right: 80
+        right: 95
       },
       numXTicks: 4,
       bandwidth: 20,
@@ -206,6 +213,7 @@ export default Vue.extend({
     },
     updateAxes() {
       this.plottedData = cloneDeep(this.data);
+      console.log(this.plottedData)
       if (this.isLinearSorted) {
         this.plottedData.sort(this.linearSorter)
       } else {
@@ -278,19 +286,30 @@ export default Vue.extend({
             .style("font-weight", 700);
           // .style("fill", "#555");
 
-          grp.append("text")
+          const annotGrp = grp.append("text")
             .attr("class", "annotation")
             .attr("x", this.x(1))
-            .attr("dx", 37)
             .attr("dy", this.y.bandwidth() / 2)
-            .text(d => d.prevalence_formatted)
-            .style("font-size", 13)
             .style("fill", this.fillColor)
             .style("dominant-baseline", "central")
+            .style("font-size", 13)
             .style("text-anchor", "end");
 
+
+          annotGrp.append("tspan")
+            .attr("dx", 48)
+            .html(d => d.is_additional_mutation ? "&bull;" : null)
+            .style("font-size", 25)
+
+          annotGrp.append("tspan")
+            .attr("dx", d => d.is_additional_mutation ? 3 : 48)
+            .text(d => d.prevalence_formatted)
+
+
+
+
           grp
-            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
             .append("rect")
             .attr("class", "moi")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
@@ -302,7 +321,7 @@ export default Vue.extend({
             .style("stroke-width", 0.75);
 
           grp
-            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
             .append("text")
             .attr("class", "moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
@@ -315,7 +334,7 @@ export default Vue.extend({
             .style("text-anchor", "middle");
 
           grp
-            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
+            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
             .append("rect")
             .attr("class", "moc")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
@@ -327,7 +346,7 @@ export default Vue.extend({
             .style("stroke-width", 0.75);
 
           grp
-            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
+            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
             .append("text")
             .attr("class", "moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
@@ -374,25 +393,25 @@ export default Vue.extend({
             .attr("dy", this.y.bandwidth() / 2);
 
           update
-            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
             .select(".moi")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
             .attr("height", this.y.bandwidth());
 
           update
-            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation))
+            .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
             .select(".moi-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
             .attr("dy", this.y.bandwidth() / 2);
 
           update
-            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation))
+            .filter(d => this.moc.map(d => d.toLowerCase()).includes(d.mutation.toLowerCase()))
             .select(".moc")
             .attr("x", this.width - this.margin.left - this.interestWidth - 2)
             .attr("height", this.y.bandwidth());
 
           update
-            .filter(d => this.moc.includes(d.mutation))
+            .filter(d => this.moc.includes(d.mutation.toLowerCase()))
             .select(".moc-annotation")
             .attr("x", this.width - this.margin.left - this.interestWidth / 2 - 2)
             .attr("dy", this.y.bandwidth() / 2);

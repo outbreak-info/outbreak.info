@@ -16,13 +16,13 @@
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
   <div class="d-flex align-items-center ml-2 mr-3">
-    <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" />
+    <DownloadReportData :data="data" figureRef="mutation-map" dataType="Mutation Map" />
   </div>
 
   <div class="ml-2" id="mutation-table">
     <div class="row">
-      <div class="col" v-if="lineageName">
-        <MutationTable :data="mutations" :lineageTotal="lineageTotal" :moc="moc" :moi="moi" :colorScale="colorScale" :lineageName="lineageName" v-if="colorScale" />
+      <div class="col" v-if="data">
+        <MutationTable :data="data" :lineageTotal="lineageTotal" :moc="moc" :moi="moi" :colorScale="colorScale" :lineageName="mutationName" v-if="colorScale" />
       </div>
     </div>
   </div>
@@ -59,6 +59,9 @@ export default {
         return([this.lineageName].concat(this.sublineages))
       }
       return(this.lineageName)
+    },
+    data() {
+      return(this.mutations.concat(this.additionalMutations))
     },
     charMutThreshold() {
       return (format(".0%")(this.characteristicThreshold))
