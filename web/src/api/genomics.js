@@ -424,8 +424,9 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
     locations.push(location);
   }
   // add the world
-  locations.push("Worldwide");
-
+  if (!locations.includes("Worldwide")) {
+    locations.push("Worldwide");
+  }
   // ensure locations are unique
   locations = uniq(locations);
 
@@ -601,7 +602,9 @@ export function updateLocationData(apiurl, alias, mutationArr, lineageString, lo
     locations = [locations];
   }
 
-  locations.push("Worldwide");
+  if (!locations.includes("Worldwide")) {
+    locations.push("Worldwide");
+  }
 
   // ensure locations are unique
   locations = uniq(locations);
