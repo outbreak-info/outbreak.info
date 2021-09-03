@@ -380,7 +380,7 @@
             overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
 
           <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
-            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-4 font-weight-bold">
+            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 font-weight-bold">
               <!-- WHO reports -->
               <template v-if="report.who_name">
                 <!-- with sublineages -->

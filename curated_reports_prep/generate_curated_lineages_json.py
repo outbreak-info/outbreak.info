@@ -32,11 +32,13 @@ curated_data = yaml.load(open(curated_filename), Loader=yaml.BaseLoader)
 vocs = pd.DataFrame(curated_data["VOC"])
 vois = pd.DataFrame(curated_data["VOI"])
 vums = pd.DataFrame(curated_data["VUM"])
+deescalated = pd.DataFrame(curated_data["deescalated"])
 vocs["variantType"] = "Variant of Concern"
 vois["variantType"] = "Variant of Interest"
 vums["variantType"] = "Variant under Monitoring"
+deescalated["variantType"] = "De-escalated"
 # merge the two back together
-curated = pd.concat([vocs, vois, vums])
+curated = pd.concat([vocs, vois, vums, deescalated])
 
 
 # --- DESCENDANTS ---

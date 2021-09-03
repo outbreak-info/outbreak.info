@@ -554,6 +554,59 @@ const state = {
       }
     },
     {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "Added C.1.2 as a VUM",
+      description: 'Added C.1.2 as a Variant Under Monitoring',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "C.1.2",
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated AV.1 from VOI",
+      description: 'Based on WHO and CDC classifications, removed AV.1 as a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "AV.1",
+          selected: "GBR"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated Epsilon/B.1.427/B.1.429 from VUM",
+      description: 'Based on WHO, CDC, and ECDC classifications, removed Epsilon/B.1.427/B.1.429 as a Variant Under Monitoring',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "epsilon",
+        },
+        query: {
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated Zeta/P.2 from VOI",
+      description: 'Based on WHO, CDC, PHE, and ECDC classifications, removed Zeta/P.2 as a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "zeta",
+        }
+      }
+    },
+    {
       date: new Date("2021-08-23 0:0"),
       category: "variants",
       title: "ECDC reclassified C.37/Lambda as Variants of Interest",
