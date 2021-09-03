@@ -374,7 +374,7 @@
         </template>
         <div v-else id="de-escalated">
           <h4>De-escalated Variants</h4>
-          <small class="text-muted line-height-sm">These former VOI or VOC have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating
+          <small class="text-muted line-height-sm">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating
             for a long
             time without any impact on the
             overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
