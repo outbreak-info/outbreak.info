@@ -264,7 +264,7 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 
 
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
-  const query = CURATED.map(d => d.label);
+  const query = CURATED.filter(d => d.variantType != "De-escalated").map(d => d.label);
 
   return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
     map(charMuts => {
@@ -277,7 +277,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
 
         report["mutations"] = Object.keys(charMuts).includes(report.char_muts_parent_query) ? charMuts[report.char_muts_parent_query] : [];
         report["mutationsYDomain"] = uniq(report.mutations.map(d => d.pangolin_lineage));
-        report["lineage_count"] = report.mutations[0].lineage_count.toLocaleString();
+        report["lineage_count"] = report.mutations[0] ? report.mutations[0].lineage_count.toLocaleString() : null;
 
         if (sMutationsOnly) {
           report.mutations = report.mutations.filter(d => d.gene == "S");
@@ -292,7 +292,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
         .entries(curated);
 
       curated.forEach(d => {
-        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : "unknown";
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum": d.key == "De-escalated" ? "deescalated" : "unknown";
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
@@ -1582,7 +1582,7 @@ function geneSorter(a) {
 }
 
 function reportTypeSorter(a) {
-  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Monitoring", "Mutation of Concern", "Mutation of Interest", "undefined"];
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Monitoring", "Mutation of Concern", "Mutation of Interest", "De-escalated", "undefined"];
   // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key);
 }

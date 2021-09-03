@@ -118,258 +118,288 @@
     <section id="report-list" class="text-left">
       <!-- lineage groups -->
       <div class="lineage-group my-10" v-for="(group, i) in filteredReports" :key="i" :id="group.id + '-reports'">
-
-        <div class="d-flex justify-content-between">
-          <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
-          <div class="d-flex align-items-center text-sec" v-if="i === 0">
-            <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
-            <router-link :to="{name:'SituationReportCaveats'}" class="text-sec">How to interpret these reports</router-link>
-          </div>
-        </div>
-
-        <small>
-          <div class="line-height-1">
-            <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
-            <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
-          </div>
-        </small>
-
-
-        <template v-if="group.values.length">
-          <!-- filter to hide VOCs / VOIs -->
-          <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center" v-if="group.id != 'vum'">
-            <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
-            <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
-              <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
-              <span>{{curator.label}}</span>
-              <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" v-if="group.id == 'voc'" />
-              <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" v-if="group.id == 'voi'" />
-              <div class="b-input"></div>
-            </label>
-            <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
+        <template v-if="group.id != 'deescalated'">
+          <div class="d-flex justify-content-between">
+            <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
+            <div class="d-flex align-items-center text-sec" v-if="i === 0">
+              <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+              <router-link :to="{name:'SituationReportCaveats'}" class="text-sec">How to interpret these reports</router-link>
+            </div>
           </div>
 
-          <!-- LINEAGE TABLE -->
-          <table class="bg-white my-2">
-            <thead class="text-uppercase bg-dark text-light">
-              <tr class="border-bottom border-white">
-                <!-- table header -->
-                <th>
-                  <div class="d-flex align-items-center">
-                    variant
-                    <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-                      <div class="input-group">
-                        <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-                        <div class="input-group-prepend">
-                          <span class="input-group-text text-muted border-0" id="sb">
-                            <font-awesome-icon :icon="['fas', 'search']" />
-                          </span>
+          <small>
+            <div class="line-height-1">
+              <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
+              <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
+            </div>
+          </small>
+
+
+          <template v-if="group.values.length">
+            <!-- filter to hide VOCs / VOIs -->
+            <div class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center" v-if="group.id != 'vum'">
+              <small class="text-muted mr-2">include {{group.id.toUpperCase()}}s classified by:</small>
+              <label class="b-contain d-flex align-items-center pr-4 m-0" v-for="(curator, idx) in curatorOpts" :key="idx">
+                <img :src="require(`@/assets/${curator.src}`)" class="variant-logo mr-1" />
+                <span>{{curator.label}}</span>
+                <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOC" @change="filterVOC()" v-if="group.id == 'voc'" />
+                <input type="checkbox" :id="curator.label" :value="curator.id" v-model.lazy="selectedVOI" @change="filterVOC()" v-if="group.id == 'voi'" />
+                <div class="b-input"></div>
+              </label>
+              <button class="btn btn-grey-outline py-1 m-0" @click="clearFilters">clear</button>
+            </div>
+
+            <!-- LINEAGE TABLE -->
+            <table class="bg-white my-2">
+              <thead class="text-uppercase bg-dark text-light">
+                <tr class="border-bottom border-white">
+                  <!-- table header -->
+                  <th>
+                    <div class="d-flex align-items-center">
+                      variant
+                      <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+                        <div class="input-group">
+                          <input :id="'sBar' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                          <div class="input-group-prepend">
+                            <span class="input-group-text text-muted border-0" id="sb">
+                              <font-awesome-icon :icon="['fas', 'search']" />
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </form>
-                  </div>
-                </th>
-                <th>
-                  classifications
-                </th>
-                <th>
-                  first identified
-                </th>
-                <th>
-                  total
-                </th>
-                <th>
-                  S-gene Mutations<sup>*</sup>
-                </th>
-              </tr>
-            </thead>
+                      </form>
+                    </div>
+                  </th>
+                  <th>
+                    classifications
+                  </th>
+                  <th>
+                    first identified
+                  </th>
+                  <th>
+                    total
+                  </th>
+                  <th>
+                    S-gene Mutations<sup>*</sup>
+                  </th>
+                </tr>
+              </thead>
 
-            <!-- table body -->
-            <tbody>
-              <template v-for="(report, rIdx) in group.values">
-                <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
-                  <!-- name + synonyms -->
-                  <td class="pt-2  border-bottom">
-                    <!-- WHO reports -->
-                    <template v-if="report.who_name">
-                      <!-- with sublineages -->
-                      <router-link :to="{name:'MutationReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline"
-                        v-if="report.pango_sublineages.length || Array.isArray(report.pangolin_lineage)">
-                        <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
-                      </router-link>
-                      <!-- WHO named lineage, no sublineages -->
-                      <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
-                        <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
-                      </router-link>
-                    </template>
-
-                    <!-- multiple sublineages, unnamed -->
-                    <router-link :to="{name:'MutationReport', params: {alias: report.label.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.pango_sublineages.length">
-                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.label)">{{ report.label }}</h3>
-                    </router-link>
-
-                    <!-- single lineage -->
-                    <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
-                      <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h3>
-                    </router-link>
-
-                    <!-- list of parent / sublineages -->
-                    <div class="sublineages text-muted border-bottom pb-2 mb-2" v-if="report.pango_descendants.length > 1  || report.who_name">
-                      <template v-if="report.pangolin_lineage">
-                        <div v-if="Array.isArray(report.pangolin_lineage)" class="d-flex">
-                          <h4 class="m-0 parent-lineage" :id="anchorLink(parentLineage)" v-for="(parentLineage, pIdx) in report.pangolin_lineage" :key="pIdx">
-                            <router-link :to="{name:'MutationReport', query: {pango: parentLineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">
-                              {{parentLineage}}
-                            </router-link>
-                            <span class="mx-1" v-if="pIdx < report.pangolin_lineage.length - 1">&bull;</span>
-                          </h4>
-                        </div>
-                        <h4 class="m-0 parent-lineage" :id="anchorLink(report.pangolin_lineage)" v-else>
-                          <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">
-                            {{report.pangolin_lineage}}
-                          </router-link>
-                        </h4>
+              <!-- table body -->
+              <tbody>
+                <template v-for="(report, rIdx) in group.values">
+                  <tr :key="rIdx" class="border-bottom" :class="{checkbook : rIdx%2-1}" :id="report.identifier">
+                    <!-- name + synonyms -->
+                    <td class="pt-2  border-bottom">
+                      <!-- WHO reports -->
+                      <template v-if="report.who_name">
+                        <!-- with sublineages -->
+                        <router-link :to="{name:'MutationReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline"
+                          v-if="report.pango_sublineages.length || Array.isArray(report.pangolin_lineage)">
+                          <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
+                        </router-link>
+                        <!-- WHO named lineage, no sublineages -->
+                        <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
+                          <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
+                        </router-link>
                       </template>
 
-                      <div v-if="report.pango_sublineages.length">
-                        <h5 class="sublineage d-flex flex-wrap">
-                          <span class="mr-2">Sublineages: </span>
-                          <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx" :id="anchorLink(sublineage)">
-                            <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
-                            <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
-                          </span>
-                        </h5>
-                        <!-- DELTA WARNING! -->
-                        <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Delta'">
-                          <Warning text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
+                      <!-- multiple sublineages, unnamed -->
+                      <router-link :to="{name:'MutationReport', params: {alias: report.label.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.pango_sublineages.length">
+                        <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.label)">{{ report.label }}</h3>
+                      </router-link>
+
+                      <!-- single lineage -->
+                      <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
+                        <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h3>
+                      </router-link>
+
+                      <!-- list of parent / sublineages -->
+                      <div class="sublineages text-muted border-bottom pb-2 mb-2" v-if="report.pango_descendants.length > 1  || report.who_name">
+                        <template v-if="report.pangolin_lineage">
+                          <div v-if="Array.isArray(report.pangolin_lineage)" class="d-flex">
+                            <h4 class="m-0 parent-lineage" :id="anchorLink(parentLineage)" v-for="(parentLineage, pIdx) in report.pangolin_lineage" :key="pIdx">
+                              <router-link :to="{name:'MutationReport', query: {pango: parentLineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">
+                                {{parentLineage}}
+                              </router-link>
+                              <span class="mx-1" v-if="pIdx < report.pangolin_lineage.length - 1">&bull;</span>
+                            </h4>
+                          </div>
+                          <h4 class="m-0 parent-lineage" :id="anchorLink(report.pangolin_lineage)" v-else>
+                            <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline">
+                              {{report.pangolin_lineage}}
+                            </router-link>
+                          </h4>
+                        </template>
+
+                        <div v-if="report.pango_sublineages.length">
+                          <h5 class="sublineage d-flex flex-wrap">
+                            <span class="mr-2">Sublineages: </span>
+                            <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx" :id="anchorLink(sublineage)">
+                              <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
+                              <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
+                            </span>
+                          </h5>
+                          <!-- DELTA WARNING! -->
+                          <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Delta'">
+                            <Warning text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <!-- synonyms -->
-                    <small class="d-flex flex-column text-muted">
-                      <div v-if="report.who_name">
-                        WHO: <span class="font-weight-bold">{{report.who_name}}</span>
+                      <!-- synonyms -->
+                      <small class="d-flex flex-column text-muted">
+                        <div v-if="report.who_name">
+                          WHO: <span class="font-weight-bold">{{report.who_name}}</span>
+                        </div>
+                        <div v-if="report.phe_name">
+                          PHE: <span class="font-weight-bold">{{report.phe_name}}</span>
+                        </div>
+                        <div v-if="report.nextstrain_clade">
+                          Nextstrain: <span class="font-weight-bold">{{report.nextstrain_clade}}</span>
+                        </div>
+                        <div v-if="report.gisaid_clade">
+                          GISAID: <span class="font-weight-bold">{{report.gisaid_clade}}</span>
+                        </div>
+                        <div class="text-highlight d-flex flex-wrap" v-if="report.related">
+                          <span class="mr-1">related:</span>
+                          <span v-for="(related, rIdx) in report.related" :key="rIdx">
+                            <router-link :to="{hash: anchorLink(related)}" class="font-weight-bold">{{related}}</router-link>
+                            <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
+                          </span>
+                        </div>
+                      </small>
+
+                    </td>
+
+                    <!-- classifications -->
+                    <td>
+                      <table class="bordered">
+                        <thead>
+                          <tr class="fa-xs">
+                            <th></th>
+                            <th v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'table'">
+                              <img :src="require(`@/assets/${curator.src}`)" class="variant-logo" />
+                            </th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          <tr v-for="(variant, vIdx) in variantTypes" :key="vIdx">
+                            <th>
+                              <span :class="'tracked-variant-badge ' + variant.id + '-logo'" :data-tippy-info="variant.label">{{variant.id}}</span>
+                              <!-- <span :class="'tracked-variant-badge ' + variant.id + '-logo'" :data-tippy-info="`<b>${variant.label}</b><div class='fa-sm line-height-1'>${variant.def}</div>`">{{variant.id}}</span> -->
+                            </th>
+
+                            <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant.id] && report.classificationTable[variant.id][curator.id] ? variant.id + '-bg' : 'no-classification']">
+                              <div v-if="report.classificationTable[variant.id]" class="border-inset">
+                                <small class="line-height-1 tracked-variant-report" v-if="report.classificationTable[variant.id][curator.id] && report.classificationTable[variant.id][curator.id].label"
+                                  :data-tippy-info="report.classificationTable[variant.id][curator.id].ttip" v-html="report.classificationTable[variant.id][curator.id].label"></small>
+                              </div>
+
+                            </td>
+                          </tr>
+
+                        </tbody>
+
+                      </table>
+                    </td>
+
+                    <!-- location found -->
+                    <td class="text-center line-height-1">
+                      {{ report.location_first_identified }}
+                    </td>
+
+                    <td class="text-center">
+                      {{report.lineage_count}}
+                    </td>
+
+                    <!-- s-gene mutations heatmap -->
+                    <td>
+                      <div class="d-flex flex-column align-items-center">
+                        <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.mutationsYDomain" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
+                        <div class="d-flex">
+                          <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-if="report.mutations.length">
+                            <small v-if="report.pango_sublineages.length">Compare sublineages
+                            </small>
+                            <small v-else>Explore all genes
+                            </small>
+                          </router-link>
+                        </div>
+
                       </div>
-                      <div v-if="report.phe_name">
-                        PHE: <span class="font-weight-bold">{{report.phe_name}}</span>
-                      </div>
-                      <div v-if="report.nextstrain_clade">
-                        Nextstrain: <span class="font-weight-bold">{{report.nextstrain_clade}}</span>
-                      </div>
-                      <div v-if="report.gisaid_clade">
-                        GISAID: <span class="font-weight-bold">{{report.gisaid_clade}}</span>
-                      </div>
-                      <div class="text-highlight d-flex flex-wrap" v-if="report.related">
-                        <span class="mr-1">related:</span>
-                        <span v-for="(related, rIdx) in report.related" :key="rIdx">
-                          <router-link :to="{hash: anchorLink(related)}" class="font-weight-bold">{{related}}</router-link>
-                          <span class="mx-1" v-if="rIdx < report.related.length - 1">&bull;</span>
-                        </span>
-                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+
+            </table>
+
+            <div class="mt-2">
+
+              <div class="mt-2 d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="border-bottom pb-2">
+                    <sup class="text-muted mr-1">*</sup>
+                    <small class="text-muted line-height-1">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)
+                      </router-link>. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For
+                      applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
                     </small>
-
-                  </td>
-
-                  <!-- classifications -->
-                  <td>
-                    <table class="bordered">
-                      <thead>
-                        <tr class="fa-xs">
-                          <th></th>
-                          <th v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'table'">
-                            <img :src="require(`@/assets/${curator.src}`)" class="variant-logo" />
-                          </th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr v-for="(variant, vIdx) in variantTypes" :key="vIdx">
-                          <th>
-                            <span :class="'tracked-variant-badge ' + variant.id + '-logo'" :data-tippy-info="variant.label">{{variant.id}}</span>
-                            <!-- <span :class="'tracked-variant-badge ' + variant.id + '-logo'" :data-tippy-info="`<b>${variant.label}</b><div class='fa-sm line-height-1'>${variant.def}</div>`">{{variant.id}}</span> -->
-                          </th>
-
-                          <td v-for="(curator, cIdx) in curatorOpts" :key="cIdx +'td'" :class="[report.classificationTable[variant.id] && report.classificationTable[variant.id][curator.id] ? variant.id + '-bg' : 'no-classification']">
-                            <div v-if="report.classificationTable[variant.id]" class="border-inset">
-                              <small class="line-height-1 tracked-variant-report" v-if="report.classificationTable[variant.id][curator.id] && report.classificationTable[variant.id][curator.id].label"
-                                :data-tippy-info="report.classificationTable[variant.id][curator.id].ttip" v-html="report.classificationTable[variant.id][curator.id].label"></small>
-                            </div>
-
-                          </td>
-                        </tr>
-
-                      </tbody>
-
-                    </table>
-                  </td>
-
-                  <!-- location found -->
-                  <td class="text-center line-height-1">
-                    {{ report.location_first_identified }}
-                  </td>
-
-                  <td class="text-center">
-                    {{report.lineage_count}}
-                  </td>
-
-                  <!-- s-gene mutations heatmap -->
-                  <td>
-                    <div class="d-flex flex-column align-items-center">
-                      <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.mutationsYDomain" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
-                      <div class="d-flex">
-                        <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-if="report.mutations.length">
-                          <small v-if="report.pango_sublineages.length">Compare sublineages
-                          </small>
-                          <small v-else>Explore all genes
-                          </small>
-                        </router-link>
-                      </div>
-
-                    </div>
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-
-          </table>
-
-          <div class="mt-2">
-
-            <div class="mt-2 d-flex justify-content-between align-items-center">
-              <div>
-                <div class="border-bottom pb-2">
-                  <sup class="text-muted mr-1">*</sup>
-                  <small class="text-muted line-height-1">S-gene mutations appearing in at least {{charMutThreshold}} of sequences <router-link :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)
-                    </router-link>. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For
-                    applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
-                  </small>
+                  </div>
+                  <div v-for="(variant, vIdx) in variantTypes" :key="vIdx" class="line-height-1 my-2">
+                    <small><b>{{variant.label}}</b> (<span class="text-underline">{{variant.id}}</span>): <span v-html="variant.def"></span></small>
+                  </div>
                 </div>
-                <div v-for="(variant, vIdx) in variantTypes" :key="vIdx" class="line-height-1 my-2">
-                  <small><b>{{variant.label}}</b> (<span class="text-underline">{{variant.id}}</span>): <span v-html="variant.def"></span></small>
+
+
+                <DownloadReportData :fullWidth="false" :data="group.values" dataType="Curated Variant List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
+              </div>
+            </div>
+          </template>
+
+          <div class="d-flex align-items-center my-3" v-else>
+            <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
+            <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
+              <div class="input-group">
+                <input :id="'sBar-clear' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
+                <div class="input-group-prepend">
+                  <span class="input-group-text text-muted border-0" id="sb">
+                    <font-awesome-icon :icon="['fas', 'search']" />
+                  </span>
                 </div>
               </div>
+            </form>
 
-
-              <DownloadReportData :fullWidth="false" :data="group.values" dataType="Curated Variant List" reportType="curated-list" :downloadLabel="`${group.id} list`" :numSvgs="1000" class="mt-3" />
-            </div>
+            <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
           </div>
         </template>
+        <div v-else id="de-escalated">
+          <h4>De-escalated Variants</h4>
+          <small class="text-muted line-height-sm">These former VOI or VOC have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating
+            for a long
+            time without any impact on the
+            overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
 
-        <div class="d-flex align-items-center my-3" v-else>
-          <h5 class="text-muted m-0">No {{group.key}} reports found</h5>
-          <form autocomplete="off" class="ml-3 fa-sm" @submit.prevent="onEnter" style="width:250px">
-            <div class="input-group">
-              <input :id="'sBar-clear' + i" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" @input="debounceSearch" />
-              <div class="input-group-prepend">
-                <span class="input-group-text text-muted border-0" id="sb">
-                  <font-awesome-icon :icon="['fas', 'search']" />
-                </span>
-              </div>
+          <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
+            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-4 font-weight-bold">
+              <!-- WHO reports -->
+              <template v-if="report.who_name">
+                <!-- with sublineages -->
+                <router-link :to="{name:'MutationReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline">
+                  <h5 class="m-0" :id="anchorLink(report.who_name)">{{ report.label }}/{{Array.isArray(report.pangolin_lineage) ? report.pangolin_lineage.join(" & ") : report.pangolin_lineage}}</h5>
+                </router-link>
+              </template>
+
+              <!-- multiple sublineages, unnamed -->
+              <router-link :to="{name:'MutationReport', params: {alias: report.label.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.pango_sublineages.length">
+                <h5 class="m-0" :id="anchorLink(report.label)">{{ report.label }}</h5>
+              </router-link>
+
+              <!-- single lineage -->
+              <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
+                <h5 class="m-0" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h5>
+              </router-link>
             </div>
-          </form>
-
-          <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
+          </div>
         </div>
       </div>
 
