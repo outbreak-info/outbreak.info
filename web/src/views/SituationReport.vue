@@ -731,7 +731,6 @@ export default {
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
-          console.log(results)
           this.hasData = true;
 
           // selected locations
