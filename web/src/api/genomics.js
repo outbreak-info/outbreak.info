@@ -177,9 +177,9 @@ export function addTotals2Mutations(apiurl) {
 }
 
 export function getCuratedMutations(apiurl, prevalenceThreshold) {
-  const query = MUTATIONS.map(mutation => mutation.mutation_name).join(" AND ");
+  const query = MUTATIONS.map(mutation => mutation.mutation_name);
 
-  return forkJoin([getMutationsByLineage(apiurl, query, prevalenceThreshold, false), addTotals2Mutations(apiurl)]).pipe(
+  return forkJoin([getMutationsByLineage(apiurl, query, prevalenceThreshold, false, true), addTotals2Mutations(apiurl)]).pipe(
     map(([lineagesByMutation, totals]) => {
       // sort by codon num, then alpha
       let curated = orderBy(MUTATIONS, ["codon_num", "mutation_name"]);
@@ -292,7 +292,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
         .entries(curated);
 
       curated.forEach(d => {
-        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum": d.key == "De-escalated" ? "deescalated" : "unknown";
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : d.key == "De-escalated" ? "deescalated" : "unknown";
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
@@ -459,6 +459,8 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
     getLocationPrevalence(apiurl, queryStr, location)
   ]).pipe(
     map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev, longitudinal, longitudinalSublineages, countries, states, choroData]) => {
+      console.log(mutationDetails)
+      console.log(mutationsByLineage)
       // attach names to cum prevalences
       locPrev.forEach(d => {
         const filtered = locations.filter(loc => loc.id === d.location_id);
@@ -597,7 +599,7 @@ export function updateLocationData(apiurl, alias, mutationArr, lineageString, lo
     locations = [location];
   }
 
-  if(typeof(locations) == "string") {
+  if (typeof(locations) == "string") {
     locations = [locations];
   }
 
@@ -665,11 +667,14 @@ export function getMutationDetails(apiurl, mutationString) {
   )
 }
 
-export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold = 0, returnFlat = true) {
+export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold = 0, returnFlat = true, andLogic = false) {
   if (!mutationArr)
     return ( of ([]));
+
+  const queryStr = andLogic ? mutationArr.join(" AND ") : mutationArr.join(",");
+
   const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}mutations-by-lineage?mutations=${mutationArr.join(",")}&timestamp=${timestamp}&frequency=${proportionThreshold}`;
+  const url = `${apiurl}mutations-by-lineage?mutations=${queryStr}&timestamp=${timestamp}&frequency=${proportionThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -1811,8 +1816,8 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
   }
 }
 
-export function getComparisonByMutations(apiurl, lineages, prevalenceThreshold, mutationQuery, mutationThreshold) {
-  return getMutationsByLineage(apiurl, mutationQuery, mutationThreshold).pipe(
+export function getComparisonByMutations(apiurl, lineages, prevalenceThreshold, mutationArr, mutationThreshold) {
+  return getMutationsByLineage(apiurl, mutationArr, mutationThreshold).pipe(
     mergeMap(newLineages => {
       newLineages.sort((a, b) => b.proportion - a.proportion);
       const newPango = uniq(lineages.concat(newLineages.map(d => d.pangolin_lineage)));

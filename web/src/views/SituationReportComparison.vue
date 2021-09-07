@@ -693,7 +693,7 @@ export default {
       })
     },
     addMutations() {
-      const selMutation = this.selectedMutationQuery.replace(/\s/g, "");
+      const selMutation = this.selectedMutationQuery.replace(/\s/g, "").split(",");
       this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
         this.showSnackbar = true;
         this.snackbarText = `${results.addedLength} lineages added`
