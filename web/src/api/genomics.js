@@ -707,6 +707,10 @@ export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold =
   )
 }
 
+function cleanSelectors(id) {
+  return id.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_");
+}
+
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
@@ -740,7 +744,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
             const filtered_curated = CURATED.filter(d => d.char_muts_parent_query == lineage_key);
             d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
             d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
-            d["id"] = `${d.pangolin_lineage}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
+            d["id"] = `${d.pangolin_lineage}_${cleanSelectors(d.mutation)}`;
             return (d);
           }
         ));
@@ -753,7 +757,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
 
             d["pangolin_lineage"] = filtered_curated.length === 1 ? filtered_curated[0].label : lineage_key.replace(/AND/g, "+");
             d["is_alias"] = filtered_curated.length === 1 && filtered_curated[0].pango_descendants.length > 1;
-            d["id"] = `${d.pangolin_lineage.replace(/\./g, "-")}_${d.mutation.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`;
+            d["id"] = `${d.pangolin_lineage.replace(/\./g, "-")}_${cleanSelectors(d.mutation)}`;
             d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` : d.mutation.split(":")[1].toUpperCase();
           })
           // sort by location
@@ -884,7 +888,7 @@ export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, ret
             const last = parseDate(d.last_detected);
 
             d["mutation_string"] = mutation_key;
-            d["id"] = `${d.mutation_string.replace(/\s/g, "_").replace(/\./g, "-")}_${location}`;
+            d["id"] = `${cleanSelectors(d.mutation_string)}_${location}`;
             d["location_id"] = location;
             d["first_detected"] = first ? formatDateShort(first) : null;
             d["last_detected"] = last ? formatDateShort(last) : null;
@@ -1105,7 +1109,7 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
             return ({
               label: label,
               pango_descendants: filtered.length === 1 ? filtered[0].pango_descendants : null,
-              id: label.replace(/\(/g, "").replace(/\)/g, "").replace(/:/g, "").replace(/\//g, "-").replace(/\./g, "-").replace(/\s/g, "_"),
+              id: cleanSelectors(label),
               data: d,
               route: filtered.length === 1 ? null : parseStrQuery(queryStr),
               params: filtered.length === 1 ? {
@@ -1758,7 +1762,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
 
 
         characteristic.forEach(d => {
-          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_").replace(/:/g, "_").replace(/\s\+\s/g, "--")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+          d["id"] = `${cleanSelectors(d.pangolin_lineage)}-${cleanSelectors(d.mutation)}`;
           d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
             d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
           d["isMOI"] = mutationsOfInterest.includes(d.mutation);
@@ -1766,7 +1770,7 @@ export function getMutationsOfInterestPrevalence(apiurl, lineages, prevalenceThr
         })
 
         moi.forEach(d => {
-          d["id"] = `${d.pangolin_lineage.replace(/\./g, "_").replace(/:/g, "_").replace(/\s\+\s/g, "--")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+          d["id"] = `${cleanSelectors(d.pangolin_lineage)}-${cleanSelectors(d.mutation)}`;
           d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
             d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
           d["isMOI"] = mutationsOfInterest.includes(d.mutation);
@@ -1894,7 +1898,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
       // filtered = filtered.concat(avgByMutation);
 
       filtered.forEach(d => {
-        d["id"] = `${d.pangolin_lineage.replace(/\./g, "_").replace(/:/g, "_").replace(/\s\+\s/g, "--")}-${d.mutation.replace(/\//g, "_").replace(/:/g, "_")}`;
+        d["id"] = `${cleanSelectors(d.pangolin_lineage)}-${cleanSelectors(d.mutation)}`;
         d["mutation_simplified"] = d.type == "substitution" ? `${d.ref_aa}${d.codon_num}${d.alt_aa}` :
           d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })
