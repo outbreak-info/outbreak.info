@@ -216,7 +216,7 @@ export default Vue.extend({
       if (this.data && this.chart) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
         this.updateScales();
-        this.drawDots();
+        this.drawPlot();
       }
     },
     prepData: function() {
@@ -364,78 +364,13 @@ export default Vue.extend({
           // );
         }
       }
-
-      select(this.$refs.xSelector)
-        .style("right", this.margin.right + "px")
-        .style("top", this.height - 28 + "px");
     },
-    drawDots: function() {
+    drawPlot() {
       if (this.plottedData && this.plottedData.length) {
         const t1 = transition().duration(this.transitionDuration);
         const t2 = transition().duration(1500);
         const formatDate = timeFormat("%d %b %Y");
 
-        // --- annotation: change in case definition ---
-        const includesChina = this.plottedData
-          .filter(d => d.key.includes("CHN"))
-        const dateCaseDefChange = new Date("2020-02-13");
-
-        const defChangedSelector = this.chart
-          .selectAll(".case-def-changed")
-          .data(includesChina.length > 0 ? ["includesChina"] : []);
-        const defChangedLine = this.chart
-          .selectAll(".case-def-changed-line")
-          .data(includesChina.length > 0 ? ["includesChina"] : []);
-
-
-        const defChangedEnter = defChangedSelector
-          .join(
-            enter => {
-              enter.append("text")
-                .attr("dx", -3)
-                .attr("y", 0)
-                .attr("x", this.x(dateCaseDefChange))
-                .attr("class", "annotation-label case-def-changed")
-                .text("Case definition changed")
-
-              // defEnter.append("line")
-              //   .attr("class", "annotation--line case-def-changed")
-              //   .attr("y1", 8)
-              //   .attr("x1", this.x(dateCaseDefChange))
-              //   .attr("x2", this.x(dateCaseDefChange))
-              //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            update => {
-              update.attr("x", this.x(dateCaseDefChange))
-
-              // update.select("line")
-              //   .attr("class", "annotation--line case-def-changed")
-              //   .attr("y1", 8)
-              //   .attr("x1", this.x(dateCaseDefChange))
-              //   .attr("x2", this.x(dateCaseDefChange))
-              //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-          );
-
-        defChangedLine
-          .join(
-            enter => {
-              enter.append("line")
-                .attr("class", "annotation--line case-def-changed-line")
-                .attr("y1", 8)
-                .attr("x1", this.x(dateCaseDefChange))
-                .attr("x2", this.x(dateCaseDefChange))
-                .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            update => {
-              update
-                .attr("x1", this.x(dateCaseDefChange))
-                .attr("x2", this.x(dateCaseDefChange))
-                .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-          );
         // --- create groups for each region ---
         const regionGroups = this.chart
           .selectAll(".epi-region")
