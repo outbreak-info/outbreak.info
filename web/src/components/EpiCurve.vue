@@ -121,7 +121,6 @@ export default Vue.extend({
       plottedData: null,
 
       // button interfaces
-      isLogY: false,
       zoomAllowed: false,
       xVariable: "date",
       // axes
@@ -145,7 +144,13 @@ export default Vue.extend({
     dataUpdated() {
       // Combo property to check if the data has changed, or the normalization has.
       // TODO: in Vue 3, this can be streamlined as a dual watcher
-      return JSON.stringify(this.data) + this.variable + String(this.percapita);
+      return JSON.stringify(this.data) + this.selectedVariable + String(this.percapita);
+    },
+    selectedVariable() {
+      if (this.percapita) {
+        return this.variableObj.percapita === false ? this.variableObj.value : this.variableObj.value + "_per_100k";
+      }
+      return this.variableObj.value;
     },
     title() {
       if (this.data.length == 1) {
@@ -158,7 +163,6 @@ export default Vue.extend({
   },
   watch: {
     dataUpdated: function() {
-      console.log("data")
       this.xMin = timeParse("%Y-%m-%d")(this.xmin);
       this.xMax = timeParse("%Y-%m-%d")(this.xmax);
       this.setXScale();
@@ -176,22 +180,12 @@ export default Vue.extend({
       this.setXScale();
       this.updatePlot();
     },
-    variableObj: {
-      immediate: true,
-      handler(newObj, oldObj) {
-        console.log("variable")
-        this.variable = newObj.value;
-        this.updatePlot();
-      }
-    },
-    log: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        console.log('log')
-        this.isLogY = this.loggable ? newVal : false;
-      },
+    variable: function() {
+      this.setXScale();
+      this.updatePlot();
     },
     width() {
+      this.setXScale();
       this.updatePlot();
     }
   },
@@ -253,7 +247,7 @@ export default Vue.extend({
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable.replace("_per_100k", ""),
+          variable: this.selectedVariable.replace("_per_100k", ""),
           xmin: this.xmin,
           xmax: this.xmax,
           percapita: String(this.percapita)
@@ -384,8 +378,6 @@ export default Vue.extend({
       selectAll(`.epi-line`).style("opacity", 1);
     },
     updatePlot: function() {
-      console.log("DATA UPDATED")
-
       if (this.data && this.chart) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
         this.updateScales();
@@ -393,21 +385,16 @@ export default Vue.extend({
       }
     },
     prepData: function() {
-      this.loggable = this.variable != "testing_positivity";
-
-      if (this.percapita) {
-        this.variable = this.variable.includes("_per_100k") || this.variableObj.percapita === false ? this.variable : this.variable + "_per_100k";
-      } else {
-        this.variable = this.variable.replace("_per_100k", "");
-      }
+      this.loggable = this.selectedVariable != "testing_positivity";
+      this.isLogY = this.loggable && this.log;
 
       if (this.data) {
         this.plottedData = cloneDeep(this.data);
 
         this.plottedData.forEach(d => {
           d["value"] = this.isLogY && this.loggable ?
-            d.value.filter(x => x[this.variable] >= 1 && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0)) :
-            d.value.filter(x => x[this.variable] && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0));
+            d.value.filter(x => x[this.selectedVariable] >= 1 && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0)) :
+            d.value.filter(x => x[this.selectedVariable] && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0));
 
           // ensure dates are sorted
           d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
@@ -430,7 +417,7 @@ export default Vue.extend({
 
       this.line = line()
         .x(d => this.x(d[this.xVariable]))
-        .y(d => this.y(d[this.variable]));
+        .y(d => this.y(d[this.selectedVariable]));
 
       this.brushRef = select(this.$refs.brush);
       this.setXScale();
@@ -465,14 +452,14 @@ export default Vue.extend({
           .nice()
           .domain([
             1,
-            max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
+            max(this.plottedData.flatMap(d => d.value).map(d => d[this.selectedVariable]))
           ]);
       } else {
         this.y = scaleLinear()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .domain([
             0,
-            max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
+            max(this.plottedData.flatMap(d => d.value).map(d => d[this.selectedVariable]))
           ]);
       }
 
@@ -560,7 +547,8 @@ export default Vue.extend({
     },
     drawPlot() {
       if (this.plottedData && this.plottedData.length) {
-        const t1 = transition().duration(this.transitionDuration);
+        const t1 = transition()
+          .duration(this.transitionDuration);
         const t2 = transition().duration(500);
         const formatDate = timeFormat("%d %b %Y");
 
@@ -572,7 +560,7 @@ export default Vue.extend({
         this.plottedData.forEach(d => {
           d["fx"] = 0;
           const filtered = d.value.slice(-1)
-          const yMax = filtered.map(d => d[this.variable]);
+          const yMax = filtered.map(d => d[this.selectedVariable]);
           d["xMax"] = filtered.length === 1 ? this.x(filtered[0][this.xVariable]) : null;
           d["targetY"] = yMax[0] ? this.y(yMax[0]) : this.height;
         });
@@ -622,10 +610,9 @@ export default Vue.extend({
               .attr("x", this.width - this.margin.left - this.margin.right)
               .attr("y", d => d.y)
               .text(d => d.value[0] ? d.value[0].name : "")
-              .style("opacity", 1e-6)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-              .transition(t1)
-              .delay(1000)
+              // .transition(t1)
+              // .delay(1000)
               .style("opacity", 1);
 
             grps.append("path")
@@ -636,20 +623,17 @@ export default Vue.extend({
               .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
               .datum(d => d.value)
               .attr("d", this.line)
-              .attr("stroke-dasharray", function() {
-                var totalLength = this.getTotalLength();
-                return totalLength + " " + totalLength;
-              })
-              .attr("stroke-dashoffset", function() {
-                var totalLength = this.getTotalLength();
-                return totalLength;
-              })
-              .call(update => {
-                update.transition(t2)
-                  .attr("d", this.line)
-                  .ease(easeLinear)
-                  .attr("stroke-dashoffset", 0)
-              });
+              // .attr("stroke-dasharray", function() {
+              //   var totalLength = this.getTotalLength();
+              //   return totalLength + " " + totalLength;
+              // })
+              // .attr("stroke-dashoffset", function() {
+              //   var totalLength = this.getTotalLength();
+              //   return totalLength;
+              // })
+              // .transition(t1)
+              // .ease(easeLinear)
+              // .attr("stroke-dashoffset", 0)
 
             grps
               .append("circle")
@@ -658,9 +642,6 @@ export default Vue.extend({
               .attr("r", this.radius)
               .attr("cx", d => d.xMax)
               .attr("cy", d => d.y)
-              .style("opacity", 0)
-              .transition(t1)
-              .delay(1000)
               .style("opacity", 1)
           },
           update => {
@@ -682,9 +663,8 @@ export default Vue.extend({
               .datum(d => d.value)
               .attr("stroke-dashoffset", 0)
               .attr("stroke-dasharray", "none")
-              .call(update => {
-                update.transition(t2).attr("d", this.line)
-              })
+              .transition(t2)
+              .attr("d", this.line)
 
             update.select(".epi-point")
               .attr("class", d => `epi-point ${d.key}`)

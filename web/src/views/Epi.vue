@@ -481,10 +481,10 @@ export default {
       epiTableSubject.next([]);
     },
     changeVariable() {
-      this.variable = this.variableObj.value;
+      const newVariable = this.variableObj.value;
 
       // update y-max
-      const varUsed = this.isPerCapita ? this.variable + "_per_100k" : this.variable;
+      const varUsed = this.isPerCapita ? newVariable + "_per_100k" : newVariable;
       this.yMax = this.isFixedY ?
         max(
           this.plottedData.flatMap(d => d.value),
@@ -500,7 +500,7 @@ export default {
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable,
+          variable: newVariable,
           xmin: this.xmin,
           xmax: this.xmax,
           fixedY: String(this.isFixedY),
