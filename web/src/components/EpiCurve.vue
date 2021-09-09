@@ -645,7 +645,6 @@ export default Vue.extend({
                 return totalLength;
               })
               .call(update => {
-                console.log("path")
                 update.transition(t2)
                   .attr("d", this.line)
                   .ease(easeLinear)
@@ -673,7 +672,7 @@ export default Vue.extend({
               .attr("x", this.width - this.margin.left - this.margin.right)
               .text(d => d.value[0] ? d.value[0].name : "")
               .style("opacity", 1)
-              .transition(t1)
+              .transition(t2)
               .attr("y", d => d.y)
 
             update.select(".epi-line")
@@ -691,7 +690,7 @@ export default Vue.extend({
               .attr("class", d => `epi-point ${d.key}`)
               .attr("id", d => `${d.key}`)
               .attr("cx", d => d.xMax)
-              .transition(t1)
+              .transition(t2)
               .attr("cy", d => d.y)
           },
           exit =>
