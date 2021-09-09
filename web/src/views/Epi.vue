@@ -417,7 +417,7 @@ export default {
       if (newValue) {
         this.isOverlay = false;
 
-        this.variable = this.variable.replace("_numIncrease", "_rolling");
+        const newVariable = this.variable.replace("_numIncrease", "_rolling");
         this.$router.push({
           name: "Epidemiology",
           params: {
@@ -426,7 +426,7 @@ export default {
           query: {
             location: this.location,
             log: String(this.isLogY),
-            variable: this.variable,
+            variable: newVariable,
             fixedY: String(this.isFixedY),
             percapita: String(this.isPerCapita)
           }
