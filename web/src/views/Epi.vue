@@ -123,10 +123,8 @@
 <script>
 // @ is an alias to /src
 import DataSource from "@/components/DataSource.vue";
-import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
-import Bargraph from "@/components/Bargraph.vue";
 import Warning from "@/components/Warning.vue";
 
 // --- font awesome --
@@ -168,9 +166,9 @@ export default {
   components: {
     DataSource,
     Warning,
-    EpiCurve,
+    EpiCurve: () => import( /* webpackPrefetch: true */ "@/components/EpiCurve.vue"),
+    Bargraph: () => import( /* webpackPrefetch: true */ "@/components/Bargraph.vue"),
     EpiTable,
-    Bargraph,
     Autocomplete,
     FontAwesomeIcon
   },
