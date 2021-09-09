@@ -27,7 +27,25 @@ import {
   epiDataState$
 } from "@/api/epi-traces.js";
 
-import { select, selectAll, scaleLinear, scaleLog, scaleTime, extent, max, axisBottom, axisLeft, format, timeFormat, forceCollide, forceY, forceSimulation, transition, easeLinear, line } from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleLog,
+  scaleTime,
+  extent,
+  max,
+  axisBottom,
+  axisLeft,
+  format,
+  timeFormat,
+  forceCollide,
+  forceY,
+  forceSimulation,
+  transition,
+  easeLinear,
+  line
+} from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
 
@@ -42,7 +60,7 @@ const margin = {
   bottom: 75,
   left: 125
 };
-const transitionDuration = 3500;
+const transitionDuration = 1500;
 
 export default Vue.extend({
   name: "EpiCurve",
@@ -96,7 +114,8 @@ export default Vue.extend({
     },
     title() {
       if (this.data.length == 1) {
-        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` :
+          `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
       } else {
         return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
       }
@@ -260,11 +279,11 @@ export default Vue.extend({
         .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
-        this.x = scaleTime()
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain(
-            extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
-          );
+      this.x = scaleTime()
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain(
+          extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
+        );
 
       if (this.isLogY && this.loggable) {
         this.y = scaleLog()
@@ -368,36 +387,19 @@ export default Vue.extend({
     drawPlot() {
       if (this.plottedData && this.plottedData.length) {
         const t1 = transition().duration(this.transitionDuration);
-        const t2 = transition().duration(1500);
+        const t2 = transition().duration(500);
         const formatDate = timeFormat("%d %b %Y");
 
-        // --- create groups for each region ---
-        const regionGroups = this.chart
-          .selectAll(".epi-region")
-          .data(this.plottedData);
-
-        // -- exit --
-        regionGroups.exit().remove();
-
-        // -- enter --
-        const regionsEnter = regionGroups
-          .enter()
-          .append("g")
-          .attr("class", "epi-region");
-
-        regionGroups
-          .merge(regionsEnter)
-          .attr("id", d => d.key)
-          .attr("fill", d => this.colorScale(d.key));
-
-        // --- region annotation ---
+        // --- location annotation ---
         // using force direction to make sure they don't overlap.
         // based off https://bl.ocks.org/wdickerson/bd654e61f536dcef3736f41e0ad87786
         const labelHeight = 16;
         // Create nodes of the text labels for force direction
         this.plottedData.forEach(d => {
           d["fx"] = 0;
-          const yMax = d.value.filter(d => d.mostRecent).map(d => d[this.variable]);
+          const filtered = d.value.filter(d => d.mostRecent)
+          const yMax = filtered.map(d => d[this.variable]);
+          d["xMax"] = filtered.length === 1 ? this.x(filtered[0][this.xVariable]) : null;
           d["targetY"] = yMax[0] ? this.y(yMax[0]) : this.height;
         });
 
@@ -428,45 +430,31 @@ export default Vue.extend({
         // Execute the simulation
         for (let i = 0; i < 300; i++) force.tick();
 
-        const countrySelector = this.chart
+        // --- create groups for each region ---
+        const regionGroups = this.chart
           .selectAll(".epi-region")
-          .select(".annotation--region-name");
+          .data(this.plottedData, d => d.key);
 
-        const textEnter = regionsEnter
-          .append("text")
-          .style("stroke", "none")
-          .attr("dx", 8)
-          .style("opacity", 1e-6)
-          .transition(t2)
-          .delay(250)
-          .style("opacity", 1);
-
-        countrySelector
-          .merge(textEnter)
-          // .attr('x', 0)
-          // .attr('y', this.y(0))
-          .attr("class", d => `annotation--region-name ${d.key}`)
-          .attr("x", this.width - this.margin.left - this.margin.right)
-          .attr("y", d => d.y)
-          .text(d => d.value[0] ? d.value[0].name : "")
-          .style("opacity", 1e-6)
-          .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-          .transition(t1)
-          .delay(1000)
-          .style("opacity", 1);
-
-        // --- path ---
-        const pathSelector = this.chart.selectAll(".epi-line")
-          .data(this.plottedData, d => {
-            // kind of a weird hack; on the first iteration of the data call, you get d is this.plottedData[i].value (e.g. array of timepoints)
-            // and then it gets called again, where d is this.plottedData[i]
-            // this is probably doubling the work that needs to be done, but it works, so...
-            return d.key ? d.key : d[0] ? d[0].location_id : null
-          })
-
-        pathSelector.join(
+        regionGroups.join(
           enter => {
-            enter.append("path")
+            const grps = enter.append("g")
+              .attr("class", "epi-region")
+              .attr("id", d => d.key)
+              .attr("fill", d => this.colorScale(d.key));
+
+            grps.append("text")
+              .attr("dx", 8)
+              .attr("class", d => `annotation--region-name ${d.key}`)
+              .attr("x", this.width - this.margin.left - this.margin.right)
+              .attr("y", d => d.y)
+              .text(d => d.value[0] ? d.value[0].name : "")
+              .style("opacity", 1e-6)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .transition(t1)
+              .delay(1000)
+              .style("opacity", 1);
+
+            grps.append("path")
               .attr("class", d => `epi-line ${d.key}`)
               .attr("stroke", d => this.colorScale(d.key))
               .style("fill", "none")
@@ -483,190 +471,64 @@ export default Vue.extend({
                 return totalLength;
               })
               .call(update => {
+                console.log("path")
                 update.transition(t2)
                   .attr("d", this.line)
                   .ease(easeLinear)
                   .attr("stroke-dashoffset", 0)
-              })
+              });
+
+            grps
+              .append("circle")
+              .attr("class", d => `epi-point ${d.key}`)
+              .attr("id", d => `${d.key}`)
+              .attr("r", this.radius)
+              .attr("cx", d => d.xMax)
+              .attr("cy", d => d.y)
+              .attr("opacity", 0)
+              .call(update => update.transition(t2).delay(1500)
+                .attr("opacity", 1))
           },
+          update => {
+            update
+              .attr("id", d => d.key)
+              .attr("fill", d => this.colorScale(d.key));
 
-          // update
-          update => update
-          .attr("stroke", d => this.colorScale(d.key))
-          .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
-          .attr("class", d => `epi-line ${d.key}`)
-          .datum(d => d.value)
-          .attr("stroke-dashoffset", 0)
-          .attr("stroke-dasharray", "none")
-          .call(update => {
-            update.transition(t2).attr("d", this.line)
-          }),
+            update.select(".annotation--region-name")
+              .attr("x", this.width - this.margin.left - this.margin.right)
+              .text(d => d.value[0] ? d.value[0].name : "")
+              .style("opacity", 1)
+              .transition(t1)
+              .attr("y", d => d.y)
 
-          // exit
+            update.select(".epi-line")
+              .attr("stroke", d => this.colorScale(d.key))
+              .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
+              .attr("class", d => `epi-line ${d.key}`)
+              .datum(d => d.value)
+              .attr("stroke-dashoffset", 0)
+              .attr("stroke-dasharray", "none")
+              .call(update => {
+                update.transition(t2).attr("d", this.line)
+              })
+
+            update.select(".epi-point")
+              .attr("class", d => `epi-point ${d.key}`)
+              .attr("id", d => `${d.key}`)
+              .attr("cx", d => d.xMax)
+              .transition(t1)
+              .attr("cy", d => d.y)
+          },
           exit =>
           exit.call(exit =>
             exit
             .transition()
-            .duration(10)
             .style("opacity", 1e-5)
             .remove()
           )
         )
 
-        // --- dots ---
-        const keyFunc = function(d, i) {
-          return d._id
-        }
-        const dotGroupSelector = this.chart
-          .selectAll(".epi-region")
-          .selectAll(".epi-point")
-          .data(d => d.value, keyFunc);
-
-        dotGroupSelector.exit().remove();
-
-        const dotGroupEnter = dotGroupSelector
-          .join(
-            enter => enter.append("circle")
-            .attr("r", this.radius)
-            .attr("class", "epi-point")
-            // .attr("cy", this.y(0))
-            .attr("class", d => d.mostRecent ? `epi-point ${d.location_id}` : "epi-point")
-            .attr("id", d => `${d._id}`)
-            .attr("cx", d => this.x(d[this.xVariable]))
-            .attr("cy", d => this.y(d[this.variable]))
-            .attr("opacity", 0)
-            // .attr("opacity", d => d.mostRecent ? 1 : 0)
-            .call(update => update.transition(t2).delay(1500)
-              .attr("opacity", d => d.mostRecent ? 1 : 0)),
-            update => update
-            .attr("class", d => d.mostRecent ? `epi-point ${d.location_id}` : "epi-point")
-            .attr("id", d => `${d._id}`)
-            .attr("opacity", 0)
-            .call(update => update.transition(t2)
-              .attr("opacity", d => d.mostRecent ? 1 : 0)
-              .attr("cx", d => this.x(d[this.xVariable]))
-              .attr("cy", d => this.y(d[this.variable]))),
-            exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
-
-          );
-
-        dotGroupSelector
-          .merge(dotGroupEnter);
-
-        // --- tooltips ---
-        // need to be outside the path/dot groups, so they're on top of all the curves.
-        // OUTER GROUP: one per country
-        const tooltipGroupSelector = this.chart
-          .selectAll(".epi-tooltip-group")
-          .data(this.plottedData);
-
-        // -- exit --
-        tooltipGroupSelector.exit().remove();
-
-        // -- enter --
-        const tooltipGroupEnter = tooltipGroupSelector
-          .enter()
-          .append("g")
-          .attr("class", "epi-tooltip-group")
-          .attr("fill", d => this.lightColorScale(d.key))
-          .attr("stroke", d => this.colorScale(d.key));
-
-        tooltipGroupSelector
-          .merge(tooltipGroupEnter)
-          .attr("class", d => `epi-tooltip-group ${d.key}`);
-
-        // INNER GROUPS: one per timepoint
-        const tooltipSelector = this.chart
-          .selectAll(".epi-tooltip-group")
-          .selectAll(".tooltip--epi-curve")
-          .data(d => d.value);
-
-        tooltipSelector.exit().remove();
-
-        const tooltipEnter = tooltipSelector
-          .enter()
-          .append("g")
-          .attr("class", "tooltip--epi-curve")
-          .attr("transform", "translate(5,5)")
-          .attr("display", "none");
-
-        tooltipSelector
-          .merge(tooltipEnter)
-          .attr("id", d => `tooltip-${d._id}`);
-
-        const tooltipRect = tooltipSelector.select(".tooltip--rect");
-
-        const tooltipRectEnter = tooltipEnter
-          .append("rect")
-          .attr("class", "tooltip--rect");
-
-        tooltipRect
-          .merge(tooltipRectEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          .attr("width", 165)
-          .attr("height", 60)
-          .attr("stroke-dasharray", "165, 285")
-          .attr("stroke-width", "3");
-
-        const tooltipText = tooltipSelector.select(".tooltip--text");
-
-        const tooltipTextEnter = tooltipEnter
-          .append("text")
-          .attr("class", "tooltip--text default-black")
-          .attr("transform", "translate(5,5)");
-
-        const tooltipCtryEnter = tooltipTextEnter.append("tspan")
-          .attr("class", "tooltip--country");
-
-        tooltipText.select(".tooltip--country").merge(tooltipCtryEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          .text(d => d.name)
-
-        const tooltipDateEnter = tooltipTextEnter
-          .append("tspan")
-          .attr("class", "tooltip--date");
-
-        tooltipText
-          .select(".tooltip--date")
-          .merge(tooltipDateEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          .attr("dy", "1.1em")
-          .text(d => d.date ? formatDate(d.date) : "interpolated value");
-
-        const tooltipCasesEnter = tooltipTextEnter
-          .append("tspan")
-          .attr("class", "tooltip--case-count");
-
-        tooltipText
-          .select(".tooltip--case-count")
-          .merge(tooltipCasesEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          // .attr("dy", "1.1em")
-          .attr("dy", "2.2em")
-          .text(d => this.percent ? `${format(".1%")(d[this.variable])} ${this.variableObj.ttip}` : `${format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
-
-        // dynamically adjust the width of the rect
-        if (tooltipSelector.selectAll("rect")["_groups"].length) {
-          tooltipSelector.each(function(d) {
-            const bounds = select(this).select("text")
-              .node()
-              .getBBox();
-
-            select(this).select("rect").attr("width", bounds.width + 10)
-              .attr("height", bounds.height + 5)
-              .attr("stroke-dasharray", `${bounds.width + 10}, ${(bounds.height + 5)*2 + bounds.width + 10}`)
-          })
-        }
-
         // --- event listeners ---
-        selectAll("circle")
-          .on("mouseover", d => this.tooltipOn(d, "location_id"))
-          .on("mouseout", d => this.tooltipOff(d));
-
         selectAll(".annotation--region-name")
           .on("mouseover", d => this.tooltipOn(d, "key"))
           .on("mouseout", d => this.tooltipOff(d));
