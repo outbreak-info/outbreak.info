@@ -216,6 +216,8 @@ const routes = [{
       location: route.query.location,
       variable: route.query.variable,
       log: route.query.log,
+      xmin: route.query.xmin,
+      xmax: route.query.xmax,
       fixedY: route.query.fixedY,
       percapita: route.query.percapita
     }),

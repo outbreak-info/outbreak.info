@@ -1,5 +1,15 @@
 <template>
 <div class="col-sm-12 epidemiology-curves flex-column align-items-center" style="margin-bottom: 45px">
+  <!-- zoom btns -->
+  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+    </button>
+    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+    </button>
+  </div>
+
   <svg :width="width" :height="height-45" class="epi-curve" ref="svg" :name="title">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -9,7 +19,9 @@
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
+    <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
   </svg>
+
   <svg :width="width" :height="height" class="swoopy-arrow-group position-absolute" ref="svg_arrows">
     <g ref="switchY" class="switch-y-button-group" transform="translate(5,0)" v-if="loggable">
       <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
@@ -38,7 +50,10 @@ import {
   axisBottom,
   axisLeft,
   format,
+  brushX,
+  event,
   timeFormat,
+  timeParse,
   forceCollide,
   forceY,
   forceSimulation,
@@ -46,6 +61,20 @@ import {
   easeLinear,
   line
 } from "d3";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSearchPlus,
+  faCompressArrowsAlt
+} from "@fortawesome/free-solid-svg-icons/";
+
+library.add(faSearchPlus, faCompressArrowsAlt);
 
 import cloneDeep from "lodash/cloneDeep";
 
@@ -64,10 +93,14 @@ const transitionDuration = 1500;
 
 export default Vue.extend({
   name: "EpiCurve",
-  components: {},
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     data: Array,
     location: String,
+    xmin: String,
+    xmax: String,
     variableObj: Object,
     log: Boolean,
     percapita: Boolean,
@@ -85,11 +118,11 @@ export default Vue.extend({
 
       // data
       dataSubscription: null,
-      // logData: null,
       plottedData: null,
 
       // button interfaces
       isLogY: false,
+      zoomAllowed: false,
       xVariable: "date",
       // axes
       numXTicks: 6,
@@ -102,8 +135,10 @@ export default Vue.extend({
       svg: null,
       chart: null,
       switchBtn: null,
+      brushRef: null,
       // methods
-      line: null
+      line: null,
+      brush: null
     };
   },
   computed: {
@@ -123,11 +158,28 @@ export default Vue.extend({
   },
   watch: {
     dataUpdated: function() {
+      console.log("data")
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmin: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmax: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
       this.updatePlot();
     },
     variableObj: {
       immediate: true,
       handler(newObj, oldObj) {
+        console.log("variable")
         this.variable = newObj.value;
         this.updatePlot();
       }
@@ -135,6 +187,7 @@ export default Vue.extend({
     log: {
       immediate: true,
       handler(newVal, oldVal) {
+        console.log('log')
         this.isLogY = this.loggable ? newVal : false;
       },
     },
@@ -144,7 +197,11 @@ export default Vue.extend({
   },
   mounted() {
     this.setupPlot();
+    this.updateBrush();
     this.updatePlot();
+  },
+  created: function() {
+    this.debounceZoom = this.debounce(this.zoom, 150);
   },
   destroyed() {
     window.removeEventListener("resize", this.setPlotDims);
@@ -185,7 +242,6 @@ export default Vue.extend({
     changeYScale: function() {
       this.isLogY = !this.isLogY;
       this.changeScale();
-
     },
     changeScale: function() {
       this.$router.replace({
@@ -198,11 +254,109 @@ export default Vue.extend({
           location: this.location,
           log: String(this.isLogY),
           variable: this.variable.replace("_per_100k", ""),
+          xmin: this.xmin,
+          xmax: this.xmax,
           percapita: String(this.percapita)
         }
       });
 
       this.updatePlot();
+    },
+    updateBrush() {
+      // Update brush so it spans the whole of the area
+      this.brush = brushX()
+        .extent([
+          [0, 0],
+          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+        ])
+        .on("end", () => this.debounceZoom(event));
+
+      this.brushRef
+        .call(this.brush)
+        .on("dblclick", this.resetZoom);
+    },
+    zoom(evt, ref) {
+      // reset domain to new coords
+      const selection = this.event.selection;
+
+      if (selection) {
+        const newMin = this.x.invert(selection[0]);
+        const newMax = this.x.invert(selection[1]);
+
+        this.x = scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
+          .domain([newMin, newMax]);
+
+        // update plotted data
+        this.prepData();
+
+        // move the brush
+        this.brushRef.call(this.brush.move, null);
+        this.zoomAllowed = false;
+        this.updatePlot();
+
+        // update route
+        const queryParams = this.$route.query;
+
+        this.$router.push({
+          name: "Epidemiology",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            xmin: timeFormat("%Y-%m-%d")(newMin),
+            xmax: timeFormat("%Y-%m-%d")(newMax),
+            location: queryParams.location,
+            variable: queryParams.variable,
+            log: queryParams.log,
+            fixedY: queryParams.fixedY,
+            percapita: queryParams.percapita
+          }
+        })
+      }
+    },
+    resetZoom() {
+      this.brushRef.call(this.brush.move, null);
+      const queryParams = this.$route.query;
+      const params = this.$route.params;
+
+      this.xMin = null;
+      this.xMax = null;
+      this.setXScale();
+
+      this.$router.push({
+        name: "Epidemiology",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          location: queryParams.location,
+          variable: queryParams.variable,
+          log: queryParams.log,
+          fixedY: queryParams.fixedY,
+          percapita: queryParams.percapita
+        }
+      })
+
+      this.updatePlot();
+    },
+    enableZoom() {
+      this.zoomAllowed = true;
+    },
+    debounce(fn, delay) {
+      var timer = null;
+      return function() {
+        var context = this,
+          args = arguments,
+          evt = event;
+        //we get the D3 event here
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          context.event = evt;
+          //and use the reference here
+          fn.apply(context, args);
+        }, delay);
+      };
     },
     tooltipOn: function(d, location_id) {
       select(`#tooltip-${d._id}`).attr("display", "block");
@@ -230,7 +384,7 @@ export default Vue.extend({
       selectAll(`.epi-line`).style("opacity", 1);
     },
     updatePlot: function() {
-      this.prepData();
+      console.log("DATA UPDATED")
 
       if (this.data && this.chart) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
@@ -251,13 +405,13 @@ export default Vue.extend({
         this.plottedData = cloneDeep(this.data);
 
         this.plottedData.forEach(d => {
-          d["value"] = this.isLogY && this.loggable ? d.value.filter(x => x[this.variable] >= 1 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
+          d["value"] = this.isLogY && this.loggable ?
+            d.value.filter(x => x[this.variable] >= 1 && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0)) :
+            d.value.filter(x => x[this.variable] && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0));
 
           // ensure dates are sorted
           d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
         });
-
-
       }
     },
     setupPlot: function() {
@@ -277,14 +431,34 @@ export default Vue.extend({
       this.line = line()
         .x(d => this.x(d[this.xVariable]))
         .y(d => this.y(d[this.variable]));
+
+      this.brushRef = select(this.$refs.brush);
+      this.setXScale();
     },
-    updateScales: function() {
+    setXScale() {
+      let xDomain;
+
+      if (this.xMin && this.xMax && this.xMin < this.xMax) {
+        xDomain = [this.xMin, this.xMax];
+      } else {
+        xDomain = extent(this.data.flatMap(d => d.value).map(d => d[this.xVariable]));
+
+        if (this.xMin && this.xMin < xDomain[1]) {
+          xDomain[0] = this.xMin;
+        }
+
+        if (this.xMax && this.xMax > xDomain[0]) {
+          xDomain[1] = this.xMax;
+        }
+      }
+
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(
-          extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
-        );
+        .domain(xDomain);
 
+      this.prepData();
+    },
+    updateScales: function() {
       if (this.isLogY && this.loggable) {
         this.y = scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -397,7 +571,7 @@ export default Vue.extend({
         // Create nodes of the text labels for force direction
         this.plottedData.forEach(d => {
           d["fx"] = 0;
-          const filtered = d.value.filter(d => d.mostRecent)
+          const filtered = d.value.slice(-1)
           const yMax = filtered.map(d => d[this.variable]);
           d["xMax"] = filtered.length === 1 ? this.x(filtered[0][this.xVariable]) : null;
           d["targetY"] = yMax[0] ? this.y(yMax[0]) : this.height;
@@ -485,9 +659,10 @@ export default Vue.extend({
               .attr("r", this.radius)
               .attr("cx", d => d.xMax)
               .attr("cy", d => d.y)
-              .attr("opacity", 0)
-              .call(update => update.transition(t2).delay(1500)
-                .attr("opacity", 1))
+              .style("opacity", 0)
+              .transition(t1)
+              .delay(1000)
+              .style("opacity", 1)
           },
           update => {
             update

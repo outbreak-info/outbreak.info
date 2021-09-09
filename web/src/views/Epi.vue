@@ -92,7 +92,7 @@
     <!-- curve -->
     <template v-if="plottedData && showCurves && !this.variable.includes('Increase')">
       <EpiCurve class="row" id="curveContainer" :data="plottedData" :percapita="isPerCapita" :location="location" :variableObj="variableObj" :log="isLogY" :loggable="variable != 'testing_positivity'"
-        :percent="variable == 'testing_positivity'" :showAll="showAll" />
+        :percent="variable == 'testing_positivity'" :xmin="xmin" :xmax="xmax" :showAll="showAll" />
 
       <!-- source / download data -->
       <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
@@ -189,7 +189,9 @@ export default {
       type: String,
       default: "false"
     },
-    location: String
+    location: String,
+    xmin: String,
+    xmax: String
   },
   data() {
     return {
@@ -499,6 +501,8 @@ export default {
           location: this.location,
           log: String(this.isLogY),
           variable: this.variable,
+          xmin: this.xmin,
+          xmax: this.xmax,
           fixedY: String(this.isFixedY),
           percapita: String(this.isPerCapita)
         }
