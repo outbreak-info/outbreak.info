@@ -11,23 +11,12 @@
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
   </svg>
   <svg :width="width" :height="height" class="swoopy-arrow-group position-absolute" ref="svg_arrows">
-    <g ref="switchX" class="switch-x-button-group" transform="translate(0,0)">
-      <path class="swoopy-arrow" id="switch-x-btn-swoopy-arrow"></path>
-    </g>
     <g ref="switchY" class="switch-y-button-group" transform="translate(5,0)" v-if="loggable">
       <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
       <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
       <text class="switch-button" id="switch-y-btn-text"></text>
     </g>
   </svg>
-  <small class="d-flex position-absolute justify-content-end pr-5 x-axis-select" ref="xSelector">
-    <select v-model="xVariable" class="select-dropdown" @change="changeScale">
-      <option v-for="option in xVarOptions" :value="option.value" :key="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-  </small>
-
 </div>
 </template>
 
@@ -62,7 +51,6 @@ export default Vue.extend({
     data: Array,
     location: String,
     variableObj: Object,
-    xVariableInput: String,
     log: Boolean,
     percapita: Boolean,
     loggable: Boolean,
@@ -85,19 +73,6 @@ export default Vue.extend({
       // button interfaces
       isLogY: false,
       xVariable: "date",
-      xVarOptions: [{
-        value: "date",
-        label: "date"
-      }, {
-        value: "daysSince100Cases",
-        label: "days since 100 cases"
-      }, {
-        value: "daysSince10Deaths",
-        label: "days since 10 deaths"
-      }, {
-        value: "daysSince50Deaths",
-        label: "days since 50 deaths"
-      }],
       // axes
       numXTicks: 6,
       numYTicks: 6,
@@ -142,12 +117,6 @@ export default Vue.extend({
       immediate: true,
       handler(newVal, oldVal) {
         this.isLogY = this.loggable ? newVal : false;
-      },
-    },
-    xVariableInput: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.xVariable = newVal;
       },
     },
     width() {
@@ -210,7 +179,6 @@ export default Vue.extend({
           location: this.location,
           log: String(this.isLogY),
           variable: this.variable.replace("_per_100k", ""),
-          xVariable: this.xVariable,
           percapita: String(this.percapita)
         }
       });
@@ -292,19 +260,11 @@ export default Vue.extend({
         .y(d => this.y(d[this.variable]));
     },
     updateScales: function() {
-      if (this.xVariable == "date") {
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain(
             extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
           );
-      } else {
-        this.x = scaleLinear()
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain(
-            [0, max(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))]
-          );
-      }
 
       if (this.isLogY && this.loggable) {
         this.y = scaleLog()
@@ -343,31 +303,10 @@ export default Vue.extend({
 
       select(this.$refs.yAxis).call(this.yAxis);
 
-      // --- update x-scale switch button --
-      const dySwitch = -10;
+      // --- update y-scale switch button --
       const xSwoop = 30;
       const ySwoop = -35;
       const swoopOffset = 10;
-
-      select(this.$refs.switchX).select("path")
-        .attr("marker-end", "url(#arrow)")
-        .attr(
-          "d",
-          `M ${xSwoop + this.width - this.margin.right} ${this.height + ySwoop}
-          C ${xSwoop + this.width - this.margin.right*0.95 } ${this.height-45},
-          ${xSwoop + this.width - this.margin.right + 10} ${this.height -
-            this.margin.bottom +
-            18},
-          ${xSwoop + this.width - this.margin.right + ySwoop + 20} ${this.height -
-            this.margin.bottom +
-            15}`
-        );
-
-      // --- update y-scale switch button --
-      // const dySwitch = -10;
-      // const xSwoop = 30;
-      // const ySwoop = -35;
-      // const swoopOffset = 10;
       if (this.loggable) {
         this.switchBtn = select(this.$refs.switchY);
 

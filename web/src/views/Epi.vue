@@ -91,7 +91,7 @@
 
     <!-- curve -->
     <template v-if="plottedData && showCurves && !this.variable.includes('Increase')">
-      <EpiCurve class="row" id="curveContainer" :data="plottedData" :percapita="isPerCapita" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'"
+      <EpiCurve class="row" id="curveContainer" :data="plottedData" :percapita="isPerCapita" :location="location" :variableObj="variableObj" :log="isLogY" :loggable="variable != 'testing_positivity'"
         :percent="variable == 'testing_positivity'" :showAll="showAll" />
 
       <!-- source / download data -->
@@ -105,7 +105,7 @@
           <template v-if="metro.hasSubparts">
             <b>{{metro.key}}</b> metro area includes:
             <span v-for="(loc, idx) in metro.parts" :key="idx" class="line-height-1">
-              <router-link :to="{name: 'Epidemiology', query: {location: loc.location_id, log: log, variable: variable, xVariable: xVariable, percapita: percapita}}" v-if="variable">
+              <router-link :to="{name: 'Epidemiology', query: {location: loc.location_id, log: log, variable: variable, percapita: percapita}}" v-if="variable">
                 {{loc.county_name}}, {{loc.state_name}}</router-link>
               <span v-if="idx < metro.parts.length - 1">; </span>
             </span>
@@ -180,10 +180,6 @@ export default {
     log: {
       type: String,
       default: "false"
-    },
-    xVariable: {
-      type: String,
-      default: "date"
     },
     fixedY: {
       type: String,
@@ -371,7 +367,6 @@ export default {
             location: newLocation,
             log: String(this.isLogY),
             variable: this.variable,
-            xVariable: this.xVariable,
             fixedY: String(this.isFixedY),
             percapita: String(this.isPerCapita)
           }
@@ -430,7 +425,6 @@ export default {
             location: this.location,
             log: String(this.isLogY),
             variable: this.variable,
-            xVariable: this.xVariable,
             fixedY: String(this.isFixedY),
             percapita: String(this.isPerCapita)
           }
@@ -507,7 +501,6 @@ export default {
           location: this.location,
           log: String(this.isLogY),
           variable: this.variable,
-          xVariable: this.xVariable,
           fixedY: String(this.isFixedY),
           percapita: String(this.isPerCapita)
         }

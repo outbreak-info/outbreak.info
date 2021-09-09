@@ -1135,6 +1135,15 @@ const state = {
       }
     },
     {
+      date: new Date("2020-09-10 0:0"),
+      category: "deprecation",
+      title: "Removed the ability to normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
+      description: "Given that the pandemic has spanned over a year and a half, removed the option to shift the x-axis of epidemiology plots for simplicity.",
+      route: {
+        name: "Epidemiology"
+      }
+    },
+    {
       date: new Date("2020-04-21 0:0"),
       category: "data",
       title: "Add testing and hospitalization data for states in the United States",

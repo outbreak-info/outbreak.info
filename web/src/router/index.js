@@ -214,7 +214,6 @@ const routes = [{
     name: "Epidemiology",
     props: route => ({
       location: route.query.location,
-      xVariable: route.query.xVariable,
       variable: route.query.variable,
       log: route.query.log,
       fixedY: route.query.fixedY,
