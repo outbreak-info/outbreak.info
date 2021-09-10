@@ -115,7 +115,7 @@
     </div>
 
     <!-- table -->
-    <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
+    <EpiTable class="row overflow-auto mx-5" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
   </div>
 </div>
 </template>
