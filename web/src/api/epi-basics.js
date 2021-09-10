@@ -1,5 +1,6 @@
 import {
   from,
+  of ,
   forkJoin
 } from "rxjs";
 import axios from "axios";
@@ -37,6 +38,56 @@ import {
 import CURATED from "@/assets/genomics/curated_lineages.json";
 
 import store from "@/store";
+
+export function lookupEpiLocations(apiUrl, locationArr) {
+  if (locationArr.length) {
+    return from(
+      axios.get(
+        `${apiUrl}query?q=mostRecent:true AND location_id:(${locationArr.join(" OR ")})&size=1000&fields=name,location_id,country_name,state_name`
+      )
+    ).pipe(
+      pluck("data", "hits"),
+      map(results => {
+        results.forEach(d => {
+          d["label"] = d.state_name ? `${d.name}, ${d.state_name}` : d.country_name && d.country_name != d.name ? `${d.name}, ${d.country_name}` : d.name
+        })
+
+        // ensure the sort order is same as what was given
+        results.sort((a, b) => locationArr.indexOf(a.location_id) - locationArr.indexOf(b.location_id));
+
+        return (results)
+      }),
+      catchError(e => {
+        console.log("%c Error in epi locations!", "color: red");
+        console.log(e);
+        return from([]);
+      })
+    )
+  } else {
+    return ( of ([]))
+  }
+}
+
+export function findEpiLocation(apiUrl, query, num2Return = 5) {
+  return from(
+    axios.get(
+      `${apiUrl}query?q=mostRecent:true AND name:*${query}*&size=${num2Return}&fields=name,location_id,country_name,state_name`
+    )
+  ).pipe(
+    pluck("data", "hits"),
+    map(results => {
+      results.forEach(d => {
+        d["label"] = d.state_name ? `${d.name}, ${d.state_name}` : d.country_name && d.country_name != d.name ? `${d.name}, ${d.country_name}` : d.name
+      })
+      return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in epi locations!", "color: red");
+      console.log(e);
+      return from([]);
+    })
+  )
+}
 
 export function getLocations(apiUrl) {
   store.state.admin.loading = true;
