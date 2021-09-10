@@ -145,9 +145,7 @@ import {
   epiDataSubject,
   epiTableSubject
 } from "@/api/epi-traces.js";
-import {
-  getLocations
-} from "@/api/epi-basics.js";
+
 import {
   getLocation,
   processLocation
@@ -580,7 +578,6 @@ export default {
     window.removeEventListener("resize", this.setDims);
   },
   mounted() {
-    getLocations(this.$apiurl).subscribe(_ => null);
     this.setLocation(this.location);
     this.$nextTick(function() {
       window.addEventListener("resize", this.setDims);
