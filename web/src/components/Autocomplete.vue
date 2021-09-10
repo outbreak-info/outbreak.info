@@ -117,7 +117,6 @@ export default Vue.extend({
   methods: {
     updateSelected() {
       this.lookupSubscription = lookupEpiLocations(this.$apiurl, this.selected).subscribe(results => {
-        console.log(results)
         this.selectedItems = results.map(d => {
           return {
             label: d.label,

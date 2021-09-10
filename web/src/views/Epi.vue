@@ -5,7 +5,7 @@
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
   <!-- autocomplete region selector -->
-  <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
+  <Autocomplete class="m-auto" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <!-- too many to plot -->
   <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold && !variable.includes('Increase')">
     <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
