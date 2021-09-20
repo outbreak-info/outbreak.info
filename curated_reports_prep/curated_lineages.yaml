@@ -210,9 +210,9 @@ VOI:
         url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
         variantType: VOI
       - author: PHE
-        dateModified: 2021-04-01
+        dateModified: 2021-09-02
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/979818/Variants_of_Concern_VOC_Technical_Briefing_9_England.pdf
-        variantType: VOI
+        variantType: de-escalated
       - author: ECDC
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
         dateModified: 2021-09-03
@@ -288,6 +288,9 @@ VOI:
       - author: ECDC
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
         dateModified: 2021-09-03
+        variantType: de-escalated
+      - author: WHO
+        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
         variantType: de-escalated
 
 
