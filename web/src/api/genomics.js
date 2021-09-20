@@ -880,10 +880,11 @@ export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, ret
   })).pipe(
     pluck("data"),
     map(results => {
+      results = results["results"];
       if (returnFlat) {
         let res = Object.keys(results).map(
           mutation_key => {
-            let d = results[mutation_key]["results"];
+            let d = results[mutation_key];
             const first = parseDate(d.first_detected);
             const last = parseDate(d.last_detected);
 
@@ -1004,14 +1005,14 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
       "Content-Type": "application/json"
     }
   })).pipe(
-    pluck("data"),
+    pluck("data", "results"),
     map(hits => {
       const keys = Object.keys(hits);
       let results;
 
       if (returnFlat) {
         results = keys.map(key => {
-          hits[key]["results"].forEach(d => {
+          hits[key].forEach(d => {
             d["proportion_formatted"] = formatPercent(d.proportion);
             // Shim to fix confusion over dates, https://github.com/outbreak-info/outbreak.info/issues/247
             d["date_last_detected"] = d.date;
@@ -1020,7 +1021,7 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
             d["location_id"] = location == "Worldwide" ? `country_${d.name.replace(/\s/g, "")}` : d.name.replace(/\s/g, "");
             d["mutation_string"] = key;
           })
-          return (hits[key]["results"])
+          return (hits[key])
         })
         return (results.flatMap(d => d))
       } else {
@@ -1053,7 +1054,7 @@ export function getPositiveLocations(apiurl, queryStr, location, returnFlat = tr
       "Content-Type": "application/json"
     }
   })).pipe(
-    pluck("data"),
+    pluck("data", "results"),
     map(hits => {
       if (returnFlat) {
         const keys = Object.keys(hits);
@@ -1061,11 +1062,11 @@ export function getPositiveLocations(apiurl, queryStr, location, returnFlat = tr
           const results = keys.map(key => {
             return ({
               mutation_string: key,
-              names: hits[key]["results"]["names"]
+              names: hits[key]["names"]
             });
           })
         } else {
-          return (hits[keys[0]]["results"]["names"])
+          return (hits[keys[0]]["names"])
         }
       }
       return hits
@@ -1095,13 +1096,14 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
   })).pipe(
     pluck("data"),
     map(results => {
+      results = results["results"];
       if (returnFlat) {
         let res = Object.keys(results).map(
           mutation_key => {
             const filtered = CURATED.filter(d => d.char_muts_parent_query == mutation_key);
             const label = filtered.length === 1 ? filtered[0].label : mutation_key;
             // look up if the mutation key is a variant of concerned/named
-            let d = results[mutation_key]["results"];
+            let d = results[mutation_key];
             d.forEach(datum => {
               datum["dateTime"] = parseDate(datum.date);
               datum["mutation_string"] = mutation_key;
