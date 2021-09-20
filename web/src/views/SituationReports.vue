@@ -374,7 +374,8 @@
         </template>
         <div v-else id="de-escalated">
           <h4>De-escalated Variants</h4>
-          <small class="text-muted line-height-sm">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating
+          <small class="text-muted line-height-sm">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been
+            circulating
             for a long
             time without any impact on the
             overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
@@ -870,6 +871,11 @@ export default {
           id: "VUM",
           label: "Variant Under Monitoring",
           def: "Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy"
+        },
+        {
+          id: "de-escalated",
+          label: "De-escalated Variant",
+          def: "These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties"
         }
       ],
       mutationTypes: [{
@@ -1123,6 +1129,25 @@ $vum-color: #edc949;
     padding: 0 !important;
     & .border-inset {
         border-left: 4px solid $vum-color !important;
+        padding: 0 0.25rem 0 0.5rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+}
+
+$de-escalated: #bab0ab;
+.de-escalated-logo {
+    background: lighten($de-escalated, 18%);
+    color: darken($de-escalated, 20%);
+    height: 2.5rem;
+}
+
+.de-escalated-bg {
+    background: lighten($de-escalated, 23%);
+    padding: 0 !important;
+    & .border-inset {
+        border-left: 4px solid $de-escalated!important;
         padding: 0 0.25rem 0 0.5rem;
         height: 100%;
         display: flex;

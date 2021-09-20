@@ -63,9 +63,9 @@ VOC:
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/959438/Technical_Briefing_VOC_SH_NJL2_SH2.pdf
         variantType: VOC
       - author: ECDC
-        dateModified: 2020-12-29
+        dateModified: 2021-09-03
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        variantType: VOC
+        variantType: de-escalated
 
   - who_name: Beta
     pangolin_lineage: B.1.351
@@ -153,7 +153,8 @@ VOI:
         variantType: VOI
       - author: ECDC
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        variantType: VOI
+        dateModified: 2021-09-03
+        variantType: de-escalated
     location_first_identified: England, Nigeria
     selected: NGA
     loc:
@@ -214,7 +215,8 @@ VOI:
         variantType: VOI
       - author: ECDC
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        variantType: VOI
+        dateModified: 2021-09-03
+        variantType: de-escalated
 
 
   - who_name: Lambda
@@ -285,7 +287,8 @@ VOI:
         variantType: VOI
       - author: ECDC
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        variantType: VOI
+        dateModified: 2021-09-03
+        variantType: de-escalated
 
 
   - pangolin_lineage: B.1.1.318
@@ -413,10 +416,6 @@ deescalated:
       - USA
       - USA_US-CA
     selected: BRA
-    classifications:
-      - author: ECDC
-        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        variantType: VUM
   - pangolin_lineage: AV.1
     phe_name: VUI-21MAY-01
     dateModified: 2021-06-01
