@@ -539,6 +539,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-09-20 0:0"),
+      category: "variants",
+      title: "Updated ECDC's classification of B.1.1.7, B.1.525, B.1.617.1, P.2, P.3 & PHE's classification of B.1.617.1 as De-escalated Variants",
+      description: 'Based on the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">ECDC</a> classification, updated their classification of B.1.1.7/Alpha, B.1.525/Eta, B.1.617.1/Kappa, P.2/Zeta, and P.3/Theta and the classification of B.1.617.1/Kappa by <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1014926/Technical_Briefing_22_21_09_02.pdf" target="_blank">PHE</a> as De-escalated Variants.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-08-23 0:0"),
       category: "variants",
       title: "Outbreak.info, CDC, and ECDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
