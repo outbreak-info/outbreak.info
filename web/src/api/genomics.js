@@ -459,8 +459,6 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
     getLocationPrevalence(apiurl, queryStr, location)
   ]).pipe(
     map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev, longitudinal, longitudinalSublineages, countries, states, choroData]) => {
-      console.log(mutationDetails)
-      console.log(mutationsByLineage)
       // attach names to cum prevalences
       locPrev.forEach(d => {
         const filtered = locations.filter(loc => loc.id === d.location_id);
