@@ -550,6 +550,15 @@ const state = {
     {
       date: new Date("2021-09-22 0:0"),
       category: "variants",
+      title: "Updated WHO's classification of B.1.1.7, B.1.351, P.1, B.1.427, B.1.429, B.1.525, B.1.617.1, B.1.617.3, B.1.621, and P.2 as VUMs",
+      description: 'Based on the updated <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/" target="_blank">WHO</a> classification, changing WHO classification of  from Variant of Interest to Variant Under Monitoring.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-09-22 0:0"),
+      category: "variants",
       title: "Updated CDC's classification of B.1.1.7, B.1.351, P.1, B.1.427, B.1.429, B.1.525, B.1.617.1, B.1.617.3, B.1.621, and P.2 as VUMs",
       description: 'Based on the updated <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification, changing CDC classification of B.1.1.7/Alpha, B.1.351/Beta, and P.1/Gamma from Variant of Concern to Variant Under Monitoring and all CDC Variants of Interest as Variants Under Monitoring (B.1.427 and B.1.429/Epsilon, B.1.525/Eta, B.1.526/Iota, B.1.617.1/Kappa, B.1.617.3, B.1.621/Mu, and P.2/Zeta).',
       route: {

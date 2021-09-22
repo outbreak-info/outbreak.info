@@ -148,9 +148,9 @@ VOI:
         variantType: VUM
         dateModified: 2021-09-21
       - author: WHO
-        dateModified: 2021-03-17
+        dateModified: 2021-09-21
         url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-        variantType: VOI
+        variantType: VUM
       - author: PHE
         dateModified: 2021-02-12
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf
@@ -177,9 +177,9 @@ VOI:
     selected: USA_US-NY
     classifications:
         - author: WHO
-          dateModified: 2021-03-24
+          dateModified: 2021-09-21
           url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VOI
+          variantType: VUM
         - author: CDC
           url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
           variantType: VUM
@@ -208,9 +208,9 @@ VOI:
     selected: IND
     classifications:
       - author: WHO
-        dateModified: 2021-04-04
+        dateModified: 2021-09-21
         url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-        variantType: VOI
+        variantType: VUM
       - author: CDC
         url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
         variantType: VUM
@@ -262,7 +262,7 @@ VOI:
       - author: CDC
         url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
         variantType: VUM
-        dateModified: 2021-09-21      
+        dateModified: 2021-09-21
       - author: WHO
         variantType: VOI
         dateModified: 2021-08-30
@@ -419,6 +419,9 @@ deescalated:
           url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
           variantType: VUM
           dateModified: 2021-09-21
+        - author: WHO
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VUM
   - who_name: Zeta
     pangolin_lineage: P.2
     related:
