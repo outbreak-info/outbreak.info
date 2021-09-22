@@ -60,7 +60,8 @@ import store from "@/store";
 
 axios.interceptors.request.use(function(config) {
   // Pass GISAID param to API via headers
-  config.headers.Authorization = process.env.VUE_APP_API_ACCESS
+  config.headers.Authorization = `Bearer ${process.env.VUE_APP_API_ACCESS}`;
+  console.log(process.env.VUE_APP_API_ACCESS);
   return config;
 }, function(error) {
   return Promise.reject(error);
