@@ -492,8 +492,10 @@ export default {
       // selectedNdays: 60,
       selectedWindow: 60,
       queryLocation: null,
-      voi: null,
+      voi: null, // array of all the VOIs, including sublineages
+      voi_parent: null, // just the main lineages -- one lineage per VOI/VOC, such as Alpha, Beta, Gamma, Delta...
       voc: null,
+      voc_parent: null,
       moi: null,
       moc: null,
       geneOpts: [
@@ -576,8 +578,8 @@ export default {
   methods: {
     addVOCs(clear = true) {
       // remove lineages w/ additional mutations
-      this.selectedPango = clear ? this.voc :
-        this.voc.concat(this.selectedPango);
+      this.selectedPango = clear ? this.voc_parent :
+        this.voc_parent.concat(this.selectedPango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
@@ -602,8 +604,8 @@ export default {
     },
     addVOIs(clear = true) {
       // remove lineages w/ additional mutations
-      this.selectedPango = clear ? this.voi :
-        this.voi.concat(this.selectedPango);
+      this.selectedPango = clear ? this.voi_parent :
+        this.voi_parent.concat(this.selectedPango);
       this.selectedPango = uniq(this.selectedPango);
 
       this.showSnackbar = true;
@@ -671,7 +673,9 @@ export default {
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
+        this.voc_parent = results.voc_parent;
         this.voi = results.voi;
+        this.voi_parent = results.voi_parent;
       })
     },
     routeDark() {
@@ -689,7 +693,7 @@ export default {
       })
     },
     addMutations() {
-      const selMutation = this.selectedMutationQuery.replace(/\s/g, "");
+      const selMutation = this.selectedMutationQuery.replace(/\s/g, "").split(",");
       this.lineageByMutationsSubscription = getComparisonByMutations(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, selMutation, this.selectedMutationThreshold / 100).subscribe(results => {
         this.showSnackbar = true;
         this.snackbarText = `${results.addedLength} lineages added`
@@ -700,7 +704,9 @@ export default {
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
+        this.voc_parent = results.voc_parent;
         this.voi = results.voi;
+        this.voi_parent = results.voi_parent;
 
         this.$router.push({
           name: "SituationReportComparison",
@@ -731,7 +737,9 @@ export default {
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
         this.voc = results.voc;
+        this.voc = results.voc_parent;
         this.voi = results.voi;
+        this.voi_parent = results.voi_parent;
 
         this.$router.push({
           name: "SituationReportComparison",

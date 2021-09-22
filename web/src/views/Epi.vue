@@ -452,6 +452,8 @@ export default {
     setLocation: function(locationString, nullLocationHandler) {
       if (locationString && locationString !== "") {
         const locations = locationString.split(";").map(d => d.trim());
+        console.log(locationString)
+        console.log(locations)
         this.selectedPlaces = locations;
         this.dataSubscription = getEpiData(
           this.$apiurl,

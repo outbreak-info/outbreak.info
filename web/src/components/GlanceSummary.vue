@@ -20,7 +20,7 @@
           }">
           <div class="d-flex align-items-end justify-content-start router-link-black mr-2 p-1">
             <div class="d-flex flex-column text-left">
-              <h6>cases</h6>
+              <h6>total cases</h6>
               <div class="muted">
                 <span class="accent">{{ cases }}</span>: today
               </div>
@@ -53,7 +53,7 @@
   }">
           <div class="d-flex align-items-end justify-content-start router-link-black ml-2 p-1 pl-2" id="deaths">
             <div class="d-flex flex-column text-left">
-              <h6>deaths</h6>
+              <h6>total deaths</h6>
               <div class="muted">
                 <span class="accent">{{ deaths }}</span>: today
               </div>
@@ -115,7 +115,7 @@
     <router-link :to="{name: 'LocationReport', query:{ loc: data.location_id }}" class="no-underline">
       <div class="d-flex flex-column router-link-black mini-graphs mt-2 p-1">
         <div class="d-flex justify-content-between align-items-center">
-          Variants of Concern &amp; Interest
+          Variants of Concern
           <small class="text-muted" v-if="data.voc">Cumulative prevalence since detection</small>
         </div>
         <div class="d-flex flex-wrap" v-if="data.voc">

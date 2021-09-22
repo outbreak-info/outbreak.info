@@ -39,24 +39,29 @@
 
         </td>
       </tr>
-      <tr class="border-top border-bottom" :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
-        <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'voi': lineageGroup.key == 'Variant of Interest'}">
+      <tr class="border-top border-bottom"
+        :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'vum': lineageGroup.key == 'Variant under Monitoring',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
+        <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'vum': lineageGroup.key == 'Variant under Monitoring',  'voi': lineageGroup.key == 'Variant of Interest'}">
           {{lineageGroup.key}}
           <!-- <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" /> -->
         </td>
 
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
-        <td>
-          <router-link :to="{name: 'MutationReport', query: lineage.route }">
+        <td class="text-left line-height-1">
+          <router-link class="variant-table" :to="{name: 'MutationReport', params: lineage.params, query: lineage.route }" :data-tippy-info="lineage.tooltip">
             {{ lineage.label }}
           </router-link>
+          <!-- <small class="text-muted pointer variant-expand" :data-tippy-info="`show ${lineage.label} sublineages`" @click="showSublineages(lineage)">
+            <font-awesome-icon class="fa-sm ml-1" :icon="['far', 'plus-square']" />
+          </small> -->
         </td>
         <td>
           {{ lineage.lineage_count_formatted }}
         </td>
         <td :class="{'text-muted' : lineage.proportion_formatted == 'no estimate' || lineage.proportion_formatted == 'not detected'}">
-          <span :class="{'no-estimate' : lineage.proportion_formatted == 'no estimate'}" :data-tippy-info="`Prevalence estimates are unreliable since only ${lineage.total_count} ${lineage.total_count === 1 ? 'sample has' : 'samples have'} been sequenced since ${lineage.label} detection in ${locationName}`">{{ lineage.proportion_formatted }}</span>
+          <span :class="{'no-estimate' : lineage.proportion_formatted == 'no estimate'}"
+            :data-tippy-info="`Prevalence estimates are unreliable since only ${lineage.total_count} ${lineage.total_count === 1 ? 'sample has' : 'samples have'} been sequenced since ${lineage.label} detection in ${locationName}`">{{ lineage.proportion_formatted }}</span>
         <td class="spacer">
 
         </td>
@@ -93,19 +98,46 @@ import "tippy.js/themes/light.css";
 //   library
 // } from "@fortawesome/fontawesome-svg-core";
 // import {
-//   faSync
-// } from "@fortawesome/free-solid-svg-icons/faSync";
+//   faPlusSquare
+// } from "@fortawesome/free-regular-svg-icons/faPlusSquare";
 //
-// library.add(faSync);
+// library.add(faPlusSquare);
 
 export default {
   name: "LocationTable",
+  components: {
+    // FontAwesomeIcon
+  },
   props: {
     data: Array,
     locationID: String,
     locationName: String
   },
   mounted() {
+    tippy(".variant-table", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+
+    tippy(".variant-expand", {
+      content: "Loading...",
+      maxWidth: "200px",
+      placement: "bottom",
+      animation: "fade",
+      theme: "light",
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      }
+    });
+
     tippy(".no-estimate", {
       content: "Loading...",
       maxWidth: "200px",
@@ -133,9 +165,12 @@ th.padded {
 
 .checkbook td,
 .custom td,
+.moc,
+.moi,
 .padding,
 .voc,
-.voi, .moc, .moi {
+.voi,
+.vum {
     padding: 0.5rem;
     text-align: center;
 }

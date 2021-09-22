@@ -132,7 +132,7 @@ import debounce from "lodash/debounce";
 export default Vue.extend({
   name: "CustomReportForm",
   props: {
-    selectedLineage: String,
+    selectedLineage: Object,
     selectedMutations: Array,
     submitted: Number,
     minimalistic: {
@@ -163,7 +163,7 @@ export default Vue.extend({
   computed: {
     title() {
       if (this.selectedLineage) {
-        return this.selectedMutations.length ? `${this.selectedLineage} lineage with ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage} lineage`;
+        return this.selectedMutations.length ? `${this.selectedLineage.name} lineage with ${this.selectedMutations.map(d => d.mutation).join(", ")}` : `${this.selectedLineage.name} lineage`;
       } else {
         return (this.selectedMutations.length > 1 ? this.selectedMutations.map(d => d.mutation).join(", ") + " Variant" : this.selectedMutations.map(d => d.mutation).join(", ") + " Mutation")
       }
@@ -181,7 +181,7 @@ export default Vue.extend({
   methods: {
     updatePangolin(selected) {
       selected ?
-        this.$emit("update:selectedLineage", selected.name) :
+        this.$emit("update:selectedLineage", selected) :
         this.$emit("update:selectedLineage", null);
     },
     changeBulk() {

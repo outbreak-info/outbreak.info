@@ -14,7 +14,6 @@
     </defs>
     <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
     <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
-    <g ref="yAxisLeft" class="axis axis--y" :transform="`translate(${this.margin.left - 5}, ${this.margin.top})`"></g>
     <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
     <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
   </svg>
@@ -62,8 +61,6 @@ import {
   select,
   selectAll,
   scaleBand,
-  axisLeft,
-  axisRight,
   axisBottom,
   axisTop,
   transition,
@@ -75,6 +72,9 @@ import {
 
 
 import chroma from "chroma-js";
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+
 
 export default Vue.extend({
   name: "MutationHeatmap",
@@ -140,7 +140,7 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 195,
+        right: 225,
         bottom: 72,
         left: 153
       },
@@ -154,13 +154,13 @@ export default Vue.extend({
       interestColor: "#feb56c",
       concernColorDark: "#e15759",
       interestColorDark: "#f28e2c",
+      lineageWarningThreshold: 1000,
       // scales
       x: scaleBand(),
       y: scaleBand(),
       paddingInner: 0.1,
       xAxisTop: null,
       xAxisBottom: null,
-      yAxisLeft: null,
       width: null,
       height: null,
       colorScale: interpolateRdPu,
@@ -177,6 +177,23 @@ export default Vue.extend({
   mounted() {
     this.setupPlot();
     this.updatePlot();
+    this.$nextTick(function() {
+      tippy(this.svg.selectAll(".low-count").nodes(), {
+        content: "Loading...",
+        maxWidth: "200px",
+        placement: "bottom",
+        animation: "fade",
+        theme: "light",
+        allowHTML: true,
+        interactive: true,
+        appendTo: document.body,
+        onShow(instance) {
+          let info = instance.reference.dataset.tippyInfo;
+          instance.setContent(info);
+        }
+      });
+    })
+
   },
   methods: {
     setupDims() {
@@ -216,10 +233,8 @@ export default Vue.extend({
       if (!this.onlyTopAxis) {
         this.xAxisBottom = axisBottom(this.x).tickSizeOuter(0);
         select(this.$refs.xAxisBottom).call(this.xAxisBottom);
-
-        this.yAxisLeft = axisLeft(this.y).tickSizeOuter(0);
-        select(this.$refs.yAxisLeft).call(this.yAxisLeft);
       }
+
       this.xAxisTop = axisTop(this.x).tickSizeOuter(0);
       select(this.$refs.xAxisTop).call(this.xAxisTop);
 
@@ -228,10 +243,13 @@ export default Vue.extend({
           const obj = {};
           obj[this.xVar] = x;
           obj[this.yVar] = y;
-          obj["id"] = `base_${x.replace(/\//g, "_")}-${y.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`;
+          obj["id"] = `base_${this.cleanSelectors(x)}-${this.cleanSelectors(y)}`;
           return (obj)
         })
       }).flatMap(d => d)
+    },
+    cleanSelectors(id) {
+      return(id.replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\./g, "_"))
     },
     prepData() {
       this.plottedData = cloneDeep(this.data);
@@ -327,16 +345,15 @@ export default Vue.extend({
       this.svg
         .selectAll(".y-axis-right")
         .style("opacity", 0.2);
-
-      select(this.$refs.yAxisLeft)
-        .selectAll("text")
+      this.svg
+        .selectAll(".y-axis-left")
         .style("opacity", 0.2);
 
       this.svg
         .selectAll("rect")
         .style("fill-opacity", 0.2);
 
-      this.svg.selectAll(`.${d.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
+      this.svg.selectAll(`.${this.cleanSelectors(d)}`)
         .style("fill-opacity", 1)
         .style("opacity", 1)
     },
@@ -353,7 +370,7 @@ export default Vue.extend({
         .selectAll("rect")
         .style("fill-opacity", 0.2);
 
-      this.svg.selectAll(`.${d.replace(/\//g, "_")}`)
+      this.svg.selectAll(`.${this.cleanSelectors(d)}`)
         .style("fill-opacity", 1)
         .style("opacity", 1)
     },
@@ -366,8 +383,8 @@ export default Vue.extend({
         .selectAll("text")
         .style("opacity", 1);
 
-      select(this.$refs.yAxisLeft)
-        .selectAll("text")
+      this.svg
+        .selectAll(".y-axis-left")
         .style("opacity", 1);
 
       this.svg
@@ -378,26 +395,53 @@ export default Vue.extend({
         .selectAll("rect")
         .style("fill-opacity", 1);
     },
-    route2Lineage(pango) {
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          loc: this.locationID,
-          pango: pango,
-          selected: this.locationID
-        }
-      })
+    route2Lineage(pango, is_alias) {
+      if (is_alias) {
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: pango.toLowerCase()
+          },
+          query: {
+            loc: this.locationID,
+            selected: this.locationID
+          }
+        })
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            loc: this.locationID,
+            pango: pango,
+            selected: this.locationID
+          }
+        })
+      }
     },
     route2LineageMutation(d) {
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          loc: this.locationID,
-          pango: d[this.yVar],
-          muts: d.mutation,
-          selected: this.locationID
-        }
-      })
+      if (d.is_alias) {
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: d[this.yVar].toLowerCase()
+          },
+          query: {
+            loc: this.locationID,
+            muts: d.mutation,
+            selected: this.locationID
+          }
+        })
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            loc: this.locationID,
+            pango: d[this.yVar],
+            muts: d.mutation,
+            selected: this.locationID
+          }
+        })
+      }
     },
     route2Mutation(mut) {
       this.$router.push({
@@ -462,7 +506,7 @@ export default Vue.extend({
         enter => {
           enter
             .append("rect")
-            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
+            .attr("class", d => `heatmap pointer ${this.cleanSelectors(d[this.xVar])} ${this.cleanSelectors(d[this.yVar])}`)
             .attr("id", d => d.id)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
@@ -476,7 +520,7 @@ export default Vue.extend({
         },
         update => {
           update.attr("id", d => d.id)
-            .attr("class", d => `heatmap pointer ${d[this.xVar].replace(/\//g, "_")} ${d[this.yVar].replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
+            .attr("class", d => `heatmap pointer ${this.cleanSelectors(d[this.xVar])} ${this.cleanSelectors(d[this.yVar])}`)
             .attr("x", d => this.x(d[this.xVar]))
             .attr("width", this.x.bandwidth())
             .attr("y", d => this.y(d[this.yVar]))
@@ -494,8 +538,20 @@ export default Vue.extend({
 
       const yDomainFull = nest()
         .key(d => d[this.yVar])
-        .rollup(values => values[0].lineage_count)
-        .entries(this.data);
+        .rollup(values => {
+          return ({
+            is_alias: values[0].is_alias,
+            count: values[0].lineage_count
+          })
+        })
+        .entries(this.data)
+        .map(d => {
+          return ({
+            key: d.key,
+            value: d.value.count,
+            is_alias: d.value.is_alias
+          })
+        });
 
       if (!this.onlyTopAxis) {
         const yAxisRightSelector = this.heatmap
@@ -504,7 +560,7 @@ export default Vue.extend({
 
         yAxisRightSelector.join(enter => {
             const grp = enter.append("text")
-              .attr("class", d => `y-axis-right ${d.key.replace(/\./g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_")}`)
+              .attr("class", d => `y-axis-right ${this.cleanSelectors(d.key)}`)
               .attr("x", this.width)
               .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
               .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
@@ -521,7 +577,7 @@ export default Vue.extend({
               .style("font-size", 18)
               .attr("dx", 10)
               .text(d => d.key)
-              .on("click", d => this.route2Lineage(d.key));
+              .on("click", d => this.route2Lineage(d.key, d.is_alias));
 
             grp.append("tspan")
               .attr("class", "y-axis-count")
@@ -532,10 +588,24 @@ export default Vue.extend({
               .attr("dx", 7)
               // .attr("dx", -5)
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+
+            grp.append("tspan")
+              .attr("class", "fa fa-exclamation-circle")
+              .attr('font-family', "FontAwesome")
+              .attr("dx", 7)
+              .attr("data-tippy-info", d =>
+                `<span class='text-underline'>Warning</span>: currently, there are only <b>${d.value} sequences</b> reported for <b>${d.key}</b>. The characteristic mutations for ${d.key} may change as more sequences are reported. <a href='https://outbreak.info/situation-reports/methods#characteristic'>(read more)</a>`
+              )
+              .classed("hidden", d => d.value >= this.lineageWarningThreshold)
+              .classed("low-count", d => d.value < this.lineageWarningThreshold)
+              .style("font-size", 14)
+              .style("fill", "#D13B62")
+              .text("\uf06a");
+
           },
           update => {
             update
-              .attr("class", d => `y-axis-right ${d.key.replace(/\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
+              .attr("class", d => `y-axis-right ${this.cleanSelectors(d.key)}`)
               .attr("x", this.width)
               .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
 
@@ -546,6 +616,53 @@ export default Vue.extend({
             update.select(".y-axis-count")
               .style("fill", this.dark ? "#d2d2d2" : "#999")
               .text((d, i) => i === 0 ? `(${format(",")(d.value)} seqs)` : `(${format(",")(d.value)})`);
+
+            update.select(".fa-exclamation-circle")
+              .classed("hidden", d => d.value >= this.lineageWarningThreshold)
+              .classed("low-count", d => d.value < this.lineageWarningThreshold);
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          ))
+
+        const yAxisLeftSelector = this.heatmap
+          .selectAll(".y-axis-left")
+          .data(yDomainFull, d => d.key);
+
+        yAxisLeftSelector.join(enter => {
+            const grp = enter.append("text")
+              .attr("class", d => `y-axis-left ${this.cleanSelectors(d.key)}`)
+              .attr("x", 0)
+              .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2)
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("fill", this.textColor)
+              .style("text-anchor", "end")
+              .style("dominant-baseline", "central")
+              .on("mouseover", d => this.highlightRow(d.key))
+              .on("mouseout", this.highlightOff);
+
+            grp.append("tspan")
+              .attr("class", "y-axis-lineage")
+              .classed("hover-underline", "true")
+              .classed("pointer", "true")
+              .style("fill", d => this.voc.includes(d.key) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
+              .style("font-size", 18)
+              .attr("dx", -10)
+              .text(d => d.key)
+              .on("click", d => this.route2Lineage(d.key, d.is_alias));
+          },
+          update => {
+            update
+              .attr("class", d => `y-axis-left ${this.cleanSelectors(d.key)}`)
+              .attr("y", d => this.y(d.key) + this.y.bandwidth() / 2);
+
+            update.select(".y-axis-lineage")
+              .text(d => d.key)
+              .style("fill", d => this.voc.includes(d.key) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d.key) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor);
           },
           exit =>
           exit.call(exit =>
@@ -577,7 +694,7 @@ export default Vue.extend({
         .attr("transform", "rotate(-35)")
         .style("text-anchor", "start")
         .style("fill", d => this.moc.includes(d) ? (this.dark ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
-        .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
+        .attr("class", d => `hover-underline pointer ${this.cleanSelectors(d)}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
         .on("mouseout", this.highlightOff);
@@ -590,18 +707,10 @@ export default Vue.extend({
         .attr("transform", "rotate(35)")
         .style("text-anchor", "start")
         .style("fill", d => this.moc.includes(d) ? (this.dark ? this.concernColor : this.concernColorDark) : this.moi.includes(d) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
-        .attr("class", d => `hover-underline pointer ${d.replace(/\//g, "_")}`)
+        .attr("class", d => `hover-underline pointer ${this.cleanSelectors(d)}`)
         .on("click", d => this.route2Mutation(d))
         .on("mouseover", d => this.highlightColumn(d))
         .on("mouseout", this.highlightOff);;
-
-      select(this.$refs.yAxisLeft)
-        .selectAll("text")
-        .style("fill", d => this.voc.includes(d) ? (this.dark ? this.concernColor : this.concernColorDark) : this.voi.includes(d) ? (this.dark ? this.interestColor : this.interestColorDark) : this.textColor)
-        .attr("class", d => `hover-underline pointer ${d.replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\./g, "_")}`)
-        .on("click", d => this.route2Lineage(d))
-        .on("mouseover", d => this.highlightRow(d))
-        .on("mouseout", this.highlightOff);
     }
   }
 })

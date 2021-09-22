@@ -1,33 +1,46 @@
 <template>
 <div id="streamgraph">
   <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
-    <h5 class="m-0">Lineage prevalence over time</h5>
+    <h5 class="m-0">{{plotTitle}}</h5>
     <div class="d-flex justify-content-end">
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
-  </div>
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+        <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+      </button>
+    </div>
   </div>
 
   <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
+    <defs>
+      <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+        <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+        <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
+      </pattern>
+    </defs>
+
     <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
     </g>
+
     <g class="stream-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
     <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
     <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
   </svg>
 
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts && x" />
+  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="mutationName" className="lineages-by-location" :onlyTotals="onlyTotals" detectedColor="#79706E" notDetectedColor="#bab0ab"
+    v-if="seqCounts && seqCounts.length && x" />
 
   <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
 
   <div ref="tooltip_streamgraph" class="tooltip-basic box-shadow" id="tooltip-streamgraph">
     <h5 id="lineage" class="my-1"></h5>
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center" v-if="tooltipTotal">
+      Total found:
+      <b id="proportion" class="ml-1"></b>
+    </div>
+    <div class="d-flex align-items-center" v-else>
       Prevalence in the last {{ recentWindow }} days:
       <b id="proportion" class="ml-1"></b>
     </div>
@@ -74,11 +87,15 @@ import {
   transition,
   event,
   brushX,
+  timeParse,
+  timeFormat,
   extent,
+  min,
   max,
   format
 } from "d3";
 
+import cloneDeep from "lodash/cloneDeep";
 
 export default Vue.extend({
   name: "LineagesByLocation",
@@ -94,7 +111,31 @@ export default Vue.extend({
     recentWindow: String,
     location: String,
     recentMin: Date,
-    colorScale: Function
+    colorScale: Function,
+    setWidth: Number,
+    mutationName: String,
+    xmin: String,
+    xmax: String,
+    includeToday: {
+      type: Boolean,
+      default: true
+    },
+    routeName: {
+      type: String,
+      default: "LocationReport"
+    },
+    plotTitle: {
+      type: String,
+      default: "Lineage prevalence over time"
+    },
+    onlyTotals: {
+      type: Boolean,
+      default: true
+    },
+    tooltipTotal: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     title() {
@@ -103,10 +144,26 @@ export default Vue.extend({
   },
   watch: {
     width: function() {
+      this.setXScale();
       this.updateBrush();
       this.updatePlot();
     },
     data: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmin: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmax: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
       this.updatePlot();
     }
   },
@@ -116,25 +173,27 @@ export default Vue.extend({
       margin: {
         top: 18,
         bottom: 30,
-        left: 55,
-        right: 55
+        left: 85,
+        right: 135
       },
       marginHist: {
         top: 5,
         bottom: 10,
-        left: 55,
-        right: 55
+        left: 85,
+        right: 135
       },
       width: null,
       minWidth: 450,
       height: 500,
       // variables
       fillVar: "pangolin_lineage",
+      xVariable: "date_time",
       // axes
       x: null,
       y: scaleLinear(),
       xAxis: null,
       yAxis: null,
+      maxDate: null,
       numXTicks: 5,
       numYTicks: 5,
       // methods
@@ -143,6 +202,7 @@ export default Vue.extend({
       // data
       series: null,
       lineages: null,
+      plottedData: null,
       // refs
       chart: null,
       brushRef: null,
@@ -186,27 +246,67 @@ export default Vue.extend({
       let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
       const pageContainer = document.getElementById('location-report')
       let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
-      const idealWidth = (maxWidth - containerWidth)*0.95;
-      this.width = idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
+      const idealWidth = (maxWidth - containerWidth) * 0.95;
+
+      this.width = this.setWidth ? this.setWidth : idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
 
       this.numXTicks = this.width < 500 ? 2 : 5;
     },
     setupPlot() {
+      // read in the limits from the route params
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+
       this.svg = select(this.$refs.svg);
       this.legend = select(this.$refs.legend);
       this.chart = select(this.$refs.chart);
       this.brushRef = select(this.$refs.brush);
 
       this.area = area()
-        .x(d => this.x(d.data.date_time))
+        .x(d => this.x(d.data[this.xVariable]))
         .y0(d => this.y(d[0]))
         .y1(d => this.y(d[1]));
+
+      this.setXScale();
     },
-    updateScales() {
+    setXScale() {
+      let xDomain;
+
+      if (this.xMin && this.xMax && this.xMin < this.xMax) {
+        xDomain = [this.xMin, this.xMax];
+      } else {
+        if (this.includeToday) {
+          const today = new Date();
+          this.maxDate = max(this.data, d => d[this.xVariable]);
+          xDomain = [min(this.data, d => d[this.xVariable]), today];
+        } else {
+          xDomain = extent(this.data.map(d => d[this.xVariable]));
+        }
+
+        if (this.xMin && this.xMin < xDomain[1]) {
+          xDomain[0] = this.xMin;
+        }
+
+        if (this.xMax && this.xMax > xDomain[0]) {
+          xDomain[1] = this.xMax;
+        }
+      }
+
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map(d => d.date_time)))
-        .clamp(true);
+        .domain(xDomain);
+
+      this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
+        .ticks(this.numXTicks);
+
+      select(this.$refs.xAxis).call(this.xAxis);
+
+      this.plottedData = cloneDeep(this.data);
+
+      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1]);
+    },
+    updateScales() {
 
       this.y = this.y
         // .range([0, this.height - this.margin.top - this.margin.bottom])
@@ -214,12 +314,7 @@ export default Vue.extend({
         .nice()
         .domain([0, 1]);
 
-      this.lineages = Object.keys(this.data[0]).filter(d => d != "date_time");
-
-      this.xAxis = axisBottom(this.x)
-        .ticks(this.numXTicks);
-
-      select(this.$refs.xAxis).call(this.xAxis);
+      this.lineages = Object.keys(this.data[0]).filter(d => d != this.xVariable);
 
       this.yAxis = axisLeft(this.y).tickSizeOuter(0)
         .ticks(this.numYTicks)
@@ -229,12 +324,12 @@ export default Vue.extend({
       this.series = stack()
         .keys(this.lineages)
         .order(stackOrderInsideOut)
-        (this.data)
+        (this.plottedData)
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
     updatePlot() {
-      if (this.data && this.colorScale) {
+      if (this.plottedData && this.colorScale) {
         this.updateScales();
         this.drawPlot();
       }
@@ -250,6 +345,9 @@ export default Vue.extend({
       selectAll(".stacked-bar-chart")
         .style("fill-opacity", 0.2);
 
+      this.chart.selectAll(".no-data")
+        .style("fill-opacity", 0);
+
       // turn on the selected region
       this.chart.select(`#area_${key.replace(/\./g, "-")}`)
         .style("fill-opacity", 1);
@@ -263,12 +361,22 @@ export default Vue.extend({
         .text(key)
 
       const recentPrev = this.recentData[key];
-      if (recentPrev) {
-        ttip.select("#proportion")
-          .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+      if (this.tooltipTotal) {
+        if (recentPrev) {
+          ttip.select("#proportion")
+            .text(format(",")(recentPrev))
+        } else {
+          ttip.select("#proportion")
+            .text('')
+        }
       } else {
-        ttip.select("#proportion")
-          .text('Grouped into "other" category')
+        if (recentPrev) {
+          ttip.select("#proportion")
+            .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+        } else {
+          ttip.select("#proportion")
+            .text('Grouped into "other" category')
+        }
       }
 
       // fix location
@@ -278,6 +386,9 @@ export default Vue.extend({
         .style("display", "block");
     },
     tooltipOff() {
+      this.chart.selectAll(".no-data")
+        .style("fill-opacity", 1);
+
       this.chart
         .selectAll(".stacked-area-chart")
         .style("stroke", "#555")
@@ -299,8 +410,12 @@ export default Vue.extend({
 
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax])
-          .clamp(true);
+          .domain([newMin, newMax]);
+
+
+        this.plottedData = cloneDeep(this.data);
+
+        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
 
         // reset the axis
         this.xAxis = axisBottom(this.x)
@@ -312,18 +427,128 @@ export default Vue.extend({
         this.brushRef.call(this.brush.move, null);
         this.zoomAllowed = false;
         this.drawPlot();
+
+        // update the url
+        const queryParams = this.$route.query;
+        if (this.routeName == "MutationReport") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: this.routeName,
+            params: {
+              disableScroll: true,
+              alias: params.alias
+            },
+            query: {
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        }
+
+        if (this.routeName == "LocationReport") {
+          this.$router.push({
+            name: "LocationReport",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              alias: queryParams.alias,
+              pango: queryParams.pango,
+              variant: queryParams.variant,
+              selected: queryParams.selected
+            }
+          })
+        }
       }
 
     },
     resetZoom() {
-      this.x = this.x.domain(extent(this.data.map(d => d.date_time)));
       this.brushRef.call(this.brush.move, null);
+      const queryParams = this.$route.query;
+
+      this.xMin = null;
+      this.xMax = null;
+      this.setXScale();
+
+      if (this.routeName == "MutationReport") {
+        const params = this.$route.params;
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected
+          }
+        })
+      }
+
+      if (this.routeName == "LocationReport") {
+        this.$router.push({
+          name: "LocationReport",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected
+          }
+        })
+      }
       this.updatePlot();
     },
     enableZoom() {
       this.zoomAllowed = true;
     },
     drawPlot() {
+      if (this.includeToday) {
+        const noDataSelector = this.chart
+          .selectAll(".no-data")
+          .data([0]);
+
+        noDataSelector.join(
+          enter => {
+            enter.append("rect")
+              .attr("class", "no-data")
+              .attr("x", 0)
+              .attr("width", this.width - this.margin.left - this.margin.right)
+              .attr("height", this.height - this.margin.top - this.margin.bottom)
+              .style("fill", "url(#diagonalHatchLight)")
+          },
+          update => {
+            update
+              .attr("x", 0)
+              .attr("width", this.width - this.margin.left - this.margin.right)
+              .attr("height", this.height - this.margin.top - this.margin.bottom)
+              .style("fill", "url(#diagonalHatchLight)")
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
+        )
+      }
+
+
       const areaSelector = this.chart
         .selectAll(".stacked-area-chart")
         .data(this.series);
@@ -335,6 +560,9 @@ export default Vue.extend({
                 key
               }) => this.colorScale(key))
               .attr("class", "stacked-area-chart")
+              .classed("pointer", ({
+                key
+              }) => key.toLowerCase() != "other")
               .attr("id", ({
                 key
               }) => `area_${key.replace(/\./g, "-")}`)
@@ -362,78 +590,97 @@ export default Vue.extend({
         )
 
       // annotation for the most recent date
-      const recentSelector = this.chart
-        .selectAll(".recent-date-annotation")
-        .data([this.recentMin]);
+      if (this.recentMin) {
+        const recentSelector = this.chart
+          .selectAll(".recent-date-annotation")
+          .data([this.recentMin]);
 
-      const t1 = transition().duration(500);
+        const t1 = transition().duration(500);
 
-      recentSelector.join(
-        enter => {
-          const grp = enter.append("g")
-            .attr("class", "recent-date-annotation");
+        recentSelector.join(
+          enter => {
+            const grp = enter.append("g")
+              .attr("class", "recent-date-annotation");
 
-          grp.append("line")
-            .attr("class", "annotation-line")
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d))
-            .attr("y1", 0)
-            .attr("y2", this.height)
-            .style("stroke", "white")
-            .style("stroke-dasharray", "6,6");
+            grp.append("line")
+              .attr("class", "annotation-line")
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
+              .attr("y1", 0)
+              .attr("y2", this.height)
+              .style("stroke", "white")
+              .style("stroke-dasharray", "6,6");
 
-          grp.append("line")
-            .attr("class", "text-line")
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d))
-            .attr("y1", 0)
-            .attr("y2", -5)
-            .style("stroke", "#2c3e50")
+            grp.append("line")
+              .attr("class", "text-line")
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
+              .attr("y1", 0)
+              .attr("y2", -5)
+              .style("stroke", "#2c3e50")
 
-          grp.append("text")
-            .attr("x", d => this.x(d))
-            .attr("y", 0)
-            .attr("dy", -8)
-            .text(`${this.recentWindow} days`)
-            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
-            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-            .style("dominant-baseline", "text-top")
-            .style("font-size", "9pt");
-        },
-        update => {
-          update.select(".annotation-line")
-            .attr("y1", 0)
-            .attr("y2", this.height)
-            .transition(t1)
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d));
+            grp.append("text")
+              .attr("x", d => this.x(d))
+              .attr("y", 0)
+              .attr("dy", -8)
+              .text(`${this.recentWindow} days`)
+              .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              .style("dominant-baseline", "text-top")
+              .style("font-size", "9pt");
+          },
+          update => {
+            update.select(".annotation-line")
+              .attr("y1", 0)
+              .attr("y2", this.height)
+              .transition(t1)
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d));
 
-          update.select(".text-line")
-            .transition(t1)
-            .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d))
+            update.select(".text-line")
+              .transition(t1)
+              .attr("x1", d => this.x(d))
+              .attr("x2", d => this.x(d))
 
-          update.select("text")
-            .text(`${this.recentWindow} days`)
-            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
-            .transition(t1)
-            .attr("x", d => this.x(d));
-        },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition()
-          .style("opacity", 1e-5)
-          .remove()
+            update.select("text")
+              .text(`${this.recentWindow} days`)
+              .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+              .transition(t1)
+              .attr("x", d => this.x(d));
+          },
+          exit =>
+          exit.call(exit =>
+            exit
+            .transition()
+            .style("opacity", 1e-5)
+            .remove()
+          )
         )
-      )
+      }
 
       this.chart
         .selectAll(".stacked-area-chart")
         .on("mousemove", ({
           key
         }) => this.tooltipOn(key))
-        .on("mouseleave", this.tooltipOff)
+        .on("click", ({
+          key
+        }) => this.route2Mutation(key))
+        .on("mouseleave", this.tooltipOff);
+    },
+    route2Mutation(d) {
+      if (d.toLowerCase() != "other") {
+        const queryParams = this.$route.query;
+        const selected = this.routeName == "LocationReport" ? queryParams.loc : queryParams.selected;
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            pango: d,
+            loc: queryParams.loc,
+            selected: selected
+          }
+        })
+      }
     },
     debounce(fn, delay) {
       var timer = null;
@@ -457,7 +704,7 @@ export default Vue.extend({
 <style lang="scss">
 .lineages-by-location {
     .axis--x text {
-        font-size: 16pt;
+        font-size: 16pt !important;
     }
     .axis--y text {
         font-size: 9pt;

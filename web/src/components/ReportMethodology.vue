@@ -63,7 +63,7 @@
       <h2>Lineages</h2>
       <h4 id="lineages">Lineage assignment</h4>
       <p>
-        PANGO lineage classification for each individual sequence was provided by GISAID.
+        PANGO lineage classification for each individual sequence was provided by GISAID. Note that classifications of newer lineages, including Delta, by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are in flux and may change. While underlying sequence data remains the same, reports for specific lineages may change. Read more from the Pango team on <a href="https://cov-lineages.org/FAQ.html" target="_blank">why a lineage assignment might change</a> and an explanation about the <a href="https://www.pango.network/new-ay-lineages/" target="_blank">AY lineage series</a>.
       </p>
 
       <h4 id="characteristic">Characteristic mutations of a lineage</h4>

@@ -294,7 +294,8 @@ export default {
 
         this.filteredData.forEach(d => {
           const filtered = this.data.filter(seq => seq.name.toLowerCase() == d.properties.NAME.toLowerCase());
-          if (filtered.length == 1) {
+          if (filtered.length > 0) {
+            filtered.sort((a,b) => b.cum_total_count - a.cum_total_count)
             const seq = filtered[0];
             d[this.variable] = seq[this.variable];
             // filter values with too few values
@@ -500,7 +501,7 @@ export default {
       if (d.proportion || d.proportion === 0) {
         ttip.select("#no-sequencing").classed("hidden", true);
         ttip.select("#proportion")
-          .text(d.proportion_formatted)
+          .text(`${d.proportion_formatted} ${this.mutationName}`)
           .classed("hidden", false);
 
         ttip.select("#confidence-interval")
@@ -508,7 +509,7 @@ export default {
           .classed("hidden", false);
 
         ttip.select("#sequencing-count")
-          .text(`Number of total cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
+          .text(`Number of total ${this.mutationName} cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
           .classed("hidden", false);
 
       } else {
@@ -541,12 +542,14 @@ export default {
     route2Location(id) {
       if (this.report == "variant") {
         const query = this.$route.query;
+        const params = this.$route.params;
         let locs = query.loc ? (typeof(query.loc) == "string" ? [query.loc] : query.loc) : [];
         locs.push(id);
         this.$router.push({
           name: "MutationReport",
           params: {
-            disableScroll: true
+            disableScroll: true,
+            alias: params.alias
           },
           query: {
             pango: query.pango,
@@ -562,6 +565,7 @@ export default {
           query: {
             loc: id,
             muts: query.muts,
+            alias: query.alias,
             pango: query.pango,
             variant: query.variant,
             selected: query.selected,

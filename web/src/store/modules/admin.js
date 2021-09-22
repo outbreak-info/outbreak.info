@@ -539,6 +539,125 @@ const state = {
       }
     },
     {
+      date: new Date("2021-09-20 0:0"),
+      category: "variants",
+      title: "Updated ECDC's classification of B.1.1.7, B.1.525, B.1.617.1, P.2, P.3 & PHE's classification of B.1.617.1 as De-escalated Variants",
+      description: 'Based on the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">ECDC</a> classification, updated their classification of B.1.1.7/Alpha, B.1.525/Eta, B.1.617.1/Kappa, P.2/Zeta, and P.3/Theta and the classification of B.1.617.1/Kappa by <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1014926/Technical_Briefing_22_21_09_02.pdf" target="_blank">PHE</a> as De-escalated Variants.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-08-23 0:0"),
+      category: "variants",
+      title: "Outbreak.info, CDC, and ECDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
+      description: 'Updated the outbreak.info, <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a>, and <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineages B.1.427 and B.1.429 from <b>Variants of Interest</b> to <b>Variants under Monitoring</b>.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "epsilon",
+        },
+        query: {
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "Added C.1.2 as a VUM",
+      description: 'Added C.1.2 as a Variant Under Monitoring',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "C.1.2",
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated AV.1 from VOI",
+      description: 'Based on WHO and CDC classifications, removed AV.1 as a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "AV.1",
+          selected: "GBR"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated Epsilon/B.1.427/B.1.429 from VUM",
+      description: 'Based on WHO, CDC, and ECDC classifications, removed Epsilon/B.1.427/B.1.429 as a Variant Under Monitoring',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "epsilon",
+        },
+        query: {
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated Zeta/P.2 from VOI",
+      description: 'Based on WHO, CDC, PHE, and ECDC classifications, removed Zeta/P.2 as a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "zeta",
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-23 0:0"),
+      category: "variants",
+      title: "ECDC reclassified C.37/Lambda as Variants of Interest",
+      description: 'Updated the <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification of lineage C.37 / Lambda from <b>Variant under Monitoring</b> to <b>Variant of Interest</b>.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "lambda"
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-31 0:0"),
+      category: "variants",
+      title: "WHO reclassified B.1.621/Mu as Variants of Interest",
+      description: 'Updated the <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/" target="_blank">WHO</a> classification of lineage B.1.621 as Variant of Interest Mu.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "lambda"
+        }
+      }
+    },
+    {
+      date: new Date("2021-08-30 1:0"),
+      category: "variants",
+      title: "Released combined reports for Delta and other lineages",
+      description: 'Based on the proliferation of sublineages associated with Variants of Concern and Interest, we created combined reports that provide aggregate statistics for variants and their descendants. These reports will be updated as new sublineages are classified by the Pango team. Read more about <a href="https://outbreak.info/situation-reports/caveats#delta">sublineages</a>.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-08-10 0:0"),
+      category: "variants",
+      title: "Added P.1 sublineages as VOCs",
+      description: "Added P.1.3, P.1.4, P.1.5, P.1.6, and P.1.7 as Variants of Concern, sublineages of P.1.",
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-06-30 0:0"),
       category: "variants",
       title: "Added B.1.351.1, B.1.351.2, and B.1.351.3 as a VOCs",
@@ -1105,6 +1224,10 @@ const actions = {};
 const mutations = {
   setLoading(state, isLoading) {
     state.loading = isLoading;
+  },
+
+  setReportLoading(state, isLoading) {
+    state.reportloading = isLoading;
   }
 };
 
