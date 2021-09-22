@@ -2229,39 +2229,3 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
     finalize(() => (store.state.admin.loading = false))
   );
 }
-
-export function getVOCs(genomicsUrl, locations, totalThreshold) {
-  const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern")).map(d => {
-    // const mutations = CURATED.filter(d => d.variantType == "Variant of Concern" || d.variantType == "Variant of Interest").map(d => {
-    return ({
-      label: d.mutation_name,
-      type: d.variantType == "Variant of Concern" ? "VOC" : d.variantType == "Variant of Interest" ? "VOI" : null,
-      query: `pangolin_lineage=${d.mutation_name}`
-    })
-  });
-
-  return forkJoin(...locations.map(loc => getLocationTable(genomicsUrl, loc, mutations, totalThreshold))).pipe(
-    map(results => {
-      const flattened = results.flatMap(d => d).map(d => d.values);
-      const whiteThreshold = 0.35;
-      const colorScale = scaleThreshold(schemeYlGnBu[9])
-        .domain([0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75]);
-
-      const cleaned = flattened.map(location => {
-        if (location.every(d => !d.global_prevalence)) {
-          // no location map for sequencing
-          return (null)
-        } else {
-          location.forEach(d => {
-            d["fill"] = colorScale(d.global_prevalence);
-            d["proportion_formatted"] = d.proportion_formatted == "not detected" ? "none" : d.proportion_formatted;
-            d["color"] = d.global_prevalence > whiteThreshold ? "#FFFFFF" : "#2c3e50";
-          })
-          return (location)
-        }
-      })
-
-      return cleaned;
-    })
-  );
-}
