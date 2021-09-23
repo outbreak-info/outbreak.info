@@ -57,7 +57,8 @@ VOC:
         variantType: VOC
       - author: CDC
         url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-        variantType: VOC
+        variantType: VUM
+        dateModified: 2021-09-21
       - author: PHE
         dateModified: 2020-12-18
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/959438/Technical_Briefing_VOC_SH_NJL2_SH2.pdf
@@ -86,7 +87,8 @@ VOC:
         variantType: VOC
       - author: CDC
         url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-        variantType: VOC
+        variantType: VUM
+        dateModified: 2021-09-21
       - author: PHE
         dateModified: 2020-12-24
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf
@@ -114,7 +116,8 @@ VOC:
         variantType: VOC
       - author: CDC
         url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-        variantType: VOC
+        variantType: VUM
+        dateModified: 2021-09-21
       - author: PHE
         dateModified: 2021-01-13
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/961299/Variants_of_Concern_VOC_Technical_Briefing_6_England-1.pdf
@@ -131,94 +134,6 @@ VOC:
 
 
 VOI:
-  - who_name: Eta
-    pangolin_lineage: B.1.525
-    gisaid_clade: G/484K.V3
-    nextstrain_clade: 20A/S484K
-    phe_name: VUI-21FEB-03, VUI-202102/03
-    mutation_synonyms:
-      - UK1188
-    dateModified: 2021-06-01
-    classifications:
-      - author: CDC
-        url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-        variantType: VOI
-      - author: WHO
-        dateModified: 2021-03-17
-        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-        variantType: VOI
-      - author: PHE
-        dateModified: 2021-02-12
-        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf
-        variantType: VOI
-      - author: ECDC
-        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        dateModified: 2021-09-03
-        variantType: de-escalated
-    location_first_identified: England, Nigeria
-    selected: NGA
-    loc:
-      - GBR
-      - NGA
-
-  - who_name: Iota
-    pangolin_lineage: B.1.526
-    nextstrain_clade: 20C/S:484K
-    gisaid_clade: GH
-    dateModified: 2021-02-26
-    location_first_identified: New York
-    loc:
-        - USA
-        - USA_US-NY
-    selected: USA_US-NY
-    classifications:
-        - author: WHO
-          dateModified: 2021-03-24
-          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VOI
-        - author: CDC
-          url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-          variantType: VOI
-        - author: PHE
-          dateModified: 2021-03-10
-          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf
-          variantType: VUM
-        - author: ECDC
-          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-          variantType: VUM
-
-  - who_name: Kappa
-    pangolin_lineage: B.1.617.1
-    nextstrain_clade: 21A/S:154K
-    gisaid_clade: G/452R.V3
-    related:
-      - Delta
-      - B.1.617.3
-    dateModified: 2021-05-03
-    location_first_identified: India
-    loc:
-      - IND
-      - GBR
-      - USA
-    selected: IND
-    classifications:
-      - author: WHO
-        dateModified: 2021-04-04
-        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-        variantType: VOI
-      - author: CDC
-        url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-        variantType: VOI
-      - author: PHE
-        dateModified: 2021-09-02
-        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/979818/Variants_of_Concern_VOC_Technical_Briefing_9_England.pdf
-        variantType: de-escalated
-      - author: ECDC
-        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        dateModified: 2021-09-03
-        variantType: de-escalated
-
-
   - who_name: Lambda
     pangolin_lineage: C.37
     gisaid_clade: GR/452Q.V1
@@ -253,6 +168,10 @@ VOI:
       - GBR
     selected: COL
     classifications:
+      - author: CDC
+        url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
+        variantType: VUM
+        dateModified: 2021-09-21
       - author: WHO
         variantType: VOI
         dateModified: 2021-08-30
@@ -265,8 +184,143 @@ VOI:
         url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
         variantType: VOI
 
+
+VUM:
+  - pangolin_lineage: C.1.2
+    dateModified: 2021-09-03
+    location_first_identified: South Africa
+    loc:
+        - ZAF
+    selected: ZAF
+    classifications:
+        - author: WHO
+          dateModified: 2021-09-01
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VUM
+        - author: PHE
+          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/991343/Variants_of_Concern_VOC_Technical_Briefing_14.pdf
+          variantType: VUM
+        - author: ECDC
+          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+          variantType: VUM
+  - who_name: Eta
+    pangolin_lineage: B.1.525
+    gisaid_clade: G/484K.V3
+    nextstrain_clade: 20A/S484K
+    phe_name: VUI-21FEB-03, VUI-202102/03
+    mutation_synonyms:
+      - UK1188
+    dateModified: 2021-09-22
+    classifications:
+      - author: CDC
+        url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
+        variantType: VUM
+        dateModified: 2021-09-21
+      - author: WHO
+        dateModified: 2021-09-21
+        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+        variantType: VUM
+      - author: PHE
+        dateModified: 2021-02-12
+        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf
+        variantType: VOI
+      - author: ECDC
+        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+        dateModified: 2021-09-03
+        variantType: de-escalated
+    location_first_identified: England, Nigeria
+    selected: NGA
+    loc:
+      - GBR
+      - NGA
+  - who_name: Iota
+    pangolin_lineage: B.1.526
+    nextstrain_clade: 20C/S:484K
+    gisaid_clade: GH
+    dateModified: 2021-09-22
+    location_first_identified: New York
+    loc:
+        - USA
+        - USA_US-NY
+    selected: USA_US-NY
+    classifications:
+        - author: WHO
+          dateModified: 2021-09-21
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VUM
+        - author: CDC
+          url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
+          variantType: VUM
+          dateModified: 2021-09-21
+        - author: PHE
+          dateModified: 2021-03-10
+          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/972247/Variants_of_Concern_VOC_Technical_Briefing_7_England.pdf
+          variantType: VUM
+        - author: ECDC
+          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+          variantType: VUM
+
+  - who_name: Kappa
+    pangolin_lineage: B.1.617.1
+    nextstrain_clade: 21A/S:154K
+    gisaid_clade: G/452R.V3
+    related:
+      - Delta
+      - B.1.617.3
+    dateModified: 2021-09-22
+    location_first_identified: India
+    loc:
+      - IND
+      - GBR
+      - USA
+    selected: IND
+    classifications:
+      - author: WHO
+        dateModified: 2021-09-21
+        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+        variantType: VUM
+      - author: CDC
+        url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
+        variantType: VUM
+        dateModified: 2021-09-21
+      - author: PHE
+        dateModified: 2021-09-02
+        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/979818/Variants_of_Concern_VOC_Technical_Briefing_9_England.pdf
+        variantType: de-escalated
+      - author: ECDC
+        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+        dateModified: 2021-09-03
+        variantType: de-escalated
+  - pangolin_lineage: B.1.617.3
+    related:
+      - Delta
+      - B.1.617.1
+    phe_name: VUI-21APR-03
+    dateModified: 2021-09-22
+    location_first_identified: India
+    loc:
+      - IND
+      - GBR
+      - USA
+    selected: IND
+    classifications:
+      - author: WHO
+        variantType: none
+      - author: CDC
+        url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
+        variantType: VUM
+        dateModified: 2021-09-21
+      - author: PHE
+        dateModified: 2021-04-27
+        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf
+        variantType: VOI
+      - author: ECDC
+        dateModified: 2021-06-03
+        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+        variantType: VUM
   - who_name: Theta
     pangolin_lineage: P.3
+    dateModified: 2021-09-22
     related:
       - Gamma
       - P.2
@@ -279,7 +333,6 @@ VOI:
       - USA
       - USA_US-CA
     selected: PHL
-    dateModified: 2021-06-01
     classifications:
       - author: PHE
         dateModified: 2021-03-11
@@ -293,10 +346,9 @@ VOI:
         url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
         variantType: de-escalated
 
-
   - pangolin_lineage: B.1.1.318
     phe_name: VUI-21FEB-04, VUI-202102/04
-    dateModified: 2021-06-01
+    dateModified: 2021-09-22
     classifications:
         - author: CDC
           variantType: none
@@ -315,33 +367,6 @@ VOI:
     selected: GBR
     loc:
         - GBR
-
-  - pangolin_lineage: B.1.617.3
-    related:
-      - Delta
-      - B.1.617.1
-    phe_name: VUI-21APR-03
-    dateModified: 2021-05-07
-    location_first_identified: India
-    loc:
-      - IND
-      - GBR
-      - USA
-    selected: IND
-    classifications:
-      - author: WHO
-        variantType: none
-      - author: CDC
-        url: https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html
-        variantType: VOI
-      - author: PHE
-        dateModified: 2021-04-27
-        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/984274/Variants_of_Concern_VOC_Technical_Briefing_10_England.pdf
-        variantType: VOI
-      - author: ECDC
-        dateModified: 2021-06-03
-        url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-        variantType: VUM
 
   - pangolin_lineage: C.36.3
     loc:
@@ -363,26 +388,7 @@ VOI:
         dateModified: 2021-05-24
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/990339/Variants_of_Concern_VOC_Technical_Briefing_13_England.pdf
         variantType: VOI
-
-VUM:
-  - pangolin_lineage: C.1.2
-    dateModified: 2021-09-03
-    location_first_identified: South Africa
-    loc:
-        - ZAF
-    selected: ZAF
-    classifications:
-        - author: WHO
-          dateModified: 2021-09-01
-          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VUM
-        - author: PHE
-          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/991343/Variants_of_Concern_VOC_Technical_Briefing_14.pdf
-          variantType: VUM
-        - author: ECDC
-          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-          variantType: VUM
-
+        
 deescalated:
   - who_name: Epsilon
     pangolin_lineage:
@@ -404,6 +410,13 @@ deescalated:
           dateModified: 2021-06-03
           url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/991343/Variants_of_Concern_VOC_Technical_Briefing_14.pdf
           variantType: VUM
+        - author: CDC
+          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+          variantType: VUM
+          dateModified: 2021-09-21
+        - author: WHO
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VUM
   - who_name: Zeta
     pangolin_lineage: P.2
     related:
@@ -419,6 +432,11 @@ deescalated:
       - USA
       - USA_US-CA
     selected: BRA
+    classifications:
+        - author: CDC
+          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+          variantType: VUM
+          dateModified: 2021-09-21
   - pangolin_lineage: AV.1
     phe_name: VUI-21MAY-01
     dateModified: 2021-06-01
