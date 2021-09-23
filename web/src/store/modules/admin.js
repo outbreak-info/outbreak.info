@@ -566,6 +566,15 @@ const state = {
       }
     },
     {
+      date: new Date("2021-09-22 0:1"),
+      category: "variants",
+      title: "Downgraded B.1.525/Eta, B.1.526/Iota, B.1.617.1/Kappa, P.3/Theta, B.1.1.318, B.1.617.3, C.36.3 to VUMs",
+      description: 'Based on updated classifications from the CDC, WHO, ECDC, and PHE, downgraded Variants of Interest B.1.525/Eta, B.1.526/Iota, B.1.617.1/Kappa, P.3/Theta, B.1.1.318, B.1.617.3, C.36.3 to Variants Under Monitoring',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-08-23 0:0"),
       category: "variants",
       title: "Outbreak.info, CDC, and ECDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
