@@ -185,27 +185,6 @@ VOI:
         variantType: VOI
 
 
-  - pangolin_lineage: C.36.3
-    loc:
-      - THA
-      - EGY
-    selected: EGY
-    phe_name: VUI-21MAY-01
-    dateModified: 2021-06-01
-    classifications:
-      - author: CDC
-        variantType: none
-      - author: WHO
-        dateModified: 2021-06-21
-        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-        variantType: VUM
-      - author: ECDC
-        variantType: none
-      - author: PHE
-        dateModified: 2021-05-24
-        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/990339/Variants_of_Concern_VOC_Technical_Briefing_13_England.pdf
-        variantType: VOI
-
 VUM:
   - pangolin_lineage: C.1.2
     dateModified: 2021-09-03
@@ -389,6 +368,27 @@ VUM:
     loc:
         - GBR
 
+  - pangolin_lineage: C.36.3
+    loc:
+      - THA
+      - EGY
+    selected: EGY
+    phe_name: VUI-21MAY-01
+    dateModified: 2021-06-01
+    classifications:
+      - author: CDC
+        variantType: none
+      - author: WHO
+        dateModified: 2021-06-21
+        url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+        variantType: VUM
+      - author: ECDC
+        variantType: none
+      - author: PHE
+        dateModified: 2021-05-24
+        url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/990339/Variants_of_Concern_VOC_Technical_Briefing_13_England.pdf
+        variantType: VOI
+        
 deescalated:
   - who_name: Epsilon
     pangolin_lineage:
