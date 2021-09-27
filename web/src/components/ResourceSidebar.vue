@@ -24,8 +24,8 @@
   </div>
 
   <!-- cite -->
-  <div class="py-3 border-bottom">
-    <small class="text-muted section-header">download citation</small>
+  <div class="py-3 border-bottom d-flex flex-column">
+    <span class="sidebar-header">Download Citation</span>
     <div class="citation-container flex">
       <a class="mr-3 share-link" @click="downloadCitation()">RIS</a>
       <a :href="citationRIS" target="_blank" rel="noreferrer" download="outbreakinfo_citation.ris" ref="risDownload"></a>
@@ -34,10 +34,10 @@
 
   <!-- evaluations -->
   <template v-if="data.evaluations && data.evaluations.length">
-    <div v-for="(evaluation, eIdx) in data.evaluations" :key="eIdx" class="py-3 border-bottom">
+    <div v-for="(evaluation, eIdx) in data.evaluations" :key="eIdx">
       <!-- COVID-19 LST -->
-      <div id="covid19-lst" v-if="evaluation.name == 'covid19LST'" class="d-flex flex-column">
-        <small class="text-muted section-header">Level of Evidence in Study</small>
+      <div id="covid19-lst" v-if="evaluation.name == 'covid19LST'" class="py-3 border-bottom d-flex flex-column">
+        <span class="sidebar-header">Level of Evidence in Study</span>
         <span class="mt-2">&larr; more evidence </span>
         <div class="d-flex justify-content-center mt-1 mb-3">
           <div class="circle-rating mx-2" v-for="(rating, dIdx) in 5" :key="dIdx" :class="[rating == evaluation.ratingValue ? 'rating-selected' : 'rating-unselected']">
@@ -55,6 +55,14 @@
           <span v-else>{{evaluation.reviewAspect}}</span>
         </small>
       </div>
+    </div>
+
+    <div class="py-3 border-bottom d-flex flex-column" v-if="data.doi">
+      <span class="sidebar-header">
+        <a class="text-white" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+      </span>
+      <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='left' :data-doi='data.doi'></div>
+      <small class="text-muted line-height-1">Altmetric tracks mentions of scholarly works across the social web</small>
     </div>
 
 
@@ -80,8 +88,8 @@
     </div> -->
 
   <!-- share -->
-  <div class="py-3 border-bottom text-muted">
-    <small class="text-muted section-header">share</small>
+  <div class="py-3 border-bottom text-muted d-flex flex-column">
+    <span class="sidebar-header">Share</span>
     <div class="d-flex flex-wrap justify-content-center mt-1">
       <a :href="
             `https://twitter.com/intent/tweet?url=${outbreakUrl}&hashtags=covid-19,outbreak.info`
@@ -152,6 +160,12 @@ export default {
       return navigator.share ? true : false;
     }
   },
+  mounted() {
+    // append Altmetrics script
+    let altmetricsScript = document.createElement("script")
+    altmetricsScript.setAttribute('src', 'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js')
+    document.body.appendChild(altmetricsScript);
+  },
   methods: {
     copy2Clipboard: function() {
       this.showSnackbar = true;
@@ -207,7 +221,6 @@ $circle-width: 20px;
     height: $circle-width;
 }
 
-
 .rating-selected {
     background: $warning-color !important;
     color: white;
@@ -216,5 +229,16 @@ $circle-width: 20px;
 .rating-unselected {
     background: lighten(#bab0ab, 10%) !important;
     color: #555555 !important;
+}
+
+.sidebar-header {
+    // text-transform: uppercase;
+    // background: #6c757d!important;
+    background: lighten(#bab0ab, 0%) !important;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+    color: white;
+    font-weight: bold;
 }
 </style>
