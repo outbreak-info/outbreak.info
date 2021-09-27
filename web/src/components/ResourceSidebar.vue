@@ -53,7 +53,7 @@
           <span class="text-underline">Level {{evaluation.ratingValue}}</span><span v-if="evaluation.ratingExplanation">: {{evaluation.ratingExplanation}}</span>
         </div>
 
-        <small class="text-muted section-header fa-xs line-height-1">rated by <a :href="evaluation.author.url" target="_blank">{{evaluation.author.name}}</a></small>
+        <div class="text-muted section-header fa-sm mb-2 line-height-1">rated by <a :href="evaluation.author.url" target="_blank">{{evaluation.author.name}}</a></div>
         <small class="text-muted section-header fa-xs line-height-1" v-if="evaluation.reviewAspect">based on
           <a href="https://www.cebm.ox.ac.uk/resources/levels-of-evidence/explanation-of-the-2011-ocebm-levels-of-evidence" target="_blank" v-if="evaluation.reviewAspect == 'Oxford 2011 Levels of Evidence'">{{evaluation.reviewAspect}}</a>
           <span v-else>{{evaluation.reviewAspect}}</span>
