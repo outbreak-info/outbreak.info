@@ -24,13 +24,43 @@
   </div>
 
   <!-- cite -->
-  <div href="fdfs" class="py-3 border-bottom">
+  <div class="py-3 border-bottom">
     <small class="text-muted section-header">download citation</small>
     <div class="citation-container flex">
       <a class="mr-3 share-link" @click="downloadCitation()">RIS</a>
       <a :href="citationRIS" target="_blank" rel="noreferrer" download="outbreakinfo_citation.ris" ref="risDownload"></a>
     </div>
   </div>
+
+  <!-- evaluations -->
+  <template v-if="data.evaluations && data.evaluations.length">
+    <div v-for="(evaluation, eIdx) in data.evaluations" :key="eIdx" class="py-3 border-bottom">
+      <!-- COVID-19 LST -->
+      <div id="covid19-lst" v-if="evaluation.name == 'covid19LST'" class="d-flex flex-column">
+        <small class="text-muted section-header">Level of Evidence in Study</small>
+        <span class="mt-2">&larr; more evidence </span>
+        <div class="d-flex justify-content-center mt-1 mb-3">
+          <div class="circle-rating mx-2" v-for="(rating, dIdx) in 5" :key="dIdx" :class="[rating == evaluation.ratingValue ? 'rating-selected' : 'rating-unselected']">
+            <span class="fa-xs">{{rating}}
+            </span>
+          </div>
+        </div>
+        <div class="line-height-1 text-left mb-2">
+          <span class="text-underline">Level {{evaluation.ratingValue}}</span><span v-if="evaluation.ratingExplanation">: {{evaluation.ratingExplanation}}</span>
+        </div>
+
+        <small class="text-muted section-header fa-xs line-height-1">rated by <a :href="evaluation.author.url" target="_blank">{{evaluation.author.name}}</a></small>
+        <small class="text-muted section-header fa-xs line-height-1" v-if="evaluation.reviewAspect">based on
+          <a href="https://www.cebm.ox.ac.uk/resources/levels-of-evidence/explanation-of-the-2011-ocebm-levels-of-evidence" target="_blank" v-if="evaluation.reviewAspect == 'Oxford 2011 Levels of Evidence'">{{evaluation.reviewAspect}}</a>
+          <span v-else>{{evaluation.reviewAspect}}</span>
+        </small>
+      </div>
+    </div>
+
+
+  </template>
+
+
 
   <!-- edit -->
   <!-- <div class="pt-4 pb-3 border-bottom d-flex flex-column">
@@ -93,7 +123,7 @@ import {
   faEnvelope
 } from "@fortawesome/free-solid-svg-icons";
 import {
-faTwitter
+  faTwitter
 } from "@fortawesome/free-brands-svg-icons";
 
 library.add(faLink, faShare, faEnvelope, faTwitter);
@@ -158,5 +188,33 @@ export default {
     &:hover {
         color: $link-hover !important;
     }
+}
+
+$circle-width: 20px;
+.circle-rating {
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    flex-shrink: 0 !important;
+    color: white;
+
+    font-size: calc(#{$circle-width} * 0.9);
+    line-height: $circle-width;
+    background: $secondary-color;
+    width: $circle-width;
+    height: $circle-width;
+}
+
+
+.rating-selected {
+    background: $warning-color !important;
+    color: white;
+}
+
+.rating-unselected {
+    background: lighten(#bab0ab, 10%) !important;
+    color: #555555 !important;
 }
 </style>
