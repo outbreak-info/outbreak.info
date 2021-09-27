@@ -18,9 +18,13 @@
   </div>
 
   <!-- link out -->
-  <div class="py-4 border-bottom" v-if="data.url">
-    <a class="btn btn-main" :href="data.url" target="_blank" rel="noreferrer">View {{ type }}
-    </a>
+  <div class="py-4 border-bottom d-flex flex-column justify-content-center" v-if="data.url">
+    <span class="sidebar-header">View {{ type }}</span>
+    <div class="d-flex align-items-center justify-content-center">
+      <a class="btn btn-main-outline line-height-1" :href="data.url" target="_blank" rel="noreferrer">{{resourceLinkLabel}}
+      </a>
+    </div>
+
   </div>
 
   <!-- cite -->
@@ -155,6 +159,13 @@ export default {
   computed: {
     outbreakUrl() {
       return window.location.href;
+    },
+    resourceLinkLabel() {
+      if (this.type == "Publication") {
+        return this.data.journalName ? this.data.journalName : this.data.journalNameAbbrev;
+      } else {
+        return (this.data.curatedBy.name)
+      }
     },
     canShare() {
       return navigator.share ? true : false;

@@ -278,7 +278,6 @@ export default Vue.extend({
       return source.length == 1 ? source[0].img : null;
     },
     formatDate(dateStr) {
-      console.log(this.data)
       const parseDate = timeParse("%Y-%m-%d");
       const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f");
       const formatDate = timeFormat("%d %B %Y");
