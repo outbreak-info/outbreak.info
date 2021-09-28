@@ -1,10 +1,15 @@
 <template>
 <div class="d-flex flex-column text-left" v-if="data">
+  <!-- title -->
+  <h4 class="d-flex align-item-center m-0 mb-4">
+    <b>{{ data.name }}</b>
+  </h4>
+
   <!-- authors -->
-  <div class="author-container d-flex flex-wrap" v-if="data.author || data.creator">
+  <div class="author-container d-flex flex-wrap align-items-center my-2" v-if="data.author || data.creator">
     <template v-if="data.author && (data.author.length || data.author.name)">
       <template v-if="Array.isArray(data.author)">
-        <div class="author" v-for="(author, idx) in data.author" :key="'author2'+idx" id="authors">
+        <div class="author font-weight-bold fa-lg" v-for="(author, idx) in data.author" :key="'author2'+idx" id="authors">
           <span>{{
             author.name
               ? author.name
@@ -15,7 +20,7 @@
           <span v-if="idx == data.author.length - 2 && data.author.length > 2" v-html="',&nbsp;and&nbsp;'"></span>
         </div>
       </template>
-      <div class="author" v-else id="authors">
+      <div class="author font-weight-bold fa-lg" v-else id="authors">
         <span>{{
             data.author.name
               ? data.author.name
@@ -112,8 +117,9 @@
   </div>
 
   <!-- mini-citation -->
-  <div v-if="data['@type'] && data['@type'] == 'Publication'" class="text-muted">
-    <span v-if="data.journalName">{{data.journalName}}</span>
+  <div v-if="data['@type'] && data['@type'] == 'Publication'" class="text-muted fa-lg mb-4">
+    <span v-if="data.journalName" class="font-italic">{{data.journalName}}</span>
+    <span v-else-if="data.journalAbbreviation" class="font-italic">{{data.journalAbbreviation}}</span>
     <span v-if="data.volumeNumber">, volume {{data.volumeNumber}}</span>
     <span v-if="data.issueNumber">, issue {{data.issueNumber}}</span>
   </div>
@@ -159,43 +165,8 @@
     </div>
   </div>
 
-  <!-- keywords -->
-  <div class="keyword-container flex flex-wrap mt-2">
-    <template v-if="data.topicCategory">
-      <template v-if="Array.isArray(data.topicCategory)">
-        <small class="topic uppercase px-2 py-1 mb-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
-          <router-link :to="{
-            name: 'Resources',
-            query: { q: `&quot;${topic}&quot;` }
-          }" class="no-underline">
-            {{ topic }}
-          </router-link>
-        </small>
-      </template>
-
-      <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory}`" v-else>
-        <router-link :to="{
-            name: 'Resources',
-            query: { q: `&quot;${data.topicCategory}&quot;` }
-          }" class="no-underline">
-          {{ data.topicCategory }}
-        </router-link>
-      </small>
-    </template>
-
-    <div v-for="(keyword, idx) in data.keywords" :key="'keyword'+idx" class="mb-1 mr-1">
-      <small class="keyword px-2 py-1" v-if="keyword != ''" :data-tippy-info="`search ${keyword}`">
-        <router-link :to="{
-            name: 'Resources',
-            query: { q: `&quot;${keyword}&quot;` }
-          }" class="no-underline text-dark">
-          {{ keyword }}
-        </router-link>
-      </small>
-    </div>
-  </div>
   <!-- source -->
-  <div class="mt-2" v-if="data.curatedBy">
+  <div class="mt-1 mb-1" v-if="data.curatedBy">
     <small>Record provided by
       <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">{{ data.curatedBy.name }}<img v-if="getLogo(data.curatedBy.name)" :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)" alt="data.curatedBy.name" width="auto"
           height="25" class="ml-1 mr-4" />
@@ -206,8 +177,49 @@
 
   <ClinicalTrialSummary :data="data" v-if="type == 'ClinicalTrial'" />
 
+  <!-- topics -->
+  <div class="keyword-container flex flex-wrap align-items-center mt-4">
+    <span class="text-muted mr-2">Topics: </span>
+    <template v-if="data.topicCategory">
+      <template v-if="Array.isArray(data.topicCategory)">
+        <small class="topic px-2 py-1 mb-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
+          <router-link :to="{
+        name: 'Resources',
+        query: { q: `&quot;${topic}&quot;` }
+      }" class="no-underline">
+            {{ topic }}
+          </router-link>
+        </small>
+      </template>
+
+      <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory}`" v-else>
+        <router-link :to="{
+        name: 'Resources',
+        query: { q: `&quot;${data.topicCategory}&quot;` }
+      }" class="no-underline">
+          {{ data.topicCategory }}
+        </router-link>
+      </small>
+</template>
+</div>
+
+    <!-- keywords -->
+    <div class="keyword-container flex flex-wrap mt-2">
+      <span class="text-muted mr-2">Keywords: </span>
+      <div v-for="(keyword, idx) in data.keywords" :key="'keyword'+idx" class="mb-1 mr-1">
+        <small class="keyword px-2 py-1" v-if="keyword != ''" :data-tippy-info="`search ${keyword}`">
+          <router-link :to="{
+              name: 'Resources',
+              query: { q: `&quot;${keyword}&quot;` }
+            }" class="no-underline text-dark">
+            {{ keyword }}
+          </router-link>
+        </small>
+      </div>
+    </div>
+
   <!-- description -->
-  <div class="mt-4" id="description">
+  <div class="mt-5" id="description">
     <div v-html="data.description" v-if="data.description"></div>
     <div v-html="data.abstract" v-else-if="data.abstract"></div>
     <div v-else>
