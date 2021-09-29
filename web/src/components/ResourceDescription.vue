@@ -2,12 +2,13 @@
 <div class="d-flex flex-column text-left" v-if="data">
   <!-- title -->
   <h4 class="d-flex align-item-center m-0 mb-4">
+    <span class="font-weight-bold text-highlight mr-2" v-if="retractionText">RETRACTED: </span>
     <b>{{ data.name }}</b>
   </h4>
 
   <!-- retraction notice -->
   <div class="col-sm-12" v-if="retractionText">
-    <Warning :animate="true" class="w-100 mb-2" :text="retractionText"> </Warning>
+    <Warning :animate="true" class="w-100 mb-2 fa-lg" :text="retractionText"> </Warning>
   </div>
 
   <!-- authors -->
