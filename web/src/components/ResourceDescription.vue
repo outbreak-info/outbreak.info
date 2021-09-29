@@ -322,7 +322,7 @@ export default Vue.extend({
       if (this.data.correction && this.data.correction.some(d => d.correctionType == "retraction in")) {
         const retraction = this.data.correction.filter(d => d.correctionType == "retraction in")
         const retractionLink = retraction.map(d => `<a class="text-white" href="${d.url}" target="_blank">Retraction Notice </a>`);
-        return (`This ${this.data['@type']} has been retracted. View ${retractionLink}`)
+        return (`This ${this.data['@type']} has been retracted. <span class="ml-3">View ${retractionLink}</span>`)
       }
       if (this.data.correction && this.data.correction.some(d => d.correctionType == "retraction of")) {
         const retraction = this.data.correction.filter(d => d.correctionType == "retraction of");
