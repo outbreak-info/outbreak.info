@@ -60,7 +60,8 @@
         </small>
       </div>
     </div>
-
+  </template>
+  
     <div class="py-3 border-bottom d-flex flex-column" v-if="data.doi">
       <span class="sidebar-header">
         <a class="text-white" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
@@ -70,7 +71,7 @@
     </div>
 
 
-  </template>
+
 
 
 
