@@ -14,7 +14,7 @@
   <div class="author-container d-flex flex-wrap align-items-center my-2" v-if="data.author || data.creator">
     <template v-if="data.author && (data.author.length || data.author.name)">
       <template v-if="Array.isArray(data.author)">
-        <div class="author font-weight-bold fa-lg" v-for="(author, idx) in data.author" :key="'author2'+idx" id="authors">
+        <div class="author font-weight-bold fa-lg line-height-1" v-for="(author, idx) in data.author" :key="'author2'+idx" id="authors">
           <span>{{
             author.name
               ? author.name
@@ -25,7 +25,7 @@
           <span v-if="idx == data.author.length - 2 && data.author.length > 2" v-html="',&nbsp;and&nbsp;'"></span>
         </div>
       </template>
-      <div class="author font-weight-bold fa-lg" v-else id="authors">
+      <div class="author font-weight-bold fa-lg line-height-1" v-else id="authors">
         <span>{{
             data.author.name
               ? data.author.name
@@ -122,7 +122,7 @@
   </div>
 
   <!-- mini-citation -->
-  <div v-if="data['@type'] && data['@type'] == 'Publication'" class="text-muted fa-lg mb-4">
+  <div v-if="data['@type'] && data['@type'] == 'Publication'" class="text-muted fa-lg line-height-1 mb-4">
     <span v-if="data.journalName" class="font-italic">{{data.journalName}}</span>
     <span v-else-if="data.journalAbbreviation" class="font-italic">{{data.journalAbbreviation}}</span>
     <span v-if="data.volumeNumber">, volume {{data.volumeNumber}}</span>

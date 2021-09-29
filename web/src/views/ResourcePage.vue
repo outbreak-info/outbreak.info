@@ -312,6 +312,7 @@ export default Vue.extend({
     var citationTags = [];
     if (this.data) {
       metadata = cloneDeep(this.data);
+      console.log(this.data)
 
       // phaseNumber causes problems
       if (metadata.studyDesign && metadata.studyDesign.phaseNumber) {
