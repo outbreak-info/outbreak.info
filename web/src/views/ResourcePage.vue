@@ -7,9 +7,6 @@
   </div>
 
   <div class="row w-100 m-0" v-if="data">
-    <div class="col-sm-12" v-if="retracted">
-      <Warning :animate="true" class="w-100 mb-2" :text="`This ${data['@type']} has been retracted.`"> </Warning>
-    </div>
 
     <div class="col-sm-12 text-left">
 
@@ -46,14 +43,14 @@
     <div class="col-md-9 my-3 pr-5">
 
       <!-- description -->
-      <ResourceDescription :data="data" :type="type" />
+      <ResourceDescription :data="data" :type="type" class="border-bottom pb-3" />
 
       <!-- special clinical trials description -->
       <ClinicalTrialDescription :data="data" v-if="type == 'ClinicalTrial'" />
 
       <div class="mr-5">
         <!-- downloads -->
-        <div id="downloads" class="text-left border-top border-bottom text-muted py-3 my-3">
+        <div id="downloads" class="text-left border-bottom text-muted py-3 my-3" v-if="anchorsArr.includes('downloads')">
           <h6 class="m-0">Downloads</h6>
           <ul v-if="data.distribution" id="download-list">
             <li v-for="(item, idx) in data.distribution" :key="idx">
@@ -69,7 +66,7 @@
 
 
         <!-- funding info -->
-        <div id="funder" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="funder" class="text-left border-bottom text-muted py-3 mb-3" v-if="anchorsArr.includes('funder')">
           <h6 class="m-0">Funder</h6>
           <div v-if="data.funding || data.funder">
             <div v-if="data.funding">
@@ -156,9 +153,23 @@
           </div>
         </div>
 
+        <!-- corrections -->
+        <div id="corrections" class="text-left border-bottom text-muted py-1 my-3" v-if="anchorsArr.includes('corrections')">
+          <h6 class="m-0">Corrections</h6>
+          <ul v-if="data.correction" id="correction-list">
+            <li v-for="(item, idx) in data.correction" :key="idx">
+              <a :href="item.url" target="_blank" rel="noreferrer">
+                {{ item.correctionType[0].toUpperCase() }}{{ item.correctionType.slice(1) }} {{item.identifier.toUpperCase()}}
+              </a>
+            </li>
+          </ul>
+          <div v-else>
+            <small>none</small>
+          </div>
+        </div>
 
         <!-- license -->
-        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('license')">
           <h6 class="m-0">License</h6>
           <div v-if="data.license">
             <a v-if="data.license.startsWith('http')" :href="data.license" target="_blank">{{ data.license }}
@@ -171,7 +182,7 @@
         </div>
 
         <!-- based on -->
-        <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('based on')">
           <h6 class="m-0 mb-2">Based on</h6>
           <div v-if="data.isBasedOn && data.isBasedOn.length">
             <Citation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx" />
@@ -182,7 +193,7 @@
         </div>
 
         <!-- cited by -->
-        <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="data['@type'] != 'ClinicalTrial'">
+        <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('cited by')">
           <h6 class="m-0 mb-2">Cited by</h6>
           <div v-if="data.citedBy && data.citedBy.length">
             <Citation :data="item" v-for="(item, idx) in data.citedBy" :key="idx" />
@@ -193,7 +204,7 @@
         </div>
 
         <!-- related -->
-        <div id="related" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="related" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('related')">
           <h6 class="m-0 mb-2">Related resources</h6>
           <div v-if="data.relatedTo && data.relatedTo.length">
             <Citation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx" />
@@ -252,7 +263,6 @@ import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 import ClinicalTrialDescription from "@/components/ClinicalTrialDescription.vue";
 import Citation from "@/components/Citation.vue";
-import Warning from "@/components/Warning.vue";
 
 export default Vue.extend({
   name: "ResourcePage",
@@ -261,7 +271,6 @@ export default Vue.extend({
     ResourceSidebar,
     ClinicalTrialDescription,
     Citation,
-    Warning,
     FontAwesomeIcon
   },
   data() {
@@ -271,6 +280,7 @@ export default Vue.extend({
       id: null,
       anchors: {
         default: ["authors", "description", "downloads", "license", "funder", "based on", "cited by", "related"],
+        Publication: ["authors", "description", "funder", "corrections", "based on", "cited by", "related"],
         ClinicalTrial: ["authors", "description", "design", "interventions", "eligibility", "outcome", "status", "funder", "publications", "based on", "related"]
       }
     })
@@ -283,297 +293,8 @@ export default Vue.extend({
     },
     getData(id) {
       this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
-        this.data = {
-          "@context": {
-            "outbreak": "https://discovery.biothings.io/view/outbreak/",
-            "schema": "http://schema.org/"
-          },
-          "@type": "Publication",
-          "_id": "pmid32830286",
-          "_version": 1,
-          "abstract": "PURPOSE OF REVIEW: The role of renin-angiotensin-aldosterone system (RAAS) inhibitors, notably angiotensin-converting enzyme inhibitors (ACEi) or angiotensin receptor blockers (ARBs), in the COVID-19 pandemic has not been fully evaluated. With an increasing number of COVID-19 cases worldwide, it is imperative to better understand the impact of RAAS inhibitors in hypertensive COVID patients. PubMed, Embase and the pre-print database Medrxiv were searched, and studies with data on patients on ACEi/ARB with COVID-19 were included. Random effects models were used to estimate the pooled mean difference with 95% confidence interval using Open Meta[Analyst] software.\nRECENT FINDINGS: A total of 28,872 patients were included in this meta-analysis. The use of any RAAS inhibition for any conditions showed a trend to lower risk of death/critical events (OR 0.671, CI 0.435 to 1.034, p\u2009=\u20090.071). Within the hypertensive cohort, however, there was a significant lower association with deaths (OR 0.664, CI 0.458 to 0.964, p\u2009=\u20090.031) or the combination of death/critical outcomes (OR 0.670, CI 0.495 to 0.908, p\u2009=\u20090.010). There was no significant association of critical/death outcomes within ACEi vs non-ACEi (OR 1.008, CI 0.822 to 1.235, p\u2009=\u20090.941) and ARB vs non-ARB (OR 0.946, CI 0.735 to 1.218, p\u2009=\u20090.668). This is the largest meta-analysis including critical events and mortality data on patients prescribed ACEi/ARB and found evidence of beneficial effects of chronic ACEi/ARB use especially in hypertensive cohort with COVID-19. As such, we would strongly encourage patients to continue with RAAS inhibitor pharmacotherapy during the COVID-19 pandemic.\n",
-          "author": [{
-            "@type": "outbreak:Person",
-            "affiliation": [{
-              "@type": "outbreak:Organization",
-              "name": "Norfolk and Norwich University Hospital, Norwich, UK."
-            }],
-            "familyName": "Baral",
-            "givenName": "Ranu",
-            "name": "Ranu Baral"
-          }, {
-            "@type": "outbreak:Person",
-            "affiliation": [{
-              "@type": "outbreak:Organization",
-              "name": "Norwich Medical School, University of East Anglia, Norwich Research Park, Norwich, NR4 7UQ, UK."
-            }],
-            "familyName": "White",
-            "givenName": "Madeline",
-            "name": "Madeline White"
-          }, {
-            "@type": "outbreak:Person",
-            "affiliation": [{
-              "@type": "outbreak:Organization",
-              "name": "Norwich Medical School, University of East Anglia, Norwich Research Park, Norwich, NR4 7UQ, UK. v.vassiliou@uea.ac.uk."
-            }],
-            "familyName": "Vassiliou",
-            "givenName": "Vassilios S",
-            "name": "Vassilios S Vassiliou"
-          }],
-          "curatedBy": {
-            "@type": "schema:WebSite",
-            "curationDate": "2021-09-22",
-            "name": "litcovid",
-            "url": "https://www.ncbi.nlm.nih.gov/research/coronavirus/publication/32830286"
-          },
-          "date": "2020-12-18",
-          "dateCompleted": "2020-09-04",
-          "dateCreated": "2020-08-25",
-          "dateModified": "2020-12-18",
-          "datePublished": "2020-08-24",
-          "doi": "10.1007/s11883-020-00880-6",
-          "identifier": "32830286",
-          "isBasedOn": [{
-            "@type": "Publication",
-            "citation": "JAMA. 2020 Apr 7;323(13):1239-1242",
-            "identifier": "32091533",
-            "pmid": "32091533"
-          }, {
-            "@type": "Publication",
-            "citation": "Lancet. 2020 May 30;395(10238):1705-1714",
-            "identifier": "32416785",
-            "pmid": "32416785"
-          }, {
-            "@type": "Publication",
-            "citation": "N Engl J Med. 2020 Jun 18;382(25):2441-2448",
-            "identifier": "32356628",
-            "pmid": "32356628"
-          }, {
-            "@type": "Publication",
-            "citation": "JAMA Cardiol. 2020 Jul 1;5(7):811-818",
-            "identifier": "32219356",
-            "pmid": "32219356"
-          }, {
-            "@type": "Publication",
-            "citation": "JAMA. 2020 May 26;323(20):2052-2059",
-            "identifier": "32320003",
-            "pmid": "32320003"
-          }, {
-            "@type": "Publication",
-            "citation": "Emerg Microbes Infect. 2020 Dec;9(1):757-760",
-            "identifier": "32228222",
-            "pmid": "32228222"
-          }, {
-            "@type": "Publication",
-            "citation": "N Engl J Med. 1992 Sep 3;327(10):678-84",
-            "identifier": "1495520",
-            "pmid": "1495520"
-          }, {
-            "@type": "Publication",
-            "citation": "Hypertension. 2020 Aug;76(2):e13-e14",
-            "identifier": "32458694",
-            "pmid": "32458694"
-          }, {
-            "@type": "Publication",
-            "citation": "N Engl J Med. 2020 Jun 18;382(25):e102",
-            "identifier": "32356626",
-            "pmid": "32356626"
-          }, {
-            "@type": "Publication",
-            "citation": "Am J Cardiovasc Drugs. 2020 Jun;20(3):217-221",
-            "identifier": "32281055",
-            "pmid": "32281055"
-          }, {
-            "@type": "Publication",
-            "citation": "J Am Coll Cardiol. 1993 Nov 15;22(6):1557-63",
-            "identifier": "8227822",
-            "pmid": "8227822"
-          }, {
-            "@type": "Publication",
-            "citation": "JAMA Cardiol. 2020 Jul 1;5(7):825-830",
-            "identifier": "32324209",
-            "pmid": "32324209"
-          }, {
-            "@type": "Publication",
-            "citation": "Arch Biochem Biophys. 2009 Jan 1;481(1):131-6",
-            "identifier": "18940180",
-            "pmid": "18940180"
-          }, {
-            "@type": "Publication",
-            "citation": "JAMA Cardiol. 2020 Sep 1;5(9):1020-1026",
-            "identifier": "32936273",
-            "pmid": "32936273"
-          }, {
-            "@type": "Publication",
-            "citation": "J Card Fail. 2020 May;26(5):370",
-            "identifier": "32439095",
-            "pmid": "32439095"
-          }, {
-            "@type": "Publication",
-            "citation": "Ann Transl Med. 2020 Apr;8(7):430",
-            "identifier": "32395474",
-            "pmid": "32395474"
-          }, {
-            "@type": "Publication",
-            "citation": "Anesthesiology. 2015 Aug;123(2):288-306",
-            "identifier": "26200181",
-            "pmid": "26200181"
-          }, {
-            "@type": "Publication",
-            "citation": "Am J Respir Crit Care Med. 2020 Jun 1;201(11):1380-1388",
-            "identifier": "32275452",
-            "pmid": "32275452"
-          }, {
-            "@type": "Publication",
-            "citation": "Circ Res. 2020 Jun 5;126(12):e142-e143",
-            "identifier": "32496914",
-            "pmid": "32496914"
-          }, {
-            "@type": "Publication",
-            "citation": "N Engl J Med. 2020 Jun 25;382(26):2582",
-            "identifier": "32501665",
-            "pmid": "32501665"
-          }, {
-            "@type": "Publication",
-            "citation": "Blood Press. 1993 Jun;2(2):136-41",
-            "identifier": "8180726",
-            "pmid": "8180726"
-          }, {
-            "@type": "Publication",
-            "citation": "Curr Atheroscler Rep. 2020 May 7;22(3):14",
-            "identifier": "32415481",
-            "pmid": "32415481"
-          }, {
-            "@type": "Publication",
-            "citation": "Zhonghua Xin Xue Guan Bing Za Zhi. 2020 Jun 24;48(6):450-455",
-            "identifier": "32120458",
-            "pmid": "32120458"
-          }],
-          "issueNumber": "1534-6242",
-          "journalAbbreviation": "Curr Atheroscler Rep",
-          "journalName": "Current atherosclerosis reports",
-          "keywords": ["COVID", "Coronavirus", "Hypertension", "Renin-angiotensin-aldosterone system"],
-          "name": "Effect of Renin-Angiotensin-Aldosterone System Inhibitors in Patients with COVID-19: a Systematic Review and Meta-analysis of 28,872 Patients.",
-          "pmid": "32830286",
-          "publicationType": ["Journal Article", "Meta-Analysis", "Systematic Review"],
-          "url": "https://www.doi.org/10.1007/s11883-020-00880-6",
-          "volumeNumber": "22",
-          "evaluations": [{
-            "@type": "Rating",
-            "name": "covid19LST",
-            "ratingExplanation": "Systematic review of randomized trials or n-of-1 trial",
-            "ratingValue": "1",
-            "reviewAspect": "Oxford 2011 Levels of Evidence",
-            "author": {
-              "@type": "Organization",
-              "identifier": "covid19LST",
-              "url": "https://www.covid19lst.org/",
-              "name": "COVID-19 Literature Surveillance Team",
-              "affiliation": "",
-              "curationDate": "2021-09-14"
-            }
-          }, {
-            "@type": "AggregateRating",
-            "author": {
-              "@type": "Organization",
-              "identifier": "altmetric",
-              "name": "Altmetric",
-              "affiliation": ["Digital Science"],
-              "curationDate": "2021-09-23"
-            },
-            "identifier": 88768198,
-            "url": "http://www.altmetric.com/details.php?citation_id=88768198",
-            "image": "https://badges.altmetric.com/?size=64&score=1534&types=mmbttttf",
-            "name": "Altmetric",
-            "reviewAspect": "Altmetric score",
-            "ratingValue": 1533.75,
-            "reviews": [{
-              "@type": "Review",
-              "reviewAspect": "cited_by_fbwalls_count",
-              "reviewRating": {
-                "ratingValue": 1
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_feeds_count",
-              "reviewRating": {
-                "ratingValue": 2
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_gplus_count",
-              "reviewRating": {
-                "ratingValue": 0
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_msm_count",
-              "reviewRating": {
-                "ratingValue": 174
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_posts_count",
-              "reviewRating": {
-                "ratingValue": 613
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_rdts_count",
-              "reviewRating": {
-                "ratingValue": 0
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_tweeters_count",
-              "reviewRating": {
-                "ratingValue": 288
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_videos_count",
-              "reviewRating": {
-                "ratingValue": 0
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "cited_by_accounts_count",
-              "reviewRating": {
-                "ratingValue": 465
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "readers_count",
-              "reviewRating": {
-                "ratingValue": 122
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "citeulike reader count",
-              "reviewRating": {
-                "ratingValue": "0"
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "mendeley reader count",
-              "reviewRating": {
-                "ratingValue": "122"
-              }
-            }, {
-              "@type": "Review",
-              "reviewAspect": "connotea reader count",
-              "reviewRating": {
-                "ratingValue": "0"
-              }
-            }]
-          }],
-          "citedBy": [{
-            "_id": "lst2020.09.11",
-            "name": "Covid-19 LST Report 2020.09.11",
-            "url": "https://www.covid19lst.org/post/september-11-daily-covid-19-lst-report"
-          }],
-          "topicCategory": ["Treatment", " Mechanism"]
-        };
+        this.data = results;
+
         this.type = this.data["@type"];
         this.dateModified = this.formatDate(this.data.date);
       })
@@ -734,13 +455,6 @@ export default Vue.extend({
         return (this.anchors[this.type])
       }
       return (this.anchors["default"])
-    },
-    retracted() {
-      if (this.data.publicationType) {
-        return (this.data.publicationType.includes("Retracted Publication"))
-      } else {
-        return (false)
-      }
     }
   },
   mounted() {

@@ -5,6 +5,11 @@
     <b>{{ data.name }}</b>
   </h4>
 
+  <!-- retraction notice -->
+  <div class="col-sm-12" v-if="retractionText">
+    <Warning :animate="true" class="w-100 mb-2" :text="retractionText"> </Warning>
+  </div>
+
   <!-- authors -->
   <div class="author-container d-flex flex-wrap align-items-center my-2" v-if="data.author || data.creator">
     <template v-if="data.author && (data.author.length || data.author.name)">
@@ -179,8 +184,8 @@
 
   <!-- topics -->
   <div class="keyword-container flex flex-wrap align-items-center mt-4">
-    <span class="text-muted mr-2">Topics: </span>
     <template v-if="data.topicCategory">
+      <span class="text-muted mr-2">Topics: </span>
       <template v-if="Array.isArray(data.topicCategory)">
         <small class="topic px-2 py-1 mb-1 mr-1" v-for="(topic, idx) in data.topicCategory" :key="idx" :data-tippy-info="`search ${topic}`">
           <router-link :to="{
@@ -204,7 +209,7 @@
 </div>
 
     <!-- keywords -->
-    <div class="keyword-container flex flex-wrap mt-2">
+    <div class="keyword-container flex flex-wrap mt-2" v-if="data.keywords">
       <span class="text-muted mr-2">Keywords: </span>
       <div v-for="(keyword, idx) in data.keywords" :key="'keyword'+idx" class="mb-1 mr-1">
         <small class="keyword px-2 py-1" v-if="keyword != ''" :data-tippy-info="`search ${keyword}`">
@@ -251,6 +256,7 @@ import {
 } from "@/api/resources.js";
 
 import ClinicalTrialSummary from "@/components/ClinicalTrialSummary.vue";
+import Warning from "@/components/Warning.vue";
 
 // --- font awesome --
 import {
@@ -277,6 +283,7 @@ export default Vue.extend({
   },
   components: {
     ClinicalTrialSummary,
+    Warning,
     FontAwesomeIcon
   },
   data() {
@@ -310,6 +317,23 @@ export default Vue.extend({
     ...mapState("admin", ["loading", "resources"]),
     datePublished: function() {
       return (this.formatDate(this.data.dateModified))
+    },
+    retractionText() {
+      if (this.data.correction && this.data.correction.some(d => d.correctionType == "retraction in")) {
+        const retraction = this.data.correction.filter(d => d.correctionType == "retraction in")
+        const retractionLink = retraction.map(d => `<a class="text-white" href="${d.url}" target="_blank">Retraction Notice </a>`);
+        return (`This ${this.data['@type']} has been retracted. View ${retractionLink}`)
+      }
+      if (this.data.correction && this.data.correction.some(d => d.correctionType == "retraction of")) {
+        const retraction = this.data.correction.filter(d => d.correctionType == "retraction of");
+        const retractionLink = retraction.map(d => `<a class="text-white" href="${d.url}" target="_blank">${d.identifier.toUpperCase()} </a>`);
+        return (`Retraction of ${retractionLink}`)
+      }
+      if (this.data.publicationType && this.data.publicationType.includes("Retracted Publication")) {
+        return (`This ${this.data['@type']} has been retracted.`)
+      } else {
+        return (null)
+      }
     }
   },
   mounted() {
