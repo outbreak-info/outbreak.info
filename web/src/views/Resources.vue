@@ -351,7 +351,7 @@
                   </router-link> -->
                 </div>
 
-                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5 line-height-1 d-flex align-items-center" v-if="item.curatedBy">
+                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5 line-height-1 d-flex align-items-center justify-content-between" v-if="item.curatedBy">
                   <!-- altmetrics badges -->
                   <div class="d-flex flex-column align-items-center" v-if="item.doi">
                     <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='right' :data-doi='item.doi'></div>
@@ -368,7 +368,7 @@
                     </small>
                   </div>
 
-                  <div class="col-sm-12 d-flex flex-column" :class="item['@type']">
+                  <div class="d-flex flex-column" :class="item['@type']">
                     <small>provided by {{ item.curatedBy.name }}</small>
                     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
                       <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" width="auto" height="25" class="ml-2" />
@@ -461,8 +461,6 @@ import {
   getResources
 } from "@/api/resources.js";
 
-// import{_altmetric_embed_init} from "@/js/altmetric_badges.js";
-
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
@@ -536,7 +534,6 @@ export default {
         this.data = results.results;
         this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;
-        console.log(results.facets)
         this.facetSummary = results.facets;
         this.selectedFilters = results.facets.map(d => {
             return {
@@ -548,17 +545,6 @@ export default {
         this.numResults = results.total;
         this.esQuery = results.query;
 
-        // update Altmetric badges
-        // if (window._altmetric_embed_init) {
-        //   console.log("WINDOW EXISTS")
-        //   window._altmetric_embed_init();
-        // } else {
-        //   console.log("APPEND")
-        //   // append Altmetrics script
-        //   let altmetricsScript = document.createElement("script")
-        //   altmetricsScript.setAttribute('src', 'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js')
-        //   document.body.appendChild(altmetricsScript);
-        // }
         tippy(".keyword", {
           content: "Loading...",
           maxWidth: "200px",
