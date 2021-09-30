@@ -208,7 +208,7 @@ export function getResourceFacets(
     "curatedBy.name",
     "keywords",
     "date",
-    // "topicCategory",
+    "topicCategory",
     "interventions.name",
     // "sponsor.name",
     "funding.funder.name",
@@ -222,9 +222,9 @@ export function getResourceFacets(
 
   const sortOrder = [
     "Type",
-    // "topicCategory",
     "date",
     "Source",
+    "Topic",
     "Funding",
     // "Trial Sponsor",
     "Trial Intervention",
