@@ -70,6 +70,14 @@
     <small class="text-muted line-height-1">Altmetric tracks mentions of scholarly works across the social web</small>
   </div>
 
+  <div class="py-3 border-bottom d-flex flex-column" v-else-if="data.curatedBy.name=='ClinicalTrials.gov'">
+    <span class="sidebar-header">
+      <a class="text-white" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+    </span>
+    <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='left' :data-nct-id='data.identifier'></div>
+    <small class="text-muted line-height-1">Altmetric tracks mentions of scholarly works across the social web</small>
+  </div>
+
 
 
 
