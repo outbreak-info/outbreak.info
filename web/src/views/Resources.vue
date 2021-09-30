@@ -356,7 +356,7 @@
                   <div class="d-flex flex-column align-items-center" v-if="item.doi">
                     <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='right' :data-doi='item.doi'></div>
                     <small class="d-flex">
-                      <a class="mr-1" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+                      <a class="mr-1" href="https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated-#:~:text=The%20Altmetric%20Attention%20Score%20for,attention%20that%20it%20has%20received.&text=The%20score%20is%20derived%20from,up%20for%20a%20research%20output." target="_blank">Altmetric</a> Rating
                     </small>
                   </div>
 
@@ -364,7 +364,7 @@
 
                     <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='right' :data-nct-id='item.identifier'></div>
                     <small class="d-flex">
-                      <a class="mr-1" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+                      <a class="mr-1" href="https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated-#:~:text=The%20Altmetric%20Attention%20Score%20for,attention%20that%20it%20has%20received.&text=The%20score%20is%20derived%20from,up%20for%20a%20research%20output." target="_blank">Altmetric</a> Rating
                     </small>
                   </div>
 

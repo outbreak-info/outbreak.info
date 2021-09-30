@@ -65,7 +65,7 @@
   <!-- altmetrics badges -->
   <div class="py-3 border-bottom d-flex flex-column" v-if="data.doi">
     <span class="sidebar-header">
-      <a class="text-white" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+      <a class="text-white" href="https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated" target="_blank">Altmetric</a> Rating
     </span>
     <div class="altmetric-embed my-2" data-badge-type='medium-donut' data-badge-popover='left' :data-doi='data.doi'></div>
     <small class="text-muted line-height-1">Altmetric tracks mentions of scholarly works across the social web</small>
@@ -73,7 +73,7 @@
 
   <div class="py-3 border-bottom d-flex flex-column" v-else-if="data.curatedBy.name=='ClinicalTrials.gov'">
     <span class="sidebar-header">
-      <a class="text-white" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+      <a class="text-white" href="https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated" target="_blank">Altmetric</a> Rating
     </span>
     <div class="altmetric-embed my-2" data-badge-type='medium-donut' data-badge-popover='left' :data-nct-id='data.identifier'></div>
     <small class="text-muted line-height-1">Altmetric tracks mentions of scholarly works across the social web</small>
