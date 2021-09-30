@@ -536,6 +536,7 @@ export default {
         this.data = results.results;
         this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;
+        console.log(results.facets)
         this.facetSummary = results.facets;
         this.selectedFilters = results.facets.map(d => {
             return {
@@ -858,7 +859,7 @@ export default {
       sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
-      pieVariables: ["Type", "Source", "Funding", "Measurement Technique"],
+      pieVariables: ["Type", "Source", "Topic", "Funding", "Measurement Technique"],
       sortOpts: [{
           value: "",
           label: "best match"
