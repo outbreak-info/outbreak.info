@@ -324,7 +324,7 @@
 
                   <!-- clinical trial status -->
                   <div v-if="item.studyStatus">
-                    <TrialStatus :status="item.studyStatus" :locations="item.studyLocation" :setWidth="400" />
+                    <TrialStatus :status="item.studyStatus" :locations="item.studyLocation" />
                   </div>
 
                   <!-- relatedTo -->

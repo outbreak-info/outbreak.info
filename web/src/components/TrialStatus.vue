@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="d-flex flex-column mb-3" :style="{width: mapWidth + 'px'}">
+  <div class="d-flex flex-column mb-3" ref="map" :style="{width: mapWidth + 'px'}">
     <div class="status-container d-flex justify-content-between align-items-center py-1 px-2 mt-2">
       <div class="d-flex align-items-center">
         <!-- status -->
@@ -64,7 +64,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      mapWidth: 350
+      mapWidth: null
     };
   },
   watch: {},
@@ -72,7 +72,7 @@ export default Vue.extend({
     if (this.setWidth) {
       this.mapWidth = this.setWidth
     } else {
-      const targetWidth = window.innerWidth * 0.75 * 0.75;
+      const targetWidth = this.$refs.map.clientWidth * 0.85;
       this.mapWidth = targetWidth > 600 ? 600 : targetWidth;
     }
   },
