@@ -69,7 +69,7 @@ export default Vue.extend({
   watch: {},
   mounted() {
     const targetWidth = window.innerWidth * 0.75 * 0.75;
-    this.mapWidth = targetWidth > 750 ? 750 : targetWidth;
+    this.mapWidth = targetWidth > 600 ? 600 : targetWidth;
   },
   computed: {
     countries() {

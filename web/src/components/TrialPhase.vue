@@ -63,7 +63,7 @@ export default Vue.extend({
       triangleWidth: 10,
       allPhases: [1, 2, 3, 4],
       spacer: 7,
-      height: 27
+      height: 22
     };
   },
   watch: {},
