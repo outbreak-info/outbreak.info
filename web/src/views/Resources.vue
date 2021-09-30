@@ -107,7 +107,7 @@
               </div>
               <div class="col-sm-2 text-center p-1" v-if="facet.filtered.length">
                 <!-- toggle fa class up->down -->
-                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-up']" v-if="!dateFacet.expanded" />
+                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-up']" v-if="!facet.expanded" />
                 <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-down']" v-else />
               </div>
             </div>
