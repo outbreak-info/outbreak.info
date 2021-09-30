@@ -23,7 +23,8 @@
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb">
-                  <font-awesome-icon :icon="['fas', 'search']" /></span>
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
               </div>
               <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
             </div>
@@ -351,7 +352,23 @@
                 </div>
 
                 <div class="text-right border-top pt-2 mt-2 ml-2 mr-5 line-height-1 d-flex align-items-center" v-if="item.curatedBy">
-                  <div class="col-sm-12" :class="item['@type']">
+                  <!-- altmetrics badges -->
+                  <div class="d-flex flex-column align-items-center" v-if="item.doi">
+                    <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='right' :data-doi='item.doi'></div>
+                    <small class="d-flex">
+                      <a class="mr-1" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+                    </small>
+                  </div>
+
+                  <div class="d-flex flex-column  align-items-center" v-else-if="item.curatedBy.name=='ClinicalTrials.gov'">
+
+                    <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='right' :data-nct-id='item.identifier'></div>
+                    <small class="d-flex">
+                      <a class="mr-1" href="https://www.altmetric.com/" target="_blank">Altmetric</a> Rating
+                    </small>
+                  </div>
+
+                  <div class="col-sm-12 d-flex flex-column" :class="item['@type']">
                     <small>provided by {{ item.curatedBy.name }}</small>
                     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
                       <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" width="auto" height="25" class="ml-2" />
@@ -444,6 +461,8 @@ import {
   getResources
 } from "@/api/resources.js";
 
+// import{_altmetric_embed_init} from "@/js/altmetric_badges.js";
+
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
@@ -528,6 +547,17 @@ export default {
         this.numResults = results.total;
         this.esQuery = results.query;
 
+        // update Altmetric badges
+        // if (window._altmetric_embed_init) {
+        //   console.log("WINDOW EXISTS")
+        //   window._altmetric_embed_init();
+        // } else {
+        //   console.log("APPEND")
+        //   // append Altmetrics script
+        //   let altmetricsScript = document.createElement("script")
+        //   altmetricsScript.setAttribute('src', 'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js')
+        //   document.body.appendChild(altmetricsScript);
+        // }
         tippy(".keyword", {
           content: "Loading...",
           maxWidth: "200px",
@@ -761,6 +791,18 @@ export default {
   beforeDestroy() {
     if (this.resultsSubscription) {
       this.resultsSubscription.unsubscribe();
+    }
+  },
+
+  updated() {
+    if (window._altmetric_embed_init) {
+      // Call Altmetrics
+      window._altmetric_embed_init();
+    } else {
+      // append Altmetrics script
+      let altmetricsScript = document.createElement("script")
+      altmetricsScript.setAttribute('src', 'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js')
+      document.body.appendChild(altmetricsScript);
     }
   },
   computed: {
