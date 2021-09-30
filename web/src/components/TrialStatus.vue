@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="d-flex flex-column  mb-3">
+  <div class="d-flex flex-column mb-3" :style="{width: mapWidth + 'px'}">
     <div class="status-container d-flex justify-content-between align-items-center py-1 px-2 mt-2">
       <div class="d-flex align-items-center">
         <!-- status -->
@@ -55,10 +55,6 @@ export default Vue.extend({
     includeDate: {
       type: Boolean,
       default: false
-    },
-    mapWidth: {
-      type: Number,
-      default: 200
     }
   },
   components: {
@@ -67,18 +63,15 @@ export default Vue.extend({
   },
   data() {
     return {
-      phaseWidth: 37,
-      triangleWidth: 10,
-      allPhases: [1, 2, 3, 4],
-      spacer: 7,
-      height: 17
+      mapWidth: 350
     };
   },
   watch: {},
+  mounted() {
+    const targetWidth = window.innerWidth * 0.75 * 0.75;
+    this.mapWidth = targetWidth > 750 ? 750 : targetWidth;
+  },
   computed: {
-    width() {
-      return (this.phaseWidth * 5 + this.spacer * 4)
-    },
     countries() {
       return (uniq(this.locations.map(d => d.studyLocationCountry).sort((a, b) => a < b ? -1 : 1)));
     }

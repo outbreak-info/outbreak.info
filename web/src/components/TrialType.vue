@@ -1,9 +1,9 @@
 <template>
 <div class="d-flex flex-wrap my-2">
-  <small class="accent mr-2" v-if="design && design.studyType">
+  <div class="accent mr-2" v-if="design && design.studyType">
     {{ design.studyType }}
-  </small>
-  <small class="text-dark mr-3" v-for="(intervention, key) in arms" :key="key">
+  </div>
+  <div class="text-dark mr-3" v-for="(intervention, key) in arms" :key="key">
     <font-awesome-icon class="bright" :icon="['fas', 'pills']" v-if="intervention.category == 'drug'" />
     <!-- <i class="fas fa-prescription-bottle bright" v-if="intervention.category == 'drug'" /> -->
     <font-awesome-icon class="bright" :icon="['fas', 'dna']" v-if="intervention.category == 'genetic'" />
@@ -17,7 +17,7 @@
     <font-awesome-icon class="bright" :icon="['fas', 'user-nurse']" v-if="intervention.category == 'procedure'" />
     <font-awesome-icon class="bright" :icon="['fas', 'radiation']" v-if="intervention.category == 'radiation'" />
     {{ intervention.name }}
-  </small>
+  </div>
 </div>
 </template>
 
