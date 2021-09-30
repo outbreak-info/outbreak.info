@@ -51,6 +51,7 @@ export default Vue.extend({
   name: "TrialStatus",
   props: {
     status: Object,
+    setWidth: Number,
     locations: Array,
     includeDate: {
       type: Boolean,
@@ -68,8 +69,12 @@ export default Vue.extend({
   },
   watch: {},
   mounted() {
-    const targetWidth = window.innerWidth * 0.75 * 0.75;
-    this.mapWidth = targetWidth > 600 ? 600 : targetWidth;
+    if (this.setWidth) {
+      this.mapWidth = this.setWidth
+    } else {
+      const targetWidth = window.innerWidth * 0.75 * 0.75;
+      this.mapWidth = targetWidth > 600 ? 600 : targetWidth;
+    }
   },
   computed: {
     countries() {
