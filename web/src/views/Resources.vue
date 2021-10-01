@@ -57,7 +57,7 @@
       <div class="col-sm-4 col-md-3 col-xl-2">
         <div class="bg-white ml-1 mt-2 border-right">
 
-          <div class="border-bottom p-1 px-2 my-2 d-flex flex-column align-items-center">
+          <div class="filter-bottom pb-4 px-2 mt-0 mb-3 d-flex flex-column align-items-center">
             <!-- Toggle Header -->
             <div class="row m-0 pointer w-100" @click="dateFacet.expanded = !dateFacet.expanded">
               <div class="col-sm-10 p-1">
@@ -71,7 +71,7 @@
             </div>
             <DateHistogram :data="dates" v-if="dates && dates.length && !dateFacet.expanded" />
           </div>
-          <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
+          <div class="filter-bottom pb-4 px-2 mt-0 mb-3" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
             <div class="row m-0 pointer" @click="facet.expanded = !facet.expanded">
               <div class="col-sm-10 p-1">
@@ -869,6 +869,10 @@ export default {
 .search-result {
     border-bottom: 3px solid $grey-40;
     padding: 5px;
+}
+
+.filter-bottom {
+  border-bottom: 10px solid #82bed1;
 }
 
 .search-result:nth-child(odd) {
