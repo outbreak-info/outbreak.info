@@ -17,7 +17,7 @@
       <!-- search input -->
       <div class="col-sm-4 col-md-4">
         <div class="py-3">
-          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
+          <form autocomplete="off" class="m-auto">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb">
@@ -322,6 +322,8 @@
                     <small class="d-flex">
                       <a class="mr-1" href="https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated" target="_blank">Altmetric</a> Rating
                     </small>
+                  </div>
+                  <div v-else>
                   </div>
 
                   <div class="d-flex flex-column" :class="item['@type']">
@@ -734,7 +736,6 @@ export default {
       this.resultsSubscription.unsubscribe();
     }
   },
-
   updated() {
     if (window._altmetric_embed_init) {
       // Call Altmetrics
@@ -768,6 +769,9 @@ export default {
     }
   },
   watch: {
+    searchInput() {
+      this.debounceSearchText();
+    },
     $route: {
       immediate: true,
       handler(to, from) {
