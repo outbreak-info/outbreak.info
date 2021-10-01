@@ -7,17 +7,15 @@
 
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
-    <div class="row m-0 w-100">
-      <div class="col-sm-12 m-auto">
+    <div class="row m-0 d-flex align-items-center w-100">
+      <div class="col-sm-8 col-md-8">
         <h4>COVID-19 and SARS-CoV-2 datasets, analyses, and resources</h4>
+        <router-link :to="{path: '/sources', hash: '#resources'}" class="fa-sm text-white">Where do we get our data?</router-link>
+        <span class="text-muted mx-3">&bull;</span>
+        <router-link :to="{ name: 'Contributing' }" class="fa-sm text-white">Contributing a source</router-link>
       </div>
-    </div>
-  </section>
-
-  <section class="d-flex py-2">
-    <div class="row m-0 w-100">
-      <!-- search bar -->
-      <div class="col-sm-12 col-md-8">
+      <!-- search input -->
+      <div class="col-sm-4 col-md-4">
         <div class="py-3">
           <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
             <div class="input-group">
@@ -35,46 +33,20 @@
               <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
               Wrap terms in quotes if you want to search for an exact phrase, like
               <router-link class=" inline-block" :to="{
-                    name: 'Resources',
-                    query: { q: quotedSearch}
-                  }">"{{searchInput}}"</router-link>
+                      name: 'Resources',
+                      query: { q: quotedSearch}
+                    }">"{{searchInput}}"</router-link>
             </small>
           </div>
         </div>
-
-
       </div>
 
-      <!-- sidebar: links -->
-      <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
-        <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
-        <router-link :to="{path: '/sources', hash: '#resources'}">Where do we get our data?</router-link>
-        <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
-      </div>
-
-      <!-- what's new -->
-      <div class="col-sm-12">
-        <NewResources :newData="newData" />
-      </div>
     </div>
+
   </section>
 
   <!-- mini-nav for resource types -->
   <section class="d-flex justify-content-end py-2 bg-sec">
-    <!-- <div class="row d-flex justify-content-center w-100">
-      <nav class="navbar navbar-expand-lg navbar-dark">
-        <ul class="navbar-nav">
-          <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
-            <router-link class="nav-link no-underline p-0" :to="{
-                  name: 'Resources',
-                  query: { q: searchInput, filter: '@type:' + resource.id }
-                }">
-              {{ resource.label }}
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-    </div> -->
   </section>
 
   <!-- RESULTS -->
@@ -157,7 +129,7 @@
                 <h4 class="m-0 mr-4" v-if="q">
                   You searched for {{ q }}
                 </h4>
-                <div class="m-0 text-highlight">
+                <div class="m-0 text-highlight fa-lg">
                   {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
                 </div>
               </div>
@@ -448,7 +420,6 @@ import StripeAccent from "@/components/StripeAccent.vue";
 import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
-import NewResources from "@/components/NewResources.vue";
 import DownloadData from "@/components/DownloadData.vue";
 import Donut from "@/components/Donut.vue";
 import DateHistogram from "@/components/DateHistogram.vue";
@@ -508,7 +479,6 @@ export default {
     TrialStatus,
     TrialType,
     FontAwesomeIcon,
-    NewResources,
     DownloadData,
     Donut,
     DateHistogram
