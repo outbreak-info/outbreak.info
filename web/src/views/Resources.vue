@@ -57,9 +57,9 @@
       <div class="col-sm-4 col-md-3 col-xl-2">
         <div class="bg-white ml-1 mt-2 border-right">
 
-          <div class="border-bottom p-1 px-2 my-2">
+          <div class="border-bottom p-1 px-2 my-2 d-flex flex-column align-items-center">
             <!-- Toggle Header -->
-            <div class="row m-0 pointer" @click="dateFacet.expanded = !dateFacet.expanded">
+            <div class="row m-0 pointer w-100" @click="dateFacet.expanded = !dateFacet.expanded">
               <div class="col-sm-10 p-1">
                 <h6 class="p-0 m-0">Date</h6>
               </div>
@@ -133,39 +133,23 @@
                   {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
                 </div>
               </div>
-              <!-- <small class="text-muted text-left" v-if="filterString">
-              filtered by {{ filterString }}
-            </small>
-            <button @click="clearFilters" v-if="filterString">
-              <small>clear filters</small>
-            </button> -->
-
-              <!-- <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
-              <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === 0 }" @click="changePage(-1)">
-                <font-awesome-icon :icon="['fas', 'arrow-left']" />
-              </button>
-              <small>viewing results {{ (lowerLim + 1).toLocaleString() }} &minus; {{ upperLim.toLocaleString() }} of
-                {{ numResults.toLocaleString() }}</small>
-              <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
-                <font-awesome-icon :icon="['fas', 'arrow-right']" />
-              </button>
-            </div> -->
             </div>
 
+            <div class="d-flex">
+              <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" class="mr-4" />
 
-            <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" />
+              <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown mr-4">
+                <option v-for="option in pageOpts" :value="option" :key="option">
+                  {{ option }} results
+                </option>
+              </select>
 
-            <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
-              <option v-for="option in pageOpts" :value="option" :key="option">
-                {{ option }} results
-              </option>
-            </select>
-
-            <select v-model="sortValue" @change="changeSort">
-              <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
-                {{option.label}}
-              </option>
-            </select>
+              <select v-model="sortValue" @change="changeSort">
+                <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
+                  {{option.label}}
+                </option>
+              </select>
+            </div>
           </div>
 
           <!-- Selected filters -->
