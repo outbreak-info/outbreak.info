@@ -5,23 +5,12 @@ import store from "@/store";
 
 Vue.use(VueRouter);
 
-const routes = [{
-    path: "/",
-    name: "Home",
-    component: () =>
-      import( /* webpackChunkName: "home" */ "../views/Home.vue")
-  },
+const routes = [
   {
     path: "/privacy",
     name: "Privacy",
     component: () =>
       import( /* webpackChunkName: "privacy" */ "../views/Privacy.vue")
-  },
-  {
-    path: "/faq",
-    name: "FAQ",
-    component: () =>
-      import( /* webpackChunkName: "faq" */ "../views/Faq.vue")
   },
   {
     path: "/terms",
@@ -36,73 +25,13 @@ const routes = [{
       import( /* webpackChunkName: "license" */ "../views/License.vue")
   },
   {
-    path: "/videos",
-    name: "Videos",
-    component: () =>
-      import( /* webpackChunkName: "videos" */ "../views/Videos.vue")
-  },
-  {
-    path: "/citation",
-    name: "Citation",
-    component: () =>
-      import( /* webpackChunkName: "citation" */ "../views/Citation.vue")
-  },
-  {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import( /* webpackChunkName: "about" */ "../views/About.vue")
-  },
-  {
-    path: "/regions",
-    name: "Regions",
-    component: () =>
-      import( /* webpackChunkName: "regions" */ "../views/Regions.vue")
-  },
-  {
     path: "/schema",
     name: "Schema",
     component: () =>
       import( /* webpackChunkName: "schema" */ "../views/Schema.vue")
   },
-  {
-    path: "/maps",
-    name: "Maps",
-    props: route => ({
-      admin_level: route.query.admin_level,
-      location: route.query.location,
-      variable: route.query.variable,
-      sort: route.query.sort,
-      date: route.query.date,
-      min: route.query.min,
-      max: route.query.max,
-      animate: route.animate
-    }),
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import( /* webpackChunkName: "compare" */ "../views/Maps.vue")
-  },
-  {
-    path: "/compare",
-    name: "Compare",
-    props: route => ({
-      admin_levels: route.query.admin_levels,
-      location: route.query.location,
-      variable: route.query.variable,
-      similarity: route.query.similarity
-    }),
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import( /* webpackChunkName: "compare" */ "../views/Compare.vue")
-  },
-  {
+
+ {
     path: "/latest",
     name: "Latest",
     // route level code-splitting
@@ -110,28 +39,6 @@ const routes = [{
     // which is lazy-loaded when the route is visited.
     component: () =>
       import( /* webpackChunkName: "latest" */ "../views/Latest.vue")
-  },
-  {
-    path: "/data",
-    name: "Data",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "data" */ "../views/Data.vue")
-  },
-  {
-    path: "/press",
-    name: "Press",
-    component: () => import( /* webpackChunkName: "press" */ "../views/Press.vue")
-  },
-  {
-    path: "/sources",
-    name: "Sources",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import( /* webpackChunkName: "sources" */ "../views/Sources.vue")
   },
   {
     path: "/contributing-data",
@@ -210,36 +117,7 @@ const routes = [{
       import( /* webpackChunkName: "summary" */ "../views/Summary.vue")
   },
   {
-    path: "/epidemiology",
-    name: "Epidemiology",
-    props: route => ({
-      location: route.query.location,
-      xVariable: route.query.xVariable,
-      variable: route.query.variable,
-      log: route.query.log,
-      fixedY: route.query.fixedY,
-      percapita: route.query.percapita
-    }),
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "epi" */ "../views/Epi.vue")
-  },
-  {
-    path: "/doubling-rates",
-    name: "Doubling Rates",
-    props: route => ({
-      location: route.query.location,
-      variable: route.query.variable
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "doubling-rates" */
-        "../views/DoublingRates.vue"
-      )
-  },
-  {
-    path: "/situation-reports",
+    path: "/",
     name: "SituationReports",
     props: route => ({
       voc: route.query.voc,

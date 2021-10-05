@@ -22,41 +22,7 @@
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
     <div class="row m-0 w-100 d-flex justify-content-center">
 
-      <!-- EPI INTRO -->
-      <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro">
-        <div class="mb-3">
-          <router-link :to="{name: 'Epidemiology'}" class="text-light">
-            <h3 class="my-3">COVID-19 Cases &amp; Deaths</h3>
-          </router-link>
-
-          <div id="sBar-text" class="form-text d-block mb-3 text-light-highlight line-height-1">View COVID-19 trends by region, country, state/province, U.S.
-            metropolitan area, or U.S. county</div>
-        </div>
-
-        <div>
-          <SearchBar routeTo="/epidemiology?" placeholder="Search location" class="w-100" :darkMode="false"></SearchBar>
-          <small id="sBar-example" class="form-text d-block text-left ml-5">
-            <span class="mr-2">Try:</span>
-            <span class="mr-3">
-              <router-link :to="{name: 'Epidemiology', query: {location: 'BRA'}} " class="text-light">Brazil
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
-            </span>
-
-            <span class="mr-3">
-              <router-link :to="{name: 'Epidemiology', query: {location: 'CITY_US-NY_NYC'}} " class="text-light">New York City
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
-            </span>
-
-            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
-              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-            </router-link>
-          </small>
-        </div>
-      </div>
-
-      <!-- VARIANTS -->
+       <!-- VARIANTS -->
       <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro">
         <div class="mb-3">
           <router-link :to="{name: 'SituationReports'}" class="text-light">
