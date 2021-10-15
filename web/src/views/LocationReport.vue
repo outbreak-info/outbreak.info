@@ -547,7 +547,7 @@ export default {
       if (this.newPango && this.newMuts.length) {
         newVariantObj = {
           label: `${this.newPango.name} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
-          qParam: `${this.newPango.name}|${this.newMuts.map(d => d.mutation).join(",")}`,
+          qParam: `${this.newPango.name}|${this.newMuts.map(d => d.mutation).join(" AND ")}`,
           type: "variant"
         }
       } else if (this.newPango) {
