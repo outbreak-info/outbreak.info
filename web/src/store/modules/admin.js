@@ -43,6 +43,10 @@ const state = {
       linkedin: "https://www.linkedin.com/in/lauradhughes/"
     },
     {
+      name: "Kaleigh Jaeger",
+      img: "kaleigh.png"
+    },
+    {
       name: "Alaa Abdel Latif",
       img: "alaa.jpg"
     },
