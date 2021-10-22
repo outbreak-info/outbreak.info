@@ -742,7 +742,20 @@ export default {
         this.filteredReports.forEach(group => {
           let filtered = [];
           group.values.forEach(report => {
-            if (report.classifications && (this.selectedVOC.length || this.selectedVOI.length)) {
+            // FILTER OUTBREAK CLASSIFICATIONS
+            if (report.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") ||
+              report.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
+              // Filter by outbreak VOC/VOI + name
+              if(this.searchInput){
+              if (report.searchTerms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+                filtered.push(report);
+              }} else {
+                // just add the outbreak VOC/VOI
+                filtered.push(report)
+              }
+
+              // FILTER BY CLASSICATIONS
+            } else if (report.classifications && (this.selectedVOC.length || this.selectedVOI.length)) {
               // filter name filters
               if (this.searchInput) {
                 if (report.searchTerms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())) &&
@@ -752,7 +765,10 @@ export default {
                   filtered.push(report);
                 }
               } else {
-                if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI
+                // filter only the classifications
+                if (report.classifications.filter(x => x.variantType == "VOC" &&
+                    this.selectedVOC.includes(x.author)).length ||
+                  report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI
                     .includes(x
                       .author))
                   .length) {
