@@ -90,7 +90,7 @@ const state = {
     }
   ],
   funding: [{
-      identifier: "5 U19 AI135995-02",
+      identifier: "5 U19 AI135995-04S3",
       name: "CViSB",
       funder: {
         name: "National Institute for Allergy and Infectious Diseases"
