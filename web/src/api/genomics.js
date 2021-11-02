@@ -709,7 +709,7 @@ function cleanSelectors(id) {
   return id.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_");
 }
 
-export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true) {
+export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true, includeSublineages = false) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
     return ( of ([]));
@@ -718,12 +718,20 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   if (Array.isArray(lineage)) {
     lineage = lineage.map(d => {
       const filtered = CURATED.filter(report => report.label == d);
+      if (includeSublineages) {
+        return filtered.length === 1 ? `${filtered[0].char_muts_parent_query},${filtered[0].pango_descendants.join(",")}` : lineage;
+      } else {
       return (filtered.length === 1 ? filtered[0].char_muts_parent_query : d)
+    }
     })
     lineage = lineage.join(",");
   } else {
     const filtered = CURATED.filter(report => report.label == lineage);
-    lineage = filtered.length === 1 ? filtered[0].char_muts_parent_query : lineage;
+    if (includeSublineages) {
+      lineage = filtered.length === 1 ? `${filtered[0].char_muts_parent_query},${filtered[0].pango_descendants.join(",")}` : lineage;
+    } else {
+      lineage = filtered.length === 1 ? filtered[0].char_muts_parent_query : lineage;
+    }
   }
 
   // convert + to AND to specify lineages + mutations
@@ -1857,7 +1865,7 @@ export function getComparisonByLocation(apiurl, lineages, prevalenceThreshold, l
 
 
 
-export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
+export function getLineagesComparison(apiurl, lineages, prevalenceThreshold, includeSublineages = false) {
   store.state.genomics.locationLoading2 = true;
 
   // if nothing selected, pull out the VOCs/VOIs
@@ -1871,7 +1879,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold) {
 
   const ofInterest = getVOCs();
 
-  return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0))]).pipe(
+  return forkJoin([...lineages.map(lineage => getCharacteristicMutations(apiurl, lineage, 0, true, includeSublineages))]).pipe(
     map((results, idx) => {
       const prevalentMutations = uniq(results.flatMap(d => d).filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
 
