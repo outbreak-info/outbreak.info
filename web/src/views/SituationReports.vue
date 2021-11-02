@@ -332,8 +332,14 @@
                       <div class="d-flex flex-column align-items-center">
                         <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.mutationsYDomain" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
                         <div class="d-flex">
-                          <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-if="report.mutations.length">
-                            <small v-if="report.pango_sublineages.length">Compare sublineages
+                          <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.who_name, sub: true } }" v-if="report.mutations.length && report.who_name">
+                            <small v-if="report.pango_sublineages.length">Compare {{report.who_name}} sublineages
+                            </small>
+                            <small v-else>Explore all genes
+                            </small>
+                          </router-link>
+                          <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-else-if="report.mutations.length">
+                            <small v-if="report.pango_sublineages.length">Compare {{report.pangolin_lineage}} sublineages
                             </small>
                             <small v-else>Explore all genes
                             </small>
