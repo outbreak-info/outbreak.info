@@ -65,7 +65,7 @@
       </div>
     </div> -->
 
-    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom colapse">
+    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom collapse">
       <div class="d-flex justify-content-between mt-1 mb-2">
         <h4>Selected lineages</h4>
         <font-awesome-icon class="mr-2" :icon="['far', 'times-circle']" :style="{'opacity': '0.6'}" data-toggle="collapse" data-target="#select-lineages" />
