@@ -1737,7 +1737,10 @@ export function getSequenceCount(apiurl, location = null, cumulative = true, rou
 
 // COMPARISON REPORTS
 export function getBasicComparisonReportData(apiurl) {
-  store.state.genomics.locationLoading1 = true
+  store.state.genomics.locationLoading1 = true;
+
+  const who = CURATED.filter(d => d.who_name).map(d => d.who_name).sort();
+
   return forkJoin([
     getDateUpdated(apiurl),
     getSequenceCount(apiurl)
@@ -1745,6 +1748,7 @@ export function getBasicComparisonReportData(apiurl) {
     map(([dateUpdated, total]) => {
       return ({
         dateUpdated: dateUpdated,
+        who: who,
         total: total
       })
     }),

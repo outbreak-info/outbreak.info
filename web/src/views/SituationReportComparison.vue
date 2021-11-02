@@ -124,11 +124,24 @@
             <div class="line-height-1" style="width: 200px">
               <div class="fa-sm mt-2 ml-2">&gt;&gt; Add all lineages associated with a WHO VOC / VOI</div>
             </div>
-            <div class="d-flex flex-wrap align-items-center">
-              <button v-for="(who, wIdx) in whoLineages" :key="wIdx" class="ml-2 px-2 py-1 btn btn-sec fa-sm text-no-transform">
-                {{ who }}
+
+            <div class="d-flex flex-wrap align-items-center mt-3 justify-content-center">
+              <select v-model="selectedWHO">
+                <option v-for="(who, wIdx) in whoLineages" :key="wIdx" class="ml-2 px-2 py-1 btn btn-sec fa-sm text-no-transform">
+                  {{ who }}
+                </option>
+              </select>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between my-3" style="width: 250px" v-if="selectedWHO">
+              <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addWHO(false)">
+                <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />Add <b>{{selectedWHO}}</b> lineages
+              </button>
+              <button class="ml-2 px-2 py-1 btn btn-sec fa-sm" @click="addWHO(true)">
+                <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />clear &amp; add <b>{{selectedWHO}}</b> lineages
               </button>
             </div>
+
           </div>
 
           <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
@@ -526,7 +539,8 @@ export default {
       voc_parent: null,
       moi: null,
       moc: null,
-      whoLineages: ["Alpha", "Beta"],
+      selectedWHO: null,
+      whoLineages: [],
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -586,6 +600,7 @@ export default {
     this.basicSubscription = getBasicComparisonReportData(this.$genomicsurl).subscribe(results => {
       this.totalSequences = results.total;
       this.lastUpdated = results.dateUpdated.lastUpdated;
+      this.whoLineages = results.who;
     })
   },
   created() {
@@ -696,21 +711,21 @@ export default {
     },
     changeInclSublineages() {
       this.selectedPango = this.pango;
-        this.$router.push({
-          name: "SituationReportComparison",
-          params: {
-            disableScroll: true
-          },
-          query: {
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode
-          }
-        })
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.pango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold,
+          sub: this.includeSublineages,
+          dark: this.darkMode
+        }
+      })
 
-        this.getData();
+      this.getData();
     },
     updateLocation(location) {
       this.selectedLocation = location;
@@ -820,6 +835,39 @@ export default {
     clearAddLocationLineages() {
       this.selectedPango = [];
       this.addLocationLineages();
+    },
+    addWHO(clearPrevious = false) {
+      // set new values
+      if (clearPrevious) {
+        this.selectedPango = [this.selectedWHO];
+      } else {
+        this.selectedPango.push(this.selectedWHO)
+      }
+      this.includeSublineages = true;
+
+      this.showSnackbar = true;
+      this.snackbarText = `${this.selectedWHO} lineages added`
+      setTimeout(() => {
+        this.showSnackbar = false;
+      }, 5000);
+
+      this.$router.push({
+        name: "SituationReportComparison",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          pango: this.selectedPango,
+          gene: this.selectedGenes,
+          threshold: this.prevalenceThreshold,
+          sub: true,
+          dark: this.darkMode
+        }
+      })
+
+      // reset / clear
+      this.selectedWHO = null;
+      this.getData();
     },
     addPango(selected) {
       this.selectedPango.push(selected.name);
@@ -941,9 +989,5 @@ $circle-width-sm: 1.1em;
 
 .warning {
     color: $warning-color;
-}
-
-.text-no-transform {
-    text-transform: none !important;
 }
 </style>
