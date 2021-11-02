@@ -1916,8 +1916,6 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold, inc
           d.type == "deletion" ? d.mutation.toUpperCase().split(":").slice(-1)[0] : d.mutation;
       })
 
-      // update lineages to be the "fixed" names, to account for WHO / grouped names.
-      lineages = uniq(results.flatMap(d => d).map(d => d.pangolin_lineage));
 
       let nestedByGenes = nest()
         .key(d => d.gene)
@@ -1931,8 +1929,7 @@ export function getLineagesComparison(apiurl, lineages, prevalenceThreshold, inc
         voc: ofInterest.voc,
         voc_parent: ofInterest.voc_parent,
         voi: ofInterest.voi,
-        voi_parent: ofInterest.voi_parent,
-        yDomain: lineages
+        voi_parent: ofInterest.voi_parent
       })
     }),
     catchError(e => {

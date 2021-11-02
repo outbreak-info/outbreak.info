@@ -319,7 +319,8 @@ const routes = [{
       gene: route.query.gene,
       dark: route.query.dark,
       sub: route.query.sub,
-      threshold: route.query.threshold
+      threshold: route.query.threshold,
+      nthresh: route.query.nthresh
     }),
     component: () =>
       import(
