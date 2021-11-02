@@ -70,16 +70,19 @@
         <h4>Selected lineages</h4>
         <font-awesome-icon class="mr-2" :icon="['far', 'times-circle']" :style="{'opacity': '0.6'}" data-toggle="collapse" data-target="#select-lineages" />
       </div>
-      <div class="d-flex flex-wrap">
+      <div class="d-flex flex-wrap align-items-center">
         <button role="button" class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1" v-for="(lineage, lIdx) in selectedPango" :key="lIdx" @click="deletePango(lIdx)">
           <span>{{lineage}}</span>
           <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
         </button>
-        <label class="b-contain d-flex align-items-center pl-4 m-0">
-          <input type="checkbox" id="checkbox" v-model="includeSublineages" @change="changeInclSublineages">
-          include sublineages
-          <div class="b-input"></div>
-        </label>
+        <div class="ml-3">
+          <label class="b-contain pr-4 m-0">
+            <input type="checkbox" id="checkbox" v-model="includeSublineages" @change="changeInclSublineages">
+            include sublineages
+            <div class="b-input"></div>
+          </label>
+        </div>
+
         <button role="button" class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1" @click="clearPango()">
           clear lineages
         </button>
