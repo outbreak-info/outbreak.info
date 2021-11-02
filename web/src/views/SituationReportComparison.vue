@@ -75,8 +75,8 @@
           <span>{{lineage}}</span>
           <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
         </button>
-        <label class="b-contain d-flex align-items-center pr-4 m-0">
-          <input type="checkbox" id="checkbox" v-model="includeSublineages">
+        <label class="b-contain d-flex align-items-center pl-4 m-0">
+          <input type="checkbox" id="checkbox" v-model="includeSublineages" @change="changeInclSublineages">
           include sublineages
           <div class="b-input"></div>
         </label>
@@ -624,7 +624,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
-          sublineages: this.includeSublineages,
+          sub: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -651,7 +651,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
-          sublineages: this.includeSublineages,
+          sub: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -667,7 +667,7 @@ export default {
           pango: this.pango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
-          sublineages: this.includeSublineages,
+          sub: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -683,13 +683,31 @@ export default {
             pango: this.pango,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
-            sublineages: this.includeSublineages,
+            sub: this.includeSublineages,
             dark: this.darkMode
           }
         })
 
         this.getData();
       }
+    },
+    changeInclSublineages() {
+      this.selectedPango = this.pango;
+        this.$router.push({
+          name: "SituationReportComparison",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.pango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+
+        this.getData();
     },
     updateLocation(location) {
       this.selectedLocation = location;
@@ -719,7 +737,7 @@ export default {
           pango: this.pango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
-          sublineages: this.includeSublineages,
+          sub: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -749,7 +767,7 @@ export default {
             pango: results.yDomain,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
-            sublineages: this.includeSublineages,
+            sub: this.includeSublineages,
             dark: this.darkMode
           }
         })
@@ -783,7 +801,7 @@ export default {
             pango: results.yDomain,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
-            sublineages: this.includeSublineages,
+            sub: this.includeSublineages,
             dark: this.darkMode
           }
         })
@@ -819,7 +837,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
-          sublineages: this.includeSublineages,
+          sub: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -834,7 +852,7 @@ export default {
           pango: [],
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
-          sublineages: this.includeSublineages,
+          sub: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -851,7 +869,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
-          sublineages: this.includeSublineages,
+          sub: this.includeSublineages,
           dark: this.darkMode
         }
       })
