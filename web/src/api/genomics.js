@@ -275,6 +275,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
       curated.forEach(report => {
         let mutations_in_report = [];
 
+        report["showSublineages"] = false;
         report["mutations"] = Object.keys(charMuts).includes(report.char_muts_parent_query) ? charMuts[report.char_muts_parent_query] : [];
         report["mutationsYDomain"] = uniq(report.mutations.map(d => d.pangolin_lineage));
         report["lineage_count"] = report.mutations[0] ? report.mutations[0].lineage_count.toLocaleString() : null;
