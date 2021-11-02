@@ -464,7 +464,7 @@ const routes = [{
     beforeEnter(to, from, next) {
       // redirect to blog.outbreak.info to account for nginx config change.
       if(Object.keys(to.query).length) {
-        window.location.replace(`https://blog.outbreak.info${to.fullPath}`)
+        window.location.replace(`https://blog.outbreak.info${to.fullPath.replace("/blog", "")}`)
       } else {
       window.location.replace("https://blog.outbreak.info")
       }
