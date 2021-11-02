@@ -318,6 +318,7 @@ const routes = [{
       pango: route.query.pango,
       gene: route.query.gene,
       dark: route.query.dark,
+      sub: route.query.sub,
       threshold: route.query.threshold
     }),
     component: () =>
