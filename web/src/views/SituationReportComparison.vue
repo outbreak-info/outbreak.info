@@ -65,7 +65,7 @@
       </div>
     </div> -->
 
-    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom collapse">
+    <div id="select-lineages" class="my-3 p-2 bg-white border-top border-bottom colapse">
       <div class="d-flex justify-content-between mt-1 mb-2">
         <h4>Selected lineages</h4>
         <font-awesome-icon class="mr-2" :icon="['far', 'times-circle']" :style="{'opacity': '0.6'}" data-toggle="collapse" data-target="#select-lineages" />
@@ -75,6 +75,11 @@
           <span>{{lineage}}</span>
           <font-awesome-icon class="ml-1" :icon="['far', 'times-circle']" :style="{'font-size': '0.85em', 'opacity': '0.6'}" />
         </button>
+        <label class="b-contain d-flex align-items-center pr-4 m-0">
+          <input type="checkbox" id="checkbox" v-model="includeSublineages">
+          include sublineages
+          <div class="b-input"></div>
+        </label>
         <button role="button" class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1" @click="clearPango()">
           clear lineages
         </button>
@@ -111,6 +116,21 @@
           <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center">
               <div class="mr-2 circle">2</div>
+              <span class="mr-1"></span><a href='https://cov-lineages.org/lineage_list.html' target='_blank'>WHO VOC/VOI sublineages</a>
+            </h6>
+            <div class="line-height-1" style="width: 200px">
+              <div class="fa-sm mt-2 ml-2">&gt;&gt; Add all lineages associated with a WHO VOC / VOI</div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center">
+              <button v-for="(who, wIdx) in whoLineages" :key="wIdx" class="ml-2 px-2 py-1 btn btn-sec fa-sm text-no-transform">
+                {{ who }}
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3">
+            <h6 class="d-flex align-items-center">
+              <div class="mr-2 circle">3</div>
               <span class="mr-1">By</span><a href='https://cov-lineages.org/lineage_list.html' target='_blank'>PANGO lineage</a>
             </h6>
             <div class="line-height-1" style="width: 200px">
@@ -125,7 +145,7 @@
 
           <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">3</div>
+              <div class="mr-2 circle">4</div>
               Containing a mutation(s)
             </h6>
 
@@ -182,7 +202,7 @@
 
           <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
             <h6 class="d-flex align-items-center p-0 m-0">
-              <div class="mr-2 circle">4</div>
+              <div class="mr-2 circle">5</div>
               Prevalent in a location
             </h6>
             <div class="d-flex">
@@ -422,6 +442,10 @@ export default {
       type: [String, Boolean],
       default: true
     },
+    sub: {
+      type: [String, Boolean],
+      default: false
+    },
     gene: {
       type: [Array, String],
       default: () => [
@@ -467,6 +491,7 @@ export default {
       today: null,
       url: null,
       darkMode: null,
+      includeSublineages: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
       title: "Lineage Comparison",
       queryPangolin: null,
@@ -498,6 +523,7 @@ export default {
       voc_parent: null,
       moi: null,
       moc: null,
+      whoLineages: ["Alpha", "Beta"],
       geneOpts: [
         "ORF1a",
         "ORF1b",
@@ -520,6 +546,7 @@ export default {
     this.today = formatDate(this.currentTime);
 
     this.darkMode = this.dark == "true" || !!(this.dark) && this.dark != "false";
+    this.includeSublineages = this.sub == "true" || !!(this.sub) && this.sub != "false";
 
     this.prevalenceThreshold = +this.threshold;
     this.colorScale = scaleSequential(interpolateRdPu);
@@ -597,6 +624,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
+          sublineages: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -623,6 +651,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
+          sublineages: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -638,6 +667,7 @@ export default {
           pango: this.pango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
+          sublineages: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -653,6 +683,7 @@ export default {
             pango: this.pango,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
+            sublineages: this.includeSublineages,
             dark: this.darkMode
           }
         })
@@ -668,7 +699,7 @@ export default {
       this.moc = ofInterest.moc;
       this.moi = ofInterest.moi;
 
-      this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100).subscribe(results => {
+      this.heatmapSubscription = getLineagesComparison(this.$genomicsurl, this.selectedPango, this.prevalenceThreshold / 100, this.includeSublineages).subscribe(results => {
         this.mutationHeatmap = results.data;
         this.downloadableHeatmap = results.dataFlat;
         this.selectedPango = results.yDomain;
@@ -688,6 +719,7 @@ export default {
           pango: this.pango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
+          sublineages: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -717,6 +749,7 @@ export default {
             pango: results.yDomain,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
+            sublineages: this.includeSublineages,
             dark: this.darkMode
           }
         })
@@ -750,6 +783,7 @@ export default {
             pango: results.yDomain,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
+            sublineages: this.includeSublineages,
             dark: this.darkMode
           }
         })
@@ -785,6 +819,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
+          sublineages: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -799,6 +834,7 @@ export default {
           pango: [],
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
+          sublineages: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -815,6 +851,7 @@ export default {
           pango: this.selectedPango,
           gene: this.selectedGenes,
           threshold: this.prevalenceThreshold,
+          sublineages: this.includeSublineages,
           dark: this.darkMode
         }
       })
@@ -883,5 +920,9 @@ $circle-width-sm: 1.1em;
 
 .warning {
     color: $warning-color;
+}
+
+.text-no-transform {
+    text-transform: none !important;
 }
 </style>
