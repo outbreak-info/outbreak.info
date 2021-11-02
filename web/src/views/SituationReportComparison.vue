@@ -275,45 +275,46 @@
 
     <!-- LOOP OVER MUTATION HEATMAPS -->
     <div id="mutation-heatmaps" class="mt-4">
-      <div class="d-flex flex-wrap justify-content-between">
-        <div class="d-flex align-items-center" :class="{'flex-wrap': mediumScreen}">
-          <div class="d-flex flex-column">
-            <div class="d-flex align-items-center">
-              <h3 class="m-0">Mutation prevalence across lineages</h3>
-              <button class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
-                <font-awesome-icon class="m-0 mr-2 fa-xs" :icon="['fas', 'sync']" />
-                <span class="fa-xs">change lineages</span>
-              </button>
-            </div>
-            <p class="text-muted line-height-1 m-0 my-1">Mutations with > {{ prevalenceThreshold }}% prevalence in at least one lineage</p>
+      <!-- ADJUST PARAMS -->
+      <div class="d-flex w-100 flex-column bg-white border-top border-bottom py-1 mb-3" :class="{'flex-wrap': smallScreen}">
+        <div class="d-flex flex-wrap justify-content-between align-items-center" :class="{'flex-wrap': smallScreen}">
+          <div class="dark-mode-helper" :data-tippy-info="darkModeHelper" style="margin-left: 90px;">
+            <input class="checkbox" id="checkbox1" type="checkbox" v-model.lazy="darkMode" @change="routeDark" />
+            <label for="checkbox1" class="checkbox-label">
+              <span class="on">dark mode</span>
+              <span class="off">light mode</span>
+            </label>
           </div>
-          <div class="d-flex align-items-center" :class="{'flex-wrap': smallScreen}">
-            <!-- CHECKBOX TO SELECT GENES -->
-            <div id="select-genes" class="d-flex align-items-center justify-content-between mt-3">
-              <small class="text-muted text-right mx-2 line-height-1">include genes:</small>
-              <div class="d-flex flex-wrap">
-                <label class="b-contain pr-3" v-for="(gene, idx) in geneOpts" :key="idx">
-                  <span>{{gene}}</span>
-                  <input type="checkbox" :id="gene" :value="gene" v-model.lazy="selectedGenes" @change="updateGenes()" />
-                  <div class="b-input"></div>
-                </label>
-              </div>
-            </div>
 
+          <!-- CHECKBOX TO SELECT GENES -->
+          <div id="select-genes" class="d-flex align-items-center justify-content-between ml-3">
+            <small class="text-muted text-right mx-2 line-height-1">include genes:</small>
+            <div class="d-flex flex-wrap">
+              <label class="b-contain pr-3" v-for="(gene, idx) in geneOpts" :key="idx">
+                <span>{{gene}}</span>
+                <input type="checkbox" :id="gene" :value="gene" v-model.lazy="selectedGenes" @change="updateGenes()" />
+                <div class="b-input"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex" style="margin-right: 90px;">
+            <!-- MIN MUTATION % -->
             <div class="d-flex flex-column ml-3">
               <small class="text-muted line-height-1" style="width: 100px">Min. mutation prevalence</small>
               <div class="mt-2">
                 <span class="percent-sign border border-radius-1 bg-white py-1">
-                  <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 42px" v-model="prevalenceThreshold" @change="debounceThreshold" />
+                  <input type="number" min="0" max="100" class="flex-grow-0 px-2" style="width: 42px" v-model="prevalenceThreshold" />
                   <span class="mr-1">%</span>
                 </span>
               </div>
             </div>
 
+            <!-- MIN LINEAGE COUNT -->
             <div class="d-flex flex-column ml-3">
               <small class="text-muted line-height-1" style="width: 100px">Min. sequences per lineage</small>
               <div class="mt-2">
-                <input type="number" min="1" class="flex-grow-0 px-2 border border-radius-1" style="width: 85px" v-model="countThreshold" @change="debounceCountThreshold" />
+                <input type="number" min="1" class="flex-grow-0 px-2 border border-radius-1" style="width: 85px" v-model="countThreshold" />
               </div>
             </div>
 
@@ -321,16 +322,29 @@
         </div>
       </div>
 
-      <!-- LEGEND -->
-      <div class="d-flex w-100 justify-content-between">
-        <div class="d-flex align-items-center dark-mode-helper my-2" :data-tippy-info="darkModeHelper" style="margin-left: 85px;">
-          <input class="checkbox" id="checkbox1" type="checkbox" v-model.lazy="darkMode" @change="routeDark" />
-          <label for="checkbox1" class="checkbox-label">
-            <span class="on">dark mode</span>
-            <span class="off">light mode</span>
-          </label>
+
+
+      <!-- TITLE -->
+      <div class="d-flex flex-wrap justify-content-between">
+        <div class="d-flex align-items-center" :class="{'flex-wrap': mediumScreen}">
+          <div class="d-flex flex-column">
+            <div class="d-flex align-items-center">
+              <h2 class="m-0">Mutation prevalence across lineages</h2>
+              <button class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+                <font-awesome-icon class="m-0 mr-2 fa-xs" :icon="['fas', 'sync']" />
+                <span class="fa-xs">change lineages</span>
+              </button>
+            </div>
+            <div class="d-flex flex-wrap">
+              <p class="text-muted line-height-1 m-0 my-1">Mutations with > {{ prevalenceThreshold }}% prevalence in at least one lineage.</p>
+              <p class="text-muted font-weight-bold line-height-1 m-0 my-1 ml-2" v-if="countThreshold > 1">Lineages with fewer than {{countThreshold.toLocaleString()}} sequences have been removed.</p>
+            </div>
+
+          </div>
+
         </div>
 
+        <!-- LEGEND -->
         <div id="legend" class="d-flex px-2 py-1 my-2" :class="{'bg-dark' : darkMode}">
           <GradientLegend maxValue="100%" :colorScale="colorScale" :dark="darkMode" label="Mutation prevalence in lineage" class="mr-3" />
           <div class="d-flex align-items-center">
@@ -355,6 +369,7 @@
 
         </div>
       </div>
+
 
 
       <div class="d-flex flex-wrap">
@@ -511,6 +526,18 @@ export default {
     },
     darkModeHelper() {
       return (this.darkMode ? "Switch to <b>light mode</b> to focus on similarities between lineages" : "Switch to <b>dark mode</b> to emphasize mutations with low prevalence")
+    }
+  },
+  watch: {
+    countThreshold(newVal, oldVal) {
+      if (oldVal && newVal != oldVal) {
+        this.debounceCountThreshold();
+      }
+    },
+    prevalenceThreshold(newVal, oldVal) {
+      if (oldVal && newVal != oldVal) {
+        this.debounceThreshold();
+      }
     }
   },
   data() {
