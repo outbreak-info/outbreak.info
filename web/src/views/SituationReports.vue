@@ -1241,6 +1241,6 @@ $de-escalated: #bab0ab;
 }
 
 .opacity-75 {
-  opacity: 75% !important;
+  opacity: 0.75 !important;
 }
 </style>
