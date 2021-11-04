@@ -171,8 +171,9 @@ export default {
       return window.location.href;
     },
     resourceLinkLabel() {
+      console.log(this.data)
       if (this.type == "Publication") {
-        return this.data.journalName ? this.data.journalName : this.data.journalNameAbbrev;
+        return this.data.journalName ? this.data.journalName : this.data.journalNameAbbrev ? this.data.journalNameAbbrev : this.data.curatedBy.name;
       } else {
         return (this.data.curatedBy.name)
       }
