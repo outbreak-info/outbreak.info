@@ -7,23 +7,22 @@
 
   <!-- header -->
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
-    <div class="row m-0 w-100">
-      <div class="col-sm-12 m-auto">
+    <div class="row m-0 d-flex align-items-center w-100">
+      <div class="col-sm-8 col-md-8">
         <h4>COVID-19 and SARS-CoV-2 datasets, analyses, and resources</h4>
+        <router-link :to="{path: '/sources', hash: '#resources'}" class="fa-sm text-white">Where do we get our data?</router-link>
+        <span class="text-muted mx-3">&bull;</span>
+        <router-link :to="{ name: 'Contributing' }" class="fa-sm text-white">Contributing a source</router-link>
       </div>
-    </div>
-  </section>
-
-  <section class="d-flex py-2">
-    <div class="row m-0 w-100">
-      <!-- search bar -->
-      <div class="col-sm-12 col-md-8">
+      <!-- search input -->
+      <div class="col-sm-4 col-md-4">
         <div class="py-3">
-          <form autocomplete="off" class="m-auto" @submit.prevent="onEnter">
+          <form autocomplete="off" class="m-auto">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text bg-grey text-muted border-0" id="sb">
-                  <font-awesome-icon :icon="['fas', 'search']" /></span>
+                  <font-awesome-icon :icon="['fas', 'search']" />
+                </span>
               </div>
               <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
             </div>
@@ -34,46 +33,20 @@
               <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
               Wrap terms in quotes if you want to search for an exact phrase, like
               <router-link class=" inline-block" :to="{
-                    name: 'Resources',
-                    query: { q: quotedSearch}
-                  }">"{{searchInput}}"</router-link>
+                      name: 'Resources',
+                      query: { q: quotedSearch}
+                    }">"{{searchInput}}"</router-link>
             </small>
           </div>
         </div>
-
-
       </div>
 
-      <!-- sidebar: links -->
-      <div class="col-sm-12 col-md-4 d-flex justify-content-center align-items-center flex-column">
-        <!-- <router-link class="btn btn-main mb-2" :to="{ name: 'Contributing' }"><i class="fas fa-bolt"></i> subscribe to updates</router-link> -->
-        <router-link :to="{path: '/sources', hash: '#resources'}">Where do we get our data?</router-link>
-        <router-link :to="{ name: 'Contributing' }">Contributing a source</router-link>
-      </div>
-
-      <!-- what's new -->
-      <div class="col-sm-12">
-        <NewResources :newData="newData" />
-      </div>
     </div>
+
   </section>
 
   <!-- mini-nav for resource types -->
   <section class="d-flex justify-content-end py-2 bg-sec">
-    <!-- <div class="row d-flex justify-content-center w-100">
-      <nav class="navbar navbar-expand-lg navbar-dark">
-        <ul class="navbar-nav">
-          <li class="nav-item text-light" v-for="(resource, idx) in resourceTypes" :key="idx">
-            <router-link class="nav-link no-underline p-0" :to="{
-                  name: 'Resources',
-                  query: { q: searchInput, filter: '@type:' + resource.id }
-                }">
-              {{ resource.label }}
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-    </div> -->
   </section>
 
   <!-- RESULTS -->
@@ -84,9 +57,9 @@
       <div class="col-sm-4 col-md-3 col-xl-2">
         <div class="bg-white ml-1 mt-2 border-right">
 
-          <div class="border-bottom p-1 px-2 my-2">
+          <div class="filter-bottom pb-4 px-2 mt-0 mb-3 d-flex flex-column align-items-center">
             <!-- Toggle Header -->
-            <div class="row m-0 pointer" @click="dateFacet.expanded = !dateFacet.expanded">
+            <div class="row m-0 pointer w-100" @click="dateFacet.expanded = !dateFacet.expanded">
               <div class="col-sm-10 p-1">
                 <h6 class="p-0 m-0">Date</h6>
               </div>
@@ -98,7 +71,7 @@
             </div>
             <DateHistogram :data="dates" v-if="dates && dates.length && !dateFacet.expanded" />
           </div>
-          <div class="border-bottom p-1 px-2 my-2" v-for="(facet, idx) in facetSummary" :key="idx">
+          <div class="filter-bottom pb-4 px-2 mt-0 mb-3" v-for="(facet, idx) in facetSummary" :key="idx">
             <!-- Toggle Header -->
             <div class="row m-0 pointer" @click="facet.expanded = !facet.expanded">
               <div class="col-sm-10 p-1">
@@ -106,7 +79,7 @@
               </div>
               <div class="col-sm-2 text-center p-1" v-if="facet.filtered.length">
                 <!-- toggle fa class up->down -->
-                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-up']" v-if="!dateFacet.expanded" />
+                <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-up']" v-if="!facet.expanded" />
                 <font-awesome-icon class="text-muted" :icon="['fas', 'chevron-down']" v-else />
               </div>
             </div>
@@ -156,43 +129,27 @@
                 <h4 class="m-0 mr-4" v-if="q">
                   You searched for {{ q }}
                 </h4>
-                <div class="m-0 text-highlight">
+                <div class="m-0 text-highlight fa-lg">
                   {{ numResults.toLocaleString() }} {{ numResults == 1 ? "result" : "results" }}
                 </div>
               </div>
-              <!-- <small class="text-muted text-left" v-if="filterString">
-              filtered by {{ filterString }}
-            </small>
-            <button @click="clearFilters" v-if="filterString">
-              <small>clear filters</small>
-            </button> -->
-
-              <!-- <div class="pagination mt-2 d-flex align-items-center justify-content-between w-100 m-auto">
-              <button aria-label="previous-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === 0 }" @click="changePage(-1)">
-                <font-awesome-icon :icon="['fas', 'arrow-left']" />
-              </button>
-              <small>viewing results {{ (lowerLim + 1).toLocaleString() }} &minus; {{ upperLim.toLocaleString() }} of
-                {{ numResults.toLocaleString() }}</small>
-              <button aria-label="next-button" class="pagination-btn pagination-left" :class="{ disabled: selectedPage === lastPage }" @click="changePage(1)">
-                <font-awesome-icon :icon="['fas', 'arrow-right']" />
-              </button>
-            </div> -->
             </div>
 
+            <div class="d-flex">
+              <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" class="mr-4" />
 
-            <DownloadData downloadLabel="results" type="resources" :query="esQuery" :api="$resourceurl" />
+              <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown mr-4">
+                <option v-for="option in pageOpts" :value="option" :key="option">
+                  {{ option }} results
+                </option>
+              </select>
 
-            <select v-model="numPerPage" @change="changePageNum()" class="select-dropdown">
-              <option v-for="option in pageOpts" :value="option" :key="option">
-                {{ option }} results
-              </option>
-            </select>
-
-            <select v-model="sortValue" @change="changeSort">
-              <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
-                {{option.label}}
-              </option>
-            </select>
+              <select v-model="sortValue" @change="changeSort">
+                <option v-for="(option, idx) in sortOpts" :value="option.value" :key="idx">
+                  {{option.label}}
+                </option>
+              </select>
+            </div>
           </div>
 
           <!-- Selected filters -->
@@ -350,8 +307,26 @@
                   </router-link> -->
                 </div>
 
-                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5 line-height-1 d-flex align-items-center" v-if="item.curatedBy">
-                  <div class="col-sm-12" :class="item['@type']">
+                <div class="text-right border-top pt-2 mt-2 ml-2 mr-5 line-height-1 d-flex align-items-center justify-content-between" v-if="item.curatedBy">
+                  <!-- altmetrics badges -->
+                  <div class="d-flex flex-column align-items-center" v-if="item.doi">
+                    <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='right' :data-doi='item.doi'></div>
+                    <small class="d-flex">
+                      <a class="mr-1" href="https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated" target="_blank">Altmetric</a> Rating
+                    </small>
+                  </div>
+
+                  <div class="d-flex flex-column  align-items-center" v-else-if="item.curatedBy.name=='ClinicalTrials.gov'">
+
+                    <div class="altmetric-embed my-2" data-badge-type='donut' data-badge-popover='right' :data-nct-id='item.identifier'></div>
+                    <small class="d-flex">
+                      <a class="mr-1" href="https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated" target="_blank">Altmetric</a> Rating
+                    </small>
+                  </div>
+                  <div v-else>
+                  </div>
+
+                  <div class="d-flex flex-column" :class="item['@type']">
                     <small>provided by {{ item.curatedBy.name }}</small>
                     <router-link :to="{ name: 'Resource Page', params: { id: item._id } }" v-if="getLogo(item.curatedBy.name)">
                       <img :src="require(`@/assets/resources/${getLogo(item.curatedBy.name)}`)" alt="item.curatedBy.name" width="auto" height="25" class="ml-2" />
@@ -431,7 +406,6 @@ import StripeAccent from "@/components/StripeAccent.vue";
 import TrialPhase from "@/components/TrialPhase.vue";
 import TrialStatus from "@/components/TrialStatus.vue";
 import TrialType from "@/components/TrialType.vue";
-import NewResources from "@/components/NewResources.vue";
 import DownloadData from "@/components/DownloadData.vue";
 import Donut from "@/components/Donut.vue";
 import DateHistogram from "@/components/DateHistogram.vue";
@@ -491,7 +465,6 @@ export default {
     TrialStatus,
     TrialType,
     FontAwesomeIcon,
-    NewResources,
     DownloadData,
     Donut,
     DateHistogram
@@ -763,6 +736,17 @@ export default {
       this.resultsSubscription.unsubscribe();
     }
   },
+  updated() {
+    if (window._altmetric_embed_init) {
+      // Call Altmetrics
+      window._altmetric_embed_init();
+    } else {
+      // append Altmetrics script
+      let altmetricsScript = document.createElement("script")
+      altmetricsScript.setAttribute('src', 'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js')
+      document.body.appendChild(altmetricsScript);
+    }
+  },
   computed: {
     ...mapState("admin", ["loading", "resources"]),
     lowerLim: function() {
@@ -785,6 +769,9 @@ export default {
     }
   },
   watch: {
+    searchInput() {
+      this.debounceSearchText();
+    },
     $route: {
       immediate: true,
       handler(to, from) {
@@ -816,7 +803,7 @@ export default {
       sortValue: null,
       numPerPage: null,
       pageOpts: [5, 10, 50, 100],
-      pieVariables: ["Type", "Source", "Funding", "Measurement Technique"],
+      pieVariables: ["Type", "Source", "Topic", "Funding", "Measurement Technique"],
       sortOpts: [{
           value: "",
           label: "best match"
@@ -882,6 +869,10 @@ export default {
 .search-result {
     border-bottom: 3px solid $grey-40;
     padding: 5px;
+}
+
+.filter-bottom {
+  border-bottom: 10px solid #82bed1;
 }
 
 .search-result:nth-child(odd) {

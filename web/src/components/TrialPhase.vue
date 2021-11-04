@@ -1,6 +1,6 @@
 <template>
-  <div class="my-2">
-    <small class="mr-1" v-if="includeLabel">Phase</small>
+  <div class="my-2 d-flex align-items-center">
+    <span class="mr-3" v-if="includeLabel">Phase</span>
     <svg :width="width" :height="height">
       <g>
         <polygon
@@ -59,17 +59,17 @@ export default Vue.extend({
   },
   data() {
     return {
-      phaseWidth: 37,
+      phaseWidth: 55,
       triangleWidth: 10,
       allPhases: [1, 2, 3, 4],
       spacer: 7,
-      height: 17
+      height: 22
     };
   },
   watch: {},
   computed: {
     width() {
-      return (this.phaseWidth * 4 + this.spacer * 4)
+      return (this.phaseWidth * 4 + this.spacer * 5)
     }
   },
   methods: {},
