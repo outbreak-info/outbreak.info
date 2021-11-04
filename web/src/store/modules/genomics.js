@@ -1,7 +1,7 @@
 const state = {
   refSeq: {
-    url: "https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2/",
-    name: "NC_045512"
+    url: "https://github.com/cov-lineages/pangolin/blob/master/pangolin/data/reference.fasta",
+    name: "Pangolin"
   },
   characteristicThreshold: 0.75,
   // loading indicators

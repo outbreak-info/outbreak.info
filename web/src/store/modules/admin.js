@@ -43,6 +43,10 @@ const state = {
       linkedin: "https://www.linkedin.com/in/lauradhughes/"
     },
     {
+      name: "Kaleigh Jaeger",
+      img: "kaleigh.png"
+    },
+    {
       name: "Alaa Abdel Latif",
       img: "alaa.jpg"
     },
@@ -86,7 +90,7 @@ const state = {
     }
   ],
   funding: [{
-      identifier: "5 U19 AI135995-02",
+      identifier: "5 U19 AI135995-04S3",
       name: "CViSB",
       funder: {
         name: "National Institute for Allergy and Infectious Diseases"

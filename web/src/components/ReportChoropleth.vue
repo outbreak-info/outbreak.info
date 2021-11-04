@@ -233,7 +233,7 @@ export default {
         this.locationMap = cloneDeep(ADMIN0_SIMPLE);
         // this.hwRatio = 0.45;
         // this.setDims();
-      } else if (this.location === "United States") {
+      } else if (this.location === "United States" || this.location === "USA") {
         this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
