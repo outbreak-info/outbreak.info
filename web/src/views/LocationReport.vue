@@ -146,11 +146,17 @@
           </button>
         </a>
 
-        <a href="#geographic" v-if="geoData && selectedLocation.admin_level === 0">
+        <a href="#geographic" v-if="geoData && selectedLocation.admin_levels === 0">
           <button class="btn btn-grey mx-3 py-2">
             <small>Geographic breakdown</small>
           </button>
         </a>
+        <a href="#geographic-counties" v-if="geoData && selectedLocation.admin_levels === 1">
+          <button class="btn btn-grey mx-3 py-2">
+            <small>Geographic breakdown</small>
+          </button>
+        </a>
+ 
       </div>
 
 
@@ -271,9 +277,73 @@
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
           <OverlayLineagePrevalence :options="selectedMutations" :xmin="xmin" :xmax="xmax" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
-        </section>
+        </section>      
 
-        <!-- GEOGRAPHIC CHOROPLETHS -->
+       <!-- COUNTIES -->
+       <section id="geographic-counties" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 1">
+          <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
+            <div class="d-flex align-items-center">
+            <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap justify-content-center">
+            <div class="d-flex flex-wrap align-items-center border-top border-bottom bg-white pt-1 px-2 mt-1">
+              <ClassedLegend :colorScale="choroColorScale" :horizontal="false" :label="`Est. prevalence over the last ${recentWindow} days`" :countThreshold="choroCountThreshold" :mutationName="null" />
+              <div class="d-flex flex-column">
+                <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" class="mr-3" />
+                <div class="d-flex align-items-center">
+                  <small>Show data from last</small>
+                  <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
+                  <small>days</small>
+                </div>
+              </div>
+
+              <!-- Histogram of sequencing COUNTY LEVEL -->
+              <SequencingHistogram :data="seqCountsWindowed" :width="widthHist" :downward="false" :includeXAxis="true" :margin="marginHist" :mutationName="null" className="sequencing-histogram"
+                :title="`Samples sequenced per day over last ${recentWindow} days`" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCountsWindowed && !noRecentData" />
+
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap" v-if="geoData && selectedLocation.admin_level === 1">
+            <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="my-3" :class="[mediumScreen ? 'w-100' : 'w-33']">
+              <div v-if="choro.values.length">
+                <div class="d-flex justify-content-between align-items-center mx-4">
+                  <router-link :to="{name: 'MutationReport', params: choro.params, query: { ... choro.route, loc: [loc], selected: loc }}">
+                    <h5>{{ choro.key }}</h5>
+                  </router-link>
+                  <small v-if="choro.variantType.includes('Variant') || choro.variantType.includes('Mutation')"
+                    :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'VUM': choro.variantType == 'Variant under Monitoring', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
+                    {{ choro.variantType }}
+                  </small>
+                </div>
+                <ReportChoroplethCounties report="location" :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
+                  :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" :abbloc="loc" />
+              </div>
+            </div>
+            <DownloadReportData :data="geoData" figureRef="geo-counties" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData" />
+          </div>
+
+          <!-- no recent geo data -->
+          <div v-if="noRecentData" class="align-self-center text-muted">
+            <h4>No recent sequences found over the past {{recentWindow}} days</h4>
+            <p class="text-muted mb-0">
+              Try adjusting the most recent data window:
+            </p>
+            <div class="d-flex">
+              <div class="px-3 py-2 my-2 bg-white border-top border-bottom">
+                <small>Show data from last</small>
+                <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" v-model="recentWindow" placeholder="days">
+                <small>days</small>
+              </div>
+            </div>
+          </div>
+
+       </section>
+
+       <!-- GEOGRAPHIC CHOROPLETHS -->
         <section id="geographic" class="my-5 py-3 border-top" v-if="geoData && selectedLocation.admin_level === 0">
           <div class="d-flex flex-wrap justify-content-between align-items-center">
             <h3 class="m-0">Geographic prevalence of tracked lineages &amp; mutations</h3>
@@ -304,21 +374,20 @@
             </div>
           </div>
 
-          <div class="d-flex flex-wrap" v-if="geoData">
+          <div class="d-flex flex-wrap" v-if="geoData && selectedLocation.admin_level === 0">
             <div v-for="(choro, cIdx) in geoData" :key="cIdx" class="my-3" :class="[mediumScreen ? 'w-100' : 'w-33']">
               <div v-if="choro.values.length">
                 <div class="d-flex justify-content-between align-items-center mx-4">
                   <router-link :to="{name: 'MutationReport', params: choro.params, query: { ... choro.route, loc: [loc], selected: loc }}">
                     <h5>{{ choro.key }}</h5>
                   </router-link>
-
                   <small v-if="choro.variantType.includes('Variant') || choro.variantType.includes('Mutation')"
                     :class="{ 'VOC': choro.variantType == 'Variant of Concern',  'VOI': choro.variantType == 'Variant of Interest', 'VUM': choro.variantType == 'Variant under Monitoring', 'MOC': choro.variantType == 'Mutation of Concern',  'MOI': choro.variantType == 'Mutation of Interest'}">
                     {{ choro.variantType }}
                   </small>
                 </div>
                 <ReportChoropleth report="location" :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
-                  :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
+                  :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" :abbloc="loc" />
               </div>
             </div>
             <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData" />
@@ -481,6 +550,7 @@ export default {
     ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
     ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
     ReportChoropleth: () => import( /* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
+    ReportChoroplethCounties: () => import( /* webpackPrefetch: true */ "@/components/ReportChoroplethCounties.vue"),
     LineagesByLocation: () => import( /* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
     ReportStackedBarGraph: () => import( /* webpackPrefetch: true */ "@/components/ReportStackedBarGraph.vue"),
     HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
@@ -919,10 +989,11 @@ export default {
       })
     },
     updateMaps() {
-      if (this.selectedLocation.admin_level === 0) {
+      if (this.selectedLocation.admin_level <= 1) {
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
-
+          console.log("GEO");  
+          console.log(this.geoData);
           this.choroMaxCount = max(results.flatMap(d => d.values), d => d.cum_total_count);
         })
       }
