@@ -325,9 +325,6 @@ export default {
             parsedGeoJson["proportion_formatted"] = null; 
             parsedGeoJson["cum_total_count"]=null; 
             parsedGeoJson['properties']['location_id'] = l;
-            if (l === "San Diego"){
-                console.log(JSON.parse(JSON.stringify(parsedGeoJson)));
-            }
             this.filteredData.push(JSON.parse(JSON.stringify(parsedGeoJson)));
             //console.log(this.filteredData);
             //this.filteredData.push(parsedGeoJson);
@@ -341,9 +338,7 @@ export default {
     },
 
     drawMap() {
-      console.log('in draw map');
       this.prepData();
-      //console.log(this.locationMap.features);
       const basemapData = [];
       if (this.filteredData) {
         this.basemap
@@ -423,7 +418,7 @@ export default {
             )
           )
         
-        console.log(this.filteredData);
+        //console.log(this.filteredData);
         // highlight where the data is 0.
         this.regions
           .selectAll(".zero-data")
