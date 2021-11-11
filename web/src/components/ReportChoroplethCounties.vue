@@ -346,13 +346,9 @@ export default {
       //console.log(this.locationMap.features);
       const basemapData = [];
       if (this.filteredData) {
-       //console.log(this.projection);
-       this.basemap
+        this.basemap
           .selectAll(".basemap")
-          .data(basemapData, d => d.properties.location_id)
-          .join(".basemap")
-          .attr("d", this.path
-                .projection(this.projection))
+          .data(this.filteredData, d => d.properties.location_id)
           .join(
             enter => {
               enter
@@ -363,68 +359,33 @@ export default {
                 .attr("d", this.path
                   .projection(this.projection)
                 )
+
                 .style("fill", "#FDFDFD")
                 .style("stroke", "#444444")
                 .style("stroke-width", 0.25)
+
             },
             update => update
             .attr("id", d => d.properties.location_id)
             // draw each region
             .attr("d", this.path
               .projection(this.projection)
-            ),
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition()
-              .duration(10)
-              .style("opacity", 1e-5)
-              .remove()
             )
-          )
-        this.regions
-          .selectAll(".region-fill-back")
-          .data(this.filteredData)
-          .join(
-            enter => {
-              enter
-                .append("path")
-                .attr("class", d => `${d.properties.location_id} region region-fill`)
-                .attr("id", d => d.properties.location_id)
-                // draw each region
-                .attr("d", this.path
-                  .projection(this.projection)
-                )
-                .classed("pointer", true)
-                .on("click", d => this.route2Location(d.id))
-                .style("fill", d => d.fill ? d.fill : this.nullColor)
-                .style("stroke", this.strokeColor)
-                .style("stroke-width", 0.5)
-            },
-            update => update
-            .attr("class", d => `${d.properties.location_id} region region-fill`)
-            .attr("id", d => d.properties.location_id)
-            .on("click", d => this.route2Location(d.id))
-            // draw each region
-            .attr("d", this.path
-              .projection(this.projection)
-            )
-            .transition()
-            .duration(250)
+            .transition(250)
+            .duration(210)
             .style("fill", d => d.fill ? d.fill : this.nullColor),
             exit =>
             exit.call(exit =>
               exit
               .transition()
-              .duration(10)
+              .duration(250)
               .style("opacity", 1e-5)
               .remove()
             )
           )
- 
         this.regions
-          .selectAll(".region-fill-colors")
-          .data(this.filteredData.filter(d => d.proportion > 0))
+          .selectAll(".region-fill")
+          .data(this.filteredData.filter(d => d.proportion >0, d => d.properties.location_id))
           .join(
             enter => {
               enter
@@ -498,43 +459,6 @@ export default {
             )
           )
        
-        this.overlay
-          .selectAll(".overlay")
-          .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States"), d => d.properties.location_id)
-          .join(
-            enter => {
-              enter
-                .append("path")
-                .attr("class", "overlay")
-                .attr("id", d => d.properties.location_id)
-                // draw each region
-                .attr("d", this.path
-                  .projection(this.projection)
-                )
-                .style("fill", "none")
-                .style("stroke", this.strokeColor)
-                .style("stroke-width", 1.25)
-            },
-            update => update
-            .attr("id", d => d.properties.location_id)
-            // draw each region
-            .attr("d", this.path
-              .projection(this.projection)
-            ),
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition()
-              .duration(10)
-              .style("opacity", 1e-5)
-              .remove()
-            )
-          )
-        
-        this.regions.selectAll("path.region")
-          .on("mouseenter", d => this.debounceMouseon(d))
-          .on("mouseleave", this.mouseOff);
-
         this.regions.selectAll("path.region")
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
@@ -559,7 +483,7 @@ export default {
       const ttip = select(this.$refs.tooltip_choro);
 
       // edit text
-      ttip.select("h5").text(d.properties.NAME);
+      ttip.select("h5").text(d.properties.location_id);
       if (d.proportion || d.proportion === -1) {
         ttip.select("#no-sequencing").classed("hidden", true);
         ttip.select("#proportion")
