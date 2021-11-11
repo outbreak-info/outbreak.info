@@ -33,7 +33,6 @@
 <script>
 import cloneDeep from "lodash/cloneDeep";
 import DownloadReportData from "@/components/DownloadReportData.vue";
-
 import {
   geoEqualEarth,
   geoAlbersUsa,
@@ -50,12 +49,10 @@ import {
   select,
   selectAll
 } from "d3";
-
 import ADMIN0_SIMPLE from "@/assets/geo/gadm_adm0_simplified.json";
 import ADMIN0 from "@/assets/geo/gadm_adm0.json";
 import USADATA from "@/assets/geo/US_states.json";
 import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
-
 export default {
   name: "ReportChoropleth",
   props: {
@@ -166,12 +163,10 @@ export default {
   mounted() {
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
-
       this.$root.$on("update:countThreshold", newThreshold => {
         // this.countThreshold = newThreshold;
         // this.drawMap();
       });
-
       // event listener to hide tooltips
       document.addEventListener(
         "mousemove",
@@ -194,7 +189,6 @@ export default {
         }
       );
     });
-
     this.chooseMap();
     // set initial dimensions for the choropleth plots.
     this.setDims();
@@ -205,15 +199,12 @@ export default {
       const mx = 0.8;
       const my = 0.85;
       const svgContainer = document.getElementById('report-choropleth');
-
       let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       const maxWidth = window.innerWidth;
       const maxHeight = window.innerHeight * my;
-
       if (maxSvgWidth > maxWidth) {
         maxSvgWidth = maxWidth - 20;
       }
-
       const idealHeight = this.hwRatio * maxSvgWidth;
       if (idealHeight <= maxHeight) {
         this.height = idealHeight;
@@ -229,7 +220,6 @@ export default {
           .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the ADMIN1 anyway...
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
-
         this.locationMap = cloneDeep(ADMIN0_SIMPLE);
         // this.hwRatio = 0.45;
         // this.setDims();
@@ -237,20 +227,17 @@ export default {
         this.projection = geoAlbersUsa()
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
-
         this.locationMap = cloneDeep(USADATA);
         // this.hwRatio = 0.45;
         // this.setDims();
       } else {
         this.locationMap = cloneDeep(ADMIN1[this.location]);
         const mapBounds = geoBounds(this.locationMap);
-
         this.projection = geoAzimuthalEqualArea()
           .center([0, 0])
           .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
-
         // const mapRatio = Math.abs(mapBounds[0][1] - mapBounds[1][1]) / Math.abs(mapBounds[0][0] - mapBounds[1][0]);
         // this.hwRatio = mapRatio;
         // this.setDims();
@@ -271,7 +258,6 @@ export default {
       this.projection = this.projection
         .scale(1)
         .translate([this.width / 2, this.height / 2]);
-
       this.path = this.path.projection(this.projection);
       // calc and set scale
       // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
@@ -281,17 +267,14 @@ export default {
         xscale = this.width / dx * 0.98,
         yscale = this.height / dy * 0.98,
         scale = min([xscale, yscale]);
-
       this.projection = this.projection
         .scale(scale);
-
       this.filteredData = this.locationMap.features;
     },
     prepData() {
       if (this.data && this.locationMap) {
         // Update projection / scales
         this.updateProjection();
-
         this.filteredData.forEach(d => {
           const filtered = this.data.filter(seq => seq.name.toLowerCase() == d.properties.NAME.toLowerCase());
           if (filtered.length > 0) {
@@ -316,7 +299,6 @@ export default {
             d["proportion_formatted"] = null;
           }
         });
-
         this.noMap = false;
       } else {
         this.filteredData = null;
@@ -325,10 +307,8 @@ export default {
     },
     drawMap() {
       this.prepData();
-
       if (this.filteredData) {
         const basemapData = this.location == "Worldwide" || this.location == "United States" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
-
         this.basemap
           .selectAll(".basemap")
           .data(basemapData, d => d.properties.location_id)
@@ -361,7 +341,6 @@ export default {
               .remove()
             )
           )
-
         this.regions
           .selectAll(".region-fill")
           .data(this.filteredData, d => d.properties.location_id)
@@ -401,7 +380,6 @@ export default {
               .remove()
             )
           )
-
         // highlight where the data is 0.
         this.regions
           .selectAll(".zero-data")
@@ -436,7 +414,6 @@ export default {
               .remove()
             )
           )
-
         this.overlay
           .selectAll(".overlay")
           .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States"), d => d.properties.location_id)
@@ -469,11 +446,9 @@ export default {
               .remove()
             )
           )
-
         this.regions.selectAll("path.region")
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
-
         this.regions.selectAll("path.region")
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
@@ -481,21 +456,17 @@ export default {
     },
     mouseOn(d) {
       const ttipShift = 15;
-
       // dim everything
       this.regions
         .selectAll(".region")
         .style("opacity", 0.2)
         .style("stroke-opacity", 0.5);
-
       // turn on the location
       this.regions
         .select(`.${d.properties.location_id}`)
         .style("opacity", 1)
         .style("stroke-opacity", 1);
-
       const ttip = select(this.$refs.tooltip_choro);
-
       // edit text
       ttip.select("h5").text(d.properties.NAME);
       if (d.proportion || d.proportion === 0) {
@@ -503,22 +474,18 @@ export default {
         ttip.select("#proportion")
           .text(`${d.proportion_formatted} ${this.mutationName}`)
           .classed("hidden", false);
-
         ttip.select("#confidence-interval")
           .text(`(95% CI: ${format(".0%")(d.lower)}-${format(".0%")(d.upper)})`)
           .classed("hidden", false);
-
         ttip.select("#sequencing-count")
           .text(`Number of total ${this.mutationName} cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
           .classed("hidden", false);
-
       } else {
         ttip.select("#no-sequencing").classed("hidden", false);
         ttip.select("#proportion").classed("hidden", true);
         ttip.select("#confidence-interval").classed("hidden", true);
         ttip.select("#sequencing-count").classed("hidden", true);
       }
-
       // fix location
       ttip
         .style("left", `${this.event.clientX + ttipShift}px`)
@@ -528,16 +495,13 @@ export default {
     mouseOff() {
       select(this.$refs.tooltip_choro)
         .style("display", "none");
-
       this.regions
         .selectAll(".zero-data")
         .style("opacity", 1);
-
       this.regions
         .selectAll(".region")
         .style("opacity", 1)
         .style("stroke-opacity", 1);
-
     },
     route2Location(id) {
       if (this.report == "variant") {
@@ -596,3 +560,4 @@ export default {
   }
 }
 </script>
+
