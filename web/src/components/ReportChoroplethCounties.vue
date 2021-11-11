@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="geo-counties">
   <!-- choropleth -->
-  <svg :width="width" :height="height" ref="choropleth" class="geo-counties mt-3" :subtitle="subtitle" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
+  <svg :width="width" :height="height" ref="geo-counties" class="geo-counties mt-3" :subtitle="subtitle" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
     <defs>
       <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
@@ -224,6 +224,22 @@ export default {
     },
     chooseMap() {
         var country = this.location.split(",").at(-1).trim();
+        //iterate and find outline of state/division
+        //console.log(this.poly);
+        for (var x of Object.entries(this.poly.at(0))){
+            var location = x.at(1)._source.location.trim();
+            if (location === "None"){
+                this.locationMap = JSON.parse(x.at(1)._source.shape);
+                const mapBounds = geoBounds(this.locationMap);
+                this.projection = geoAzimuthalEqualArea()
+                  .center([0, 0])
+                  .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])
+                  .scale(1)
+                  .translate([this.width / 2, this.height / 2]);
+                        
+            }
+        }
+        /*
         if (country === "United States"){
             this.projection = geoAlbersUsa()
               .scale(1)
@@ -232,13 +248,13 @@ export default {
             
         }else{
             this.locationMap = cloneDeep(ADMIN1[country]);
-        }
         const mapBounds = geoBounds(this.locationMap);
         this.projection = geoAzimuthalEqualArea()
           .center([0, 0])
           .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])
           .scale(1)
           .translate([this.width / 2, this.height / 2]);
+          }*/
       
     },
     setupChoro() {
@@ -278,24 +294,43 @@ export default {
         //console.log(this.data);
         for (var x of Object.entries(this.poly.at(0))){
             const parsedGeoJson = JSON.parse(x.at(1)._source.shape);
-            var location = x.at(1)._source.location.trim();
-            //console.log(parsedGeoJson);
+            const l = x.at(1)._source.location.trim();
+            var location = x.at(1)._source.location.replace(/\s+/g,"").trim();
             var found = false;
             //loop over property information
             for (var y of Object.entries(this.data)){
                 var count_loc = y.at(1)['location_id'];
+                //console.log(count_loc, location);
                 if (count_loc === location){
                     found = true;
                     //console.log(count_loc, location);
                     parsedGeoJson['properties'] = {'proportion': y.at(1)['proportion']};
+                    //console.log(this.colorScale(y.at(1)['proportion']));
+                    parsedGeoJson['fill'] = this.colorScale(y.at(1)['proportion']);
+                    parsedGeoJson["id"] = l;
+                    parsedGeoJson['proportion'] = y.at(1)['proportion'];
                     //console.log(parsedGeoJson);
                 }
             }
             if (found === false){
-                parsedGeoJson['properties'] = {'proportion': -1}; 
+                parsedGeoJson['properties'] = {'proportion': -1};
+                //parsedGeoJson['fill'] = this.nullColor;
+                parsedGeoJson["id"] = null; 
+                //parsedGeoJson["proportion"] = -1;
             }
+                   
+            parsedGeoJson['lower'] = null;
+            parsedGeoJson["upper"] = null; 
+            parsedGeoJson["cum_lineage_count"]=null; 
+            parsedGeoJson["proportion_formatted"] = null; 
+            parsedGeoJson["cum_total_count"]=null; 
+            parsedGeoJson['properties']['location_id'] = l;
+            if (l === "San Diego"){
+                console.log(JSON.parse(JSON.stringify(parsedGeoJson)));
+            }
+            this.filteredData.push(JSON.parse(JSON.stringify(parsedGeoJson)));
             //console.log(this.filteredData);
-            this.filteredData.push(parsedGeoJson);
+            //this.filteredData.push(parsedGeoJson);
         }
 
        this.noMap = false;
@@ -308,17 +343,17 @@ export default {
     drawMap() {
       console.log('in draw map');
       this.prepData();
-      //console.log(this.filteredData);
-      console.log(this.locationMap.features);
-      console.log(this.basemap);
+      //console.log(this.locationMap.features);
+      const basemapData = [];
       if (this.filteredData) {
+       //console.log(this.projection);
        this.basemap
           .selectAll(".basemap")
-          .data(this.locationMap.features)
+          .data(basemapData, d => d.properties.location_id)
           .join(".basemap")
           .attr("d", this.path
                 .projection(this.projection))
-          /*.join(
+          .join(
             enter => {
               enter
                 .append("path")
@@ -346,11 +381,10 @@ export default {
               .style("opacity", 1e-5)
               .remove()
             )
-          )*/
-                
+          )
         this.regions
-          .selectAll(".region-fill")
-          .data(poly.features)
+          .selectAll(".region-fill-back")
+          .data(this.filteredData)
           .join(
             enter => {
               enter
@@ -387,7 +421,48 @@ export default {
               .remove()
             )
           )
-
+ 
+        this.regions
+          .selectAll(".region-fill-colors")
+          .data(this.filteredData.filter(d => d.proportion > 0))
+          .join(
+            enter => {
+              enter
+                .append("path")
+                .attr("class", d => `${d.properties.location_id} region region-fill`)
+                .attr("id", d => d.properties.location_id)
+                // draw each region
+                .attr("d", this.path
+                  .projection(this.projection)
+                )
+                .classed("pointer", true)
+                .on("click", d => this.route2Location(d.id))
+                .style("fill", d => d.fill ? d.fill : this.nullColor)
+                .style("stroke", this.strokeColor)
+                .style("stroke-width", 0.5)
+            },
+            update => update
+            .attr("class", d => `${d.properties.location_id} region region-fill`)
+            .attr("id", d => d.properties.location_id)
+            .on("click", d => this.route2Location(d.id))
+            // draw each region
+            .attr("d", this.path
+              .projection(this.projection)
+            )
+            .transition()
+            .duration(250)
+            .style("fill", d => d.fill ? d.fill : this.nullColor),
+            exit =>
+            exit.call(exit =>
+              exit
+              .transition()
+              .duration(10)
+              .style("opacity", 1e-5)
+              .remove()
+            )
+          )
+        
+        console.log(this.filteredData);
         // highlight where the data is 0.
         this.regions
           .selectAll(".zero-data")
@@ -422,7 +497,7 @@ export default {
               .remove()
             )
           )
-
+       
         this.overlay
           .selectAll(".overlay")
           .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States"), d => d.properties.location_id)
@@ -463,6 +538,7 @@ export default {
         this.regions.selectAll("path.region")
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
+      
       }
     },
     mouseOn(d) {
@@ -484,7 +560,7 @@ export default {
 
       // edit text
       ttip.select("h5").text(d.properties.NAME);
-      if (d.proportion || d.proportion === 0) {
+      if (d.proportion || d.proportion === -1) {
         ttip.select("#no-sequencing").classed("hidden", true);
         ttip.select("#proportion")
           .text(`${d.proportion_formatted} ${this.mutationName}`)
