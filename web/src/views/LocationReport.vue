@@ -990,11 +990,13 @@ export default {
       })
     },
     updateMaps() {
-      if (this.selectedLocation.admin_level <= 1) {
+      if (this.selectedLocation.admin_level == 1) {
         this.shapesSubscription = getShapeData(this.$shapeapiurl, this.loc).subscribe(results => {
         this.shapeData = results;
         console.log(this.shapeData);
         })
+      }
+      if (this.selectedLocation.admin_level <= 1){ 
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
           this.choroMaxCount = max(results.flatMap(d => d.values), d => d.cum_total_count);
