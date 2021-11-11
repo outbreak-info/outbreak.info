@@ -973,9 +973,32 @@ export function getNewToday(apiurl, queryStr, location) {
   )
 }
 
+
+export function getShapeData(apiurl, location){
+    let url;
+    url = `${apiurl}shape?location_id=${location}`;
+    //console.log(axios.get(url));
+    //console.log(url);
+    return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+    })).pipe(
+    pluck("data"),
+    map(hits => {
+      const keys = Object.keys(hits);
+      let results;
+      const returnFlat = true;
+      return(hits['results']);        
+   }))
+ 
+}
+
 export function getAllLocationPrevalence(apiurl, mutation, location, ndays = null) {
+ 
   return (getLocationPrevalence(apiurl, mutation.query, location, ndays).pipe(
     map(results => {
+      //console.log('getAllLocationPrevalence in genomics.js', results, location);
       return ({
         key: mutation.label,
         variantType: mutation.variantType,
@@ -989,15 +1012,16 @@ export function getAllLocationPrevalence(apiurl, mutation, location, ndays = nul
 
 export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
-
   let url;
   url = location == "Worldwide" ?
-    `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&timestamp=${timestamp}` :
-    `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}&timestamp=${timestamp}`;
+  `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&timestamp=${timestamp}` :
+  `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}&timestamp=${timestamp}`;
+
 
   if (ndays) {
     url += `&ndays=${ndays}`;
   }
+  //console.log(url);
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -1540,11 +1564,11 @@ export function getLocationLineagePrevalences(apiurl, location, mutations, pango
 
 export function getLocationMaps(apiurl, location, mutations, ndays) {
   store.state.genomics.locationLoading5 = true;
-
+  
   return forkJoin(...mutations.map(mutation => getAllLocationPrevalence(apiurl, mutation, location, ndays))).pipe(
     map(results => {
       results = orderBy(results, [locationTableSorter, "key"], ["asc", "asc"]);
-
+      //console.log("getLocationMaps in genomics.js", results);
       return (results)
     }),
     catchError(e => {
