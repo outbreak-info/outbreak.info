@@ -320,7 +320,7 @@
                   </small>
                 </div>
                 <ReportChoroplethCounties report="location" :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
-                  :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" :abbloc="loc" />
+                  :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" :abbloc="loc" :poly=shapeData />
               </div>
             </div>
             <DownloadReportData :data="geoData" figureRef="geo-counties" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData" />
@@ -513,6 +513,7 @@ import {
   getLocationReportData,
   getSequenceCount,
   getLocationMaps,
+  getShapeData,
   getBasicLocationReportData,
   getLocationTable,
   findLocation,
@@ -990,10 +991,12 @@ export default {
     },
     updateMaps() {
       if (this.selectedLocation.admin_level <= 1) {
+        this.shapesSubscription = getShapeData(this.$shapeapiurl, this.loc).subscribe(results => {
+        this.shapeData = results;
+        console.log(this.shapeData);
+        })
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
-          console.log("GEO");  
-          console.log(this.geoData);
           this.choroMaxCount = max(results.flatMap(d => d.values), d => d.cum_total_count);
         })
       }
@@ -1016,6 +1019,7 @@ export default {
       basicSubscription: null,
       reportSubscription: null,
       choroSubscription: null,
+      shapesSubscription: null,
       tableSubscription: null,
       countSubscription: null,
       // methods
@@ -1053,6 +1057,7 @@ export default {
       heatmapColorScale: scaleSequential(interpolateRdPu),
       mostRecentDomain: null,
       geoData: null,
+      shapeData: null,
       seqCounts: null,
       widthHist: 300,
       marginHist: {
@@ -1135,6 +1140,10 @@ export default {
     if (this.choroSubscription) {
       this.choroSubscription.unsubscribe();
     }
+    if (this.shapesSubscription) {
+      this.shapesSubscription.unsubscribe();
+    }
+
 
     if (this.tableSubscription) {
       this.tableSubscription.unsubscribe();
