@@ -1,7 +1,7 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="geo-counties">
+<div class="d-flex flex-column align-items-center w-100" id="geo-zipcode">
   <!-- choropleth -->
-  <svg :width="width" :height="height" ref="geo-counties" class="geo-counties mt-3" :subtitle="subtitle" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
+  <svg :width="width" :height="height" ref="geo-zipcode" class="geo-zipcode mt-3" :subtitle="subtitle" :name="title" :class="{'hidden': noMap}" style="background: aliceblue;">
     <defs>
       <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
@@ -24,7 +24,7 @@
   </div>
 
   <div class="w-75" v-if="showCopy && !noMap">
-    <DownloadReportData :data="data" figureRef="geo-counties" dataType="Mutation Report Choropleth" />
+    <DownloadReportData :data="data" figureRef="geo-zipcode" dataType="Mutation Report Choropleth" />
   </div>
 
 </div>
@@ -57,6 +57,7 @@ export default {
   name: "ReportChoropleth",
   props: {
     data: Array,
+    outline: Array,
     abbloc: String,
     poly: Array,
     mutationName: String,
@@ -203,7 +204,7 @@ export default {
     setDims() {
       const mx = 0.8;
       const my = 0.85;
-      const svgContainer = document.getElementById('geo-counties');
+      const svgContainer = document.getElementById('geo-zipcode');
 
       let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       const maxWidth = window.innerWidth;
@@ -223,24 +224,30 @@ export default {
       }
     },
     chooseMap() {
+        console.log("In Choose Map");
+        var division = this.location.split(",").at(-2).trim();
+
+        var loc = this.location.split(",").at(-3).trim();
         var country = this.location.split(",").at(-1).trim();
-        //iterate and find outline of state/division
-        //console.log(this.poly);
+        var featCollection = [];
         for (var x of Object.entries(this.poly.at(0))){
-            var location = x.at(1)._source.location.trim();
-            if (location === "None"){
-                this.locationMap = JSON.parse(x.at(1)._source.shape);
-                console.log("Loc Map", this.locationMap);
-                const mapBounds = geoBounds(this.locationMap);          
+          featCollection.push(JSON.parse(x.at(1)._source.shape));
+        }
+        let json = {type:"FeatureCollection", features: featCollection};
+        this.featureCollection = json;
+        for (var y of Object.entries(this.outline.at(0))){
+            var temp_loc = y.at(1)._source["location"];
+            if (temp_loc === loc){
+                this.locationMap = JSON.parse(y.at(1)._source.shape);
+                const mapBounds = geoBounds(this.locationMap);
                 this.projection = geoAzimuthalEqualArea()
                   .center([0, 0])
                   .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])
                   .scale(1)
                   .translate([this.width / 2, this.height / 2]);
-                        
+
             }
-        }
-     
+        } 
     },
     setupChoro() {
       this.svg = select(this.$refs.svg);
@@ -272,18 +279,20 @@ export default {
       //this.filteredData = this.locationMap.features;
     },
     prepData(){
-      if (this.data && this.locationMap) {
+    if (this.data) {
         // Update projection / scales
+        console.log("In Prep Data");
         this.updateProjection();
         this.filteredData = [];
-        //console.log(this.data);
         for (var x of Object.entries(this.poly.at(0))){
             const parsedGeoJson = JSON.parse(x.at(1)._source.shape);
-            const l = x.at(1)._source.location.trim();
-            var location = x.at(1)._source.location.replace(/\s+/g,"").trim();
+            const l = x.at(1)._source.zipcode;
+            let location = x.at(1)._source.zipcode.toString();
             var found = false;
+            //console.log(parsedGeoJson, location, l);
             //loop over property information
             for (var y of Object.entries(this.data)){
+                //console.log(y, location);
                 var count_loc = y.at(1)['location_id'];
                 //console.log(count_loc, location);
                 if (count_loc === location){
@@ -300,15 +309,15 @@ export default {
             if (found === false){
                 parsedGeoJson['properties'] = {'proportion': -1};
                 //parsedGeoJson['fill'] = this.nullColor;
-                parsedGeoJson["id"] = null; 
+                parsedGeoJson["id"] = null;
                 //parsedGeoJson["proportion"] = -1;
             }
-                   
+
             parsedGeoJson['lower'] = null;
-            parsedGeoJson["upper"] = null; 
-            parsedGeoJson["cum_lineage_count"]=null; 
-            parsedGeoJson["proportion_formatted"] = null; 
-            parsedGeoJson["cum_total_count"]=null; 
+            parsedGeoJson["upper"] = null;
+            parsedGeoJson["cum_lineage_count"]=null;
+            parsedGeoJson["proportion_formatted"] = null;
+            parsedGeoJson["cum_total_count"]=null;
             parsedGeoJson['properties']['location_id'] = l;
             this.filteredData.push(JSON.parse(JSON.stringify(parsedGeoJson)));
             //console.log(this.filteredData);
@@ -320,6 +329,7 @@ export default {
         this.filteredData = null;
         this.noMap = true;
       }
+
     },
 
     drawMap() {
@@ -363,9 +373,10 @@ export default {
               .remove()
             )
           )
+         
         this.regions
           .selectAll(".region-fill")
-          .data(this.filteredData.filter(d => d.proportion >0, d => d.properties.location_id))
+          .data(this.filteredData.filter(d => d.properties.proportion >0, d => d.properties.location_id))
           .join(
             enter => {
               enter
@@ -402,12 +413,13 @@ export default {
               .remove()
             )
           )
-        
+         
         //console.log(this.filteredData);
         // highlight where the data is 0.
+        
         this.regions
           .selectAll(".zero-data")
-          .data(this.filteredData.filter(d => d.proportion === 0), d => d.properties.location_id)
+          .data(this.filteredData.filter(d => d.properties.proportion === 0), d => d.properties.location_id)
           .join(
             enter => {
               enter
@@ -438,7 +450,7 @@ export default {
               .remove()
             )
           )
-       
+        
         this.regions.selectAll("path.region")
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
