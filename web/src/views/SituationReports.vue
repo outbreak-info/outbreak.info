@@ -306,7 +306,7 @@
 
                     <!-- location found -->
                     <td class="text-center line-height-1">
-                      {{ report.location_first_identified }}
+                        {{ report.location_first_identified }}
                     </td>
 
                     <td class="text-center">

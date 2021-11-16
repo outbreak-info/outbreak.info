@@ -474,7 +474,7 @@ export default {
   },
   props: {
     alias: String,
-    loc: [Array, String],
+    loc: {type:[Array, String], default: "USA_US-CA_06073"},
     muts: [Array, String],
     pango: String,
     xmin: String,
@@ -485,7 +485,7 @@ export default {
     },
     selected: {
       type: String,
-      default: "Worldwide"
+      default: "USA_US-CA_06073"
     }
   },
   computed: {

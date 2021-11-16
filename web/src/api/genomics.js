@@ -974,11 +974,33 @@ export function getNewToday(apiurl, queryStr, location) {
 }
 
 
+export function getZipcodes(apiurl, location){
+    let url;
+    url = `${apiurl}get-zipcodes?location_id=${location}`;
+    console.log("IN ZIPCODES", url);
+    return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+    })).pipe(
+    pluck("data"),
+    map(hits => {
+      var results = [];
+      var res;
+      res = hits['results'];
+     
+      for (var x of Object.entries(res)){
+        results.push(Math.round(x.at(1).zipcode));
+      }
+      return(results);
+   }))   
+}
+
 export function getShapeData(apiurl, location){
     let url;
     url = `${apiurl}shape?location_id=${location}`;
-    //console.log(axios.get(url));
-    //console.log(url);
+    
+    console.log("IN GENOMICS", url);
     return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -988,6 +1010,7 @@ export function getShapeData(apiurl, location){
     map(hits => {
       const keys = Object.keys(hits);
       let results;
+      console.log(results);
       const returnFlat = true;
       return(hits['results']);        
    }))
