@@ -7,7 +7,12 @@ const state = {
     authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
   },
   mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
-  team: [{
+  team: [
+    {
+      name: "Chrissy Aceves",
+      img: "chrissy.jpg"
+    },
+    {
       name: "Manar Alkuzweny",
       img: "manar.jpg"
     },
@@ -49,6 +54,10 @@ const state = {
     {
       name: "Alaa Abdel Latif",
       img: "alaa.jpg"
+    },
+    {
+      name: "Josh Levy",
+      img: "josh.png"
     },
     {
       name: "Julia Mullen",
