@@ -240,6 +240,11 @@ export default {
             if (temp_loc === loc){
                 this.locationMap = JSON.parse(y.at(1)._source.shape);
                 const mapBounds = geoBounds(this.locationMap);
+                console.log(this.path.bounds(this.locationMap));
+                var height = mapBounds[1][0] - mapBounds[0][0];
+                var width = mapBounds[1][1] - mapBounds[0][1];
+                console.log(height, width, (height/width));
+                this.hwRatio = height/width;
                 this.projection = geoAzimuthalEqualArea()
                   .center([0, 0])
                   .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])

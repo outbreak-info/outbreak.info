@@ -309,6 +309,7 @@ export default {
       this.prepData();
       if (this.filteredData) {
         const basemapData = this.location == "Worldwide" || this.location == "United States" ? [] : ADMIN0.features.filter(d => d.properties.NAME != this.location);
+        //console.log(this.projection);
         this.basemap
           .selectAll(".basemap")
           .data(basemapData, d => d.properties.location_id)
@@ -341,9 +342,10 @@ export default {
               .remove()
             )
           )
+        console.log(this.path);
         this.regions
           .selectAll(".region-fill")
-          .data(this.filteredData, d => d.properties.location_id)
+          .data(this.filteredData)
           .join(
             enter => {
               enter
@@ -380,6 +382,7 @@ export default {
               .remove()
             )
           )
+        console.log(this.filteredData);
         // highlight where the data is 0.
         this.regions
           .selectAll(".zero-data")
@@ -414,6 +417,7 @@ export default {
               .remove()
             )
           )
+        
         this.overlay
           .selectAll(".overlay")
           .data(ADMIN0.features.filter(d => d.properties.NAME == this.location && d.properties.NAME != "United States"), d => d.properties.location_id)

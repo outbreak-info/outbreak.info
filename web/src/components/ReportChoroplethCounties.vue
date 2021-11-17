@@ -204,7 +204,7 @@ export default {
       const mx = 0.8;
       const my = 0.85;
       const svgContainer = document.getElementById('geo-counties');
-
+      
       let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       const maxWidth = window.innerWidth;
       const maxHeight = window.innerHeight * my;
@@ -225,13 +225,17 @@ export default {
     chooseMap() {
         var country = this.location.split(",").at(-1).trim();
         //iterate and find outline of state/division
-        //console.log(this.poly);
         for (var x of Object.entries(this.poly.at(0))){
             var location = x.at(1)._source.location.trim();
             if (location === "None"){
                 this.locationMap = JSON.parse(x.at(1)._source.shape);
-                console.log("Loc Map", this.locationMap);
-                const mapBounds = geoBounds(this.locationMap);          
+                const mapBounds = geoBounds(this.locationMap);       
+                var height = mapBounds[1][0] - mapBounds[0][0];
+                var width = mapBounds[1][1] - mapBounds[0][1];
+                console.log(height, width, (height/width));
+                this.hwRatio = height/width;
+                
+                //console.log("MAP BOUNDS", mapBounds, this.hwRatio);   
                 this.projection = geoAzimuthalEqualArea()
                   .center([0, 0])
                   .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])
