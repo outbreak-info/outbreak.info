@@ -243,7 +243,7 @@ export default {
                 console.log(this.path.bounds(this.locationMap));
                 var height = mapBounds[1][0] - mapBounds[0][0];
                 var width = mapBounds[1][1] - mapBounds[0][1];
-                console.log(height, width, (height/width));
+                
                 this.hwRatio = height/width;
                 this.projection = geoAzimuthalEqualArea()
                   .center([0, 0])
@@ -301,29 +301,32 @@ export default {
                 var count_loc = y.at(1)['location_id'];
                 //console.log(count_loc, location);
                 if (count_loc === location){
-                    found = true;
-                    //console.log(count_loc, location);
+                    found = true;       
+
+                    parsedGeoJson['zipcode_name'] = x.at(1)._source.zipcode_name;
                     parsedGeoJson['properties'] = {'proportion': y.at(1)['proportion']};
                     //console.log(this.colorScale(y.at(1)['proportion']));
                     parsedGeoJson['fill'] = this.colorScale(y.at(1)['proportion']);
-                    parsedGeoJson["id"] = l;
+                    parsedGeoJson["id"] = l.toString();
                     parsedGeoJson['proportion'] = y.at(1)['proportion'];
-                    //console.log(parsedGeoJson);
+                    parsedGeoJson['cum_lineage_count'] = y.at(1)['cum_lineage_count'];
+                    parsedGeoJson['proportion_formatted'] = y.at(1)['proportion_formatted'];
+                    parsedGeoJson['cum_total_count'] = y.at(1)['cum_total_count'];
                 }
             }
             if (found === false){
                 parsedGeoJson['properties'] = {'proportion': -1};
-                //parsedGeoJson['fill'] = this.nullColor;
                 parsedGeoJson["id"] = null;
+                parsedGeoJson['zipcode_name'] = null;
+                parsedGeoJson["cum_lineage_count"]=null;
+                parsedGeoJson["proportion_formatted"] = null;
+                parsedGeoJson["cum_total_count"]=null;
                 //parsedGeoJson["proportion"] = -1;
             }
 
             parsedGeoJson['lower'] = null;
             parsedGeoJson["upper"] = null;
-            parsedGeoJson["cum_lineage_count"]=null;
-            parsedGeoJson["proportion_formatted"] = null;
-            parsedGeoJson["cum_total_count"]=null;
-            parsedGeoJson['properties']['location_id'] = l;
+            parsedGeoJson['properties']['location_id'] = l.toString();
             this.filteredData.push(JSON.parse(JSON.stringify(parsedGeoJson)));
             //console.log(this.filteredData);
             //this.filteredData.push(parsedGeoJson);
@@ -349,7 +352,7 @@ export default {
               enter
                 .append("path")
                 .attr("class", "basemap")
-                .attr("id", d => d.properties.location_id)
+                .attr("id", d => d.zipcode_name + d.properties.location_id)
                 // draw each region
                 .attr("d", this.path
                   .projection(this.projection)
@@ -361,7 +364,7 @@ export default {
 
             },
             update => update
-            .attr("id", d => d.properties.location_id)
+            .attr("id", d => d.zipcode_name + d.properties.location_id)
             // draw each region
             .attr("d", this.path
               .projection(this.projection)
@@ -386,8 +389,8 @@ export default {
             enter => {
               enter
                 .append("path")
-                .attr("class", d => `${d.properties.location_id} region region-fill`)
-                .attr("id", d => d.properties.location_id)
+                .attr("class", d => d.zipcode_name + d.properties.location_id + " region region-fill")
+                .attr("id", d => d.zipcode_name + d.properties.location_id)
                 // draw each region
                 .attr("d", this.path
                   .projection(this.projection)
@@ -399,8 +402,8 @@ export default {
                 .style("stroke-width", 0.5)
             },
             update => update
-            .attr("class", d => `${d.properties.location_id} region region-fill`)
-            .attr("id", d => d.properties.location_id)
+            .attr("class", d => d.zipcode_name + d.properties.location_id+ " region region-fill")
+            .attr("id", d => d.zipcode_name + d.properties.location_id)
             .on("click", d => this.route2Location(d.id))
             // draw each region
             .attr("d", this.path
@@ -419,7 +422,7 @@ export default {
             )
           )
          
-        //console.log(this.filteredData);
+        console.log(this.filteredData);
         // highlight where the data is 0.
         
         this.regions
@@ -429,8 +432,8 @@ export default {
             enter => {
               enter
                 .append("path")
-                .attr("class", d => `${d.properties.location_id} region zero-data`)
-                .attr("id", d => `${d.properties.location_id}_zero`)
+                .attr("class", d => d.zipcode_name + d.properties.location_id + " region zero-data")
+                .attr("id", d => d.zipcode_name + d.properties.location_id + "_zero")
                 // draw each region
                 .attr("d", this.path
                   .projection(this.projection)
@@ -440,8 +443,8 @@ export default {
                 .style("stroke-width", 0.5)
             },
             update => update
-            .attr("class", d => `${d.properties.location_id} region zero-data`)
-            .attr("id", d => `${d.properties.location_id}_zero`)
+            .attr("class", d => d.zipcode_name + d.properties.location_id + " region zero-data")
+            .attr("id", d => d.zipcode_name + d.properties.location_id + '_zero')
             // draw each region
             .attr("d", this.path
               .projection(this.projection)
@@ -459,7 +462,9 @@ export default {
         this.regions.selectAll("path.region")
           .on("mouseenter", d => this.debounceMouseon(d))
           .on("mouseleave", this.mouseOff);
-      
+        this.regions.selectAll("path.region")
+          .on("mouseenter", d => this.debounceMouseon(d))
+          .on("mouseleave", this.mouseOff); 
       }
     },
     mouseOn(d) {
@@ -470,17 +475,19 @@ export default {
         .selectAll(".region")
         .style("opacity", 0.2)
         .style("stroke-opacity", 0.5);
-
+     
+      let stringrep = d.zipcode_name + d.properties.location_id; 
       // turn on the location
       this.regions
-        .select(`.${d.properties.location_id}`)
+        .select(`.${stringrep}`)
         .style("opacity", 1)
-        .style("stroke-opacity", 1);
-
+        .style("stroke-opacity", 1); 
+      console.log(this.regions); 
       const ttip = select(this.$refs.tooltip_choro);
 
       // edit text
-      ttip.select("h5").text(d.properties.location_id);
+      console.log(ttip.select("h5"));
+      ttip.select("h5").text(d.properties.location_id + " " + d.zipcode_name);
       if (d.proportion || d.proportion === -1) {
         ttip.select("#no-sequencing").classed("hidden", true);
         ttip.select("#proportion")
@@ -512,9 +519,9 @@ export default {
       select(this.$refs.tooltip_choro)
         .style("display", "none");
 
-      this.regions
-        .selectAll(".zero-data")
-        .style("opacity", 1);
+      //this.regions
+     //   .selectAll(".zero-data")
+     //   .style("opacity", 1);
 
       this.regions
         .selectAll(".region")
