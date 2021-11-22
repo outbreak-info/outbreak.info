@@ -2186,7 +2186,7 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   const location_string =
     locations && locations.length ?
-    ` AND location_id:("${locations.join('","')}")` :
+    ` AND location_id:("${locations.join('" OR "')}")` :
     ` AND admin_level:[0 TO *]&sort=-confirmed_numIncrease`;
   const num2Return = locations && locations.length ? locations.length : 3;
 
@@ -2215,7 +2215,7 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
 
           voc.forEach(variant => {
             if (variant) {
-              const idx = summaryData.findIndex(d => d.location_id === variant[0].id);
+              const idx = summaryData.findIndex(d => d.location_id === variant[0].location_id);
               if (idx > -1) {
                 summaryData[idx]["voc"] = variant;
               }
