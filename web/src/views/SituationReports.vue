@@ -234,10 +234,24 @@
                         <div v-if="report.pango_sublineages.length">
                           <h5 class="sublineage d-flex flex-wrap">
                             <span class="mr-2">Sublineages: </span>
-                            <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx" :id="anchorLink(sublineage)">
-                              <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
-                              <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
-                            </span>
+                            <template v-if="report.showSublineages">
+                              <span v-for="(sublineage, sIdx) in report.pango_sublineages" :key="sIdx" :id="anchorLink(sublineage)">
+                                <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
+                                <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
+                              </span>
+                            </template>
+                            <template v-else>
+                              <span v-for="(sublineage, sIdx) in report.pango_sublineages.slice(0, sublineageMax)" :key="sIdx" :id="anchorLink(sublineage)">
+                                <router-link :to="{name:'MutationReport', query: {pango: sublineage, loc: report.loc, selected: report.selected }}" class="font-weight-bold no-underline" :id="anchorLink(sublineage)">{{sublineage}}</router-link>
+                                <span class="mx-1" v-if="sIdx < report.pango_sublineages.length - 1">&bull;</span>
+                                <span class="mx-1 opacity-75" v-if="sIdx == sublineageMax -1 && sIdx != report.pango_sublineages.length - 1">and
+                                  <span class="font-weight-bold">{{report.pango_sublineages.length - sublineageMax}}</span> more
+                                  <small>
+                                    <a @click="viewSublineages(report)" class="link">view all</a>
+                                  </small>
+                                </span>
+                              </span>
+                            </template>
                           </h5>
                           <!-- DELTA WARNING! -->
                           <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Delta'">
@@ -318,8 +332,14 @@
                       <div class="d-flex flex-column align-items-center">
                         <MutationHeatmap :data="report.mutations" :dark="false" gene="S" :yDomain="report.mutationsYDomain" :moc="curatedMOC" :moi="curatedMOI" v-if="report.mutations.length" />
                         <div class="d-flex">
-                          <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-if="report.mutations.length">
-                            <small v-if="report.pango_sublineages.length">Compare sublineages
+                          <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.who_name, sub: true } }" v-if="report.mutations.length && report.who_name">
+                            <small v-if="report.pango_sublineages.length">Compare {{report.who_name}} sublineages
+                            </small>
+                            <small v-else>Explore all genes
+                            </small>
+                          </router-link>
+                          <router-link class="text-muted" :to="{name:'SituationReportComparison', query: { pango: report.char_muts_query } }" v-else-if="report.mutations.length">
+                            <small v-if="report.pango_sublineages.length">Compare {{report.pangolin_lineage}} sublineages
                             </small>
                             <small v-else>Explore all genes
                             </small>
@@ -742,7 +762,21 @@ export default {
         this.filteredReports.forEach(group => {
           let filtered = [];
           group.values.forEach(report => {
-            if (report.classifications && (this.selectedVOC.length || this.selectedVOI.length)) {
+            // FILTER OUTBREAK CLASSIFICATIONS
+            if (report.variantType == "Variant of Concern" && this.selectedVOC.includes("outbreak") ||
+              report.variantType == "Variant of Interest" && this.selectedVOI.includes("outbreak")) {
+              // Filter by outbreak VOC/VOI + name
+              if (this.searchInput) {
+                if (report.searchTerms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase()))) {
+                  filtered.push(report);
+                }
+              } else {
+                // just add the outbreak VOC/VOI
+                filtered.push(report)
+              }
+
+              // FILTER BY CLASSICATIONS
+            } else if (report.classifications && (this.selectedVOC.length || this.selectedVOI.length)) {
               // filter name filters
               if (this.searchInput) {
                 if (report.searchTerms.some(x => x.toLowerCase().includes(this.searchInput.toLowerCase())) &&
@@ -752,7 +786,10 @@ export default {
                   filtered.push(report);
                 }
               } else {
-                if (report.classifications.filter(x => x.variantType == "VOC" && this.selectedVOC.includes(x.author)).length || report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI
+                // filter only the classifications
+                if (report.classifications.filter(x => x.variantType == "VOC" &&
+                    this.selectedVOC.includes(x.author)).length ||
+                  report.classifications.filter(x => (x.variantType == "VOI" || x.variantType == "VUI") && this.selectedVOI
                     .includes(x
                       .author))
                   .length) {
@@ -832,6 +869,9 @@ export default {
         })
       }
     },
+    viewSublineages(report) {
+      report.showSublineages = true;
+    },
     anchorLink(link) {
       return (link.replace(/\./g, "_"))
     },
@@ -857,6 +897,7 @@ export default {
       mutationReports: [],
       filteredReports: null,
       filteredMutations: [],
+      sublineageMax: 5,
       variantTypes: [{
           id: "VOC",
           label: "Variant of Concern",
@@ -1197,5 +1238,9 @@ $de-escalated: #bab0ab;
 
 .sublineages {
     max-width: 500px;
+}
+
+.opacity-75 {
+  opacity: 0.75 !important;
 }
 </style>

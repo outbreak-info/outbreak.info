@@ -142,7 +142,6 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
     map(results => {
       const resources = results.hits;
       const total = results.total;
-      console.log(resources)
 
       resources.forEach(d => {
         d["longDescription"] = d.abstract && d.abstract.length ? d.abstract : d.description;
@@ -209,7 +208,7 @@ export function getResourceFacets(
     "curatedBy.name",
     "keywords",
     "date",
-    // "topicCategory",
+    "topicCategory",
     "interventions.name",
     // "sponsor.name",
     "funding.funder.name",
@@ -223,9 +222,9 @@ export function getResourceFacets(
 
   const sortOrder = [
     "Type",
-    // "topicCategory",
     "date",
     "Source",
+    "Topic",
     "Funding",
     // "Trial Sponsor",
     "Trial Intervention",

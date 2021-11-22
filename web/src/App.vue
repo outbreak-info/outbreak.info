@@ -90,7 +90,7 @@
             <div class="dropdown-menu dropdown-menu-dark p-1" aria-labelledby="dropdownMenuButton">
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/about" :class="{ active: $route.name == 'About' }">About</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/sources" :class="{ active: $route.name == 'Sources' }">Data sources</router-link>
-              <a class="nav-link" href="https://outbreak.info/blog">Blog</a>
+              <a class="nav-link" href="https://blog.outbreak.info">Blog</a>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/faq" :class="{ active: $route.name == 'Faq' }">FAQ</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/latest" :class="{ active: $route.name == 'Latest' }">Latest changes</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Citation' }" :to="{name: 'Citation'}">How to cite</router-link>
@@ -207,7 +207,7 @@
           </li>
 
           <li class="nav-item px-0 py-1">
-            <a class="nav-link p-0" href="https://outbreak.info/blog">Blog</a>
+            <a class="nav-link p-0" href="https://blog.outbreak.info">Blog</a>
           </li>
 
           <li class="nav-item px-0 py-1">

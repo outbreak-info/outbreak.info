@@ -321,7 +321,7 @@
                   :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
-            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Mutation Report Prevalence over Time" v-if="!noRecentData" />
+            <DownloadReportData :data="geoData" figureRef="report-choropleth" dataType="Variant Report Prevalence over Time" v-if="!noRecentData" />
           </div>
 
           <!-- no recent geo data -->
@@ -528,7 +528,7 @@ export default {
       return (format(".0%")(this.otherThresh))
     },
     title() {
-      return (this.selectedLocation ? `${this.selectedLocation.label} Mutation Report` : null)
+      return (this.selectedLocation ? `${this.selectedLocation.label} Variant Report` : null)
     },
     seqCountsWindowed() {
       return this.recentMin && this.seqCounts ?
@@ -547,7 +547,7 @@ export default {
       if (this.newPango && this.newMuts.length) {
         newVariantObj = {
           label: `${this.newPango.name} + ${this.newMuts.map(d => d.mutation).join(", ")}`,
-          qParam: `${this.newPango.name}|${this.newMuts.map(d => d.mutation).join(",")}`,
+          qParam: `${this.newPango.name}|${this.newMuts.map(d => d.mutation).join(" AND ")}`,
           type: "variant"
         }
       } else if (this.newPango) {

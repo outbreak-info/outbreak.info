@@ -7,7 +7,12 @@ const state = {
     authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
   },
   mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
-  team: [{
+  team: [
+    {
+      name: "Chrissy Aceves",
+      img: "chrissy.jpg"
+    },
+    {
       name: "Manar Alkuzweny",
       img: "manar.jpg"
     },
@@ -43,8 +48,16 @@ const state = {
       linkedin: "https://www.linkedin.com/in/lauradhughes/"
     },
     {
+      name: "Kaleigh Jaeger",
+      img: "kaleigh.png"
+    },
+    {
       name: "Alaa Abdel Latif",
       img: "alaa.jpg"
+    },
+    {
+      name: "Josh Levy",
+      img: "josh.png"
     },
     {
       name: "Julia Mullen",
@@ -86,7 +99,7 @@ const state = {
     }
   ],
   funding: [{
-      identifier: "5 U19 AI135995-02",
+      identifier: "5 U19 AI135995-04S3",
       name: "CViSB",
       funder: {
         name: "National Institute for Allergy and Infectious Diseases"

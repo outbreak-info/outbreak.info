@@ -62,7 +62,7 @@
     <h6 class="m-0 mb-2">Publications</h6>
     <div v-if="(data.citedBy && data.citedBy.length) || citations">
       <template v-if="data.citedBy">
-        <div v-for="(citation, idx) in data.citedBy" :key="idx"  class="text-dark">
+        <div v-for="(citation, idx) in data.citedBy" :key="idx+'by'"  class="text-dark">
           <Citation :data="citation"/>
         </div>
       </template>
