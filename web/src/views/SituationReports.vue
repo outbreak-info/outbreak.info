@@ -192,13 +192,8 @@
                     <td class="pt-2  border-bottom">
                       <!-- WHO reports -->
                       <template v-if="report.who_name">
-                        <!-- with sublineages -->
-                        <router-link :to="{name:'MutationReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline"
-                          v-if="report.pango_sublineages.length || Array.isArray(report.pangolin_lineage)">
-                          <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
-                        </router-link>
-                        <!-- WHO named lineage, no sublineages -->
-                        <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
+                        <!-- WHO named lineage -->
+                        <router-link :to="{name:'MutationReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline">
                           <h3 class="m-0 font-weight-bold border-bottom pb-1 mb-2" :id="anchorLink(report.who_name)">{{ report.label }}</h3>
                         </router-link>
                       </template>
