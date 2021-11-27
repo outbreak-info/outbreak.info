@@ -171,6 +171,11 @@
         </div>
       </div>
 
+      <div id="warning" class="w-100 mt-3" v-if="(alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'">
+        <Warning text="Why are there no sequences for Omicron? After the new designation of Omicron / B.1.1.529 by the Pango network, it takes a day or two for the lineage assignment models used by Pangolin to be retrained, followed by sequence classification with the updated models." />
+
+      </div>
+
       <!-- Report Nav bar -->
       <div class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center border-top border-bottom">
         <div class="d-flex flex-wrap justify-content-center mx-3 py-2">
