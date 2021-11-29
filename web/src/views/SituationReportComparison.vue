@@ -41,7 +41,7 @@
 
         </div>
         <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-          <div class="d-flex align-items-center mb-1">
+          <div class="d-flex align-items-center mb-1 fa-lg">
             Enabled by data from
             <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
               <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
@@ -324,7 +324,7 @@
       </div>
 
       <!-- OMICRON WARNING -->
-      <div id="warning" class="w-100 mt-3" v-if="pango.includes('Omicron') || pango.includes('omicron') || pango.includes('B.1.1.529')">
+      <div id="warning" class="w-100 mt-3" v-if="pango && (pango.includes('Omicron') || pango.includes('omicron') || pango.includes('B.1.1.529'))">
         <Warning text="As a newly designated Variant of Concern, Omicron / B.1.1.529 is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
       </div>
 
@@ -1027,10 +1027,6 @@ export default {
 
 .w-75px {
     width: 75px;
-}
-
-.gisaid {
-    height: 25px;
 }
 
 $circle-width: 1.35em;
