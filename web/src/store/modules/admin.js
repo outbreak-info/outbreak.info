@@ -644,7 +644,7 @@ const state = {
       }
     },
     {
-      date: new Date("2021-11-24 0:0"),
+      date: new Date("2021-11-25 0:0"),
       category: "variants",
       title: "Added Omicron as a Variant under Monitoring",
       description: 'Based on the WHO classification, added Omicron / B.1.1.529 as a Variant under Monitoring.',
