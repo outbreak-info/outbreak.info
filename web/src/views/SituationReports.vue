@@ -16,10 +16,10 @@
       <img src="@/assets/sars-virus.svg" alt="map" class="bg-image" />
       <div class="d-flex flex-column justify-content-center align-items-center">
         <div class="d-flex w-75 justify-content-around align-items-center">
-          <div class="text-left d-flex align-items-center my-3 border-top border-bottom py-2 px-2">
+          <div class="text-left d-flex align-items-center my-3 border-top border-bottom py-2 px-2 gisaid-text">
             Enabled by data from
             <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-              <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
+              <img src="@/assets/resources/gisaid.png" class="gisaid-lg ml-2" alt="GISAID Initiative" />
             </a>
           </div>
         </div>
@@ -1034,10 +1034,6 @@ export default {
 <style lang="scss" scoped>
 .logo {
     width: 150px;
-}
-
-.gisaid {
-    height: 25px;
 }
 
 $mutation-width: 275px;

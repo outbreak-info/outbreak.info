@@ -157,7 +157,7 @@
 
           </div>
           <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-            <div class="d-flex align-items-center mb-1">
+            <div class="d-flex align-items-center mb-1 fa-lg">
               Enabled by data from
               <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
                 <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
@@ -980,10 +980,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.gisaid {
-    height: 25px;
-}
-
 .font-size-2 {
     font-size: 1.25rem;
 }
