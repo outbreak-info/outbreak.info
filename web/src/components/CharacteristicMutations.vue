@@ -7,7 +7,7 @@
     </div>
 
     <div class="d-flex flex-column align-items-end" v-if="lineageName">
-      <router-link class="mt-n1" v-if="sublineages.length" :to="{name:'SituationReportComparison', query: { pango: lineageName, sub: true }}">Compare {{lineageName}} sublineages</router-link>
+      <router-link class="mt-n1" v-if="sublineages.length > 1" :to="{name:'SituationReportComparison', query: { pango: lineageName, sub: true }}">Compare {{lineageName}} sublineages</router-link>
       <router-link class="mt-n1" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
       <router-link class="mt-n1"  :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
     </div>
