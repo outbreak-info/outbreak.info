@@ -644,6 +644,36 @@ const state = {
       }
     },
     {
+      date: new Date("2021-11-24 0:0"),
+      category: "variants",
+      title: "Added Omicron as a Variant under Monitoring",
+      description: 'Based on the WHO classification, added Omicron / B.1.1.529 as a Variant under Monitoring.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-11-26 0:0"),
+      category: "variants",
+      title: "Added Omicron as a Variant of Concern",
+      description: 'Based on the WHO and ECDC classifications, upgraded Omicron / B.1.1.529 to a Variant of Concern.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
       date: new Date("2021-09-03 0:0"),
       category: "variants",
       title: "De-escalated Zeta/P.2 from VOI",
