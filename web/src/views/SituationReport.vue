@@ -172,7 +172,7 @@
       </div>
 
       <div id="warning" class="w-100 mt-3" v-if="(alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'">
-        <Warning text="Why are there no sequences for Omicron? After the new designation of Omicron / B.1.1.529 by the Pango network, it takes a day or two for the lineage assignment models used by Pangolin to be retrained, followed by sequence classification with the updated models." />
+        <Warning text="As a newly designated Variant of Concern, Omicron is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
 
       </div>
 
