@@ -804,3 +804,9 @@ $status-color: #bab0ab;
 .bright-hyperlink a {
   color: #70d3ff;
 }
+
+@media only screen and (max-width: 500px) {
+  .mb-flex{
+    flex-direction: column;
+  }
+}
