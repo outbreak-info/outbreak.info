@@ -70,7 +70,8 @@
       <h4 id="characteristic">Characteristic mutations of a lineage</h4>
 
       <p>
-        Characteristic mutations for a lineage are defined as nonsynonymous substitutions or deletions that occur in > {{charMutThreshold}} of sequences within that lineage. For lineages with few sequences, the {{charMutThreshold}} threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
+        Characteristic mutations for a lineage are defined as nonsynonymous substitutions or deletions that occur in > {{charMutThreshold}} of sequences within that lineage. Currently, outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day, but we're working towards incorporating insertions into our data processing pipeline.
+        For lineages with few sequences, the {{charMutThreshold}} characteristic threshold may not identify all the mutations specific to that lineage, and as more sequences are found, the characteristic mutations may change. For applications like reagent design which require stringent accuracy, we recommend downloading the consensus sequences from <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
       </p>
     </section>
 
