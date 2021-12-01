@@ -60,6 +60,7 @@ import store from "@/store";
 
 axios.interceptors.request.use(function(config) {
   // Pass GISAID param to API via headers
+  // * BEFORE COMPLIATION, YOU NEED to run `export VUE_APP_API_ACCESS={key}`*
   config.headers.Authorization = `Bearer ${process.env.VUE_APP_API_ACCESS}`;
   return config;
 }, function(error) {
