@@ -107,7 +107,8 @@ import GlanceSummary from "@/components/GlanceSummary";
 import SearchBar from "@/components/SearchBar";
 
 import { timeFormat } from "d3";
-import { getSummary, getGlanceSummary } from "@/api/epi-basics.js";
+import { getSummary} from "@/api/epi-basics.js";
+import { getGlanceSummary } from "@/api/genomics.js";
 import { getCurrentDate } from "@/api/biothings.js";
 
 export default Vue.extend({
