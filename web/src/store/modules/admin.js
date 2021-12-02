@@ -659,6 +659,21 @@ const state = {
       }
     },
     {
+      date: new Date("2021-12-02 0:0"),
+      category: "variants",
+      title: "Added CDC classification of Omicron as a VOC",
+      description: "Updated the CDC's classification of Omicron as a Variant of Concern",
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
       date: new Date("2021-11-26 0:0"),
       category: "variants",
       title: "Added Omicron as a Variant of Concern",
