@@ -79,12 +79,12 @@
           </form>
           <small id="sBar-example-variant-lineage" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
+              <router-link :to="{name: 'MutationReport', params: {alias: 'omicron'}} " class="text-light">Omicron
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.617.2'}} " class="text-light">B.1.617.2
+              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -498,7 +498,7 @@
 
 
   <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
-    <div class="d-flex justify-content-center align-items-center px-5 py-3">
+    <div class="d-flex justify-content-center align-items-center mb-px-5 py-3 mb-flex">
       <div class="d-flex w-100 justify-content-between">
         <div>
           <h4 class="at-a-glance-header m-0">At a glance</h4>
@@ -711,7 +711,18 @@ export default {
         border: none !important;
     }
 }
+.mb-px-5{
+    padding-left: 3rem;
+     padding-right: 3rem;;
 
+  }
+@media (max-width:500px) {
+  .mb-px-5{
+    padding-left: 0;
+     padding-right: 0;
+
+  }
+}
 .text-light-highlight {
     color: #d5d5d5 !important;
 }
