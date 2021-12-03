@@ -79,12 +79,12 @@
           </form>
           <small id="sBar-example-variant-lineage" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
+              <router-link :to="{name: 'MutationReport', params: {alias: 'omicron'}} " class="text-light">Omicron
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.617.2'}} " class="text-light">B.1.617.2
+              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
