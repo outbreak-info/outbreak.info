@@ -7,12 +7,15 @@
     </div>
 
     <div class="d-flex flex-column align-items-end" v-if="lineageName">
-      <router-link class="mt-n1" v-if="sublineages.length" :to="{name:'SituationReportComparison', query: { pango: lineageName, sub: true }}">Compare {{lineageName}} sublineages</router-link>
+      <router-link class="mt-n1" v-if="sublineages.length > 1" :to="{name:'SituationReportComparison', query: { pango: lineageName, sub: true }}">Compare {{lineageName}} sublineages</router-link>
       <router-link class="mt-n1" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
       <router-link class="mt-n1"  :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
     </div>
 
   </div>
+
+  <!-- OMICRON INSERTION WARNING -->
+  <Warning text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions." class="fa-sm mt-2 mb-4" :align_left="true" v-if="lineageName == 'omicron' || lineageName == 'Omicron' || lineageName == 'B.1.1.529'" />
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
@@ -64,6 +67,7 @@ import {
 import SARSMutationMap from "@/components/SARSMutationMap.vue";
 import MutationTable from "@/components/MutationTable.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
+import Warning from "@/components/Warning.vue";
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
 
 import {
@@ -90,6 +94,7 @@ export default {
   components: {
     SARSMutationMap,
     MutationTable,
+    Warning,
     DownloadReportData
   },
   data() {

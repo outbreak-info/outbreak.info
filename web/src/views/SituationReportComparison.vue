@@ -41,7 +41,7 @@
 
         </div>
         <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-          <div class="d-flex align-items-center mb-1">
+          <div class="d-flex align-items-center mb-1 fa-lg">
             Enabled by data from
             <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
               <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
@@ -273,6 +273,7 @@
       </div>
     </div>
 
+
     <!-- LOOP OVER MUTATION HEATMAPS -->
     <div id="mutation-heatmaps" class="mt-4">
       <!-- ADJUST PARAMS -->
@@ -322,6 +323,10 @@
         </div>
       </div>
 
+      <!-- OMICRON WARNING -->
+      <div id="warning" class="w-100 mt-3" v-if="selectedPango && (selectedPango.includes('Omicron') || selectedPango.includes('omicron') || selectedPango.includes('B.1.1.529'))">
+        <Warning text="As a newly designated Variant of Concern, Omicron / B.1.1.529 is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
+      </div>
 
 
       <!-- TITLE -->
@@ -374,8 +379,13 @@
 
       <div class="d-flex flex-wrap">
         <div v-for="(geneData, gIdx) in filteredMutationHeatmap" :key="gIdx" class="mr-4 mb-2">
+
           <template v-if="selectedGenes.includes(geneData.key)">
             <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
+
+            <!-- OMICRON INSERTION WARNING -->
+            <Warning text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions." class="fa-sm mt-1 mb-2" :align_left="true" v-if="geneData.key == 'S' && selectedPango && (selectedPango.includes('Omicron') || selectedPango.includes('omicron') || selectedPango.includes('B.1.1.529'))" />
+
             <MutationHeatmap :data="geneData.values" :yDomain="selectedPango" :gene="geneData.key" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :dark="darkMode" />
           </template>
         </div>
@@ -1022,10 +1032,6 @@ export default {
 
 .w-75px {
     width: 75px;
-}
-
-.gisaid {
-    height: 25px;
 }
 
 $circle-width: 1.35em;

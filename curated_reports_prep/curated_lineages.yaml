@@ -32,6 +32,36 @@ VOC:
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOC
 
+  - who_name: Omicron
+    pangolin_lineage: B.1.1.529
+    nextstrain_clade: 21K
+    gisaid_clade: GR/484A
+    dateModified: 2021-11-26
+    location_first_identified: South Africa
+    loc:
+      - ZAF
+      - GBR
+      - USA
+    selected: ZAF
+    variantType: Variant of Concern
+    classifications:
+        - author: WHO
+          dateModified: 2021-11-26
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VOC
+        - author: CDC
+          dateModified: 2021-12-01
+          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+          variantType: VOC
+        - author: PHE
+          dateModified: 2021-11-21
+          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1036501/Technical_Briefing_29_published_26_November_2021.pdf
+          variantType: VOI
+        - author: ECDC
+          dateModified: 2021-11-26
+          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+          variantType: VOC
+
   - who_name: Alpha
     pangolin_lineage: B.1.1.7
     nextstrain_clade: 20I/501Y.V1, 20B/501Y.V1
@@ -388,7 +418,7 @@ VUM:
         dateModified: 2021-05-24
         url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/990339/Variants_of_Concern_VOC_Technical_Briefing_13_England.pdf
         variantType: VOI
-        
+
 deescalated:
   - who_name: Epsilon
     pangolin_lineage:

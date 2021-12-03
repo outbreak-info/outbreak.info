@@ -28,7 +28,7 @@
 import GlanceSummary from "@/components/GlanceSummary.vue";
 import Logos from "@/components/Logos.vue";
 import DataSource from "@/components/DataSource.vue";
-import { getGlanceSummary } from "@/api/epi-basics.js";
+import { getGlanceSummary } from "@/api/genomics.js";
 
 // --- font awesome --
 import {
