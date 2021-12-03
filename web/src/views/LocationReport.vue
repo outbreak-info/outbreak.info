@@ -520,10 +520,8 @@
 
 <script>
 import Vue from "vue";
-
 import tippy from "tippy.js";
 import 'tippy.js/themes/material.css';
-
 // --- font awesome --
 import {
   FontAwesomeIcon
@@ -552,16 +550,11 @@ import {
 import {
   faSync
 } from "@fortawesome/free-solid-svg-icons/faSync";
-
 library.add(faClock, faSpinner, faSync, faInfoCircle, faArrowLeft, faPlus, faTimesCircle);
-
-
 import debounce from "lodash/debounce";
-
 import {
   mapState
 } from "vuex";
-
 import {
   max,
   timeFormat,
@@ -573,12 +566,10 @@ import {
   extent,
   format
 } from "d3";
-
 import {
   schemeYlGnBu,
   interpolateRdPu
 } from "d3-scale-chromatic";
-
 import {
   getLocationReportData,
   getSequenceCount,
@@ -591,11 +582,9 @@ import {
   getBadMutations,
   findWHOLineage
 } from "@/api/genomics.js";
-
 import cloneDeep from "lodash/cloneDeep";
 import uniq from "lodash/uniq";
 import uniqBy from "lodash/uniqBy";
-
 export default {
   name: "LocationReport",
   props: {
@@ -726,7 +715,6 @@ export default {
           tracked.push(...curatedQuery);
         }
       }
-
       if (this.pango) {
         if (typeof(this.pango) == "string") {
           tracked.push({
@@ -833,35 +821,26 @@ export default {
   },
   mounted() {
     this.darkMode = this.dark == "true" || !!(this.dark) && this.dark != "false";
-
     const ofInterest = getBadMutations(true);
     this.moc = ofInterest.moc;
     this.moi = ofInterest.moi;
-
     this.queryLocation = findLocation;
     this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
       .domain(this.choroColorDomain);
-
     this.customMutations = this.grabCustomMutations();
-
     const formatDate = timeFormat("%e %B %Y");
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
-
-
     this.$nextTick(function() {
       // resize listener
       window.addEventListener("resize", this.setDims);
       this.setDims;
-
       // set URL for sharing, etc.
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
-
     // intial setup
     this.setDims();
-
     this.setupReport();
   },
   updated() {
@@ -893,11 +872,9 @@ export default {
         this.voi = results.voi;
         this.selectedLocation = results.location;
       })
-
       this.reportSubscription = getLocationReportData(this.$genomicsurl, this.loc, this.muts, this.pango, this.otherThresh, this.ndayThresh, this.dayThresh, this.recentWindow).subscribe(results => {
         this.lineagesByDay = results.lineagesByDay;
         this.noRecentData = results.mostRecentLineages && results.mostRecentLineages.length ? false : true;
-
         this.mostRecentLineages = results.mostRecentLineages;
         this.lineageDomain = results.lineageDomain;
         this.colorScale = scaleOrdinal(this.colorPalette).domain(this.lineageDomain);
@@ -905,7 +882,6 @@ export default {
         this.recentHeatmap = results.heatmap.characteristic.data;
         this.mostRecentDomain = results.heatmap.characteristic.yDomain;
       })
-
       this.updateSequenceCount();
     },
     createReport() {
@@ -1004,12 +980,9 @@ export default {
       }
       let alias = this.customMutations.filter(d => d.type == "alias").map(d => d.qParam);
       let pango = this.customMutations.filter(d => d.type == "pango").map(d => d.qParam);
-
       const variant = this.customMutations.filter(d => d.type == "variant").map(d => d.qParam);
       const mutation = this.customMutations.filter(d => d.type == "mutation").map(d => d.qParam);
-
       let selected = this.customMutations.map(d => d.label).concat(this.selected);
-
       if (this.newVariant) {
         if (typeof(this.selected) == "string") {
           selected = [this.selected, this.newVariant.label];
@@ -1017,10 +990,8 @@ export default {
           selected.push(this.newVariant.label);
         }
       };
-
       // clear new additions
       this.submitCount += 1;
-
       this.$router.push({
         name: "LocationReport",
         query: {
@@ -1083,7 +1054,6 @@ export default {
         this.shapeData = results;
         })
       }
-
       if (this.selectedLocation.admin_level <= 2){ 
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
@@ -1223,23 +1193,18 @@ export default {
     if (this.basicSubscription) {
       this.basicSubscription.unsubscribe();
     }
-
     if (this.reportSubscription) {
       this.reportSubscription.unsubscribe();
     }
-
     if (this.choroSubscription) {
       this.choroSubscription.unsubscribe();
     }
     if (this.shapesSubscription) {
       this.shapesSubscription.unsubscribe();
     }
-
-
     if (this.tableSubscription) {
       this.tableSubscription.unsubscribe();
     }
-
     if (this.countSubscription) {
       this.countSubscription.unsubscribe();
     }
@@ -1251,20 +1216,16 @@ export default {
 .gisaid {
     height: 25px;
 }
-
 .font-size-small {
     font-size: small;
 }
-
 .btn-active {
     background-color: $primary-color;
     color: white;
 }
-
 .w-33 {
     width: 33% !important;
 }
-
 .w-75px {
     width: 75px !important;
 }

@@ -218,7 +218,7 @@ export default Vue.extend({
     FontAwesomeIcon
   },
   props: {
-    loc: String,
+    loc: {type: String, default: "USA_US-CA_06073" },
     var: String
   },
   computed: {

@@ -718,7 +718,6 @@ export default {
     },
     filterName() {
       this.filterReports();
-
       this.$router.push({
         name: "SituationReports",
         params: {
@@ -735,8 +734,8 @@ export default {
     },
     filterReports() {
       this.filteredReports = cloneDeep(this.reports);
+      
       this.filteredMutations = cloneDeep(this.mutationReports);
-
       if (this.selectedVOC.length || this.selectedVOI.length || this.searchInput) {
         // filter the selected VOC/VOI reports
         this.filteredReports.forEach(group => {
@@ -770,7 +769,6 @@ export default {
           group.values = filtered;
         })
       }
-
       // filter mutation reports
       if (this.selectedMOC.length || this.selectedMOI.length || this.searchInput) {
         if (this.searchInput) {
@@ -817,7 +815,7 @@ export default {
           })
         }
       }
-
+   
       // MOC || MOI selected but not VOC / VOI
       if ((this.selectedMOC.length || this.selectedMOI.length) && !this.selectedVOC.length && !this.selectedVOI.length) {
         this.filteredReports.forEach(group => {
@@ -924,6 +922,7 @@ export default {
     }
   },
   mounted() {
+    console.log("mount Situation Reports");
     this.selectedVOC = this.voc ? typeof(this.voc) == "string" ? [this.voc] : this.voc : [];
     this.selectedVOI = this.voi ? typeof(this.voi) == "string" ? [this.voi] : this.voi : [];
     this.selectedMOC = this.moc ? typeof(this.moc) == "string" ? [this.moc] : this.moc : [];
@@ -937,9 +936,18 @@ export default {
     this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(results => {
       this.lastUpdated = results.dateUpdated;
       this.reports = results.md;
+
+      // this is meant to make it SD only as the default value
+      this.reports.forEach((x) => {
+        var val = x.values;
+        val.forEach((y) => {
+            y.loc = ['USA_US-CA_06073'];
+        })
+      })
+      console.log(this.reports);
       this.filterReports();
     })
-
+    
     this.totalSubscription = getSequenceCount(this.$genomicsurl, null, true).subscribe(total => {
       this.total = total;
     })

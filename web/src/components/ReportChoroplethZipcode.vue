@@ -33,7 +33,6 @@
 <script>
 import cloneDeep from "lodash/cloneDeep";
 import DownloadReportData from "@/components/DownloadReportData.vue";
-
 import {
   geoEqualEarth,
   geoAlbersUsa,
@@ -50,7 +49,6 @@ import {
   select,
   selectAll
 } from "d3";
-
 import ADMIN1 from "@/assets/geo/gadm_adm1_simplified.json";
 import USADATA from "@/assets/geo/US_states.json";
 export default {
@@ -166,12 +164,10 @@ export default {
   mounted() {
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
-
       this.$root.$on("update:countThreshold", newThreshold => {
         // this.countThreshold = newThreshold;
         // this.drawMap();
       });
-
       // event listener to hide tooltips
       document.addEventListener(
         "mousemove",
@@ -194,7 +190,6 @@ export default {
         }
       );
     });
-
     this.chooseMap();
     // set initial dimensions for the choropleth plots.
     this.setDims();
@@ -205,15 +200,12 @@ export default {
       const mx = 0.8;
       const my = 0.85;
       const svgContainer = document.getElementById('geo-zipcode');
-
       let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
       const maxWidth = window.innerWidth;
       const maxHeight = window.innerHeight * my;
-
       if (maxSvgWidth > maxWidth) {
         maxSvgWidth = maxWidth - 20;
       }
-
       const idealHeight = this.hwRatio * maxSvgWidth;
       if (idealHeight <= maxHeight) {
         this.height = idealHeight;
@@ -224,9 +216,8 @@ export default {
       }
     },
     chooseMap() {
-        console.log("In Choose Map");
+        //console.log("In Choose Map");
         var division = this.location.split(",").at(-2).trim();
-
         var loc = this.location.split(",").at(-3).trim();
         var country = this.location.split(",").at(-1).trim();
         var featCollection = [];
@@ -240,7 +231,7 @@ export default {
             if (temp_loc === loc){
                 this.locationMap = JSON.parse(y.at(1)._source.shape);
                 const mapBounds = geoBounds(this.locationMap);
-                console.log(this.path.bounds(this.locationMap));
+                //console.log(this.path.bounds(this.locationMap));
                 var height = mapBounds[1][0] - mapBounds[0][0];
                 var width = mapBounds[1][1] - mapBounds[0][1];
                 
@@ -250,7 +241,6 @@ export default {
                   .rotate([(mapBounds[0][0] + mapBounds[1][0]) * -0.5, (mapBounds[0][1] + mapBounds[1][1]) * -0.5])
                   .scale(1)
                   .translate([this.width / 2, this.height / 2]);
-
             }
         } 
     },
@@ -302,7 +292,6 @@ export default {
                 //console.log(count_loc, location);
                 if (count_loc === location){
                     found = true;       
-
                     parsedGeoJson['zipcode_name'] = x.at(1)._source.zipcode_name;
                     parsedGeoJson['properties'] = {'proportion': y.at(1)['proportion']};
                     //console.log(this.colorScale(y.at(1)['proportion']));
@@ -323,7 +312,6 @@ export default {
                 parsedGeoJson["cum_total_count"]=null;
                 //parsedGeoJson["proportion"] = -1;
             }
-
             parsedGeoJson['lower'] = null;
             parsedGeoJson["upper"] = null;
             parsedGeoJson['properties']['location_id'] = l.toString();
@@ -331,15 +319,12 @@ export default {
             //console.log(this.filteredData);
             //this.filteredData.push(parsedGeoJson);
         }
-
        this.noMap = false;
       } else {
         this.filteredData = null;
         this.noMap = true;
       }
-
     },
-
     drawMap() {
       this.prepData();
       const basemapData = [];
@@ -357,11 +342,9 @@ export default {
                 .attr("d", this.path
                   .projection(this.projection)
                 )
-
                 .style("fill", "#FDFDFD")
                 .style("stroke", "#444444")
                 .style("stroke-width", 0.25)
-
             },
             update => update
             .attr("id", d => d.zipcode_name + d.properties.location_id)
@@ -381,7 +364,7 @@ export default {
               .remove()
             )
           )
-         
+        console.log(this.filteredData); 
         this.regions
           .selectAll(".region-fill")
           .data(this.filteredData.filter(d => d.properties.proportion >0, d => d.properties.location_id))
@@ -422,7 +405,7 @@ export default {
             )
           )
          
-        console.log(this.filteredData);
+        //console.log(this.filteredData);
         // highlight where the data is 0.
         
         this.regions
@@ -469,7 +452,6 @@ export default {
     },
     mouseOn(d) {
       const ttipShift = 15;
-
       // dim everything
       this.regions
         .selectAll(".region")
@@ -482,33 +464,28 @@ export default {
         .select(`.${stringrep}`)
         .style("opacity", 1)
         .style("stroke-opacity", 1); 
-      console.log(this.regions); 
+      //console.log(this.regions); 
       const ttip = select(this.$refs.tooltip_choro);
-
       // edit text
-      console.log(ttip.select("h5"));
+      //console.log(ttip.select("h5"));
       ttip.select("h5").text(d.properties.location_id + " " + d.zipcode_name);
       if (d.proportion || d.proportion === -1) {
         ttip.select("#no-sequencing").classed("hidden", true);
         ttip.select("#proportion")
           .text(`${d.proportion_formatted} ${this.mutationName}`)
           .classed("hidden", false);
-
         ttip.select("#confidence-interval")
           .text(`(95% CI: ${format(".0%")(d.lower)}-${format(".0%")(d.upper)})`)
           .classed("hidden", false);
-
         ttip.select("#sequencing-count")
           .text(`Number of total ${this.mutationName} cases: ${format(",")(d.cum_lineage_count)}/${format(",")(d.cum_total_count)}`)
           .classed("hidden", false);
-
       } else {
         ttip.select("#no-sequencing").classed("hidden", false);
         ttip.select("#proportion").classed("hidden", true);
         ttip.select("#confidence-interval").classed("hidden", true);
         ttip.select("#sequencing-count").classed("hidden", true);
       }
-
       // fix location
       ttip
         .style("left", `${this.event.clientX + ttipShift}px`)
@@ -518,18 +495,16 @@ export default {
     mouseOff() {
       select(this.$refs.tooltip_choro)
         .style("display", "none");
-
       //this.regions
      //   .selectAll(".zero-data")
      //   .style("opacity", 1);
-
       this.regions
         .selectAll(".region")
         .style("opacity", 1)
         .style("stroke-opacity", 1);
-
     },
     route2Location(id) {
+      console.log("in route");
       if (this.report == "variant") {
         const query = this.$route.query;
         const params = this.$route.params;
@@ -549,11 +524,12 @@ export default {
           }
         })
       } else if (this.report == "location") {
+        console.log("in other route", id, this.abbloc);
         const query = this.$route.query;
         this.$router.push({
           name: "LocationReport",
           query: {
-            loc: id,
+            loc: this.abbloc + "_" + id,
             muts: query.muts,
             alias: query.alias,
             pango: query.pango,
@@ -586,3 +562,4 @@ export default {
   }
 }
 </script>
+

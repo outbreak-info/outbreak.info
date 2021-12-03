@@ -63,10 +63,7 @@
           <div class="modal-body">
             <div class="mb-3 py-3 border-bottom border-secondary">
               <h6 class="text-muted text-underline m-0">Current locations</h6>
-              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" @click="switchLocation()" data-dismiss="modal">
-                Worldwide
-              </button>
-              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx3) in currentLocs" :key="lIdx3" @click="switchLocation(location)" data-dismiss="modal">
+             <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx3) in currentLocs" :key="lIdx3" @click="switchLocation(location)" data-dismiss="modal">
                 {{ location.label }}
               </button>
             </div>
@@ -180,11 +177,23 @@
             </button>
           </a>
 
-          <a href="#geographic">
+          <a href="#geographic" v-if="selectedLocation.admin_levels == 0">
             <button class="btn btn-grey mx-3 py-2">
               <small>Geographic prevalence</small>
             </button>
           </a>
+          <a href="#geo-zipcode" v-if="selectedLocation.admin_levels == 2">
+            <button class="btn btn-grey mx-3 py-2">
+              <small>Geographic prevalence</small>
+            </button>
+          </a>
+          <a href="#geo-county" v-if="selectedLocation.admin_levels == 1">
+            <button class="btn btn-grey mx-3 py-2">
+              <small>Geographic prevalence</small>
+            </button>
+          </a>
+  
+
           <a href="#resources">
             <button class="btn btn-grey mx-3 py-2">
               <small>Publications</small>
@@ -302,9 +311,9 @@
             :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale" :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
         </div>
       </section>
-
-      <!-- GEOGRAPHIC PREVALENCE -->
-      <section class="my-4 d-flex flex-column align-items-center" id="geographic">
+      
+      <!-- GEOGRAPHIC PREVALENCE COUNTIES-->
+      <section class="my-4 d-flex flex-column align-items-center" id="geo-county" v-if="selectedLocation.admin_level == 1">
         <div class="d-flex align-items-center">
           <h4 class="mb-0 mr-3">Cumulative {{reportName}} prevalence</h4>
           <div id="location-buttons" class="d-flex flex-wrap align-items-center">
@@ -315,8 +324,80 @@
           </div>
         </div>
 
-        <div v-if="selectedLocation && selectedLocation.admin_level < 2">
-          <template v-if="selectedLocation.admin_level < 1">
+        <div v-if="selectedLocation && selectedLocation.admin_level == 1">
+          <template v-if="selectedLocation.admin_level == 1">
+            <div class="d-flex align-items-center justify-content-end mb-3 mt-2">
+              <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="btn btn-sec mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
+              <Warning text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            </div>
+            <div class="d-flex flex-wrap">
+              <!-- Legend -->
+              <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
+                <ClassedLegend :colorScale="choroColorScale" :label="`Est. ${ reportName } prevalence since identification`" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
+              </div>
+              <!-- Total count filter -->
+              <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
+            </div>
+
+            <ReportChoroplethCounties report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" :abbloc="selectedLocation" :poly=shapeData />
+          </template>
+
+          <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
+        </div>
+
+       </section>
+
+
+      <!-- GEOGRAPHIC PREVALENCE ZIPCODES-->
+      <section class="my-4 d-flex flex-column align-items-center" id="geo-zipcode" v-if="selectedLocation.admin_level==2">
+        <div class="d-flex align-items-center">
+          <h4 class="mb-0 mr-3">Cumulative {{reportName}} prevalence</h4>
+          <div id="location-buttons" class="d-flex flex-wrap align-items-center">
+            <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethLocations" :key="cIdx" @click="switchLocation(location)">{{ location.label }}</button>
+            <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+            </button>
+          </div>
+        </div>
+
+        <div v-if="selectedLocation && selectedLocation.admin_level == 2">
+          <template v-if="selectedLocation.admin_level == 2">
+            <div class="d-flex align-items-center justify-content-end mb-3 mt-2">
+              <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="btn btn-sec mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
+              <Warning text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
+            </div>
+            <div class="d-flex flex-wrap">
+              <!-- Legend -->
+              <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
+                <ClassedLegend :colorScale="choroColorScale" :label="`Est. ${ reportName } prevalence since identification`" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
+              </div>
+              <!-- Total count filter -->
+              <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
+            </div>
+
+            <ReportChoroplethZipcode report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" :abbloc="selectedLocation" :poly=shapeData :outline=outlineData />
+          </template>
+
+          <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
+        </div>
+
+       </section>
+
+
+      <!-- GEOGRAPHIC PREVALENCE -->
+      <section class="my-4 d-flex flex-column align-items-center" id="geographic" v-if="selectedLocation && selectedLocation.adminlevel ==0">
+        <div class="d-flex align-items-center">
+          <h4 class="mb-0 mr-3">Cumulative {{reportName}} prevalence</h4>
+          <div id="location-buttons" class="d-flex flex-wrap align-items-center">
+            <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethLocations" :key="cIdx" @click="switchLocation(location)">{{ location.label }}</button>
+            <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
+              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
+            </button>
+          </div>
+        </div>
+
+        <div v-if="selectedLocation && selectedLocation.admin_level == 0">
+          <template v-if="selectedLocation.admin_level == 0">
             <div class="d-flex align-items-center justify-content-end mb-3 mt-2">
               <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="btn btn-sec mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
               <Warning text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
@@ -435,6 +516,8 @@ import {
   updateLocationData,
   findLocation,
   findPangolin,
+  getZipcodes,
+  getShapeData,
   getLocationPrevalence
 } from "@/api/genomics.js";
 
@@ -459,6 +542,8 @@ export default {
     ReportPrevalence: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalence.vue"),
     ReportPrevalenceByLocation: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceByLocation.vue"),
     ReportChoropleth: () => import( /* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
+    ReportChoroplethZipcode: () => import( /* webpackPrefetch: true */ "@/components/ReportChoroplethZipcode.vue"),
+    ReportChoroplethCounties: () => import( /* webpackPrefetch: true */ "@/components/ReportChoroplethCounties.vue"),
     ReportResources: () => import( /* webpackPrefetch: true */ "@/components/ReportResources.vue"),
     ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
     ReportSummary: () => import( /* webpackPrefetch: true */ "@/components/ReportSummary.vue"),
@@ -498,13 +583,14 @@ export default {
         this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
     },
     locationLabel() {
+      //console.log("HERE", this.selectedLocation);
       return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
     },
     choroplethLocations() {
-      return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)
+      return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level <= 2) : null)
     }
   },
   watch: {
@@ -541,6 +627,9 @@ export default {
       locationQueryParams: null,
       title: null,
       lastUpdated: null,
+      shapeData: null,
+      outlineData: null,
+      shapeSubscription: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
       width: 800,
 
@@ -641,10 +730,10 @@ export default {
     // set URL for sharing, etc.
     this.$nextTick(function() {
       window.addEventListener("resize", this.debounceSetDims);
-
       const location = window.location;
       this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
     })
+  
     this.setupReport();
   },
   methods: {
@@ -662,7 +751,6 @@ export default {
         this.reportType = "combined lineage";
         this.reportName = this.lineageName;
       } else {
-
         if (this.$route.query.pango) {
           if (this.$route.query.muts && this.$route.query.muts.length) {
             // Lineage + Mutation report
@@ -724,21 +812,30 @@ export default {
     },
     setupReport() {
       // set default, if needed.
+      console.log("Default", this.alias, this.selected, this.loc);
       if (!this.selected) {
-        this.selected = "Worldwide";
+        if (Array.isArray(this.loc)){
+            this.selected = this.loc.at(0);
+        }else if (this.loc){
+            this.selected = this.loc;
+        }else{
+            this.selected = "USA_US-CA_06073";
+        }
       }
-
+      console.log('after', this.selected, this.loc); 
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
           this.hasData = true;
 
+          
           // selected locations
           this.selectedLocations = results.locations;
           this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
           const selected = results.locations.filter(d => d.isActive);
-          this.selectedLocation = selected.length === 1 ? selected[0] : null;
-
+          //this is important for the event that something other than the default gets passed
+          this.selectedLocation = this.currentLocs.at(0);
+          console.log(this.selectedLocation, "sl");
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
           this.lastUpdated = results.dateUpdated.lastUpdated;
@@ -751,6 +848,7 @@ export default {
           this.sublineagePrev = results.sublineagePrev;
 
           // location prevalence
+          
           this.locationTotals = results.locPrev;
 
           // longitudinal data: prevalence over time
@@ -761,12 +859,14 @@ export default {
           this.sublineageTotalStacked = results.sublineageTotalStacked;
           this.setSublineageColorScale();
 
-
+        
           // // recent data by country & countries with that lineage.
           this.countries = results.countries;
           this.states = results.states;
           this.choroData = results.choroData;
           this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
+       
+          this.updateMaps();          
 
           // characteristic mutations
           this.mutations = results.mutations;
@@ -834,7 +934,6 @@ export default {
 
       // reset the fields.
       this.loc2Add = [];
-
       this.$router.push({
         name: "MutationReport",
         params: {
@@ -865,7 +964,6 @@ export default {
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
-
       this.$router.push({
         name: "MutationReport",
         query: {
@@ -881,11 +979,35 @@ export default {
         }
       })
     },
+
+    updateMaps(){
+        //if we have somehting other than SD County being passed, find it
+        if (this.selectedLocation.admin_level == 2 && this.selectedLocation.id === 'USA_US-CA_06073') {
+        this.zipcodeSubscription = getZipcodes(this.$genomicsurl, this.selectedLocation.id).subscribe(results => {
+        this.zipcodes = results;
+        })
+        this.shapeSubscription = getShapeData(this.$sdzipcodeapiurl, this.selectedLocation.id).subscribe(results => {
+            this.shapeData = results;
+        })
+        this.shapiesSubscription = getShapeData(this.$shapeapiurl, 'USA_US-CA').subscribe(results => {
+            this.outlineData = results;
+        })
+      }
+
+        if (this.selectedLocation.admin_level == 1) {
+        this.shapiesSubscription = getShapeData(this.$shapeapiurl, this.selectedLocation.id).subscribe(results => {
+            this.shapeData = results;
+        })
+      }
+    },
+
+
     updateLocations() {
       // set default, if needed.
       if (!this.selected) {
-        this.selected = "Worldwide";
+        this.selected = "USA_US-CA_06073";
       }
+      console.log("update locations"); 
       this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
@@ -913,6 +1035,7 @@ export default {
       })
     },
     changeSublineageOverlay(selected) {
+      console.log('sublienage overlay');
       this.$router.push({
         name: "MutationReport",
         query: {
@@ -935,7 +1058,6 @@ export default {
     },
     selectNewPangolin() {
       // const queryParams = this.$route.query;
-
       this.$router.push({
         name: "MutationReport",
         query: {
