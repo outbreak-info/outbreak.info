@@ -1,15 +1,13 @@
 <template>
 <div>
-  <div class="row d-flex align-items-end">
-
-
+  <div class="row d-flex align-items-end mt-4">
   <!-- clinical trial phase -->
-  <div class="col-sm-12 d-flex align-items-center">
+  <div class="col-sm-12 d-flex align-items-center mb-2">
   <div v-if="data.studyDesign && data.studyDesign.phaseNumber">
     <TrialPhase :phases="data.studyDesign.phaseNumber" />
   </div>
   <!-- interventions -->
-  <div v-if="data.studyDesign || data.armGroup" class="mb-1">
+  <div v-if="data.studyDesign || data.armGroup" class="ml-5">
     <TrialType :design="data.studyDesign" :arms="data.interventions" />
   </div>
 </div>

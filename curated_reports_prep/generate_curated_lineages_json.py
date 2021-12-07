@@ -2,6 +2,8 @@
 Function to read in the `curated_lineage.yaml`, pull in all the Pango sublineages
 for each curated linage, and calculate a few derived properties for the
 outbreak.info front-end.
+
+Usage: `python3 generate_curated_lineages_json.py`
 """
 
 # required packages
@@ -32,11 +34,13 @@ curated_data = yaml.load(open(curated_filename), Loader=yaml.BaseLoader)
 vocs = pd.DataFrame(curated_data["VOC"])
 vois = pd.DataFrame(curated_data["VOI"])
 vums = pd.DataFrame(curated_data["VUM"])
+deescalated = pd.DataFrame(curated_data["deescalated"])
 vocs["variantType"] = "Variant of Concern"
 vois["variantType"] = "Variant of Interest"
 vums["variantType"] = "Variant under Monitoring"
+deescalated["variantType"] = "De-escalated"
 # merge the two back together
-curated = pd.concat([vocs, vois, vums])
+curated = pd.concat([vocs, vois, vums, deescalated])
 
 
 # --- DESCENDANTS ---
@@ -124,36 +128,36 @@ def formatClassifications(row):
     elif(row.variantType == "Variant under Monitoring"):
         formatted_classifications = {"VUM": {"outbreak": {"label": row.dateModifiedFormatted, "ttip":"<b>Variant under Monitoring</b> classification by <b>outbreak.info</b>"}}}
 
-    # loop over the classifications and reformat:
-    for classification in row.classifications:
-        if("url" in classification.keys()):
-            if("dateModified" in classification.keys()):
-                label = f'<a href={classification["url"]} target="_blank">{datetime.strptime(classification["dateModified"], "%Y-%m-%d").strftime("%d %b %Y")}</a>'
+    if(row.classifications == row.classifications):
+        # loop over the classifications and reformat:
+        for classification in row.classifications:
+            if("url" in classification.keys()):
+                if("dateModified" in classification.keys()):
+                    label = f'<a href={classification["url"]} target="_blank">{datetime.strptime(classification["dateModified"], "%Y-%m-%d").strftime("%d %b %Y")}</a>'
+                else:
+                    label = f'<a href={classification["url"]} target="_blank">report</a>'
             else:
-                label = f'<a href={classification["url"]} target="_blank">report</a>'
-        else:
-            if("dateModified" in classification.keys()):
-                label = datetime.strptime(classification["dateModified"], "%Y-%m-%d").strftime("%d %b %Y")
+                if("dateModified" in classification.keys()):
+                    label = datetime.strptime(classification["dateModified"], "%Y-%m-%d").strftime("%d %b %Y")
+                else:
+                    label = "report"
+
+            if(classification["variantType"] == "VOC"):
+                variantType = "Variant of Concern"
+            elif(classification["variantType"] == "VOI"):
+                variantType = "Variant of Interest"
+            elif(classification["variantType"] == "VUM"):
+                variantType = "Variant under Monitoring"
             else:
-                label = "report"
+                variantType = "none"
 
-        if(classification["variantType"] == "VOC"):
-            variantType = "Variant of Concern"
-        elif(classification["variantType"] == "VOI"):
-            variantType = "Variant of Interest"
-        elif(classification["variantType"] == "VUM"):
-            variantType = "Variant under Monitoring"
-        else:
-            variantType = "none"
+            ttip = f"View <b>{variantType}</b> classification by <b>{classification['author']}</b>"
+            to_add = {"label": label, "ttip": ttip}
 
-        ttip = f"View <b>{variantType}</b> classification by <b>{classification['author']}</b>"
-        to_add = {"label": label, "ttip": ttip}
-
-        if(classification["variantType"] in formatted_classifications.keys()):
-            formatted_classifications[classification["variantType"]][classification["author"]] = to_add
-        else:
-            formatted_classifications[classification["variantType"]] = { classification["author"]: to_add }
-
+            if(classification["variantType"] in formatted_classifications.keys()):
+                formatted_classifications[classification["variantType"]][classification["author"]] = to_add
+            else:
+                formatted_classifications[classification["variantType"]] = { classification["author"]: to_add }
 
     return(formatted_classifications)
 

@@ -16,8 +16,7 @@ import {
   nest,
   timeParse,
   timeFormat,
-  sum,
-  scaleThreshold
+  sum
 } from "d3";
 
 import {
@@ -305,102 +304,6 @@ export function getCasesAboveThresh(apiUrl, threshold) {
       console.log("%c Error in getting case counts!", "color: red");
       console.log(e);
       return from([]);
-    })
-  );
-}
-
-export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
-  store.state.admin.loading = true;
-  const formatDate = timeFormat("%e %B %Y");
-  const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const location_string =
-    locations && locations.length ?
-    ` AND location_id:("${locations.join('" OR "')}")` :
-    ` AND admin_level:[0 TO *]&sort=-confirmed_numIncrease`;
-  const num2Return = locations && locations.length ? locations.length : 3;
-
-  return from(
-    axios.get(
-      `${apiUrl}query?q=mostRecent:true${location_string}&fields=location_id,name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,date,dead,dead_numIncrease,dead_pctIncrease,dead_rolling,confirmed_rolling&size=${num2Return}&timestamp=${timestamp}`
-    )
-  ).pipe(
-    pluck("data", "hits"),
-    mergeMap(summaryData =>
-      forkJoin([
-        getVOCs(genomicsUrl, summaryData.map(d => d.location_id), 25),
-        getSparklineTraces(
-          apiUrl,
-          summaryData.map(d => d.location_id),
-          "confirmed,dead,confirmed_numIncrease,dead_numIncrease,confirmed_rolling,dead_rolling"
-        )
-      ]).pipe(
-        map(([voc, sparks]) => {
-          sparks.forEach(spark => {
-            const idx = summaryData.findIndex(d => d.location_id === spark.key);
-            if (idx > -1) {
-              summaryData[idx]["longitudinal"] = spark.value;
-            }
-          });
-
-          voc.forEach(variant => {
-            if (variant) {
-              const idx = summaryData.findIndex(d => d.location_id === variant[0].location_id);
-              if (idx > -1) {
-                summaryData[idx]["voc"] = variant;
-              }
-            }
-          })
-
-          summaryData.forEach(d => {
-            d["date"] = formatDate(parseDate(d["date"]));
-          });
-
-          return summaryData;
-        })
-      )
-    ),
-    catchError(e => {
-      console.log("%c Error in getting glance summary!", "color: red");
-      console.log(e);
-      return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false))
-  );
-}
-
-export function getVOCs(genomicsUrl, locations, totalThreshold) {
-  const mutations = CURATED.filter(d => (d.variantType == "Variant of Concern")).map(d => {
-    return ({
-      label: d.label,
-      type: d.variantType == "Variant of Concern" ? "VOC" : d.variantType == "Variant of Interest" ? "VOI" : null,
-      bulkQuery: d.char_muts_parent_query
-    })
-  });
-
-  return forkJoin(...locations.map(loc => getLocationTable(genomicsUrl, loc, mutations, totalThreshold))).pipe(
-    map(results => {
-
-      const flattened = results.flatMap(d => d).map(d => d.values);
-      const whiteThreshold = 0.35;
-      const colorScale = scaleThreshold(schemeYlGnBu[9])
-        .domain([0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75]);
-
-      const cleaned = flattened.map(location => {
-        if (location.every(d => !d.global_prevalence)) {
-          // no location map for sequencing
-          return (null)
-        } else {
-          location.forEach(d => {
-            d["fill"] = colorScale(d.global_prevalence);
-            d["proportion_formatted"] = d.proportion_formatted == "not detected" ? "none" : d.proportion_formatted;
-            d["color"] = d.global_prevalence > whiteThreshold ? "#FFFFFF" : "#2c3e50";
-          })
-          return (location)
-        }
-      })
-
-      return cleaned;
     })
   );
 }

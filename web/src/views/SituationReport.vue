@@ -149,15 +149,15 @@
               <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
               </small>
-              <div class="text-light font-size-2 ml-5" v-if="totalLineage">
-                {{totalLineage}} sequences
+              <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
+                with <span class="text-light">{{totalLineage}} sequences</span> from GISAID
               </div>
             </div>
 
 
           </div>
           <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-            <div class="d-flex align-items-center mb-1">
+            <div class="d-flex align-items-center mb-1 fa-lg">
               Enabled by data from
               <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
                 <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
@@ -169,6 +169,11 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <div id="warning" class="w-100 mt-3" v-if="(alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'">
+        <Warning text="As a newly designated Variant of Concern, Omicron is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
+
       </div>
 
       <!-- Report Nav bar -->
@@ -975,10 +980,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.gisaid {
-    height: 25px;
-}
-
 .font-size-2 {
     font-size: 1.25rem;
 }

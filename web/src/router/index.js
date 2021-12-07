@@ -256,15 +256,14 @@ const routes = [{
       ),
     // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
-      if(to.params && to.params.alias) {
+      if (to.params && to.params.alias) {
         // redirect to route below
         next({
           name: 'MutationReport',
           params: to.params,
           query: to.query
         })
-      }
-      else if (to.query && ((to.query.pango) || (to.query.muts))) {
+      } else if (to.query && ((to.query.pango) || (to.query.muts))) {
         // redirect to route below
         next({
           name: 'MutationReport',
@@ -319,7 +318,9 @@ const routes = [{
       pango: route.query.pango,
       gene: route.query.gene,
       dark: route.query.dark,
-      threshold: route.query.threshold
+      sub: route.query.sub,
+      threshold: route.query.threshold,
+      nthresh: route.query.nthresh
     }),
     component: () =>
       import(
@@ -458,6 +459,34 @@ const routes = [{
   {
     path: "/situation-reports-demo",
     redirect: "/situation-reports"
+  },
+  {
+    path: "/blog",
+    beforeEnter(to, from, next) {
+      // redirect to blog.outbreak.info to account for nginx config change.
+      if(Object.keys(to.query).length) {
+        window.location.replace(`https://blog.outbreak.info${to.fullPath.replace("/blog", "")}`)
+      } else {
+      window.location.replace("https://blog.outbreak.info")
+      }
+
+    }
+  },
+  {
+    path: "/blog/:id",
+    beforeEnter(to, from, next) {
+      console.log(to)
+      // redirect to blog.outbreak.info to account for nginx config change.
+      window.location.replace(`https://blog.outbreak.info/${to.params.id}`)
+    }
+  },
+  {
+    path: "/author/:name",
+    beforeEnter(to, from, next) {
+      console.log(to)
+      // redirect to blog.outbreak.info to account for nginx config change.
+      window.location.replace(`https://blog.outbreak.info/author/${to.params.name}`)
+    }
   },
   {
     path: "/situation-report-demo",

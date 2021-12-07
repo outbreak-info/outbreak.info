@@ -7,28 +7,11 @@
   </div>
 
   <div class="row w-100 m-0" v-if="data">
-    <div class="col-sm-12" v-if="retracted">
-      <Warning :animate="true" class="w-100 mb-2" :text="`This ${data['@type']} has been retracted.`"> </Warning>
-    </div>
 
     <div class="col-sm-12 text-left">
-      <div :class="type.replace(/\s/g, '')" v-if="type">
-        <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
-        {{ type }}
-        <span class="pub-type mx-2" v-if="data.publicationType && data.publicationType[0]">
-          <template v-if="Array.isArray(data.publicationType)">
-            <span v-for="(pub, idx) in data.publicationType" :key="idx">{{ pub }} </span>
-          </template>
-          <template v-else>{{ data.publicationType }}</template>
-        </span>
-      </div>
-      <!-- title -->
-      <h4 class="d-flex align-item-center m-0 mb-2">
-        <b>{{ data.name }}</b>
-      </h4>
 
       <!-- mini-nav for resource types -->
-      <section class="d-flex justify-content-end w-100 bg-sec">
+      <section class="d-flex justify-content-end w-100 bg-grey__lighter my-4">
         <div class="row d-flex justify-content-center w-100">
           <nav class="navbar navbar-expand-lg navbar-dark">
             <ul class="navbar-nav">
@@ -41,18 +24,33 @@
           </nav>
         </div>
       </section>
+
+      <!-- type label -->
+      <div :class="type.replace(/\s/g, '')" v-if="type">
+        <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
+        {{ type }}
+        <span class="pub-type mx-3" v-if="data.publicationType && data.publicationType[0]">
+          <template v-if="Array.isArray(data.publicationType)">
+            <span v-for="(pub, idx) in data.publicationType" :key="idx">{{ pub }}<span v-if="idx < data.publicationType.length - 1" class="mx-2">&bull;</span></span>
+
+          </template>
+          <template v-else>{{ data.publicationType }}</template>
+        </span>
+      </div>
+
     </div>
 
-    <div class="col-md-9 my-3">
+    <div class="col-md-9 my-3 pr-5">
+
       <!-- description -->
-      <ResourceDescription :data="data" :type="type" />
+      <ResourceDescription :data="data" :type="type" class="border-bottom pb-3" />
 
       <!-- special clinical trials description -->
       <ClinicalTrialDescription :data="data" v-if="type == 'ClinicalTrial'" />
 
       <div class="mr-5">
         <!-- downloads -->
-        <div id="downloads" class="text-left border-top border-bottom text-muted py-3 my-3">
+        <div id="downloads" class="text-left border-bottom text-muted py-3 my-3" v-if="anchorsArr.includes('downloads')">
           <h6 class="m-0">Downloads</h6>
           <ul v-if="data.distribution" id="download-list">
             <li v-for="(item, idx) in data.distribution" :key="idx">
@@ -68,7 +66,7 @@
 
 
         <!-- funding info -->
-        <div id="funder" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="funder" class="text-left border-bottom text-muted py-3 mb-3" v-if="anchorsArr.includes('funder')">
           <h6 class="m-0">Funder</h6>
           <div v-if="data.funding || data.funder">
             <div v-if="data.funding">
@@ -155,9 +153,23 @@
           </div>
         </div>
 
+        <!-- corrections -->
+        <div id="corrections" class="text-left border-bottom text-muted py-1 my-3" v-if="anchorsArr.includes('corrections')">
+          <h6 class="m-0">Corrections</h6>
+          <ul v-if="data.correction" id="correction-list">
+            <li v-for="(item, idx) in data.correction" :key="idx">
+              <a :href="item.url" target="_blank" rel="noreferrer">
+                {{ item.correctionType[0].toUpperCase() }}{{ item.correctionType.slice(1) }} {{item.identifier.toUpperCase()}}
+              </a>
+            </li>
+          </ul>
+          <div v-else>
+            <small>none</small>
+          </div>
+        </div>
 
         <!-- license -->
-        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('license')">
           <h6 class="m-0">License</h6>
           <div v-if="data.license">
             <a v-if="data.license.startsWith('http')" :href="data.license" target="_blank">{{ data.license }}
@@ -170,7 +182,7 @@
         </div>
 
         <!-- based on -->
-        <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('based on')">
           <h6 class="m-0 mb-2">Based on</h6>
           <div v-if="data.isBasedOn && data.isBasedOn.length">
             <Citation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx" />
@@ -181,7 +193,7 @@
         </div>
 
         <!-- cited by -->
-        <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="data['@type'] != 'ClinicalTrial'">
+        <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('cited by')">
           <h6 class="m-0 mb-2">Cited by</h6>
           <div v-if="data.citedBy && data.citedBy.length">
             <Citation :data="item" v-for="(item, idx) in data.citedBy" :key="idx" />
@@ -192,7 +204,7 @@
         </div>
 
         <!-- related -->
-        <div id="related" class="text-left border-bottom text-muted pb-3 mb-3">
+        <div id="related" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('related')">
           <h6 class="m-0 mb-2">Related resources</h6>
           <div v-if="data.relatedTo && data.relatedTo.length">
             <Citation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx" />
@@ -251,7 +263,6 @@ import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 import ClinicalTrialDescription from "@/components/ClinicalTrialDescription.vue";
 import Citation from "@/components/Citation.vue";
-import Warning from "@/components/Warning.vue";
 
 export default Vue.extend({
   name: "ResourcePage",
@@ -260,7 +271,6 @@ export default Vue.extend({
     ResourceSidebar,
     ClinicalTrialDescription,
     Citation,
-    Warning,
     FontAwesomeIcon
   },
   data() {
@@ -270,6 +280,7 @@ export default Vue.extend({
       id: null,
       anchors: {
         default: ["authors", "description", "downloads", "license", "funder", "based on", "cited by", "related"],
+        Publication: ["authors", "description", "funder", "corrections", "based on", "cited by", "related"],
         ClinicalTrial: ["authors", "description", "design", "interventions", "eligibility", "outcome", "status", "funder", "publications", "based on", "related"]
       }
     })
@@ -283,7 +294,8 @@ export default Vue.extend({
     getData(id) {
       this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
         this.data = results;
-        this.type = results["@type"];
+
+        this.type = this.data["@type"];
         this.dateModified = this.formatDate(this.data.date);
       })
     }
@@ -443,13 +455,6 @@ export default Vue.extend({
         return (this.anchors[this.type])
       }
       return (this.anchors["default"])
-    },
-    retracted() {
-      if (this.data.publicationType) {
-        return (this.data.publicationType.includes("Retracted Publication"))
-      } else {
-        return (false)
-      }
     }
   },
   mounted() {

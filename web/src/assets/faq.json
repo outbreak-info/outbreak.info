@@ -5,7 +5,7 @@
     },
     {
       "q": "Who created Outbreak.info?",
-      "a": "Outbreak.info is a project from the Su, Wu, and Andersen labs at Scripps Research and is supported by the National Institute for Allergy and Infectious Diseases (5 U19 AI135995-02), National Center for Data to Health (5 U24 TR00230), and Centers for Disease Control and Prevention (75D30120C09795). <a href='https://outbreak.info/about'>Click here to meet the team</a>."
+      "a": "Outbreak.info is a project from the Su, Wu, and Andersen labs at Scripps Research and is supported by the National Institute for Allergy and Infectious Diseases (5 U19 AI135995-04S3), National Center for Data to Health (5 U24 TR00230), and Centers for Disease Control and Prevention (75D30120C09795). <a href='https://outbreak.info/about'>Click here to meet the team</a>."
     },
     {
       "q": "Where does the data come from? And how often is it updated?",
@@ -85,7 +85,7 @@
       },
       {
         "q": "What are the new COVID-19 variants?",
-        "a": "Like all viruses, when SARS-CoV-2 (the virus that causes COVID-19) replicates, it can produce mutations. An increasing number of genomes that contain certain sets of mutations have been discovered around the world. Outbreak.info is tracking the spread of these variants, including lineages that have been classified as Variants of Concern and Variants of Interest. Find the latest info on SARS-CoV-2 variants using Outbreak.info’s <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a>. <br>Learn more about the definitions of variants at our <a href='https://outbreak.info/situation-reports/caveats'>Glossary of Mutations Terms</a>. Read more about the biological significance of mutations and how they impact the pandemic on the Outbreak.info <a href='https://outbreak.info/blog/what-are-covid-19-mutations'>blog</a>."
+        "a": "Like all viruses, when SARS-CoV-2 (the virus that causes COVID-19) replicates, it can produce mutations. An increasing number of genomes that contain certain sets of mutations have been discovered around the world. Outbreak.info is tracking the spread of these variants, including lineages that have been classified as Variants of Concern and Variants of Interest. Find the latest info on SARS-CoV-2 variants using Outbreak.info’s <a href='https://outbreak.info/situation-reports'>Lineage|Mutation Tracker</a>. <br>Learn more about the definitions of variants at our <a href='https://outbreak.info/situation-reports/caveats'>Glossary of Mutations Terms</a>. Read more about the biological significance of mutations and how they impact the pandemic on the Outbreak.info <a href='https://blog.outbreak.info/what-are-covid-19-mutations'>blog</a>."
       },
 {
         "q": "What is a Variant of Concern or Variant of Interest?",

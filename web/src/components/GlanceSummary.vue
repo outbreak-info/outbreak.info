@@ -1,6 +1,6 @@
 <template>
-<div class="at-a-glance box-shadow p-2 position-relative">
-  <div class="d-flex flex-column">
+<div class="at-a-glance box-shadow p-2 position-relative mb-width">
+  <div class="d-flex flex-column mb-width">
     <router-link class="no-underline" :data-tippy-info="`view ${data.name} over time`" :to="{
         name: 'Epidemiology',
         query: { location: data.location_id }
@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="d-flex">
+      <div class="d-flex mb-flex">
         <!-- cases increase -->
         <router-link class="no-underline" :data-tippy-info="`view ${data.name} over time`" :to="{
             name: 'Epidemiology',
@@ -51,7 +51,7 @@
     name: 'Epidemiology',
     query: { location: data.location_id, variable:'dead_numIncrease' }
   }">
-          <div class="d-flex align-items-end justify-content-start router-link-black ml-2 p-1 pl-2" id="deaths">
+          <div class="d-flex align-items-end justify-content-start router-link-black mb-ml-2 p-1 mb-pl-2" id="deaths">
             <div class="d-flex flex-column text-left">
               <h6>total deaths</h6>
               <div class="muted">
@@ -81,14 +81,14 @@
       </div>
 
       <!-- SPARKS -->
-      <div class="d-flex router-link-black mini-graphs mt-2 p-1">
+      <div class="d-flex router-link-black mini-graphs mt-2 p-1 mb-flex">
         <div class="d-flex flex-column">
           <h6>cumulative cases</h6>
           <Sparkline :data="[data.longitudinal]" variable="confirmed" :width="140" :height="40" :id="'glance_' + idx" :color="'#126B93'" />
         </div>
 
         <!-- case increase barplot -->
-        <div class="d-flex flex-column ml-4">
+        <div class="d-flex flex-column mb-ml-4">
           <router-link class="no-underline" :data-tippy-info="`view ${data.name} over time`" :to="{
             name: 'Epidemiology',
             query: { location: data.location_id, variable:'confirmed_numIncrease' }
@@ -99,7 +99,7 @@
         </div>
 
         <!-- death increase barplot -->
-        <div class="d-flex flex-column ml-4">
+        <div class="d-flex flex-column mb-ml-4">
           <router-link class="no-underline" :data-tippy-info="`view ${data.name} over time`" :to="{
             name: 'Epidemiology',
             query: { location: data.location_id, variable:'dead_numIncrease' }
@@ -114,7 +114,7 @@
     <!-- VOCs / VOIs -->
     <router-link :to="{name: 'LocationReport', query:{ loc: data.location_id }}" class="no-underline">
       <div class="d-flex flex-column router-link-black mini-graphs mt-2 p-1">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center mb-flex">
           Variants of Concern
           <small class="text-muted" v-if="data.voc">Cumulative prevalence since detection</small>
         </div>
@@ -301,5 +301,32 @@ export default Vue.extend({
 }
 .tiny {
   font-size: x-small;
+}
+.mb-ml-4{
+margin-left: 1.5rem;
+}
+.mb-ml-2{
+  margin-left: .5rem;
+}
+.mb-pl-2{
+  padding-left: .5rem;
+}
+@media only screen and (max-width: 500px) {
+.mb-width{
+  width:100%;
+}
+
+#deaths{
+  border-left:none;
+}
+.mb-ml-4{
+  margin-left:0;
+}
+.mb-ml-2{
+  margin-left: 0;
+}
+.mb-pl-2{
+  padding-left: 0;
+}
 }
 </style>

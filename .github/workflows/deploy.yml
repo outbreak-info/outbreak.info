@@ -14,8 +14,12 @@ jobs:
       with:
         node-version: '14'
     - run: npm --prefix web/ install
-    - run: npm --prefix web/ run build
-    - uses: jakejarvis/s3-sync-action@master
+    - name: build website
+      env:
+        VUE_APP_API_ACCESS: ${{ secrets.VUE_APP_API_ACCESS }}
+      run: npm --prefix web/ run build
+    - name: sync s3
+      uses: jakejarvis/s3-sync-action@master
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
@@ -25,3 +29,11 @@ jobs:
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SOURCE_DIR: './web/dist'
         DEST_DIR: 'master'
+    - name: invalidate cloudfront
+      uses: chetan/invalidate-cloudfront-action@v2
+      env:
+        PATHS: "/*"
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

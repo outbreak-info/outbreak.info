@@ -521,7 +521,7 @@ input {
   flex-grow: 2;
   border: none;
   font-size: 1em;
-  width: 100%;
+  // width: 100%;
 }
 
 input:focus {
@@ -803,4 +803,10 @@ $status-color: #bab0ab;
 .bright-hyperlink,
 .bright-hyperlink a {
   color: #70d3ff;
+}
+
+@media only screen and (max-width: 500px) {
+  .mb-flex{
+    flex-direction: column;
+  }
 }

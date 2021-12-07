@@ -7,7 +7,12 @@ const state = {
     authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
   },
   mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
-  team: [{
+  team: [
+    {
+      name: "Chrissy Aceves",
+      img: "chrissy.jpg"
+    },
+    {
       name: "Manar Alkuzweny",
       img: "manar.jpg"
     },
@@ -43,8 +48,16 @@ const state = {
       linkedin: "https://www.linkedin.com/in/lauradhughes/"
     },
     {
+      name: "Kaleigh Jaeger",
+      img: "kaleigh.png"
+    },
+    {
       name: "Alaa Abdel Latif",
       img: "alaa.jpg"
+    },
+    {
+      name: "Josh Levy",
+      img: "josh.png"
     },
     {
       name: "Julia Mullen",
@@ -86,7 +99,7 @@ const state = {
     }
   ],
   funding: [{
-      identifier: "5 U19 AI135995-02",
+      identifier: "5 U19 AI135995-04S3",
       name: "CViSB",
       funder: {
         name: "National Institute for Allergy and Infectious Diseases"
@@ -539,6 +552,42 @@ const state = {
       }
     },
     {
+      date: new Date("2021-09-20 0:0"),
+      category: "variants",
+      title: "Updated ECDC's classification of B.1.1.7, B.1.525, B.1.617.1, P.2, P.3 & PHE's classification of B.1.617.1 as De-escalated Variants",
+      description: 'Based on the <a href="https://www.ecdc.europa.eu/en/covid-19/variants-concern" target="_blank">ECDC</a> classification, updated their classification of B.1.1.7/Alpha, B.1.525/Eta, B.1.617.1/Kappa, P.2/Zeta, and P.3/Theta and the classification of B.1.617.1/Kappa by <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1014926/Technical_Briefing_22_21_09_02.pdf" target="_blank">PHE</a> as De-escalated Variants.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-09-22 0:0"),
+      category: "variants",
+      title: "Updated WHO's classification of B.1.1.7, B.1.351, P.1, B.1.427, B.1.429, B.1.525, B.1.617.1, B.1.617.3, B.1.621, and P.2 as VUMs",
+      description: 'Based on the updated <a href="https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/" target="_blank">WHO</a> classification, changing WHO classification of  from Variant of Interest to Variant Under Monitoring.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-09-22 0:0"),
+      category: "variants",
+      title: "Updated CDC's classification of B.1.1.7, B.1.351, P.1, B.1.427, B.1.429, B.1.525, B.1.617.1, B.1.617.3, B.1.621, and P.2 as VUMs",
+      description: 'Based on the updated <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/variant-surveillance/variant-info.html" target="_blank">CDC</a> classification, changing CDC classification of B.1.1.7/Alpha, B.1.351/Beta, and P.1/Gamma from Variant of Concern to Variant Under Monitoring and all CDC Variants of Interest as Variants Under Monitoring (B.1.427 and B.1.429/Epsilon, B.1.525/Eta, B.1.526/Iota, B.1.617.1/Kappa, B.1.617.3, B.1.621/Mu, and P.2/Zeta).',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
+      date: new Date("2021-09-22 0:1"),
+      category: "variants",
+      title: "Downgraded B.1.525/Eta, B.1.526/Iota, B.1.617.1/Kappa, P.3/Theta, B.1.1.318, B.1.617.3, C.36.3 to VUMs",
+      description: 'Based on updated classifications from the CDC, WHO, ECDC, and PHE, downgraded Variants of Interest B.1.525/Eta, B.1.526/Iota, B.1.617.1/Kappa, P.3/Theta, B.1.1.318, B.1.617.3, C.36.3 to Variants Under Monitoring',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-08-23 0:0"),
       category: "variants",
       title: "Outbreak.info, CDC, and ECDC reclassified B.1.427 and B.1.429 as Variants under Monitoring",
@@ -550,6 +599,119 @@ const state = {
         },
         query: {
           selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "Added C.1.2 as a VUM",
+      description: 'Added C.1.2 as a Variant Under Monitoring',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "C.1.2",
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated AV.1 from VOI",
+      description: 'Based on WHO and CDC classifications, removed AV.1 as a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        query: {
+          pango: "AV.1",
+          selected: "GBR"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated Epsilon/B.1.427/B.1.429 from VUM",
+      description: 'Based on WHO, CDC, and ECDC classifications, removed Epsilon/B.1.427/B.1.429 as a Variant Under Monitoring',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "epsilon",
+        },
+        query: {
+          selected: "USA_US-CA"
+        }
+      }
+    },
+    {
+      date: new Date("2021-11-25 0:0"),
+      category: "variants",
+      title: "Added B.1.1.529 as a Variant under Monitoring",
+      description: 'Based on the WHO classification, added B.1.1.529 as a Variant under Monitoring.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-12-02 0:0"),
+      category: "variants",
+      title: "Added CDC classification of Omicron as a VOC",
+      description: "Updated the CDC's classification of Omicron as a Variant of Concern",
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-12-06 0:0"),
+      category: "variants",
+      title: "Added PHE classification of Omicron as a VOC",
+      description: "Updated the PHE's classification of Omicron as a Variant of Concern based on their <a href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf' target='_blank'>latest report.</a>",
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-11-26 0:0"),
+      category: "variants",
+      title: "Added Omicron as a Variant of Concern",
+      description: 'Based on the WHO and ECDC classifications, upgraded Omicron / B.1.1.529 to a Variant of Concern.',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-09-03 0:0"),
+      category: "variants",
+      title: "De-escalated Zeta/P.2 from VOI",
+      description: 'Based on WHO, CDC, PHE, and ECDC classifications, removed Zeta/P.2 as a Variant of Interest',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "zeta",
         }
       }
     },
