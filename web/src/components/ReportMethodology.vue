@@ -25,8 +25,8 @@
       <p>
         All SARS-CoV sequences are downloaded from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> daily and subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer"
           target="_blank">Bjorn</a>, which relies heavily on <a href="https://github.com/lh3/minimap2/" rel="noreferrer" target="_blank">minimap2</a> and <a href="https://github.com/cov-ert/datafunk/" rel="noreferrer" target="_blank">datafunk</a>.
-          The alignment is based on <a
-          :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a> as the reference sequence.
+          The alignment is based on the reference sequence used by <a
+          :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a>.
       </p>
 
       <h4 id="filters">Data processing</h4>
