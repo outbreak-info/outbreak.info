@@ -33,8 +33,8 @@
             <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
               <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
             </small>
-            <div class="text-light font-size-2 ml-5" v-if="totalSequences">
-              {{totalSequences}} sequences
+            <div class="text-grey font-size-2 ml-5" v-if="totalSequences">
+              with <span class="text-light">{{totalSequences}} sequences</span> from GISAID
             </div>
           </div>
 

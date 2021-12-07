@@ -35,8 +35,8 @@
               <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
             </small>
           </div>
-          <div id="sequence-count" class="ml-2 mr-5 text-highlight" v-if="total">
-            {{total}} sequences
+          <div id="sequence-count" class="ml-2 mr-5 text-muted" v-if="total">
+            with <span class="text-highlight">{{total}} sequences</span>  from GISAID
           </div>
         </div>
 
