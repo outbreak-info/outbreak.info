@@ -6,7 +6,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero">
       <router-link to="/" class="navbar-brand no-underline">
         <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
-        outbreak.info
+        outbreak.info | {{localBuildName}}
       </router-link>
       <button class="navbar-toggler" type="button" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -96,6 +96,7 @@
 
 <script>
 import Logos from "@/components/Logos.vue";
+import json from "@/localConfig.json";
 export default {
   name: "App",
   components: {
@@ -103,13 +104,16 @@ export default {
   },
   data() {
     return {
-      year: ""
+      year: "",
+      localConfig: json
     };
   },
   mounted() {
+    
     var self = this;
     var currentTime = new Date();
     self.year = currentTime.getFullYear();
+    this.localBuildName = json['local-build-name']  
   }
 }
 </script>
