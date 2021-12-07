@@ -674,6 +674,21 @@ const state = {
       }
     },
     {
+      date: new Date("2021-12-06 0:0"),
+      category: "variants",
+      title: "Added PHE classification of Omicron as a VOC",
+      description: "Updated the PHE's classification of Omicron as a Variant of Concern based on their <a href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf' target='_blank'>latest report.</a>",
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
       date: new Date("2021-11-26 0:0"),
       category: "variants",
       title: "Added Omicron as a Variant of Concern",
