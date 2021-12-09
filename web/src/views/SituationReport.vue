@@ -144,6 +144,9 @@
               <small class="mutation-hyperlink" v-if="pangoLink">
                 <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
               </small>
+              <small class="mutation-hyperlink" v-if="aquariaLink">
+                <a :href="aquariaLink" target="_blank" rel="noreferrer">view protein structures on Aquaria</a>
+              </small>
             </div>
             <div class="d-flex align-items-center">
               <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
@@ -215,7 +218,8 @@
 
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions"
+            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel"
+            :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions" :aquariaLink="aquariaLink"
               v-if="mutations" />
           </div>
 
@@ -507,6 +511,9 @@ export default {
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
+    },
+    aquariaLink() {
+      return this.mutationName ? `https://aquaria.app/SARS-CoV-2/${this.mutationName.replace(":", "?")}` : null
     },
     choroplethLocations() {
       return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)

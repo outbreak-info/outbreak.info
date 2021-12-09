@@ -3,29 +3,40 @@
   <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
     <div class="d-flex flex-column">
       <h4 class="mb-0">{{ definitionLabel }}</h4>
-      <small class="text-muted">Mutations in at least {{charMutThreshold}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)</router-link></small>
+      <small class="text-muted">Mutations in at least {{charMutThreshold}} of {{mutationName}} sequences <router-link v-if="reportType != 'mutation'" :to="{name: 'SituationReportMethodology', hash: '#characteristic'}" target="_blank">(read more)
+        </router-link></small>
     </div>
 
     <div class="d-flex flex-column align-items-end" v-if="lineageName">
       <router-link class="mt-n1" v-if="sublineages.length > 1" :to="{name:'SituationReportComparison', query: { pango: lineageName, sub: true }}">Compare {{lineageName}} sublineages</router-link>
       <router-link class="mt-n1" :to="{name:'SituationReportComparison', query: { pango: lineageName }}">Compare to other lineages</router-link>
-      <router-link class="mt-n1"  :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
+      <router-link class="mt-n1" :to="{name:'SituationReportComparison', query: { pango: lineageName, gene: 'S', threshold: 0.2  }}">View S-gene mutations</router-link>
     </div>
 
   </div>
 
   <!-- OMICRON INSERTION WARNING -->
-  <Warning text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions." class="fa-sm mt-2 mb-4" :align_left="true" v-if="lineageName == 'omicron' || lineageName == 'Omicron' || lineageName == 'B.1.1.529'" />
+  <Warning
+    text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
+    class="fa-sm mt-2 mb-4" :align_left="true" v-if="lineageName == 'omicron' || lineageName == 'Omicron' || lineageName == 'B.1.1.529'" />
 
   <SARSMutationMap :mutationKey="mutationName" :lineageMutations="mutations" :additionalMutations="additionalMutations" class="mb-3" v-if="mutations || additionalMutations" :copyable="true" />
 
-  <div class="d-flex align-items-center ml-2 mr-3">
+  <div class="d-flex flex-wrap  ml-2 mr-3">
     <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#mutation-table" aria-expanded="true" aria-controls="mutation-table">
       <small><span class="if-collapsed">View</span>
         <span class="if-not-collapsed">Hide</span>
         mutation table</small>
     </button>
-    <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" />
+
+    <a :href="aquariaLink" target="_blank" v-if="aquariaLink" class="px-1 flex-shrink-0">
+      <button class="btn btn-main-outline btn-mut router-link">
+        <small>View protein structures on <b>Aquaria</b></small>
+        <img src="@/assets/resources/aquaria.svg" style="width: 25px" class="ml-2" />
+      </button>
+    </a>
+
+    <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" :fullWidth="false" />
   </div>
 
 
@@ -89,6 +100,7 @@ export default {
     lineageName: String,
     sublineages: [Array, String],
     reportType: String,
+    aquariaLink: String,
     additionalMutations: Array
   },
   components: {
