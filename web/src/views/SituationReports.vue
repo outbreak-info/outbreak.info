@@ -150,7 +150,7 @@
             </div>
 
             <!-- LINEAGE TABLE -->
-            <table class="bg-white my-2">
+            <table class="bg-white my-2 st-rep-table">
               <thead class="text-uppercase bg-dark text-light">
                 <tr class="border-bottom border-white">
                   <!-- table header -->
@@ -1237,5 +1237,10 @@ $de-escalated: #bab0ab;
 
 .opacity-75 {
   opacity: 0.75 !important;
+}
+.st-rep-table{
+  display: block;
+  overflow-x: auto;
+    width: 110%;
 }
 </style>
