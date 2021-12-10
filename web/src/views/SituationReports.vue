@@ -1241,6 +1241,6 @@ $de-escalated: #bab0ab;
 .st-rep-table{
   display: block;
   overflow-x: auto;
-    width: 110%;
+    width: 100%;
 }
 </style>
