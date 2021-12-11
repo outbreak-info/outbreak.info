@@ -33,7 +33,7 @@ VOC:
           variantType: VOC
 
   - who_name: Omicron
-    pangolin_lineage: B.1.1.529
+    pangolin_lineage: BA.1
     nextstrain_clade: 21K
     gisaid_clade: GR/484A
     dateModified: 2021-11-26
