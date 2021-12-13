@@ -31,7 +31,7 @@
 
     <a :href="aquariaLink" target="_blank" v-if="aquariaLink" class="px-1 flex-shrink-0">
       <button class="btn btn-main-outline btn-mut router-link">
-        <small>View protein structures on <b>Aquaria</b></small>
+        <small>View mutation(s) on 3D structures</small>
         <img src="@/assets/resources/aquaria.svg" style="width: 25px" class="ml-2" />
       </button>
     </a>
