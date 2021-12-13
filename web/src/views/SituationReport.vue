@@ -144,9 +144,23 @@
               <small class="mutation-hyperlink" v-if="pangoLink">
                 <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
               </small>
-              <small class="mutation-hyperlink" v-if="aquariaLink">
-                <a :href="aquariaLink" target="_blank" rel="noreferrer">view protein structures on Aquaria</a>
+
+              <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
+                &bull;
               </small>
+
+
+              <!-- link to Aquaria structures -->
+              <template v-if="aquariaLink">
+                <small class="mutation-hyperlink" v-for="(link, lIdx) in aquariaLink" :key="lIdx">
+                  <a :href="link.value.link" target="_blank" rel="noreferrer">
+                    view <b>{{aquariaLink.length > 1 ? link.key + "-gene" : ""}}</b> {{link.value.count === 1 ? "mutation" : "mutations"}} on 3D structures (Aquaria)</a>
+                  <span class="text-grey mx-2" v-if="lIdx < aquariaLink.length - 1">
+                    &bull;
+                  </span>
+                </small>
+              </template>
+
             </div>
             <div class="d-flex align-items-center">
               <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
@@ -175,7 +189,8 @@
       </div>
 
       <div id="warning" class="w-100 mt-3" v-if="(alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'">
-        <Warning text="As a newly designated Variant of Concern, Omicron is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
+        <Warning
+          text="As a newly designated Variant of Concern, Omicron is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
 
       </div>
 
@@ -218,9 +233,8 @@
 
           <!-- CHARACTERISTIC MUTATIONS -->
           <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel"
-            :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions" :aquariaLink="aquariaLink"
-              v-if="mutations" />
+            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions"
+              :aquariaLink="aquariaLink" v-if="mutations" />
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN -->
@@ -408,7 +422,8 @@ import isEqual from "lodash/isEqual";
 import debounce from "lodash/debounce";
 
 import {
-  scaleOrdinal
+  scaleOrdinal,
+  nest
 } from "d3";
 
 import ReportResources from "@/components/ReportResources.vue";
@@ -513,7 +528,22 @@ export default {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
     },
     aquariaLink() {
-      return this.mutationName ? `https://aquaria.app/SARS-CoV-2/${this.mutationName.replace(":", "?")}` : null
+      if (this.additionalMutations && this.additionalMutations.length > 0) {
+        const aquariaStub = "https://aquaria.app/SARS-CoV-2/";
+        const mutationsByGene = nest()
+          .key(d => d.gene)
+          .rollup(values => {
+            return ({
+              link: `${aquariaStub}${values[0].gene}?${values.map(d => d.mutation.replace(d.gene, "").replace(":", "")).join("&")}`,
+              count: values.length
+            })
+          })
+          .entries(this.additionalMutations)
+
+        return (mutationsByGene)
+      } else {
+        return (null)
+      }
     },
     choroplethLocations() {
       return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)

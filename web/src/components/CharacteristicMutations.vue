@@ -29,12 +29,15 @@
         mutation table</small>
     </button>
 
-    <a :href="aquariaLink" target="_blank" v-if="aquariaLink" class="px-1 flex-shrink-0">
-      <button class="btn btn-main-outline btn-mut router-link">
-        <small>View mutation(s) on 3D structures</small>
-        <img src="@/assets/resources/aquaria.svg" style="width: 25px" class="ml-2" />
-      </button>
-    </a>
+    <!-- link to structures on aquaria -->
+    <template v-if="aquariaLink">
+      <a :href="link.value.link" target="_blank" class="px-1 flex-shrink-0" v-for="(link, lIdx) in aquariaLink" :key="lIdx">
+        <button class="btn btn-main-outline btn-mut router-link">
+          <small>View <b>{{aquariaLink.length > 1 ? link.key + "-gene" : ""}}</b> {{link.value.count === 1 ? "mutation" : "mutations"}} on 3D structures</small>
+          <img src="@/assets/resources/aquaria.svg" style="width: 25px" class="ml-2" />
+        </button>
+      </a>
+</template>
 
     <DownloadReportData :data="mutations" figureRef="mutation-map" dataType="Mutation Map" :fullWidth="false" />
   </div>
@@ -100,7 +103,7 @@ export default {
     lineageName: String,
     sublineages: [Array, String],
     reportType: String,
-    aquariaLink: String,
+    aquariaLink: Array,
     additionalMutations: Array
   },
   components: {
