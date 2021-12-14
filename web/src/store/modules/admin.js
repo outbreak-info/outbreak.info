@@ -689,6 +689,21 @@ const state = {
       }
     },
     {
+      date: new Date("2021-12-14 0:0"),
+      category: "variants",
+      title: "Redesignated Omicron as B.1.1.529 and its sublineages",
+      description: "Redesignated Omicron as B.1.1.529 and its sub lineages. Updated NextStrain clades",
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
       date: new Date("2021-11-26 0:0"),
       category: "variants",
       title: "Added Omicron as a Variant of Concern",
