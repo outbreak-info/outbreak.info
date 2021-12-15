@@ -1,0 +1,3 @@
+[submodule "outbreak-api-lite"]
+	path = outbreak-api-lite
+	url = ./outbreak-api-lite/
