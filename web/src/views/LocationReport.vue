@@ -575,6 +575,7 @@ import {
   getSequenceCount,
   getLocationMaps,
   getShapeData,
+  getLocationIds,
   getZipcodes,
   getBasicLocationReportData,
   getLocationTable,
@@ -1040,23 +1041,35 @@ export default {
         })
         this.shapeSubscription = getShapeData(this.$sdzipcodeapiurl, this.loc).subscribe(results => {
             this.shapeData =results;
-        
+           
         })
         this.shapiesSubscription = getShapeData(this.$shapeapiurl, 'USA_US-CA').subscribe(results => {
-        console.log("SHAPE", results);
-        this.outlineData = results;
+            this.outlineData = results;
+            console.log(this.outlineData);
         })
  
       }
  
       if (this.selectedLocation.admin_level == 1) {
+        //we need to get the shape data, also all the location ids for future clicks
+        
         this.shapesSubscription = getShapeData(this.$shapeapiurl, this.loc).subscribe(results => {
         this.shapeData = results;
+        this.shapeData.at(0).forEach(x => {
+            //console.log(x._source.location);
+            this.locationSubscription = getLocationIds(this.$genomicsurl, x._source.location).subscribe(r => {
+                //console.log("here");
+                console.log(r);
+            })
         })
+        
+        })       
+
       }
       if (this.selectedLocation.admin_level <= 2){ 
         this.choroSubscription = getLocationMaps(this.$genomicsurl, this.loc, this.selectedMutations, this.recentWindow).subscribe(results => {
           this.geoData = results;
+          console.log(this.geoData, 'geo');
           this.choroMaxCount = max(results.flatMap(d => d.values), d => d.cum_total_count);
         })
       }
@@ -1080,6 +1093,7 @@ export default {
       reportSubscription: null,
       choroSubscription: null,
       shapesSubscription: null,
+      locationSubscription: null,
       tableSubscription: null,
       countSubscription: null,
       // methods
