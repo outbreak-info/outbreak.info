@@ -1,0 +1,13 @@
+# Dockerfile for running the server side api instance
+# base image
+FROM 
+
+# set working directory
+WORKDIR /web/src
+
+# create the conda env for tornado app
+RUN conda env create -f 
+
+# start the api instance
+CMD 
+

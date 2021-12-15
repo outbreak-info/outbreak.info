@@ -1,0 +1,17 @@
+# Dockerfile for running the server side es instance
+# base image
+FROM 
+
+# set working directory
+WORKDIR /web/src
+
+# create the conda env for bjorn
+RUN conda env create -f ../bjorn/evs/env_min.yml
+
+# run bjorn
+
+#ingest into es instance
+
+# start the es instance
+CMD 
+

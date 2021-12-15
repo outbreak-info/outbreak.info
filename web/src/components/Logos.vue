@@ -100,7 +100,7 @@ export default Vue.extend({
 
 #terms {
   /* background-color: #3a4c5f !important; */
-  background-color: #415365 !important;
+  background-color: #4c2870 !important;
 }
 
 .white-underline {

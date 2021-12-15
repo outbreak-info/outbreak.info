@@ -44,7 +44,7 @@ export default Vue.extend({
     submitQuery() {
       this.$emit("exit", true);
       const routeQuery = this.$route.query;
-
+      console.log('please', routeQuery);
       this.submitCount += 1;
       if (this.selectedLineage && this.selectedLineage.alias) {
         this.$router.push({

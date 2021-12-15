@@ -1,0 +1,19 @@
+#Dockerfile for running the client side
+# base image
+FROM node:12.2.0-alpine
+
+# set working directory
+WORKDIR /web/src
+
+# add `/app/node_modules/.bin` to $PATH
+ENV PATH /web/node_modules/.bin:$PATH
+
+# install and cache app dependencies
+COPY package.json /web/package.json
+RUN npm install
+RUN npm install @vue/cli@3.7.0 -g
+RUN conda env create -f ../bjorn/evs/env_min.yml
+
+# start app
+CMD ./run-all.sh
+
