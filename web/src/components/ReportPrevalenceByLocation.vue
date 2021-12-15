@@ -134,8 +134,8 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    location: String,
-    locationName: String,
+    location: {type: String, default: "USA_US-CA_06073"},
+    locationName: {type: String, default: "San Diego"},
     colorScale: Function
   },
   watch: {

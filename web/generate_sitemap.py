@@ -5,9 +5,12 @@
 from datetime import datetime
 print(f"Creating sitemap at {datetime.now()}")
 from requests import get
+import json
 
+#local config load
+localConfig = json.load(open("localConfig.json","r"))
 
-SITEMAP_FILE = "/Users/laurahughes/GitHub/outbreak.info/web/public/sitemap"
+SITEMAP_FILE = "./public/sitemap"
 ROUTES = [
 "about",
  "citation",
@@ -39,7 +42,8 @@ ROUTES = [
 # Probably static
 # API url to grab all the resource IDs
 API_URL = "https://api.outbreak.info/resources/query?fields=_id"
-SITE_URL = "https://outbreak.info"
+
+SITE_URL = "https://{url}".format(url=localConfig['site-url'])
 
 def fetchOne(url, scroll_id = None):
     if(scroll_id is not None):

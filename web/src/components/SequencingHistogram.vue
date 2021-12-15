@@ -135,6 +135,7 @@ export default Vue.extend({
     },
   },
   mounted() {
+    //console.log("HERE IN SEEEE", this.data);
     this.setupPlot();
     this.updatePlot();
   },

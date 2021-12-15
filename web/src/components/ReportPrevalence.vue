@@ -1,7 +1,7 @@
 <template>
 <div class="d-flex flex-column align-items-center w-100" id="report-prevalence">
   <!-- zoom btns -->
-  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}" v-if="!simpleView">
     <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
       <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
     </button>
@@ -58,7 +58,7 @@
           <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
             sequencing data</text>
         </g>
-        <g id="weird-last values" :hidden="data.length < lengthThreshold">
+        <g id="weird-last values" :hidden="data.length < lengthThreshold" v-if="!simpleView">
           <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing
             delays</text>
           <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
@@ -137,13 +137,17 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
-    location: String,
+    location: {type: String, default: "USA_US-CA_06073"},
     xmin: String,
     xmax: String,
     setWidth: Number,
     includeToday: {
       type: Boolean,
       default: true
+    },
+    simpleView: {
+      type: Boolean,
+      default: false
     },
     routeName: {
       type: String,
@@ -229,12 +233,15 @@ export default Vue.extend({
     }
   },
   mounted() {
+    console.log("Made it to prev");
+    console.log(this.data, this.mutationName, this.xmin, this.xmax, this.location, this.setWdith);
     if (!this.setWidth) {
       this.$nextTick(function() {
         window.addEventListener("resize", this.debounceSetDims);
       })
       this.updateBrush();
     }
+
     // set initial dimensions for the plots.
     this.setDims();
     this.setupPlot();
@@ -500,7 +507,6 @@ export default Vue.extend({
           [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
         ])
         .on("end", () => this.debounceZoom(event));
-
       this.brushRef
         .call(this.brush)
         .on("dblclick", this.resetZoom);

@@ -265,7 +265,7 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
   const query = CURATED.filter(d => d.variantType != "De-escalated").map(d => d.label);
-
+  
   return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
     map(charMuts => {
 
@@ -296,7 +296,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
-
+      
       return ({
         md: curated
       })
@@ -306,7 +306,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
 
 export function getReportList(apiurl, prevalenceThreshold = store.state.genomics.characteristicThreshold) {
   store.state.admin.reportloading = true;
-
+  
   return forkJoin([getDateUpdated(apiurl), getCuratedList(apiurl, prevalenceThreshold)]).pipe(
     map(([dateUpdated, md]) => {
       return ({
@@ -409,9 +409,8 @@ function parseStrQuery(query) {
 
 // Report data for a Situation Report page.
 // Returns: date updated, location dictionary metadata, characteristic mutations, lineage/sublineage totals, lineage/sublineage prevalences over time, subnational data for choropleths.
-export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
+export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, defaultLocations = ["USA_US-CA_06073"]) {
   store.state.admin.reportloading = true;
-
   // clean up the locations data
   // ensure it's an array
   locations = typeof(locations) == "string" ? [locations] : locations;
@@ -424,11 +423,10 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
     locations.push(location);
   }
   // add the world
-  locations.push("Worldwide");
+  //locations.push("Worldwide");
 
   // ensure locations are unique
   locations = uniq(locations);
-
 
   // lookup WHO name in curated dictionary
   const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
@@ -443,20 +441,22 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
   } else {
     queryStr = buildQueryStr(lineageString, mutationArr);
   }
-
+  
+  //console.log('in getReportData', lineageString, mutationArr, totalThreshold, location, locations);
+  console.log(apiurl);
   return forkJoin([
     getDateUpdated(apiurl),
-    findAllLocationMetadata(apiurl, locations, location),
+    findAllLocationMetadata(apiurl, locations, location), //
     getCharacteristicMutations(apiurl, lineageString),
     getMutationDetails(apiurl, mutationArr),
     getMutationsByLineage(apiurl, mutationArr),
-    getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
-    getSublineageTotals(apiurl, md, location),
-    getTemporalPrevalence(apiurl, location, queryStr, null),
-    getSublineagePrevalence(apiurl, md, location),
+    getCumPrevalences(apiurl, queryStr, locations, totalThreshold), //
+    getSublineageTotals(apiurl, md, location), //
+    getTemporalPrevalence(apiurl, location, queryStr, null), //
+    getSublineagePrevalence(apiurl, md, location), //
     getPositiveLocations(apiurl, queryStr, "Worldwide"),
     getPositiveLocations(apiurl, queryStr, "USA"),
-    getLocationPrevalence(apiurl, queryStr, location)
+    getLocationPrevalence(apiurl, queryStr, location) //
   ]).pipe(
     map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev, longitudinal, longitudinalSublineages, countries, states, choroData]) => {
       // attach names to cum prevalences
@@ -466,7 +466,6 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
           d["name"] = filtered[0].label;
         }
       })
-
       return ({
         dateUpdated: dateUpdated,
         locations: locations,
@@ -578,6 +577,7 @@ export function getSublineagePrevalence(apiurl, md, location) {
 }
 
 export function updateLocationData(apiurl, alias, mutationArr, lineageString, locations, location, totalThreshold) {
+  
   // lookup WHO name in curated dictionary
   const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
   var md;
@@ -713,7 +713,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
   const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
     return ( of ([]));
-
+  
   // convert named curated lineages to OR queries
   if (Array.isArray(lineage)) {
     lineage = lineage.map(d => {
@@ -977,7 +977,7 @@ export function getNewToday(apiurl, queryStr, location) {
 export function getZipcodes(apiurl, location){
     let url;
     url = `${apiurl}get-zipcodes?location_id=${location}`;
-    console.log("IN ZIPCODES", url);
+    //console.log("IN ZIPCODES", url);
     return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -996,11 +996,11 @@ export function getZipcodes(apiurl, location){
    }))   
 }
 
-export function getShapeData(apiurl, location){
+export function getLocationIds(apiurl, location){
     let url;
-    url = `${apiurl}shape?location_id=${location}`;
-    
-    console.log("IN GENOMICS", url);
+    //console.log("In get location ids");
+    url = `${apiurl}location?name=${location}`;    
+    //console.log(url);
     return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -1010,15 +1010,97 @@ export function getShapeData(apiurl, location){
     map(hits => {
       const keys = Object.keys(hits);
       let results;
-      console.log(results);
       const returnFlat = true;
-      return(hits['results']);        
-   }))
- 
+      return(hits['results']);
+      }))    
+}
+
+//for the home page of the local build, gets prevalence information for each curated lineage
+// ie. Delta, Alpha, Beta ect.
+// could be used for any sublineage as well, but is meant to take in a list of them and return results
+export function getPrevalenceofCuratedLineages(apiurl, location, locations, lineages){
+  store.state.admin.reportloading = true;
+  var totalThreshold=25;
+  // create an array of oberservables
+  var observable = [];  
+  var queryStrs = [];
+  var aliases = [];
+  // clean up the locations data
+  // ensure it's an array
+  locations = typeof(locations) == "string" ? [locations] : locations;
+  // if not specified, use the default
+  if (!locations) {
+    locations = defaultLocations;
+  }
+  // if "selected" isn't included in the locations, add it.
+  if (!locations.includes(location)) {
+    locations.push(location);
+  }
+
+  // ensure locations are unique
+  locations = uniq(locations);
+  
+  lineages.forEach(d => {
+    var alias = d.label;
+    var lineageString = d.pango_descendants.at(0);
+    // lookup WHO name in curated dictionary
+    const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
+    var md;
+    var queryStr;
+
+    // Check if the value exists within the curated list
+    // pull out the sublineage queries
+    if (filtered.length === 1) {
+      md = filtered[0];
+      queryStr = buildQueryStr(lineageString, null, md);
+    }   else {
+      queryStr = buildQueryStr(lineageString, null);
+    }
+    //var y = getCumPrevalences(apiurl, queryStr, locations, totalThreshold);
+    //observable.push(y);
+    var z = getTemporalPrevalence(apiurl, location, queryStr, null);
+    observable.push(z);
+    queryStrs.push(queryStr);
+    aliases.push(alias);
+  });
+  var x = findAllLocationMetadata(apiurl, locations, location);
+  observable.push(x);
+  return forkJoin(
+    observable
+    ).pipe(
+    map((results) => {
+     return (results)
+    }),
+    catchError(e => {
+      console.log("%c Error in getting initial report data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  )
+}
+
+export function getShapeData(apiurl, location){
+    let url;
+    //console.log("In get Shape Data");
+    url = `${apiurl}shape?location_id=${location}`;    
+    console.log(url);
+    return from(axios.get(url, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+    })).pipe(
+    pluck("data"),
+    map(hits => {
+      const keys = Object.keys(hits);
+      let results;
+      const returnFlat = true;
+      return(hits['results']);
+      }))    
 }
 
 export function getAllLocationPrevalence(apiurl, mutation, location, ndays = null) {
- 
+   
   return (getLocationPrevalence(apiurl, mutation.query, location, ndays).pipe(
     map(results => {
       //console.log('getAllLocationPrevalence in genomics.js', results, location);
@@ -1054,7 +1136,6 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
     map(hits => {
       const keys = Object.keys(hits);
       let results;
-
       if (returnFlat) {
         results = keys.map(key => {
           hits[key].forEach(d => {
@@ -1088,12 +1169,13 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
 export function getPositiveLocations(apiurl, queryStr, location, returnFlat = true) {
   const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
+  //console.log("In getPositiveLocation");
   if (location == "Worldwide") {
     url = `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&detected=true&timestamp=${timestamp}`;
   } else {
     url = `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&detected=true&location_id=${location}&timestamp=${timestamp}`;
   }
-
+  console.log(url);
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -1133,7 +1215,7 @@ export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = fa
   } else {
     url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&timestamp=${timestamp}`;
   }
-
+  
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -1252,16 +1334,16 @@ export function findLocationMetadata(apiurl, location) {
 
 export function findAllLocationMetadata(apiurl, locations, selected) {
   locations = locations.filter(d => d != "Worldwide");
-
+  
   return forkJoin(...locations.map(location => findLocationMetadata(apiurl, location))).pipe(
     map(results => {
       // add in a Worldwide default location
-      results = [{
-        id: "Worldwide",
-        label: "Worldwide",
-        admin_level: -1,
-        query_id: "Worldwide"
-      }].concat(results)
+      //results = [{
+      //  id: "Worldwide",
+      //  label: "Worldwide",
+      //  admin_level: -1,
+      //  query_id: "Worldwide"
+      //}].concat(results)
 
       // set the active place
       results.forEach(d => {
@@ -1280,7 +1362,7 @@ export function findAllLocationMetadata(apiurl, locations, selected) {
 export function findLocation(apiurl, queryString) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const url = `${apiurl}location?name=*${queryString}*&timestamp=${timestamp}`
-
+  
   return from(
     axios.get(url, {
       headers: {
@@ -1303,7 +1385,6 @@ export function findLocation(apiurl, queryString) {
 export function findPangolin(apiurl, queryString) {
   const timestamp = Math.round(new Date().getTime() / 8.64e7);
   const url = `${apiurl}lineage?name=*${queryString}*&timestamp=${timestamp}`;
-
   const vocs = CURATED.filter(d => d.who_name).map(d => ({
     name: d.who_name,
     alias: true
@@ -1528,7 +1609,6 @@ export function getBasicLocationReportData(apiurl, location) {
 
 export function getLocationReportData(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window) {
   store.state.genomics.locationLoading2 = true;
-
   return getLocationLineagePrevalences(apiurl, location, mutations, pango_lineages, other_threshold, nday_threshold, ndays, window)
     .pipe(
       mergeMap(results => getMutationsOfInterestPrevalence(apiurl, results.recentDomain).pipe(
@@ -1737,12 +1817,14 @@ export function getAllTemporalPrevalences(apiurl, locationID, mutations) {
   }
 }
 
-export function getSequenceCount(apiurl, location = null, cumulative = true, rounded = false) {
+export function getSequenceCount(apiurl, location = null, cumulative = true, rounded = false, return_loc=false) {
   let url = `${apiurl}sequence-count`;
   if (cumulative && location) {
     url += `?location_id=${location}&cumulative=true`;
   } else if (location) {
     url += `?location_id=${location}`
+  } else if (cumulative && return_loc != null) {
+    url += `?cumulative=true&return_loc=${return_loc}`;
   } else if (cumulative) {
     url += "?cumulative=true";
   }
@@ -1757,8 +1839,10 @@ export function getSequenceCount(apiurl, location = null, cumulative = true, rou
       if (rounded) {
         return (Math.floor(results.total_count / 1e5) / 10)
       }
-      if (cumulative) {
+      if (cumulative && return_loc == false) {
         return (results.total_count.toLocaleString())
+      } if (cumulative && return_loc == true){
+        return(results);
       } else {
         results.forEach(d => {
           d["dateTime"] = parseDate(d.date);
@@ -2062,7 +2146,6 @@ export function getStatusBasics(apiurl, location) {
 
 export function getStatusLocation(apiurl, location) {
   store.state.admin.reportloading = true;
-
   return forkJoin([getSequenceCount(apiurl, location, true), findLocationMetadata(apiurl, location)]).pipe(
     map(([total, location]) => {
       return ({

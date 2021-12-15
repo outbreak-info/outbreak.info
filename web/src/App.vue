@@ -22,6 +22,9 @@
               </router-link>
               <router-link class="nav-link" :to="{name: 'SituationReportCaveats'}" :class="{ active: $route.name == 'SituationReportCaveats' }">Intrepreting Reports
               </router-link>
+              <router-link class="nav-item nav-link" :to="{name: 'About'}" :class="{ active: $route.name == 'About' }">About
+              </router-link>
+              <a class="nav-item nav-link" href="https://outbreak.info/">View Global Data at Outbreak.info</a> 
         </ul>
     </nav>
   </header>

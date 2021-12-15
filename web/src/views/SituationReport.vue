@@ -1017,6 +1017,7 @@ export default {
 
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
+        
         this.sublineageLongitudinalAll = results.longitudinalSublineages;
         // stream graph of lineages by day
         this.lineagesByDay = results.lineagesByDay;

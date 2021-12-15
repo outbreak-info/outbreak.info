@@ -276,7 +276,7 @@ export default {
     prepData(){
     if (this.data) {
         // Update projection / scales
-        console.log("In Prep Data");
+        console.log("In Prep Data", this.data);
         this.updateProjection();
         this.filteredData = [];
         for (var x of Object.entries(this.poly.at(0))){
@@ -284,10 +284,10 @@ export default {
             const l = x.at(1)._source.zipcode;
             let location = x.at(1)._source.zipcode.toString();
             var found = false;
-            //console.log(parsedGeoJson, location, l);
+            
             //loop over property information
             for (var y of Object.entries(this.data)){
-                //console.log(y, location);
+                //console.log(y);                
                 var count_loc = y.at(1)['location_id'];
                 //console.log(count_loc, location);
                 if (count_loc === location){
@@ -301,6 +301,7 @@ export default {
                     parsedGeoJson['cum_lineage_count'] = y.at(1)['cum_lineage_count'];
                     parsedGeoJson['proportion_formatted'] = y.at(1)['proportion_formatted'];
                     parsedGeoJson['cum_total_count'] = y.at(1)['cum_total_count'];
+                    console.log('h');
                 }
             }
             if (found === false){
@@ -364,7 +365,7 @@ export default {
               .remove()
             )
           )
-        console.log(this.filteredData); 
+        //console.log(this.filteredData); 
         this.regions
           .selectAll(".region-fill")
           .data(this.filteredData.filter(d => d.properties.proportion >0, d => d.properties.location_id))
@@ -504,7 +505,7 @@ export default {
         .style("stroke-opacity", 1);
     },
     route2Location(id) {
-      console.log("in route");
+      //console.log("in route");
       if (this.report == "variant") {
         const query = this.$route.query;
         const params = this.$route.params;
@@ -524,7 +525,7 @@ export default {
           }
         })
       } else if (this.report == "location") {
-        console.log("in other route", id, this.abbloc);
+        //console.log("in other route", id, this.abbloc);
         const query = this.$route.query;
         this.$router.push({
           name: "LocationReport",

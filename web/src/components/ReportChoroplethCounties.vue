@@ -223,6 +223,7 @@ export default {
       }
     },
     chooseMap() {
+        console.log("county in choose map");
         var country = this.location.split(",").at(-1).trim();
         //iterate and find outline of state/division
         for (var x of Object.entries(this.poly.at(0))){
@@ -232,7 +233,7 @@ export default {
                 const mapBounds = geoBounds(this.locationMap);       
                 var height = mapBounds[1][0] - mapBounds[0][0];
                 var width = mapBounds[1][1] - mapBounds[0][1];
-                console.log(height, width, (height/width));
+                //console.log(height, width, (height/width));
                 this.hwRatio = height/width;
                 
                 //console.log("MAP BOUNDS", mapBounds, this.hwRatio);   
@@ -294,25 +295,28 @@ export default {
                     found = true;
                     //console.log(count_loc, location);
                     parsedGeoJson['properties'] = {'proportion': y.at(1)['proportion']};
+                    //let stringrep = count_loc.toString();
+                    //parsedGeoJson['properties']['location_id'] = stringrep
                     //console.log(this.colorScale(y.at(1)['proportion']));
+                    parsedGeoJson["proportion_formatted"] = y.at(1)['proportion_formatted'];
                     parsedGeoJson['fill'] = this.colorScale(y.at(1)['proportion']);
                     parsedGeoJson["id"] = l;
                     parsedGeoJson['proportion'] = y.at(1)['proportion'];
+                    parsedGeoJson['cum_lineage_count'] = y.at(1)['cum_lineage_count'];
+                    parsedGeoJson["cum_total_count"]= y.at(1)['cum_total_count'];
                     //console.log(parsedGeoJson);
                 }
             }
             if (found === false){
                 parsedGeoJson['properties'] = {'proportion': -1};
-                //parsedGeoJson['fill'] = this.nullColor;
+                parsedGeoJson['cum_lineage_count'] = null;
+                parsedGeoJson['proportion_formatted'] = null;
                 parsedGeoJson["id"] = null; 
-                //parsedGeoJson["proportion"] = -1;
+                parsedGeoJson["cum_total_count"]=null;
             }
                    
             parsedGeoJson['lower'] = null;
             parsedGeoJson["upper"] = null; 
-            parsedGeoJson["cum_lineage_count"]=null; 
-            parsedGeoJson["proportion_formatted"] = null; 
-            parsedGeoJson["cum_total_count"]=null; 
             parsedGeoJson['properties']['location_id'] = l;
             this.filteredData.push(JSON.parse(JSON.stringify(parsedGeoJson)));
             //console.log(this.filteredData);
@@ -460,12 +464,12 @@ export default {
 
       // turn on the location
       this.regions
-        .select(`.${d.properties.location_id}`)
+        .select(`.${d.id}`)
         .style("opacity", 1)
         .style("stroke-opacity", 1);
 
       const ttip = select(this.$refs.tooltip_choro);
-
+      console.log(d);
       // edit text
       ttip.select("h5").text(d.properties.location_id);
       if (d.proportion || d.proportion === -1) {
@@ -499,9 +503,9 @@ export default {
       select(this.$refs.tooltip_choro)
         .style("display", "none");
 
-      this.regions
-        .selectAll(".zero-data")
-        .style("opacity", 1);
+      //this.regions
+      //  .selectAll(".zero-data")
+      //  .style("opacity", 1);
 
       this.regions
         .selectAll(".region")
@@ -529,6 +533,7 @@ export default {
           }
         })
       } else if (this.report == "location") {
+        console.log("IN THIS ROUTE", this.abbloc, this.loc, id); 
         const query = this.$route.query;
         this.$router.push({
           name: "LocationReport",

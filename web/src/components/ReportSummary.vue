@@ -103,6 +103,8 @@ import Vue from "vue";
 
 import CountryMap from "@/components/CountryMap.vue";
 import Warning from "@/components/Warning.vue";
+//import ReportChoroplethZipcode from "@/components/ReportChoroplethZipcode.vue";
+//import ReportChoroplethCounties from "@/components/ReportChoroplethCounties.vue";
 
 // --- font awesome --
 import {
@@ -124,6 +126,8 @@ export default {
   name: "ReportSummary",
   components: {
     CountryMap,
+    //ReportChoroplethCounties,
+    //ReportChoroplethZipcode,
     Warning,
     FontAwesomeIcon
   },
