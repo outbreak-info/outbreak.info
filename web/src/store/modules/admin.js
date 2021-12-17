@@ -659,6 +659,18 @@ const state = {
       }
     },
     {
+      date: new Date("2021-12-17 0:0"),
+      category: "variants",
+      title: "Fixed Omicron mutation counting",
+      description: 'Adjusted parameters within the minimap2 alignment call (added <span style="font-family: monospace">--score-N=0</span>) in the <a href="https://github.com/andersen-lab/bjorn/commit/560591e12e1fbc8bd469bcc4b24d3a858abb89da" target="_blank">Bjorn</a> pipeline to account for long stretches of unknown base pairs (Ns) in Omicron. This fixes the mutation prevalence of mutations like S:S477N, S:T478K, S:E484A, whose prevalence was underreported before the patch.',
+      route: {
+        name: "SituationReportComparison",
+        query: {
+          pango: "Omicron"
+        }
+      }
+    },
+    {
       date: new Date("2021-12-02 0:0"),
       category: "variants",
       title: "Added CDC classification of Omicron as a VOC",
