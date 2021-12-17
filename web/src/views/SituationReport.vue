@@ -534,7 +534,9 @@ export default {
           .key(d => d.gene)
           .rollup(values => {
             return ({
-              link: `${aquariaStub}${values[0].gene}?${values.map(d => d.mutation.replace(d.gene, "").replace(":", "")).join("&")}`,
+              link: values[0].gene.toLowerCase() === "orf1b" ?
+                // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+                `${aquariaStub}PP1ab?${values.map(d => this.calcORF1bLink(d)).join("&")}` : `${aquariaStub}${values[0].gene}?${values.map(d => d.mutation.replace(d.gene, "").replace(":", "")).join("&")}`,
               count: values.length
             })
           })
@@ -994,6 +996,16 @@ export default {
     },
     closeModal() {
       $("#change-pangolin-modal").modal("hide");
+    },
+    calcORF1bLink(mutation) {
+      const codonOffset = 4401;
+      // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+      if (mutation.type == "substitution") {
+        return (`${mutation.ref_aa}${mutation.codon_num + codonOffset}${mutation.alt_aa}`)
+      } else if (mutation.type == "deletion") {
+        return (`${mutation}`)
+      }
+
     }
   },
   destroyed() {
