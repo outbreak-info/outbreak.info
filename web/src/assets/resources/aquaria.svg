@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.3.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" baseProfile="basic" id="Layer_1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 120 124"
+	 xml:space="preserve">
+<style type="text/css">
+	.st0{opacity:0.501;}
+	.st1{fill:#FFFFFF;}
+	.st2{opacity:0.505;fill:#29ABE2;}
+	.st3{fill:#F43030;}
+	.st4{opacity:0.997;fill:url(#Ellipse_49_2_);}
+	.st5{opacity:0.997;fill:url(#Ellipse_50_2_);}
+	.st6{opacity:0.42;fill:#29ABE2;}
+	.st7{opacity:0.18;fill:#29ABE2;}
+	.st8{opacity:0.7;fill:#29ABE2;}
+	.st9{opacity:0.699;fill:none;stroke:#FFFFFF;stroke-width:2.5517;stroke-linecap:round;stroke-miterlimit:10;}
+</style>
+<g>
+	<g id="Layer_1_2_" transform="translate(-1 -1.35)">
+		<g id="Path_808_1_" transform="translate(-343.917 -185.432)" class="st0">
+			<path class="st1" d="M405.04,304.65c-0.46,0-0.92-0.12-1.32-0.36l-45.95-26.73c-0.82-0.48-1.34-1.38-1.34-2.34v-53.46
+				c0-0.96,0.51-1.86,1.34-2.34l45.95-26.73c0.4-0.23,0.86-0.36,1.32-0.36c0.46,0,0.92,0.12,1.32,0.36l45.95,26.73
+				c0.82,0.48,1.34,1.38,1.34,2.34v53.46c0,0.96-0.51,1.86-1.34,2.34l-45.95,26.73C405.96,304.53,405.5,304.65,405.04,304.65z"/>
+			<path class="st1" d="M405.04,193.42c-0.02,0-0.03,0.01-0.04,0.01l-46.8,27.15c-0.03,0.02,0,0.05,0,0.11v54.56
+				c0,0.07-0.03-0.02,0,0l46.58,27.58c0.01,0.01-0.05-0.03,0,0c0.01,0.01,0.05-0.03,0.06-0.04l46.71-26.63c0.03-0.02,0-1.43,0-1.43
+				v-53.46c0,0,0.03,0.02,0,0l-46.48-27.84C405.07,193.42,405.06,193.42,405.04,193.42 M405.04,189.78c0.9,0,1.8,0.23,2.6,0.7
+				l45.95,26.73c1.61,0.94,2.6,2.67,2.6,4.55v53.46c0,1.88-0.99,3.61-2.6,4.55l-45.95,26.73c-0.81,0.47-1.7,0.7-2.6,0.7
+				c-0.9,0-1.8-0.23-2.6-0.7l-45.95-26.73c-1.61-0.94-2.6-2.67-2.6-4.55v-53.46c0-1.88,0.99-3.61,2.6-4.55l45.95-26.73
+				C403.24,190.02,404.14,189.78,405.04,189.78z"/>
+		</g>
+	</g>
+	<g id="Layer_2_1_" transform="translate(1.694 2.146)">
+		<g id="Layer_2-2_1_">
+			<path id="Path_807_1_" class="st2" d="M58.47,4.5l-0.3,54.13l46.78,28.61V32.27L58.47,4.5z"/>
+			<circle id="Ellipse_51_1_" class="st3" cx="58.12" cy="54.64" r="23.69"/>
+			
+				<radialGradient id="Ellipse_49_2_" cx="35.0874" cy="67.7577" r="12.8724" fx="29.0407" fy="62.0204" gradientUnits="userSpaceOnUse">
+				<stop  offset="0.4545" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.6729" style="stop-color:#EDEDED"/>
+				<stop  offset="1" style="stop-color:#CCCCCC"/>
+			</radialGradient>
+			<path id="Ellipse_49_1_" class="st4" d="M35.92,54.47c1.77,0,6.33,3.47,8.8,7.87c2.24,3.99,3.33,11.19,2.56,12.29
+				c-2.58,3.67-6.55,6.4-11.36,6.4c-7.34,0-13.28-5.95-13.28-13.28C22.64,60.42,28.59,54.47,35.92,54.47z"/>
+			
+				<radialGradient id="Ellipse_50_2_" cx="81.5078" cy="67.7577" r="13.0136" fx="75.9677" fy="63.7843" gradientUnits="userSpaceOnUse">
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+				<stop  offset="0.4696" style="stop-color:#FCFCFC"/>
+				<stop  offset="0.6816" style="stop-color:#ECECEC"/>
+				<stop  offset="1" style="stop-color:#CCCCCC"/>
+			</radialGradient>
+			<path id="Ellipse_50_1_" class="st5" d="M80.96,54.47c7.34,0,13.28,5.95,13.28,13.28c0,7.34-5.95,13.28-13.28,13.28
+				c-5.01,0-9.33-2.81-11.64-6.88c-0.72-1.27-1.26-6.4,1.95-11.81C74.11,57.57,79.92,54.47,80.96,54.47z"/>
+			<path id="Path_805_1_" class="st6" d="M58.17,113.9l46.78-26.67V32.27L58.17,58.63V113.9z"/>
+			<path id="Path_806_1_" class="st7" d="M104.95,32.34L58.47,4.5L11.59,31.65l46.58,26.98L104.95,32.34z"/>
+			<path id="Path_807-2_1_" class="st8" d="M11.59,31.65v54.68l46.58,27.58V58.63L11.59,31.65z"/>
+		</g>
+		<path id="Path_809_1_" class="st9" d="M11.59,31.65l46.53,26.93l46.83-26.24"/>
+		<line id="Line_74_1_" class="st9" x1="58.23" y1="59.28" x2="58.17" y2="113.9"/>
+		<circle id="Ellipse_52_1_" class="st1" cx="58.12" cy="58.52" r="2.66"/>
+	</g>
+</g>
+</svg>
