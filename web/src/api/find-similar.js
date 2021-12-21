@@ -118,16 +118,16 @@ if(adminLevels.length) {
     locationQuery.push("admin_level:0")
   }
   if(adminLevels.includes("non-U.S. States/Provinces")) {
-    locationQuery.push("(admin_level:1 AND -country_iso3:USA)")
+    locationQuery.push("(admin_level:1 AND -iso3:USA)")
   }
   if(adminLevels.includes("U.S. States")) {
-    locationQuery.push("(admin_level:1 AND country_iso3:USA)")
+    locationQuery.push("(admin_level:1 AND iso3:USA)")
   }
   if(adminLevels.includes("U.S. Metro Areas")) {
-    locationQuery.push('(admin_level:"1.5" AND country_iso3:USA)')
+    locationQuery.push('(admin_level:"1.5" AND iso3:USA)')
   }
   if(adminLevels.includes("U.S. Counties")) {
-    locationQuery.push("(admin_level:2 AND country_iso3:USA)")
+    locationQuery.push("(admin_level:2 AND iso3:USA)")
   }
   query = `(${locationQuery.join(" OR ")}) AND ${query}`;
 }
