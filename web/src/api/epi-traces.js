@@ -260,7 +260,7 @@ export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
 
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,state_name,wb_region,date,confirmed,confirmed_numIncrease,confirmed_pctIncrease,dead,dead_numIncrease,dead_pctIncrease,recovered,recovered_numIncrease,recovered_pctIncrease,first_dead-first_confirmed,population&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,admin1,wb_region,date,confirmed,confirmed_numIncrease,confirmed_pctIncrease,dead,dead_numIncrease,dead_pctIncrease,recovered,recovered_numIncrease,recovered_pctIncrease,first_dead-first_confirmed,population&timestamp=${timestamp}`, {
         headers: {
           "Content-Type": "application/json"
         }

@@ -90,7 +90,7 @@
                 }" class="router-link font-weight-bold" v-if="routable">
               {{
                   row.admin_level == 2
-                    ? row[column.value] + ", " + row.state_name
+                    ? row[column.value] + ", " + row.admin1
                     : row[column.value]
                 }}
               <font-awesome-icon :icon="['fas', 'chevron-right']" :style="{ color: row.color }" />
@@ -98,7 +98,7 @@
             <!-- not routable location name -->
             <span v-else>{{
                 row.admin_level == 2
-                  ? row[column.value] + ", " + row.state_name
+                  ? row[column.value] + ", " + row.admin1
                   : row[column.value]
               }}</span>
           </span>

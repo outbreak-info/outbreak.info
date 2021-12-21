@@ -17,7 +17,7 @@
           :to="{ name: 'Maps', query: {admin_level: '1', location: 'iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. States</router-link>
         <div class="d-flex">
           <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}"
-            :to="{ name: 'Maps', query: {admin_level: '1.5', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
+            :to="{ name: 'Maps', query: {admin_level: '1.5', location:'iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
           </router-link>
           <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
             :to="{ name: 'Maps', query: {admin_level: '2', location:'iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Counties</router-link>
