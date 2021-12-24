@@ -47,7 +47,7 @@
   <!-- title / drop down variable selector -->
   <h4 class="plot-title pt-5 pb-3" v-if="location">
     Number of COVID-19
-    <select v-model="variableObj" class="select-dropdown" @change="changeVariable">
+    <select v-model="variableObj" class="select-dropdown select-width" @change="changeVariable">
       <option v-for="option in variableOptions" :value="option" :key="option.value">
         {{ option.label }}
       </option>
@@ -77,16 +77,18 @@
   <Warning :animate="true" class="my-4" v-if="noData" text="No results. Testing/hospitalization data are currently only available for U.S. States (not Metro areas or Counties), and recovery data is not available for the U.S."></Warning>
   <Warning :animate="true" class="my-4" v-if="['testing_positivity', 'testing_totalTestResultsIncrease', 'testing_totalTestResults', 'testing_hospitalizedIncrease', 'testing_hospitalized'].includes(variable)" text="The COVID Tracking Project stopped collecting data on <a class='text-light' href='https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done' target='_blank'>7 March 2021</a>"></Warning>
 
-  <div class="d-flex row m-0">
+  <div class="d-flex row m-0 content-wrapper">
     <!-- bar graph -->
     <div class="d-flex flex-column align-items-center" v-if="data$ && data$[0] && this.variable.includes('Increase')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
-        <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
-          :includeTooltips="true" :location="location" :log="isLogY" :percapita="isPerCapita" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+        <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight" :transformChart="bargraphTransform"
+        :includeTooltips="true" :location="location" :log="isLogY" :percapita="isPerCapita" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
 
       <!-- source / download data -->
+     
       <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="data$[0].length" :data="data$[0]" v-if="data$" />
+      
     </div>
 
     <!-- curve -->
@@ -204,8 +206,9 @@ export default {
       isFixedY: false,
       isPerCapita: false,
       isOverlay: false,
-      bargraphWidth: 550,
+      bargraphWidth: 750,
       bargraphHeight: 400,
+      bargraphTransform: 1,
       yMax: null,
       variableObj: {
         label: "cumulative cases",
@@ -520,26 +523,18 @@ export default {
       const dimWidth = document.getElementById("bar-group") ?
         document.getElementById("bar-group").offsetWidth :
         minWidth;
-
-      if (dimWidth < 350) {
-        this.bargraphWidth = 300;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 450) {
-        this.bargraphWidth = dimWidth - framePadding - marginPadding*3;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 600) {
-        this.bargraphWidth = dimWidth - framePadding - marginPadding;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 1000) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 1200) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 3;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      }
+     this.bargraphWidth = 650
+     if(window.innerWidth < 360){
+       this.bargraphTransform = 0.4
+     } else if (window.innerWidth < 390){
+      this.bargraphTransform = 0.45
+     } else if (window.innerWidth < 630){
+     this.bargraphTransform = 0.5
+     } else if (window.innerWidth <790){
+      this.bargraphTransform = 0.8
+     } else {
+       this.bargraphTransform = 1
+     }
     },
     hideExtra: function() {
       const selectedData = this.data$ ?
@@ -592,5 +587,15 @@ export default {
 .epi-group {
     align-items: center;
     width: 100%;
+}
+.select-width{
+  max-width:100%;
+}
+@media only screen and (max-width: 790px) {
+.content-wrapper{
+justify-content: center;
+}
+
+
 }
 </style>
