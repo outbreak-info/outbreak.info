@@ -281,7 +281,7 @@
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->
       <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage" v-if="lineagesByDay">
-        <h4 class="mb-0">Lingeage breakdown of {{reportName}} by day {{locationLabel}}</h4>
+        <h4 class="mb-0">Lineage breakdown of {{reportName}} by day {{locationLabel}}</h4>
         <small class="text-muted mb-2">Based on reported sample collection date</small>
 
         <!-- change location selectors for sublineage prevalences -->
