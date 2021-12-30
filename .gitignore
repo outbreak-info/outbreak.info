@@ -1,6 +1,8 @@
 
 .DS_Store
 web/package-lock.json
+package-lock.json
+node_modules/*
 web/performance.xlsx
 cleanup_scripts/table_backup.html
 web/src/assets/resources/clinicaltrialsgov_full.png
