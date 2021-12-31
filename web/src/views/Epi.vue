@@ -70,12 +70,6 @@
     <router-link :to="{ hash: '#sub_parts' }">View counties in metro area(s)</router-link>
   </div>
 
-  <!-- warnings -->
-  <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
-    text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
-  </Warning>
-  <Warning :animate="true" class="my-4" v-if="noData" text="No results. Testing/hospitalization data are currently only available for U.S. States (not Metro areas or Counties), and recovery data is not available for the U.S."></Warning>
-  <Warning :animate="true" class="my-4" v-if="['testing_positivity', 'testing_totalTestResultsIncrease', 'testing_totalTestResults', 'testing_hospitalizedIncrease', 'testing_hospitalized'].includes(variable)" text="The COVID Tracking Project stopped collecting data on <a class='text-light' href='https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done' target='_blank'>7 March 2021</a>"></Warning>
 
   <div class="d-flex row m-0 content-wrapper">
     <!-- bar graph -->
@@ -86,9 +80,9 @@
       </div>
 
       <!-- source / download data -->
-     
+
       <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="data$[0].length" :data="data$[0]" v-if="data$" />
-      
+
     </div>
 
     <!-- curve -->
@@ -228,22 +222,12 @@ export default {
           sources: ["NYT", "JHU"]
         },
         {
-          label: "cumulative hospitalizations",
-          ttip: "hospitalizations",
-          value: "testing_hospitalized",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
           label: "cumulative deaths",
           ttip: "deaths",
           value: "dead",
           sources: ["NYT", "JHU"]
         },
         {
-          //   label: "cumulative cases & deaths",
-          //   value: "both"
-          // }, {
           label: "daily new cases",
           ttip: "new cases",
           value: "confirmed_numIncrease",
@@ -256,13 +240,6 @@ export default {
           sources: ["NYT", "JHU"]
         },
         {
-          label: "daily new hospitalizations (U.S. States only)",
-          ttip: "new hospitalizations",
-          value: "testing_hospitalizedIncrease",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
           label: "daily new deaths",
           ttip: "new deaths",
           value: "dead_numIncrease",
@@ -273,27 +250,6 @@ export default {
           ttip: "new deaths (7 day average)",
           value: "dead_rolling",
           sources: ["NYT", "JHU"]
-        },
-        {
-          label: "cumulative COVID-19 tests (U.S. States only)",
-          ttip: "tests (positive & negative)",
-          value: "testing_totalTestResults",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
-          label: "daily new tests (U.S. States only)",
-          ttip: "new tests (positive & negative)",
-          value: "testing_totalTestResultsIncrease",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
-          label: "percent positive tests (U.S. States only)",
-          ttip: "positive tests",
-          value: "testing_positivity",
-          percapita: false,
-          sources: ["testing"]
         }
       ]
     };
