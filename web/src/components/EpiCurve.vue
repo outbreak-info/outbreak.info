@@ -1,5 +1,15 @@
 <template>
 <div class="col-sm-12 epidemiology-curves flex-column align-items-center" style="margin-bottom: 45px">
+  <!-- zoom btns -->
+  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
+    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
+      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+    </button>
+    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
+      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
+    </button>
+  </div>
+
   <svg :width="width" :height="height-45" class="epi-curve" ref="svg" :name="title">
     <defs>
       <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -9,25 +19,16 @@
     <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
     <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
     <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
+    <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
   </svg>
+
   <svg :width="width" :height="height" class="swoopy-arrow-group position-absolute" ref="svg_arrows">
-    <g ref="switchX" class="switch-x-button-group" transform="translate(0,0)">
-      <path class="swoopy-arrow" id="switch-x-btn-swoopy-arrow"></path>
-    </g>
     <g ref="switchY" class="switch-y-button-group" transform="translate(5,0)" v-if="loggable">
       <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
       <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
       <text class="switch-button" id="switch-y-btn-text"></text>
     </g>
   </svg>
-  <small class="d-flex position-absolute justify-content-end pr-5 x-axis-select" ref="xSelector">
-    <select v-model="xVariable" class="select-dropdown" @change="changeScale">
-      <option v-for="option in xVarOptions" :value="option.value" :key="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-  </small>
-
 </div>
 </template>
 
@@ -38,7 +39,42 @@ import {
   epiDataState$
 } from "@/api/epi-traces.js";
 
-import { select, selectAll, scaleLinear, scaleLog, scaleTime, extent, max, axisBottom, axisLeft, format, timeFormat, forceCollide, forceY, forceSimulation, transition, easeLinear, line } from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleLog,
+  scaleTime,
+  extent,
+  max,
+  axisBottom,
+  axisLeft,
+  format,
+  brushX,
+  event,
+  timeFormat,
+  timeParse,
+  forceCollide,
+  forceY,
+  forceSimulation,
+  transition,
+  easeLinear,
+  line
+} from "d3";
+
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faSearchPlus,
+  faCompressArrowsAlt
+} from "@fortawesome/free-solid-svg-icons/";
+
+library.add(faSearchPlus, faCompressArrowsAlt);
 
 import cloneDeep from "lodash/cloneDeep";
 
@@ -51,18 +87,21 @@ const margin = {
   top: 15,
   right: 225,
   bottom: 75,
-  left: 95
+  left: 125
 };
-const transitionDuration = 3500;
+const transitionDuration = 1500;
 
 export default Vue.extend({
   name: "EpiCurve",
-  components: {},
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     data: Array,
     location: String,
+    xmin: String,
+    xmax: String,
     variableObj: Object,
-    xVariableInput: String,
     log: Boolean,
     percapita: Boolean,
     loggable: Boolean,
@@ -79,25 +118,11 @@ export default Vue.extend({
 
       // data
       dataSubscription: null,
-      // logData: null,
       plottedData: null,
 
       // button interfaces
-      isLogY: false,
+      zoomAllowed: false,
       xVariable: "date",
-      xVarOptions: [{
-        value: "date",
-        label: "date"
-      }, {
-        value: "daysSince100Cases",
-        label: "days since 100 cases"
-      }, {
-        value: "daysSince10Deaths",
-        label: "days since 10 deaths"
-      }, {
-        value: "daysSince50Deaths",
-        label: "days since 50 deaths"
-      }],
       // axes
       numXTicks: 6,
       numYTicks: 6,
@@ -109,19 +134,28 @@ export default Vue.extend({
       svg: null,
       chart: null,
       switchBtn: null,
+      brushRef: null,
       // methods
-      line: null
+      line: null,
+      brush: null
     };
   },
   computed: {
     dataUpdated() {
       // Combo property to check if the data has changed, or the normalization has.
       // TODO: in Vue 3, this can be streamlined as a dual watcher
-      return JSON.stringify(this.data) + this.variable + String(this.percapita);
+      return JSON.stringify(this.data) + this.selectedVariable + String(this.percapita);
+    },
+    selectedVariable() {
+      if (this.percapita) {
+        return this.variableObj.percapita === false ? this.variableObj.value : this.variableObj.value + "_per_100k";
+      }
+      return this.variableObj.value;
     },
     title() {
       if (this.data.length == 1) {
-        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` :
+          `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
       } else {
         return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
       }
@@ -129,34 +163,39 @@ export default Vue.extend({
   },
   watch: {
     dataUpdated: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
       this.updatePlot();
     },
-    variableObj: {
-      immediate: true,
-      handler(newObj, oldObj) {
-        this.variable = newObj.value;
-        this.updatePlot();
-      }
+    xmin: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
     },
-    log: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.isLogY = this.loggable ? newVal : false;
-      },
+    xmax: function() {
+      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
+      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.setXScale();
+      this.updatePlot();
     },
-    xVariableInput: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.xVariable = newVal;
-      },
+    variable: function() {
+      this.setXScale();
+      this.updatePlot();
     },
     width() {
+      this.setXScale();
       this.updatePlot();
     }
   },
   mounted() {
     this.setupPlot();
+    this.updateBrush();
     this.updatePlot();
+  },
+  created: function() {
+    this.debounceZoom = this.debounce(this.zoom, 150);
   },
   destroyed() {
     window.removeEventListener("resize", this.setPlotDims);
@@ -197,7 +236,6 @@ export default Vue.extend({
     changeYScale: function() {
       this.isLogY = !this.isLogY;
       this.changeScale();
-
     },
     changeScale: function() {
       this.$router.replace({
@@ -209,13 +247,110 @@ export default Vue.extend({
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable.replace("_per_100k", ""),
-          xVariable: this.xVariable,
+          variable: this.selectedVariable.replace("_per_100k", ""),
+          xmin: this.xmin,
+          xmax: this.xmax,
           percapita: String(this.percapita)
         }
       });
 
       this.updatePlot();
+    },
+    updateBrush() {
+      // Update brush so it spans the whole of the area
+      this.brush = brushX()
+        .extent([
+          [0, 0],
+          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+        ])
+        .on("end", () => this.debounceZoom(event));
+
+      this.brushRef
+        .call(this.brush)
+        .on("dblclick", this.resetZoom);
+    },
+    zoom(evt, ref) {
+      // reset domain to new coords
+      const selection = this.event.selection;
+
+      if (selection) {
+        const newMin = this.x.invert(selection[0]);
+        const newMax = this.x.invert(selection[1]);
+
+        this.x = scaleTime()
+          .range([0, this.width - this.margin.left - this.margin.right])
+          .domain([newMin, newMax]);
+
+        // update plotted data
+        this.prepData();
+
+        // move the brush
+        this.brushRef.call(this.brush.move, null);
+        this.zoomAllowed = false;
+        this.updatePlot();
+
+        // update route
+        const queryParams = this.$route.query;
+
+        this.$router.push({
+          name: "Epidemiology",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            xmin: timeFormat("%Y-%m-%d")(newMin),
+            xmax: timeFormat("%Y-%m-%d")(newMax),
+            location: queryParams.location,
+            variable: queryParams.variable,
+            log: queryParams.log,
+            fixedY: queryParams.fixedY,
+            percapita: queryParams.percapita
+          }
+        })
+      }
+    },
+    resetZoom() {
+      this.brushRef.call(this.brush.move, null);
+      const queryParams = this.$route.query;
+      const params = this.$route.params;
+
+      this.xMin = null;
+      this.xMax = null;
+      this.setXScale();
+
+      this.$router.push({
+        name: "Epidemiology",
+        params: {
+          disableScroll: true
+        },
+        query: {
+          location: queryParams.location,
+          variable: queryParams.variable,
+          log: queryParams.log,
+          fixedY: queryParams.fixedY,
+          percapita: queryParams.percapita
+        }
+      })
+
+      this.updatePlot();
+    },
+    enableZoom() {
+      this.zoomAllowed = true;
+    },
+    debounce(fn, delay) {
+      var timer = null;
+      return function() {
+        var context = this,
+          args = arguments,
+          evt = event;
+        //we get the D3 event here
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          context.event = evt;
+          //and use the reference here
+          fn.apply(context, args);
+        }, delay);
+      };
     },
     tooltipOn: function(d, location_id) {
       select(`#tooltip-${d._id}`).attr("display", "block");
@@ -243,34 +378,27 @@ export default Vue.extend({
       selectAll(`.epi-line`).style("opacity", 1);
     },
     updatePlot: function() {
-      this.prepData();
-
       if (this.data && this.chart) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
         this.updateScales();
-        this.drawDots();
+        this.drawPlot();
       }
     },
     prepData: function() {
-      this.loggable = this.variable != "testing_positivity";
-
-      if (this.percapita) {
-        this.variable = this.variable.includes("_per_100k") || this.variableObj.percapita === false ? this.variable : this.variable + "_per_100k";
-      } else {
-        this.variable = this.variable.replace("_per_100k", "");
-      }
+      this.loggable = this.selectedVariable != "testing_positivity";
+      this.isLogY = this.loggable && this.log;
 
       if (this.data) {
         this.plottedData = cloneDeep(this.data);
 
         this.plottedData.forEach(d => {
-          d["value"] = this.isLogY && this.loggable ? d.value.filter(x => x[this.variable] >= 1 && (x[this.xVariable] || x[this.xVariable] === 0)) : d.value.filter(x => x[this.variable] && (x[this.xVariable] || x[this.xVariable] === 0));
+          d["value"] = this.isLogY && this.loggable ?
+            d.value.filter(x => x[this.selectedVariable] >= 1 && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0)) :
+            d.value.filter(x => x[this.selectedVariable] && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0));
 
           // ensure dates are sorted
           d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
         });
-
-
       }
     },
     setupPlot: function() {
@@ -289,37 +417,49 @@ export default Vue.extend({
 
       this.line = line()
         .x(d => this.x(d[this.xVariable]))
-        .y(d => this.y(d[this.variable]));
+        .y(d => this.y(d[this.selectedVariable]));
+
+      this.brushRef = select(this.$refs.brush);
+      this.setXScale();
     },
-    updateScales: function() {
-      if (this.xVariable == "date") {
-        this.x = scaleTime()
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain(
-            extent(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))
-          );
+    setXScale() {
+      let xDomain;
+
+      if (this.xMin && this.xMax && this.xMin < this.xMax) {
+        xDomain = [this.xMin, this.xMax];
       } else {
-        this.x = scaleLinear()
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain(
-            [0, max(this.plottedData.flatMap(d => d.value).map(d => d[this.xVariable]))]
-          );
+        xDomain = extent(this.data.flatMap(d => d.value).map(d => d[this.xVariable]));
+
+        if (this.xMin && this.xMin < xDomain[1]) {
+          xDomain[0] = this.xMin;
+        }
+
+        if (this.xMax && this.xMax > xDomain[0]) {
+          xDomain[1] = this.xMax;
+        }
       }
 
+      this.x = scaleTime()
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain(xDomain);
+
+      this.prepData();
+    },
+    updateScales: function() {
       if (this.isLogY && this.loggable) {
         this.y = scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .nice()
           .domain([
             1,
-            max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
+            max(this.plottedData.flatMap(d => d.value).map(d => d[this.selectedVariable]))
           ]);
       } else {
         this.y = scaleLinear()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .domain([
             0,
-            max(this.plottedData.flatMap(d => d.value).map(d => d[this.variable]))
+            max(this.plottedData.flatMap(d => d.value).map(d => d[this.selectedVariable]))
           ]);
       }
 
@@ -343,31 +483,10 @@ export default Vue.extend({
 
       select(this.$refs.yAxis).call(this.yAxis);
 
-      // --- update x-scale switch button --
-      const dySwitch = -10;
+      // --- update y-scale switch button --
       const xSwoop = 30;
       const ySwoop = -35;
       const swoopOffset = 10;
-
-      select(this.$refs.switchX).select("path")
-        .attr("marker-end", "url(#arrow)")
-        .attr(
-          "d",
-          `M ${xSwoop + this.width - this.margin.right} ${this.height + ySwoop}
-          C ${xSwoop + this.width - this.margin.right*0.95 } ${this.height-45},
-          ${xSwoop + this.width - this.margin.right + 10} ${this.height -
-            this.margin.bottom +
-            18},
-          ${xSwoop + this.width - this.margin.right + ySwoop + 20} ${this.height -
-            this.margin.bottom +
-            15}`
-        );
-
-      // --- update y-scale switch button --
-      // const dySwitch = -10;
-      // const xSwoop = 30;
-      // const ySwoop = -35;
-      // const swoopOffset = 10;
       if (this.loggable) {
         this.switchBtn = select(this.$refs.switchY);
 
@@ -425,105 +544,24 @@ export default Vue.extend({
           // );
         }
       }
-
-      select(this.$refs.xSelector)
-        .style("right", this.margin.right + "px")
-        .style("top", this.height - 28 + "px");
     },
-    drawDots: function() {
+    drawPlot() {
       if (this.plottedData && this.plottedData.length) {
-        const t1 = transition().duration(this.transitionDuration);
-        const t2 = transition().duration(1500);
+        const t1 = transition()
+          .duration(this.transitionDuration);
+        const t2 = transition().duration(500);
         const formatDate = timeFormat("%d %b %Y");
 
-        // --- annotation: change in case definition ---
-        const includesChina = this.plottedData
-          .filter(d => d.key.includes("CHN"))
-        const dateCaseDefChange = new Date("2020-02-13");
-
-        const defChangedSelector = this.chart
-          .selectAll(".case-def-changed")
-          .data(includesChina.length > 0 ? ["includesChina"] : []);
-        const defChangedLine = this.chart
-          .selectAll(".case-def-changed-line")
-          .data(includesChina.length > 0 ? ["includesChina"] : []);
-
-
-        const defChangedEnter = defChangedSelector
-          .join(
-            enter => {
-              enter.append("text")
-                .attr("dx", -3)
-                .attr("y", 0)
-                .attr("x", this.x(dateCaseDefChange))
-                .attr("class", "annotation-label case-def-changed")
-                .text("Case definition changed")
-
-              // defEnter.append("line")
-              //   .attr("class", "annotation--line case-def-changed")
-              //   .attr("y1", 8)
-              //   .attr("x1", this.x(dateCaseDefChange))
-              //   .attr("x2", this.x(dateCaseDefChange))
-              //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            update => {
-              update.attr("x", this.x(dateCaseDefChange))
-
-              // update.select("line")
-              //   .attr("class", "annotation--line case-def-changed")
-              //   .attr("y1", 8)
-              //   .attr("x1", this.x(dateCaseDefChange))
-              //   .attr("x2", this.x(dateCaseDefChange))
-              //   .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-          );
-
-        defChangedLine
-          .join(
-            enter => {
-              enter.append("line")
-                .attr("class", "annotation--line case-def-changed-line")
-                .attr("y1", 8)
-                .attr("x1", this.x(dateCaseDefChange))
-                .attr("x2", this.x(dateCaseDefChange))
-                .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            update => {
-              update
-                .attr("x1", this.x(dateCaseDefChange))
-                .attr("x2", this.x(dateCaseDefChange))
-                .attr("y2", this.height - this.margin.top - this.margin.bottom)
-            },
-            exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-          );
-        // --- create groups for each region ---
-        const regionGroups = this.chart
-          .selectAll(".epi-region")
-          .data(this.plottedData);
-
-        // -- exit --
-        regionGroups.exit().remove();
-
-        // -- enter --
-        const regionsEnter = regionGroups
-          .enter()
-          .append("g")
-          .attr("class", "epi-region");
-
-        regionGroups
-          .merge(regionsEnter)
-          .attr("id", d => d.key)
-          .attr("fill", d => this.colorScale(d.key));
-
-        // --- region annotation ---
+        // --- location annotation ---
         // using force direction to make sure they don't overlap.
         // based off https://bl.ocks.org/wdickerson/bd654e61f536dcef3736f41e0ad87786
         const labelHeight = 16;
         // Create nodes of the text labels for force direction
         this.plottedData.forEach(d => {
           d["fx"] = 0;
-          const yMax = d.value.filter(d => d.mostRecent).map(d => d[this.variable]);
+          const filtered = d.value.slice(-1)
+          const yMax = filtered.map(d => d[this.selectedVariable]);
+          d["xMax"] = filtered.length === 1 ? this.x(filtered[0][this.xVariable]) : null;
           d["targetY"] = yMax[0] ? this.y(yMax[0]) : this.height;
         });
 
@@ -554,45 +592,30 @@ export default Vue.extend({
         // Execute the simulation
         for (let i = 0; i < 300; i++) force.tick();
 
-        const countrySelector = this.chart
+        // --- create groups for each region ---
+        const regionGroups = this.chart
           .selectAll(".epi-region")
-          .select(".annotation--region-name");
+          .data(this.plottedData, d => d.key);
 
-        const textEnter = regionsEnter
-          .append("text")
-          .style("stroke", "none")
-          .attr("dx", 8)
-          .style("opacity", 1e-6)
-          .transition(t2)
-          .delay(250)
-          .style("opacity", 1);
-
-        countrySelector
-          .merge(textEnter)
-          // .attr('x', 0)
-          // .attr('y', this.y(0))
-          .attr("class", d => `annotation--region-name ${d.key}`)
-          .attr("x", this.width - this.margin.left - this.margin.right)
-          .attr("y", d => d.y)
-          .text(d => d.value[0] ? d.value[0].name : "")
-          .style("opacity", 1e-6)
-          .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-          .transition(t1)
-          .delay(1000)
-          .style("opacity", 1);
-
-        // --- path ---
-        const pathSelector = this.chart.selectAll(".epi-line")
-          .data(this.plottedData, d => {
-            // kind of a weird hack; on the first iteration of the data call, you get d is this.plottedData[i].value (e.g. array of timepoints)
-            // and then it gets called again, where d is this.plottedData[i]
-            // this is probably doubling the work that needs to be done, but it works, so...
-            return d.key ? d.key : d[0] ? d[0].location_id : null
-          })
-
-        pathSelector.join(
+        regionGroups.join(
           enter => {
-            enter.append("path")
+            const grps = enter.append("g")
+              .attr("class", "epi-region")
+              .attr("id", d => d.key)
+              .attr("fill", d => this.colorScale(d.key));
+
+            grps.append("text")
+              .attr("dx", 8)
+              .attr("class", d => `annotation--region-name ${d.key}`)
+              .attr("x", this.width - this.margin.left - this.margin.right)
+              .attr("y", d => d.y)
+              .text(d => d.value[0] ? d.value[0].name : "")
+              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+              // .transition(t1)
+              // .delay(1000)
+              .style("opacity", 1);
+
+            grps.append("path")
               .attr("class", d => `epi-line ${d.key}`)
               .attr("stroke", d => this.colorScale(d.key))
               .style("fill", "none")
@@ -600,199 +623,66 @@ export default Vue.extend({
               .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
               .datum(d => d.value)
               .attr("d", this.line)
-              .attr("stroke-dasharray", function() {
-                var totalLength = this.getTotalLength();
-                return totalLength + " " + totalLength;
-              })
-              .attr("stroke-dashoffset", function() {
-                var totalLength = this.getTotalLength();
-                return totalLength;
-              })
-              .call(update => {
-                update.transition(t2)
-                  .attr("d", this.line)
-                  .ease(easeLinear)
-                  .attr("stroke-dashoffset", 0)
-              })
+              // .attr("stroke-dasharray", function() {
+              //   var totalLength = this.getTotalLength();
+              //   return totalLength + " " + totalLength;
+              // })
+              // .attr("stroke-dashoffset", function() {
+              //   var totalLength = this.getTotalLength();
+              //   return totalLength;
+              // })
+              // .transition(t1)
+              // .ease(easeLinear)
+              // .attr("stroke-dashoffset", 0)
+
+            grps
+              .append("circle")
+              .attr("class", d => `epi-point ${d.key}`)
+              .attr("id", d => `${d.key}`)
+              .attr("r", this.radius)
+              .attr("cx", d => d.xMax)
+              .attr("cy", d => d.y)
+              .style("opacity", 1)
           },
+          update => {
+            update
+              .attr("id", d => d.key)
+              .attr("fill", d => this.colorScale(d.key));
 
-          // update
-          update => update
-          .attr("stroke", d => this.colorScale(d.key))
-          .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
-          .attr("class", d => `epi-line ${d.key}`)
-          .datum(d => d.value)
-          .attr("stroke-dashoffset", 0)
-          .attr("stroke-dasharray", "none")
-          .call(update => {
-            update.transition(t2).attr("d", this.line)
-          }),
+            update.select(".annotation--region-name")
+              .attr("x", this.width - this.margin.left - this.margin.right)
+              .text(d => d.value[0] ? d.value[0].name : "")
+              .style("opacity", 1)
+              .transition(t2)
+              .attr("y", d => d.y)
 
-          // exit
+            update.select(".epi-line")
+              .attr("stroke", d => this.colorScale(d.key))
+              .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
+              .attr("class", d => `epi-line ${d.key}`)
+              .datum(d => d.value)
+              .attr("stroke-dashoffset", 0)
+              .attr("stroke-dasharray", "none")
+              .transition(t2)
+              .attr("d", this.line)
+
+            update.select(".epi-point")
+              .attr("class", d => `epi-point ${d.key}`)
+              .attr("id", d => `${d.key}`)
+              .attr("cx", d => d.xMax)
+              .transition(t2)
+              .attr("cy", d => d.y)
+          },
           exit =>
           exit.call(exit =>
             exit
             .transition()
-            .duration(10)
             .style("opacity", 1e-5)
             .remove()
           )
         )
 
-        // --- dots ---
-        const keyFunc = function(d, i) {
-          return d._id
-        }
-        const dotGroupSelector = this.chart
-          .selectAll(".epi-region")
-          .selectAll(".epi-point")
-          .data(d => d.value, keyFunc);
-
-        dotGroupSelector.exit().remove();
-
-        const dotGroupEnter = dotGroupSelector
-          .join(
-            enter => enter.append("circle")
-            .attr("r", this.radius)
-            .attr("class", "epi-point")
-            // .attr("cy", this.y(0))
-            .attr("class", d => d.mostRecent ? `epi-point ${d.location_id}` : "epi-point")
-            .attr("id", d => `${d._id}`)
-            .attr("cx", d => this.x(d[this.xVariable]))
-            .attr("cy", d => this.y(d[this.variable]))
-            .attr("opacity", 0)
-            // .attr("opacity", d => d.mostRecent ? 1 : 0)
-            .call(update => update.transition(t2).delay(1500)
-              .attr("opacity", d => d.mostRecent ? 1 : 0)),
-            update => update
-            .attr("class", d => d.mostRecent ? `epi-point ${d.location_id}` : "epi-point")
-            .attr("id", d => `${d._id}`)
-            .attr("opacity", 0)
-            .call(update => update.transition(t2)
-              .attr("opacity", d => d.mostRecent ? 1 : 0)
-              .attr("cx", d => this.x(d[this.xVariable]))
-              .attr("cy", d => this.y(d[this.variable]))),
-            exit => exit.call(exit => exit.transition(t2).style("opacity", 1e-5).remove())
-
-          );
-
-        dotGroupSelector
-          .merge(dotGroupEnter);
-
-        // --- tooltips ---
-        // need to be outside the path/dot groups, so they're on top of all the curves.
-        // OUTER GROUP: one per country
-        const tooltipGroupSelector = this.chart
-          .selectAll(".epi-tooltip-group")
-          .data(this.plottedData);
-
-        // -- exit --
-        tooltipGroupSelector.exit().remove();
-
-        // -- enter --
-        const tooltipGroupEnter = tooltipGroupSelector
-          .enter()
-          .append("g")
-          .attr("class", "epi-tooltip-group")
-          .attr("fill", d => this.lightColorScale(d.key))
-          .attr("stroke", d => this.colorScale(d.key));
-
-        tooltipGroupSelector
-          .merge(tooltipGroupEnter)
-          .attr("class", d => `epi-tooltip-group ${d.key}`);
-
-        // INNER GROUPS: one per timepoint
-        const tooltipSelector = this.chart
-          .selectAll(".epi-tooltip-group")
-          .selectAll(".tooltip--epi-curve")
-          .data(d => d.value);
-
-        tooltipSelector.exit().remove();
-
-        const tooltipEnter = tooltipSelector
-          .enter()
-          .append("g")
-          .attr("class", "tooltip--epi-curve")
-          .attr("transform", "translate(5,5)")
-          .attr("display", "none");
-
-        tooltipSelector
-          .merge(tooltipEnter)
-          .attr("id", d => `tooltip-${d._id}`);
-
-        const tooltipRect = tooltipSelector.select(".tooltip--rect");
-
-        const tooltipRectEnter = tooltipEnter
-          .append("rect")
-          .attr("class", "tooltip--rect");
-
-        tooltipRect
-          .merge(tooltipRectEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          .attr("width", 165)
-          .attr("height", 60)
-          .attr("stroke-dasharray", "165, 285")
-          .attr("stroke-width", "3");
-
-        const tooltipText = tooltipSelector.select(".tooltip--text");
-
-        const tooltipTextEnter = tooltipEnter
-          .append("text")
-          .attr("class", "tooltip--text default-black")
-          .attr("transform", "translate(5,5)");
-
-        const tooltipCtryEnter = tooltipTextEnter.append("tspan")
-          .attr("class", "tooltip--country");
-
-        tooltipText.select(".tooltip--country").merge(tooltipCtryEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          .text(d => d.name)
-
-        const tooltipDateEnter = tooltipTextEnter
-          .append("tspan")
-          .attr("class", "tooltip--date");
-
-        tooltipText
-          .select(".tooltip--date")
-          .merge(tooltipDateEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          .attr("dy", "1.1em")
-          .text(d => d.date ? formatDate(d.date) : "interpolated value");
-
-        const tooltipCasesEnter = tooltipTextEnter
-          .append("tspan")
-          .attr("class", "tooltip--case-count");
-
-        tooltipText
-          .select(".tooltip--case-count")
-          .merge(tooltipCasesEnter)
-          .attr("x", d => this.x(d[this.xVariable]))
-          .attr("y", d => this.y(d[this.variable]))
-          // .attr("dy", "1.1em")
-          .attr("dy", "2.2em")
-          .text(d => this.percent ? `${format(".1%")(d[this.variable])} ${this.variableObj.ttip}` : `${format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`);
-
-        // dynamically adjust the width of the rect
-        if (tooltipSelector.selectAll("rect")["_groups"].length) {
-          tooltipSelector.each(function(d) {
-            const bounds = select(this).select("text")
-              .node()
-              .getBBox();
-
-            select(this).select("rect").attr("width", bounds.width + 10)
-              .attr("height", bounds.height + 5)
-              .attr("stroke-dasharray", `${bounds.width + 10}, ${(bounds.height + 5)*2 + bounds.width + 10}`)
-          })
-        }
-
         // --- event listeners ---
-        selectAll("circle")
-          .on("mouseover", d => this.tooltipOn(d, "location_id"))
-          .on("mouseout", d => this.tooltipOff(d));
-
         selectAll(".annotation--region-name")
           .on("mouseover", d => this.tooltipOn(d, "key"))
           .on("mouseout", d => this.tooltipOff(d));

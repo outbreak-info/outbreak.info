@@ -145,19 +145,6 @@ const state = {
         name: "CC BY-NC"
       },
       citation: 'The New York Times. <i>Coronavirus (Covid-19) Data in the United States</i>. Available online: <a href="https://github.com/nytimes/covid-19-data" target="_blank">https://github.com/nytimes/covid-19-data</a> (2020)'
-    },
-    {
-      id: "testing",
-      name: "The COVID Tracking Project",
-      scope: "testing data",
-      img: "ustesting.svg",
-      description: 'Testing and hospitalization at the state-level for the United States. See <a target="_blank" rel="noreferrer" href="https://covidtracking.com/about-data">data caveats</a>. The COVID Tracking Project stopped collecting data on <a href="https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done" target="_blank">7 March 2021</a>.',
-      url: "https://covidtracking.com/",
-      license: {
-        url: "https://covidtracking.com/license",
-        name: "CC BY-NC"
-      },
-      citation: 'The Atlantic. <i>The COVID Tracking Project</i>. Available online: <a href="https://covidtracking.com/" target="_blank">https://covidtracking.com/</a> (2020)'
     }
   ],
   genomicSources: [{
@@ -537,6 +524,12 @@ const state = {
           selected: "USA_US-NY_36005"
         }
       }
+    },
+    {
+      date: new Date("2021-12-31 0:0"),
+      category: "data",
+      title: "Removed COVID Tracking Project data",
+      description: "Since the COVID Tracking Project stopped tracking data on <a href='https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done' target='_blank'>7 March 2021</a>, removed U.S. hospitalization / testing data."
     },
     {
       date: new Date("2021-03-16 0:0"),
@@ -1321,6 +1314,15 @@ const state = {
           variable: "dead",
           xVariable: "daysSince10Deaths"
         }
+      }
+    },
+    {
+      date: new Date("2020-09-10 0:0"),
+      category: "deprecation",
+      title: "Removed the ability to normalize epidemiology plots by days since 100 cases, 10 deaths, or 50 deaths",
+      description: "Given that the pandemic has spanned over a year and a half, removed the option to shift the x-axis of epidemiology plots for simplicity.",
+      route: {
+        name: "Epidemiology"
       }
     },
     {
