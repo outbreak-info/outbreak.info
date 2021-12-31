@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-items-center justify-content-end" :class="{'w-100': fullWidth}">
+  <div class="d-flex align-items-center justify-content-end flex-grow-1" :class="{'w-100': fullWidth}">
     <div class="btn ml-3 py-0 px-2 btn-main-outline" v-if="copyable">
       <font-awesome-icon :icon="['far', 'copy']" @click="copyPng" />
     </div>

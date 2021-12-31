@@ -202,6 +202,7 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
       // Merge in the lineages
       curated.forEach(mutation => {
         mutation["lineages"] = lineagesByMutation[mutation.mutation_name].map(d => d.pangolin_lineage);
+        mutation["aquaria"] = "https://aquaria.app/SARS-CoV-2/S/7krq/A?E484K";
       })
 
       // nest by MOC/MOI
@@ -281,14 +282,15 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
   const query = CURATED.filter(d => d.variantType != "De-escalated").map(d => d.label);
 
-  return (getCharacteristicMutations(apiurl, query, 0, false)).pipe(
+  return forkJoin(...query.map(d => getCharacteristicMutations(apiurl, d, 0, false))).pipe(
     map(charMuts => {
+      // flatten array of objects to a single object.
+      charMuts = Object.assign(...charMuts)
 
       // pull out the characteristic mutations and bind to the curated list.
       let curated = orderBy(CURATED, ["variantType"]);
       // loop over each curated report; attach the associated lineages / characteristic mutations with it.
       curated.forEach(report => {
-        let mutations_in_report = [];
 
         report["showSublineages"] = false;
         report["mutations"] = Object.keys(charMuts).includes(report.char_muts_parent_query) ? charMuts[report.char_muts_parent_query] : [];

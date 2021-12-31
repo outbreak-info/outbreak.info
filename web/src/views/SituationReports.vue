@@ -150,7 +150,7 @@
             </div>
 
             <!-- LINEAGE TABLE -->
-            <table class="bg-white my-2">
+            <table class="bg-white my-2 st-rep-table">
               <thead class="text-uppercase bg-dark text-light">
                 <tr class="border-bottom border-white">
                   <!-- table header -->
@@ -478,6 +478,9 @@
                   <th>
                     total found
                   </th>
+                  <th>
+                    protein structures
+                  </th>
                 </tr>
               </thead>
 
@@ -506,6 +509,14 @@
 
                     <td>
                       {{ report.lineage_count }}
+                    </td>
+
+                    <td>
+                      <a :href="report.aquaria" v-if="report.aquaria" class="line-height-1 d-flex">
+
+                        {{report.mutation_name}} 3D structures
+                        <img src="@/assets/resources/aquaria.svg" style="width: 35px" class="ml-2"/>
+                      </a>
                     </td>
                   </tr>
 
@@ -1237,5 +1248,10 @@ $de-escalated: #bab0ab;
 
 .opacity-75 {
   opacity: 0.75 !important;
+}
+.st-rep-table{
+  display: block;
+  overflow-x: auto;
+    width: 100%;
 }
 </style>

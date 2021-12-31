@@ -34,7 +34,7 @@ VOC:
 
   - who_name: Omicron
     pangolin_lineage: B.1.1.529
-    nextstrain_clade: 21K
+    nextstrain_clade: 21K, 21L
     gisaid_clade: GR/484A
     dateModified: 2021-11-26
     location_first_identified: South Africa

@@ -652,6 +652,18 @@ const state = {
       }
     },
     {
+      date: new Date("2021-12-17 0:0"),
+      category: "variants",
+      title: "Fixed Omicron mutation counting",
+      description: 'Adjusted parameters within the minimap2 alignment call (added <span style="font-family: monospace">--score-N=0</span>) in the <a href="https://github.com/andersen-lab/bjorn/commit/560591e12e1fbc8bd469bcc4b24d3a858abb89da" target="_blank">Bjorn</a> pipeline to account for long stretches of unknown base pairs (Ns) in Omicron. This fixes the mutation prevalence of mutations like S:S477N, S:T478K, S:E484A, whose prevalence was underreported before the patch.',
+      route: {
+        name: "SituationReportComparison",
+        query: {
+          pango: "Omicron"
+        }
+      }
+    },
+    {
       date: new Date("2021-12-02 0:0"),
       category: "variants",
       title: "Added CDC classification of Omicron as a VOC",
@@ -671,6 +683,21 @@ const state = {
       category: "variants",
       title: "Added PHE classification of Omicron as a VOC",
       description: "Updated the PHE's classification of Omicron as a Variant of Concern based on their <a href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf' target='_blank'>latest report.</a>",
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "omicron",
+        },
+        query: {
+          selected: "ZAF"
+        }
+      }
+    },
+    {
+      date: new Date("2021-12-14 0:0"),
+      category: "variants",
+      title: "Redesignated Omicron as B.1.1.529 and its sublineages",
+      description: "Redesignated Omicron as B.1.1.529 and its sub lineages. Updated NextStrain clades",
       route: {
         name: "MutationReport",
         params: {
