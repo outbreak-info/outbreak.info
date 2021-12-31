@@ -63,17 +63,6 @@
             <font-awesome-icon class="sort-btn" :icon="['fas', 'arrow-down']" v-if="column.sorted === -1" />
           </div>
         </th>
-        <th id="td-outcomes">
-          outcomes
-          <svg width="70px" height="44px" class="mt-2">
-            <rect width="13" height="13" class="outcome-legend-rect recovered-cases" x="0" y="0"></rect>
-            <rect width="13" height="13" class="outcome-legend-rect total-cases" x="0" y="16"></rect>
-            <rect width="13" height="13" class="outcome-legend-rect dead-cases" x="0" y="32"></rect>
-            <text class="outcome-legend" x="17" y="0">recovered</text>
-            <text class="outcome-legend" x="17" y="16">unknown</text>
-            <text class="outcome-legend" x="17" y="32">dead</text>
-          </svg>
-        </th>
       </tr>
 
       <tr v-for="row in data" class="table-data" :key="row.location_id">
@@ -134,9 +123,6 @@
           <!-- normal -->
           <span v-else>{{ row[column.value] }}</span>
         </td>
-        <td>
-          <RecoveredBar :data="row" :color="row.color" />
-        </td>
       </tr>
     </table>
   </div>
@@ -162,7 +148,6 @@ import {
   timeFormat
 } from "d3";
 import Sparkline from "@/components/Sparkline.vue";
-import RecoveredBar from "@/components/RecoveredBar.vue";
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
@@ -197,8 +182,7 @@ export default Vue.extend({
   name: "EpiTable",
   components: {
     FontAwesomeIcon,
-    Sparkline,
-    RecoveredBar
+    Sparkline
   },
   props: {
     locations: Array,
@@ -233,26 +217,11 @@ export default Vue.extend({
         {
           label: "",
           colspan: 1
-        },
-        {
-          label: "",
-          colspan: 1
-        },
-        {
-          label: "",
-          colspan: 1
         }, {
           label: "DEATHS",
           colspan: 5
-        }, {
-          label: "",
-          colspan: 1
-        }, {
-          label: "RECOVERIES",
-          colspan: 4
         }
       ],
-
       columns: [{
           label: "location",
           value: "name",
@@ -267,13 +236,6 @@ export default Vue.extend({
           sorted: 0,
           essential: false
         },
-        // {
-        //   label: "region",
-        //   value: "wb_region",
-        //   sort_id: "wb_region",
-        //   sorted: 0,
-        //   essential: false
-        // },
         {
           label: "",
           value: "",
@@ -325,19 +287,6 @@ export default Vue.extend({
           essential: false
         },
         {
-          label: "days between first case and death",
-          value: "first_dead-first_confirmed",
-          sort_id: "first_dead-first_confirmed",
-          sorted: 0,
-          essential: true
-        },
-        {
-          label: "",
-          value: "",
-          sorted: null,
-          essential: false
-        },
-        {
           group: "deaths",
           label: "total",
           value: "dead_cases",
@@ -372,43 +321,6 @@ export default Vue.extend({
           group: "deaths",
           label: "change over time",
           value: "dead_sparkline",
-          sorted: null,
-          essential: true
-        },
-        {
-          label: "",
-          value: "",
-          sorted: null,
-          essential: false
-        },
-        {
-          group: "recoveries",
-          label: "total",
-          value: "recovered_cases",
-          sort_id: "recovered",
-          sorted: 0,
-          essential: true
-        },
-        {
-          group: "recoveries",
-          label: "new today",
-          value: "recovered_increase",
-          sort_id: "recovered_numIncrease",
-          sorted: 0,
-          essential: false
-        },
-        {
-          group: "recoveries",
-          label: "increase today",
-          value: "recovered_pctIncrease",
-          sort_id: "recovered_pctIncrease",
-          sorted: 0,
-          essential: true
-        },
-        {
-          group: "recoveries",
-          label: "change over time",
-          value: "recovered_sparkline",
           sorted: null,
           essential: true
         }

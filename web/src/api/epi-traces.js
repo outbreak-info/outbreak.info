@@ -115,7 +115,7 @@ export function getWorldDailyCases(apiUrl, fields = "wb_region,confirmed_numIncr
   )
 }
 
-export function getEpiTraces(apiUrl, locations, fields = "location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,daysSince100Cases,daysSince10Deaths,daysSince50Deaths,dead_doublingRate,confirmed_doublingRate,mostRecent,testing_totalTestResults,testing_positive,testing_hospitalized,testing_hospitalizedIncrease,testing_totalTestResultsIncrease,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k,sub_parts") {
+export function getEpiTraces(apiUrl, locations, fields = "location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,dead_doublingRate,confirmed_doublingRate,mostRecent,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k,sub_parts") {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
   const locationString = `("${locations.join('" OR "')}")`;
@@ -129,20 +129,6 @@ export function getEpiTraces(apiUrl, locations, fields = "location_id,admin_leve
       // convert dates to javascript dates
       results.forEach(d => {
         d["date"] = parseDate(d.date);
-        if (fields.includes("testing_positive")) {
-          d["testing_positive"] = d.testing_positive ? d.testing_positive : 0;
-          d["testing_totalTestResults"] = d.testing_totalTestResults ?
-            d.testing_totalTestResults :
-            0;
-          // truncate positivity data to be later than April 1 to avoid weirdness in data.
-          if (d.date >= new Date("2020-04-01")) {
-            d["testing_positivity"] = d.testing_positive ?
-              d.testing_positive / d.testing_totalTestResults :
-              0;
-          } else {
-            d["testing_positivity"] = null
-          }
-        }
       });
 
       const nested = nest()
@@ -158,32 +144,6 @@ export function getEpiTraces(apiUrl, locations, fields = "location_id,admin_leve
         // sorting so transition appears correctly
         d.value.sort((a, b) => a.date - b.date);
 
-        // add in static values to get 0 points for x-shifted cases
-        if (today[0].confirmed >= 100) {
-          d["value"].push({
-            name: today[0].name,
-            confirmed: 100,
-            daysSince100Cases: 0,
-            calculated: true
-          });
-        }
-
-        if (today[0].dead >= 10) {
-          d["value"].push({
-            name: today[0].name,
-            dead: 10,
-            daysSince10Deaths: 0,
-            calculated: true
-          });
-        }
-        if (today[0].dead >= 50) {
-          d["value"].push({
-            name: today[0].name,
-            dead: 50,
-            daysSince50Deaths: 0,
-            calculated: true
-          });
-        }
       });
 
       // sort colors by the highest confirmed cases

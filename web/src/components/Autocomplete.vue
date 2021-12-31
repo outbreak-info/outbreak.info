@@ -1,63 +1,28 @@
 <template>
-  <div class="autocomplete" style="background:white;">
-    <div
-      :content="selected"
-      class="autocomplete-input flex-column user-input-wrp"
-    >
-      <div
-        class="floating-label align-left"
-        :class="[selected.length === 0 ? 'empty' : 'filled']"
-      >
-        select locations
-      </div>
-      <div class="d-flex flex-wrap">
-        <button
-          class="chip"
-          v-for="(item, idx) in selectedItems"
-          :key="idx"
-          :class="{ 'to-add': item.addable, 'all-selected': isSelectAll }"
-          @click="updateChip(item)"
-          v-bind:style="{ background: item.lightColor }"
-        >
-          {{ item.label }}
-          <font-awesome-icon
-            class="remove-btn"
-            :icon="['far', 'times-circle']"
-            v-bind:style="{ color: item.darkColor }"
-            v-if="!item.addable"
-          />
-        </button>
-        <input
-          type="text"
-          v-model="search"
-          placeholder="Type here"
-          @input="onChange"
-          @keydown.down="onArrowDown"
-          @keydown.up="onArrowUp"
-          @keydown.enter="onEnter"
-          @keydown.delete="onBackspace"
-          @keydown.ctrl.65="onSelectAll"
-          @keydown.meta.65="onSelectAll"
-        />
-      </div>
+<div class="autocomplete" style="background:white;">
+  <div :content="selected" class="autocomplete-input flex-column user-input-wrp">
+    <div class="floating-label align-left" :class="[selected.length === 0 ? 'empty' : 'filled']">
+      select locations
     </div>
-
-    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
-      <li class="loading" v-if="isLoading">
-        Loading results...
-      </li>
-      <li
-        v-else
-        v-for="(result, i) in results"
-        :key="i"
-        @click="setResult(result)"
-        class="autocomplete-result"
-        :class="{ 'is-active': i === arrowCounter }"
-      >
-        {{ result.label }}
-      </li>
-    </ul>
+    <div class="d-flex flex-wrap">
+      <button class="chip" v-for="(item, idx) in selectedItems" :key="idx" :class="{ 'to-add': item.addable, 'all-selected': isSelectAll }" @click="updateChip(item)" v-bind:style="{ background: item.lightColor }">
+        {{ item.label }}
+        <font-awesome-icon class="remove-btn" :icon="['far', 'times-circle']" v-bind:style="{ color: item.darkColor }" v-if="!item.addable" />
+      </button>
+      <input type="text" v-model="search" placeholder="Type here" @input="onChange" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll"
+        @keydown.meta.65="onSelectAll" />
+    </div>
   </div>
+
+  <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
+    <li class="loading" v-if="isLoading">
+      Loading results...
+    </li>
+    <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
+      {{ result.label }}
+    </li>
+  </ul>
+</div>
 </template>
 
 <script lang="ts">
@@ -67,9 +32,20 @@ import Vue from "vue";
 // --- store / Vuex ---
 import store from "@/store";
 
+import debounce from "lodash/debounce";
+
+import {
+  findEpiLocation,
+  lookupEpiLocations
+} from "@/api/epi-basics.js";
+
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
 import {
   faTimesCircle,
   faPlusSquare
@@ -80,11 +56,6 @@ library.add(faTimesCircle, faPlusSquare);
 export default Vue.extend({
   name: "Autocomplete",
   props: {
-    items: {
-      type: Array,
-      required: false,
-      default: () => []
-    },
     selected: {
       type: Array,
       required: false,
@@ -108,42 +79,55 @@ export default Vue.extend({
     return {
       isOpen: false,
       results: [],
+      selectedItems: null,
       search: "",
       isLoading: false,
       isSelectAll: false,
-      arrowCounter: 0
+      arrowCounter: 0,
+      lookupSubscription: null,
+      querySubscription: null
     };
   },
-  computed: {
-    selectedItems: function() {
-      return this.selected.map(d => {
-        const place = this.items.filter(placeDict => placeDict.id === d);
-        return {
-          label: place.length > 0 ? place[0].label : null,
-          id: d,
-          addable: this.toAdd.includes(d),
-          darkColor: this.colorScale(d),
-          lightColor: this.lightColorScale(d)
-        };
-      });
+  watch: {
+    selected: function(val, oldValue) {
+      this.updateSelected();
+    },
+    colorScale: function(val, oldValue) {
+      this.updateSelected();
     }
   },
-  watch: {
-    items: function(val, oldValue) {
-      // actually compare them
-      if (val.length !== oldValue.length) {
-        this.results = val;
-        this.isLoading = false;
-      }
-    }
+  created: function() {
+    this.debounceSearch = debounce(this.onChange, 250);
   },
   mounted() {
+    this.updateSelected();
     document.addEventListener("click", this.handleClickOutside);
   },
   destroyed() {
     document.removeEventListener("click", this.handleClickOutside);
+
+    if (this.querySubscription) {
+      this.querySubscription.unsubscribe();
+    }
+
+    if (this.lookupSubscription) {
+      this.lookupSubscription.unsubscribe();
+    }
   },
   methods: {
+    updateSelected() {
+      this.lookupSubscription = lookupEpiLocations(this.$apiurl, this.selected).subscribe(results => {
+        this.selectedItems = results.map(d => {
+          return {
+            label: d.label,
+            location_id: d.location_id,
+            addable: this.toAdd.includes(d.location_id),
+            darkColor: this.colorScale(d.location_id),
+            lightColor: this.lightColorScale(d.location_id)
+          };
+        })
+      })
+    },
     lightColorScale: function(location) {
       const scale = store.getters["colors/getLightColor"];
       return scale(location);
@@ -154,36 +138,23 @@ export default Vue.extend({
     },
     updateChip(item) {
       if (item.addable) {
-        this.$emit("selected", this.selected.concat(item.id));
+        this.$emit("selected", this.selected.concat(item.location_id));
       } else {
         this.$emit(
           "selected",
-          this.selected.filter(d => d !== item.id)
+          this.selected.filter(d => d !== item.location_id)
         );
       }
-      // this.selected = this.selected.filter(d => d !== item);
     },
     onChange() {
       this.isSelectAll = false;
-
-      // Is the data given by an outside ajax request?
-      if (this.isAsync) {
-        this.isLoading = true;
-      } else {
-        // Let's  our flat array
-        this.filterResults();
+      this.querySubscription = findEpiLocation(this.$apiurl, this.search).subscribe(results => {
+        this.results = results;
         this.isOpen = true;
-      }
-    },
-    filterResults() {
-      // first uncapitalize all the things
-      this.results = this.items.filter(item => {
-        return item.label.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
-      });
+      })
     },
     setResult(result) {
-      // this.$emit('input', result);
-      this.selected.push(result.id);
+      this.selected.push(result.location_id);
       this.$emit("selected", this.selected);
       this.search = "";
       this.isOpen = false;
@@ -199,18 +170,18 @@ export default Vue.extend({
       }
     },
     onEnter() {
-      // Let's warn the parent that a change was made
-      const result = this.results[this.arrowCounter]
-        ? this.results[this.arrowCounter]
-        : this.search;
-      // this.$emit('input', result);
-      this.selected.push(result.id);
+      // Warn the parent that a change was made
+      const result = this.results[this.arrowCounter] ?
+        this.results[this.arrowCounter] :
+        this.search;
+      this.selected.push(result.location_id);
       this.$emit("selected", this.selected);
       this.search = "";
       this.isOpen = false;
       this.arrowCounter = -1;
     },
     onBackspace() {
+      console.log(this.selected)
       if (this.search === "") {
         this.search = this.selected.pop();
       }
@@ -238,6 +209,6 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 .chip {
-  border: none !important;
+    border: none !important;
 }
 </style>

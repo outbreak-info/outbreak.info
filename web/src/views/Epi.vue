@@ -5,7 +5,7 @@
     <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
   </div>
   <!-- autocomplete region selector -->
-  <Autocomplete class="m-auto" :items="allPlaces" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
+  <Autocomplete class="m-auto" :toAdd="addable" :selected="selectedPlaces" @selected="updateSelected" />
   <!-- too many to plot -->
   <div class="flex-column too-many-warning" v-if="dataLength > lengthThreshold && !variable.includes('Increase')">
     <div class="text-center m-auto p-2 bg-grey__lightest" style="max-width:700px;">
@@ -47,7 +47,7 @@
   <!-- title / drop down variable selector -->
   <h4 class="plot-title pt-5 pb-3" v-if="location">
     Number of COVID-19
-    <select v-model="variableObj" class="select-dropdown" @change="changeVariable">
+    <select v-model="variableObj" class="select-dropdown select-width" @change="changeVariable">
       <option v-for="option in variableOptions" :value="option" :key="option.value">
         {{ option.label }}
       </option>
@@ -70,29 +70,25 @@
     <router-link :to="{ hash: '#sub_parts' }">View counties in metro area(s)</router-link>
   </div>
 
-  <!-- warnings -->
-  <Warning :animate="false" class="my-4" v-if="variable == 'testing_positivity'"
-    text="Percent positive tests &ndash; the ratio of positive COVID-19 tests to all tests on a given day &ndash; is a noisy metric. States will occasionally report no tests (or no negative tests) one day, and huge backlog the next. A high positivity rate may indicate insufficient testing.">
-  </Warning>
-  <Warning :animate="true" class="my-4" v-if="noData" text="No results. Testing/hospitalization data are currently only available for U.S. States (not Metro areas or Counties), and recovery data is not available for the U.S."></Warning>
-  <Warning :animate="true" class="my-4" v-if="['testing_positivity', 'testing_totalTestResultsIncrease', 'testing_totalTestResults', 'testing_hospitalizedIncrease', 'testing_hospitalized'].includes(variable)" text="The COVID Tracking Project stopped collecting data on <a class='text-light' href='https://covidtracking.com/analysis-updates/giving-thanks-and-looking-ahead-our-data-collection-work-is-done' target='_blank'>7 March 2021</a>"></Warning>
 
-  <div class="d-flex row m-0">
+  <div class="d-flex row m-0 content-wrapper">
     <!-- bar graph -->
     <div class="d-flex flex-column align-items-center" v-if="data$ && data$[0] && this.variable.includes('Increase')">
       <div class="w-100 px-3 d-flex justify-content-center flex-wrap" id="bar-group" ref="bar_group">
-        <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight"
-          :includeTooltips="true" :location="location" :log="isLogY" :percapita="isPerCapita" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
+        <Bargraph v-for="(countryData, idx) in data$[0]" :key="idx" class="mr-3 mb-3" :data="countryData.value" :title="countryData.value[0].name" :variableObj="variableObj" :includeAxis="true" :width="bargraphWidth" :height="bargraphHeight" :transformChart="bargraphTransform"
+        :includeTooltips="true" :location="location" :log="isLogY" :percapita="isPerCapita" :xVariableLim="xLim" :fixedYMax="yMax" :animate="true" :id="String(idx)" :color="colorScale(countryData.key)" />
       </div>
 
       <!-- source / download data -->
+
       <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="data$[0].length" :data="data$[0]" v-if="data$" />
+
     </div>
 
     <!-- curve -->
     <template v-if="plottedData && showCurves && !this.variable.includes('Increase')">
-      <EpiCurve class="row" id="curveContainer" :data="plottedData" :percapita="isPerCapita" :location="location" :variableObj="variableObj" :xVariableInput="xVariable" :log="isLogY" :loggable="variable != 'testing_positivity'"
-        :percent="variable == 'testing_positivity'" :showAll="showAll" />
+      <EpiCurve class="row" id="curveContainer" :data="plottedData" :percapita="isPerCapita" :location="location" :variableObj="variableObj" :log="isLogY" :loggable="variable != 'testing_positivity'"
+        :percent="variable == 'testing_positivity'" :xmin="xmin" :xmax="xmax" :showAll="showAll" />
 
       <!-- source / download data -->
       <DataSource class="col-sm-12" :ids="variableObj.sources" v-if="data$" dataType="epidemiology" figureRef="epi-curve" :data="data$[0]" />
@@ -115,7 +111,7 @@
     </div>
 
     <!-- table -->
-    <EpiTable class="row overflow-auto" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
+    <EpiTable class="row overflow-auto mx-5" :locations="selectedPlaces" :colorScale="colorScale" colorVar="location_id" />
   </div>
 </div>
 </template>
@@ -123,10 +119,8 @@
 <script>
 // @ is an alias to /src
 import DataSource from "@/components/DataSource.vue";
-import EpiCurve from "@/components/EpiCurve.vue";
 import EpiTable from "@/components/EpiTable.vue";
 import Autocomplete from "@/components/Autocomplete.vue";
-import Bargraph from "@/components/Bargraph.vue";
 import Warning from "@/components/Warning.vue";
 
 // --- font awesome --
@@ -147,9 +141,7 @@ import {
   epiDataSubject,
   epiTableSubject
 } from "@/api/epi-traces.js";
-import {
-  getLocations
-} from "@/api/epi-basics.js";
+
 import {
   getLocation,
   processLocation
@@ -168,9 +160,9 @@ export default {
   components: {
     DataSource,
     Warning,
-    EpiCurve,
+    EpiCurve: () => import( /* webpackPrefetch: true */ "@/components/EpiCurve.vue"),
+    Bargraph: () => import( /* webpackPrefetch: true */ "@/components/Bargraph.vue"),
     EpiTable,
-    Bargraph,
     Autocomplete,
     FontAwesomeIcon
   },
@@ -183,10 +175,6 @@ export default {
       type: String,
       default: "false"
     },
-    xVariable: {
-      type: String,
-      default: "date"
-    },
     fixedY: {
       type: String,
       default: "false"
@@ -195,7 +183,9 @@ export default {
       type: String,
       default: "false"
     },
-    location: String
+    location: String,
+    xmin: String,
+    xmax: String
   },
   data() {
     return {
@@ -210,8 +200,9 @@ export default {
       isFixedY: false,
       isPerCapita: false,
       isOverlay: false,
-      bargraphWidth: 550,
+      bargraphWidth: 750,
       bargraphHeight: 400,
+      bargraphTransform: 1,
       yMax: null,
       variableObj: {
         label: "cumulative cases",
@@ -231,22 +222,12 @@ export default {
           sources: ["NYT", "JHU"]
         },
         {
-          label: "cumulative hospitalizations",
-          ttip: "hospitalizations",
-          value: "testing_hospitalized",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
           label: "cumulative deaths",
           ttip: "deaths",
           value: "dead",
           sources: ["NYT", "JHU"]
         },
         {
-          //   label: "cumulative cases & deaths",
-          //   value: "both"
-          // }, {
           label: "daily new cases",
           ttip: "new cases",
           value: "confirmed_numIncrease",
@@ -259,13 +240,6 @@ export default {
           sources: ["NYT", "JHU"]
         },
         {
-          label: "daily new hospitalizations (U.S. States only)",
-          ttip: "new hospitalizations",
-          value: "testing_hospitalizedIncrease",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
           label: "daily new deaths",
           ttip: "new deaths",
           value: "dead_numIncrease",
@@ -276,27 +250,6 @@ export default {
           ttip: "new deaths (7 day average)",
           value: "dead_rolling",
           sources: ["NYT", "JHU"]
-        },
-        {
-          label: "cumulative COVID-19 tests (U.S. States only)",
-          ttip: "tests (positive & negative)",
-          value: "testing_totalTestResults",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
-          label: "daily new tests (U.S. States only)",
-          ttip: "new tests (positive & negative)",
-          value: "testing_totalTestResultsIncrease",
-          percapita: false,
-          sources: ["testing"]
-        },
-        {
-          label: "percent positive tests (U.S. States only)",
-          ttip: "positive tests",
-          value: "testing_positivity",
-          percapita: false,
-          sources: ["testing"]
         }
       ]
     };
@@ -373,7 +326,6 @@ export default {
             location: newLocation,
             log: String(this.isLogY),
             variable: this.variable,
-            xVariable: this.xVariable,
             fixedY: String(this.isFixedY),
             percapita: String(this.isPerCapita)
           }
@@ -422,7 +374,7 @@ export default {
       if (newValue) {
         this.isOverlay = false;
 
-        this.variable = this.variable.replace("_numIncrease", "_rolling");
+        const newVariable = this.variable.replace("_numIncrease", "_rolling");
         this.$router.push({
           name: "Epidemiology",
           params: {
@@ -431,8 +383,7 @@ export default {
           query: {
             location: this.location,
             log: String(this.isLogY),
-            variable: this.variable,
-            xVariable: this.xVariable,
+            variable: newVariable,
             fixedY: String(this.isFixedY),
             percapita: String(this.isPerCapita)
           }
@@ -487,10 +438,10 @@ export default {
       epiTableSubject.next([]);
     },
     changeVariable() {
-      this.variable = this.variableObj.value;
+      const newVariable = this.variableObj.value;
 
       // update y-max
-      const varUsed = this.isPerCapita ? this.variable + "_per_100k" : this.variable;
+      const varUsed = this.isPerCapita ? newVariable + "_per_100k" : newVariable;
       this.yMax = this.isFixedY ?
         max(
           this.plottedData.flatMap(d => d.value),
@@ -506,8 +457,9 @@ export default {
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.variable,
-          xVariable: this.xVariable,
+          variable: newVariable,
+          xmin: this.xmin,
+          xmax: this.xmax,
           fixedY: String(this.isFixedY),
           percapita: String(this.isPerCapita)
         }
@@ -527,26 +479,18 @@ export default {
       const dimWidth = document.getElementById("bar-group") ?
         document.getElementById("bar-group").offsetWidth :
         minWidth;
-
-      if (dimWidth < 350) {
-        this.bargraphWidth = 300;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 450) {
-        this.bargraphWidth = dimWidth - framePadding - marginPadding*3;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 600) {
-        this.bargraphWidth = dimWidth - framePadding - marginPadding;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 1000) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else if (dimWidth < 1200) {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 2;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      } else {
-        this.bargraphWidth = (dimWidth - framePadding - marginPadding) / 3;
-        this.bargraphHeight = this.bargraphWidth * hwRatio;
-      }
+     this.bargraphWidth = 650
+     if(window.innerWidth < 360){
+       this.bargraphTransform = 0.4
+     } else if (window.innerWidth < 390){
+      this.bargraphTransform = 0.45
+     } else if (window.innerWidth < 630){
+     this.bargraphTransform = 0.5
+     } else if (window.innerWidth <790){
+      this.bargraphTransform = 0.8
+     } else {
+       this.bargraphTransform = 1
+     }
     },
     hideExtra: function() {
       const selectedData = this.data$ ?
@@ -585,7 +529,6 @@ export default {
     window.removeEventListener("resize", this.setDims);
   },
   mounted() {
-    getLocations(this.$apiurl).subscribe(_ => null);
     this.setLocation(this.location);
     this.$nextTick(function() {
       window.addEventListener("resize", this.setDims);
@@ -600,5 +543,15 @@ export default {
 .epi-group {
     align-items: center;
     width: 100%;
+}
+.select-width{
+  max-width:100%;
+}
+@media only screen and (max-width: 790px) {
+.content-wrapper{
+justify-content: center;
+}
+
+
 }
 </style>
