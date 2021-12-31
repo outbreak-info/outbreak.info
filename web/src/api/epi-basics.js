@@ -70,7 +70,7 @@ export function lookupEpiLocations(apiUrl, locationArr) {
 export function findEpiLocation(apiUrl, query, num2Return = 5) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND name:*${query}*&size=${num2Return}&fields=name,location_id,country_name,state_name`
+      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,country_name,state_name`
     )
   ).pipe(
     pluck("data", "hits"),
