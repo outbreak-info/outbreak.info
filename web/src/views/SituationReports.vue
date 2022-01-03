@@ -512,11 +512,11 @@
                     </td>
 
                     <td>
-                      <a :href="report.aquaria" v-if="report.aquaria" class="line-height-1 d-flex">
+                      <a :href="report.aquaria" v-if="report.aquaria" target="_blank" class="line-height-1 d-flex">
 
                         {{report.mutation_name}} 3D structures
                         <img src="@/assets/resources/aquaria.svg" style="width: 35px" class="ml-2"/>
-                      </a>
+""                      </a>
                     </td>
                   </tr>
 

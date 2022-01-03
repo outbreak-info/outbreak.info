@@ -202,7 +202,8 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
       // Merge in the lineages
       curated.forEach(mutation => {
         mutation["lineages"] = lineagesByMutation[mutation.mutation_name].map(d => d.pangolin_lineage);
-        mutation["aquaria"] = "https://aquaria.app/SARS-CoV-2/S/7krq/A?E484K";
+        console.log(mutation)
+        mutation["aquaria"] = `https://aquaria.app/SARS-CoV-2/${mutation.mutation_name.replace(":", "?")}`;
       })
 
       // nest by MOC/MOI

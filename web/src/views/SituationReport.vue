@@ -536,6 +536,7 @@ export default {
             return ({
               link: values[0].gene.toLowerCase() === "orf1b" ?
                 // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+                // in general: gene?mutations, separated by &
                 `${aquariaStub}PP1ab?${values.map(d => this.calcORF1bLink(d)).join("&")}` : `${aquariaStub}${values[0].gene}?${values.map(d => d.mutation.replace(d.gene, "").replace(":", "")).join("&")}`,
               count: values.length
             })
