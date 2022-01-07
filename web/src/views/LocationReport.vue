@@ -97,7 +97,12 @@
         <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
         <div class="d-flex flex-wrap justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
+            <!-- WHO region -->
+            <div v-if="selectedLocation && selectedLocation.who_region" class="mt-2 mb-n1">
+              WHO Region: {{selectedLocation.who_region}}
+            </div>
 
+            <!-- name -->
             <div class="d-flex align-items-end">
               <div class="d-flex flex-wrap align-items-center">
                 <h1 class="m-0 font-weight-bold location-header">{{ title }}</h1>
@@ -106,15 +111,16 @@
                 </button>
               </div>
             </div>
+
+            <!-- last updated info -->
             <div class="d-flex align-items-center">
               <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
               </small>
               <div id="sequence-count" class="text-grey font-size-2 ml-3" v-if="totalSequences">
-                with <span class="text-light">{{totalSequences}} sequences</span>  from GISAID
+                with <span class="text-light">{{totalSequences}} sequences</span> from GISAID
               </div>
             </div>
-
 
           </div>
           <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">

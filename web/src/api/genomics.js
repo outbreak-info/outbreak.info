@@ -45,6 +45,7 @@ import {
 import CURATED from "@/assets/genomics/curated_lineages.json";
 import MUTATIONS from "@/assets/genomics/curated_mutations.json";
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
+import WHO_REGIONS from "@/assets/genomics/who_regions.json";
 
 import orderBy from "lodash/orderBy";
 import uniq from "lodash/uniq";
@@ -1217,6 +1218,7 @@ export function findLocationMetadata(apiurl, location) {
       pluck("data", "results"),
       map(results => {
         results["id"] = location;
+        results["who_region"] = WHO_REGIONS[results.country_id];
         return (results)
       }),
       catchError(e => {
