@@ -101,8 +101,8 @@
           <template v-if="metro.hasSubparts">
             <b>{{metro.key}}</b> metro area includes:
             <span v-for="(loc, idx) in metro.parts" :key="idx" class="line-height-1">
-              <router-link :to="{name: 'Epidemiology', query: {location: loc.location_id, log: log, variable: variable, percapita: percapita}}" v-if="variable">
-                {{loc.county_name}}, {{loc.state_name}}</router-link>
+              <router-link :to="{name: 'Epidemiology', query: {location: loc.location_id, log: log, variable: variable, xVariable: xVariable, percapita: percapita}}" v-if="variable">
+                {{loc.county_name}}, {{loc.admin1}}</router-link>
               <span v-if="idx < metro.parts.length - 1">; </span>
             </span>
           </template>

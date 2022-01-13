@@ -37,7 +37,7 @@ export function findSimilar(apiUrl, locationID, variable, similarityMetric, admi
             nested.forEach(d => {
               const mostRecent = d.values.slice(-1)[0];
               d["name"] = mostRecent.name;
-              d["nameFormatted"] = mostRecent.state_name ? `${mostRecent.name}, ${mostRecent.state_name}` : mostRecent.country_name && mostRecent.country_name != mostRecent.name ? `${mostRecent.name}, ${mostRecent.country_name}` : mostRecent.name;
+              d["nameFormatted"] = mostRecent.admin1 ? `${mostRecent.name}, ${mostRecent.admin1}` : mostRecent.country_name && mostRecent.country_name != mostRecent.name ? `${mostRecent.name}, ${mostRecent.country_name}` : mostRecent.name;
               d["partOfUSA"] = mostRecent.country_name == "United States of America";
               d["lat"] = mostRecent.lat;
               d["lon"] = mostRecent.long;
@@ -84,7 +84,7 @@ export function getLocation(apiUrl, locationID, variable, similarityMetric, most
 
   return getAll(
     apiUrl,
-    `${query}&fields=${similarityMetric},name,lat,long,date,location_id,confirmed_rolling_per_100k,dead_rolling_per_100k,state_name,country_name,population`
+    `${query}&fields=${similarityMetric},name,lat,long,date,location_id,confirmed_rolling_per_100k,dead_rolling_per_100k,admin1,country_name,population`
   ).pipe(
     map(results => {
       results.forEach(d => {
@@ -118,16 +118,16 @@ if(adminLevels.length) {
     locationQuery.push("admin_level:0")
   }
   if(adminLevels.includes("non-U.S. States/Provinces")) {
-    locationQuery.push("(admin_level:1 AND -country_iso3:USA)")
+    locationQuery.push("(admin_level:1 AND -iso3:USA)")
   }
   if(adminLevels.includes("U.S. States")) {
-    locationQuery.push("(admin_level:1 AND country_iso3:USA)")
+    locationQuery.push("(admin_level:1 AND iso3:USA)")
   }
   if(adminLevels.includes("U.S. Metro Areas")) {
-    locationQuery.push('(admin_level:"1.5" AND country_iso3:USA)')
+    locationQuery.push('(admin_level:"1.5" AND iso3:USA)')
   }
   if(adminLevels.includes("U.S. Counties")) {
-    locationQuery.push("(admin_level:2 AND country_iso3:USA)")
+    locationQuery.push("(admin_level:2 AND iso3:USA)")
   }
   query = `(${locationQuery.join(" OR ")}) AND ${query}`;
 }

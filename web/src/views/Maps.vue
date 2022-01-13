@@ -14,20 +14,20 @@
         countries</router-link>
       <div class="d-flex flex-column justify-content-around">
         <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '1'}" role="button"
-          :to="{ name: 'Maps', query: {admin_level: '1', location: 'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. States</router-link>
+          :to="{ name: 'Maps', query: {admin_level: '1', location: 'iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. States</router-link>
         <div class="d-flex">
           <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :class="{active: admin_level === '1.5'}"
-            :to="{ name: 'Maps', query: {admin_level: '1.5', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
+            :to="{ name: 'Maps', query: {admin_level: '1.5', location:'iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Metro Areas
           </router-link>
           <router-link class="btn btn-main-outline router-link no-underline m-1" :class="{active: admin_level === '2'}" role="button"
-            :to="{ name: 'Maps', query: {admin_level: '2', location:'country_iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Counties</router-link>
+            :to="{ name: 'Maps', query: {admin_level: '2', location:'iso3:USA', variable: this.selectedVariable.value, date: this.selectedDate} }">U.S. Counties</router-link>
         </div>
       </div>
 
       <!-- <div class="d-flex flex-wrap">
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Maps', query: {admin_level: '1', location:'country_iso3:AUS', variable: this.selectedVariable.value} }">Australian States</router-link>
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Maps', query: {admin_level: '1', location:'country_iso3:CAN', variable: this.selectedVariable.value} }">Canadian Provinces</router-link>
-      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Maps', query: {admin_level: '1', location:'country_iso3:CHN', variable: this.selectedVariable.value} }">Chinese Provinces</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Maps', query: {admin_level: '1', location:'iso3:AUS', variable: this.selectedVariable.value} }">Australian States</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Maps', query: {admin_level: '1', location:'iso3:CAN', variable: this.selectedVariable.value} }">Canadian Provinces</router-link>
+      <router-link class="btn btn-main-outline router-link no-underline m-1" role="button" :to="{ name: 'Maps', query: {admin_level: '1', location:'iso3:CHN', variable: this.selectedVariable.value} }">Chinese Provinces</router-link>
 
     </div> -->
     </div>

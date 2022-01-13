@@ -278,14 +278,14 @@ ${resourcesString}
           this.downloadable = this.downloadable.flatMap(location => location.value).filter(d => !d.calculated);
 
           this.downloadable.forEach(d => {
-            d["source"] = d.country_name == "United States of America" || d.country_iso3 === "USA" || d.location_id === "USA" ? "The New York Times, The COVID Tracking Project" : "JHU COVID-19 Data Repository";
+            d["source"] = d.country_name == "United States of America" || d.iso3 === "USA" || d.location_id === "USA" ? "The New York Times, The COVID Tracking Project" : "JHU COVID-19 Data Repository";
             d["date"] = this.formatDate(d.date);
             delete d._score;
             delete d.color;
           })
         } else if (this.type == "maps") {
           this.downloadable.forEach(d => {
-            d["source"] = d.country_name == "United States of America" || d.country_iso3 === "USA" || d.location_id === "USA" ? "The New York Times" : "JHU COVID-19 Data Repository";
+            d["source"] = d.country_name == "United States of America" || d.iso3 === "USA" || d.location_id === "USA" ? "The New York Times" : "JHU COVID-19 Data Repository";
             delete d._score;
             delete d.datetime;
             delete d.fill;

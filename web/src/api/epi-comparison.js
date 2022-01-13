@@ -162,7 +162,7 @@ export function getJenksBreaks(apiUrl, queryString, variable) {
 export function getCurrentData(apiUrl, queryString, variable, date) {
   const parseDate = timeParse("%Y-%m-%d");
 
-  const fields = "date,location_id,name,state_name,country_iso3,geometry," + variable;
+  const fields = "date,location_id,name,admin1,iso3,geometry," + variable;
 
   // const qString = `(${queryString})&sort=${"-date"}&size=${size}&from=${page}&fields=${fields}`;
   const qString = date ? `date:${date} AND (${queryString})&sort=-date&fields=${fields}&_sorted=false` : `mostRecent:true AND (${queryString})&sort=-date&fields=${fields}&_sorted=0`;

@@ -94,7 +94,7 @@ export function getLocations(apiUrl) {
   if (store.state.geo.allPlaces.length == 0) {
     return getAll(
       apiUrl,
-      `mostRecent:true&fields=location_id,name,country_name,state_name,wb_region,admin_level`
+      `mostRecent:true&fields=location_id,name,country_name,admin1,wb_region,admin_level`
     ).pipe(
       map(results => {
         let places = results.map(d => {
@@ -161,7 +161,7 @@ function getLabel(entry) {
   } else if (String(entry.admin_level) == "1.5") {
     return `${entry.name} Metropolitan Area`;
   } else if (String(entry.admin_level) == "2") {
-    return `${entry.name}, ${entry.state_name}`;
+    return `${entry.name} County, ${entry.admin1}`;
   }
   return entry.name;
 }

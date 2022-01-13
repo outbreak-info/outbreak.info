@@ -244,7 +244,7 @@ export default {
         .attr("x", d => this.x(0))
         .attr("dx", d => d.rightAlign ? this.radius * 1.5 : -1.5 * this.radius)
         .attr("y", d => this.y(d.location_id) + this.y.bandwidth() / 2)
-        .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
+        .text(d => d.admin1 ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
         .style("text-anchor", d => d.rightAlign ? "start" : "end")
         .style("dominant-baseline", "middle")
         .style("font-size", "0.75em")
@@ -257,7 +257,7 @@ export default {
         update
         .attr("id", d => `location-change-${d._id}`)
         .attr("class", d => `location-most-change ${d.location_id} y-axis`)
-        .text(d => d.state_name ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
+        .text(d => d.admin1 ? `${trimText(d.name.replace(" County", ""), locationNameThresh)}` : trimText(d.name, locationNameThresh))
         .call(update => {
           if(this.animate) {
             update.transition().duration(this.transition1)
