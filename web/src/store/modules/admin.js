@@ -132,19 +132,6 @@ const state = {
         url: "https://github.com/CSSEGISandData/COVID-19/blob/master/README.md"
       },
       citation: 'Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. <i>COVID-19 Data Repository</i>. Available online: <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank">https://github.com/CSSEGISandData/COVID-19</a> (2020)'
-    },
-    {
-      id: "NYT",
-      name: "The New York Times",
-      img: "nytimes.png",
-      scope: "U.S. data",
-      description: 'Confirmed cases and deaths over time for the United States, U.S. States, U.S. Metropolitan Areas, U.S. cities and U.S. counties. Note that "New York City" refers to the combined totals for New York, Kings, Queens, Bronx and Richmond Counties; "Kansas City" refers to cases within the Missouri portion of the Kansas City Metropolitan area and values for Jackson, Cass, Clay, and Platte counties are the totals excluding the KCMO data; cities like St. Louis that are administered separately from their containing county are reported separately. See other <a target="_blank" rel="noreferrer" href="https://github.com/nytimes/covid-19-data#geographic-exceptions">geographic exceptions</a>.',
-      url: "https://github.com/nytimes/covid-19-data",
-      license: {
-        url: "https://github.com/nytimes/covid-19-data/blob/master/LICENSE",
-        name: "CC BY-NC"
-      },
-      citation: 'The New York Times. <i>Coronavirus (Covid-19) Data in the United States</i>. Available online: <a href="https://github.com/nytimes/covid-19-data" target="_blank">https://github.com/nytimes/covid-19-data</a> (2020)'
     }
   ],
   genomicSources: [{
@@ -1234,6 +1221,19 @@ const state = {
       category: "data",
       title: "Changed United States epidemiology data source",
       description: 'Switched the data source for U.S. epidemiological data from <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank" rel="noreferrer">Johns Hopkins</a> to the <a href="https://github.com/nytimes/covid-19-data" target="_blank" rel="noreferrer">New York Times</a>.',
+      route: {
+        name: "Epidemiology",
+        query: {
+          location: "USA;USA_US-CA;METRO_41940;USA_US-CA_06085",
+          variable: "confirmed"
+        }
+      }
+    },
+    {
+      date: new Date("2022-01-12 0:0"),
+      category: "data",
+      title: "Changed United States epidemiology data source",
+      description: 'Switched the data source for U.S. epidemiological data from the <a href="https://github.com/nytimes/covid-19-data" target="_blank" rel="noreferrer">New York Times</a> to <a href="https://github.com/CSSEGISandData/COVID-19" target="_blank" rel="noreferrer">Johns Hopkins</a>.',
       route: {
         name: "Epidemiology",
         query: {
