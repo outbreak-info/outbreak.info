@@ -107,10 +107,10 @@ const state = {
       url: "https://projectreporter.nih.gov/project_info_details.cfm?aid=9634840"
     },
     {
-      identifier: "5 U24 TR00230",
+      identifier: "5 U24 TR002306",
       name: "CD2H",
       funder: {
-        name: "National Center for Data to Health"
+        name: "National Center for Advancing Translational Sciences"
       }
     },
     {
