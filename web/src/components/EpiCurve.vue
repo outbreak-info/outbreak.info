@@ -1,35 +1,114 @@
 <template>
-<div class="col-sm-12 epidemiology-curves flex-column align-items-center" style="margin-bottom: 45px">
-  <!-- zoom btns -->
-  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
+  <div
+    class="col-sm-12 epidemiology-curves flex-column align-items-center"
+    style="margin-bottom: 45px"
+  >
+    <!-- zoom btns -->
+    <div
+      class="d-flex justify-content-end px-3"
+      :style="{ width: width + 'px' }"
+    >
+      <button
+        class="
+          btn btn-accent-flat
+          text-highlight
+          d-flex
+          align-items-center
+          m-0
+          p-2
+        "
+        @click="enableZoom"
+      >
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button
+        class="
+          btn btn-accent-flat
+          text-highlight
+          d-flex
+          align-items-center
+          m-0
+          p-2
+        "
+        @click="resetZoom"
+      >
+        <font-awesome-icon
+          class="text-right"
+          :icon="['fas', 'compress-arrows-alt']"
+        />
+      </button>
+    </div>
+
+    <svg
+      :width="width"
+      :height="height - 45"
+      class="epi-curve"
+      ref="svg"
+      :name="title"
+    >
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="13"
+          markerHeight="10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
+        class="epi-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        class="epi-axis axis--y"
+        ref="yAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="epi-curve"
+        ref="epi_curve"
+      ></g>
+      <g
+        ref="brush"
+        class="brush"
+        id="brush-zoom"
+        :transform="`translate(${margin.left},${margin.top})`"
+        v-if="data"
+        :class="{ hidden: !zoomAllowed }"
+      ></g>
+    </svg>
+
+    <svg
+      :width="width"
+      :height="height"
+      class="swoopy-arrow-group position-absolute"
+      ref="svg_arrows"
+    >
+      <g
+        ref="switchY"
+        class="switch-y-button-group"
+        transform="translate(5,0)"
+        v-if="loggable"
+      >
+        <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
+        <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
+        <text class="switch-button" id="switch-y-btn-text"></text>
+      </g>
+    </svg>
+    <div class="tooltip p-2">
+      <p class="date m-0"></p>
+      <div v-for="line in plottedData" :key="line.key" :class="line.key">
+        <h6 class="country-name m-0"></h6>
+        <b class="count-avg m-0"></b>
+      </div>
+    </div>
   </div>
-
-  <svg :width="width" :height="height-45" class="epi-curve" ref="svg" :name="title">
-    <defs>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
-    <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-  </svg>
-
-  <svg :width="width" :height="height" class="swoopy-arrow-group position-absolute" ref="svg_arrows">
-    <g ref="switchY" class="switch-y-button-group" transform="translate(5,0)" v-if="loggable">
-      <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
-      <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
-      <text class="switch-button" id="switch-y-btn-text"></text>
-    </g>
-  </svg>
-</div>
 </template>
 
 <script lang="js">
@@ -50,6 +129,7 @@ import {
   axisBottom,
   axisLeft,
   format,
+  bisector,
   brushX,
   event,
   timeFormat,
@@ -59,7 +139,8 @@ import {
   forceSimulation,
   transition,
   easeLinear,
-  line
+  line,
+  mouse
 } from "d3";
 
 // --- font awesome --
@@ -354,7 +435,7 @@ export default Vue.extend({
     },
     tooltipOn: function(d, location_id) {
       select(`#tooltip-${d._id}`).attr("display", "block");
-
+      console.log(d._id)
       select(`#${d._id}`).attr("r", this.radius * 2);
 
       selectAll(`#${d[location_id]}`)
@@ -377,6 +458,43 @@ export default Vue.extend({
       selectAll(`.epi-region`).style("opacity", 1);
       selectAll(`.epi-line`).style("opacity", 1);
     },
+    
+    mouseOn: function(){
+      const ttip = selectAll(".tooltip")
+       .style("pointer-events", "none")
+        .style("top", event.y + "px")
+        .style("left", event.x + "px")
+        .style("opacity", 1);
+
+    let date = this.x.invert(event.pageX - document.getElementById("epi-curve").getBoundingClientRect().x + 55)
+
+  this.plottedData.forEach((line, ind)=>{
+    const bisect = bisector(d => d.date);
+    let i = bisect.left(line.value, date, 1);
+    const a = line.value[i - 1];
+    const b = line.value[i];
+    let dat = date - a.date > b.date - date ? b : a;
+    const mouseLine = selectAll('.mouse-line')
+        .attr('x1', this.x(dat.date))
+        .attr('x2', this.x(dat.date))
+        .style('opacity',1)
+
+      ttip.select(`.${dat.location_id}`).select(`.country-name`).text(dat.name);
+      if(ind == 0){
+      ttip.select(`.date`).text(`${timeFormat("%d %b %Y")(dat.date)}`);
+      }
+      ttip
+          .select(`.${dat.location_id}`)
+          .select(`.count-avg`)
+          .text(`${format(",.1f")(dat[this.selectedVariable])}`);
+      } )
+    },
+    mouseOff: function(){
+     selectAll(".tooltip").style("opacity", 0);
+     selectAll('.mouse-line').style("opacity", 0);
+    
+    },
+
     updatePlot: function() {
       if (this.data && this.chart) {
         // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
@@ -442,7 +560,7 @@ export default Vue.extend({
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
-
+       
       this.prepData();
     },
     updateScales: function() {
@@ -623,6 +741,7 @@ export default Vue.extend({
               .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
               .datum(d => d.value)
               .attr("d", this.line)
+             
               // .attr("stroke-dasharray", function() {
               //   var totalLength = this.getTotalLength();
               //   return totalLength + " " + totalLength;
@@ -665,6 +784,7 @@ export default Vue.extend({
               .attr("stroke-dasharray", "none")
               .transition(t2)
               .attr("d", this.line)
+              
 
             update.select(".epi-point")
               .attr("class", d => `epi-point ${d.key}`)
@@ -686,6 +806,27 @@ export default Vue.extend({
         selectAll(".annotation--region-name")
           .on("mouseover", d => this.tooltipOn(d, "key"))
           .on("mouseout", d => this.tooltipOff(d));
+
+        const mouseRect =  selectAll(".epi-curve")
+            .append('rect')
+            .style("fill", "none")
+            .style("pointer-events", "all")
+            .attr('transform', `translate(${margin.left},${margin.top})`)
+            .attr('width', this.width - this.margin.left - this.margin.right)
+            .attr('height', this.height - this.margin.top - this.margin.bottom)
+            .on("touchmove mousemove", this.mouseOn)
+            .on("touchend mouseleave", this.mouseOff);
+
+        selectAll(".epi-curve")
+        .append('g')
+        .append('line')
+        .attr('class', 'mouse-line')
+        .attr('transform', `translate(${margin.left},${margin.top})`)
+        .attr('y1', this.height - this.margin.top - this.margin.bottom)
+        .attr('y2',0)
+        .attr('stroke', 'currentColor')
+        .style("stroke-width", "1")
+        .style('opacity', 0)
       }
     }
   }
@@ -694,88 +835,97 @@ export default Vue.extend({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+.tooltip {
+  position: fixed;
+  z-index: 1000;
+  background: #ffffffcf;
+  opacity: 0;
+  pointer-events: none;
+}
 .epi-axis text {
-    font-size: 12pt;
+  font-size: 12pt;
 }
 
 .epi-point {
-    // opacity: 0.4;
+  // opacity: 0.4;
 }
 
 .annotation--region-name {
-    dominant-baseline: middle;
-    stroke: none !important;
-    font-family: $font-family;
+  dominant-baseline: middle;
+  stroke: none !important;
+  font-family: $font-family;
 }
 
 .tooltip--text {
-    dominant-baseline: hanging;
-    stroke: none !important;
+  dominant-baseline: hanging;
+  stroke: none !important;
 }
 
 .tooltip--date {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 .tooltip--case-count {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .switch-button {
-    pointer-events: none;
-    dominant-baseline: text-after-edge;
-    // fill: $grey-90 !important;
-    font-weight: 300 !important;
-    font-size: 12.8px;
-    fill: $secondary-color;
+  pointer-events: none;
+  dominant-baseline: text-after-edge;
+  // fill: $grey-90 !important;
+  font-weight: 300 !important;
+  font-size: 12.8px;
+  fill: $secondary-color;
 
-    &:hover {}
+  &:hover {
+  }
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-    stroke: $grey-70;
-    fill: none;
-    stroke-width: 0.8;
+  stroke: $grey-70;
+  fill: none;
+  stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-    stroke-width: 1;
+  stroke-width: 1;
 }
 
 .switch-button-rect {
-    cursor: pointer;
-    fill: white;
-    rx: 5;
-    ry: 5;
-    stroke: $secondary-color;
-    stroke-width: 1;
-    shape-rendering: crispedges;
-    &:hover {
-        fill: $secondary-bright;
-    }
+  cursor: pointer;
+  fill: white;
+  rx: 5;
+  ry: 5;
+  stroke: $secondary-color;
+  stroke-width: 1;
+  shape-rendering: crispedges;
+  &:hover {
+    fill: $secondary-bright;
+  }
 }
 
-.switch-button-hover {}
+.switch-button-hover {
+}
 
 .epidemiology-curves line.case-def-changed-line {
-    stroke: $grey-60;
-    stroke-width: 0.75;
-    shape-rendering: crispedges;
-    stroke-dasharray: 6, 6;
+  stroke: $grey-60;
+  stroke-width: 0.75;
+  shape-rendering: crispedges;
+  stroke-dasharray: 6, 6;
 }
 .epidemiology-curves .case-def-changed text {
-    text-anchor: start;
+  text-anchor: start;
 }
 
 .x-axis-select {
-    // top: -29px;
-    // right: 20px;
+  // top: -29px;
+  // right: 20px;
 }
 
 .swoopy-arrow-group {
-    pointer-events: none;
-    & rect {
-        pointer-events: auto !important;
-    }
+  pointer-events: none;
+  & rect {
+    pointer-events: auto !important;
+  }
 }
 </style>
