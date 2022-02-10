@@ -16,7 +16,7 @@
             </option>
           </select>
         </h3>
-        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="bargraphWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false" :transformChart="bargraphTransform" :tooltipIdx="'n-'+idx"
+        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false" :tooltipIdx="'n-'+idx"
           :animate="true" id="world-cases" color="#888380" />
         <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="1" :data="total.total" v-if="total" />
       </div>
