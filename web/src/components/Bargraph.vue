@@ -3,11 +3,13 @@
   <h4 v-if="title">{{ title }}</h4>
   <div class="position-relative"  >
      <div :style="{transform:`translate(${margin.left}px,${margin.top}px)`}"  id='barchart-wrapper' ref='barchart_wrapper'>
+  <div :class="tooltipIdx">
 <div class="tooltip  p-2">
     <h6 class="country-name m-0"></h6>
     <p class="date m-0"></p>
     <p class="count m-0"></p>
     <b class="count-avg m-0"></b>
+  </div>
   </div>
      </div>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" :subtitle="title" ref="svg">
@@ -58,6 +60,7 @@ export default Vue.extend({
     width: Number,
     height: Number,
     transformChart: Number,
+    tooltipIdx: String,
     // variable: String,
     variableObj: Object,
     id: String,
@@ -501,7 +504,7 @@ export default Vue.extend({
         if (this.includeTooltips) {
        bar.interactive = true
        bar.on('pointerover', (event) => {
-               const ttip = selectAll(".tooltip")
+               const ttip = selectAll(`.${this.tooltipIdx}`).selectAll(".tooltip")
         .style("top", this.y(d[this.variable.replace("_numIncrease", "_rolling")]) + "px")
         .style("left", event.data.global.x + "px")
         .style("opacity", 1);
@@ -528,8 +531,6 @@ export default Vue.extend({
                hoverCircle.alpha = 1
                let circ_x = this.x(d.date) + this.x.bandwidth()/2
                hoverCircle.position.set(circ_x, this.y(d[this.variable.replace("_numIncrease", "_rolling")]))
-               
-              
             })
             bar.on('pointerout', (event) => {
             selectAll(".tooltip")

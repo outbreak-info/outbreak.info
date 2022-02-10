@@ -16,7 +16,7 @@
             </option>
           </select>
         </h3>
-        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false"
+        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="bargraphWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false" :transformChart="bargraphTransform" :tooltipIdx="'n-'+idx"
           :animate="true" id="world-cases" color="#888380" />
         <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="1" :data="total.total" v-if="total" />
       </div>
@@ -94,7 +94,7 @@
         </h3>
         <div class="d-flex flex-wrap justify-content-between">
 
-        <Bargraph v-for="(regionData, idx) in total.regional" :key="idx" :data="regionData.value" :title="regionData.key" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth/3" :height="stackedHeight/2"
+        <Bargraph v-for="(regionData, idx) in total.regional" :key="idx" :data="regionData.value" :title="regionData.key" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth/3" :height="stackedHeight/2" :tooltipIdx="'n-'+idx"
           :includeTooltips="true" location="World" :log="false" :percapita="false" :animate="true" :id="'region'+idx" :color="regionColorScale(regionData.key)" />
 
         </div>
