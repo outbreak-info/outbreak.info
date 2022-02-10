@@ -435,7 +435,6 @@ export default Vue.extend({
     },
     tooltipOn: function(d, location_id) {
       select(`#tooltip-${d._id}`).attr("display", "block");
-      console.log(d._id)
       select(`#${d._id}`).attr("r", this.radius * 2);
 
       selectAll(`#${d[location_id]}`)
