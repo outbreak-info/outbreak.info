@@ -1,6 +1,6 @@
 <template>
 <div class="home flex-column align-left">
-  <LocationReportComponent />
+  <LocationReportComponent :embedded="true" :loc="loc" />
 
 
   <Logos />
