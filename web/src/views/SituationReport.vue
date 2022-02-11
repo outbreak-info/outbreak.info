@@ -379,13 +379,7 @@
       </section>
 
       <!-- CITATION -->
-      <section class="my-3 border-top pt-3">
-        <h4 class="">Citing this report</h4>
-        <p class="m-0">
-          <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
-        </p>
-        <ShareReport :title="title" :url="url" />
-      </section>
+      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
 
       <!-- ACKNOWLEDGEMENTS -->
       <ReportAcknowledgements class="border-top pt-3" />
@@ -495,6 +489,7 @@ export default {
     HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
     ReportPrevalenceOverlay: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceOverlay.vue"),
     LineagesByLocation: () => import( /* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
+    GenomicsCitation: () => import( /* webpackPrefetch: true */ "@/components/GenomicsCitation.vue")
   },
   props: {
     alias: String,

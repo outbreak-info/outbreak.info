@@ -231,7 +231,9 @@
           </div>
 
           <!-- OMICRON INSERTION WARNING -->
-          <Warning text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions." class="fa-sm mt-1 mb-2" :align_left="true" v-if="mostRecentDomain && (mostRecentDomain.includes('Omicron') || mostRecentDomain.includes('omicron') || mostRecentDomain.includes('B.1.1.529'))" />
+          <Warning
+            text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
+            class="fa-sm mt-1 mb-2" :align_left="true" v-if="mostRecentDomain && (mostRecentDomain.includes('Omicron') || mostRecentDomain.includes('omicron') || mostRecentDomain.includes('B.1.1.529'))" />
 
           <div class="d-flex flex-column align-items-center" :class="{'bg-dark': darkMode}">
 
@@ -374,13 +376,7 @@
       </section>
 
       <!-- CITATION -->
-      <section class="my-3 border-top pt-3">
-        <h4 class="">Citing this report</h4>
-        <p class="m-0">
-          <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
-        </p>
-        <ShareReport :title="title" :url="url" />
-      </section>
+      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
 
       <!-- ACKNOWLEDGEMENTS -->
       <ReportAcknowledgements class="border-top pt-3" />
@@ -504,6 +500,7 @@ export default {
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     DownloadReportData: () => import( /* webpackPrefetch: true */ "@/components/DownloadReportData.vue"),
     GradientLegend: () => import( /* webpackPrefetch: true */ "@/components/GradientLegend.vue"),
+    GenomicsCitation: () => import( /* webpackPrefetch: true */ "@/components/GenomicsCitation.vue"),
     FontAwesomeIcon
   },
   watch: {

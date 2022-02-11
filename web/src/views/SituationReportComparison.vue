@@ -405,13 +405,7 @@
     </section>
 
     <!-- CITATION -->
-    <section class="my-3 border-top pt-3">
-      <h4 class="">Citing this report</h4>
-      <p class="m-0">
-        <b>{{ title }}</b>. {{ mutationAuthors }}. outbreak.info, (available at {{ url }}). Accessed {{ today }}.
-      </p>
-      <ShareReport :title="title" :url="url" />
-    </section>
+<GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
 
     <!-- ACKNOWLEDGEMENTS -->
     <ReportAcknowledgements class="border-top pt-3" />
@@ -514,6 +508,7 @@ export default {
     MutationHeatmap: () => import( /* webpackPrefetch: true */ "@/components/MutationHeatmap.vue"),
     GradientLegend: () => import( /* webpackPrefetch: true */ "@/components/GradientLegend.vue"),
     DownloadReportData: () => import( /* webpackPrefetch: true */ "@/components/DownloadReportData.vue"),
+    GenomicsCitation: () => import( /* webpackPrefetch: true */ "@/components/GenomicsCitation.vue"),
     FontAwesomeIcon
   },
   computed: {
