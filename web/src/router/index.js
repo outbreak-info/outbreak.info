@@ -209,6 +209,19 @@ const routes = [{
     component: () =>
       import( /* webpackChunkName: "summary" */ "../views/Summary.vue")
   },
+  // embeddable iframe, stripped down combined location/variant reports
+  {
+    path: "/genomics/embed",
+    name: "GenomicsEmbed",
+    props: route => ({
+      loc: route.query.loc
+    }),
+    meta: {
+      hideNavigation: true
+    },
+    component: () =>
+      import( /* webpackChunkName: "genomics-embed" */ "../views/GenomicsEmbed.vue")
+  },
   {
     path: "/epidemiology",
     name: "Epidemiology",
