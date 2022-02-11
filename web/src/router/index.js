@@ -217,7 +217,8 @@ const routes = [{
       loc: route.query.loc
     }),
     meta: {
-      hideNavigation: true
+      hideNavigation: true,
+      includeGISAIDLogo: true
     },
     component: () =>
       import( /* webpackChunkName: "genomics-embed" */ "../views/GenomicsEmbed.vue")
