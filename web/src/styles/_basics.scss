@@ -617,6 +617,10 @@ select:hover {
   border-color: $secondary-color;
 }
 
+.radio-item-light input[type=radio]:checked + label:before {
+  border-color: white;
+}
+
 .radio-item input[type=radio]:checked + label:after {
   border-radius: 11px;
   width: 10px;
@@ -627,6 +631,18 @@ select:hover {
   content: " ";
   display: block;
   background: $secondary-color;
+}
+
+.radio-item-light input[type=radio]:checked + label:after {
+  border-radius: 11px;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  content: " ";
+  display: block;
+  background: white;
 }
 
 #snackbar {

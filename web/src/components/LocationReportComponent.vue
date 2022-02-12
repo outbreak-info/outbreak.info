@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="mb-4 mt-3 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
+  <div class="mb-4 mt-1 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
     <!-- LOADING -->
     <div v-if="loading" class="loader">
       <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
