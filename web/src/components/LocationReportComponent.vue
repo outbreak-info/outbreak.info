@@ -73,7 +73,7 @@
 
     <template>
       <!-- REPORT HEADER -->
-      <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
+      <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-if="!embedded">
         <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
         <div class="d-flex flex-wrap justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
@@ -118,11 +118,54 @@
         </div>
       </div>
 
+      <!-- simplified header for embedded options -->
+      <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
+        <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-start">
+            <!-- name -->
+            <h1 class="m-0 font-weight-bold location-header">{{ title }}</h1>
+
+            <!-- WHO region -->
+            <small v-if="selectedLocation && selectedLocation.who_region" class="mb-2 mb-n1">
+              WHO Region: {{selectedLocation.who_region}}
+            </small>
+
+
+
+
+
+          </div>
+          <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
+            <!-- last updated info -->
+            <div class="d-flex align-items-center">
+              <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+                <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
+              </small>
+              <div id="sequence-count" class="text-grey font-size-2 ml-3" v-if="totalSequences">
+                with <span class="text-light">{{totalSequences}} sequences</span> from GISAID
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center bright-hyperlink my-1">
+              <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+              <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- MINI-NAV -->
       <div class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center border-top border-bottom">
         <a href="#lineages">
           <button class="btn btn-grey mx-3 py-2">
             <small>Common lineages</small>
+          </button>
+        </a>
+
+        <a href="#lineages-over-time">
+          <button class="btn btn-grey mx-3 py-2">
+            <small>Variants over time</small>
           </button>
         </a>
 
@@ -199,7 +242,7 @@
         </div>
 
         <!-- HEATMAP + LEGEND -->
-        <div class="d-flex flex-column align-items-center mt-3" v-if="recentHeatmap && recentHeatmap.length">
+        <div id="lineage-comparison" class="d-flex flex-column align-items-center mt-3" v-if="recentHeatmap && recentHeatmap.length">
           <h5 class="m-0">S-gene mutations in &gt; {{charMutThreshold}} of global sequences for lineages found in {{selectedLocation.label}} in the last {{recentWindow}} days</h5>
           <div class="d-flex flex-wrap justify-content-between">
             <small class="text-muted mb-2">
