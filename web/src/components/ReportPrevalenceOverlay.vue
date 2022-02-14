@@ -672,8 +672,11 @@ export default Vue.extend({
       // }
     },
     tooltipOff() {
-      select(this.$refs.tooltip_prevalence)
+      select(this.$refs.tooltip_mutations)
         .style("display", "none");
+
+      this.chart.selectAll(".mutation-trace")
+        .style("opacity", 1);
 
       selectAll(".raw-counts")
         .style("opacity", 1);
@@ -940,7 +943,7 @@ export default Vue.extend({
         )
 
         // event listener for tooltips
-        this.chart.selectAll(".confidence-interval")
+        this.chart.selectAll(".mutation-trace")
           .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
         this.counts.selectAll(".raw-counts")
