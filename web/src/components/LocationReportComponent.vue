@@ -210,8 +210,9 @@
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
-              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :colorScale="colorScale" :xmin="xmin"
-                :xmax="xmax" />
+              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow"
+              :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :routeName="routeTo"
+              :colorScale="colorScale" :xmin="xmin" :xmax="xmax" />
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
@@ -352,7 +353,7 @@
                     {{ choro.variantType }}
                   </small>
                 </div>
-                <ReportChoropleth report="location" :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
+                <ReportChoropleth :report="routeTo" :showCopy="false" :smallMultiples="true" :recentWindow="recentWindow" :showLegend="false" :data="choro.values" :countThreshold="choroCountThreshold" :fillMax="1" :location="selectedLocation.label"
                   :colorScale="choroColorScale" :mutationName="choro.key" :widthRatio="1" />
               </div>
             </div>
@@ -498,6 +499,10 @@ export default {
     dark: {
       type: [String, Boolean],
       default: true
+    },
+    routeTo: {
+      type: String,
+      default: "LocationReport"
     },
     selected: {
       type: [Array, String],
@@ -807,7 +812,7 @@ export default {
     },
     submitNewLocation() {
       this.$router.push({
-        name: "LocationReport",
+        name: this.routeTo,
         query: {
           loc: this.newLocation.id,
           alias: this.alias,
@@ -909,7 +914,7 @@ export default {
       this.submitCount += 1;
 
       this.$router.push({
-        name: "LocationReport",
+        name: this.routeTo,
         query: {
           loc: this.loc,
           alias: uniq(alias),
@@ -923,7 +928,7 @@ export default {
     },
     routeDark() {
       this.$router.push({
-        name: "LocationReport",
+        name: this.routeTo,
         params: {
           disableScroll: true
         },

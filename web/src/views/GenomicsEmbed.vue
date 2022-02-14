@@ -1,7 +1,7 @@
 <template>
 <div class="home flex-column align-left">
   <div class="d-flex variants-form">
-    <!-- LOCATION REPORT -->
+    <!-- LOCATION REPORT SELECTOR -->
     <div class="d-block">
       <!-- selector -->
       <div class="radio-item-light text-light w-100 pt-2">
@@ -53,7 +53,10 @@
 
 
   <!-- Location report component -->
-  <LocationReportComponent :embedded="true" :loc="loc" v-if="selectedReportType == 'location'" />
+  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark"
+  :muts="muts" :pango="pango" :alias="alias" :variant="variant"
+  :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed"
+  v-if="selectedReportType == 'location'" />
 
   <Logos />
 </div>
@@ -91,12 +94,23 @@ export default {
     Logos
   },
   props: {
-    loc: String
+    loc: String,
+    pango: [String, Array],
+    muts: [String, Array],
+    alias: String,
+    variant: [String, Array],
+    xmin: String,
+    xmax: String,
+    selected: {
+      type: [Array, String],
+      default: () => []
+    }
   },
   data() {
     return {
       queryPangolin: null,
       queryLocation: null,
+      dark: false,
       selectedReportType: "location"
     };
   },

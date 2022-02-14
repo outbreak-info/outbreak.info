@@ -558,10 +558,26 @@ export default {
             loc: locs
           }
         })
-      } else if (this.report == "location") {
+      } else if (this.report == "LocationReport") {
         const query = this.$route.query;
         this.$router.push({
           name: "LocationReport",
+          query: {
+            loc: id,
+            muts: query.muts,
+            alias: query.alias,
+            pango: query.pango,
+            variant: query.variant,
+            selected: query.selected,
+            dark: query.dark,
+            xmax: query.xmax,
+            xmin: query.xmin
+          }
+        })
+      } else if (this.report == "GenomicsEmbed") {
+        const query = this.$route.query;
+        this.$router.push({
+          name: "GenomicsEmbed",
           query: {
             loc: id,
             muts: query.muts,
