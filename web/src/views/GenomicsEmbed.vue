@@ -1,6 +1,6 @@
 <template>
 <div class="home flex-column align-left">
-  <div class="d-flex radio-form">
+  <div class="d-flex flex-wrap radio-form">
     <!-- VARIANT REPORT RADIO SELECTOR -->
     <div class="d-block px-5 py-2 variants-form">
       <!-- selector -->
@@ -109,13 +109,13 @@
 
 
   <!-- Lineage report component -->
-  <!-- <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc'" /> -->
+  <!-- <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'var' && pango || alias" /> -->
 
   <!-- Location report component -->
   <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc' && loc" />
 
   <!-- Lineage comparison component -->
-  <!-- <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc'" /> -->
+  <LineageComparisonComponent :embeded="false" routeTo="GenomicsEmbed" v-if="selectedReportType == 'comp'" />
 
   <Logos />
 </div>
@@ -149,6 +149,7 @@ export default {
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
     LocationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/LocationReportComponent.vue"),
+    LineageComparisonComponent: () => import( /* webpackPrefetch: true */ "@/components/LineageComparisonComponent.vue"),
     FontAwesomeIcon,
     Logos
   },
@@ -176,14 +177,15 @@ export default {
   },
   watch: {
     selectedReportType(newVal, oldVal) {
-      console.log(newVal)
-      this.$router.push({
-        name: "GenomicsEmbed",
-        query: {
-          type: newVal
+      if (newVal !== oldVal) {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: newVal
+          }
+        })
       }
-    })
-  }
+    }
   },
   computed: {},
   methods: {
@@ -233,7 +235,7 @@ export default {
 
 .variants-form {
     background: darken($grey-80, 0%);
-    width: 425px;
+    width: 485px;
     // border-top: 1px solid white;
     // border-bottom: 3px solid white;
 }
