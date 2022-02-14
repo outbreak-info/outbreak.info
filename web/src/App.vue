@@ -18,9 +18,9 @@
         </a>
 
         <small class="ml-2 text-light" v-if="$route.meta.includeGISAIDLogo">
-          enabled by data from
+          Enabled by data from
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-            <img src="@/assets/resources/gisaid.png" class="gisaid-small ml-2" alt="GISAID Initiative" />
+            <img src="@/assets/resources/gisaid.png" class="gisaid-md ml-2" alt="GISAID Initiative" />
           </a>
         </small>
       </div>

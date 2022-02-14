@@ -72,6 +72,21 @@
     <!-- end change mutations modal -->
 
     <template>
+      <!-- SOCIAL MEDIA SHARE, BACK BTN -->
+      <div class="d-flex align-items-center mb-2 mt-3" v-if="!embedded">
+        <router-link :to="{ name: 'LocationReports'}" class="no-underline">
+          <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
+            <font-awesome-icon class="mr-2 fa-sm" :icon="['fas', 'arrow-left']" />
+            back
+          </button>
+        </router-link>
+        <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-mutations-modal">
+          <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
+          add variants
+        </button>
+        <ShareReport title="title" url="url" />
+      </div>
+
       <!-- REPORT HEADER -->
       <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-if="!embedded">
         <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
@@ -510,6 +525,7 @@ export default {
     }
   },
   components: {
+    ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
     ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
     Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue"),

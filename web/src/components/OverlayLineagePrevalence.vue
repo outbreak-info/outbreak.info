@@ -121,7 +121,7 @@ export default {
       // this.updateMutations();
     },
     setMutations() {
-      if (this.selected.length) {
+      if (this.selected && this.selected.length) {
         this.selectedMutations = typeof(this.selected) == "string" ? this.options.filter(d => this.selected == d.label) : this.options.filter(d => uniq(this.selected).includes(d.label));
       } else {
         this.selectedMutations = this.options.slice(0, this.numPreselected);

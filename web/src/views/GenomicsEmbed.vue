@@ -7,7 +7,7 @@
       <div class="radio-item-light text-light w-100 pt-2 pb-3">
         <div class="radio-item fa-lg">
           <input type="radio" id="var" value="var" v-model="selectedReportType">
-          <label for="var">Lineage Report</label>
+          <label class="font-weight-bold" for="var">Lineage Report</label>
         </div>
       </div>
 
@@ -51,7 +51,7 @@
       <div class="radio-item-light text-light w-100 pt-2">
         <div class="radio-item fa-lg">
           <input type="radio" id="loc" value="loc" v-model="selectedReportType">
-          <label for="loc">Location Report</label>
+          <label class="font-weight-bold" for="loc">Location Report</label>
         </div>
       </div>
 
@@ -99,7 +99,7 @@
       <div class="radio-item-light text-light w-100 pt-2">
         <div class="radio-item fa-lg">
           <input type="radio" id="comp" value="comp" v-model="selectedReportType">
-          <label for="comp">Lineage Comparison</label>
+          <label class="font-weight-bold" for="comp">Lineage Comparison</label>
         </div>
       </div>
 
@@ -179,10 +179,13 @@ export default {
   watch: {
     selectedReportType(newVal, oldVal) {
       if (newVal !== oldVal) {
+        const newSelected = newVal == "loc" ? [] : null;
+
         this.$router.push({
           name: "GenomicsEmbed",
           query: {
-            type: newVal
+            type: newVal,
+            selected: newSelected
           }
         })
       }
