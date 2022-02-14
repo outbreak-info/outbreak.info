@@ -214,7 +214,15 @@ const routes = [{
     path: "/genomics/embed",
     name: "GenomicsEmbed",
     props: route => ({
-      loc: route.query.loc
+      type: route.query.type,
+      loc: route.query.loc,
+      pango: route.query.pango,
+      muts: route.query.muts,
+      alias: route.query.alias,
+      variant: route.query.variant,
+      xmin: route.query.xmin,
+      xmax: route.query.xmax,
+      selected: route.query.selected,
     }),
     meta: {
       hideNavigation: true,

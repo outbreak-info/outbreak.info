@@ -109,7 +109,8 @@
 
 
   <!-- Lineage report component -->
-  <!-- <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'var' && pango || alias" /> -->
+  pango: {{pango}}
+  <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && pango || alias" />
 
   <!-- Location report component -->
   <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc' && loc" />
@@ -148,6 +149,7 @@ export default {
   name: "GenomicsEmbed",
   components: {
     TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
+    SituationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/SituationReportComponent.vue"),
     LocationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/LocationReportComponent.vue"),
     LineageComparisonComponent: () => import( /* webpackPrefetch: true */ "@/components/LineageComparisonComponent.vue"),
     FontAwesomeIcon,
@@ -164,7 +166,7 @@ export default {
     xmax: String,
     selected: {
       type: [Array, String],
-      default: () => []
+      default: () => null
     }
   },
   data() {
