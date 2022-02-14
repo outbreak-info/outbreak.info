@@ -189,8 +189,6 @@
       </div>
 
       <div id="warning" class="w-100 mt-3" v-if="(alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'">
-        <Warning
-          text="As a newly designated Variant of Concern, Omicron is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
 
       </div>
 

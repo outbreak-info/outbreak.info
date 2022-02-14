@@ -323,11 +323,6 @@
         </div>
       </div>
 
-      <!-- OMICRON WARNING -->
-      <div id="warning" class="w-100 mt-3" v-if="selectedPango && (selectedPango.includes('Omicron') || selectedPango.includes('omicron') || selectedPango.includes('B.1.1.529'))">
-        <Warning
-          text="As a newly designated Variant of Concern, Omicron / B.1.1.529 is highly in flux. Expect the characteristic mutations associated with Omicron and its prevalence across locations to change as more sequences are reported. outbreak.info updates daily with new data from GISAID." />
-      </div>
 
 
       <!-- TITLE -->
