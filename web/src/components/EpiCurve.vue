@@ -46,6 +46,16 @@
       ref="svg"
       :name="title"
     >
+    <g
+    class="tooltip-cover" 
+    :transform="`translate(${margin.left}, ${margin.top})`"
+    >
+    <line class='mouse-line'></line>
+   <rect
+   id="tooltip-cover-rect"
+   ></rect>
+    </g>
+
       <defs>
         <marker
           id="arrow"
@@ -351,6 +361,8 @@ export default Vue.extend({
         .on("dblclick", this.resetZoom);
     },
     zoom(evt, ref) {
+     selectAll(".tooltip").style("opacity", 0);
+     selectAll('.mouse-line').style("opacity", 0);
       // reset domain to new coords
       const selection = this.event.selection;
 
@@ -465,22 +477,22 @@ export default Vue.extend({
         .style("left", event.x + "px")
         .style("opacity", 1);
 
-    let date = this.x.invert(event.pageX - document.getElementById("epi-curve").getBoundingClientRect().x + 55)
-
+  let date = this.x.invert(event.pageX - document.getElementById("tooltip-cover-rect").getBoundingClientRect().x)
+   
   this.plottedData.forEach((line, ind)=>{
     const bisect = bisector(d => d.date);
     let i = bisect.left(line.value, date, 1);
     const a = line.value[i - 1];
     const b = line.value[i];
     let dat = date - a.date > b.date - date ? b : a;
-    const mouseLine = selectAll('.mouse-line')
-        .attr('x1', this.x(dat.date))
-        .attr('x2', this.x(dat.date))
-        .style('opacity',1)
 
       ttip.select(`.${dat.location_id}`).select(`.country-name`).text(dat.name);
       if(ind == 0){
       ttip.select(`.date`).text(`${timeFormat("%d %b %Y")(dat.date)}`);
+      const mouseLine = selectAll('.mouse-line')
+        .attr('x1', this.x(dat.date))
+        .attr('x2', this.x(dat.date))
+        .style('opacity',1)
       }
       ttip
           .select(`.${dat.location_id}`)
@@ -806,21 +818,15 @@ export default Vue.extend({
           .on("mouseover", d => this.tooltipOn(d, "key"))
           .on("mouseout", d => this.tooltipOff(d));
 
-        const mouseRect =  selectAll(".epi-curve")
-            .append('rect')
+         const mouseRect =  select("#tooltip-cover-rect")
             .style("fill", "none")
             .style("pointer-events", "all")
-            .attr('transform', `translate(${margin.left},${margin.top})`)
             .attr('width', this.width - this.margin.left - this.margin.right)
             .attr('height', this.height - this.margin.top - this.margin.bottom)
-            .on("touchmove mousemove", this.mouseOn)
-            .on("touchend mouseleave", this.mouseOff);
+            .on("touchmove mouseover mousemove", this.mouseOn)
+            .on("touchend mouseout", this.mouseOff);
 
-        selectAll(".epi-curve")
-        .append('g')
-        .append('line')
-        .attr('class', 'mouse-line')
-        .attr('transform', `translate(${margin.left},${margin.top})`)
+        selectAll(".mouse-line")
         .attr('y1', this.height - this.margin.top - this.margin.bottom)
         .attr('y2',0)
         .attr('stroke', 'currentColor')
