@@ -109,7 +109,6 @@
 
 
   <!-- Lineage report component -->
-  pango: {{pango}}
   <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && pango || alias" />
 
   <!-- Location report component -->

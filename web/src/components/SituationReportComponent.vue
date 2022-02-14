@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="my-4 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
+  <div class="mt-1 mb-4 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
     <!-- LOADING -->
     <div v-if="reportloading" class="loader">
       <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
@@ -107,7 +107,7 @@
 
     <template v-if="hasData">
       <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-      <div class="d-flex align-items-center mb-2">
+      <div class="d-flex align-items-center mb-2" v-if="!embedded">
         <router-link :to="{ name: 'SituationReports'}" class="no-underline">
           <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
             <font-awesome-icon class="mr-2 fa-sm" :icon="['fas', 'arrow-left']" />
@@ -122,7 +122,7 @@
       </div>
 
       <!-- REPORT HEADER -->
-      <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
+      <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-if="!embedded">
         <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
@@ -180,6 +180,60 @@
                 <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
               </a>
             </div>
+            <div class="d-flex align-items-center bright-hyperlink my-1">
+              <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+              <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<!-- Simplified form for embedded reports -->
+      <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
+        <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-start">
+
+                <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
+
+            <div class="d-flex my-1 align-items-center">
+              <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms && reportMetadata.mutation_synonyms.length > 1"><span>a.k.a. </span>
+                <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
+                  <b>{{ synonym }}</b>
+                  <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
+              </small>
+              <small class="mutation-hyperlink" v-if="pangoLink">
+                <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
+              </small>
+
+              <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
+                &bull;
+              </small>
+
+
+              <!-- link to Aquaria structures -->
+              <template v-if="aquariaLink">
+                <small class="mutation-hyperlink" v-for="(link, lIdx) in aquariaLink" :key="lIdx">
+                  <a :href="link.value.link" target="_blank" rel="noreferrer">
+                    view <b>{{aquariaLink.length > 1 ? link.key + "-gene" : ""}}</b> {{link.value.count === 1 ? "mutation" : "mutations"}} on 3D structures (Aquaria)</a>
+                  <span class="text-grey mx-2" v-if="lIdx < aquariaLink.length - 1">
+                    &bull;
+                  </span>
+                </small>
+              </template>
+
+            </div>
+          </div>
+          <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
+            <div class="d-flex align-items-center">
+              <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+                <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
+              </small>
+              <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
+                with <span class="text-light">{{totalLineage}} sequences</span> from GISAID
+              </div>
+            </div>
+
             <div class="d-flex align-items-center bright-hyperlink my-1">
               <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
               <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
