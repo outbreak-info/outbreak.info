@@ -11,12 +11,12 @@
     </p>
 
     <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center" v-if="!embedded">
       <ShareReport title="title" url="url" />
     </div>
 
     <!-- REPORT HEADER -->
-    <div class="d-flex flex-column text-light comparison-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
+    <div class="d-flex flex-column text-light comparison-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-if="!embedded">
       <h3 class="m-0 mt-n1 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
       <div class="d-flex flex-wrap justify-content-between align-items-center">
         <div class="d-flex flex-column align-items-start">
@@ -47,6 +47,34 @@
               <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
             </a>
           </div>
+          <div class="d-flex align-items-center bright-hyperlink my-1">
+            <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
+            <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simplified embedded version -->
+    <div class="d-flex flex-column text-light comparison-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
+      <div class="d-flex flex-wrap justify-content-between align-items-center">
+        <div class="d-flex flex-column align-items-start">
+
+          <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
+
+
+
+        </div>
+        <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
+          <div class="d-flex align-items-center">
+            <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+              <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
+            </small>
+            <div class="text-grey font-size-2 ml-3" v-if="totalSequences">
+              with <span class="text-light">{{totalSequences}} sequences</span> from GISAID
+            </div>
+          </div>
+
           <div class="d-flex align-items-center bright-hyperlink my-1">
             <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
             <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
@@ -473,7 +501,7 @@ import uniq from "lodash/uniq";
 export default {
   name: "LineageComparisonComponent",
   props: {
-    embeded: {
+    embedded: {
       type: Boolean,
       default: false
     },

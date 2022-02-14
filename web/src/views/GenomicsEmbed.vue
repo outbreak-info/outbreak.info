@@ -115,7 +115,7 @@
   <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc' && loc" />
 
   <!-- Lineage comparison component -->
-  <LineageComparisonComponent :embeded="false" routeTo="GenomicsEmbed" v-if="selectedReportType == 'comp'" />
+  <LineageComparisonComponent :embedded="true" routeTo="GenomicsEmbed" v-if="selectedReportType == 'comp'" />
 
   <Logos />
 </div>
