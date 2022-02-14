@@ -613,6 +613,19 @@ select:hover {
   background-color: transparent;
 }
 
+.radio-item-light label:before {
+  content: " ";
+  display: inline-block;
+  position: relative;
+  top: 5px;
+  margin: 0 15px 0 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 11px;
+  border: 2px solid white;
+  background-color: transparent;
+}
+
 .radio-item input[type=radio]:checked + label:before {
   border-color: $secondary-color;
 }

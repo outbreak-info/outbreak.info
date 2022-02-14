@@ -1,18 +1,62 @@
 <template>
 <div class="home flex-column align-left">
-  <div class="d-flex variants-form">
-    <!-- LOCATION REPORT SELECTOR -->
-    <div class="d-block">
+  <div class="d-flex radio-form">
+    <!-- VARIANT REPORT RADIO SELECTOR -->
+    <div class="d-block px-5 py-2 variants-form">
+      <!-- selector -->
+      <div class="radio-item-light text-light w-100 pt-2 pb-3">
+        <div class="radio-item fa-lg">
+          <input type="radio" id="var" value="var" v-model="selectedReportType">
+          <label for="var">Lineage Report</label>
+        </div>
+      </div>
+
+      <!-- lineage typeahead -->
+      <div id="search-lineage" v-if="selectedReportType == 'var'">
+        <form autocomplete="off" class="w-100" id="search-lineage-input">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text bg-grey text-muted border-0" id="sb">
+                <font-awesome-icon :icon="['fas', 'search']" />
+              </span>
+            </div>
+            <TypeaheadSelect :isStandalone="false" class="form-control border" :queryFunction="queryPangolin" @selected="updatePangolin" :apiUrl="this.$genomicsurl" :removeOnSelect="true" placeholder="Search PANGO lineage" />
+          </div>
+        </form>
+        <small id="sBar-example-variant-lineage" class="form-text d-block text-left text-light ml-5">
+          <span class="mr-2">Try:</span>
+          <span class="mr-3">
+            <router-link :to="{name: 'GenomicsEmbed', query: {alias: 'omicron', type: 'var'}} " class="text-light">Omicron
+              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+            </router-link>
+          </span>
+          <span class="mr-3">
+            <router-link :to="{name: 'GenomicsEmbed', query: {alias: 'delta', type: 'var'}} " class="text-light">Delta
+              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+            </router-link>
+          </span>
+          <span class="mr-3">
+            <router-link :to="{name: 'GenomicsEmbed', query: {alias: 'alpha', type: 'var'}} " class="text-light">Alpha / B.1.1.7
+              <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+            </router-link>
+          </span>
+        </small>
+      </div>
+
+    </div>
+
+    <!-- LOCATION REPORT RADIO SELECTOR -->
+    <div class="d-block px-5 py-2 location-form">
       <!-- selector -->
       <div class="radio-item-light text-light w-100 pt-2">
         <div class="radio-item fa-lg">
-          <input type="radio" id="location" value="location" v-model="selectedReportType">
-          <label for="location">Location Report</label>
+          <input type="radio" id="loc" value="loc" v-model="selectedReportType">
+          <label for="loc">Location Report</label>
         </div>
       </div>
 
       <!-- location typeahead -->
-      <div id="search-variant-location" class="m-3 text-light" v-if="selectedReportType == 'location'">
+      <div id="search-variant-location" class="m-3 text-light" v-if="selectedReportType == 'loc'">
         <form autocomplete="off" class="w-100" id="search-variant-location-input">
           <div class="input-group">
             <div class="input-group-prepend">
@@ -49,14 +93,29 @@
       </div>
     </div>
 
+    <!-- LINEAGE COMPARISON REPORT RADIO SELECTOR -->
+    <div class="d-block px-5 py-2 comparison-form">
+      <!-- selector -->
+      <div class="radio-item-light text-light w-100 pt-2">
+        <div class="radio-item fa-lg">
+          <input type="radio" id="comp" value="comp" v-model="selectedReportType">
+          <label for="comp">Lineage Comparison</label>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 
+  <!-- Lineage report component -->
+  <!-- <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc'" /> -->
+
   <!-- Location report component -->
-  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark"
-  :muts="muts" :pango="pango" :alias="alias" :variant="variant"
-  :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed"
-  v-if="selectedReportType == 'location'" />
+  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc' && loc" />
+
+  <!-- Lineage comparison component -->
+  <!-- <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc'" /> -->
 
   <Logos />
 </div>
@@ -94,6 +153,7 @@ export default {
     Logos
   },
   props: {
+    type: String,
     loc: String,
     pango: [String, Array],
     muts: [String, Array],
@@ -111,22 +171,53 @@ export default {
       queryPangolin: null,
       queryLocation: null,
       dark: false,
-      selectedReportType: "location"
+      selectedReportType: null
     };
   },
-  watch: {},
+  watch: {
+    selectedReportType(newVal, oldVal) {
+      console.log(newVal)
+      this.$router.push({
+        name: "GenomicsEmbed",
+        query: {
+          type: newVal
+      }
+    })
+  }
+  },
   computed: {},
   methods: {
+    updatePangolin(selected) {
+      if (selected.alias) {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: "var",
+            alias: selected.name.toLowerCase()
+          }
+        });
+      } else {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: "var",
+            pango: selected.name
+          }
+        });
+      }
+    },
     submitLocation(selected) {
       this.$router.push({
         name: "GenomicsEmbed",
         query: {
+          type: "loc",
           loc: selected.id
         }
       })
     }
   },
   mounted() {
+    this.selectedReportType = this.type ? this.type : "var";
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;
   }
@@ -134,8 +225,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.variants-form {
-    background: $secondary-color;
+.radio-form {
+    background: $grey-60;
+    border-top: 1px solid white;
     border-bottom: 3px solid white;
+}
+
+.variants-form {
+    background: darken($grey-80, 0%);
+    width: 425px;
+    // border-top: 1px solid white;
+    // border-bottom: 3px solid white;
+}
+
+.location-form {
+    background: lighten($grey-80, 8%);
+    width: 485px;
+}
+
+.comp-form {
+    background: $grey-60;
 }
 </style>
