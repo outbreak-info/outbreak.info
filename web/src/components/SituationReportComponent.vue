@@ -405,7 +405,7 @@
               <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
             </div>
 
-            <ReportChoropleth :routeTo="routeTo" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
+            <ReportChoropleth :report="routeTo" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
           </template>
 
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
