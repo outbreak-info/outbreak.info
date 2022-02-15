@@ -75,6 +75,7 @@ export default Vue.extend({
     subtitle: String,
     lineage: String,
     mutationName: String,
+    routeTo: String,
     margin: {
       type: Object,
       default: function() {
@@ -128,9 +129,10 @@ export default Vue.extend({
   methods: {
     handleLineageClick(lineage) {
       const queryParams = this.$route.query;
+      const routePath = this.routeTo == "GenomicsEmbedVariant" ? "GenomicsEmbed" : this.routeTo;
 
       this.$router.push({
-        name: "MutationReport",
+        name: routePath,
         query: {
           pango: lineage,
           selected: queryParams.selected,
