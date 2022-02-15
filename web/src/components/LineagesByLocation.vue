@@ -447,9 +447,25 @@ export default Vue.extend({
               selected: queryParams.selected
             }
           })
-        }
-
-        if (this.routeName == "LocationReport") {
+        } else if (this.routeName == "GenomicsEmbedVariant") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: "GenomicsEmbed",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "var",
+              alias: queryParams.alias,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        } else if (this.routeName == "LocationReport") {
           this.$router.push({
             name: "LocationReport",
             params: {
@@ -466,15 +482,14 @@ export default Vue.extend({
               selected: queryParams.selected
             }
           })
-        }
-
-        if (this.routeName == "GenomicsEmbed") {
+        } else if (this.routeName == "GenomicsEmbedLocation") {
           this.$router.push({
             name: "GenomicsEmbed",
             params: {
               disableScroll: true
             },
             query: {
+              var: "loc",
               xmin: timeFormat("%Y-%m-%d")(newMin),
               xmax: timeFormat("%Y-%m-%d")(newMax),
               loc: queryParams.loc,
@@ -486,6 +501,7 @@ export default Vue.extend({
             }
           })
         }
+
       }
 
     },
@@ -514,7 +530,25 @@ export default Vue.extend({
         })
       }
 
-      if (this.routeName == "LocationReport") {
+      else if (this.routeName == "GenomicsEmbedVariant") {
+        const params = this.$route.params;
+        this.$router.push({
+          name: "GenomicsEmbed",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "var",
+            alias: queryParams.alias,
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected
+          }
+        })
+      }
+
+      else if (this.routeName == "LocationReport") {
         this.$router.push({
           name: "LocationReport",
           params: {
@@ -531,13 +565,14 @@ export default Vue.extend({
         })
       }
 
-      if (this.routeName == "GenomicsEmbed") {
+      else if (this.routeName == "GenomicsEmbedLocation") {
         this.$router.push({
-          name: "LocationReport",
+          name: "GenomicsEmbed",
           params: {
             disableScroll: true
           },
           query: {
+            type: "loc",
             loc: queryParams.loc,
             muts: queryParams.muts,
             alias: queryParams.alias,
@@ -547,6 +582,7 @@ export default Vue.extend({
           }
         })
       }
+
       this.updatePlot();
     },
     enableZoom() {
