@@ -107,7 +107,7 @@
 
     <template v-if="hasData">
       <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-      <div class="d-flex align-items-center mb-2" v-if="!embedded">
+      <div class="d-flex align-items-center mb-2 mt-3" v-if="!embedded">
         <router-link :to="{ name: 'SituationReports'}" class="no-underline">
           <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
             <font-awesome-icon class="mr-2 fa-sm" :icon="['fas', 'arrow-left']" />
@@ -188,13 +188,13 @@
         </div>
       </div>
 
-<!-- Simplified form for embedded reports -->
+      <!-- Simplified form for embedded reports -->
       <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
         <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
 
-                <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
+            <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
 
             <div class="d-flex my-1 align-items-center">
               <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms && reportMetadata.mutation_synonyms.length > 1"><span>a.k.a. </span>
@@ -564,7 +564,7 @@ export default {
     },
     routeTo: {
       type: String,
-      default: "SituationReport"
+      default: "MutationReport"
     }
   },
   computed: {
@@ -829,6 +829,7 @@ export default {
       }
 
       this.setLineageAndMutationStr();
+      console.log(this.loc)
       if (this.lineageName || this.selectedMutationArr || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
           this.hasData = true;
@@ -935,19 +936,34 @@ export default {
       // reset the fields.
       this.loc2Add = [];
 
-      this.$router.push({
-        name: "MutationReport",
-        params: {
-          alias: this.alias
-        },
-        query: {
-          pango: this.pango,
-          muts: this.muts,
-          selected: newSelected,
-          loc: locationIDs,
-          overlay: this.sublineageOverlay
-        }
-      })
+      if (this.routeTo == "MutationReport") {
+        this.$router.push({
+          name: "MutationReport",
+          params: {
+            alias: this.alias
+          },
+          query: {
+            pango: this.pango,
+            muts: this.muts,
+            selected: newSelected,
+            loc: locationIDs,
+            overlay: this.sublineageOverlay
+          }
+        })
+      } else if (this.routeTo == "GenomicsEmbedVariant") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: "var",
+            alias: this.alias,
+            pango: this.pango,
+            muts: this.muts,
+            selected: newSelected,
+            loc: locationIDs,
+            overlay: this.sublineageOverlay
+          }
+        })
+      }
     },
     // Select a location button on the longitudinal traces or choropleths
     switchLocation(location) {
@@ -966,20 +982,38 @@ export default {
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
 
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          pango: this.pango,
-          muts: this.muts,
-          loc: ids,
-          selected: this.selectedLocation,
-          overlay: this.sublineageOverlay
-        },
-        params: {
-          alias: this.alias,
-          disableScroll: true
-        }
-      })
+      if (this.routeTo == "MutationReport") {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            pango: this.pango,
+            muts: this.muts,
+            loc: ids,
+            selected: this.selectedLocation,
+            overlay: this.sublineageOverlay
+          },
+          params: {
+            alias: this.alias,
+            disableScroll: true
+          }
+        })
+      } else if (this.routeTo == "GenomicsEmbedVariant") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            alias: this.alias,
+            pango: this.pango,
+            muts: this.muts,
+            loc: ids,
+            selected: this.selectedLocation,
+            overlay: this.sublineageOverlay
+          },
+          params: {
+            disableScroll: true
+          }
+        })
+      }
+
     },
     updateLocations() {
       // set default, if needed.
@@ -1013,39 +1047,71 @@ export default {
       })
     },
     changeSublineageOverlay(selected) {
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          pango: this.pango,
-          muts: this.muts,
-          loc: this.loc,
-          selected: this.selected,
-          xmin: this.xmin,
-          xmax: this.xmax,
-          overlay: this.sublineageOverlay
-        },
-        params: {
-          alias: this.alias,
-          disableScroll: true
-        }
-      })
+      if (this.routeTo == "MutationReport") {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            pango: this.pango,
+            muts: this.muts,
+            loc: this.loc,
+            selected: this.selected,
+            xmin: this.xmin,
+            xmax: this.xmax,
+            overlay: this.sublineageOverlay
+          },
+          params: {
+            alias: this.alias,
+            disableScroll: true
+          }
+        })
+      } else if (this.routeTo == "GenomicsEmbedVariant") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            alias: this.alias,
+            pango: this.pango,
+            muts: this.muts,
+            loc: this.loc,
+            selected: this.selected,
+            xmin: this.xmin,
+            xmax: this.xmax,
+            overlay: this.sublineageOverlay
+          },
+          params: {
+            disableScroll: true
+          }
+        })
+      }
     },
     updatePangolin(selected) {
       this.newPangolin = selected.name;
     },
     selectNewPangolin() {
       // const queryParams = this.$route.query;
-
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          loc: this.loc,
-          pango: this.newPangolin,
-          muts: this.muts,
-          selected: this.selected,
-          overlay: this.sublineageOverlay
-        }
-      })
+      if (this.routeTo == "MutationReport") {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            loc: this.loc,
+            pango: this.newPangolin,
+            muts: this.muts,
+            selected: this.selected,
+            overlay: this.sublineageOverlay
+          }
+        })
+      } else if (this.routeTo == "GenomicsEmbedVariant") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            alias: this.alias,
+            loc: this.loc,
+            pango: this.newPangolin,
+            muts: this.muts,
+            selected: this.selected,
+            overlay: this.sublineageOverlay
+          }
+        })
+      }
     },
     closeLocModal() {
       $("#change-selected-location").modal("hide");

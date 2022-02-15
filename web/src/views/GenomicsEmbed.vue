@@ -156,7 +156,7 @@ export default {
   },
   props: {
     type: String,
-    loc: String,
+    loc: [String, Array],
     pango: [String, Array],
     muts: [String, Array],
     alias: String,
