@@ -451,14 +451,49 @@ export default Vue.extend({
               selected: queryParams.selected
             }
           })
-        }
-        if (this.routeName == "LocationReport") {
+        } else if (this.routeName == "GenomicsEmbedVariant") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: "GenomicsEmbed",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "var",
+              alias: queryParams.alias,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        } else if (this.routeName == "LocationReport") {
           this.$router.push({
             name: "LocationReport",
             params: {
               disableScroll: true
             },
             query: {
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              alias: queryParams.alias,
+              pango: queryParams.pango,
+              variant: queryParams.variant,
+              selected: queryParams.selected,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax)
+            }
+          })
+        } else if (this.routeName == "GenomicsEmbedLocation") {
+          this.$router.push({
+            name: "GenomicsEmbed",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "loc",
               loc: queryParams.loc,
               muts: queryParams.muts,
               alias: queryParams.alias,
@@ -952,15 +987,29 @@ export default Vue.extend({
       }
     },
     route2Mutation(d) {
-      this.$router.push({
-        name: "MutationReport",
-        params: d.params,
-        query: {
-          ...d.route,
-          loc: this.locationID,
-          selected: this.locationID
-        }
-      })
+      const params = d.params ? d.params : {};
+      if (this.routeName.includes("GenomicsEmbed")) {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          params: params,
+          query: {
+            type: "var",
+            pango: d.label,
+            loc: this.locationID,
+            selected: this.locationID
+          }
+        })
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          params: params,
+          query: {
+            pango: d.label,
+            loc: this.locationID,
+            selected: this.locationID
+          }
+        })
+      }
     },
     debounce(fn, delay) {
       var timer = null;

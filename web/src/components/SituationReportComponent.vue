@@ -290,7 +290,7 @@
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN -->
-          <SublineageTotals :routeTo="routeTo"  :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
+          <SublineageTotals :routeTo="routeTo" :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
 
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
@@ -365,8 +365,8 @@
             </label>
           </div>
 
-          <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length" :xmin="xmin"
-            :xmax="xmax" routeName="MutationReport" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
+          <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :routeName="routeTo" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
+            :xmin="xmin" :xmax="xmax" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
         </div>
 
         <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
@@ -608,22 +608,14 @@ export default {
     }
   },
   watch: {
-    '$route.query': function(newVal, oldVal) {
-      if (newVal.pango != oldVal.pango || !isEqual(newVal.muts, oldVal.muts)) {
+    '$route': function(newVal, oldVal) {
+      if (!isEqual(newVal.query.pango, oldVal.query.pango) || !isEqual(newVal.params.alias, oldVal.params.alias) || !isEqual(newVal.query.alias, oldVal.query.alias) || !isEqual(newVal.query.muts, oldVal.query.muts)) {
         this.newPangolin = null;
         this.lineageName = null;
         this.reportMetadata = null;
         this.setupReport();
       } else {
         this.updateLocations();
-      }
-    },
-    alias: function(newVal, oldVal) {
-      if (newVal != oldVal) {
-        this.newPangolin = null;
-        this.lineageName = null;
-        this.reportMetadata = null;
-        this.setupReport();
       }
     }
   },
@@ -829,9 +821,9 @@ export default {
       }
 
       this.setLineageAndMutationStr();
-      console.log(this.loc)
       if (this.lineageName || this.selectedMutationArr || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+          console.log(results)
           this.hasData = true;
 
           // selected locations
