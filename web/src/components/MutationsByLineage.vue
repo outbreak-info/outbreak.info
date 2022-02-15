@@ -129,16 +129,27 @@ export default Vue.extend({
   methods: {
     handleLineageClick(lineage) {
       const queryParams = this.$route.query;
-      const routePath = this.routeTo == "GenomicsEmbedVariant" ? "GenomicsEmbed" : this.routeTo;
 
-      this.$router.push({
-        name: routePath,
-        query: {
-          pango: lineage,
-          selected: queryParams.selected,
-          loc: queryParams.loc
-        }
-      })
+      if (this.routeTo == "GenomicsEmbedVariant") {
+        this.$router.push({
+          name: routePath,
+          query: {
+            pango: lineage,
+            selected: queryParams.selected,
+            loc: queryParams.loc
+          }
+        })
+      } else {
+        this.$router.push({
+          name: routePath,
+          query: {
+            type: "var",
+            pango: lineage,
+            selected: queryParams.selected,
+            loc: queryParams.loc
+          }
+        })
+      }
     },
     expandOther() {
       if (this.otherExpanded) {
@@ -187,7 +198,7 @@ export default Vue.extend({
     },
     updateAxes() {
       const paddingInner = 0.25;
-      this.height = this.processedData.length * this.bandwidth + (this.processedData.length -1) * this.bandwidth * paddingInner + this.margin.top + this.margin.bottom;
+      this.height = this.processedData.length * this.bandwidth + (this.processedData.length - 1) * this.bandwidth * paddingInner + this.margin.top + this.margin.bottom;
 
       this.x = scaleLinear()
         .range([0, this.width - this.margin.right - this.margin.left])

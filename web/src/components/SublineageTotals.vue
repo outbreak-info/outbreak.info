@@ -40,7 +40,8 @@
   <div v-if="areZerosFiltered || (!areZerosFiltered && !hideZeros)" class="text-muted mt-2 line-height-sm">
     <small>
       <font-awesome-icon class="mr-1" :icon="['far', 'question-circle']" />
-      Lineages may show zero sequences immediately after the <a href="https://www.pango.network/how-does-the-system-work/genome-designation-versus-assignation/" target="_blank">Pango network designates a new lineage</a> since lineage assignment models used by <a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Pangolin</a> have to be retrained, followed by sequence classification with the updated models.
+      Lineages may show zero sequences immediately after the <a href="https://www.pango.network/how-does-the-system-work/genome-designation-versus-assignation/" target="_blank">Pango network designates a new lineage</a> since lineage assignment
+      models used by <a href="https://cov-lineages.org/resources/pangolin.html" target="_blank">Pangolin</a> have to be retrained, followed by sequence classification with the updated models.
     </small>
   </div>
 
@@ -161,18 +162,30 @@ export default Vue.extend({
   methods: {
     handleLineageClick(lineage) {
       const queryParams = this.$route.query;
-      const routePath = this.routeTo == "GenomicsEmbedVariant" ? "GenomicsEmbed" : this.routeTo;
-
-      this.$router.push({
-        name: routePath,
-        query: {
-          country: queryParams.country,
-          division: queryParams.division,
-          pango: lineage,
-          selected: queryParams.selected,
-          selectedType: queryParams.selectedType
-        }
-      })
+      if (this.routeTo == "GenomicsEmbedVariant") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: "var",
+            country: queryParams.country,
+            division: queryParams.division,
+            pango: lineage,
+            selected: queryParams.selected,
+            selectedType: queryParams.selectedType
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          query: {
+            country: queryParams.country,
+            division: queryParams.division,
+            pango: lineage,
+            selected: queryParams.selected,
+            selectedType: queryParams.selectedType
+          }
+        })
+      }
     },
     preprocessData() {
       this.processedData = cloneDeep(this.data);
