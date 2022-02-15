@@ -540,8 +540,7 @@ export default {
 
     },
     route2Location(id) {
-      console.log(this.report)
-      if (this.report == "variant") {
+      if (this.report == "MutationReport") {
         const query = this.$route.query;
         const params = this.$route.params;
         let locs = query.loc ? (typeof(query.loc) == "string" ? [query.loc] : query.loc) : [];
