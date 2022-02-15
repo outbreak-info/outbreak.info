@@ -290,7 +290,7 @@
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN -->
-          <SublineageTotals :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
+          <SublineageTotals :routeTo="routeTo"  :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
 
 
           <!-- BREAKDOWN BY PANGO LINEAGE -->
