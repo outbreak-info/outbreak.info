@@ -405,7 +405,7 @@
               <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
             </div>
 
-            <ReportChoropleth report="variant" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
+            <ReportChoropleth :routeTo="routeTo" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
           </template>
 
           <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
@@ -1001,6 +1001,7 @@ export default {
         this.$router.push({
           name: "GenomicsEmbed",
           query: {
+            type: "var",
             alias: this.alias,
             pango: this.pango,
             muts: this.muts,
@@ -1068,6 +1069,7 @@ export default {
         this.$router.push({
           name: "GenomicsEmbed",
           query: {
+            type: "var",
             alias: this.alias,
             pango: this.pango,
             muts: this.muts,
@@ -1103,6 +1105,7 @@ export default {
         this.$router.push({
           name: "GenomicsEmbed",
           query: {
+            type: "var",
             alias: this.alias,
             loc: this.loc,
             pango: this.newPangolin,

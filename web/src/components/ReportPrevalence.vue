@@ -556,6 +556,7 @@ export default Vue.extend({
               disableScroll: true
             },
             query: {
+              type: "var",
               alias: queryParams.alias,
               xmin: timeFormat("%Y-%m-%d")(newMin),
               xmax: timeFormat("%Y-%m-%d")(newMax),
@@ -599,6 +600,7 @@ export default Vue.extend({
             disableScroll: true
           },
           query: {
+            type: "var",
             alias: queryParams.alias,
             loc: queryParams.loc,
             muts: queryParams.muts,
