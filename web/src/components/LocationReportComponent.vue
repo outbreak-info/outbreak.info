@@ -225,9 +225,8 @@
 
           <div class="d-flex flex-wrap justify-content-center align-items-end">
             <section id="lineages-over-time" class="flex-grow-1 flex-shrink-1" v-if="lineagesByDay">
-              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow"
-              :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :routeName="routeTo"
-              :colorScale="colorScale" :xmin="xmin" :xmax="xmax" />
+              <LineagesByLocation :data="lineagesByDay" :recentData="mostRecentLineages[0]" :recentWindow="recentWindow" :location="selectedLocation.label" :recentMin="recentMin" :seqCounts="seqCounts" :routeName="routeTo" :colorScale="colorScale"
+                :xmin="xmin" :xmax="xmax" />
             </section>
 
             <!-- STACKED BAR / MOST RECENT -->
@@ -321,7 +320,8 @@
             </button>
             <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
           </div>
-          <OverlayLineagePrevalence :options="selectedMutations" :xmin="xmin" :xmax="xmax" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected" v-if="selectedMutations && selectedMutations.length" />
+          <OverlayLineagePrevalence :routeTo="routeTo" :options="selectedMutations" :xmin="xmin" :xmax="xmax" :seqCounts="seqCounts" :locationID="loc" :locationName="selectedLocation.label" :selected="selected"
+            v-if="selectedMutations && selectedMutations.length" />
         </section>
 
         <!-- GEOGRAPHIC CHOROPLETHS -->
@@ -827,18 +827,34 @@ export default {
       }
     },
     submitNewLocation() {
-      this.$router.push({
-        name: this.routeTo,
-        query: {
-          loc: this.newLocation.id,
-          alias: this.alias,
-          pango: this.pango,
-          variant: this.variant,
-          muts: this.muts,
-          dark: this.darkMode,
-          selected: this.selected
-        }
-      })
+      if (this.routeTo == "GenomicsEmbedLocation") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: "loc",
+            loc: this.newLocation.id,
+            alias: this.alias,
+            pango: this.pango,
+            variant: this.variant,
+            muts: this.muts,
+            dark: this.darkMode,
+            selected: this.selected
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          query: {
+            loc: this.newLocation.id,
+            alias: this.alias,
+            pango: this.pango,
+            variant: this.variant,
+            muts: this.muts,
+            dark: this.darkMode,
+            selected: this.selected
+          }
+        })
+      }
       this.newLocation = null;
     },
     grabCustomMutations() {
@@ -929,35 +945,70 @@ export default {
       // clear new additions
       this.submitCount += 1;
 
-      this.$router.push({
-        name: this.routeTo,
-        query: {
-          loc: this.loc,
-          alias: uniq(alias),
-          pango: uniq(pango),
-          variant: uniq(variant),
-          muts: uniq(mutation),
-          dark: this.darkMode,
-          selected: uniq(selected)
-        }
-      })
+      if (this.routeTo == "GenomicsEmbedLocation") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: "loc",
+            loc: this.loc,
+            alias: uniq(alias),
+            pango: uniq(pango),
+            variant: uniq(variant),
+            muts: uniq(mutation),
+            dark: this.darkMode,
+            selected: uniq(selected)
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          query: {
+            loc: this.loc,
+            alias: uniq(alias),
+            pango: uniq(pango),
+            variant: uniq(variant),
+            muts: uniq(mutation),
+            dark: this.darkMode,
+            selected: uniq(selected)
+          }
+        })
+      }
     },
     routeDark() {
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          loc: this.loc,
-          alias: this.alias,
-          pango: this.pango,
-          variant: this.variant,
-          muts: this.muts,
-          dark: this.darkMode,
-          selected: this.selected
-        }
-      })
+      if (this.routeTo == "GenomicsEmbedLocation") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "loc",
+            loc: this.loc,
+            alias: this.alias,
+            pango: this.pango,
+            variant: this.variant,
+            muts: this.muts,
+            dark: this.darkMode,
+            selected: this.selected
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            loc: this.loc,
+            alias: this.alias,
+            pango: this.pango,
+            variant: this.variant,
+            muts: this.muts,
+            dark: this.darkMode,
+            selected: this.selected
+          }
+        })
+      }
     },
     updateWindow() {
       this.dayThresh = +this.recentWindow;

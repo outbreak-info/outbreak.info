@@ -109,7 +109,7 @@
 
 
   <!-- Lineage report component -->
-  <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && pango || alias" />
+  <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && (pango || alias)" />
 
   <!-- Location report component -->
   <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedLocation" v-if="selectedReportType == 'loc' && loc" />
@@ -159,7 +159,7 @@ export default {
     loc: [String, Array],
     pango: [String, Array],
     muts: [String, Array],
-    alias: String,
+    alias: [String, Array],
     variant: [String, Array],
     xmin: String,
     xmax: String,
@@ -178,7 +178,7 @@ export default {
   },
   watch: {
     selectedReportType(newVal, oldVal) {
-      if (newVal !== oldVal) {
+      if (newVal !== oldVal && oldVal) {
         const newSelected = newVal == "loc" ? [] : null;
 
         this.$router.push({
@@ -223,6 +223,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.$route)
     this.selectedReportType = this.type ? this.type : "var";
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;

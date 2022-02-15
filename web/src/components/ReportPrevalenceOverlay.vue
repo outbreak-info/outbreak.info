@@ -487,6 +487,7 @@ export default Vue.extend({
             }
           })
         } else if (this.routeName == "GenomicsEmbedLocation") {
+          console.log("ZOOM")
           this.$router.push({
             name: "GenomicsEmbed",
             params: {
