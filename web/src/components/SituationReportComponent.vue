@@ -328,7 +328,7 @@
             <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
           </button>
         </div>
-        <ReportPrevalence :data="prevalence" :mutationName="reportName" :xmin="xmin" :xmax="xmax" :location="selectedLocation.label" :setWidth="width" />
+        <ReportPrevalence :data="prevalence" :mutationName="reportName" :xmin="xmin" :xmax="xmax" :location="selectedLocation.label" :setWidth="width" :routeName="routeTo" />
       </section>
 
       <!-- DAILY SUBLINEAGE PREVALENCE -->

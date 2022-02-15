@@ -70,22 +70,22 @@
         </form>
         <small id="sBar-example-variant-location" class="form-text d-block text-left ml-5"> <span class="mr-2">Try:</span>
           <span class="mr-3">
-            <router-link :to="{name: 'GenomicsEmbed', query: {loc: 'USA'}} " class="text-light">USA
+            <router-link :to="{name: 'GenomicsEmbed', query: {type:'loc', loc: 'USA'}} " class="text-light">USA
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </span>
           <span class="mr-3">
-            <router-link :to="{name: 'GenomicsEmbed', query: {loc: 'GBR'}} " class="text-light">U.K.
+            <router-link :to="{name: 'GenomicsEmbed', query: {type:'loc', loc: 'GBR'}} " class="text-light">U.K.
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </span>
           <span class="mr-3">
-            <router-link :to="{name: 'GenomicsEmbed', query: {loc: 'USA_US-NY'}} " class="text-light">New York
+            <router-link :to="{name: 'GenomicsEmbed', query: {type:'loc', loc: 'USA_US-NY'}} " class="text-light">New York
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </span>
           <span class="mr-3">
-            <router-link :to="{name: 'GenomicsEmbed', query: {loc: 'USA_US-CA_06073'}} " class="text-light">San Diego
+            <router-link :to="{name: 'GenomicsEmbed', query: {type:'loc', loc: 'USA_US-CA_06073'}} " class="text-light">San Diego
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </span>
@@ -112,7 +112,7 @@
   <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && pango || alias" />
 
   <!-- Location report component -->
-  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbed" v-if="selectedReportType == 'loc' && loc" />
+  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedLocation" v-if="selectedReportType == 'loc' && loc" />
 
   <!-- Lineage comparison component -->
   <LineageComparisonComponent :embedded="true" routeTo="GenomicsEmbed" v-if="selectedReportType == 'comp'" />

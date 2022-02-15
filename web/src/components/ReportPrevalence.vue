@@ -547,6 +547,25 @@ export default Vue.extend({
             }
           })
         }
+
+        else if (this.routeName == "GenomicsEmbedVariant") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: "GenomicsEmbed",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              alias: queryParams.alias,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        }
       }
     },
     resetZoom() {
@@ -566,6 +585,21 @@ export default Vue.extend({
             alias: params.alias
           },
           query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected
+          }
+        })
+      }
+      else if (this.routeName == "GenomicsEmbedVariant") {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            alias: queryParams.alias,
             loc: queryParams.loc,
             muts: queryParams.muts,
             pango: queryParams.pango,
