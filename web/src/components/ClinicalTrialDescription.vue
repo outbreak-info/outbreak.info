@@ -63,12 +63,12 @@
     <div v-if="(data.citedBy && data.citedBy.length) || citations">
       <template v-if="data.citedBy">
         <div v-for="(citation, idx) in data.citedBy" :key="idx+'by'"  class="text-dark">
-          <Citation :data="citation"/>
+          <ResourceCitation :data="citation"/>
         </div>
       </template>
       <template v-if="citations">
         <div v-for="(citation, idx) in citations" :key="idx"  class="text-dark">
-          <Citation :data="citation"/>
+          <ResourceCitation :data="citation"/>
         </div>
       </template>
     </div>
@@ -89,7 +89,7 @@ import TrialInterventions from "@/components/TrialInterventions.vue";
 import TrialEligibility from "@/components/TrialEligibility.vue";
 import TrialOutcome from "@/components/TrialOutcome.vue";
 import TrialEvents from "@/components/TrialEvents.vue";
-import Citation from "@/components/Citation.vue";
+import ResourceCitation from "@/components/ResourceCitation.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
