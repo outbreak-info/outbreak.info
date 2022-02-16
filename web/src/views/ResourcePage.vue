@@ -270,7 +270,7 @@ export default Vue.extend({
     ResourceDescription,
     ResourceSidebar,
     ClinicalTrialDescription,
-    Citation,
+    ResourceCitation,
     FontAwesomeIcon
   },
   data() {

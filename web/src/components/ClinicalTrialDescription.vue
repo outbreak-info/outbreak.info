@@ -105,7 +105,7 @@ export default {
     TrialEligibility,
     TrialOutcome,
     TrialEvents,
-    Citation
+    ResourceCitation
   },
   data() {
     return {
