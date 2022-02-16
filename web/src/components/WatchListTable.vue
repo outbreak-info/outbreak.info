@@ -65,9 +65,9 @@
 <script>
 import Vue from "vue";
 
-import {
-  getAllLineagesForMutations
-} from "@/api/genomics.js";
+// import {
+//   getAllLineagesForMutations
+// } from "@/api/genomics.js";
 
 export default {
   name: "LocationReports",

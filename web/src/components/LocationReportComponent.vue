@@ -501,7 +501,7 @@ import uniq from "lodash/uniq";
 import uniqBy from "lodash/uniqBy";
 
 export default {
-  name: "LocationReport",
+  name: "LocationReportComponent",
   props: {
     loc: String,
     embedded: Boolean,
