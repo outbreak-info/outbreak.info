@@ -948,7 +948,7 @@ export default Vue.extend({
               .classed("hidden", !this.showCI);
 
             mutGrp.append("path")
-              .attr("class", "prevalence-line")
+              .attr("class", "prevalence-line pointer")
               .style("stroke", d => this.colorScale(d[this.fillVariable]))
               .style("fill", "none")
               .style("stroke-width", "2.5")
@@ -982,6 +982,8 @@ export default Vue.extend({
         this.chart.selectAll(".mutation-trace")
           .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
+          .on("click", d => this.route2Mutation(d));
+          
         this.counts.selectAll(".raw-counts")
           .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
