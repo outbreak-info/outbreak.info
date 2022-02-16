@@ -85,7 +85,7 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "compare" */ "../views/Maps.vue")
+      import( /* webpackChunkName: "maps" */ "../views/Maps.vue")
   },
   {
     path: "/compare",
@@ -152,7 +152,7 @@ const routes = [{
     path: "/niaid",
     name: "NIAID",
     component: () =>
-      import( /* webpackChunkName: "topics" */ "../views/NIAID.vue")
+      import( /* webpackChunkName: "topics-niaid" */ "../views/NIAID.vue")
   },
   {
     path: "/topics/definitions",
