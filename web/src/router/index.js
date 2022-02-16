@@ -209,6 +209,28 @@ const routes = [{
     component: () =>
       import( /* webpackChunkName: "summary" */ "../views/Summary.vue")
   },
+  // embeddable iframe, stripped down combined location/variant reports
+  {
+    path: "/genomics/embed",
+    name: "GenomicsEmbed",
+    props: route => ({
+      type: route.query.type,
+      loc: route.query.loc,
+      pango: route.query.pango,
+      muts: route.query.muts,
+      alias: route.query.alias,
+      variant: route.query.variant,
+      xmin: route.query.xmin,
+      xmax: route.query.xmax,
+      selected: route.query.selected,
+    }),
+    meta: {
+      hideNavigation: true,
+      includeGISAIDLogo: true
+    },
+    component: () =>
+      import( /* webpackChunkName: "genomics-embed" */ "../views/GenomicsEmbed.vue")
+  },
   {
     path: "/epidemiology",
     name: "Epidemiology",

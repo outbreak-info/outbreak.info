@@ -8,7 +8,7 @@
     </label>
     <font-awesome-icon class="fa-lg text-sec pointer" :icon="['far', 'plus-square']" data-toggle="modal" data-target="#change-mutations-modal" />
   </div>
-  <ReportPrevalenceOverlay :data="prevalences" :seqCounts="seqCounts" :epi="epi"  :xmin="xmin" :xmax="xmax" v-if="prevalences && epi" :locationID="locationID" :locationName="locationName" />
+  <ReportPrevalenceOverlay :routeName="routeTo" :data="prevalences" :seqCounts="seqCounts" :epi="epi" :xmin="xmin" :xmax="xmax" v-if="prevalences && epi" :locationID="locationID" :locationName="locationName" />
 
 </div>
 </template>
@@ -48,6 +48,7 @@ export default {
   name: "OverlayLineagePrevalence",
   props: {
     options: Array,
+    routeTo: String,
     seqCounts: Array,
     locationID: String,
     locationName: String,
@@ -101,27 +102,46 @@ export default {
   methods: {
     selectMutation() {
       const queryParams = this.$route.query;
-
-      this.$router.push({
-        name: "LocationReport",
-        params: {
-          disableScroll: true
-        },
-        query: {
-          loc: this.locationID,
-          xmin: queryParams.xmin,
-          xmax: queryParams.xmax,
-          muts: queryParams.muts,
-          alias: queryParams.alias,
-          pango: queryParams.pango,
-          variant: queryParams.variant,
-          selected: this.selectedMutations.map(d => d.label)
-        }
-      })
+      if (this.routeTo == "GenomicsEmbedLocation")
+        this.$router.push({
+          name: "GenomicsEmbed",
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "loc",
+            loc: this.locationID,
+            xmin: queryParams.xmin,
+            xmax: queryParams.xmax,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: this.selectedMutations.map(d => d.label)
+          }
+        })
+      else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            loc: this.locationID,
+            xmin: queryParams.xmin,
+            xmax: queryParams.xmax,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: this.selectedMutations.map(d => d.label)
+          }
+        })
+      }
       // this.updateMutations();
     },
     setMutations() {
-      if (this.selected.length) {
+      if (this.selected && this.selected.length) {
         this.selectedMutations = typeof(this.selected) == "string" ? this.options.filter(d => this.selected == d.label) : this.options.filter(d => uniq(this.selected).includes(d.label));
       } else {
         this.selectedMutations = this.options.slice(0, this.numPreselected);
