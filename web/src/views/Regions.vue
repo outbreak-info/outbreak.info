@@ -16,7 +16,7 @@
             </option>
           </select>
         </h3>
-        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="stackedWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false"
+        <Bargraph :data="total.total" :title="null" :variableObj="variableObj" :includeAxis="true" :loggable="false" :width="bargraphWidth" :height="stackedHeight" :includeTooltips="true" location="World" :log="false" :percapita="false" :transformChart="bargraphTransform"
           :animate="true" id="world-cases" color="#888380" />
         <DataSource class="mx-3" :ids="variableObj.sources" dataType="epidemiology" figureRef="epi-bargraph" :numSvgs="1" :data="total.total" v-if="total" />
       </div>
@@ -153,6 +153,8 @@ export default {
     return {
       stackedWidth: 500,
       stackedHeight: 250,
+      bargraphTransform: null,
+      bargraphWidth: null,
       data: null,
       total: null,
       dataSubscription: null,
@@ -235,6 +237,18 @@ export default {
           this.stackedWidth = this.stackedHeight * whRatio;
         }
       }
+      this.bargraphWidth = 650
+     if(window.innerWidth < 360){
+       this.bargraphTransform = 0.4
+     } else if (window.innerWidth < 390){
+      this.bargraphTransform = 0.45
+     } else if (window.innerWidth < 630){
+     this.bargraphTransform = 0.5
+     } else if (window.innerWidth <790){
+      this.bargraphTransform = 0.8
+     } else {
+       this.bargraphTransform = 1
+     }
     }
   },
   mounted() {
