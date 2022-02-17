@@ -451,14 +451,50 @@ export default Vue.extend({
               selected: queryParams.selected
             }
           })
-        }
-        if (this.routeName == "LocationReport") {
+        } else if (this.routeName == "GenomicsEmbedVariant") {
+          const params = this.$route.params;
+          this.$router.push({
+            name: "GenomicsEmbed",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "var",
+              alias: queryParams.alias,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax),
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              pango: queryParams.pango,
+              selected: queryParams.selected
+            }
+          })
+        } else if (this.routeName == "LocationReport") {
           this.$router.push({
             name: "LocationReport",
             params: {
               disableScroll: true
             },
             query: {
+              loc: queryParams.loc,
+              muts: queryParams.muts,
+              alias: queryParams.alias,
+              pango: queryParams.pango,
+              variant: queryParams.variant,
+              selected: queryParams.selected,
+              xmin: timeFormat("%Y-%m-%d")(newMin),
+              xmax: timeFormat("%Y-%m-%d")(newMax)
+            }
+          })
+        } else if (this.routeName == "GenomicsEmbedLocation") {
+          console.log("ZOOM")
+          this.$router.push({
+            name: "GenomicsEmbed",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "loc",
               loc: queryParams.loc,
               muts: queryParams.muts,
               alias: queryParams.alias,
@@ -672,8 +708,11 @@ export default Vue.extend({
       // }
     },
     tooltipOff() {
-      select(this.$refs.tooltip_prevalence)
+      select(this.$refs.tooltip_mutations)
         .style("display", "none");
+
+      this.chart.selectAll(".mutation-trace")
+        .style("opacity", 1);
 
       selectAll(".raw-counts")
         .style("opacity", 1);
@@ -909,7 +948,7 @@ export default Vue.extend({
               .classed("hidden", !this.showCI);
 
             mutGrp.append("path")
-              .attr("class", "prevalence-line")
+              .attr("class", "prevalence-line pointer")
               .style("stroke", d => this.colorScale(d[this.fillVariable]))
               .style("fill", "none")
               .style("stroke-width", "2.5")
@@ -940,24 +979,40 @@ export default Vue.extend({
         )
 
         // event listener for tooltips
-        this.chart.selectAll(".confidence-interval")
+        this.chart.selectAll(".mutation-trace")
           .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
+          .on("click", d => this.route2Mutation(d));
+          
         this.counts.selectAll(".raw-counts")
           .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
       }
     },
     route2Mutation(d) {
-      this.$router.push({
-        name: "MutationReport",
-        params: d.params,
-        query: {
-          ...d.route,
-          loc: this.locationID,
-          selected: this.locationID
-        }
-      })
+      const params = d.params ? d.params : {};
+      if (this.routeName.includes("GenomicsEmbed")) {
+        this.$router.push({
+          name: "GenomicsEmbed",
+          params: params,
+          query: {
+            type: "var",
+            pango: d.label,
+            loc: this.locationID,
+            selected: this.locationID
+          }
+        })
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          params: params,
+          query: {
+            pango: d.label,
+            loc: this.locationID,
+            selected: this.locationID
+          }
+        })
+      }
     },
     debounce(fn, delay) {
       var timer = null;

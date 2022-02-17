@@ -295,7 +295,7 @@ export default {
         this.filteredData.forEach(d => {
           const filtered = this.data.filter(seq => seq.name.toLowerCase() == d.properties.NAME.toLowerCase());
           if (filtered.length > 0) {
-            filtered.sort((a,b) => b.cum_total_count - a.cum_total_count)
+            filtered.sort((a, b) => b.cum_total_count - a.cum_total_count)
             const seq = filtered[0];
             d[this.variable] = seq[this.variable];
             // filter values with too few values
@@ -540,7 +540,7 @@ export default {
 
     },
     route2Location(id) {
-      if (this.report == "variant") {
+      if (this.report == "MutationReport") {
         const query = this.$route.query;
         const params = this.$route.params;
         let locs = query.loc ? (typeof(query.loc) == "string" ? [query.loc] : query.loc) : [];
@@ -558,7 +558,24 @@ export default {
             loc: locs
           }
         })
-      } else if (this.report == "location") {
+      } else if (this.report == "GenomicsEmbedVariant") {
+          const query = this.$route.query;
+          let locs = query.loc ? (typeof(query.loc) == "string" ? [query.loc] : query.loc) : [];
+          this.$router.push({
+            name: "GenomicsEmbed",
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "var",
+              alias: query.alias,
+              pango: query.pango,
+              muts: query.muts,
+              selected: id,
+              loc: locs
+            }
+          })
+      } else if (this.report == "LocationReport") {
         const query = this.$route.query;
         this.$router.push({
           name: "LocationReport",
@@ -574,7 +591,25 @@ export default {
             xmin: query.xmin
           }
         })
+      } else if (this.report == "GenomicsEmbedLocation") {
+        const query = this.$route.query;
+        this.$router.push({
+          name: "GenomicsEmbed",
+          query: {
+            type: "loc",
+            loc: id,
+            muts: query.muts,
+            alias: query.alias,
+            pango: query.pango,
+            variant: query.variant,
+            selected: query.selected,
+            dark: query.dark,
+            xmax: query.xmax,
+            xmin: query.xmin
+          }
+        })
       }
+
     },
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this

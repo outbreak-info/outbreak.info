@@ -59,9 +59,17 @@
       <!-- VARIANTS -->
       <div class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro">
         <div class="mb-3">
-          <router-link :to="{name: 'SituationReports'}" class="text-light">
-            <h3 class="my-3">Variants</h3>
-          </router-link>
+          <div class="d-flex align-items-center justify-content-between text-light">
+            <router-link :to="{name: 'SituationReports'}" class="text-light">
+              <h3 class="my-3">Variants</h3>
+            </router-link>
+            <small class="ml-2">
+              enabled by data from
+              <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
+                <img src="@/assets/resources/gisaid.png" class="gisaid-small ml-2" alt="GISAID Initiative" />
+              </a>
+            </small>
+          </div>
 
           <div id="resourceBar-text" class="form-text d-block text-light-highlight line-height-1">Explore SARS-CoV-2 lineage, variant, and mutation situation reports</div>
         </div>
@@ -393,28 +401,28 @@
           <div class="w-100 p-3 card">
             <router-link :to="{name: 'SituationReportComparison'}" class="text-dark d-flex flex-column justify-content-between">
               <h5 class="text-uppercase">Compare PANGO Lineages</h5>
-              </router-link>
-              <div class="h-100 d-flex flex-column justify-content-center">
-                <router-link :to="{name: 'SituationReportComparison'}" class="text-dark d-flex flex-column justify-content-between">
+            </router-link>
+            <div class="h-100 d-flex flex-column justify-content-center">
+              <router-link :to="{name: 'SituationReportComparison'}" class="text-dark d-flex flex-column justify-content-between">
                 <img src="@/assets/home/p1_b1351_comparison.png" alt="P.1 / B.1.351 Comparison" class="w-100" />
-                </router-link>
-                <a data-toggle="collapse" href="#compare-lineage-questions" aria-expanded="false" aria-controls="compare-lineage-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with the Lineage Comparison Tool?</a>
+              </router-link>
+              <a data-toggle="collapse" href="#compare-lineage-questions" aria-expanded="false" aria-controls="compare-lineage-questions" role="button" class="line-height-1 mt-3 mb-0">What questions can I answer with the Lineage Comparison Tool?</a>
 
-                <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="compare-lineage-questions">
-                  <li class="mb-2">
-                    What mutations are shared between lineages?
-                  </li>
-                  <li class="mb-2">
-                    How prevalent are Mutations of Interest with lineages?
-                  </li>
-                  <li class="mb-2">
-                    Which lineages contain a particular mutation like S:E484K?
-                  </li>
-                  <li class="mb-2">
-                    Which lineages are prominent in a location recently?
-                  </li>
-                </ul>
-              </div>
+              <ul class="collapse text-highlight fa-sm line-height-1 mt-2" id="compare-lineage-questions">
+                <li class="mb-2">
+                  What mutations are shared between lineages?
+                </li>
+                <li class="mb-2">
+                  How prevalent are Mutations of Interest with lineages?
+                </li>
+                <li class="mb-2">
+                  Which lineages contain a particular mutation like S:E484K?
+                </li>
+                <li class="mb-2">
+                  Which lineages are prominent in a location recently?
+                </li>
+              </ul>
+            </div>
 
           </div>
         </div>
@@ -609,20 +617,21 @@ export default {
       });
     },
     updatePangolin(selected) {
-      if(selected.alias){
+      if (selected.alias) {
         this.$router.push({
           name: "MutationReport",
           params: {
             alias: selected.name.toLowerCase()
           }
         });
-      } else{
-      this.$router.push({
-        name: "MutationReport",
-        query: {
-          pango: selected.name
-        }
-      });}
+      } else {
+        this.$router.push({
+          name: "MutationReport",
+          query: {
+            pango: selected.name
+          }
+        });
+      }
     },
     removeSummary: function(idx) {
       this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
@@ -711,17 +720,17 @@ export default {
         border: none !important;
     }
 }
-.mb-px-5{
+.mb-px-5 {
     padding-left: 3rem;
-     padding-right: 3rem;;
+    padding-right: 3rem;
 
-  }
+}
 @media (max-width:500px) {
-  .mb-px-5{
-    padding-left: 0;
-     padding-right: 0;
+    .mb-px-5 {
+        padding-left: 0;
+        padding-right: 0;
 
-  }
+    }
 }
 .text-light-highlight {
     color: #d5d5d5 !important;

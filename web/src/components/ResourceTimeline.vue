@@ -15,7 +15,7 @@ import Vue from "vue";
 import { select, selectAll, scaleLinear, scaleBand, scaleTime, axisBottom, axisLeft, timeFormat, timeDay, timeWeek, extent, sum, min, max, line } from "d3";
 
 export default Vue.extend({
-  name: "EpiStacked",
+  name: "ResourceTimeline",
   components: {},
   props: {
     data: Array,
