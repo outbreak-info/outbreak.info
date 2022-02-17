@@ -472,9 +472,6 @@ import {
   nest
 } from "d3";
 
-import ReportResources from "@/components/ReportResources.vue";
-import ReportSummary from "@/components/ReportSummary.vue";
-
 // --- font awesome --
 import {
   FontAwesomeIcon
