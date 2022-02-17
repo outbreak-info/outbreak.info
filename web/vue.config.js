@@ -22,7 +22,7 @@ module.exports = {
     const version = process.env.VUE_APP_VERSION;
     config.output
       .filename(`js/[name].[hash:8].${version}.js`)
-      .chunkFilename(`js/[name].[hash:8].${version}.js`)
+      .chunkFilename(`js/[name].[chunkhash:8].${version}.js`)
   },
   configureWebpack: {
     // plugins,
