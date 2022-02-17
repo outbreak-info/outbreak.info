@@ -85,8 +85,6 @@
 <script>
 import Vue from "vue";
 
-import Warning from "@/components/Warning.vue";
-
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
 
