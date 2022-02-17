@@ -41,7 +41,7 @@
     </svg>
   </div>
 
-  
+
 </div>
 </template>
 
@@ -329,7 +329,7 @@ export default Vue.extend({
               return !(i % plotInterval);
             })
           )
-          .tickFormat(timeFormat("%d %b"));
+          .tickFormat(timeFormat("%b %Y"));
 
         select(this.$refs.xAxis).call(this.xAxis);
 
@@ -391,7 +391,7 @@ export default Vue.extend({
             const dateSelector = this.chart
               .selectAll(`.date-annotation_${this.variable}`)
               .data([endDate]);
-            
+
             dateSelector.join(
               enter =>
               enter
@@ -403,7 +403,7 @@ export default Vue.extend({
               .attr("width", d => this.x(d) - this.x(timeDay.offset(d, -14)))
               .attr("y", 0)
               .attr("height", this.height),
-             
+
               update =>
               update
               .attr("x1", d => this.x(d))
@@ -473,7 +473,7 @@ export default Vue.extend({
       if(this.pixiApp.stage.children.length > 0){
        this.pixiApp.stage.removeChildren()
       }
-      
+
        let hoverLine = new SmoothGraphics()
            hoverLine.beginFill(0x000000)
            hoverLine.drawRect(0,0,this.x.bandwidth()*2,40)
@@ -487,8 +487,8 @@ export default Vue.extend({
         hoverCircle.endFill()
         hoverCircle.alpha = 0
         this.pixiApp.stage.addChild(hoverCircle)
-      
-       
+
+
       this.plottedData.filter(t => t[this.variable]).forEach(d =>{
 
        let barchart = new SmoothGraphics();
@@ -499,7 +499,7 @@ export default Vue.extend({
               }
       barchart.beginFill(0x507ea3, 0.55)
       let bar = barchart.lineStyle(0.9, 0x507ea3, 0, 0.5).drawRect(this.x(d.date), this.y(d[this.variable]),this.x.bandwidth(),(this.y(this.yMin) - this.y(d[this.variable])))
-     
+
       barchart.endFill();
         if (this.includeTooltips) {
        bar.interactive = true
@@ -538,14 +538,14 @@ export default Vue.extend({
 
             hoverLine.alpha = 0
             hoverCircle.alpha = 0
-          
+
         })
         }
       this.pixiApp.stage.addChild(barchart)
       })
      }
     },
-  
+
     changeScale: function() {
       this.isLogY = !this.isLogY;
       this.$router.replace({
@@ -580,7 +580,7 @@ export default Vue.extend({
     this.setupPlot();
    this.setupBarChart()
     this.updatePlot();
-    
+
   }
 });
 </script>

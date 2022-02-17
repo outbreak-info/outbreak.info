@@ -4,10 +4,27 @@
   <!-- IMPORTANT: when editing the header, make sure you edit the footer site map below too -->
   <header id="outbreak-header">
     <nav class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero">
-      <router-link to="/" class="navbar-brand no-underline">
+
+      <router-link to="/" class="navbar-brand no-underline" v-if="!$route.meta.hideNavigation">
         <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
         outbreak.info
       </router-link>
+
+      <!-- Add hard coded link to outbreak.info for the minimalistic nav bar for embeds -->
+      <div class="d-flex w-100 align-items-center justify-content-between" v-else>
+        <a href="https://outbreak.info" class="navbar-brand no-underline">
+          <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+          outbreak.info
+        </a>
+
+        <small class="ml-2 text-light" v-if="$route.meta.includeGISAIDLogo">
+          Enabled by data from
+          <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
+            <img src="@/assets/resources/gisaid.png" class="gisaid-md ml-2" alt="GISAID Initiative" />
+          </a>
+        </small>
+      </div>
+
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -109,7 +126,7 @@
 
 
   <!-- FOOTER -->
-  <footer id="outbreak-footer" class="bg-main__darker pt-4">
+  <footer id="outbreak-footer" class="bg-main__darker pt-4" v-if="!$route.meta.hideNavigation">
     <!-- sitemap -->
     <div class="w-100 d-flex justify-content-between text-left text-muted row border-bottom navbar-dark m-0 px-3 pb-3" id="footer-sitemap">
       <!-- epi group -->

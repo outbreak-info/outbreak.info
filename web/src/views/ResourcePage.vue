@@ -185,7 +185,7 @@
         <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('based on')">
           <h6 class="m-0 mb-2">Based on</h6>
           <div v-if="data.isBasedOn && data.isBasedOn.length">
-            <Citation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx" />
+            <ResourceCitation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx" />
           </div>
           <div v-else>
             <small>not specified</small>
@@ -196,7 +196,7 @@
         <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('cited by')">
           <h6 class="m-0 mb-2">Cited by</h6>
           <div v-if="data.citedBy && data.citedBy.length">
-            <Citation :data="item" v-for="(item, idx) in data.citedBy" :key="idx" />
+            <ResourceCitation :data="item" v-for="(item, idx) in data.citedBy" :key="idx" />
           </div>
           <div v-else>
             <small>not specified</small>
@@ -207,7 +207,7 @@
         <div id="related" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('related')">
           <h6 class="m-0 mb-2">Related resources</h6>
           <div v-if="data.relatedTo && data.relatedTo.length">
-            <Citation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx" />
+            <ResourceCitation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx" />
           </div>
           <div v-else>
             <small>not specified</small>
@@ -262,7 +262,7 @@ import cloneDeep from "lodash/cloneDeep";
 import ResourceDescription from "@/components/ResourceDescription.vue";
 import ResourceSidebar from "@/components/ResourceSidebar.vue";
 import ClinicalTrialDescription from "@/components/ClinicalTrialDescription.vue";
-import Citation from "@/components/Citation.vue";
+import ResourceCitation from "@/components/ResourceCitation.vue";
 
 export default Vue.extend({
   name: "ResourcePage",
@@ -270,7 +270,7 @@ export default Vue.extend({
     ResourceDescription,
     ResourceSidebar,
     ClinicalTrialDescription,
-    Citation,
+    ResourceCitation,
     FontAwesomeIcon
   },
   data() {
