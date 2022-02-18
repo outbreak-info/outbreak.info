@@ -1,4 +1,35 @@
 VOC:
+
+  - who_name: Omicron
+    pangolin_lineage: B.1.1.529
+    nextstrain_clade: 21K, 21L
+    gisaid_clade: GR/484A
+    dateModified: 2021-11-26
+    location_first_identified: South Africa
+    loc:
+      - ZAF
+      - GBR
+      - USA
+    selected: ZAF
+    variantType: Variant of Concern
+    classifications:
+        - author: WHO
+          dateModified: 2021-11-26
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VOC
+        - author: CDC
+          dateModified: 2021-12-01
+          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+          variantType: VOC
+        - author: PHE
+          dateModified: 2021-12-03
+          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf
+          variantType: VOC
+        - author: ECDC
+          dateModified: 2021-11-26
+          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+          variantType: VOC
+
   - who_name: Delta
     pangolin_lineage: B.1.617.2
     nextstrain_clade: 21A/S:478K
@@ -29,36 +60,6 @@ VOC:
           variantType: VOC
         - author: ECDC
           dateModified: 2021-05-24
-          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-          variantType: VOC
-
-  - who_name: Omicron
-    pangolin_lineage: B.1.1.529
-    nextstrain_clade: 21K, 21L
-    gisaid_clade: GR/484A
-    dateModified: 2021-11-26
-    location_first_identified: South Africa
-    loc:
-      - ZAF
-      - GBR
-      - USA
-    selected: ZAF
-    variantType: Variant of Concern
-    classifications:
-        - author: WHO
-          dateModified: 2021-11-26
-          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VOC
-        - author: CDC
-          dateModified: 2021-12-01
-          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-          variantType: VOC
-        - author: PHE
-          dateModified: 2021-12-03
-          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf
-          variantType: VOC
-        - author: ECDC
-          dateModified: 2021-11-26
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOC
 
