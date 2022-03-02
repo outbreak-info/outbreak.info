@@ -41,6 +41,8 @@
     </svg>
   </div>
 
+  <!-- Link location variant reports -->
+<router-link v-if="location_id" class="btn btn-main mt-3" :to="{name: 'LocationReports', query: {loc: location_id}}">View {{title}} Variant Report</router-link>
 
 </div>
 </template>
@@ -125,7 +127,8 @@ export default Vue.extend({
       chart: null,
       average: null,
       noRollinAvg: true,
-      pixiApp: null
+      pixiApp: null,
+      location_id: null
     };
   },
   computed: {
@@ -209,6 +212,8 @@ export default Vue.extend({
       }
     },
     prepData: function() {
+      this.location_id = this.data[0].admin_level >= 0 ? this.data[0].location_id : null;
+      
       if (this.percapita) {
         this.variable = this.variable.includes("_per_100k") || this.variableObj.percapita === false ? this.variable : this.variable + "_per_100k";
       } else {
