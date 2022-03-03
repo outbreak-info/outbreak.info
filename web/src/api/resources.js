@@ -15,7 +15,8 @@ import store from "@/store";
 
 import {
   timeParse,
-  timeFormat, format
+  timeFormat,
+  format
 } from "d3";
 
 import cloneDeep from "lodash/cloneDeep";
@@ -117,7 +118,7 @@ export function getResources(
       return results;
     }),
     catchError(e => {
-      console.log("%c Error in getting resource metadata!", "color: red");
+      console.log("%c Error in getting all resource metadata!", "color: red");
       console.log(e);
       return from([]);
     }),
@@ -162,7 +163,7 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
       };
     }),
     catchError(e => {
-      console.log("%c Error in getting resource metadata!", "color: red");
+      console.log("%c Error in getting resource metadata array!", "color: red");
       console.log(e);
       return from([]);
     })
@@ -184,9 +185,12 @@ export function getResourceMetadata(apiUrl, id) {
   ).pipe(
     pluck("data", "hits"),
     map(results => {
+      console.log(results)
       const metadata = results[0];
 
-      delete metadata["_score"];
+      if (metadata) {
+        delete metadata["_score"];
+      }
 
       return metadata;
     }),
@@ -439,8 +443,11 @@ export function getResourceTotal(apiUrl) {
   )).pipe(
     pluck("data", "total"),
     map(total => {
-      const rounded = (Math.floor(total/1000)*1000)
-      return({floor: format(",")(rounded), total: total})
+      const rounded = (Math.floor(total / 1000) * 1000)
+      return ({
+        floor: format(",")(rounded),
+        total: total
+      })
     })
   )
 }
