@@ -190,7 +190,14 @@
 
       <!-- Simplified form for embedded reports -->
       <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
-        <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
+        <div class="d-flex align-items-center">
+          <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
+          <a href="https://outbreak.info" class="ml-4 navbar-brand no-underline text-light">
+            <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+            outbreak.info
+          </a>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
 

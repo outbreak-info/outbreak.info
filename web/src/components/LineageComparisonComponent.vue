@@ -60,7 +60,13 @@
       <div class="d-flex flex-wrap justify-content-between align-items-center">
         <div class="d-flex flex-column align-items-start">
 
-          <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
+          <div class="d-flex align-items-center">
+            <h1 class="m-0 font-weight-bold comparison-header">Lineage Comparison</h1>
+            <a href="https://outbreak.info" class="ml-3 navbar-brand no-underline text-light">
+              <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+              outbreak.info
+            </a>
+          </div>
 
 
 

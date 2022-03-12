@@ -117,13 +117,20 @@
   <!-- Lineage comparison component -->
   <LineageComparisonComponent :embedded="true" routeTo="GenomicsEmbed" v-if="selectedReportType == 'comp'" />
 
-  <Logos />
+  <footer class="bg-main__darker">
+  <div class="d-flex p-2 mt-4 w-100 align-items-center justify-content-between">
+    <a href="https://outbreak.info" class="navbar-brand text-light no-underline">
+      <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+      outbreak.info
+    </a>
+  </div>
+  </footer>
+
 </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Logos from "@/components/Logos.vue";
 
 import {
   findPangolin,
@@ -151,8 +158,7 @@ export default {
     SituationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/SituationReportComponent.vue"),
     LocationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/LocationReportComponent.vue"),
     LineageComparisonComponent: () => import( /* webpackPrefetch: true */ "@/components/LineageComparisonComponent.vue"),
-    FontAwesomeIcon,
-    Logos
+    FontAwesomeIcon
   },
   props: {
     type: String,
