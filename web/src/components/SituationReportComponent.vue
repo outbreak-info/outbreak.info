@@ -581,7 +581,11 @@ export default {
         this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
     },
     locationLabel() {
-      return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
+      if (this.selectedLocation) {
+        return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
+      } else {
+        return (null)
+      }
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
@@ -827,7 +831,6 @@ export default {
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
-          console.log(results)
           this.hasData = true;
 
           // selected locations
