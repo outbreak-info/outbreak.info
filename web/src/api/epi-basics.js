@@ -70,13 +70,14 @@ export function lookupEpiLocations(apiUrl, locationArr) {
 export function findEpiLocation(apiUrl, query, num2Return = 5) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,country_name,state_name`
+      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,admin1,admin2,country_name`
     )
   ).pipe(
     pluck("data", "hits"),
     map(results => {
       results.forEach(d => {
-        d["label"] = d.state_name ? `${d.name}, ${d.state_name}` : d.country_name && d.country_name != d.name ? `${d.name}, ${d.country_name}` : d.name
+      d["label"] = d.admin1 && d.admin1 != 'None' ? `${d.admin2}, ${d.admin1}` : d.country_name && d.country_name != d.name ? `${d.name}, ${d.country_name}` : d.name
+
       })
       return (results)
     }),
