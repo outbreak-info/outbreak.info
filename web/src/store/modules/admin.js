@@ -94,6 +94,10 @@ const state = {
       img: "mark.jpg"
     },
     {
+      name: "Karina Zaiets",
+      img: "karina.jpg"
+    },
+    {
       name: "Jerry Zhou",
       img: "jerry.jpg"
     }
