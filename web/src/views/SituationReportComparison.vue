@@ -1,6 +1,6 @@
 <template>
 <div>
-  <LineageComparisonComponent />
+  <LineageComparisonComponent :pango="pango" :nthresh="nthresh" :dark="dark" :sub="sub" :gene="gene" />
 </div>
 </template>
 
