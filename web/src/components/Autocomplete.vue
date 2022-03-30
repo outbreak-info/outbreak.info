@@ -181,7 +181,6 @@ export default Vue.extend({
       this.arrowCounter = -1;
     },
     onBackspace() {
-      console.log(this.selected)
       if (this.search === "") {
         this.search = this.selected.pop();
       }
