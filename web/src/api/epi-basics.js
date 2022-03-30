@@ -70,13 +70,23 @@ export function lookupEpiLocations(apiUrl, locationArr) {
 export function findEpiLocation(apiUrl, query, num2Return = 5) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,country_name,state_name`
+      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,admin1,admin2,admin_level,country_name`
     )
   ).pipe(
     pluck("data", "hits"),
     map(results => {
       results.forEach(d => {
-        d["label"] = d.state_name ? `${d.name}, ${d.state_name}` : d.country_name && d.country_name != d.name ? `${d.name}, ${d.country_name}` : d.name
+        let location_label = d.name;
+        if (d.admin_level === 2 && d.admin2 && d.admin2 != 'None') {
+          location_label = d.name === "Kansas City" || d.name === "New York" ? `${d.name}, ${d.country_name}` : `${d.admin2} County, ${d.admin1}`;
+        } else if (d.admin_level === 1 && d.admin1 && d.admin1 != "None") {
+          location_label = `${d.name}, ${d.country_name}`;
+        } else if (d.admin_level === 1.5) {
+          location_label = `${d.name} Metro, ${d.admin1}, ${d.country_name}`;
+        }
+
+        d["label"] = location_label;
+
       })
       return (results)
     }),
