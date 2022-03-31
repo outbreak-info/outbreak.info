@@ -487,7 +487,6 @@ export default Vue.extend({
             }
           })
         } else if (this.routeName == "GenomicsEmbedLocation") {
-          console.log("ZOOM")
           this.$router.push({
             name: "GenomicsEmbed",
             params: {
@@ -983,7 +982,7 @@ export default Vue.extend({
           .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
           .on("click", d => this.route2Mutation(d));
-          
+
         this.counts.selectAll(".raw-counts")
           .on("mousemove", d => this.tooltipOnMutation(d))
           .on("mouseleave", () => this.tooltipOff())
