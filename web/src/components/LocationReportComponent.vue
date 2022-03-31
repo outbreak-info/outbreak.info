@@ -748,6 +748,7 @@ export default {
     this.debounceWindowChange = debounce(this.updateWindow, 700);
   },
   mounted() {
+    this.dayThresh = +this.recentWindow;
     this.darkMode = this.dark == "true" || !!(this.dark) && this.dark != "false";
 
     const ofInterest = getBadMutations(true);
@@ -1060,11 +1061,11 @@ export default {
       // methods
       queryLocation: null,
       // variables
-      recentWindow: "60",
+      recentWindow: "180",
       recentMin: null,
       otherThresh: 0.03,
       ndayThresh: 5,
-      dayThresh: 60,
+      dayThresh: null,
       totalThresh: 25, // threshold for "unreliable estimate" in the table
       // location info
       selectedLocation: null,
