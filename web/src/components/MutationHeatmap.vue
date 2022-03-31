@@ -140,8 +140,7 @@ export default Vue.extend({
       return this.dark ? "#efefef" : "#555555";
     },
     routeToName() {
-      console.log(this.routeTo)
-      return this.routeTo == "GenomicsEmbedLocation" ? "GenomicsEmbed" : this.routeTo == "LocationReport" ? "MutationReport": this.routeTo;
+      return this.routeTo == "GenomicsEmbedLocation" ? "GenomicsEmbed" : this.routeTo == "LocationReport" ? "MutationReport" : this.routeTo;
     }
   },
   data() {
