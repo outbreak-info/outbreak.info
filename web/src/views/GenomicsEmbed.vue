@@ -112,18 +112,19 @@
   <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && (pango || alias || muts)" />
 
   <!-- Location report component -->
-  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedLocation" v-if="selectedReportType == 'loc' && loc" />
+  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedLocation"
+    v-if="selectedReportType == 'loc' && loc" />
 
   <!-- Lineage comparison component -->
   <LineageComparisonComponent :embedded="true" routeTo="GenomicsEmbed" v-if="selectedReportType == 'comp'" />
 
   <footer class="bg-main__darker">
-  <div class="d-flex p-2 mt-4 w-100 align-items-center justify-content-between">
-    <a href="https://outbreak.info" class="navbar-brand text-light no-underline">
-      <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
-      outbreak.info
-    </a>
-  </div>
+    <div class="d-flex p-2 mt-4 w-100 align-items-center justify-content-between">
+      <a href="https://outbreak.info" class="navbar-brand text-light no-underline">
+        <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+        outbreak.info
+      </a>
+    </div>
   </footer>
 
 </div>
@@ -150,6 +151,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faAngleDoubleRight, faSearch);
+
+import isEqual from "lodash/isEqual";
 
 export default {
   name: "GenomicsEmbed",
@@ -183,19 +186,11 @@ export default {
     };
   },
   watch: {
-    selectedReportType(newVal, oldVal) {
-      if (newVal !== oldVal && oldVal) {
-        const newSelected = newVal == "loc" ? [] : null;
-
-        this.$router.push({
-          name: "GenomicsEmbed",
-          query: {
-            type: newVal,
-            selected: newSelected
-          }
-        })
+    '$route.query': function(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+      this.selectedReportType = this.type;
       }
-    }
+    },
   },
   computed: {},
   methods: {
