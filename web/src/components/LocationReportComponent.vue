@@ -521,7 +521,7 @@ export default {
     xmax: String,
     dark: {
       type: [String, Boolean],
-      default: true
+      default: false
     },
     routeTo: {
       type: String,
