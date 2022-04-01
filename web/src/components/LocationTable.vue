@@ -51,11 +51,11 @@
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
         <td class="text-left line-height-1">
           <router-link class="variant-table" :to="{name: 'GenomicsEmbed', query: {type: 'var', alias: lineage.params.alias, selected: lineage.route.selected, pango: lineage.route.pango, muts: lineage.route.muts }}" :data-tippy-info="lineage.tooltip"
-            v-if="routeTo == 'GenomicsEmbedLocation' && lineage.params">
+            v-if="routeTo == 'GenomicsEmbedLocation' && lineage.params && lineage.params.alias">
             {{ lineage.label }}
           </router-link>
           <router-link class="variant-table" :to="{name: 'GenomicsEmbed', query: {type: 'var', selected: lineage.route.selected, pango: lineage.route.pango, muts: lineage.route.muts }}" :data-tippy-info="lineage.tooltip"
-            v-if="routeTo == 'GenomicsEmbedLocation'">
+            v-else-if="routeTo == 'GenomicsEmbedLocation'">
             {{ lineage.label }}
           </router-link>
           <router-link class="variant-table" :to="{name: 'MutationReport', params: lineage.params, query: lineage.route }" :data-tippy-info="lineage.tooltip" v-else>
