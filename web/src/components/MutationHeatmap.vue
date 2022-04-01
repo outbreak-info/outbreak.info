@@ -84,7 +84,7 @@ export default Vue.extend({
     locationID: String,
     dark: {
       type: Boolean,
-      default: true
+      default: false
     },
     moc: {
       type: Array,

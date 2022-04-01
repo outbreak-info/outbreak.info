@@ -526,7 +526,7 @@ export default {
     },
     dark: {
       type: [String, Boolean],
-      default: true
+      default: false
     },
     sub: {
       type: [String, Boolean],
