@@ -48,7 +48,8 @@
       <tbody class="checkbook">
         <tr v-for="(location, lIdx) in locationTotals" :key="lIdx" :class="{'font-weight-bold' : location.location_id == selected}">
           <td>
-            <router-link class="bright-hyperlink" :to="{name: 'LocationReport', query:{ loc: location.location_id, ... locationQueryParams }}" v-if="location.name != 'Worldwide'">{{ location.name }}</router-link>
+            <router-link class="bright-hyperlink" :to="{name: 'GenomicsEmbed', query:{ type: 'loc', loc: location.location_id, ... locationQueryParams }}" v-if="location.name != 'Worldwide' && routeTo == 'GenomicsEmbedVariant'">{{ location.name }}</router-link>
+            <router-link class="bright-hyperlink" :to="{name: 'LocationReport', query:{ loc: location.location_id, ... locationQueryParams }}" v-else-if="location.name != 'Worldwide'">{{ location.name }}</router-link>
             <span class="bright-hyperlink" v-else>{{ location.name }}</span>
           </td>
           <td class="text-center">
@@ -131,6 +132,10 @@ export default {
     selected: String,
     dateUpdated: String,
     locationQueryParams: Object,
+    routeTo: {
+      type: String,
+      default: "MutationReport"
+    },
     totalLineage: String,
     mutationName: String,
     reportType: String,
