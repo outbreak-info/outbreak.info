@@ -721,20 +721,39 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.selectedPango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      }
+
       this.getData();
     },
     addVOIs(clear = true) {
@@ -749,40 +768,59 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.selectedPango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      }
+
       this.getData();
     },
     updateGenes() {
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.pango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
-    },
-    changeThreshold() {
-      if (this.prevalenceThreshold) {
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.pango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -797,26 +835,80 @@ export default {
             dark: this.darkMode
           }
         })
+      }
+    },
+    changeThreshold() {
+      if (this.prevalenceThreshold) {
+        if (this.routeTo == "GenomicsEmbed") {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "comp",
+              pango: this.pango,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        } else {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              pango: this.pango,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        }
 
         this.getData();
       }
     },
     changeCountThreshold() {
       if (this.countThreshold) {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true
-          },
-          query: {
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode
-          }
-        })
+        if (this.routeTo == "GenomicsEmbed") {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "comp",
+              pango: this.pango,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        } else {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              pango: this.pango,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        }
         // reapply the filter
         this.filteredMutationHeatmap = this.mutationHeatmap.map(gene => {
           return ({
@@ -830,21 +922,38 @@ export default {
     },
     changeInclSublineages() {
       this.selectedPango = this.pango;
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.pango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
-
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.pango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.pango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      }
       this.getData();
     },
     updateLocation(location) {
@@ -860,20 +969,38 @@ export default {
       })
     },
     routeDark() {
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.pango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.pango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.pango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      }
     },
     prepResults(results) {
       this.mutationHeatmap = results.data;
@@ -904,20 +1031,38 @@ export default {
 
         this.prepResults(results);
 
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true
-          },
-          query: {
-            pango: results.yDomain,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode
-          }
-        })
+        if (this.routeTo == "GenomicsEmbed") {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "comp",
+              pango: results.yDomain,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        } else {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              pango: results.yDomain,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        }
 
         // reset / clear
         this.selectedMutationQuery = null;
@@ -933,20 +1078,38 @@ export default {
         }, 5000);
         this.prepResults(results);
 
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true
-          },
-          query: {
-            pango: results.yDomain,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode
-          }
-        })
+        if (this.routeTo == "GenomicsEmbed") {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              type: "comp",
+              pango: results.yDomain,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        } else {
+          this.$router.push({
+            name: this.routeTo,
+            params: {
+              disableScroll: true
+            },
+            query: {
+              pango: results.yDomain,
+              gene: this.selectedGenes,
+              threshold: this.prevalenceThreshold,
+              nthresh: this.countThreshold,
+              sub: this.includeSublineages,
+              dark: this.darkMode
+            }
+          })
+        }
 
         // reset / clear
         this.selectedLocation = null;
@@ -975,20 +1138,37 @@ export default {
         this.showSnackbar = false;
       }, 5000);
 
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.selectedPango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          sub: true,
-          dark: this.darkMode
-        }
-      })
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            sub: true,
+            dark: this.darkMode
+          }
+        })
 
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            sub: true,
+            dark: this.darkMode
+          }
+        })
+      }
       // reset / clear
       this.selectedWHO = null;
       this.getData();
@@ -1003,54 +1183,108 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.selectedPango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      }
 
       this.getData();
     },
     clearPango() {
       this.selectedPango = [];
-      this.$router.push({
-        name: this.routeTo,
-        query: {
-          pango: [],
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          query: {
+            type: "comp",
+            pango: [],
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          query: {
+            pango: [],
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      }
+
       this.mutationHeatmap = null;
     },
     deletePango(idx) {
       this.selectedPango.splice(idx, 1);
-      this.$router.push({
-        name: this.routeTo,
-        params: {
-          disableScroll: true
-        },
-        query: {
-          pango: this.selectedPango,
-          gene: this.selectedGenes,
-          threshold: this.prevalenceThreshold,
-          nthresh: this.countThreshold,
-          sub: this.includeSublineages,
-          dark: this.darkMode
-        }
-      })
+
+      if (this.routeTo == "GenomicsEmbed") {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            type: "comp",
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true
+          },
+          query: {
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            nthresh: this.countThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode
+          }
+        })
+      }
+
       this.getData();
     }
   }
