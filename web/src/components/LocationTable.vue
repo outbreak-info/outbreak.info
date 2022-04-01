@@ -41,7 +41,8 @@
       </tr>
       <tr class="border-top border-bottom"
         :class="{ 'custom': lineageGroup.key.includes('Custom'), 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'vum': lineageGroup.key == 'Variant under Monitoring',  'moi': lineageGroup.key == 'Mutation of Interest', 'voi': lineageGroup.key == 'Variant of Interest'}">
-        <td colspan="6" :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'vum': lineageGroup.key == 'Variant under Monitoring',  'voi': lineageGroup.key == 'Variant of Interest'}">
+        <td colspan="6"
+          :class="{ 'voc': lineageGroup.key == 'Variant of Concern',  'moc': lineageGroup.key == 'Mutation of Concern',  'moi': lineageGroup.key == 'Mutation of Interest',  'vum': lineageGroup.key == 'Variant under Monitoring',  'voi': lineageGroup.key == 'Variant of Interest'}">
           {{lineageGroup.key}}
           <!-- <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" v-if="lineageGroup.key.includes('Custom')" /> -->
         </td>
@@ -49,12 +50,17 @@
       </tr>
       <tr class="checkbook" v-for="(lineage, lIdx) in lineageGroup.values" :key="lIdx">
         <td class="text-left line-height-1">
-          <router-link class="variant-table" :to="{name: 'MutationReport', params: lineage.params, query: lineage.route }" :data-tippy-info="lineage.tooltip">
+          <router-link class="variant-table" :to="{name: 'GenomicsEmbed', query: {type: 'var', alias: lineage.params.alias, selected: lineage.route.selected, pango: lineage.route.pango, muts: lineage.route.muts }}" :data-tippy-info="lineage.tooltip"
+            v-if="routeTo == 'GenomicsEmbedLocation' && lineage.params">
             {{ lineage.label }}
           </router-link>
-          <!-- <small class="text-muted pointer variant-expand" :data-tippy-info="`show ${lineage.label} sublineages`" @click="showSublineages(lineage)">
-            <font-awesome-icon class="fa-sm ml-1" :icon="['far', 'plus-square']" />
-          </small> -->
+          <router-link class="variant-table" :to="{name: 'GenomicsEmbed', query: {type: 'var', selected: lineage.route.selected, pango: lineage.route.pango, muts: lineage.route.muts }}" :data-tippy-info="lineage.tooltip"
+            v-if="routeTo == 'GenomicsEmbedLocation'">
+            {{ lineage.label }}
+          </router-link>
+          <router-link class="variant-table" :to="{name: 'MutationReport', params: lineage.params, query: lineage.route }" :data-tippy-info="lineage.tooltip" v-else>
+            {{ lineage.label }}
+          </router-link>
         </td>
         <td>
           {{ lineage.lineage_count_formatted }}
@@ -109,7 +115,11 @@ export default {
   props: {
     data: Array,
     locationID: String,
-    locationName: String
+    locationName: String,
+    routeTo: {
+      type: String,
+      default: "MutationReport"
+    }
   },
   mounted() {
     tippy(".variant-table", {
