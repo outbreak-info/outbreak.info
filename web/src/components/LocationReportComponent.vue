@@ -257,7 +257,7 @@
                 <h5 class="mb-0">Common lineages</h5>
                 <small class="text-muted">Prevalence over last {{recentWindow}} days</small>
                 <div class="d-flex align-items-start" :class="{'flex-wrap' : mediumScreen}">
-                  <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
+                  <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" :routeTo="routeTo" />
                 </div>
               </section>
             </template>
@@ -313,7 +313,7 @@
               </span>
             </div>
 
-            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" :dark="darkMode" />
+            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" :dark="darkMode" :routeTo="routeTo" />
           </div>
           <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
         </div>
@@ -411,7 +411,7 @@
           </button>
           <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
         </div>
-        <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
+        <LocationTable :routeTo = "routeTo" :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
       </section>
 
 
@@ -521,7 +521,7 @@ export default {
     xmax: String,
     dark: {
       type: [String, Boolean],
-      default: true
+      default: false
     },
     routeTo: {
       type: String,

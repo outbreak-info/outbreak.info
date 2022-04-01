@@ -528,9 +528,7 @@ export default Vue.extend({
             selected: queryParams.selected
           }
         })
-      }
-
-      else if (this.routeName == "GenomicsEmbedVariant") {
+      } else if (this.routeName == "GenomicsEmbedVariant") {
         const params = this.$route.params;
         this.$router.push({
           name: "GenomicsEmbed",
@@ -546,9 +544,7 @@ export default Vue.extend({
             selected: queryParams.selected
           }
         })
-      }
-
-      else if (this.routeName == "LocationReport") {
+      } else if (this.routeName == "LocationReport") {
         this.$router.push({
           name: "LocationReport",
           params: {
@@ -563,9 +559,7 @@ export default Vue.extend({
             selected: queryParams.selected
           }
         })
-      }
-
-      else if (this.routeName == "GenomicsEmbedLocation") {
+      } else if (this.routeName == "GenomicsEmbedLocation") {
         this.$router.push({
           name: "GenomicsEmbed",
           params: {
@@ -743,15 +737,28 @@ export default Vue.extend({
     route2Mutation(d) {
       if (d.toLowerCase() != "other") {
         const queryParams = this.$route.query;
-        const selected = this.routeName == "LocationReport" ? queryParams.loc : queryParams.selected;
-        this.$router.push({
-          name: "MutationReport",
-          query: {
-            pango: d,
-            loc: queryParams.loc,
-            selected: selected
-          }
-        })
+        console.log(this.routeName)
+        if (this.routeName.includes("GenomicsEmbed")) {
+          this.$router.push({
+            name: "GenomicsEmbed",
+            query: {
+              type: "var",
+              pango: d,
+              loc: queryParams.loc,
+              selected: queryParams.loc
+            }
+          })
+        } else {
+          const selected = this.routeName == "LocationReport" ? queryParams.loc : queryParams.selected;
+          this.$router.push({
+            name: "MutationReport",
+            query: {
+              pango: d,
+              loc: queryParams.loc,
+              selected: selected
+            }
+          })
+        }
       }
     },
     debounce(fn, delay) {
