@@ -188,7 +188,7 @@ export default {
   watch: {
     '$route.query': function(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
-        this.selectedReportType = this.type;
+        this.selectedReportType = this.type ? this.type : "var";
       }
     },
   },
