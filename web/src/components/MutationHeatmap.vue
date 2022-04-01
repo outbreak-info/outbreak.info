@@ -140,7 +140,7 @@ export default Vue.extend({
       return this.dark ? "#efefef" : "#555555";
     },
     routeToName() {
-      return this.routeTo == "GenomicsEmbedLocation" ? "GenomicsEmbed" : this.routeTo == "LocationReport" ? "MutationReport" : this.routeTo;
+      return this.routeTo.includes("GenomicsEmbed") ? "GenomicsEmbed" : "MutationReport";
     }
   },
   data() {
@@ -404,16 +404,28 @@ export default Vue.extend({
     },
     route2Lineage(pango, is_alias) {
       if (is_alias) {
-        this.$router.push({
-          name: this.routeToName,
-          params: {
-            alias: pango.toLowerCase()
-          },
-          query: {
-            loc: this.locationID,
-            selected: this.locationID
-          }
-        })
+        if(this.routeToName == "GenomicsEmbed"){
+          this.$router.push({
+            name: this.routeToName,
+            query: {
+              alias: pango,
+              loc: this.locationID,
+              selected: this.locationID
+            }
+          })
+        } else {
+          this.$router.push({
+            name: this.routeToName,
+            params: {
+              alias: pango.toLowerCase()
+            },
+            query: {
+              loc: this.locationID,
+              selected: this.locationID
+            }
+          })
+        }
+
       } else {
         this.$router.push({
           name: this.routeToName,
