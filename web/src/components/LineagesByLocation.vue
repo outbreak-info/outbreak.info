@@ -3,6 +3,10 @@
   <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
     <h5 class="m-0">{{plotTitle}}</h5>
     <div class="d-flex justify-content-end">
+      <button class="btn btn-accent-outline text-highlight fa-sm" @click="resetZoom">all time</button>
+      <button class="btn btn-accent-outline text-highlight fa-sm"  @click="zoomTo(180)">last 6 months</button>
+      <small><button class="btn btn-accent-outline text-highlight fa-sm" @click="zoomTo(42)">last 6 weeks</button>
+      </small>
       <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
         <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
       </button>
@@ -505,6 +509,9 @@ export default Vue.extend({
       }
 
     },
+    zoomTo(days) {
+      console.log(days)
+    },
     resetZoom() {
       this.brushRef.call(this.brush.move, null);
       const queryParams = this.$route.query;
@@ -528,9 +535,7 @@ export default Vue.extend({
             selected: queryParams.selected
           }
         })
-      }
-
-      else if (this.routeName == "GenomicsEmbedVariant") {
+      } else if (this.routeName == "GenomicsEmbedVariant") {
         const params = this.$route.params;
         this.$router.push({
           name: "GenomicsEmbed",
@@ -546,9 +551,7 @@ export default Vue.extend({
             selected: queryParams.selected
           }
         })
-      }
-
-      else if (this.routeName == "LocationReport") {
+      } else if (this.routeName == "LocationReport") {
         this.$router.push({
           name: "LocationReport",
           params: {
@@ -563,9 +566,7 @@ export default Vue.extend({
             selected: queryParams.selected
           }
         })
-      }
-
-      else if (this.routeName == "GenomicsEmbedLocation") {
+      } else if (this.routeName == "GenomicsEmbedLocation") {
         this.$router.push({
           name: "GenomicsEmbed",
           params: {

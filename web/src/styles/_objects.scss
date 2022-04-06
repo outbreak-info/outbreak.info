@@ -192,10 +192,9 @@ button.chip.to-add:hover {
 
   &-outline {
     background: transparent;
-    border: darken($warning-color, 5%) 2px solid !important;
+    border: darken($warning-color, 5%) 1px solid !important;
     color: $warning-color;
     transition: all 0.5s;
-    text-transform: uppercase;
 
     &:hover {
       background: $warning-color !important;
