@@ -24,7 +24,8 @@
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
-              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
+              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb"
+              @keydown.enter.prevent="onEnter" type="text" v-model="searchInput" />
             </div>
           </form>
 
