@@ -123,7 +123,7 @@
     },
     {
       "q": "Where does the data come from? And how often is it updated?",
-      "a": "COVID-19 cases and deaths data are sourced from Johns Hopkins University, The New York Times, and The COVID Tracking Project.  <a href='https://outbreak.info/sources'>Click here for more about our sources</a>. Data is aggregated daily."
+      "a": "COVID-19 cases and deaths data are sourced from Johns Hopkins University.  <a href='https://outbreak.info/sources'>Click here for more about our sources</a>. Data is aggregated daily."
     },
     {
       "q": "Is the data accurate?",

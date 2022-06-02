@@ -120,7 +120,7 @@ export default {
     },
     sourceString: {
       type: String,
-      default: "Johns Hopkins University Center for Systems Science and Engineering (non-U.S. data); The New York Times (U.S. data); The COVID Tracking Project (testing data), updated daily."
+      default: "Johns Hopkins University Center for Systems Science and Engineering;The COVID Tracking Project (testing data), updated daily."
     }
   },
   components: {
@@ -138,7 +138,7 @@ export default {
     })
   },
   computed: {
-    ...mapState("admin", ["loading", "outbreak", "sources", "resources"]),
+    ...mapState("admin", ["loading", "genomicsCitation", "resourcesCitation", "sources", "resources"]),
     today() {
       return (new Date());
     },
@@ -226,7 +226,8 @@ Source: ${sourceText}
 \n\n${"-".repeat(75)}
 outbreak.info
 ${"-".repeat(75)}
-${this.outbreak.authors} outbreak.info. Available online: https://outbreak.info/ (2020)
+${this.genomicsCitation}\n
+${this.resourcesCitation}
 \n\n${"-".repeat(75)}
 epidemiology
 ${"-".repeat(75)}
