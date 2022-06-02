@@ -437,7 +437,7 @@
     </section>
 
     <!-- CITATION -->
-    <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
+    <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :genomicsCitation="genomicsCitation" :url="url" :today="today" />
 
     <!-- ACKNOWLEDGEMENTS -->
     <ReportAcknowledgements class="border-top pt-3" />
@@ -552,7 +552,7 @@ export default {
     FontAwesomeIcon
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors"]),
+    ...mapState("admin", ["mutationAuthors", "genomicsCitation"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2"]),
     loading() {
       return (this.locationLoading1 || this.locationLoading2)

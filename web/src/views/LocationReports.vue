@@ -112,7 +112,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors", "reportloading"])
+    ...mapState("admin", ["reportloading"])
   },
   mounted() {
     this.curatedSubscription = getLocationBasics(this.$genomicsurl).subscribe(results => {

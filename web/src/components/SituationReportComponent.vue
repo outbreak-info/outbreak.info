@@ -438,7 +438,7 @@
       </section>
 
       <!-- CITATION -->
-      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
+      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :genomicsCitation="genomicsCitation" :url="url" :today="today" />
 
       <!-- ACKNOWLEDGEMENTS -->
       <ReportAcknowledgements class="border-top pt-3" />
@@ -572,7 +572,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors", "reportloading"]),
+    ...mapState("admin", ["mutationAuthors", "genomicsCitation", "reportloading"]),
     smallScreen() {
       return (window.innerWidth < 500)
     },

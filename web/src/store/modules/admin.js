@@ -3,10 +3,9 @@ const state = {
   loading: false,
   dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   reportloading: false, // separate loader for reports
-  outbreak: {
-    authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
-  },
-  mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
+  genomicsCitation: "<b>Outbreak.info genomic reports: scalable and dynamic surveillance of SARS-CoV-2 variants and mutations</b>. Karthik Gangavarapu, Alaa Abdel Latif, Julia Mullen, Manar Alkuzweny, Emory Hufbauer, Ginger Tsueng, Emily Haag, Mark Zeller, Christine M. Aceves, Karina Zaiets, Marco Cano, Jerry Zhou, Zhongchao Qian, Rachel Sattler, Nathaniel L. Matteson, Joshua I. Levy, Raphael T.C. Lee, Lucas Freitas, Sebastian Maurer-Stroh, GISAID core and curation team, Marc A. Suchard, Chunlei Wu, Andrew I. Su, Kristian G. Andersen, Laura D. Hughes. medRxiv (2022). doi: <a href='https://doi.org/10.1101/2022.01.27.22269965' target='_blank'>10.1101/2022.01.27.22269965</a>",
+  resourcesCitation: "<b>Outbreak.info Research Library: A standardized, searchable platform to discover and explore COVID-19 resources</b>. Ginger Tsueng,  Julia Mullen,  Manar Alkuzweny,  Marco Alvarado Cano,  Benjamin Rush, Emily Haag, Outbreak Curators, Alaa Abdel Latif,  Xinghua Zhou, Zhongchao Qian, Kristian G. Andersen,  Chunlei Wu,  Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes. bioRxiv (2022). doi: <a href='https://doi.org/10.1101/2022.01.20.477133' target='_blank'>10.1101/2022.01.20.477133</a>",
+  mutationAuthors: "Karthik Gangavarapu, Alaa Abdel Latif, Julia Mullen, Manar Alkuzweny, Emory Hufbauer, Ginger Tsueng, Emily Haag, Mark Zeller, Christine M. Aceves, Karina Zaiets, Marco Cano, Jerry Zhou, Zhongchao Qian, Rachel Sattler, Nathaniel L Matteson, Joshua I. Levy, Raphael TC Lee, Lucas Freitas, Sebastian Maurer-Stroh, GISAID core and curation team, Marc A. Suchard, Chunlei Wu, Andrew I. Su, Kristian G. Andersen, Laura D. Hughes, and the Center for Viral Systems Biology",
   team: [
     {
       name: "Chrissy Aceves",

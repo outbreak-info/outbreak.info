@@ -423,7 +423,7 @@
       </section>
 
       <!-- CITATION -->
-      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
+      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :genomicsCitation="genomicsCitation" :url="url" :today="today" />
 
       <!-- ACKNOWLEDGEMENTS -->
       <ReportAcknowledgements class="border-top pt-3" />
@@ -575,7 +575,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors"]),
+    ...mapState("admin", ["mutationAuthors", "genomicsCitation"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5", "characteristicThreshold"]),
     loading() {
       return (this.locationLoading1 || this.locationLoading2 || this.locationLoading3 || this.locationLoading4 || this.locationLoading5)
