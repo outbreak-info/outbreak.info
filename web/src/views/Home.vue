@@ -94,17 +94,17 @@
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.1'}} " class="text-light">BA.1
+              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.2.12.1'}} " class="text-light">BA.2.12.1
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.1.1'}} " class="text-light">BA.1.1
+              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.4'}} " class="text-light">BA.4
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
+              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.5'}} " class="text-light">BA.5
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
