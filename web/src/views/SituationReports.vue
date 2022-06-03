@@ -266,14 +266,6 @@
                             </template>
                           </h5>
                         </div>
-                        <!-- DELTA WARNING! -->
-                        <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Delta'">
-                          <Warning text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
-                        </div>
-                        <!-- OMICRON WARNING! -->
-                        <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Omicron'">
-                          <Warning text="Classifications of Omicron lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
-                        </div>
                       </div>
 
                       <!-- synonyms -->

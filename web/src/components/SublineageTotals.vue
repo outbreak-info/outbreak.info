@@ -7,10 +7,6 @@
     </button>
   </div>
 
-  <!-- DELTA WARNING! -->
-  <div style='max-width: 420px;' class="my-2 fa-sm" v-if="lineageName == 'Delta'">
-    <Warning text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
-  </div>
   <p class="text-muted m-0">There are <b>{{data.length}}</b> <a>Pango lineages</a> currently associated with the {{lineageName}} variant:</p>
 
   <svg :width="width" :height="height" class="sublineage_counts" :name="title">
