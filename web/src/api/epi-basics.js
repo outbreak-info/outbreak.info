@@ -178,11 +178,10 @@ function getLabel(entry) {
 
 export function getMostCases(apiUrl, num2Return = 5) {
   store.state.admin.loading = true;
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}`
     )
   ).pipe(
     pluck("data", "hits"),
@@ -223,11 +222,9 @@ export function getSummary(apiUrl, caseThreshold) {
 }
 
 export function getTotals(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100`
     )
   ).pipe(
     pluck("data", "hits"),
@@ -247,11 +244,10 @@ export function getTotals(apiUrl) {
 }
 
 export function countCountries(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name`
     )
   ).pipe(
     pluck("data", "facets", "name", "terms"),
@@ -267,11 +263,9 @@ export function countCountries(apiUrl) {
 }
 
 export function getFirstCases(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id`
     )
   ).pipe(
     pluck("data", "hits"),
@@ -293,11 +287,9 @@ export function getFirstCases(apiUrl) {
 }
 
 export function getCasesAboveThresh(apiUrl, threshold) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id`
     )
   ).pipe(
     pluck("data", "hits"),

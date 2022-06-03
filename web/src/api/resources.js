@@ -128,11 +128,10 @@ export function getResources(
 
 export function getMetadataArray(apiUrl, queryString, sort, size, page) {
   const maxDescriptionLength = 75;
-  // store.state.admin.loading = true;
-  const timestamp = Math.round(new Date().getTime() / 36e5);
+
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -173,11 +172,10 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
 
 export function getResourceMetadata(apiUrl, id) {
   store.state.admin.loading = true;
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   const query = `_id:"${id}"`;
 
   return from(
-    axios.get(`${apiUrl}query?q=${query}&size=1&timestamp=${timestamp}`, {
+    axios.get(`${apiUrl}query?q=${query}&size=1`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -238,10 +236,9 @@ export function getResourceFacets(
   ];
 
   const facetString = facets.join(",");
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&size=0&facet_size=500&facets=${facetString}&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&size=0&facet_size=500&facets=${facetString}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -312,7 +309,6 @@ export function getMostRecent(
   ]
 ) {
   const today = new Date();
-  const timestamp = Math.round(today.getTime() / 36e5);
   const fieldString = fields.join(",");
 
   if (queryString != "__all__") {
@@ -323,7 +319,7 @@ export function getMostRecent(
 
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&field=${fieldString}&size=${num2Return}&sort=${sortVar}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -379,11 +375,10 @@ export function getQuerySummaries(queries, apiUrl) {
 }
 
 export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,date,journalName, journalNameAbbrev, author,keywords", facets = "@type, curatedBy.name,date") {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(axios.get(
-    // `${apiUrl}query?q=name:${queryString} OR description:${queryString}&timestamp=${timestamp}&size=100&fields=${fields}&facets=${facets}&facet_size=100`, {
-    `${apiUrl}query?q=${queryString}&timestamp=${timestamp}&size=1000&fields=${fields}&facets=${facets}&facet_size=1000`, {
+    // `${apiUrl}query?q=name:${queryString} OR description:${queryString}&size=100&fields=${fields}&facets=${facets}&facet_size=100`, {
+    `${apiUrl}query?q=${queryString}&size=1000&fields=${fields}&facets=${facets}&facet_size=1000`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -405,10 +400,9 @@ export function getQuerySummary(queryString, apiUrl, fields = "@type,name,identi
 }
 
 export function getCTSummary(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(axios.get(
-    `${apiUrl}query?q=name:%22hydroxychloroquine%22%20OR%20description:%22hydroxychloroquine%22&fields=armGroup.name,armGroup.intervention,dateCreated,%20studyStatus&size=1000&timestamp=${timestamp}`, {
+    `${apiUrl}query?q=name:%22hydroxychloroquine%22%20OR%20description:%22hydroxychloroquine%22&fields=armGroup.name,armGroup.intervention,dateCreated,%20studyStatus&size=1000`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -421,7 +415,6 @@ export function getCTSummary(apiUrl) {
 }
 
 export function getSourceSummary(apiUrl, query) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return forkJoin([getSourceCounts(apiUrl, query), getResourcesMetadata(apiUrl)]).pipe(
     map(([results, metadata]) => {
@@ -432,10 +425,8 @@ export function getSourceSummary(apiUrl, query) {
 }
 
 export function getResourceTotal(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(axios.get(
-    `${apiUrl}query?size=0&timestamp=${timestamp}`, {
+    `${apiUrl}query?size=0`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -453,10 +444,8 @@ export function getResourceTotal(apiUrl) {
 }
 
 export function getSourceCounts(apiUrl, queryString) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(axios.get(
-    `${apiUrl}query?q=${queryString}&aggs=@type(curatedBy.name)&facet_size=100&timestamp=${timestamp}`, {
+    `${apiUrl}query?q=${queryString}&aggs=@type(curatedBy.name)&facet_size=100`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -510,11 +499,9 @@ export function getResourcesMetadata(apiUrl) {
 
 
 export function getCTPublications(apiUrl, id) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     axios.get(
-      `${apiUrl}query?q=${id} AND @type:Publication&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${id} AND @type:Publication`, {
         headers: {
           "Content-Type": "application/json"
         }

@@ -207,8 +207,6 @@ export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
 
 export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
   const parseDate = timeParse("%Y-%m-%d");
-  // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   var queryString = locations ?
     `location_id:("${locations.join('" OR "')}")  AND mostRecent:true` :
     "mostRecent:true";
@@ -220,7 +218,7 @@ export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
 
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,admin1,wb_region,date,confirmed,confirmed_numIncrease,confirmed_pctIncrease,dead,dead_numIncrease,dead_pctIncrease,recovered,recovered_numIncrease,recovered_pctIncrease,first_dead-first_confirmed,population&timestamp=${timestamp}`, {
+      `${apiUrl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=location_id,admin_level,name,country_name,admin1,wb_region,date,confirmed,confirmed_numIncrease,confirmed_pctIncrease,dead,dead_numIncrease,dead_pctIncrease,recovered,recovered_numIncrease,recovered_pctIncrease,first_dead-first_confirmed,population`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -289,7 +287,6 @@ export function getSparklineTraces(
 ) {
   if (locations) {
     const parseDate = timeParse("%Y-%m-%d");
-    // trigger no-cache behavior by adding timestamp to request
     const queryString = `location_id:("${locations.join('" OR "')}")`;
 
     return getAll(

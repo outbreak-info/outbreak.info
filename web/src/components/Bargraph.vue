@@ -212,8 +212,8 @@ export default Vue.extend({
       }
     },
     prepData: function() {
-      this.location_id = this.data[0].admin_level >= 0 ? this.data[0].location_id : null;
-      
+      this.location_id = this.data && this.data.length && this.data[0].admin_level >= 0 ? this.data[0].location_id : null;
+
       if (this.percapita) {
         this.variable = this.variable.includes("_per_100k") || this.variableObj.percapita === false ? this.variable : this.variable + "_per_100k";
       } else {

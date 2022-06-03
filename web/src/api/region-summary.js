@@ -11,13 +11,10 @@ export function getStackedRegions(apiUrl) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
 
-  // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     getAll(
       apiUrl,
-      `admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead&timestamp=${timestamp}`
+      `admin_level:"-1"&size=1000&fields=location_id, name,date,confirmed,recovered,dead`
     )
   ).pipe(
     // tap(d => console.log(d)),
@@ -86,22 +83,19 @@ export function getCountryData(apiUrl, region, variable) {
   store.state.admin.loading = true;
   const parseDate = timeParse("%Y-%m-%d");
 
-  // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return forkJoin([
     from(
       axios.get(
         `${apiUrl}query?q=admin_level:0 AND mostRecent:true AND wb_region:"${encodeURIComponent(
           region
-        )}"&size=1000&fields=location_id,name,${variable},${variable}_numIncrease&timestamp=${timestamp}`
+        )}"&size=1000&fields=location_id,name,${variable},${variable}_numIncrease`
       )
     ),
     getAll(
       apiUrl,
       `admin_level:0 AND wb_region:"${encodeURIComponent(
         region
-      )}"&size=1000&fields=location_id,date,${variable}&timestamp=${timestamp}`
+      )}"&size=1000&fields=location_id,date,${variable}`
     )
   ]).pipe(
     map(([currentData, timeData]) => {

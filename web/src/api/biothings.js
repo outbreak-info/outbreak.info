@@ -23,8 +23,7 @@ export const progressState$ = progressSubject.asObservable();
 
 export function getDateUpdated(apiUrl) {
   const today = new Date();
-  const timestamp = Math.round(today.getTime() / 36e5);
-  const url = `${apiUrl}metadata?timestamp=${timestamp}`;
+  const url = `${apiUrl}metadata`;
   return from(axios.get(url)).pipe(
     pluck("data", "build_date"),
     map(result => {
@@ -55,8 +54,7 @@ export function getDateUpdated(apiUrl) {
 export function getCurrentDate(apiUrl, returnFormatted = true) {
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiUrl}query?q=mostRecent:true&sort=-date&size=1&fields=date&timestamp=${timestamp}`;
+  const url = `${apiUrl}query?q=mostRecent:true&sort=-date&size=1&fields=date`;
   return from(axios.get(url)).pipe(
     pluck("data", "hits"),
     map(result => {
@@ -100,10 +98,8 @@ export function getAll(apiUrl, queryString) {
 }
 
 export function getOne(apiUrl, queryString, count, scrollID = null) {
-  // trigger no-cache behavior by adding timestamp to request
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
-  let url = `${apiUrl}query?q=${queryString}&fetch_all=true&page=${count}&timestamp=${timestamp}`;
+  let url = `${apiUrl}query?q=${queryString}&fetch_all=true&page=${count}`;
   if (scrollID) {
     url = `${url}&scroll_id=${scrollID}`;
   }
