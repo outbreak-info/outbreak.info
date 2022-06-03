@@ -535,6 +535,15 @@ const state = {
       }
     },
     {
+      date: new Date("2022-06-02 0:0"),
+      category: "variants",
+      title: "Formally moved extinct lineages to previously circulating VOCs or de-escalated varaints",
+      description: 'Based on the lack of circulation, Alpha, Beta, Gamma, and Delta variants have been re-classified as previously circulating VOCs. Similarly, former VOIs/VUMs which are no longer circulating have been moved to de-escalated variants: B.1.1.318-related, B.1.617.3, C.1.2, C.36.3-related, Delta, Eta,  Iota, Kappa, Lambda, Mu, and Theta.',
+      route: {
+        name: "SituationReports"
+      }
+    },
+    {
       date: new Date("2021-09-20 0:0"),
       category: "variants",
       title: "Updated ECDC's classification of B.1.1.7, B.1.525, B.1.617.1, P.2, P.3 & PHE's classification of B.1.617.1 as De-escalated Variants",

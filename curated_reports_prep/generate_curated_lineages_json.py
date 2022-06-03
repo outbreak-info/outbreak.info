@@ -32,15 +32,33 @@ curated_data = yaml.load(open(curated_filename), Loader=yaml.BaseLoader)
 # Append the Variant of Concern / Interest tag to the lineages
 # VOCs / VOIs are nested within the yaml to avoid having to type this every time.
 vocs = pd.DataFrame(curated_data["VOC"])
-vois = pd.DataFrame(curated_data["VOI"])
-vums = pd.DataFrame(curated_data["VUM"])
+
+try:
+    vois = pd.DataFrame(curated_data["VOI"])
+except:
+    print("No Variants of Interest found")
+    vois = pd.DataFrame()
+
+try:
+    vums = pd.DataFrame(curated_data["VUM"])
+except:
+    print("No Variants under Monitoring found")
+    vums = pd.DataFrame()
+
+previous = pd.DataFrame(curated_data["previous_voc"])
 deescalated = pd.DataFrame(curated_data["deescalated"])
 vocs["variantType"] = "Variant of Concern"
+vocs["showOnHomepage"] = True
 vois["variantType"] = "Variant of Interest"
+vois["showOnHomepage"] = True
 vums["variantType"] = "Variant under Monitoring"
+vums["showOnHomepage"] = True
+previous["variantType"] = "Previously Circulating Variant of Concern"
+previous["showOnHomepage"] = False
 deescalated["variantType"] = "De-escalated"
+deescalated["showOnHomepage"] = False
 # merge the two back together
-curated = pd.concat([vocs, vois, vums, deescalated])
+curated = pd.concat([vocs, vois, vums, previous, deescalated])
 
 
 # --- DESCENDANTS ---

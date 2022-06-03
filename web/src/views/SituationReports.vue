@@ -135,7 +135,7 @@
     <section id="report-list" class="text-left">
       <!-- lineage groups -->
       <div class="lineage-group my-10" v-for="(group, i) in filteredReports" :key="i" :id="group.id + '-reports'">
-        <template v-if="group.id != 'deescalated'">
+        <template v-if="group.id != 'deescalated' && group.id != 'previous_voc'">
           <div class="d-flex justify-content-between">
             <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
             <div class="d-flex align-items-center text-sec" v-if="i === 0">
@@ -408,16 +408,39 @@
             <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
           </div>
         </template>
+        <div v-else-if="group.id == 'previous_voc'" id="previous-voc">
+          <h4>Previously Circulating Variants of Concern</h4>
+          <small class="text-muted line-height-sm">These former VOCs have been de-escalated by public health agencies as the variant is no longer circulating.</small>
+
+          <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
+            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 mb-2 font-weight-bold">
+              <!-- WHO reports -->
+              <template v-if="report.who_name">
+                <!-- with sublineages -->
+                <router-link :to="{name:'MutationReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline">
+                  <h5 class="m-0" :id="anchorLink(report.who_name)">{{ report.label }}/{{Array.isArray(report.pangolin_lineage) ? report.pangolin_lineage.join(" & ") : report.pangolin_lineage}}</h5>
+                </router-link>
+              </template>
+
+              <!-- multiple sublineages, unnamed -->
+              <router-link :to="{name:'MutationReport', params: {alias: report.label.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.pango_sublineages.length">
+                <h5 class="m-0" :id="anchorLink(report.label)">{{ report.label }}</h5>
+              </router-link>
+
+              <!-- single lineage -->
+              <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
+                <h5 class="m-0" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h5>
+              </router-link>
+            </div>
+          </div>
+        </div>
         <div v-else id="de-escalated">
           <h4>De-escalated Variants</h4>
           <small class="text-muted line-height-sm">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been
-            circulating
-            for a long
-            time without any impact on the
-            overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
+            circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
 
           <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
-            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 font-weight-bold">
+            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 mb-2 font-weight-bold">
               <!-- WHO reports -->
               <template v-if="report.who_name">
                 <!-- with sublineages -->

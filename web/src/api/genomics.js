@@ -282,7 +282,7 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 
 
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
-  const query = CURATED.filter(d => d.variantType != "De-escalated").map(d => d.label);
+  const query = CURATED.filter(d => d.showOnHomepage).map(d => d.label);
 
   return forkJoin(...query.map(d => getCharacteristicMutations(apiurl, d, 0, false))).pipe(
     map(charMuts => {
@@ -312,7 +312,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
         .entries(curated);
 
       curated.forEach(d => {
-        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : d.key == "De-escalated" ? "deescalated" : "unknown";
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : d.key == "Previously Circulating Variant of Concern" ? "previous_voc" : d.key == "De-escalated" ? "deescalated" : "unknown";
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
@@ -1620,7 +1620,7 @@ function geneSorter(a) {
 }
 
 function reportTypeSorter(a) {
-  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Monitoring", "Mutation of Concern", "Mutation of Interest", "De-escalated", "undefined"];
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Monitoring", "Mutation of Concern", "Mutation of Interest", "Previously Circulating Variant of Concern", "De-escalated", "undefined"];
   // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key);
 }
