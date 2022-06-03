@@ -54,11 +54,11 @@
 
             <router-link class="mx-3" :to="{ hash: '#moi' }">Mutations of Interest</router-link>
           </div>
-          <div class="d-flex justify-content-center mt-3 fa-sm">
+          <!-- <div class="d-flex justify-content-center mt-3 fa-sm">
             <button class="btn btn-grey-outline" data-toggle="collapse" href="#filter-classifiers">
               Filter reports
             </button>
-          </div>
+          </div> -->
 
           <div id="filter-classifiers" class="mt-3 collapse">
             <div class="d-flex flex-wrap align-items-center my-3">
