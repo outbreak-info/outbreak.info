@@ -284,7 +284,7 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
   const query = CURATED.filter(d => d.showOnHomepage).map(d => d.label);
 
-  return forkJoin(...query.map(d => getCharacteristicMutations(apiurl, d, 0, false))).pipe(
+  return forkJoin(...query.map(d => getCharacteristicMutations(apiurl, d, store.state.genomics.characteristicThreshold, false))).pipe(
     map(charMuts => {
       // flatten array of objects to a single object.
       charMuts = Object.assign(...charMuts)
@@ -303,8 +303,8 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
           report.mutations = report.mutations.filter(d => d.gene == "S");
         }
 
-        const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-        report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
+        // const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+        // report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
       })
 
       curated = nest()
