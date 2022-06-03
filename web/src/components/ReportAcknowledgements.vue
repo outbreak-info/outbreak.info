@@ -12,7 +12,7 @@
     </div>
     <div class="my-4" v-if="funding">
       This work was supported by the <span v-for="(grant, idx) in funding" :key="idx">
-        <span v-if="grant.funder.name">{{ grant.funder.name }}</span> ({{ grant.identifier }})<span v-if="idx < funding.length - 2">, </span>
+        <span v-if="grant.funder.name">{{ grant.funder.name }}</span> (<span v-if="grant.url"><a :href="grant.url" target="_blank">{{ grant.identifier }}</a></span><span v-else>{{ grant.identifier }}</span>)<span v-if="idx < funding.length - 2">, </span>
         <span v-if="idx == funding.length - 2">, and </span>
       </span>.
     </div>

@@ -102,19 +102,36 @@ const state = {
     }
   ],
   funding: [{
-      identifier: "5 U19 AI135995-04S3",
+      identifier: "3 U19 AI135995-04S3",
+      name: "Outbreak supplement 2",
+      funder: {
+        name: "National Institute for Allergy and Infectious Diseases"
+      },
+      url: "https://reporter.nih.gov/search/bCP9nFsmuk6DeseQC0wP4w/project-details/10469781"
+    },
+    {
+      identifier: "3 U19 AI135995-03S2",
+      name: "Outbreak supplement 1",
+      funder: {
+        name: "National Institute for Allergy and Infectious Diseases"
+      },
+      url: "https://reporter.nih.gov/search/iF5NH_3NKEakYdbvWURuSA/project-details/10248803"
+    },
+    {
+      identifier: "5 U19 AI135995-04",
       name: "CViSB",
       funder: {
         name: "National Institute for Allergy and Infectious Diseases"
       },
-      url: "https://projectreporter.nih.gov/project_info_details.cfm?aid=9634840"
+      url: "https://reporter.nih.gov/search/1HLiPGV6lU-r27wHWKBRrg/project-details/10087872"
     },
     {
       identifier: "5 U24 TR002306",
       name: "CD2H",
       funder: {
         name: "National Center for Advancing Translational Sciences"
-      }
+      },
+      url: "https://reporter.nih.gov/search/pfcras8ylUm-g9cDf-EWPw/project-details/9964934"
     },
     {
       identifier: "75D30120C09795",
@@ -122,6 +139,14 @@ const state = {
       funder: {
         name: "Centers for Disease Control and Prevention"
       }
+    },
+    {
+      identifier: "R01 GM083924",
+      name: "BioThings R01",
+      funder: {
+        name: "National Institute of General Medical Sciences"
+      },
+      url: "https://reporter.nih.gov/search/NPnYKqlgXEO5WaR3QsdeOA/project-details/9899250"
     }
   ],
   sources: [{
