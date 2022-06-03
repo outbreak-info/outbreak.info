@@ -76,7 +76,6 @@ import {
 library.add(faSync, faQuestionCircle);
 
 import cloneDeep from "lodash/cloneDeep";
-import Warning from "@/components/Warning.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
 
 // --- store / Vuex ---
@@ -88,7 +87,6 @@ export default Vue.extend({
   name: "SublineageTotals",
   components: {
     DownloadReportData,
-    Warning,
     FontAwesomeIcon
   },
   props: {

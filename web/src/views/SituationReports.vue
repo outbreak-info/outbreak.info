@@ -600,7 +600,7 @@ import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import MutationHeatmap from "@/components/MutationHeatmap.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
-import Warning from "@/components/Warning.vue";
+// import Warning from "@/components/Warning.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -659,8 +659,8 @@ export default {
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon,
-    MutationHeatmap,
-    Warning
+    MutationHeatmap
+    // Warning
   },
   computed: {
     ...mapState("admin", ["reportloading"]),
