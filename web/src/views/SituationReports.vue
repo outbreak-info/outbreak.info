@@ -36,23 +36,40 @@
             </small>
           </div>
           <div id="sequence-count" class="ml-2 mr-5 text-muted" v-if="total">
-            with <span class="text-highlight">{{total}} sequences</span>  from GISAID
+            with <span class="text-highlight">{{total}} sequences</span> from GISAID
           </div>
         </div>
 
         <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
           <div class="d-flex flex-wrap">
             View:
-            <router-link class="mx-3" :to="{ hash: '#voc' }">Variants of Concern</router-link>
+            <div class="d-flex flex-wrap flex-column">
+              <router-link class="mx-3 mb-1" :to="{ hash: '#voc' }">Variants of Concern</router-link>
 
-            <div class="d-flex flex-column mx-3">
-              <router-link :to="{ hash: '#voi' }" class="">Variants of Interest</router-link>
-              <div class="text-muted text-size-xs mt-n1">a.k.a. Variants Under Investigation</div>
+              <div class="d-flex flex-column mx-3 mb-1">
+                <router-link :to="{ hash: '#voi' }" class="">Variants of Interest</router-link>
+                <div class="text-muted text-size-xs mt-n1">a.k.a. Variants Under Investigation</div>
+              </div>
             </div>
 
-            <router-link class="mx-3" :to="{ hash: '#moc' }">Mutations of Concern</router-link>
+            <div class="d-flex flex-wrap flex-column mx-3">
+              <div class="d-flex flex-column mx-3 mb-1">
+                <router-link :to="{ hash: '#previous-voc' }" class="">Previous Variants of Concern</router-link>
+                <div class="text-muted text-size-xs mt-n1">VOCs no longer circulating</div>
+              </div>
 
-            <router-link class="mx-3" :to="{ hash: '#moi' }">Mutations of Interest</router-link>
+              <div class="d-flex flex-column mx-3 mb-1">
+                <router-link :to="{ hash: '#de-escalated' }" class="">De-escalated Variants</router-link>
+                <div class="text-muted text-size-xs mt-n1">VOIs/VUMs no longer circulating</div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap flex-column mx-3">
+              <router-link class="mx-3 mb-1" :to="{ hash: '#moc' }">Mutations of Concern</router-link>
+
+              <router-link class="mx-3 mb-1" :to="{ hash: '#moi' }">Mutations of Interest</router-link>
+
+            </div>
           </div>
           <!-- <div class="d-flex justify-content-center mt-3 fa-sm">
             <button class="btn btn-grey-outline" data-toggle="collapse" href="#filter-classifiers">
@@ -515,8 +532,8 @@
                       <a :href="report.aquaria" v-if="report.aquaria" target="_blank" class="line-height-1 d-flex">
 
                         {{report.mutation_name}} 3D structures
-                        <img src="@/assets/resources/aquaria.svg" style="width: 35px" class="ml-2"/>
-""                      </a>
+                        <img src="@/assets/resources/aquaria.svg" style="width: 35px" class="ml-2" />
+                        "" </a>
                     </td>
                   </tr>
 
@@ -1247,11 +1264,11 @@ $de-escalated: #bab0ab;
 }
 
 .opacity-75 {
-  opacity: 0.75 !important;
+    opacity: 0.75 !important;
 }
-.st-rep-table{
-  display: block;
-  overflow-x: auto;
+.st-rep-table {
+    display: block;
+    overflow-x: auto;
     width: 100%;
 }
 </style>
