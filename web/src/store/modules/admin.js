@@ -560,6 +560,18 @@ const state = {
       }
     },
     {
+      date: new Date("2022-06-03 0:0"),
+      category: "variants",
+      title: "Added in recombinant Omicron lineages as Omicron VOC",
+      description: 'Classified recombinants of Omicron lineages (B.1.1.529 and descendants) as being part of the Omicron Variant of Concern. This will include lineages like XE, which is a combined BA.1* and BA.2*. Read more about how <a href="https://virological.org/t/pango-lineage-nomenclature-provisional-rules-for-naming-recombinant-lineages/657" target="_blank">Pango classifies recombinant lineages</a>',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "Omicron"
+        }
+      }
+    },
+    {
       date: new Date("2022-06-02 0:0"),
       category: "variants",
       title: "Formally moved extinct lineages to previously circulating VOCs or de-escalated varaints",

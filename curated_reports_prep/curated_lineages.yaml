@@ -1,6 +1,7 @@
 VOC:
   - who_name: Omicron
     pangolin_lineage: B.1.1.529
+    include_recombinants: True
     nextstrain_clade: 21K, 21L
     gisaid_clade: GR/484A
     dateModified: 2021-11-26
@@ -9,7 +10,6 @@ VOC:
       - ZAF
       - GBR
       - USA
-    selected: ZAF
     variantType: Variant of Concern
     classifications:
         - author: WHO
@@ -29,8 +29,9 @@ VOC:
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOC
 
-  - who_name: BA.2
+  - who_name: BA.2*
     pangolin_lineage: BA.2
+    include_recombinants: True
     nextstrain_clade: 21L
     gisaid_clade: GRA
     dateModified: 2021-11-26
