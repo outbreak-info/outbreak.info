@@ -14,8 +14,8 @@ jobs:
       with:
         node-version: '14'
     - run: |
-	npm install npm -g
-	npm --prefix web/ install
+        npm install npm -g
+        npm --prefix web/ install
     - name: build website
       env:
         VUE_APP_API_ACCESS: ${{ secrets.VUE_APP_API_ACCESS }}
