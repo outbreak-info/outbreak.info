@@ -14,6 +14,10 @@
     </div>
   </section>
 
+<!-- NOTICES -->
+<section id="notices" class="bg-highlight py-2 px-3 text-light text-center fa-sm">
+  <b class="mr-1">The outbreak.info <a href="https://api.outbreak.info/" class="text-light" target="_blank">API</a> & <a href="https://outbreak-info.github.io/R-outbreak-info/" class="text-light" target="_blank">R package</a> is now live!</b>  Access all SARS-CoV-2 variant data, Research Library metadata, and cases & deaths data from outbreak.info. <a href="https://www.scripps.edu/news-and-events/press-room/2022/20220606-hughes-gisaid.html" target="_blank" class="mx-3 text-light">Learn more</a>
+</section>
 
   <!-- SEARCH  -->
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
