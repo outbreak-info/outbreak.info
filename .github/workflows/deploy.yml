@@ -7,15 +7,14 @@ on:
 
 jobs:
   build_and_deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-    - run: |
-        npm install npm -g
-        npm --prefix web/ install
+    - name: setup nodejs
+      run: |
+        curl -sL https://deb.nodesource.com/setup_14.x | bash -
+        apt -y install nodejs
+    - name: install dependencies
+      run: npm --prefix web/ install
     - name: build website
       env:
         VUE_APP_API_ACCESS: ${{ secrets.VUE_APP_API_ACCESS }}
