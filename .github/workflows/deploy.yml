@@ -11,8 +11,9 @@ jobs:
     steps:
     - name: setup nodejs
       run: |
-        curl -sL https://deb.nodesource.com/setup_14.x | bash -
-        apt -y install nodejs
+        sudo apt update
+        curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+        sudo apt -y install nodejs
     - name: install dependencies
       run: npm --prefix web/ install
     - name: build website
