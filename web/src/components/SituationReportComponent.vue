@@ -756,7 +756,8 @@ export default {
     setLineageAndMutationStr() {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
       if (this.alias) {
-        this.lineageName = this.alias.includes("ba.2*") ? "BA.2* [Omicron (BA.2.X)]" : this.$options.filters.capitalize(this.alias.toLowerCase());
+        this.lineageName = this.alias.includes("*") ? this.alias.toUpperCase().replace("OMICRON", "Omicron") : this.$options.filters.capitalize(this.alias.toLowerCase());
+        console.log(this.alias)
         this.selectedMutationArr = null;
         this.title = `${this.lineageName} Variant Report`;
         this.reportType = "combined lineage";
