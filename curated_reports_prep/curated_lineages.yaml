@@ -80,7 +80,7 @@ VOC:
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOC
 
-  - who_name: "BA.2.75* [Omicron (BA.2.5.X)]"
+  - who_name: "BA.2.75* [Omicron (BA.2.75.X)]"
     pangolin_lineage: BA.2.75
     include_recombinants: True
     dateModified: 2022-07-20
