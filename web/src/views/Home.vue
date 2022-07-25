@@ -98,12 +98,17 @@
               </router-link>
             </span>
             <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.2.75'}} " class="text-light">BA.2.75
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
               <router-link :to="{name: 'MutationReport', query: {pango: 'BA.4'}} " class="text-light">BA.4
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.5'}} " class="text-light">BA.5
+              <router-link :to="{name: 'MutationReport', params: {alias: 'BA.5*'}} " class="text-light">BA.5*
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>

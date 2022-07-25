@@ -1,0 +1,42 @@
+name: Get new lineages from pango
+
+on:
+   schedule:
+     - cron: '0 0,6,12,18 * * *'
+
+jobs:
+    scheduled_check:
+       runs-on: ubuntu-20.04
+       defaults:
+           run:
+             shell: bash
+             working-directory: curated_reports_prep
+
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v2
+           with:
+              token: ${{secrets.ACTION_TOKEN}}
+  
+         - name: Install python dependencies
+           run: python -m pip install --upgrade pip pandas
+
+         - name: process data
+           run: |
+             echo "starting update"
+             python generate_curated_lineages_json.py
+             echo "removing log file"
+             rm curated_lineages_json.log
+         - name: commit if output is different 
+           run: |
+               echo "running git diff, committing if different"
+               if [[($(git status ../web/src/assets/genomics/curated_lineages.json --porcelain | wc -c) -ne 0)]]; then
+                  echo "changes were made, adding new lineage info"
+                  git config --local user.name "$GITHUB_ACTOR"
+                  git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+                  git add ../web/src/assets/genomics/curated_lineages.json
+                  git commit -m "updating lineage metadata"
+                  git push origin master
+               else
+                  echo "no changes were made, doing nothing."
+               fi; 

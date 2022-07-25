@@ -147,9 +147,9 @@ export default Vue.extend({
     return {
       margin: {
         top: 72,
-        right: 225,
+        right: 325,
         bottom: 72,
-        left: 153
+        left: 250
       },
       isOverflow: false,
       // UI
