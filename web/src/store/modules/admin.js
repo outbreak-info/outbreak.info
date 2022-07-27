@@ -173,6 +173,15 @@ const state = {
       url: "https://www.gisaid.org/registration/terms-of-use/",
     },
     citation: 'Elbe, S., and Buckland-Merrett, G. (2017) Data, disease and diplomacy: GISAID’s innovative contribution to global health. Global Challenges, 1:33-46. DOI: <a href="http://dx.doi.org/10.1002/gch2.1018" target="_blank">10.1002/gch2.1018</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6607375/" target="_blank">31565258</a>; Shu, Y., McCauley, J. (2017)  GISAID: Global initiative on sharing all influenza data – from vision to reality. EuroSurveillance, 22(13) DOI: <a href="http://dx.doi.org/10.2807/1560-7917.ES.2017.22.13.30494" target="_blank">10.2807/1560-7917.ES.2017.22.13.30494</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5388101/" target="_blank">PMC5388101</a>'
+  },
+  {
+    id: "cov-lineages",
+    name: "cov-lineages.org",
+    img: "covlineages.png",
+    scope: "PANGO lineages and descendants",
+    description: '<p>outbreak.info Variant of Concern (VOC) reports pull all descendants of a parent VOC lineage from <a href="https://cov-lineages.org/index.html" target="_blank">cov-lineages.org</a>. For instance, we define "Omicron" as all B.1.1.529 and all its descendants according to the <a href="https://github.com/cov-lineages/lineages-website/blob/master/data/lineages.yml" target="_blank">lineage file</a> maintained by the cov-lineages.org team.</p><p>The Pango nomenclature is being used by researchers and public health agencies worldwide to track the transmission and spread of SARS-CoV-2, including variants of concern. This website documents all current Pango lineages and their spread, as well as various software tools which can be used by researchers to perform analyses on SARS-COV-2 sequence data.</p>',
+    url: "https://cov-lineages.org/index.html",
+    citation: 'Tracking the international spread of SARS-CoV-2 lineages B.1.1.7 and B.1.351/501Y-V2. O’Toole Á, Hill V, Pybus OG et al. (2021) DOI: <a href="http://dx.doi.org/10.12688/wellcomeopenres.16661.1" target="_blank">10.12688/wellcomeopenres.16661.1</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8176267/" target="_blank">PMC8176267</a>'
   }],
   geoSources: [{
       id: "naturaleath",
