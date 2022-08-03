@@ -156,8 +156,7 @@ def sort_lineages(lin_list):
 
 #now add in missing lineage descendants
 allLins = lineage_info.keys()
-from tqdm import tqdm
-for lin in tqdm(list(allLins)):
+for lin in list(allLins):
     #skip recombinants and entries with no parent (e.g. A)
     if lin.startswith('X') or ('parent' not in lineage_info[lin]):
         continue
