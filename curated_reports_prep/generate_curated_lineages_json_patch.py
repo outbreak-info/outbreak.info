@@ -174,24 +174,29 @@ for lin in list(allLins):
             #add one piece at a time, see if there's an element in the flipped dict that matches. 
             j=4
             notFound = 1
-            while notFound and j<len(splitP):
+            while notFound and j<(len(splitP)):
                 candidate = '.'.join(splitP[0:j])
                 if candidate in flipped_dict.keys():
+                    pLinName_ = pLinName
                     pLinName = pLinName.replace(candidate,flipped_dict[candidate])
-                    pLin = lineage_info[pLinName]
-                    notFound = False
+                    if pLinName in lineage_info.keys():
+                        pLin = lineage_info[pLinName]
+                        notFound = False
+                    else:
+                        pLinName = pLinName_
+                        j+=1
                 else:
                     j+=1
 
         currLin = lineage_info[cLin]
         #also add children of that lineage that may not be in the parent 
-        linList+= currLin['children']# + [cLin]
+        linList+= currLin['children'] + [cLin] #some lineages don't include themselves
         linsToAdd = list(set([ll for ll in linList if ll not in pLin['children']]))
-        # print(linsToAdd)
         try:
+
             lineage_info[pLinName]['children'] += linsToAdd
         except:
-            ## to handle cases like B.2
+            ## to handle cases like B.2 
             splitP = pLinName.split('.')
             if len(splitP)>1:
                 lineage_info[pLinName] = {'parent':'.'.join(splitP[0:(len(splitP)-1)]),'children':linsToAdd}
