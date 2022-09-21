@@ -8,7 +8,7 @@
 
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
-APP_DESCRIPTION = "outbreak.info is a standardized, searchable platform to discover and explore COVID-19 and SARS-CoV-2 data from the Center for Viral Systems Biology (cvisb.org) at Scripps Research. It contains three parts: a standardized searchable database of COVID-19 research; customizable real-time surveillance reports on SARS-CoV-2 variants and mutations; and an explorable interface to examine changes in epidemiological data.";
+APP_DESCRIPTION = "Outbreak.info explores COVID-19 and SARS-CoV-2 data with variant surveillance reports, data on cases and deaths, and a searchable research library.";
 
 module.exports = {
   css: {
