@@ -151,6 +151,7 @@ const state = {
   ],
   sources: [{
       id: "JHU",
+      api_id: "epi",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
       scope: "non-U.S. data",
       img: "jhu.png",
@@ -164,6 +165,7 @@ const state = {
   ],
   genomicSources: [{
     id: "gisaid",
+    api_id: "genomics",
     name: "GISAID Initiative",
     img: "gisaid.png",
     scope: "SARS-CoV-2 virus sequences",
@@ -211,6 +213,7 @@ const state = {
       id: "Publication",
       sources: [{
           id: "litcovid",
+          api_id: "litcovid",
           name: "LitCovid / PubMed",
           img: "litcovid_pubmed.png",
           img_lg: "litcovid_pubmed_lg.png",
@@ -223,6 +226,7 @@ const state = {
         },
         {
           id: "biorxiv",
+          api_id: "biorxiv",
           name: "bioRxiv",
           img: "biorxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
@@ -234,6 +238,7 @@ const state = {
         },
         {
           id: "medrxiv",
+          api_id: "biorxiv",
           name: "medRxiv",
           img: "medrxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
@@ -245,6 +250,7 @@ const state = {
         },
         {
           id: "imperial",
+          api_id: "covid_imperial_college",
           name: "MRC Centre for Global Infectious Disease Analysis",
           img: "imperial.png",
           url: "https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/",
@@ -256,6 +262,7 @@ const state = {
         },
         {
           id: "covid19LST",
+          api_id: "covid19_LST_reports",
           name: "COVID-19 Literature Surveillance Team",
           img: "covid19_lst.png",
           url: "https://www.covid19lst.org/",
@@ -273,6 +280,7 @@ const state = {
       id: "ClinicalTrial",
       sources: [{
           id: "nct",
+          api_id: "clinical_trials",
           name: "ClinicalTrials.gov",
           img: "clinicaltrialsgov.png",
           url: "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
@@ -284,6 +292,7 @@ const state = {
         },
         {
           id: "who",
+          api_id: "covid_who_clinical_trials",
           name: "WHO International Clinical Trials Registry Platform",
           img: "who.svg",
           url: "https://www.who.int/ictrp/en/",
@@ -300,6 +309,7 @@ const state = {
       id: "Dataset",
       sources: [{
           id: "dde",
+          api_id: "dde",
           name: "Data Discovery Engine",
           img: "dde.svg",
           img_lg: "dde_full.svg",
@@ -313,6 +323,7 @@ const state = {
         },
         {
           id: "figshare",
+          api_id: "covid_figshare",
           name: "Figshare",
           img: "figshare_icon.svg",
           img_lg: "figshare.svg",
@@ -325,6 +336,7 @@ const state = {
         },
         {
           id: "dataverse",
+          api_id: "dataverses",
           name: "Harvard Dataverse",
           img: "dataverse_icon.png",
           img_lg: "dataverse.png",
@@ -337,6 +349,7 @@ const state = {
         },
         {
           id: "immport",
+          api_id: "immport",
           name: "ImmPort",
           img: "immport.png",
           img_lg: "immport_lg.png",
@@ -349,6 +362,7 @@ const state = {
         },
         {
           id: "pdb",
+          api_id: "covid_pdb_datasets",
           name: "The Protein Data Bank",
           img: "pdb.png",
           url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
@@ -361,6 +375,7 @@ const state = {
         },
         {
           id: "zenodo",
+          api_id: "zenodo",
           name: "Zenodo",
           img: "zenodo.svg",
           url: "https://zenodo.org/communities/covid-19/",
@@ -378,6 +393,7 @@ const state = {
       id: "Protocol",
       sources: [{
         id: "protocolsio",
+        api_id: "protocolsio",
         name: "protocols.io",
         img: "protocolsio.png",
         img_lg: "protocolsio_lg.png",

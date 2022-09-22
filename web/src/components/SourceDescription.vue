@@ -6,11 +6,13 @@
         <a :href="source.url" target="_blank" rel="noreferrer" class="d-flex align-items-center justify-content-between">
           {{ source.name }}
         </a>
-        <div class="text-muted ml-3 fa-xs">
-          <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }}
+        <div class="ml-3" v-if="metadata && metadata[source.api_id]">
+        <div class="text-muted badge bg-grey__lightest ml-3 fa-xs" v-if="metadata[source.api_id].dateUpdated">
+          <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ metadata[source.api_id].dateUpdated }}
         </div>
-        <div class="text-muted ml-3 fa-xs">
-          &bull; xxx records
+        <div class="text-muted badge bg-grey__lightest ml-3 fa-xs"  v-if="metadata[source.api_id].count">
+          <font-awesome-icon class="mr-1" :icon="['far', 'file']" />  <span v-html="metadata[source.api_id].count"></span>
+        </div>
         </div>
       </div>
 
@@ -49,8 +51,11 @@ import {
 import {
   faClock
 } from "@fortawesome/free-regular-svg-icons/faClock";
+import {
+  faFile
+} from "@fortawesome/free-regular-svg-icons/faFile";
 
-library.add(faClock);
+library.add(faClock, faFile);
 
 export default Vue.extend({
   name: "SourceDescription",
@@ -58,7 +63,8 @@ export default Vue.extend({
     FontAwesomeIcon
   },
   props: {
-    sources: Array
+    sources: Array,
+    metadata: Object
   }
 });
 </script>

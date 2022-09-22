@@ -31,17 +31,67 @@ const formatDateTime = timeFormat("%e %B %Y %I:%M %p");
 
 export function getSourcesUpdated(genomicsurl, resourcesurl, epiurl) {
   return forkJoin([
-    getDateUpdated(genomicsurl),
-    getDateUpdated(resourcesurl),
-    getDateUpdated(epiurl)
+    getLastUpdated(genomicsurl),
+    getLastUpdated(resourcesurl),
+    getLastUpdated(epiurl)
   ]).pipe(
     map(([genomics, resources, epi]) => {
-      return({epi: epi, genomics: genomics, resources: resources})
+      return ({
+        epi: epi,
+        genomics: genomics,
+        resources: resources
+      })
     })
   )
 }
 
-function getDateUpdated(apiurl) {
+export function getIndivSourcesUpdated(genomicsurl, resourcesurl, epiurl) {
+  return forkJoin([
+    getDateUpdated(genomicsurl, "Sequences"),
+    getResourcesDateUpdated(resourcesurl),
+    getDateUpdated(epiurl)
+  ]).pipe(
+    map(([genomics, resources, epi]) => {
+      return ({
+        epi: {
+          epi: epi
+        },
+        genomics: {
+          genomics: genomics
+        },
+        resources: resources
+      })
+    })
+  )
+}
+
+function getDateUpdated(apiurl, label = "Records") {
+  const url = `${apiurl}metadata`;
+  return from(
+    axios.get(url, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  ).pipe(
+    pluck("data"),
+    map(result => {
+      const dateUpdated = cleanDate(result.build_date, "%Y-%m-%dT%H:%M:%S.%f%Z");
+      const count = `${result.stats.total.toLocaleString()} ${label}`;
+      return ({
+        count: count,
+        dateUpdated: dateUpdated
+      })
+    }),
+    catchError(e => {
+      console.log("%c Error in getting date updated!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    })
+  )
+}
+
+function getLastUpdated(apiurl) {
   const url = `${apiurl}metadata`;
   return from(
     axios.get(url, {
@@ -53,7 +103,7 @@ function getDateUpdated(apiurl) {
     pluck("data", "build_date"),
     map(result => {
       const dateUpdated = cleanDateElapsed(result);
-      return(dateUpdated)
+      return (dateUpdated)
     }),
     catchError(e => {
       console.log("%c Error in getting date updated!", "color: red");
@@ -74,21 +124,34 @@ function getResourcesDateUpdated(apiurl) {
   ).pipe(
     pluck("data", "src"),
     map(result => {
-      console.log(result)
       const sources = Object.keys(result);
       let resultObj = {};
 
       sources.forEach(d => {
-        const count = result[d]["stats"][d] ? result[d]["stats"][d].toLocaleString() : "unknown";
+        let count;
+
+        switch (d) {
+          case "biorxiv":
+            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (combined)` : null;
+            break;
+          case "clinical_trials":
+            count = result[d]["stats"]["clinicaltrials"] ? `${result[d]["stats"]["clinicaltrials"].toLocaleString()} Records` : null;
+            break;
+          case "covid_who_clinical_trials":
+            count = result[d]["stats"]["clinicaltrialswho"] ? `${result[d]["stats"]["clinicaltrialswho"].toLocaleString()} Records` : null;
+            break;
+          default:
+            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records` : null;
+        }
 
         resultObj[d] = {
           "count": count,
           "dateUpdated": cleanDate(result[d]["version"])
         };
-        return(resultObj)
+        return (resultObj)
       })
 
-      return(resultObj)
+      return (resultObj)
     }),
     catchError(e => {
       console.log("%c Error in getting resources date updated!", "color: red");
@@ -98,13 +161,13 @@ function getResourcesDateUpdated(apiurl) {
   )
 }
 
-function cleanDate(result) {
+function cleanDate(result, dateFormat = "%Y-%m-%d-%H:%M") {
   const today = new Date();
   let lastUpdated;
-  const strictIsoParse = timeParse("%Y-%m-%d-%H:%M");
+  const strictIsoParse = timeParse(dateFormat);
   const dateUpdated = strictIsoParse(result); // ensure the time is parsed as PDT
 
-  const dateUpdatedStr = dateUpdated ? timeFormat("%d %B %Y")(dateUpdated): "unknown";
+  const dateUpdatedStr = dateUpdated ? timeFormat("%d %b %Y")(dateUpdated) : null;
 
   return (dateUpdatedStr)
 }
