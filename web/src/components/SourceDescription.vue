@@ -10,9 +10,21 @@
           <div class="text-muted badge bg-grey__lightest ml-3 fa-xs" v-if="metadata[source.api_id].dateUpdated">
             <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ metadata[source.api_id].dateUpdated }}
           </div>
-          <div class="text-muted badge bg-grey__lightest ml-3 fa-xs mt-1" v-if="metadata[source.api_id].count">
-            <font-awesome-icon class="mr-1" :icon="['far', 'file']" /> <span v-html="metadata[source.api_id].count"></span>
-          </div>
+          <template v-if="metadata[source.api_id].count">
+            <!-- link to resources page -->
+            <router-link :to="{name: 'Resources', query: {filter: 'curatedBy.name:' + source.query}}" class="text-muted badge bg-grey__lightest ml-3 fa-xs mt-1" v-if="source.query">
+              <font-awesome-icon class="mr-1" :icon="['far', 'file']" /> <span v-html="metadata[source.api_id].count"></span>
+            </router-link>
+
+            <!-- link to genomics -->
+            <router-link :to="{name: 'SituationReports'}" class="text-muted badge bg-grey__lightest ml-3 fa-xs mt-1" v-else-if="source.id == 'gisaid'">
+              <font-awesome-icon class="mr-1" :icon="['far', 'file']" /> <span v-html="metadata[source.api_id].count"></span>
+            </router-link>
+            <!-- link to epi -->
+            <router-link :to="{name: 'Epidemiology'}" class="text-muted badge bg-grey__lightest ml-3 fa-xs mt-1" v-else-if="source.id == 'JHU'">
+              <font-awesome-icon class="mr-1" :icon="['far', 'file']" /> <span v-html="metadata[source.api_id].count"></span>
+            </router-link>
+          </template>
         </div>
       </div>
 
