@@ -256,7 +256,7 @@ export default Vue.extend({
       }).flatMap(d => d)
     },
     cleanSelectors(id) {
-      return(id.replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\./g, "_"))
+      return(id.replace(/:/g, "_").replace(/\//g, "_").replace(/\*\s\[/g, "_").replace(/\s\(/g, "_").replace(/\)\]/g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_"));
     },
     prepData() {
       this.plottedData = cloneDeep(this.data);
