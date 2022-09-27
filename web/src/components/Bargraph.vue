@@ -1,17 +1,17 @@
 <template>
 <div class="bargraph-group d-flex flex-column bargraph-group-margin" :id="`bargraph-${id}-${variable}`" :style="{transform:`scale(${transformChart})`}">
   <h4 v-if="title">{{ title }}</h4>
-  <div class="position-relative"  >
-     <div :style="{transform:`translate(${margin.left}px,${margin.top}px)`}"  id='barchart-wrapper' ref='barchart_wrapper'>
-  <div :class="tooltipIdx">
-<div class="tooltip  p-2">
-    <h6 class="country-name m-0"></h6>
-    <p class="date m-0"></p>
-    <p class="count m-0"></p>
-    <b class="count-avg m-0"></b>
-  </div>
-  </div>
-     </div>
+  <div class="position-relative">
+    <div :style="{transform:`translate(${margin.left}px,${margin.top}px)`}" id='barchart-wrapper' ref='barchart_wrapper'>
+      <div :class="tooltipIdx">
+        <div class="tooltip  p-2">
+          <h6 class="country-name m-0"></h6>
+          <p class="date m-0"></p>
+          <p class="count m-0"></p>
+          <b class="count-avg m-0"></b>
+        </div>
+      </div>
+    </div>
     <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="epi-bargraph" :name="plotTitle" :subtitle="title" ref="svg">
       <defs>
         <marker id="arrow-start" markerWidth="13" markerHeight="10" refX="0" refY="5" orient="auto" markerUnits="strokeWidth">
@@ -42,7 +42,7 @@
   </div>
 
   <!-- Link location variant reports -->
-<router-link v-if="location_id" class="btn btn-main mt-3" :to="{name: 'LocationReports', query: {loc: location_id}}">View {{title}} Variant Report</router-link>
+  <router-link v-if="location_id" class="btn btn-main mt-3" :to="{name: 'LocationReports', query: {loc: location_id}}">View {{title}} Variant Report</router-link>
 
 </div>
 </template>
@@ -50,10 +50,30 @@
 <script lang="ts">
 import Vue from "vue";
 
-import { scaleBand, scaleLinear, scaleLog, axisBottom, axisLeft, line, extent, timeDay, max, select, selectAll, format, timeFormat, timeParse, transition, easeLinear, event } from "d3";
+import {
+  scaleBand,
+  scaleLinear,
+  scaleLog,
+  axisBottom,
+  axisLeft,
+  line,
+  extent,
+  timeDay,
+  max,
+  select,
+  selectAll,
+  format,
+  timeFormat,
+  timeParse,
+  transition,
+  easeLinear,
+  event
+} from "d3";
 import cloneDeep from "lodash/cloneDeep";
 import * as PIXI from 'pixi.js'
-import { SmoothGraphics } from "@pixi/graphics-smooth";
+import {
+  SmoothGraphics
+} from "@pixi/graphics-smooth";
 
 export default Vue.extend({
   name: "Bargraph",
@@ -147,7 +167,7 @@ export default Vue.extend({
         this.variable = newObj.value;
         this.noRollingAvg = !['confirmed_numIncrease', 'dead_numIncrease', 'recovered_numIncrease'].includes(this.variable) || !this.animate;
         this.updatePlot();
-       this.drawBarchart()
+        this.drawBarchart()
       }
     },
     // variable: function() {
@@ -187,20 +207,20 @@ export default Vue.extend({
     setupPlot() {
       this.svg = select(`#bargraph-${this.id}-${this.variable}`)
         .select("svg.epi-bargraph");
-         this.chart = this.svg.select("#case-counts");
+      this.chart = this.svg.select("#case-counts");
       this.average = this.svg.select("#rolling-average");
       this.line = line()
         .x(d => this.x(d.date))
         .y(d => this.y(d[this.variable.replace("_numIncrease", "_rolling")]));
     },
-    setupBarChart(){
+    setupBarChart() {
       this.wrapper = this.$refs.barchart_wrapper
       this.pixiApp = new PIXI.Application({
-		  backgroundAlpha: 0,
-			width: 650,
-			height: this.height,
-		});
-    this.wrapper.appendChild(this.pixiApp.view)
+        backgroundAlpha: 0,
+        width: 650,
+        height: this.height,
+      });
+      this.wrapper.appendChild(this.pixiApp.view)
       this.prepData();
       if (
         this.plottedData &&
@@ -326,7 +346,7 @@ export default Vue.extend({
 
       if (this.includeAxis) {
         // ~ 4 tick marks, rounded to the nearest week interval (4*7)
-        const plotInterval = Math.round(this.x.domain().length/28)*7;
+        const plotInterval = Math.round(this.x.domain().length / 28) * 7;
         this.xAxis = axisBottom(this.x)
           .tickSizeOuter(0)
           .tickValues(
@@ -339,7 +359,7 @@ export default Vue.extend({
         select(this.$refs.xAxis).call(this.xAxis);
 
         this.yAxis = this.isLogY ?
-        axisLeft(this.y)
+          axisLeft(this.y)
           .tickSizeOuter(0)
           .ticks(this.numYTicks)
           .tickFormat((d, i) => {
@@ -472,83 +492,85 @@ export default Vue.extend({
         );
       }
     },
-    drawBarchart (){
-     // this.pixiApp.renderer.resize(this.width, this.height)
-     if(this.pixiApp){
-      if(this.pixiApp.stage.children.length > 0){
-       this.pixiApp.stage.removeChildren()
-      }
+    drawBarchart() {
+      // this.pixiApp.renderer.resize(this.width, this.height)
+      if (this.pixiApp) {
+        if (this.pixiApp.stage.children.length > 0) {
+          this.pixiApp.stage.removeChildren()
+        }
 
-       let hoverLine = new SmoothGraphics()
-           hoverLine.beginFill(0x000000)
-           hoverLine.drawRect(0,0,this.x.bandwidth()*2,40)
-            hoverLine.endFill()
-            hoverLine.alpha = 0
-            this.pixiApp.stage.addChild(hoverLine)
+        let hoverLine = new SmoothGraphics()
+        hoverLine.beginFill(0x000000)
+        hoverLine.drawRect(0, 0, this.x.bandwidth() * 2, 40)
+        hoverLine.endFill()
+        hoverLine.alpha = 0
+        this.pixiApp.stage.addChild(hoverLine)
 
-             let hoverCircle = new SmoothGraphics()
-           hoverCircle.beginFill(0x000000,1)
-           hoverCircle.lineStyle(2, 0x000000, 1.0).drawCircle(0,0,this.x.bandwidth()*4)
+        let hoverCircle = new SmoothGraphics()
+        hoverCircle.beginFill(0x000000, 1)
+        hoverCircle.lineStyle(2, 0x000000, 1.0).drawCircle(0, 0, this.x.bandwidth() * 4)
         hoverCircle.endFill()
         hoverCircle.alpha = 0
         this.pixiApp.stage.addChild(hoverCircle)
 
 
-      this.plottedData.filter(t => t[this.variable]).forEach(d =>{
+        this.plottedData.filter(t => t[this.variable]).forEach(d => {
 
-       let barchart = new SmoothGraphics();
-              if(d.confirmed_numIncrease > d.confirmed_rolling){
-              barchart.hitArea = new PIXI.Rectangle(this.x(d.date), this.y(d[this.variable.replace("_numIncrease", "_rolling")])-100, this.x.bandwidth(), (this.y(this.yMin)- (this.y(d[this.variable.replace("_numIncrease", "_rolling")])-100)))
-              } else{
-               barchart.hitArea = new PIXI.Rectangle(this.x(d.date), this.y(d[this.variable.replace("_numIncrease", "_rolling")])-100, this.x.bandwidth(), (this.y(this.yMin)- (this.y(d[this.variable.replace("_numIncrease", "_rolling")])-100)))
+          let barchart = new SmoothGraphics();
+          if (d.confirmed_numIncrease > d.confirmed_rolling) {
+            barchart.hitArea = new PIXI.Rectangle(this.x(d.date), this.y(d[this.variable.replace("_numIncrease", "_rolling")]) - 100, this.x.bandwidth(), (this.y(this.yMin) - (this.y(d[this.variable.replace("_numIncrease", "_rolling")]) -
+              100)))
+          } else {
+            barchart.hitArea = new PIXI.Rectangle(this.x(d.date), this.y(d[this.variable.replace("_numIncrease", "_rolling")]) - 100, this.x.bandwidth(), (this.y(this.yMin) - (this.y(d[this.variable.replace("_numIncrease", "_rolling")]) -
+              100)))
+          }
+          barchart.beginFill(0x507ea3, 0.55)
+          let bar = barchart.lineStyle(0.9, 0x507ea3, 0, 0.5).drawRect(this.x(d.date), this.y(d[this.variable]), this.x.bandwidth(), (this.y(this.yMin) - this.y(d[this.variable])))
+
+          barchart.endFill();
+          if (this.includeTooltips) {
+            bar.interactive = true
+            bar.on('pointerover', (event) => {
+              const ttip = selectAll(`.${this.tooltipIdx}`).selectAll(".tooltip")
+                .style("top", this.y(d[this.variable.replace("_numIncrease", "_rolling")]) + "px")
+                .style("left", event.data.global.x + "px")
+                .style("opacity", 1);
+
+              ttip.select(".country-name").text(d.name);
+              ttip.select(".date").text(timeFormat("%d %b %Y")(d.date));
+              ttip
+                .select(".count")
+                .text(`${format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`)
+              if (this.noRollingAvg) {
+                ttip
+                  .select(".count-avg")
+                  .text("");
+              } else {
+                ttip
+                  .select(".count-avg")
+                  .text(`7 day average: ${format(",.1f")(d[this.variable.replace("_numIncrease", "_rolling")])}`);
               }
-      barchart.beginFill(0x507ea3, 0.55)
-      let bar = barchart.lineStyle(0.9, 0x507ea3, 0, 0.5).drawRect(this.x(d.date), this.y(d[this.variable]),this.x.bandwidth(),(this.y(this.yMin) - this.y(d[this.variable])))
 
-      barchart.endFill();
-        if (this.includeTooltips) {
-       bar.interactive = true
-       bar.on('pointerover', (event) => {
-               const ttip = selectAll(`.${this.tooltipIdx}`).selectAll(".tooltip")
-        .style("top", this.y(d[this.variable.replace("_numIncrease", "_rolling")]) + "px")
-        .style("left", event.data.global.x + "px")
-        .style("opacity", 1);
+              hoverLine.alpha = 1
+              hoverLine.position.set(this.x(d.date), this.y(d[this.variable.replace("_numIncrease", "_rolling")]))
+              hoverLine.height = this.y(this.yMin) - this.y(d[this.variable.replace("_numIncrease", "_rolling")])
 
-       ttip.select(".country-name").text(d.name);
-      ttip.select(".date").text(timeFormat("%d %b %Y")(d.date));
-      ttip
-        .select(".count")
-        .text(`${format(",.1f")(d[this.variable])} ${this.variableObj.ttip}`)
-       if (this.noRollingAvg) {
-        ttip
-          .select(".count-avg")
-          .text("");
-      } else {
-        ttip
-          .select(".count-avg")
-          .text(`7 day average: ${format(",.1f")(d[this.variable.replace("_numIncrease", "_rolling")])}`);
-      }
-
-                hoverLine.alpha = 1
-               hoverLine.position.set(this.x(d.date), this.y(d[this.variable.replace("_numIncrease", "_rolling")]))
-               hoverLine.height = this.y(this.yMin)- this.y(d[this.variable.replace("_numIncrease", "_rolling")])
-
-               hoverCircle.alpha = 1
-               let circ_x = this.x(d.date) + this.x.bandwidth()/2
-               hoverCircle.position.set(circ_x, this.y(d[this.variable.replace("_numIncrease", "_rolling")]))
+              hoverCircle.alpha = 1
+              let circ_x = this.x(d.date) + this.x.bandwidth() / 2
+              hoverCircle.position.set(circ_x, this.y(d[this.variable.replace("_numIncrease", "_rolling")]))
             })
             bar.on('pointerout', (event) => {
-            selectAll(".tooltip")
-            .style("opacity", 0);
+              selectAll(".tooltip")
+                .style("opacity", 0);
 
-            hoverLine.alpha = 0
-            hoverCircle.alpha = 0
+              hoverLine.alpha = 0
+              hoverCircle.alpha = 0
 
+            })
+          }
+          this.pixiApp.stage.addChild(barchart)
         })
-        }
-      this.pixiApp.stage.addChild(barchart)
-      })
-     }
+      }
     },
 
     changeScale: function() {
@@ -583,7 +605,7 @@ export default Vue.extend({
     }
 
     this.setupPlot();
-   this.setupBarChart()
+    this.setupBarChart()
     this.updatePlot();
 
   }
@@ -608,13 +630,14 @@ export default Vue.extend({
     stroke-width: 1;
     shape-rendering: crispedges;
 }
-.swoopy-arrow, .swoopy-arrowhead {
+.swoopy-arrow,
+.swoopy-arrowhead {
     stroke: #698bac;
     fill: none;
-    stroke-width: .8;
+    stroke-width: 0.8;
 }
-.epi-bargraph{
-  pointer-events:none;
+.epi-bargraph {
+    pointer-events: none;
 }
 .epi-bargraph-arrows {
     pointer-events: none;
@@ -622,27 +645,27 @@ export default Vue.extend({
         pointer-events: auto !important;
     }
 }
-#barchart-wrapper{
-  position:absolute;
+#barchart-wrapper {
+    position: absolute;
 }
-.axis-font{
-  font-size: 1rem;
+.axis-font {
+    font-size: 1rem;
 }
-.annotation--rolling-average{
-  font-size:0.75em;
+.annotation--rolling-average {
+    font-size: 0.75em;
 }
 @media only screen and (max-width: 790px) {
-  h4{
-    font-size: 2.5rem;
-  }
-  .annotation--rolling-average{
-  font-size:1.2rem;
-  }
-  .axis-font{
-    font-size: 1.5rem;
-  }
-  .bargraph-group-margin{
-    margin-left:1%;
-  }
+    h4 {
+        font-size: 2.5rem;
+    }
+    .annotation--rolling-average {
+        font-size: 1.2rem;
+    }
+    .axis-font {
+        font-size: 1.5rem;
+    }
+    .bargraph-group-margin {
+        margin-left: 1%;
+    }
 }
 </style>
