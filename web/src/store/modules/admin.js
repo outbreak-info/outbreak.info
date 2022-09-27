@@ -151,6 +151,7 @@ const state = {
   ],
   sources: [{
       id: "JHU",
+      api_id: "epi",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
       scope: "non-U.S. data",
       img: "jhu.png",
@@ -164,6 +165,7 @@ const state = {
   ],
   genomicSources: [{
     id: "gisaid",
+    api_id: "genomics",
     name: "GISAID Initiative",
     img: "gisaid.png",
     scope: "SARS-CoV-2 virus sequences",
@@ -211,7 +213,9 @@ const state = {
       id: "Publication",
       sources: [{
           id: "litcovid",
+          api_id: "litcovid",
           name: "LitCovid / PubMed",
+          query: "litcovid",
           img: "litcovid_pubmed.png",
           img_lg: "litcovid_pubmed_lg.png",
           url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
@@ -223,6 +227,8 @@ const state = {
         },
         {
           id: "biorxiv",
+          api_id: "biorxiv",
+          query: "bioRxiv",
           name: "bioRxiv",
           img: "biorxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
@@ -234,6 +240,8 @@ const state = {
         },
         {
           id: "medrxiv",
+          api_id: "biorxiv",
+          query: "medRxiv",
           name: "medRxiv",
           img: "medrxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
@@ -245,6 +253,8 @@ const state = {
         },
         {
           id: "imperial",
+          api_id: "covid_imperial_college",
+          query: "MRC Centre for Global Infectious Disease Analysis",
           name: "MRC Centre for Global Infectious Disease Analysis",
           img: "imperial.png",
           url: "https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/",
@@ -256,6 +266,8 @@ const state = {
         },
         {
           id: "covid19LST",
+          api_id: "covid19_LST_reports",
+          query: "COVID-19 Literature Surveillance Team",
           name: "COVID-19 Literature Surveillance Team",
           img: "covid19_lst.png",
           url: "https://www.covid19lst.org/",
@@ -273,7 +285,9 @@ const state = {
       id: "ClinicalTrial",
       sources: [{
           id: "nct",
+          api_id: "clinical_trials",
           name: "ClinicalTrials.gov",
+          query: "ClinicalTrials.gov",
           img: "clinicaltrialsgov.png",
           url: "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
           description: 'ClinicalTrials.gov is a database of privately and publicly funded clinical studies conducted around the world. Some modifications were made to the data to standardize how metadata are reported and to align to our <a href=""',
@@ -284,7 +298,9 @@ const state = {
         },
         {
           id: "who",
+          api_id: "covid_who_clinical_trials",
           name: "WHO International Clinical Trials Registry Platform",
+          query: "WHO International Clinical Trials Registry Platform",
           img: "who.svg",
           url: "https://www.who.int/ictrp/en/",
           description: "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source.",
@@ -300,7 +316,9 @@ const state = {
       id: "Dataset",
       sources: [{
           id: "dde",
+          api_id: "dde",
           name: "Data Discovery Engine",
+          query: "Data Discovery Engine",
           img: "dde.svg",
           img_lg: "dde_full.svg",
           url: "https://discovery.biothings.io/dataset",
@@ -313,7 +331,9 @@ const state = {
         },
         {
           id: "figshare",
+          api_id: "covid_figshare",
           name: "Figshare",
+          query: "Figshare",
           img: "figshare_icon.svg",
           img_lg: "figshare.svg",
           url: "https://covid19.figshare.com/",
@@ -325,7 +345,9 @@ const state = {
         },
         {
           id: "dataverse",
+          api_id: "dataverses",
           name: "Harvard Dataverse",
+          query: "Harvard Dataverse",
           img: "dataverse_icon.png",
           img_lg: "dataverse.png",
           url: "https://dataverse.harvard.edu/dataverse/covid19",
@@ -337,7 +359,9 @@ const state = {
         },
         {
           id: "immport",
+          api_id: "immport",
           name: "ImmPort",
+          query: "ImmPort",
           img: "immport.png",
           img_lg: "immport_lg.png",
           url: "https://www.immport.org/shared/search?filters=study_2_condition_or_disease.condition_preferred:COVID-19%20-%20DOID:0080600&utm_source=COVID-19&utm_medium=banner&utm_campaign=COVID-19",
@@ -349,7 +373,9 @@ const state = {
         },
         {
           id: "pdb",
+          api_id: "covid_pdb_datasets",
           name: "The Protein Data Bank",
+          query: "The Protein Data Bank",
           img: "pdb.png",
           url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
           description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
@@ -361,7 +387,9 @@ const state = {
         },
         {
           id: "zenodo",
+          api_id: "zenodo",
           name: "Zenodo",
+          query: "Zenodo",
           img: "zenodo.svg",
           url: "https://zenodo.org/communities/covid-19/",
           description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other).",
@@ -378,7 +406,9 @@ const state = {
       id: "Protocol",
       sources: [{
         id: "protocolsio",
+        api_id: "protocolsio",
         name: "protocols.io",
+        query: "Protocols.io",
         img: "protocolsio.png",
         img_lg: "protocolsio_lg.png",
         url: "https://www.protocols.io/groups/coronavirus-method-development-community",

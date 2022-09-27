@@ -724,7 +724,7 @@ export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold =
 }
 
 function cleanSelectors(id) {
-  return id.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_");
+  return id.replace(/:/g, "_").replace(/\//g, "_").replace(/\*\s\[/g, "_").replace(/\s\(/g, "_").replace(/\)\]/g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_");
 }
 
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true, includeSublineages = false) {

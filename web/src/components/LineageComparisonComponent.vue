@@ -365,9 +365,9 @@
           <div class="d-flex flex-column">
             <div class="d-flex align-items-center">
               <h2 class="m-0">Mutation prevalence across lineages</h2>
-              <button class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages">
+              <button class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0" data-toggle="collapse" data-target="#select-lineages" @click="scrollToTop">
                 <font-awesome-icon class="m-0 mr-2 fa-xs" :icon="['fas', 'sync']" />
-                <span class="fa-xs">change lineages</span>
+                <span class="fa-xs">change lineages!!</span>
               </button>
             </div>
             <div class="d-flex flex-wrap">
@@ -709,6 +709,9 @@ export default {
     }
   },
   methods: {
+    scrollToTop() {
+      window.scrollTo(0,0);
+    },
     addVOCs(clear = true) {
       // remove lineages w/ additional mutations
       this.selectedPango = clear ? this.voc_parent :

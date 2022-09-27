@@ -9,10 +9,10 @@
   <section class="d-flex justify-content-center align-items-center bg-main__darker text-light py-3">
     <div class="row m-0 d-flex align-items-center w-100">
       <div class="col-sm-8 col-md-8">
-        <h4>COVID-19 and SARS-CoV-2 datasets, analyses, and resources</h4>
-        <router-link :to="{path: '/sources', hash: '#resources'}" class="fa-sm text-white">Where do we get our data?</router-link>
+        <h1>COVID-19 and SARS-CoV-2 datasets, analyses, and resources</h1>
+        <router-link :to="{path: '/sources', hash: '#resources'}" class="text-white">Where do we get our data?</router-link>
         <span class="text-muted mx-3">&bull;</span>
-        <router-link :to="{ name: 'Contributing' }" class="fa-sm text-white">Contributing a source</router-link>
+        <router-link :to="{ name: 'Contributing' }" class="text-white">Contributing a source</router-link>
       </div>
       <!-- search input -->
       <div class="col-sm-4 col-md-4">

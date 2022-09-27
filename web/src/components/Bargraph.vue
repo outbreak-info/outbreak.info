@@ -113,7 +113,7 @@ export default Vue.extend({
         top: 15,
         bottom: 60,
         left: 95,
-        right: 25
+        right: 35
       },
       // axes
       y: null,
@@ -325,8 +325,8 @@ export default Vue.extend({
       }
 
       if (this.includeAxis) {
-        // ~ 6 tick marks, rounded to the nearest week interval (6*7)
-        const plotInterval = Math.round(this.x.domain().length/42)*7;
+        // ~ 4 tick marks, rounded to the nearest week interval (4*7)
+        const plotInterval = Math.round(this.x.domain().length/28)*7;
         this.xAxis = axisBottom(this.x)
           .tickSizeOuter(0)
           .tickValues(
