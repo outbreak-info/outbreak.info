@@ -10,7 +10,7 @@
         <div class="d-flex flex-column w-100 align-items-center my-2">
           <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-20" />
           <p class="text-light my-1 mx-3">
-            a standardized, open-source database of COVID-19 resources and epidemiology data
+            an open-source database of SARS-CoV-2 variant data, COVID-19 epidemiology data, and published research
           </p>
         </div>
       </div>
