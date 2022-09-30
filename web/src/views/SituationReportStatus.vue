@@ -33,10 +33,10 @@
         </div>
         <div class="d-flex align-items-center justify-content-center my-2 mt-3">
           <div id="date-updated">
-            <div class="text-muted badge bg-grey__lightest mt-1 mr-3" v-if="lastUpdated">
+            <!-- <div class="text-muted badge bg-grey__lightest mt-1 mr-3" v-if="lastUpdated">
               <font-awesome-icon class="mr-1 fa-1x" :icon="['far', 'clock']" />
               <span class="fa-1x">Updated {{ lastUpdated }} ago</span>
-            </div>
+            </div> -->
           </div>
           <div id="sequence-count" class="ml-2 fa-lg text-highlight" v-if="total">
             {{total}} total sequences

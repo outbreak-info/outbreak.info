@@ -7,9 +7,9 @@
           {{ source.name }}
         </a>
         <div class="ml-3" v-if="metadata && metadata[source.api_id]">
-          <div class="text-muted badge bg-grey__lightest ml-3 fa-xs" v-if="metadata[source.api_id].dateUpdated">
+          <!-- <div class="text-muted badge bg-grey__lightest ml-3 fa-xs" v-if="metadata[source.api_id].dateUpdated">
             <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ metadata[source.api_id].dateUpdated }}
-          </div>
+          </div> -->
           <template v-if="metadata[source.api_id].count">
             <!-- link to resources page -->
             <router-link :to="{name: 'Resources', query: {filter: 'curatedBy.name:' + source.query}}" class="text-muted badge bg-grey__lightest ml-3 fa-xs mt-1" v-if="source.query">

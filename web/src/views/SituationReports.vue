@@ -31,12 +31,12 @@
         </div>
         <div class="d-flex align-items-center justify-content-between my-2">
           <div id="date-updated" class="mr-2">
-            <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+            <!-- <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
               <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
-            </small>
+            </small> -->
           </div>
           <div id="sequence-count" class="ml-2 mr-5 text-muted" v-if="total">
-            with <span class="text-highlight">{{total}} sequences</span> from GISAID
+             <span class="text-highlight">{{total}} sequences</span> from GISAID
           </div>
         </div>
 

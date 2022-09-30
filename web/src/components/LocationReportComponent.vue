@@ -109,11 +109,11 @@
 
             <!-- last updated info -->
             <div class="d-flex align-items-center">
-              <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+              <!-- <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
-              </small>
+              </small> -->
               <div id="sequence-count" class="text-grey font-size-2 ml-3" v-if="totalSequences">
-                with <span class="text-light">{{totalSequences}} sequences</span> from GISAID
+                 <span class="text-light">{{totalSequences}} sequences</span> from GISAID
               </div>
             </div>
 
@@ -162,11 +162,11 @@
           <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
             <!-- last updated info -->
             <div class="d-flex align-items-center">
-              <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
+              <!-- <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
-              </small>
+              </small> -->
               <div id="sequence-count" class="text-grey font-size-2 ml-3" v-if="totalSequences">
-                with <span class="text-light">{{totalSequences}} sequences</span> from GISAID
+                 <span class="text-light">{{totalSequences}} sequences</span> from GISAID
               </div>
             </div>
 
