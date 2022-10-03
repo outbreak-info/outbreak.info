@@ -14,9 +14,9 @@
       <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} (methods)
       </small>
-      <!-- <small class="text-muted badge bg-grey__lightest mt-1 ml-3" v-if="lastUpdated">
+      <small class="text-muted badge bg-grey__lightest mt-1 ml-3" v-if="lastUpdated">
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ updated }} (data)
-      </small> -->
+      </small>
     </div>
 
     <section class="border-top py-2">
