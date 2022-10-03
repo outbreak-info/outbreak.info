@@ -270,13 +270,13 @@ const state = {
           query: "COVID-19 Literature Surveillance Team",
           name: "COVID-19 Literature Surveillance Team",
           img: "covid19_lst.png",
-          url: "https://www.covid19lst.org/",
-          description: "We are a non-profit composed of medical students, PhDs, physicians and other passionate individuals. We keep up with the latest research on COVID-19/SARS-CoV-2, find the newest articles, read them, grade their level of evidence, and bring you the bottom line. Our goal is to empower you to take the best care of yourself and those in your care.",
+          url: "https://web.archive.org/web/20211020140102/https://www.covid19lst.org/copy-of-about",
+          description: "[inactive] COVID-19 LST was a non-profit composed of medical students, PhDs, physicians and other passionate individuals. They kept up with the latest research on COVID-19/SARS-CoV-2, found the newest articles, read them, graded their level of evidence, and brought you the bottom line. Their goal was to empower you to take the best care of yourself and those in your care. The COVID-19 LST Project was completed on <a href='https://web.archive.org/web/20211020084652/https://www.covid19lst.org/post/new-projects-ahead-for-covid-19-lst' target='_blank'>3 July 2021</a>.",
           license: {
             url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
             name: "CC BY-NC-SA 4.0"
           },
-          citation: 'COVID-19 Literature Surveillance Team. <i>Daily COVID-19 LST Reports</i>. Available online: <a href="https://www.covid19lst.org/reports" target="_blank">https://www.covid19lst.org/reports</a> (2020)'
+          citation: 'COVID-19 Literature Surveillance Team. <i>Daily COVID-19 LST Reports</i>. Available online: <a href="https://web.archive.org/web/20211020140102/https://www.covid19lst.org" target="_blank">https://www.covid19lst.org/reports</a> (2020)'
         }
       ]
     },
