@@ -50,7 +50,10 @@
                 ? author.name
                 : (author.givenName ? author.givenName + " " + author.familyName : "")
             }}</b>:
-          <template v-if="Array.isArray(author.affiliation)">
+          <template v-if="!author.affiliation">
+            N/A
+          </template>
+          <template v-else-if="Array.isArray(author.affiliation)">
             <span v-for="(affiliation, idx) in author.affiliation" :key="'author'+idx">{{ affiliation.name }}</span>
           </template>
           <template v-else>
