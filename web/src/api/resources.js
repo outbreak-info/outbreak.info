@@ -33,7 +33,7 @@ function filterString2Arr(filterString) {
 
 function filterArr2String(filterArr) {
   return filterArr
-    .map(d => `${d.key}:("${d.values.join('","')}")`)
+    .map(d => `${d.key}:("${d.values.join('" OR "')}")`)
     .join(" AND ");
 }
 
