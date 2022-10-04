@@ -4,7 +4,7 @@
   <section class="d-flex flex-column justify-content-center align-items-center pt-3">
     <a href="https://api.outbreak.info/" alt="outbreak.info API" class="position-relative">
       <img src="@/assets/back-api.png" class="w-100" alt="outbreak-api" />
-      <p class="pt-1 m-0 align-items-center position-absolute text-overlay">Access all data in our API</p>
+      <p class="pt-1 m-0 align-items-center position-absolute text-overlay d-none d-lg-inline">Access all data in our API</p>
     </a>
   </section>
 
