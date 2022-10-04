@@ -165,10 +165,11 @@ function getResourcesDateUpdated(apiurl) {
 }
 
 function cleanDate(result, dateFormat = "%Y-%m-%d-%H:%M") {
-  const today = new Date();
-  let lastUpdated;
-  const strictIsoParse = timeParse(dateFormat);
-  const dateUpdated = strictIsoParse(result); // ensure the time is parsed as PDT
+  let dateUpdated = timeParse(dateFormat)(result); // ensure the time is parsed as PDT
+  if(!dateUpdated) {
+    // check because outbreak/NDE tag dates separately
+    dateUpdated = timeParse("%Y-%m-%dT%H:%M:%S%Z")(result);
+  }
 
   const dateUpdatedStr = dateUpdated ? timeFormat("%d %b %Y")(dateUpdated) : null;
 
