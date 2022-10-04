@@ -400,7 +400,52 @@ const state = {
         }
       ]
     },
-
+    {
+      category: "Computational Tools",
+      id: "Computational Tools",
+      sources: [
+        {
+          id: "biotools",
+          api_id: "biotools",
+          name: "bio.tools",
+          query: "Biotools",
+          img: "biotools.png",
+          url: "https://covid-19.bio.tools",
+          description: "The use of bioinformatics is ubiquitous within the life sciences. In bio.tools, we are striving to provide a comprehensive registry of software and databases, facilitating researchers from across the spectrum of biological and biomedical science to find, understand, utilise and cite the resources they need in their day-to-day work. Everything from simple command-line tools and online services, through to databases and complex, multi-functional analysis workflows is included. Resources are described in a rigorous semantics and syntax, providing end-users with the convenience of concise, consistent and therefore comparable information.",
+          license: {
+            name: "CC-BY 4.0",
+            url: "https://biotools.readthedocs.io/en/latest/license.html"
+          },
+          citation: 'Ison, J. et al. (2015). Tools and data services registry: a community effort to document bioinformatics resources. <i>Nucleic Acids Research</i>. doi: <a href="https://doi.org/10.1093/nar/gkv1116" target="_blank">10.1093/nar/gkv1116</a>'
+        },
+        {
+          id: "dockstore",
+          api_id: "dockstore",
+          name: "Dockstore",
+          query: "Dockstore",
+          img: "dockstore.svg",
+          url: "https://dockstore.org/search?categories.name.keyword=COVID-19&entryType=workflows&searchMode=files",
+          description: "Dockstore’s mission is to enable researchers and developers to share and reuse analytical workflows and tools in a way that makes them machine readable and runnable in a variety of environments.",
+          license: {
+            url: "https://zenodo.org/record/7072576"
+          },
+          citation: 'Denis Yuen, Louise Cabansay, Andrew Duncan, Gary Luu, Gregory Hogue, Charles Overbeck, Natalie Perez, Walt Shands, David Steinberg, Chaz Reid, Nneka Olunwa, Richard Hansen, Elizabeth Sheets, Ash O’Farrell, Kim Cullion, Brian D O’Connor, Benedict Paten, Lincoln Stein, The Dockstore: enhancing a community platform for sharing reproducible and accessible computational protocols, <i>Nucleic Acids Research<i>, Volume 49, Issue W1, 2 July 2021, Pages W624–W632, <a href="https://doi.org/10.1093/nar/gkab346" target="_blank">https://doi.org/10.1093/nar/gkab346</a>'
+        },
+        {
+          id: "zenodo",
+          api_id: "zenodo",
+          name: "Zenodo",
+          query: "Zenodo",
+          img: "zenodo.svg",
+          url: "https://zenodo.org/communities/covid-19/",
+          description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other).",
+          license: {
+            url: "https://about.zenodo.org/policies/"
+          },
+          citation: 'Zenodo. <i>Coronavirus Disease Research Community - COVID-19</i>. Available online: <a href="https://zenodo.org/communities/covid-19/" target="_blank">https://zenodo.org/communities/covid-19/</a> (2020)'
+        }
+      ]
+    },
     {
       category: "Protocols",
       id: "Protocol",
@@ -443,6 +488,19 @@ const state = {
         name: "Resources",
         query: {
           q: "remdesivir"
+        }
+      }
+    },
+    {
+      date: new Date("2022-10-05 0:0"),
+      category: "data",
+      title: "Added bio.tools and Dockstore",
+      description: 'Added bio.tools and Dockstore as ComputationalTools sources for the Research Library.',
+      route: {
+        name: "Resources",
+        query: {
+          q: "",
+          filter: "curatedBy.name:bio.tools,Dockstore"
         }
       }
     },

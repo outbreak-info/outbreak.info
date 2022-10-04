@@ -134,6 +134,9 @@ function getResourcesDateUpdated(apiurl) {
           case "biorxiv":
             count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (combined)` : null;
             break;
+          case "zenodo":
+            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (combined)` : null;
+            break;
           case "clinical_trials":
             count = result[d]["stats"]["clinicaltrials"] ? `${result[d]["stats"]["clinicaltrials"].toLocaleString()} Records` : null;
             break;
