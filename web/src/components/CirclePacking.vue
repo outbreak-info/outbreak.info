@@ -304,6 +304,14 @@ export default Vue.extend({
     fill: $software-color;
 }
 
+.ComputationalTool.depth1 {
+    stroke: $software-color;
+}
+
+.ComputationalTool.depth2 {
+    fill: $software-color;
+}
+
 .Analysis.depth1 {
     stroke: $analysis-color;
 }

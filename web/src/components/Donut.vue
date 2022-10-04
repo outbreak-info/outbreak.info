@@ -85,9 +85,10 @@ export default Vue.extend({
             "#edc949", // yellow (ImageObject)
             "#b475a3", // purple (ClinicalTrial)
             "#ff98a8", // pink (Book)
+            "#a97252", // brown (ComputationalTool)
             "#9c755f"
           ])
-          .domain(["Dataset", "WebSite", "Publication", "Analysis", "Protocol", "ImageObject", "ClinicalTrial", "Book"])
+          .domain(["Dataset", "WebSite", "Publication", "Analysis", "Protocol", "ImageObject", "ClinicalTrial", "Book", "ComputationalTool"])
           .unknown("#bababa");
       } else {
         this.colorScale = scaleOrdinal(schemeSet2)
