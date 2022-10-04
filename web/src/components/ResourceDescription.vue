@@ -198,6 +198,15 @@
         </small>
       </template>
 
+      <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory.name}`" v-else-if="data.topicCategory.name">
+        <router-link :to="{
+        name: 'Resources',
+        query: { q: `&quot;${data.topicCategory.name}&quot;` }
+      }" class="no-underline">
+          {{ data.topicCategory.name }}
+        </router-link>
+      </small>
+
       <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory}`" v-else>
         <router-link :to="{
         name: 'Resources',
