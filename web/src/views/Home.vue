@@ -7,7 +7,7 @@
         <div class="d-flex flex-column w-100 align-items-center my-2">
           <img src="@/assets/logo-full-white-01.svg" alt="Outbreak.info" class="w-20" />
           <p class="text-light my-1 mx-3">
-            a standardized, open-source database of COVID-19 resources and epidemiology data
+            an open-source database of SARS-CoV-2 variant data, COVID-19 epidemiology data, and published research
           </p>
         </div>
       </div>
@@ -205,7 +205,7 @@
   <!-- INTRO + VIDEO -->
   <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest">
     <div class="row d-flex align-items-center p-3">
-      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 larger">
+      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 large">
         <p>
           Outbreak.info is a project from the <a href="https://www.scripps.edu/faculty/hughes/" rel="noreferrer" target="_blank">Hughes</a>, <a href="http://sulab.org/" target="_blank">Su</a>, <a href="https://wulab.io/" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" target="_blank">Andersen</a> labs at Scripps Research to
           unify COVID-19 and SARS-CoV-2 epidemiology and genomic data, published research, and other resources.

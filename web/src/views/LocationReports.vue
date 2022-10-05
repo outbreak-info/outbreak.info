@@ -1,8 +1,8 @@
 <template>
 <div>
   <div class="py-4 border-top location-banner">
-    <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
-    <h1 class="m-0 font-weight-bold location-header">Location Tracker</h1>
+    <h1 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h1>
+    <h2 class="m-0 font-weight-bold location-header">Location Tracker</h2>
   </div>
   <div class="my-2 mx-4 px-4">
     <!-- LOADING -->
