@@ -1,5 +1,5 @@
 <template>
-<div class="w-100">
+<div :class="wrapperClass">
   <div class="dropdown">
     <input :class="{ 'form-control': isStandalone }" :disabled="disabled" type="text" v-model="selected" :placeholder="placeholder" @keydown.enter='enter' @keydown.down='down' @keydown.up='up' @input='debounceSearch' />
     <div class="dropdown-menu overflow-auto" :class="{'show':isOpen}" style="width:100%">
@@ -28,6 +28,10 @@ export default {
     labelVariable: {
       type: String,
       default: "name"
+    },
+    wrapperClass: {
+      type: String,
+      default: ""
     },
     removeOnSelect: {
       type: Boolean,

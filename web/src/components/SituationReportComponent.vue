@@ -35,7 +35,7 @@
               </div>
 
               <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-                <TypeaheadSelect :queryFunction="queryLocation" @selected="addLoc2Add" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
+                <TypeaheadSelect wrapperClass="w-100" :queryFunction="queryLocation" @selected="addLoc2Add" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@
             </div>
 
             <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-              <TypeaheadSelect :queryFunction="queryLocation" @selected="updateSelectedLoc" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences" />
+              <TypeaheadSelect wrapperClass="w-100" :queryFunction="queryLocation" @selected="updateSelectedLoc" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences" />
             </div>
           </div>
 
@@ -757,7 +757,6 @@ export default {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
       if (this.alias) {
         this.lineageName = this.alias.includes("*") ? this.alias.toUpperCase().replace("OMICRON", "Omicron") : this.$options.filters.capitalize(this.alias.toLowerCase());
-        console.log(this.alias)
         this.selectedMutationArr = null;
         this.title = `${this.lineageName} Variant Report`;
         this.reportType = "combined lineage";
