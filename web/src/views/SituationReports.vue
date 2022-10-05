@@ -1,8 +1,8 @@
 <template>
 <div>
   <div class="bg-main__darker mutation-banner border-top py-4">
-    <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
-    <h1 class="m-0 mutation-header font-weight-bold">Lineage <span class="mx-2">|</span> Mutation Tracker</h1>
+    <h1 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h1>
+    <h2 class="m-0 mutation-header font-weight-bold">Lineage <span class="mx-2">|</span> Mutation Tracker</h2>
   </div>
 
   <div class="my-2 mx-4 px-4">
