@@ -9,6 +9,7 @@
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
 APP_DESCRIPTION = "Outbreak.info explores COVID-19 and SARS-CoV-2 data with variant surveillance reports, data on cases and deaths, and a searchable research library.";
+APP_TITLE = "outbreak.info SARS-CoV-2 data explorer";
 
 module.exports = {
   css: {
