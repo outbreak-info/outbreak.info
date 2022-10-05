@@ -5,7 +5,7 @@
     },
     {
       "q": "Who created Outbreak.info?",
-      "a": "Outbreak.info is a project from the Su, Wu, and Andersen labs at Scripps Research and is supported by the National Institute for Allergy and Infectious Diseases (5 U19 AI135995-04S3), National Center for Advancing Translational Sciences (5 U24 TR002306), and Centers for Disease Control and Prevention (75D30120C09795). <a href='https://outbreak.info/about'>Click here to meet the team</a>."
+      "a": "Outbreak.info is a project from the Hughes, Su, Wu, and Andersen labs at Scripps Research and is supported by the National Institute for Allergy and Infectious Diseases (5 U19 AI135995-04S3), National Center for Advancing Translational Sciences (5 U24 TR002306), and Centers for Disease Control and Prevention (75D30120C09795). <a href='https://outbreak.info/about'>Click here to meet the team</a>."
     },
     {
       "q": "Where does the data come from? And how often is it updated?",
@@ -13,7 +13,7 @@
     },
     {
       "q": "How do I access the raw data?",
-      "a": "All Outbreak.info data can be accessed through our <a href='https://api.outbreak.info/'>API</a> or downloaded on the website as a .tsv or .json file."
+      "a": "All Outbreak.info data can be accessed through our <a href='https://api.outbreak.info/'>API</a> or or <a href='https://outbreak-info.github.io/R-outbreak-info/' target='_blank'>R package</a>."
     },
     {
       "q": "How do I cite outbreak.info? Can I use the data or images?",
@@ -56,7 +56,7 @@
       },
       {
         "q": "Are the trends I’m seeing real?",
-        "a": "Trends presented by Outbreak.info are rooted in real data and real statistical analysis. However, sampling and sequencing contains some known biases, hence data is presented with confidence intervals and caveats. Data may be skewed by a number of factors, particularly for the most recent dates,<a href='https://outbreak.info/situation-reports/caveats'>which is explained here</a>."
+        "a": "Trends presented by Outbreak.info are rooted in real data and real statistical analysis. However, sampling and sequencing contains some known biases, hence data is presented with confidence intervals and caveats. Data may be skewed by a number of factors, particularly for the most recent dates, <a href='https://outbreak.info/situation-reports/caveats'>which is explained here</a>."
       },
       {
         "q": "What are those pink blobs (confidence intervals) on the Lineage|Mutation Tracker?",
@@ -64,7 +64,7 @@
       },
       {
         "q": "How trustworthy is the data?",
-        "a": "All genomic data is sourced from <a href='https://www.gisaid.org/'>GISAID</a>, the world’s largest database of SARS-CoV-2 sequences, and updated daily. Quality filters are applied to reduce errors (<a href='https://outbreak.info/situation-reports/methods'>read more here</a>). The data contains some known biases,<a href='https://outbreak.info/situation-reports/caveats'>which we explain here</a>."
+        "a": "All genomic data is sourced from <a href='https://www.gisaid.org/'>GISAID</a>, the world’s largest database of SARS-CoV-2 sequences, and updated daily. Quality filters are applied to reduce errors (<a href='https://outbreak.info/situation-reports/methods'>read more here</a>). The data contains some known biases, <a href='https://outbreak.info/situation-reports/caveats'>which we explain here</a>."
       },
       {
         "q": "I see X number of sequences in the GISAID repository but you list fewer sequences. Why?",
@@ -123,7 +123,7 @@
     },
     {
       "q": "Where does the data come from? And how often is it updated?",
-      "a": "COVID-19 cases and deaths data are sourced from Johns Hopkins University, The New York Times, and The COVID Tracking Project.  <a href='https://outbreak.info/sources'>Click here for more about our sources</a>. Data is aggregated daily."
+      "a": "COVID-19 cases and deaths data are sourced from Johns Hopkins University.  <a href='https://outbreak.info/sources'>Click here for more about our sources</a>. Data is aggregated daily."
     },
     {
       "q": "Is the data accurate?",

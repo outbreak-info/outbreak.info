@@ -84,7 +84,7 @@ export default Vue.extend({
     locationID: String,
     dark: {
       type: Boolean,
-      default: true
+      default: false
     },
     moc: {
       type: Array,
@@ -114,6 +114,10 @@ export default Vue.extend({
       type: String,
       default: "pangolin_lineage"
     },
+    routeTo: {
+      type: String,
+      default: "MutationReport"
+    },
     yDomain: Array,
     onlyTopAxis: {
       type: Boolean,
@@ -134,15 +138,18 @@ export default Vue.extend({
     },
     textColor() {
       return this.dark ? "#efefef" : "#555555";
+    },
+    routeToName() {
+      return this.routeTo.includes("GenomicsEmbed") ? "GenomicsEmbed" : "MutationReport";
     }
   },
   data() {
     return {
       margin: {
         top: 72,
-        right: 225,
+        right: 325,
         bottom: 72,
-        left: 153
+        left: 250
       },
       isOverflow: false,
       // UI
@@ -249,7 +256,7 @@ export default Vue.extend({
       }).flatMap(d => d)
     },
     cleanSelectors(id) {
-      return(id.replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\./g, "_"))
+      return(id.replace(/:/g, "_").replace(/\//g, "_").replace(/\*\s\[/g, "_").replace(/\s\(/g, "_").replace(/\)\]/g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_"));
     },
     prepData() {
       this.plottedData = cloneDeep(this.data);
@@ -397,19 +404,31 @@ export default Vue.extend({
     },
     route2Lineage(pango, is_alias) {
       if (is_alias) {
-        this.$router.push({
-          name: "MutationReport",
-          params: {
-            alias: pango.toLowerCase()
-          },
-          query: {
-            loc: this.locationID,
-            selected: this.locationID
-          }
-        })
+        if(this.routeToName == "GenomicsEmbed"){
+          this.$router.push({
+            name: this.routeToName,
+            query: {
+              alias: pango,
+              loc: this.locationID,
+              selected: this.locationID
+            }
+          })
+        } else {
+          this.$router.push({
+            name: this.routeToName,
+            params: {
+              alias: pango.toLowerCase()
+            },
+            query: {
+              loc: this.locationID,
+              selected: this.locationID
+            }
+          })
+        }
+
       } else {
         this.$router.push({
-          name: "MutationReport",
+          name: this.routeToName,
           query: {
             loc: this.locationID,
             pango: pango,
@@ -421,7 +440,7 @@ export default Vue.extend({
     route2LineageMutation(d) {
       if (d.is_alias) {
         this.$router.push({
-          name: "MutationReport",
+          name: this.routeToName,
           params: {
             alias: d[this.yVar].toLowerCase()
           },
@@ -433,7 +452,7 @@ export default Vue.extend({
         })
       } else {
         this.$router.push({
-          name: "MutationReport",
+          name: this.routeToName,
           query: {
             loc: this.locationID,
             pango: d[this.yVar],
@@ -445,7 +464,7 @@ export default Vue.extend({
     },
     route2Mutation(mut) {
       this.$router.push({
-        name: "MutationReport",
+        name: this.routeToName,
         query: {
           loc: this.locationID,
           muts: `${this.gene}:${mut}`,

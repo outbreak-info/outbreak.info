@@ -1,9 +1,6 @@
 <template>
 <div class="home flex-column text-left d-flex">
-  <div v-if="loading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
-  </div>
-  <!-- INTRO -->
+<!-- INTRO -->
   <section>
     <div class="row m-0">
       <div class="col-sm-12 d-flex justify-content-center align-items-center bg-main__darker px-0 back-1">
@@ -16,7 +13,6 @@
       </div>
     </div>
   </section>
-
 
   <!-- SEARCH  -->
   <section class="d-flex justify-content-center align-items-center mb-4 text-light">
@@ -44,12 +40,12 @@
             </span>
 
             <span class="mr-3">
-              <router-link :to="{name: 'Epidemiology', query: {location: 'CITY_US-NY_NYC'}} " class="text-light">New York City
+              <router-link :to="{name: 'Epidemiology', query: {location: 'USA_US-CA'}} " class="text-light">California
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
 
-            <router-link :to="{name: 'Epidemiology', query: {location: 'METRO_28140'}} " class="text-light">Kansas City metro area
+            <router-link :to="{name: 'Epidemiology', query: {location: 'USA_US-KS-28140'}} " class="text-light">Kansas City metro area
               <font-awesome-icon :icon="['fas', 'angle-double-right']" />
             </router-link>
           </small>
@@ -92,17 +88,27 @@
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', params: {alias: 'delta'}} " class="text-light">Delta
+              <router-link :to="{name: 'MutationReport', params: {alias: 'ba.2*'}} " class="text-light">BA.2*
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', query: {pango: 'B.1.621'}} " class="text-light">B.1.621
+              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.2.12.1'}} " class="text-light">BA.2.12.1
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', params: {alias: 'alpha'}} " class="text-light">Alpha / B.1.1.7
+              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.2.75'}} " class="text-light">BA.2.75
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', query: {pango: 'BA.4'}} " class="text-light">BA.4
+                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+              </router-link>
+            </span>
+            <span class="mr-3">
+              <router-link :to="{name: 'MutationReport', params: {alias: 'BA.5*'}} " class="text-light">BA.5*
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -199,9 +205,9 @@
   <!-- INTRO + VIDEO -->
   <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest">
     <div class="row d-flex align-items-center p-3">
-      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 larger">
+      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 large">
         <p>
-          Outbreak.info is a project from the <a href="http://sulab.org/" target="_blank">Su</a>, <a href="https://wulab.io/" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" target="_blank">Andersen</a> labs at Scripps Research to
+          Outbreak.info is a project from the <a href="https://www.scripps.edu/faculty/hughes/" rel="noreferrer" target="_blank">Hughes</a>, <a href="http://sulab.org/" target="_blank">Su</a>, <a href="https://wulab.io/" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" target="_blank">Andersen</a> labs at Scripps Research to
           unify COVID-19 and SARS-CoV-2 epidemiology and genomic data, published research, and other resources.
         </p>
 
@@ -505,31 +511,6 @@
   </div>
 
 
-  <section class="d-flex flex-column justify-content-center align-items-left bg-grag-grey text-light px-3 pt-2 mb-5">
-    <div class="d-flex justify-content-center align-items-center mb-px-5 py-3 mb-flex">
-      <div class="d-flex w-100 justify-content-between">
-        <div>
-          <h4 class="at-a-glance-header m-0">At a glance</h4>
-          <p class="mb-0">
-            View the three locations with the largest increase in COVID-19 cases in the
-            past day, or select your own locations
-          </p>
-        </div>
-      </div>
-      <button class="btn btn-main-outline flex-shrink-0 router-link no-underline bg-white" @click="summaryDeletable = !summaryDeletable">
-        {{ summaryDeletable ? "done" : "change locations" }}
-      </button>
-    </div>
-
-    <div class="row d-flex justify-content-center">
-      <GlanceSummary v-for="(location, idx) in glanceSummaries" :key="idx" class="d-flex mx-2 mb-3" :data="location" :idx="location.location_id" :deletable="summaryDeletable" @removed="removeSummary" />
-
-      <div class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main" v-if="summaryDeletable">
-        <h6>Add locations</h6>
-        <SearchBar @location="addSummary" class="search-bar"></SearchBar>
-      </div>
-    </div>
-  </section>
 
 </div>
 </template>
@@ -539,10 +520,7 @@
 import SearchBar from "@/components/SearchBar.vue";
 import CustomReportForm from "@/components/CustomReportForm";
 import TypeaheadSelect from "@/components/TypeaheadSelect";
-import GlanceSummary from "@/components/GlanceSummary";
-import {
-  getGlanceSummary
-} from "@/api/genomics.js";
+
 import Vue from "vue";
 import {
   mapState
@@ -558,12 +536,11 @@ import {
   library
 } from "@fortawesome/fontawesome-svg-core";
 import {
-  faSpinner,
   faAngleDoubleRight,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faSpinner, faAngleDoubleRight, faSearch);
+library.add(faAngleDoubleRight, faSearch);
 
 import {
   findPangolin,
@@ -574,7 +551,6 @@ export default {
   name: "Home",
   components: {
     SearchBar,
-    GlanceSummary,
     FontAwesomeIcon,
     CustomReportForm,
     TypeaheadSelect
@@ -582,10 +558,6 @@ export default {
   data() {
     return {
       searchQuery: "",
-      glanceLocations: [],
-      glanceSummaries: [],
-      summaryDeletable: false,
-      dataSubscription: null,
       queryPangolin: null,
       queryLocation: null
     };
@@ -632,63 +604,13 @@ export default {
           }
         });
       }
-    },
-    removeSummary: function(idx) {
-      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
-      Vue.$cookies.set("custom_locations", this.glanceLocations);
-      if (this.glanceLocations.length > 0) {
-        this.updatedSubscription = getGlanceSummary(
-          this.$apiurl, this.$genomicsurl,
-          this.glanceLocations
-        ).subscribe(d => {
-          this.glanceSummaries = this.sortSummaries(d);
-        });
-      } else {
-        this.glanceSummaries = [];
-      }
-    },
-    addSummary: function(location_id) {
-      this.glanceLocations = this.glanceLocations.concat(location_id);
-      Vue.$cookies.set("custom_locations", this.glanceLocations);
-      this.updatedSubscription = getGlanceSummary(
-        this.$apiurl, this.$genomicsurl,
-        this.glanceLocations
-      ).subscribe(d => {
-        this.glanceSummaries = this.sortSummaries(d);
-      });
-    },
-    sortSummaries(data) {
-      if (this.glanceLocations && this.glanceLocations.length > 0) {
-        data.sort(
-          (a, b) =>
-          this.glanceLocations.indexOf(a.location_id) -
-          this.glanceLocations.indexOf(b.location_id)
-        );
-      }
-      return data;
-    }
-  },
-  destroyed() {
-    this.dataSubscription.unsubscribe();
-    if (this.updatedSubscription) {
-      this.updatedSubscription.unsubscribe();
     }
   },
   mounted() {
     const locations = Vue.$cookies.get("custom_locations");
-    this.glanceLocations = locations ? locations.split(",") : [];
 
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;
-
-    this.dataSubscription = getGlanceSummary(
-      this.$apiurl, this.$genomicsurl,
-      this.glanceLocations
-    ).subscribe(d => {
-      this.glanceSummaries = this.sortSummaries(d);
-      this.glanceLocations = d.map(d => d.location_id);
-      Vue.$cookies.set("custom_locations", this.glanceLocations);
-    });
   }
 }
 </script>

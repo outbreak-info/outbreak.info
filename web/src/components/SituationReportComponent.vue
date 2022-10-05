@@ -35,7 +35,7 @@
               </div>
 
               <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-                <TypeaheadSelect :queryFunction="queryLocation" @selected="addLoc2Add" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
+                <TypeaheadSelect wrapperClass="w-100" :queryFunction="queryLocation" @selected="addLoc2Add" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@
             </div>
 
             <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-              <TypeaheadSelect :queryFunction="queryLocation" @selected="updateSelectedLoc" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences" />
+              <TypeaheadSelect wrapperClass="w-100" :queryFunction="queryLocation" @selected="updateSelectedLoc" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences" />
             </div>
           </div>
 
@@ -190,7 +190,14 @@
 
       <!-- Simplified form for embedded reports -->
       <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
-        <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
+        <div class="d-flex align-items-center">
+          <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
+          <a href="https://outbreak.info" class="ml-4 navbar-brand no-underline text-light">
+            <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+            outbreak.info
+          </a>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
 
@@ -313,7 +320,7 @@
         <!-- RIGHT: SUMMARY BOX -->
         <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
           <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :locationQueryParams="locationQueryParams" :reportType="reportType" :selected="selected"
-            :locationTotals="locationTotals" :countries="countries" :states="states" />
+            :locationTotals="locationTotals" :countries="countries" :states="states" :routeTo="routeTo" />
         </section>
       </div>
 
@@ -431,7 +438,7 @@
       </section>
 
       <!-- CITATION -->
-      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
+      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :genomicsCitation="genomicsCitation" :url="url" :today="today" />
 
       <!-- ACKNOWLEDGEMENTS -->
       <ReportAcknowledgements class="border-top pt-3" />
@@ -565,7 +572,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors", "reportloading"]),
+    ...mapState("admin", ["mutationAuthors", "genomicsCitation", "reportloading"]),
     smallScreen() {
       return (window.innerWidth < 500)
     },
@@ -574,7 +581,11 @@ export default {
         this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
     },
     locationLabel() {
-      return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
+      if (this.selectedLocation) {
+        return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
+      } else {
+        return (null)
+      }
     },
     pangoLink() {
       return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
@@ -745,7 +756,7 @@ export default {
     setLineageAndMutationStr() {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
       if (this.alias) {
-        this.lineageName = this.$options.filters.capitalize(this.alias.toLowerCase());
+        this.lineageName = this.alias.includes("*") ? this.alias.toUpperCase().replace("OMICRON", "Omicron") : this.$options.filters.capitalize(this.alias.toLowerCase());
         this.selectedMutationArr = null;
         this.title = `${this.lineageName} Variant Report`;
         this.reportType = "combined lineage";
@@ -820,7 +831,6 @@ export default {
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
         this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
-          console.log(results)
           this.hasData = true;
 
           // selected locations

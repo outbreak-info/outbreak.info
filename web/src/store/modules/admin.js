@@ -3,10 +3,9 @@ const state = {
   loading: false,
   dataloading: false, // separate loader for data. When there's a bunch of data coming in, but also the page load data loaded initially w/ the App.vue, they can conflict.
   reportloading: false, // separate loader for reports
-  outbreak: {
-    authors: "Julia L. Mullen, Ginger Tsueng, Alaa Abdel Latif, Manar Alkuzweny, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Kristian G. Andersen, Chunlei Wu, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology"
-  },
-  mutationAuthors: "Alaa Abdel Latif, Julia L. Mullen, Manar Alkuzweny, Ginger Tsueng, Marco Cano, Emily Haag, Jerry Zhou, Mark Zeller, Emory Hufbauer, Nate Matteson, Chunlei Wu, Kristian G. Andersen, Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes, and the Center for Viral Systems Biology",
+  genomicsCitation: "<b>Outbreak.info genomic reports: scalable and dynamic surveillance of SARS-CoV-2 variants and mutations</b>. Karthik Gangavarapu, Alaa Abdel Latif, Julia Mullen, Manar Alkuzweny, Emory Hufbauer, Ginger Tsueng, Emily Haag, Mark Zeller, Christine M. Aceves, Karina Zaiets, Marco Cano, Jerry Zhou, Zhongchao Qian, Rachel Sattler, Nathaniel L. Matteson, Joshua I. Levy, Raphael T.C. Lee, Lucas Freitas, Sebastian Maurer-Stroh, GISAID core and curation team, Marc A. Suchard, Chunlei Wu, Andrew I. Su, Kristian G. Andersen, Laura D. Hughes. medRxiv (2022). doi: <a href='https://doi.org/10.1101/2022.01.27.22269965' target='_blank'>10.1101/2022.01.27.22269965</a>",
+  resourcesCitation: "<b>Outbreak.info Research Library: A standardized, searchable platform to discover and explore COVID-19 resources</b>. Ginger Tsueng,  Julia Mullen,  Manar Alkuzweny,  Marco Alvarado Cano,  Benjamin Rush, Emily Haag, Outbreak Curators, Alaa Abdel Latif,  Xinghua Zhou, Zhongchao Qian, Kristian G. Andersen,  Chunlei Wu,  Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes. bioRxiv (2022). doi: <a href='https://doi.org/10.1101/2022.01.20.477133' target='_blank'>10.1101/2022.01.20.477133</a>",
+  mutationAuthors: "Karthik Gangavarapu, Alaa Abdel Latif, Julia Mullen, Manar Alkuzweny, Emory Hufbauer, Ginger Tsueng, Emily Haag, Mark Zeller, Christine M. Aceves, Karina Zaiets, Marco Cano, Jerry Zhou, Zhongchao Qian, Rachel Sattler, Nathaniel L Matteson, Joshua I. Levy, Raphael TC Lee, Lucas Freitas, Sebastian Maurer-Stroh, GISAID core and curation team, Marc A. Suchard, Chunlei Wu, Andrew I. Su, Kristian G. Andersen, Laura D. Hughes, and the Center for Viral Systems Biology",
   team: [
     {
       name: "Chrissy Aceves",
@@ -94,24 +93,45 @@ const state = {
       img: "mark.jpg"
     },
     {
+      name: "Karina Zaiets",
+      img: "karina.jpg"
+    },
+    {
       name: "Jerry Zhou",
       img: "jerry.jpg"
     }
   ],
   funding: [{
-      identifier: "5 U19 AI135995-04S3",
+      identifier: "3 U19 AI135995-04S3",
+      name: "Outbreak supplement 2",
+      funder: {
+        name: "National Institute for Allergy and Infectious Diseases"
+      },
+      url: "https://reporter.nih.gov/search/bCP9nFsmuk6DeseQC0wP4w/project-details/10469781"
+    },
+    {
+      identifier: "3 U19 AI135995-03S2",
+      name: "Outbreak supplement 1",
+      funder: {
+        name: "National Institute for Allergy and Infectious Diseases"
+      },
+      url: "https://reporter.nih.gov/search/iF5NH_3NKEakYdbvWURuSA/project-details/10248803"
+    },
+    {
+      identifier: "5 U19 AI135995-04",
       name: "CViSB",
       funder: {
         name: "National Institute for Allergy and Infectious Diseases"
       },
-      url: "https://projectreporter.nih.gov/project_info_details.cfm?aid=9634840"
+      url: "https://reporter.nih.gov/search/1HLiPGV6lU-r27wHWKBRrg/project-details/10087872"
     },
     {
       identifier: "5 U24 TR002306",
       name: "CD2H",
       funder: {
         name: "National Center for Advancing Translational Sciences"
-      }
+      },
+      url: "https://reporter.nih.gov/search/pfcras8ylUm-g9cDf-EWPw/project-details/9964934"
     },
     {
       identifier: "75D30120C09795",
@@ -119,10 +139,19 @@ const state = {
       funder: {
         name: "Centers for Disease Control and Prevention"
       }
+    },
+    {
+      identifier: "R01 GM083924",
+      name: "BioThings R01",
+      funder: {
+        name: "National Institute of General Medical Sciences"
+      },
+      url: "https://reporter.nih.gov/search/NPnYKqlgXEO5WaR3QsdeOA/project-details/9899250"
     }
   ],
   sources: [{
       id: "JHU",
+      api_id: "epi",
       name: "Johns Hopkins University Center for Systems Science and Engineering",
       scope: "non-U.S. data",
       img: "jhu.png",
@@ -136,15 +165,25 @@ const state = {
   ],
   genomicSources: [{
     id: "gisaid",
+    api_id: "genomics",
     name: "GISAID Initiative",
     img: "gisaid.png",
     scope: "SARS-CoV-2 virus sequences",
-    description: "<p>We would like to thank the GISAID Initiative and are grateful to all of the data contributors, i.e.the Authors, the Originating laboratories responsible for obtaining the specimens, and the Submitting laboratories for generating the genetic sequence and metadata and sharing via the GISAID Initiative, on which this research is based. GISAID data provided on this website are subject to GISAID’s <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Terms and Conditions</a>.</p><p class='mb-2'>The GISAID Initiative promotes the rapid sharing of data from all influenza viruses and the coronavirus causing COVID-19. This includes genetic sequence and related clinical and epidemiological data associated with human viruses, and geographical as well as species-specific data associated with avian and other animal viruses, to help researchers understand how viruses evolve and spread during epidemics and pandemics.</p><p class='mb-2'>GISAID does so by overcoming disincentive hurdles and restrictions, which discourage or prevented sharing of virological data prior to formal publication.</p><p class='mb-2'>The Initiative ensures that open access to data in GISAID is provided free-of-charge to all individuals that agreed to identify themselves and agreed to uphold the GISAID sharing mechanism governed through its <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Database Access Agreement</a>.",
+    description: "<p>We are grateful to the data contributors who shared the data used in this Web Application via the GISAID Initiative: the Authors, the Originating Laboratories responsible for obtaining the specimens, and the Submitting Laboratories that generated the genetic sequences and metadata. All data in GISAID are subject to GISAID’s <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Terms and Conditions</a>.</p><p class='mb-2'>The GISAID Initiative promotes the rapid sharing of data from all influenza viruses and the coronavirus causing COVID-19. This includes genetic sequence and related clinical and epidemiological data associated with human viruses, and geographical as well as species-specific data associated with avian and other animal viruses, to help researchers understand how viruses evolve and spread during epidemics and pandemics.</p><p class='mb-2'>GISAID does so by overcoming disincentive hurdles and restrictions, which discourage or prevented sharing of virological data prior to formal publication.</p><p class='mb-2'>The Initiative ensures that open access to data in GISAID is provided free-of-charge to all individuals that agreed to identify themselves and agreed to uphold the GISAID sharing mechanism governed through its <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Database Access Agreement</a>.",
     url: "https://www.gisaid.org/",
     license: {
       url: "https://www.gisaid.org/registration/terms-of-use/",
     },
     citation: 'Elbe, S., and Buckland-Merrett, G. (2017) Data, disease and diplomacy: GISAID’s innovative contribution to global health. Global Challenges, 1:33-46. DOI: <a href="http://dx.doi.org/10.1002/gch2.1018" target="_blank">10.1002/gch2.1018</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6607375/" target="_blank">31565258</a>; Shu, Y., McCauley, J. (2017)  GISAID: Global initiative on sharing all influenza data – from vision to reality. EuroSurveillance, 22(13) DOI: <a href="http://dx.doi.org/10.2807/1560-7917.ES.2017.22.13.30494" target="_blank">10.2807/1560-7917.ES.2017.22.13.30494</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5388101/" target="_blank">PMC5388101</a>'
+  },
+  {
+    id: "cov-lineages",
+    name: "cov-lineages.org",
+    img: "covlineages.png",
+    scope: "PANGO lineages and descendants",
+    description: '<p>outbreak.info Variant of Concern (VOC) reports pull all descendants of a parent VOC lineage from <a href="https://cov-lineages.org/index.html" target="_blank">cov-lineages.org</a>. For instance, we define "Omicron" as all B.1.1.529 and all its descendants according to the <a href="https://github.com/cov-lineages/lineages-website/blob/master/data/lineages.yml" target="_blank">lineage file</a> maintained by the cov-lineages.org team.</p><p>The Pango nomenclature is being used by researchers and public health agencies worldwide to track the transmission and spread of SARS-CoV-2, including variants of concern. This website documents all current Pango lineages and their spread, as well as various software tools which can be used by researchers to perform analyses on SARS-COV-2 sequence data.</p>',
+    url: "https://cov-lineages.org/index.html",
+    citation: 'Tracking the international spread of SARS-CoV-2 lineages B.1.1.7 and B.1.351/501Y-V2. O’Toole Á, Hill V, Pybus OG et al. (2021) DOI: <a href="http://dx.doi.org/10.12688/wellcomeopenres.16661.1" target="_blank">10.12688/wellcomeopenres.16661.1</a>  PMCID: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8176267/" target="_blank">PMC8176267</a>'
   }],
   geoSources: [{
       id: "naturaleath",
@@ -174,7 +213,9 @@ const state = {
       id: "Publication",
       sources: [{
           id: "litcovid",
+          api_id: "litcovid",
           name: "LitCovid / PubMed",
+          query: "litcovid",
           img: "litcovid_pubmed.png",
           img_lg: "litcovid_pubmed_lg.png",
           url: "https://www.ncbi.nlm.nih.gov/research/coronavirus/",
@@ -186,6 +227,8 @@ const state = {
         },
         {
           id: "biorxiv",
+          api_id: "biorxiv",
+          query: "bioRxiv",
           name: "bioRxiv",
           img: "biorxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
@@ -197,6 +240,8 @@ const state = {
         },
         {
           id: "medrxiv",
+          api_id: "biorxiv",
+          query: "medRxiv",
           name: "medRxiv",
           img: "medrxiv.png",
           url: "https://connect.biorxiv.org/relate/content/181",
@@ -208,6 +253,8 @@ const state = {
         },
         {
           id: "imperial",
+          api_id: "covid_imperial_college",
+          query: "MRC Centre for Global Infectious Disease Analysis",
           name: "MRC Centre for Global Infectious Disease Analysis",
           img: "imperial.png",
           url: "https://www.imperial.ac.uk/mrc-global-infectious-disease-analysis/covid-19/",
@@ -219,15 +266,17 @@ const state = {
         },
         {
           id: "covid19LST",
+          api_id: "covid19_LST_reports",
+          query: "COVID-19 Literature Surveillance Team",
           name: "COVID-19 Literature Surveillance Team",
           img: "covid19_lst.png",
-          url: "https://www.covid19lst.org/",
-          description: "We are a non-profit composed of medical students, PhDs, physicians and other passionate individuals. We keep up with the latest research on COVID-19/SARS-CoV-2, find the newest articles, read them, grade their level of evidence, and bring you the bottom line. Our goal is to empower you to take the best care of yourself and those in your care.",
+          url: "https://web.archive.org/web/20211020140102/https://www.covid19lst.org/copy-of-about",
+          description: "[inactive] COVID-19 LST was a non-profit composed of medical students, PhDs, physicians and other passionate individuals. They kept up with the latest research on COVID-19/SARS-CoV-2, found the newest articles, read them, graded their level of evidence, and brought you the bottom line. Their goal was to empower you to take the best care of yourself and those in your care. The COVID-19 LST Project was completed on <a href='https://web.archive.org/web/20211020084652/https://www.covid19lst.org/post/new-projects-ahead-for-covid-19-lst' target='_blank'>3 July 2021</a>.",
           license: {
             url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
             name: "CC BY-NC-SA 4.0"
           },
-          citation: 'COVID-19 Literature Surveillance Team. <i>Daily COVID-19 LST Reports</i>. Available online: <a href="https://www.covid19lst.org/reports" target="_blank">https://www.covid19lst.org/reports</a> (2020)'
+          citation: 'COVID-19 Literature Surveillance Team. <i>Daily COVID-19 LST Reports</i>. Available online: <a href="https://web.archive.org/web/20211020140102/https://www.covid19lst.org" target="_blank">https://www.covid19lst.org/reports</a> (2020)'
         }
       ]
     },
@@ -236,7 +285,9 @@ const state = {
       id: "ClinicalTrial",
       sources: [{
           id: "nct",
+          api_id: "clinical_trials",
           name: "ClinicalTrials.gov",
+          query: "ClinicalTrials.gov",
           img: "clinicaltrialsgov.png",
           url: "https://clinicaltrials.gov/ct2/results?cond=COVID-19",
           description: 'ClinicalTrials.gov is a database of privately and publicly funded clinical studies conducted around the world. Some modifications were made to the data to standardize how metadata are reported and to align to our <a href=""',
@@ -247,7 +298,9 @@ const state = {
         },
         {
           id: "who",
+          api_id: "covid_who_clinical_trials",
           name: "WHO International Clinical Trials Registry Platform",
+          query: "WHO International Clinical Trials Registry Platform",
           img: "who.svg",
           url: "https://www.who.int/ictrp/en/",
           description: "The main aim of the WHO ICTRP is to facilitate the prospective registration of the WHO Trial Registration Data Set on all clinical trials, and the public accessibility of that information. Clinical trials are sourced from the Australian New Zealand Clinical Trials Registry (ANZCTR), Brazilian Clinical Trials Registry (ReBec), Chinese Clinical Trial Register (ChiCTR), Clinical Research Information Service (CRiS), Republic of Korea, Clinical Trials Registry - India (CTRI), Cuban Public Registry of Clinical Trials (RPCEC), EU Clinical Trials Register (EU-CTR), German Clinical Trials Register (DRKS), Iranian Registry of Clinical Trials (IRCT), ISRCTN, Japan Primary Registries Network (JPRN), Netherlands National Trial Register (NTR), Pan African Clinical Trial Registry (PACTR), Peruvian Clinical Trials Registry (REPEC), Sri Lanka Clinical Trials Registry (SLCTR), and Thai Clinical Trials Register (TCTR). Note that clinical trials also listed in ClinicalTrials.gov have been excluded from this source.",
@@ -263,7 +316,9 @@ const state = {
       id: "Dataset",
       sources: [{
           id: "dde",
+          api_id: "dde",
           name: "Data Discovery Engine",
+          query: "Data Discovery Engine",
           img: "dde.svg",
           img_lg: "dde_full.svg",
           url: "https://discovery.biothings.io/dataset",
@@ -276,7 +331,9 @@ const state = {
         },
         {
           id: "figshare",
+          api_id: "covid_figshare",
           name: "Figshare",
+          query: "Figshare",
           img: "figshare_icon.svg",
           img_lg: "figshare.svg",
           url: "https://covid19.figshare.com/",
@@ -288,7 +345,9 @@ const state = {
         },
         {
           id: "dataverse",
+          api_id: "dataverses",
           name: "Harvard Dataverse",
+          query: "Harvard Dataverse",
           img: "dataverse_icon.png",
           img_lg: "dataverse.png",
           url: "https://dataverse.harvard.edu/dataverse/covid19",
@@ -300,7 +359,9 @@ const state = {
         },
         {
           id: "immport",
+          api_id: "immport",
           name: "ImmPort",
+          query: "ImmPort",
           img: "immport.png",
           img_lg: "immport_lg.png",
           url: "https://www.immport.org/shared/search?filters=study_2_condition_or_disease.condition_preferred:COVID-19%20-%20DOID:0080600&utm_source=COVID-19&utm_medium=banner&utm_campaign=COVID-19",
@@ -312,7 +373,9 @@ const state = {
         },
         {
           id: "pdb",
+          api_id: "covid_pdb_datasets",
           name: "The Protein Data Bank",
+          query: "The Protein Data Bank",
           img: "pdb.png",
           url: "https://www.rcsb.org/news?year=2020&article=5e74d55d2d410731e9944f52&feature=true",
           description: "Since 1971, the Protein Data Bank archive (PDB) has served as the single repository of information about the 3D structures of proteins, nucleic acids, and complex assemblies.",
@@ -324,7 +387,9 @@ const state = {
         },
         {
           id: "zenodo",
+          api_id: "zenodo",
           name: "Zenodo",
+          query: "Zenodo",
           img: "zenodo.svg",
           url: "https://zenodo.org/communities/covid-19/",
           description: "This community collects research outputs that may be relevant to the Coronavirus Disease (COVID-19) or the SARS-CoV-2. Scientists are encouraged to upload their outcome in this collection to facilitate sharing and discovery of information. Although Open Access articles and datasets are recommended, also closed and restricted access material are accepted. All types of research outputs can be included in this Community (Publication, Poster, Presentation, Dataset, Image, Video/Audio, Software, Lesson, Other).",
@@ -341,7 +406,9 @@ const state = {
       id: "Protocol",
       sources: [{
         id: "protocolsio",
+        api_id: "protocolsio",
         name: "protocols.io",
+        query: "Protocols.io",
         img: "protocolsio.png",
         img_lg: "protocolsio_lg.png",
         url: "https://www.protocols.io/groups/coronavirus-method-development-community",
@@ -529,6 +596,27 @@ const state = {
           pango: "B.1.429",
           selected: "USA_US-CA"
         }
+      }
+    },
+    {
+      date: new Date("2022-06-03 0:0"),
+      category: "variants",
+      title: "Added in recombinant Omicron lineages as Omicron VOC",
+      description: 'Classified recombinants of Omicron lineages (B.1.1.529 and descendants) as being part of the Omicron Variant of Concern. This will include lineages like XE, which is a combined BA.1* and BA.2*. Read more about how <a href="https://virological.org/t/pango-lineage-nomenclature-provisional-rules-for-naming-recombinant-lineages/657" target="_blank">Pango classifies recombinant lineages</a>',
+      route: {
+        name: "MutationReport",
+        params: {
+          alias: "Omicron"
+        }
+      }
+    },
+    {
+      date: new Date("2022-06-02 0:0"),
+      category: "variants",
+      title: "Formally moved extinct lineages to previously circulating VOCs or de-escalated varaints",
+      description: 'Based on the lack of circulation, Alpha, Beta, Gamma, and Delta variants have been re-classified as previously circulating VOCs. Similarly, former VOIs/VUMs which are no longer circulating have been moved to de-escalated variants: B.1.1.318-related, B.1.617.3, C.1.2, C.36.3-related, Delta, Eta,  Iota, Kappa, Lambda, Mu, and Theta.',
+      route: {
+        name: "SituationReports"
       }
     },
     {

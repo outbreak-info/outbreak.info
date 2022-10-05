@@ -158,9 +158,17 @@
           <h6 class="m-0">Corrections</h6>
           <ul v-if="data.correction" id="correction-list">
             <li v-for="(item, idx) in data.correction" :key="idx">
-              <a :href="item.url" target="_blank" rel="noreferrer">
-                {{ item.correctionType[0].toUpperCase() }}{{ item.correctionType.slice(1) }} {{item.identifier.toUpperCase()}}
+                {{ item.correctionType[0].toUpperCase() }}{{ item.correctionType.slice(1) }}: {{item.identifier.toUpperCase()}}
+                <small>
+              <router-link :to="{name: 'Resource Page', params: {id: item.identifier}}" class="btn btn-sec ml-3 mb-3">
+                View record on outbreak.info
+              </router-link>
+              </small>
+              <small>
+              <a target="_blank" :href="item.url" class="btn btn-sec ml-3 mb-3">
+                View record on source
               </a>
+              </small>
             </li>
           </ul>
           <div v-else>
@@ -222,9 +230,9 @@
       <ResourceSidebar :data="data" :date="dateModified" :type="data['@type']" v-if="data" />
     </div>
   </div>
-  <!-- <div v-else class="min-height">
+  <div v-else class="min-height">
     Sorry, data on {{id}} is not found. Let us know at <a :href="`mailto:help@outbreak.info?subject=Missing metadata for id ${id}`" target="_blank">help@outbreak.info</a>
-  </div> -->
+  </div>
 </div>
 </template>
 
@@ -294,9 +302,13 @@ export default Vue.extend({
     getData(id) {
       this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
         this.data = results;
-
-        this.type = this.data["@type"];
-        this.dateModified = this.formatDate(this.data.date);
+        if (this.data) {
+          this.type = this.data["@type"];
+          this.dateModified = this.formatDate(this.data.date);
+        } else {
+          this.type = null;
+          this.dateModified = null;
+        }
       })
     }
   },

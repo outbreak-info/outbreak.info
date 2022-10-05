@@ -14,6 +14,7 @@ from urllib import request
 import requests
 import logging
 from datetime import datetime
+import os
 
 # --- LOGGING ---
 logging.basicConfig(filename = "curated_lineages_json.log", filemode="a", format="%(asctime)s : %(name)s - %(levelname)s - %(message)s", datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
@@ -110,9 +111,144 @@ def getDescendants(row):
 # Pull the Pango lineages, reshape the descendants into a dict
 lineage_file = request.urlopen(lineage_url)
 lineages = yaml.load(lineage_file, Loader=yaml.BaseLoader)
-lineage_descendants = {}
+### add in patch
+
+lineage_info = {}
 for lineage in lineages:
-    lineage_descendants[lineage["name"]] = lineage["children"]
+    if 'parent' in lineage.keys():
+        lineage_info[lineage['name']] = {'children': lineage['children'],'parent': lineage['parent']}
+    else:
+        lineage_info[lineage['name']] = {'children': lineage['children']}
+
+
+### also load in the lineages aliases 
+alias_dict = dict(recombinant_lineages)
+
+#drop recombinants from alias dict 
+
+for k in list(alias_dict.keys()):
+    if k.startswith('X'):
+        alias_dict.pop(k)
+
+#flipped aliases and long names
+flipped_dict = dict((v,k) for k,v in alias_dict.items())
+del flipped_dict['']
+
+
+### borrowing the sort_lineages function from the cov-lineages repo
+def sort_lineages(lin_list):
+    splitted = [i.split(".") for i in lin_list]
+    numeric = []
+    for i in splitted:
+        lin = [i[0]]
+        for j in i[1:]:
+            lin.append(int(j))
+        numeric.append(lin)
+    sorted_list = sorted(numeric)
+    stringed = []
+    for i in sorted_list:
+        lin = [i[0]]
+        for j in i[1:]:
+            lin.append(str(j))
+        stringed.append(lin)
+    finished_list = ['.'.join(i) for i in stringed]
+    return finished_list
+
+#now add in missing lineage descendants
+allLins = lineage_info.keys()
+for lin in list(allLins):
+    #skip recombinants and entries with no parent (e.g. A)
+    if lin.startswith('X') or ('parent' not in lineage_info[lin]):
+        continue
+    os.path.splitext(lineage_info[lin]['parent'])[0]
+
+    cLin = lin
+    linList = []
+    while 'parent' in lineage_info[cLin].keys():
+        pLinName = lineage_info[cLin]['parent']
+        if pLinName in lineage_info.keys():
+            pLin = lineage_info[pLinName]
+        else:
+            ### identify synonymous names (e.g. B.1.1.529.X = BA.X)
+            splitP = pLinName.split('.')
+            #add one piece at a time, see if there's an element in the flipped dict that matches. 
+            j=4
+            notFound = 1
+            while notFound and j<(len(splitP)):
+                candidate = '.'.join(splitP[0:j])
+                if candidate in flipped_dict.keys():
+                    pLinName_ = pLinName
+                    pLinName = pLinName.replace(candidate,flipped_dict[candidate])
+                    if pLinName in lineage_info.keys():
+                        pLin = lineage_info[pLinName]
+                        notFound = False
+                    else:
+                        pLinName = pLinName_
+                        j+=1
+                else:
+                    j+=1
+
+        currLin = lineage_info[cLin]
+        #also add children of that lineage that may not be in the parent 
+        linList+= currLin['children'] + [cLin] #some lineages don't include themselves
+        linsToAdd = list(set([ll for ll in linList if ll not in pLin['children']]))
+        try:
+
+            lineage_info[pLinName]['children'] += linsToAdd
+        except:
+            ## to handle cases like B.2 
+            splitP = pLinName.split('.')
+            if len(splitP)>1:
+                lineage_info[pLinName] = {'parent':'.'.join(splitP[0:(len(splitP)-1)]),'children':linsToAdd}
+            else:
+                lineage_info[pLinName] = {'children':linsToAdd + [pLinName]}
+            print(pLinName,' is missing')
+        cLin = pLinName
+        ### for when we get back to the root
+        if 'parent' not in lineage_info[cLin].keys():
+                linsToAdd = [ll for ll in linList if ll not in lineage_info[cLin]['children']]
+                lineage_info[pLinName]['children'] += linsToAdd
+
+
+### now go back and sort the lineage lists
+for lin in lineage_info.keys():
+    lineage_info[lin]['children'] = sort_lineages(lineage_info[lin]['children'])
+
+
+# also write a copy of the fixed yaml file
+# borrowed from cov-lineages/grinch
+with open("lineages.yml", "w") as lineage_file:
+    for lineage in lineage_info.keys():
+        if not lineage.startswith("*"):
+            if lineage == "A":
+                lineage_file.write("- name: " + lineage + "\n")
+                lineage_file.write("  children:\n")
+
+                for child in sort_lineages(lineage_info[lineage]['children']):
+                    lineage_file.write("      - " + child + "\n")
+            else:
+
+                lineage_file.write("- name: " + lineage + "\n")
+                lineage_file.write("  children:\n")
+
+                for child in sort_lineages(lineage_info[lineage]['children']):
+                    lineage_file.write("      - " + child + "\n")
+                if 'parent' in lineage_info[lineage].keys():
+                    if lineage_info[lineage]['parent'] is not None:
+                        lineage_file.write("  parent: " + lineage_info[lineage]['parent'] + "\n")
+
+
+
+
+lineage_descendants = {}
+for lin in lineage_info.keys():
+    lineage_descendants[lin] = lineage_info[lin]['children']
+
+#### end of patch
+
+# lineage_descendants = {}
+# for lineage in lineages:
+#     lineage_descendants[lineage["name"]] = lineage["children"]
 
 curated["pango_descendants"] = curated.apply(getDescendants, axis = 1)
 curated["pango_sublineages"] = curated.apply(lambda row: list(filter(lambda x: (x != row.pangolin_lineage) & (x not in row.pangolin_lineage), row.pango_descendants)), axis=1)

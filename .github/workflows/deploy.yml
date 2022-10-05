@@ -7,13 +7,14 @@ on:
 
 jobs:
   build_and_deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
-        node-version: '14'
-    - run: npm --prefix web/ install
+        node-version: 14
+    - name: install dependencies
+      run: npm --prefix web/ install
     - name: build website
       env:
         VUE_APP_API_ACCESS: ${{ secrets.VUE_APP_API_ACCESS }}

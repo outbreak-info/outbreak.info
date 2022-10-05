@@ -3,7 +3,7 @@
   <!-- SUMMARY VERSION -->
   <div v-if="summary">
     <p>
-      All SARS-CoV sequences are downloaded from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> daily and subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer"
+      All SARS-CoV sequences are received via direct provision from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> daily and subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer"
         target="_blank">Bjorn</a>, which relies heavily on <a href="https://github.com/lh3/minimap2/" rel="noreferrer" target="_blank">minimap2</a> and <a href="https://github.com/cov-ert/datafunk/" rel="noreferrer" target="_blank">datafunk</a>. <router-link :to="{name: 'SituationReportMethodology'}">View full methods</router-link>
     </p>
   </div>
@@ -23,7 +23,7 @@
       <h2>Sequencing data</h2>
       <h4 id="pipeline">Sequence alignment</h4>
       <p>
-        All SARS-CoV sequences are downloaded from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> daily and subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer"
+        All SARS-CoV sequences are received via direct provision from the <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">GISAID Initiative</a> daily and subsequently processed using <a href="https://github.com/andersen-lab/bjorn/" rel="noreferrer"
           target="_blank">Bjorn</a>, which relies heavily on <a href="https://github.com/lh3/minimap2/" rel="noreferrer" target="_blank">minimap2</a> and <a href="https://github.com/cov-ert/datafunk/" rel="noreferrer" target="_blank">datafunk</a>.
           The alignment is based on the reference sequence used by <a
           :href="refSeq.url" target="_blank" rel="noreferrer">{{refSeq.name}}</a>.
@@ -64,8 +64,12 @@
       <h2>Lineages</h2>
       <h4 id="lineages">Lineage assignment</h4>
       <p>
-        PANGO lineage classification for each individual sequence was provided by GISAID. Note that classifications of newer lineages, including Delta, by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are in flux and may change. While underlying sequence data remains the same, reports for specific lineages may change. Read more from the Pango team on <a href="https://cov-lineages.org/FAQ.html" target="_blank">why a lineage assignment might change</a> and an explanation about the <a href="https://www.pango.network/new-ay-lineages/" target="_blank">AY lineage series</a>.
+        PANGO lineage classification for each individual sequence was provided by GISAID. Note that classifications of newer lineages by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are in flux and may change. While underlying sequence data remains the same, reports for specific lineages may change. Read more from the Pango team on <a href="https://cov-lineages.org/FAQ.html" target="_blank">why a lineage assignment might change</a> and an explanation about the <a href="https://www.pango.network/new-ay-lineages/" target="_blank">AY lineage series</a>.
       </p>
+
+      <h4 id="sublineages">Sublineage assignment</h4>
+      <p>outbreak.info Variant of Concern (VOC) reports pull all descendants of a parent VOC lineage from <a href="https://cov-lineages.org/index.html" target="_blank">cov-lineages.org</a>. For instance, we define "Omicron" as all B.1.1.529 and all its descendants according to the <a href="https://github.com/cov-lineages/lineages-website/blob/master/data/lineages.yml" target="_blank">lineage file</a> maintained by the cov-lineages.org team.</p>
+
 
       <h4 id="characteristic">Characteristic mutations of a lineage</h4>
 

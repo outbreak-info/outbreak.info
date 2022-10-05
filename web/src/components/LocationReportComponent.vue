@@ -135,7 +135,15 @@
 
       <!-- simplified header for embedded options -->
       <div class="d-flex flex-column text-light location-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
-        <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
+
+        <div class="d-flex align-items-center">
+          <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
+          <a href="https://outbreak.info" class="ml-4 navbar-brand no-underline text-light">
+            <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+            outbreak.info
+          </a>
+        </div>
+
         <div class="d-flex flex-wrap justify-content-between align-items-center">
           <div class="d-flex flex-column align-items-start">
             <!-- name -->
@@ -249,7 +257,7 @@
                 <h5 class="mb-0">Common lineages</h5>
                 <small class="text-muted">Prevalence over last {{recentWindow}} days</small>
                 <div class="d-flex align-items-start" :class="{'flex-wrap' : mediumScreen}">
-                  <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" />
+                  <ReportStackedBarGraph :data="mostRecentLineages" :seqCounts="seqCountsWindowed" :colorScale="colorScale" :locationID="selectedLocation.id" :recentWindow="recentWindow" :routeTo="routeTo" />
                 </div>
               </section>
             </template>
@@ -305,7 +313,7 @@
               </span>
             </div>
 
-            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" :dark="darkMode" />
+            <MutationHeatmap :data="recentHeatmap" gene="S" :locationID="loc" :voc="voc" :voi="voi" :moc="moc" :moi="moi" :yDomain="mostRecentDomain" :dark="darkMode" :routeTo="routeTo" />
           </div>
           <DownloadReportData class="mt-3" :data="recentHeatmap" figureRef="mutation-heatmap" dataType="Mutation Report Heatmap" />
         </div>
@@ -403,7 +411,7 @@
           </button>
           <Warning class="fa-sm ml-3" text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
         </div>
-        <LocationTable :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
+        <LocationTable :routeTo = "routeTo" :data="lineageTable" :locationName="selectedLocation.label" :locationID="selectedLocation.id" />
       </section>
 
 
@@ -415,7 +423,7 @@
       </section>
 
       <!-- CITATION -->
-      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :url="url" :today="today" />
+      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :genomicsCitation="genomicsCitation" :url="url" :today="today" />
 
       <!-- ACKNOWLEDGEMENTS -->
       <ReportAcknowledgements class="border-top pt-3" />
@@ -513,7 +521,7 @@ export default {
     xmax: String,
     dark: {
       type: [String, Boolean],
-      default: true
+      default: false
     },
     routeTo: {
       type: String,
@@ -567,7 +575,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors"]),
+    ...mapState("admin", ["mutationAuthors", "genomicsCitation"]),
     ...mapState("genomics", ["locationLoading1", "locationLoading2", "locationLoading3", "locationLoading4", "locationLoading5", "characteristicThreshold"]),
     loading() {
       return (this.locationLoading1 || this.locationLoading2 || this.locationLoading3 || this.locationLoading4 || this.locationLoading5)

@@ -36,29 +36,46 @@
             </small>
           </div>
           <div id="sequence-count" class="ml-2 mr-5 text-muted" v-if="total">
-            with <span class="text-highlight">{{total}} sequences</span>  from GISAID
+            with <span class="text-highlight">{{total}} sequences</span> from GISAID
           </div>
         </div>
 
         <div class="d-flex flex-column text-left font-size-large bg-white border-top border-bottom p-2">
           <div class="d-flex flex-wrap">
             View:
-            <router-link class="mx-3" :to="{ hash: '#voc' }">Variants of Concern</router-link>
+            <div class="d-flex flex-wrap flex-column">
+              <router-link class="mx-3 mb-1" :to="{ hash: '#voc' }">Variants of Concern</router-link>
 
-            <div class="d-flex flex-column mx-3">
-              <router-link :to="{ hash: '#voi' }" class="">Variants of Interest</router-link>
-              <div class="text-muted text-size-xs mt-n1">a.k.a. Variants Under Investigation</div>
+              <div class="d-flex flex-column mx-3 mb-1">
+                <router-link :to="{ hash: '#voi' }" class="">Variants of Interest</router-link>
+                <div class="text-muted text-size-xs mt-n1">a.k.a. Variants Under Investigation</div>
+              </div>
             </div>
 
-            <router-link class="mx-3" :to="{ hash: '#moc' }">Mutations of Concern</router-link>
+            <div class="d-flex flex-wrap flex-column mx-3">
+              <div class="d-flex flex-column mx-3 mb-1">
+                <router-link :to="{ hash: '#previous-voc' }" class="">Previous Variants of Concern</router-link>
+                <div class="text-muted text-size-xs mt-n1">VOCs no longer circulating</div>
+              </div>
 
-            <router-link class="mx-3" :to="{ hash: '#moi' }">Mutations of Interest</router-link>
+              <div class="d-flex flex-column mx-3 mb-1">
+                <router-link :to="{ hash: '#de-escalated' }" class="">De-escalated Variants</router-link>
+                <div class="text-muted text-size-xs mt-n1">VOIs/VUMs no longer circulating</div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap flex-column mx-3">
+              <router-link class="mx-3 mb-1" :to="{ hash: '#moc' }">Mutations of Concern</router-link>
+
+              <router-link class="mx-3 mb-1" :to="{ hash: '#moi' }">Mutations of Interest</router-link>
+
+            </div>
           </div>
-          <div class="d-flex justify-content-center mt-3 fa-sm">
+          <!-- <div class="d-flex justify-content-center mt-3 fa-sm">
             <button class="btn btn-grey-outline" data-toggle="collapse" href="#filter-classifiers">
               Filter reports
             </button>
-          </div>
+          </div> -->
 
           <div id="filter-classifiers" class="mt-3 collapse">
             <div class="d-flex flex-wrap align-items-center my-3">
@@ -118,7 +135,7 @@
     <section id="report-list" class="text-left">
       <!-- lineage groups -->
       <div class="lineage-group my-10" v-for="(group, i) in filteredReports" :key="i" :id="group.id + '-reports'">
-        <template v-if="group.id != 'deescalated'">
+        <template v-if="group.id != 'deescalated' && group.id != 'previous_voc'">
           <div class="d-flex justify-content-between">
             <h2 class="mb-0" :id="group.id">{{ group.key | capitalize }} Reports</h2>
             <div class="d-flex align-items-center text-sec" v-if="i === 0">
@@ -127,12 +144,10 @@
             </div>
           </div>
 
-          <small>
-            <div class="line-height-1">
+            <div class="mt-1">
               <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
               <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
             </div>
-          </small>
 
 
           <template v-if="group.values.length">
@@ -248,14 +263,6 @@
                               </span>
                             </template>
                           </h5>
-                        </div>
-                        <!-- DELTA WARNING! -->
-                        <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Delta'">
-                          <Warning text="Classifications of Delta lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
-                        </div>
-                        <!-- OMICRON WARNING! -->
-                        <div style='max-width: 470px;' class="mb-2" v-if="report.who_name == 'Omicron'">
-                          <Warning text="Classifications of Omicron lineages are in flux. <a href='https://outbreak.info/situation-reports/caveats#delta' class='text-light text-underline'>(read more)</a>" />
                         </div>
                       </div>
 
@@ -391,16 +398,39 @@
             <button class="btn btn-grey-outline py-1 m-0 ml-4" @click="clearFilters">clear filters</button>
           </div>
         </template>
-        <div v-else id="de-escalated">
-          <h4>De-escalated Variants</h4>
-          <small class="text-muted line-height-sm">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been
-            circulating
-            for a long
-            time without any impact on the
-            overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
+        <div v-else-if="group.id == 'previous_voc'" id="previous-voc">
+          <h4>Previously Circulating Variants of Concern</h4>
+          <div class="text-muted">These former VOCs have been de-escalated by public health agencies as the variant is no longer circulating.</div>
 
           <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
-            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 font-weight-bold">
+            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 mb-2 font-weight-bold">
+              <!-- WHO reports -->
+              <template v-if="report.who_name">
+                <!-- with sublineages -->
+                <router-link :to="{name:'MutationReport', params: {alias: report.who_name.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline">
+                  <h5 class="m-0" :id="anchorLink(report.who_name)">{{ report.label }}/{{Array.isArray(report.pangolin_lineage) ? report.pangolin_lineage.join(" & ") : report.pangolin_lineage}}</h5>
+                </router-link>
+              </template>
+
+              <!-- multiple sublineages, unnamed -->
+              <router-link :to="{name:'MutationReport', params: {alias: report.label.toLowerCase()}, query: {loc: report.loc, selected: report.selected} }" class="no-underline" v-else-if="report.pango_sublineages.length">
+                <h5 class="m-0" :id="anchorLink(report.label)">{{ report.label }}</h5>
+              </router-link>
+
+              <!-- single lineage -->
+              <router-link :to="{name:'MutationReport', query: {pango: report.pangolin_lineage, loc: report.loc, selected: report.selected} }" class="no-underline" v-else>
+                <h5 class="m-0" :id="anchorLink(report.pangolin_lineage)">{{ report.pangolin_lineage }}</h5>
+              </router-link>
+            </div>
+          </div>
+        </div>
+        <div v-else id="de-escalated">
+          <h4>De-escalated Variants</h4>
+          <div class="text-muted">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been
+            circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</div>
+
+          <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
+            <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 mb-2 font-weight-bold">
               <!-- WHO reports -->
               <template v-if="report.who_name">
                 <!-- with sublineages -->
@@ -515,8 +545,8 @@
                       <a :href="report.aquaria" v-if="report.aquaria" target="_blank" class="line-height-1 d-flex">
 
                         {{report.mutation_name}} 3D structures
-                        <img src="@/assets/resources/aquaria.svg" style="width: 35px" class="ml-2"/>
-""                      </a>
+                        <img src="@/assets/resources/aquaria.svg" style="width: 35px" class="ml-2" />
+                        "" </a>
                     </td>
                   </tr>
 
@@ -568,7 +598,7 @@ import CustomReportForm from "@/components/CustomReportForm.vue";
 import ReportAcknowledgements from "@/components/ReportAcknowledgements.vue";
 import MutationHeatmap from "@/components/MutationHeatmap.vue";
 import DownloadReportData from "@/components/DownloadReportData.vue";
-import Warning from "@/components/Warning.vue";
+// import Warning from "@/components/Warning.vue";
 
 import tippy from "tippy.js";
 import "tippy.js/themes/light.css";
@@ -627,8 +657,8 @@ export default {
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon,
-    MutationHeatmap,
-    Warning
+    MutationHeatmap
+    // Warning
   },
   computed: {
     ...mapState("admin", ["reportloading"]),
@@ -1247,11 +1277,11 @@ $de-escalated: #bab0ab;
 }
 
 .opacity-75 {
-  opacity: 0.75 !important;
+    opacity: 0.75 !important;
 }
-.st-rep-table{
-  display: block;
-  overflow-x: auto;
+.st-rep-table {
+    display: block;
+    overflow-x: auto;
     width: 100%;
 }
 </style>

@@ -19,7 +19,7 @@
 
     <div id="resource-counts" class="d-flex ml-3 flex-column align-items-center" v-if="counts.total">
       <h3 class="text-left text-highlight">{{counts.total}} resources</h3>
-      <small class="text-muted badge bg-grey__lightest" v-if="counts.dateModified">
+      <small class="text-muted badge bg-grey__lightest mb-4" v-if="counts.dateModified">
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />Updated {{ counts.dateModified }}
       </small>
 

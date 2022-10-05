@@ -70,13 +70,23 @@ export function lookupEpiLocations(apiUrl, locationArr) {
 export function findEpiLocation(apiUrl, query, num2Return = 5) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,country_name,state_name`
+      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,admin1,admin2,admin_level,country_name`
     )
   ).pipe(
     pluck("data", "hits"),
     map(results => {
       results.forEach(d => {
-        d["label"] = d.state_name ? `${d.name}, ${d.state_name}` : d.country_name && d.country_name != d.name ? `${d.name}, ${d.country_name}` : d.name
+        let location_label = d.name;
+        if (d.admin_level === 2 && d.admin2 && d.admin2 != 'None') {
+          location_label = d.name === "Kansas City" || d.name === "New York" ? `${d.name}, ${d.country_name}` : `${d.admin2} County, ${d.admin1}`;
+        } else if (d.admin_level === 1 && d.admin1 && d.admin1 != "None") {
+          location_label = `${d.name}, ${d.country_name}`;
+        } else if (d.admin_level === 1.5) {
+          location_label = `${d.name} Metro, ${d.admin1}, ${d.country_name}`;
+        }
+
+        d["label"] = location_label;
+
       })
       return (results)
     }),
@@ -168,11 +178,10 @@ function getLabel(entry) {
 
 export function getMostCases(apiUrl, num2Return = 5) {
   store.state.admin.loading = true;
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}`
     )
   ).pipe(
     pluck("data", "hits"),
@@ -213,11 +222,9 @@ export function getSummary(apiUrl, caseThreshold) {
 }
 
 export function getTotals(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100`
     )
   ).pipe(
     pluck("data", "hits"),
@@ -237,11 +244,10 @@ export function getTotals(apiUrl) {
 }
 
 export function countCountries(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name`
     )
   ).pipe(
     pluck("data", "facets", "name", "terms"),
@@ -257,11 +263,9 @@ export function countCountries(apiUrl) {
 }
 
 export function getFirstCases(apiUrl) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id`
     )
   ).pipe(
     pluck("data", "hits"),
@@ -283,11 +287,9 @@ export function getFirstCases(apiUrl) {
 }
 
 export function getCasesAboveThresh(apiUrl, threshold) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id`
     )
   ).pipe(
     pluck("data", "hits"),

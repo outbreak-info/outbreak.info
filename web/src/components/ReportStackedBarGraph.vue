@@ -7,7 +7,8 @@
     <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
   </svg>
   <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="stacked-seq-histogram" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts" :title="`Sequences over last ${recentWindow} days`" />
+  <SequencingHistogram :data="seqCounts" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="stacked-seq-histogram" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts"
+    :title="`Sequences over last ${recentWindow} days`" />
 
   <DownloadReportData :data="data" figureRef="report-stacked-bar" dataType="Mutation Report Prevalence over Time" />
 </div>
@@ -56,6 +57,10 @@ export default Vue.extend({
     locationName: String,
     colorScale: Function,
     recentWindow: String,
+    routeTo: {
+      type: String,
+      default: "MutationReport"
+    },
     rectWidth: {
       type: Number,
       default: 25
@@ -133,7 +138,7 @@ export default Vue.extend({
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0,1]);
+        .domain([0, 1]);
 
       this.lineages = Object.keys(this.data[0]);
 
@@ -145,7 +150,7 @@ export default Vue.extend({
       this.series = stack()
         .keys(this.lineages)
         // .order(stackOrderDescending)
-      .order(stackOrderAscending)
+        .order(stackOrderAscending)
       // .order(stackOrderAppearance)
       // .order(stackOrderNone)
       // .order(stackOrderReverse)
@@ -272,14 +277,26 @@ export default Vue.extend({
     },
     route2Lineage(pango) {
       if (pango.toLowerCase() != "other") {
-        this.$router.push({
-          name: "MutationReport",
-          query: {
-            loc: this.locationID,
-            pango: pango,
-            selected: this.locationID
-          }
-        })
+        if (this.routeTo == "GenomicsEmbedLocation") {
+          this.$router.push({
+            name: "GenomicsEmbed",
+            query: {
+              loc: this.locationID,
+              type: "var",
+              pango: pango,
+              selected: this.locationID
+            }
+          })
+        } else {
+          this.$router.push({
+            name: "MutationReport",
+            query: {
+              loc: this.locationID,
+              pango: pango,
+              selected: this.locationID
+            }
+          })
+        }
       }
     },
     debounce(fn, delay) {

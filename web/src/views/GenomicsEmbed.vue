@@ -6,7 +6,7 @@
       <!-- selector -->
       <div class="radio-item-light text-light w-100 pt-2 pb-3">
         <div class="radio-item fa-lg">
-          <input type="radio" id="var" value="var" v-model="selectedReportType">
+          <input type="radio" id="var" value="var" v-model="selectedReportType" @change="switchRadioBtn">
           <label class="font-weight-bold" for="var">Lineage Report</label>
         </div>
       </div>
@@ -50,7 +50,7 @@
       <!-- selector -->
       <div class="radio-item-light text-light w-100 pt-2">
         <div class="radio-item fa-lg">
-          <input type="radio" id="loc" value="loc" v-model="selectedReportType">
+          <input type="radio" id="loc" value="loc" v-model="selectedReportType" @change="switchRadioBtn">
           <label class="font-weight-bold" for="loc">Location Report</label>
         </div>
       </div>
@@ -98,7 +98,7 @@
       <!-- selector -->
       <div class="radio-item-light text-light w-100 pt-2">
         <div class="radio-item fa-lg">
-          <input type="radio" id="comp" value="comp" v-model="selectedReportType">
+          <input type="radio" id="comp" value="comp" v-model="selectedReportType" @change="switchRadioBtn">
           <label class="font-weight-bold" for="comp">Lineage Comparison</label>
         </div>
       </div>
@@ -109,21 +109,29 @@
 
 
   <!-- Lineage report component -->
-  <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && (pango || alias)" />
+  <SituationReportComponent :embedded="true" :loc="loc" :muts="muts" :pango="pango" :alias="alias" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedVariant" v-if="selectedReportType == 'var' && (pango || alias || muts)" />
 
   <!-- Location report component -->
-  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedLocation" v-if="selectedReportType == 'loc' && loc" />
+  <LocationReportComponent :embedded="true" :loc="loc" :dark="dark" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax=xmax :selected="selected" routeTo="GenomicsEmbedLocation"
+    v-if="selectedReportType == 'loc' && loc" />
 
   <!-- Lineage comparison component -->
   <LineageComparisonComponent :embedded="true" routeTo="GenomicsEmbed" v-if="selectedReportType == 'comp'" />
 
-  <Logos />
+  <footer class="bg-main__darker">
+    <div class="d-flex p-2 mt-4 w-100 align-items-center justify-content-between">
+      <a href="https://outbreak.info" class="navbar-brand text-light no-underline">
+        <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
+        outbreak.info
+      </a>
+    </div>
+  </footer>
+
 </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Logos from "@/components/Logos.vue";
 
 import {
   findPangolin,
@@ -144,6 +152,8 @@ import {
 
 library.add(faAngleDoubleRight, faSearch);
 
+import isEqual from "lodash/isEqual";
+
 export default {
   name: "GenomicsEmbed",
   components: {
@@ -151,8 +161,7 @@ export default {
     SituationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/SituationReportComponent.vue"),
     LocationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/LocationReportComponent.vue"),
     LineageComparisonComponent: () => import( /* webpackPrefetch: true */ "@/components/LineageComparisonComponent.vue"),
-    FontAwesomeIcon,
-    Logos
+    FontAwesomeIcon
   },
   props: {
     type: String,
@@ -177,22 +186,25 @@ export default {
     };
   },
   watch: {
-    selectedReportType(newVal, oldVal) {
-      if (newVal !== oldVal && oldVal) {
-        const newSelected = newVal == "loc" ? [] : null;
-
-        this.$router.push({
-          name: "GenomicsEmbed",
-          query: {
-            type: newVal,
-            selected: newSelected
-          }
-        })
+    '$route.query': function(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.selectedReportType = this.type ? this.type : "var";
       }
-    }
+    },
   },
   computed: {},
   methods: {
+    switchRadioBtn() {
+      const newSelected = this.selectedReportType == "loc" ? [] : null;
+
+      this.$router.push({
+        name: "GenomicsEmbed",
+        query: {
+          type: this.selectedReportType,
+          selected: newSelected
+        }
+      })
+    },
     updatePangolin(selected) {
       if (selected.alias) {
         this.$router.push({
@@ -223,7 +235,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$route)
     this.selectedReportType = this.type ? this.type : "var";
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;

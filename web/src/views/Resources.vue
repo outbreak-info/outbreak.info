@@ -10,9 +10,9 @@
     <div class="row m-0 d-flex align-items-center w-100">
       <div class="col-sm-8 col-md-8">
         <h1>COVID-19 and SARS-CoV-2 datasets, analyses, and resources</h1>
-        <router-link :to="{path: '/sources', hash: '#resources'}" class="fa-sm text-white">Where do we get our data?</router-link>
+        <router-link :to="{path: '/sources', hash: '#resources'}" class="text-white">Where do we get our data?</router-link>
         <span class="text-muted mx-3">&bull;</span>
-        <router-link :to="{ name: 'Contributing' }" class="fa-sm text-white">Contributing a source</router-link>
+        <router-link :to="{ name: 'Contributing' }" class="text-white">Contributing a source</router-link>
       </div>
       <!-- search input -->
       <div class="col-sm-4 col-md-4">
@@ -24,7 +24,7 @@
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
-              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" type="text" v-model="searchInput" />
+              <input id="sBar" class="form-control border" placeholder="Search" aria-label="search" aria-describedby="sb" @keydown.enter.prevent="onEnter" type="text" v-model="searchInput" />
             </div>
           </form>
 
@@ -491,13 +491,25 @@ export default {
         this.dates = results.dates.filter(d => d.count);
         this.newData = results.recent;
         this.facetSummary = results.facets;
-        this.selectedFilters = results.facets.map(d => {
+
+        if (results.total) {
+          this.selectedFilters = results.facets.map(d => {
+              return {
+                id: d.id,
+                vars: d.filtered.filter(d => d.checked).map(d => d.term)
+              };
+            })
+            .filter(d => d.vars.length);
+        } else {
+          this.selectedFilters = this.$route.query.filter.split(";").map(d => {
+            let term = d.split(":");
             return {
-              id: d.id,
-              vars: d.filtered.filter(d => d.checked).map(d => d.term)
+              id: term[0],
+              vars: term[1].split(",")
             };
           })
-          .filter(d => d.vars.length);
+        }
+
         this.numResults = results.total;
         this.esQuery = results.query;
 
@@ -872,7 +884,7 @@ export default {
 }
 
 .filter-bottom {
-  border-bottom: 10px solid #82bed1;
+    border-bottom: 10px solid #82bed1;
 }
 
 .search-result:nth-child(odd) {

@@ -68,10 +68,9 @@
     </div>
 
   <div class="my-5">
-    <h3 id="delta">Delta variant lineages, new lineages, &amp; how lineages are assigned</h3>
+    <h3 id="delta">New lineages &amp; how lineages are assigned</h3>
     <p>
-      Classifications of Delta and Omicron lineages by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are in flux. While underlying sequence data remains the same, reports for specific lineages may change.
-      The mutations associated with newly classified lineages like Omicron are also more dynamic than lineages with thousands of associated sequences and may change as more samples are sequenced..
+      The mutations associated with new lineages classified by the <a target="_blank" href="https://www.pango.network/">Pango nomenclature system</a> are more dynamic than lineages with thousands of associated sequences and may change as more samples are sequenced..
       Read more from the Pango team on <a href="https://cov-lineages.org/FAQ.html" target="_blank">why a lineage assignment might change</a> and an explanation about the <a href="https://www.pango.network/new-ay-lineages/" target="_blank">AY lineage series</a>.
     </p>
   </div>

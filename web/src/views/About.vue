@@ -9,17 +9,11 @@
           Broad sharing of these resources improves the speed and efficiency of science. Unfortunately, there are no uniform standards and repositories for collecting all this information in one place.</p>
         <p class="text-left focustext pt-2"><strong>Outbreak.info</strong> aggregates data across scientific sources, providing tools to meet three major aims:</p>
         <ul class="focustext text-left ">
-          <li class="large">Track trends in COVID-19 cases and deaths</li>
           <li class="large">Track daily developments in SARS-CoV-2 variants</li>
           <li class="large">Integrate publications, preprints, clinical trials, datasets, protocols, and other resources into one searchable library of COVID-19 research</li>
+          <li class="large">Track trends in COVID-19 cases and deaths</li>
         </ul>
         <div class="text-left focustext ml-4">
-          <router-link :to="{name: 'Epidemiology'}">
-            <h4 class="mb-0">COVID-19 Cases &amp; Deaths</h4>
-          </router-link>
-          <p>Outbreak.info serves as a data integration tool to make COVID-19 data more usable. The platform tracks case and death trends around the world and across states/counties with interactive maps, location comparison tools, data tables, and
-            more.
-          </p>
 
           <router-link :to="{name: 'SituationReports'}">
             <h4 class="mb-0">SARS-CoV-2 Variants</h4>
@@ -33,11 +27,19 @@
           </router-link>
           <p>Outbreak.info aggregates SARS-CoV-2 and COVID-19 information into a single site to increase their findability and reusability. The platform standardizes the metadata describing these resources, providing a web interface to easily search
             over {{ resourceCount }} resources.</p>
+
+          <router-link :to="{name: 'Epidemiology'}">
+            <h4 class="mb-0">COVID-19 Cases &amp; Deaths</h4>
+          </router-link>
+          <p>Outbreak.info serves as a data integration tool to make COVID-19 data more usable. The platform tracks case and death trends around the world and across states/counties with interactive maps, location comparison tools, data tables, and
+            more.
+          </p>
         </div>
 
         <p class="text-left focustext mty-5 py-4 border-top">
-          Outbreak.info is a project from the <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer"
-            target="_blank">Andersen</a> labs at Scripps Research and is supported <span class="my-4" v-if="funding">by the <span v-for="(grant, idx) in funding" :key="idx">
+          Outbreak.info is a project from the <a href="https://www.scripps.edu/faculty/hughes/" rel="noreferrer" target="_blank">Hughes</a>, <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>, <a href="http://wulab.io/"
+            rel="noreferrer" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" rel="noreferrer" target="_blank">Andersen</a> labs at Scripps Research and is supported <span class="my-4" v-if="funding">by the <span
+              v-for="(grant, idx) in funding" :key="idx">
               <span v-if="grant.funder.name">{{ grant.funder.name }}</span> ({{ grant.identifier }})<span v-if="idx < funding.length - 2">, </span>
               <span v-if="idx == funding.length - 2">, and </span>
             </span>.</span>

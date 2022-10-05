@@ -3,7 +3,7 @@
   <!-- HEADER -->
   <!-- IMPORTANT: when editing the header, make sure you edit the footer site map below too -->
   <header id="outbreak-header">
-    <nav class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero">
+    <nav class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero" v-if="!$route.meta.includeGISAIDLogo">
 
       <router-link to="/" class="navbar-brand no-underline" v-if="!$route.meta.hideNavigation">
         <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
@@ -11,18 +11,11 @@
       </router-link>
 
       <!-- Add hard coded link to outbreak.info for the minimalistic nav bar for embeds -->
-      <div class="d-flex w-100 align-items-center justify-content-between" v-else>
+      <div class="d-flex w-100 align-items-center justify-content-between" v-else-if="!$route.meta.includeGISAIDLogo">
         <a href="https://outbreak.info" class="navbar-brand no-underline">
           <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
           outbreak.info
         </a>
-
-        <small class="ml-2 text-light" v-if="$route.meta.includeGISAIDLogo">
-          Enabled by data from
-          <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-            <img src="@/assets/resources/gisaid.png" class="gisaid-md ml-2" alt="GISAID Initiative" />
-          </a>
-        </small>
       </div>
 
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,7 +104,7 @@
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/faq" :class="{ active: $route.name == 'Faq' }">FAQ</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" to="/latest" :class="{ active: $route.name == 'Latest' }">Latest changes</router-link>
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Citation' }" :to="{name: 'Citation'}">How to cite</router-link>
-              <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Videos' }" :to="{name: 'Videos'}">Video demos</router-link>
+              <!-- <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Videos' }" :to="{name: 'Videos'}">Video demos</router-link> -->
               <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Press' }" :to="{name: 'Press'}">In the media</router-link>
             </div>
           </li>
@@ -120,6 +113,13 @@
       </div>
     </nav>
   </header>
+  <!-- NOTICES -->
+  <section id="notices" class="bg-highlight py-2 px-3 text-light text-center fa-sm">
+    <b class="mr-1">The outbreak.info <a href="https://api.outbreak.info/" class="text-light" target="_blank">API</a> &amp; <a href="https://outbreak-info.github.io/R-outbreak-info/" class="text-light" target="_blank">R package</a> is now live!</b>
+    Access all SARS-CoV-2 variant data, Research Library metadata, and cases &amp; deaths data from outbreak.info. <a href="https://www.scripps.edu/news-and-events/press-room/2022/20220606-hughes-gisaid.html" target="_blank"
+      class="mx-3 text-light">Learn more</a>
+  </section>
+
   <transition name="fade">
     <router-view class="main" />
   </transition>
@@ -239,9 +239,9 @@
             <router-link class="nav-link p-0" :to="{ name: 'Citation' }">How to cite</router-link>
           </li>
 
-          <li class="nav-item px-0 py-1">
+          <!-- <li class="nav-item px-0 py-1">
             <router-link class="nav-link p-0" :to="{ name: 'Videos' }">Video demos</router-link>
-          </li>
+          </li> -->
 
           <li class="nav-item px-0 py-1">
             <router-link class="nav-link p-0" :to="{ name: 'Press' }">In the media</router-link>
@@ -285,6 +285,11 @@
             <router-link class="text-light" :to="{ name: 'Citation' }">How to Cite</router-link>
           </li>
           <li class="d-inline m-3">
+            <a href="https://github.com/outbreak-info" target="_blank" class="text-light">GitHub
+              <font-awesome-icon :icon="['fab', 'github']" class="mx-1" />
+            </a>
+          </li>
+          <li class="d-inline m-3">
             <router-link class="text-light" to="/privacy">Privacy Policy</router-link>
           </li>
           <li class="d-inline m-3">
@@ -292,8 +297,8 @@
           </li>
           <li class="d-inline m-3">
             All content copyright
-            <a href="http://sulab.org/" target="_blank" rel="noreferrer" class="mx-1 white-underline">
-              SuLab</a>
+            <a href="https://scripps.edu/faculty/hughes" target="_blank" rel="noreferrer" class="mx-1 white-underline">
+              Hughes lab</a>
             &copy; <span v-text="year"></span>
           </li>
           <li class="d-inline m-3">All rights reserved</li>
@@ -308,10 +313,24 @@
 import Logos from "@/components/Logos.vue";
 import EmailSubscription from "@/components/EmailSubscription.vue";
 
+// --- font awesome --
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+import {
+  library
+} from "@fortawesome/fontawesome-svg-core";
+import {
+  faGithub
+} from "@fortawesome/free-brands-svg-icons/faGithub";
+
+library.add(faGithub);
+
 export default {
   name: "App",
   components: {
     Logos,
+    FontAwesomeIcon,
     EmailSubscription
   },
   data() {

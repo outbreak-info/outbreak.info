@@ -4,7 +4,7 @@
   <section class="d-flex flex-column justify-content-center align-items-center pt-3">
     <a href="https://api.outbreak.info/" alt="outbreak.info API" class="position-relative">
       <img src="@/assets/back-api.png" class="w-100" alt="outbreak-api" />
-      <p class="pt-1 m-0 align-items-center position-absolute text-overlay">Access all data in our API</p>
+      <p class="pt-1 m-0 align-items-center position-absolute text-overlay d-none d-lg-inline">Access all data in our API</p>
     </a>
   </section>
 
@@ -16,14 +16,15 @@
           <router-link class="btn btn-main" :to="{ name: 'Contributing' }">Contribute data</router-link>
         </div>
 
-        <div class="text-left">
-          <h3 id="epidemiology">COVID-19 Cases &amp; Deaths Data</h3>
-          <SourceDescription :sources="sources" />
-        </div>
 
         <div class="text-left mt-5">
           <h3 id="geographic" class="pt-4 border-top">Genomic Data</h3>
-          <SourceDescription :sources="genomicSources" />
+          <SourceDescription :sources="genomicSources" :metadata="sourceMetadata.genomics" v-if="sourceMetadata" />
+        </div>
+
+        <div class="text-left">
+          <h3 id="epidemiology" class="border-top pt-4">COVID-19 Cases &amp; Deaths Data</h3>
+          <SourceDescription :sources="sources" :metadata="sourceMetadata.epi" v-if="sourceMetadata"/>
         </div>
 
         <div class="text-left mt-5">
@@ -45,7 +46,7 @@
 
 
 
-            <SourceDescription :sources="resource.sources" />
+            <SourceDescription :sources="resource.sources" :metadata="sourceMetadata.resources" v-if="sourceMetadata" />
           </div>
         </div>
       </div>
@@ -64,6 +65,8 @@ import {
 import SourceDescription from "@/components/SourceDescription.vue";
 import DownloadData from "@/components/DownloadData.vue";
 
+import {getIndivSourcesUpdated} from "@/api/metadata.js";
+
 export default Vue.extend({
   name: "Sources",
   components: {
@@ -72,15 +75,31 @@ export default Vue.extend({
   },
   computed: {
     ...mapState("admin", ["sources", "geoSources", "genomicSources", "resources"])
+  },
+  data() {
+    return ({
+      metadataSubscription: null,
+      sourceMetadata: null
+    })
+  },
+  mounted() {
+    this.metadataSubscription = getIndivSourcesUpdated(this.$genomicsurl, this.$resourceurl, this.$apiurl).subscribe(results => {
+      this.sourceMetadata = results;
+    });
+  },
+  destroyed() {
+    if (this.metadataSubscription) {
+      this.metadataSubscription.unsubscribe();
+    }
   }
 });
 </script>
 
 <style lang="scss" scoped>
 .text-overlay {
-  bottom: 10px;
-  right: 10px;
-  color: white;
-  font-size: 1.25em;
+    bottom: 10px;
+    right: 10px;
+    color: white;
+    font-size: 1.25em;
 }
 </style>

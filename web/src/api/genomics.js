@@ -282,9 +282,9 @@ export function getSublineageMutations(apiurl, prevalenceThreshold, sMutationsOn
 
 
 export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = true) {
-  const query = CURATED.filter(d => d.variantType != "De-escalated").map(d => d.label);
+  const query = CURATED.filter(d => d.showOnHomepage).map(d => d.label);
 
-  return forkJoin(...query.map(d => getCharacteristicMutations(apiurl, d, 0, false))).pipe(
+  return forkJoin(...query.map(d => getCharacteristicMutations(apiurl, d, store.state.genomics.characteristicThreshold, false))).pipe(
     map(charMuts => {
       // flatten array of objects to a single object.
       charMuts = Object.assign(...charMuts)
@@ -303,8 +303,8 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
           report.mutations = report.mutations.filter(d => d.gene == "S");
         }
 
-        const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-        report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
+        // const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+        // report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
       })
 
       curated = nest()
@@ -312,7 +312,7 @@ export function getCuratedList(apiurl, prevalenceThreshold, sMutationsOnly = tru
         .entries(curated);
 
       curated.forEach(d => {
-        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : d.key == "De-escalated" ? "deescalated" : "unknown";
+        d["id"] = d.key == "Variant of Concern" ? "voc" : d.key == "Variant of Interest" ? "voi" : d.key == "Variant under Monitoring" ? "vum" : d.key == "Previously Circulating Variant of Concern" ? "previous_voc" : d.key == "De-escalated" ? "deescalated" : "unknown";
       })
 
       curated = orderBy(curated, [reportTypeSorter], ["asc"]);
@@ -666,8 +666,7 @@ export function updateLocationData(apiurl, alias, mutationArr, lineageString, lo
 export function getMutationDetails(apiurl, mutationString) {
   if (!mutationString)
     return ( of ([]));
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}mutation-details?mutations=${mutationString}&timestamp=${timestamp}`;
+  const url = `${apiurl}mutation-details?mutations=${mutationString}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -691,8 +690,7 @@ export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold =
 
   const queryStr = andLogic ? mutationArr.join(" AND ") : mutationArr.join(",");
 
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}mutations-by-lineage?mutations=${queryStr}&timestamp=${timestamp}&frequency=${proportionThreshold}`;
+  const url = `${apiurl}mutations-by-lineage?mutations=${queryStr}&frequency=${proportionThreshold}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -726,11 +724,10 @@ export function getMutationsByLineage(apiurl, mutationArr, proportionThreshold =
 }
 
 function cleanSelectors(id) {
-  return id.replace(/:/g, "_").replace(/\//g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_");
+  return id.replace(/:/g, "_").replace(/\//g, "_").replace(/\*\s\[/g, "_").replace(/\s\(/g, "_").replace(/\)\]/g, "_").replace(/\s\+\s/g, "--").replace(/:/g, "_").replace(/\*/g, "stop").replace(/\(/g, "").replace(/\)/g, "").replace(/\./g, "-").replace(/\s/g, "_");
 }
 
 export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold = store.state.genomics.characteristicThreshold, returnFlat = true, includeSublineages = false) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   if (!lineage)
     return ( of ([]));
 
@@ -802,8 +799,7 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
 
 
 export function getMostRecentSeq(apiurl, mutationString, mutationVar) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}most-recent-collection-date-by-location?${mutationVar}=${mutationString}&timestamp=${timestamp}`;
+  const url = `${apiurl}most-recent-collection-date-by-location?${mutationVar}=${mutationString}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -871,8 +867,7 @@ export function getCumPrevalenceQueryLoop(apiurl, queries, location, totalThresh
 
 
 export function getVariantTotal(apiurl, queryStr, formatted = true) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = `${apiurl}global-prevalence?cumulative=true&${queryStr}&timestamp=${timestamp}`;
+  const url = `${apiurl}global-prevalence?cumulative=true&${queryStr}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -895,10 +890,9 @@ export function getVariantTotal(apiurl, queryStr, formatted = true) {
 }
 
 export function getCumPrevalence(apiurl, queryStr, location, totalThreshold, returnFlat = true) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   const url = location == "Worldwide" ?
-    `${apiurl}prevalence-by-location?cumulative=true&${queryStr}&timestamp=${timestamp}` :
-    `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&timestamp=${timestamp}`;
+    `${apiurl}prevalence-by-location?cumulative=true&${queryStr}` :
+    `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -960,9 +954,8 @@ export function getNewTodayAll(apiurl, queryStr, locations) {
 }
 
 export function getNewToday(apiurl, queryStr, location) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-  const url = location == "Worldwide" ? `${apiurl}most-recent-submission-date-by-location?${queryStr}&timestamp=${timestamp}` :
-    `${apiurl}most-recent-submission-date-by-location?${queryStr}&location_id=${location}&timestamp=${timestamp}`;
+  const url = location == "Worldwide" ? `${apiurl}most-recent-submission-date-by-location?${queryStr}` :
+    `${apiurl}most-recent-submission-date-by-location?${queryStr}&location_id=${location}`;
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -1016,12 +1009,10 @@ export function getAllLocationPrevalence(apiurl, mutation, location, ndays = nul
 }
 
 export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, returnFlat = true) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
   let url;
   url = location == "Worldwide" ?
-    `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&timestamp=${timestamp}` :
-    `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}&timestamp=${timestamp}`;
+    `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}` :
+    `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}`;
 
   if (ndays) {
     url += `&ndays=${ndays}`;
@@ -1067,12 +1058,11 @@ export function getLocationPrevalence(apiurl, queryStr, location, ndays = null, 
 }
 
 export function getPositiveLocations(apiurl, queryStr, location, returnFlat = true) {
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
   if (location == "Worldwide") {
-    url = `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&detected=true&timestamp=${timestamp}`;
+    url = `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&detected=true`;
   } else {
-    url = `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&detected=true&location_id=${location}&timestamp=${timestamp}`;
+    url = `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}&detected=true&location_id=${location}`;
   }
 
   return from(axios.get(url, {
@@ -1107,12 +1097,11 @@ export function getPositiveLocations(apiurl, queryStr, location, returnFlat = tr
 
 export function getTemporalPrevalence(apiurl, location, queryStr, indivCall = false, returnFlat = true) {
   store.state.admin.reportloading = true;
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   let url;
   if (location == "Worldwide") {
-    url = `${apiurl}prevalence-by-location?${queryStr}&timestamp=${timestamp}`;
+    url = `${apiurl}prevalence-by-location?${queryStr}`;
   } else {
-    url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&timestamp=${timestamp}`;
+    url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}`;
   }
 
   return from(axios.get(url, {
@@ -1172,11 +1161,9 @@ export function getCuratedMetadata(id) {
 
 export function getLineageResources(apiurl, queryString, size, page, sort = "-date") {
   const fields = "@type, name, author, date, journalName"
-  const timestamp = Math.round(new Date().getTime() / 36e5);
-
 
   return from(
-    axios.get(`${apiurl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=${fields}&timestamp=${timestamp}`, {
+    axios.get(`${apiurl}query?q=${queryString}&sort=${sort}&size=${size}&from=${page}&fields=${fields}`, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -1205,8 +1192,7 @@ export function getLineageResources(apiurl, queryString, size, page, sort = "-da
 }
 
 export function findLocationMetadata(apiurl, location) {
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiurl}location-lookup?id=${location}&timestamp=${timestamp}`
+  const url = `${apiurl}location-lookup?id=${location}`
   if (location) {
     return from(
       axios.get(url, {
@@ -1260,8 +1246,7 @@ export function findAllLocationMetadata(apiurl, locations, selected) {
 }
 
 export function findLocation(apiurl, queryString) {
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiurl}location?name=*${queryString}*&timestamp=${timestamp}`
+  const url = `${apiurl}location?name=*${queryString}*`
 
   return from(
     axios.get(url, {
@@ -1283,8 +1268,7 @@ export function findLocation(apiurl, queryString) {
 }
 
 export function findPangolin(apiurl, queryString) {
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiurl}lineage?name=*${queryString}*&timestamp=${timestamp}`;
+  const url = `${apiurl}lineage?name=*${queryString}*`;
 
   const vocs = CURATED.filter(d => d.who_name).map(d => ({
     name: d.who_name,
@@ -1317,8 +1301,7 @@ export function findPangolin(apiurl, queryString) {
 }
 
 export function getDateUpdated(apiurl) {
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiurl}metadata?timestamp=${timestamp}`;
+  const url = `${apiurl}metadata`;
 
   return from(
     axios.get(url, {
@@ -1358,8 +1341,7 @@ export function getDateUpdated(apiurl) {
   )
 }
 export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays, window) {
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&window=${window}&ndays=${ndays}&cumulative=true&timestamp=${timestamp}`;
+  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&window=${window}&ndays=${ndays}&cumulative=true`;
 
   return from(
     axios.get(url, {
@@ -1394,8 +1376,7 @@ export function getCumPrevalenceAllLineages(apiurl, location, other_threshold, n
 
 export function getPrevalenceAllLineages(apiurl, location, other_threshold, nday_threshold, ndays) {
   const dateThreshold = new Date("2020-03-14");
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&timestamp=${timestamp}`;
+  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}`;
 
   return from(
     axios.get(url, {
@@ -1620,7 +1601,7 @@ function geneSorter(a) {
 }
 
 function reportTypeSorter(a) {
-  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Monitoring", "Mutation of Concern", "Mutation of Interest", "De-escalated", "undefined"];
+  const sortingArr = ["Variant of Concern", "Variant of Interest", "Variant under Monitoring", "Mutation of Concern", "Mutation of Interest", "Previously Circulating Variant of Concern", "De-escalated", "undefined"];
   // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key);
 }
@@ -1728,7 +1709,7 @@ export function getSequenceCount(apiurl, location = null, cumulative = true, rou
   } else if (cumulative) {
     url += "?cumulative=true";
   }
-  const timestamp = Math.round(new Date().getTime() / 36e5);
+
   return from(axios.get(url, {
     headers: {
       "Content-Type": "application/json"
@@ -2065,8 +2046,7 @@ export function getStatusLocation(apiurl, location) {
 
 export function getSeqGaps(apiurl, location) {
   store.state.genomics.locationLoading1 = true;
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  let url = `${apiurl}collection-submission?timestamp=${timestamp}`;
+  let url = `${apiurl}collection-submission`;
 
   if (location) {
     url += `&location_id=${location}`;
@@ -2144,8 +2124,7 @@ export function getSeqGaps(apiurl, location) {
 
 export function checkGisaidID(apiurl, id) {
   store.state.genomics.locationLoading2 = true;
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
-  const url = `${apiurl}gisaid-id-lookup?id=${id}&timestamp=${timestamp}`;
+  const url = `${apiurl}gisaid-id-lookup?id=${id}`;
 
   return from(
     axios.get(url, {
@@ -2169,7 +2148,6 @@ export function checkGisaidID(apiurl, id) {
 
 export function getSeqMap(apiurl, epiurl, location) {
   store.state.genomics.locationLoading3 = true;
-  const timestamp = Math.round(new Date().getTime() / 8.64e7);
 
   return (forkJoin([getSequenceCount(apiurl, location, true, true)])).pipe(
     map(([results]) => {
@@ -2189,7 +2167,6 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
   store.state.admin.loading = true;
   const formatDate = timeFormat("%e %B %Y");
   const parseDate = timeParse("%Y-%m-%d");
-  const timestamp = Math.round(new Date().getTime() / 36e5);
   const location_string =
     locations && locations.length ?
     ` AND location_id:("${locations.join('" OR "')}")` :
@@ -2198,7 +2175,7 @@ export function getGlanceSummary(apiUrl, genomicsUrl, locations) {
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true${location_string}&fields=location_id,name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,date,dead,dead_numIncrease,dead_pctIncrease,dead_rolling,confirmed_rolling&size=${num2Return}&timestamp=${timestamp}`
+      `${apiUrl}query?q=mostRecent:true${location_string}&fields=location_id,name,confirmed,confirmed_numIncrease,confirmed_pctIncrease,date,dead,dead_numIncrease,dead_pctIncrease,dead_rolling,confirmed_rolling&size=${num2Return}`
     )
   ).pipe(
     pluck("data", "hits"),
