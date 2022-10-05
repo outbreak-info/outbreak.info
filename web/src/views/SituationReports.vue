@@ -144,12 +144,10 @@
             </div>
           </div>
 
-          <small>
-            <div class="line-height-1">
+            <div class="mt-1">
               <span class="text-highlight d-inline" v-html="getReportType(group.key)"></span>
               <a class='ml-2 d-inline' href='https://outbreak.info/situation-reports/caveats#variant'>Read more</a>
             </div>
-          </small>
 
 
           <template v-if="group.values.length">
@@ -402,7 +400,7 @@
         </template>
         <div v-else-if="group.id == 'previous_voc'" id="previous-voc">
           <h4>Previously Circulating Variants of Concern</h4>
-          <small class="text-muted line-height-sm">These former VOCs have been de-escalated by public health agencies as the variant is no longer circulating.</small>
+          <div class="text-muted">These former VOCs have been de-escalated by public health agencies as the variant is no longer circulating.</div>
 
           <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
             <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 mb-2 font-weight-bold">
@@ -428,8 +426,8 @@
         </div>
         <div v-else id="de-escalated">
           <h4>De-escalated Variants</h4>
-          <small class="text-muted line-height-sm">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been
-            circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</small>
+          <div class="text-muted">These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been
+            circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties.</div>
 
           <div class="d-flex flex-wrap mt-3 p-3 bg-white border-top border-bottom">
             <div v-for="(report, r2Idx) in group.values" :key="r2Idx" class="m-0 mr-5 mb-2 font-weight-bold">

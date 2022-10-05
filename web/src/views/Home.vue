@@ -205,7 +205,7 @@
   <!-- INTRO + VIDEO -->
   <div class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest">
     <div class="row d-flex align-items-center p-3">
-      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 larger">
+      <div class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 large">
         <p>
           Outbreak.info is a project from the <a href="https://www.scripps.edu/faculty/hughes/" rel="noreferrer" target="_blank">Hughes</a>, <a href="http://sulab.org/" target="_blank">Su</a>, <a href="https://wulab.io/" target="_blank">Wu</a>, and <a href="https://andersen-lab.com/" target="_blank">Andersen</a> labs at Scripps Research to
           unify COVID-19 and SARS-CoV-2 epidemiology and genomic data, published research, and other resources.
