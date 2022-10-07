@@ -427,7 +427,17 @@
             <ReportChoropleth :report="routeTo" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
           </template>
 
-          <ReportPrevalenceByLocation :data="choroData" :label="choroLabel" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
+          <div class="d-flex flex-column justify-content-right">
+            <!-- Ndays filter -->
+            <div class="d-flex align-items-center flex-shrink-0 mb-3">
+              <div>Prevalence over the last</div>
+              <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" @change="debounceChoroWindowChange()" v-model="choroNdays" placeholder="days">
+              <small>days</small>
+              <small><button class="btn btn-grey px-2 fa-sm ml-2 text-lowercase" @click="updateChoroWindow(true)">all time</button></small>
+            </div>
+
+            <ReportPrevalenceByLocation :data="choroData" :label="choroLabel" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
+          </div>
         </div>
 
         <div class="text-muted my-5" v-else>
