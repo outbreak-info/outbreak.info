@@ -531,7 +531,7 @@ export default {
     },
     getLogo(curator) {
       const source = this.resources.flatMap(d => d.sources).filter(d => d.id === curator.toLowerCase() || d.name.toLowerCase() === curator.toLowerCase());
-      return source.length == 1 ? source[0].img : null;
+      return source.length ? source[0].img : null;
     },
     selectFilterText(facet, idx) {
       const selectedText = this.facetFilters[idx].toLowerCase();
