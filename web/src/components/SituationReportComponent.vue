@@ -1080,7 +1080,7 @@ export default {
       if (resetData) {
         this.choroNdays = null;
       }
-      this.choroChangeSubscription = updateChoroData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.choroNdays).subscribe(results => {
+      this.choroSubscription = updateChoroData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.selected, this.choroNdays).subscribe(results => {
         this.choroData = results;
         this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
       })
