@@ -39,7 +39,8 @@ import {
 } from "d3-scale-chromatic";
 
 import {
-  getEpiTraces, getSparklineTraces
+  getEpiTraces,
+  getSparklineTraces
 } from "@/api/epi-traces.js";
 
 import CURATED from "@/assets/genomics/curated_lineages.json";
@@ -514,6 +515,39 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
   )
 }
 
+// Only updates the report data for /situation-reports for a change to the choropleth window.
+export function updateChoroData(apiurl, alias, mutationArr, lineageString, location, ndays) {
+  store.state.admin.reportloading = true;
+  location = location ? location : "Worldwide";
+
+  // lookup WHO name in curated dictionary
+  const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
+  var md;
+  var queryStr;
+
+
+  // Check if the value exists within the curated list
+  // pull out the sublineage queries
+  if (filtered.length === 1) {
+    md = filtered[0];
+    queryStr = buildQueryStr(lineageString, mutationArr, md);
+  } else {
+    queryStr = buildQueryStr(lineageString, mutationArr);
+  }
+
+  return(
+  getLocationPrevalence(apiurl, queryStr, location, ndays).pipe(map(d => {
+      return (d)
+    }),
+    catchError(e => {
+      console.log("%c Error in updating choropleth data!", "color: red");
+      console.log(e);
+      return ( of ([]));
+    }),
+    finalize(() => store.state.admin.reportloading = false)
+  ))
+}
+
 export function getSublineageTotals(apiurl, md, location) {
   if (md && md.pango_descendants) {
     const queryStr = `pangolin_lineage=${md.pango_descendants.join(",")}`;
@@ -738,8 +772,8 @@ export function getCharacteristicMutations(apiurl, lineage, prevalenceThreshold 
       if (includeSublineages) {
         return filtered.length === 1 ? `${filtered[0].char_muts_parent_query},${filtered[0].pango_descendants.join(",")}` : lineage;
       } else {
-      return (filtered.length === 1 ? filtered[0].char_muts_parent_query : d)
-    }
+        return (filtered.length === 1 ? filtered[0].char_muts_parent_query : d)
+      }
     })
     lineage = lineage.join(",");
   } else {

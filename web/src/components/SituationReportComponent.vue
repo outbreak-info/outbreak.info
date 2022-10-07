@@ -418,7 +418,7 @@
                   <small>Prevalence over the last</small>
                   <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" @change="debounceChoroWindowChange()" v-model="choroNdays" placeholder="days">
                   <small>days</small>
-                  <small><button class="btn btn-grey px-2 fa-sm ml-2 text-lowercase" @click="updateChoroWindow()">all time</button></small>
+                  <small><button class="btn btn-grey px-2 fa-sm ml-2 text-lowercase" @click="updateChoroWindow(true)">all time</button></small>
                 </div>
               </div>
 
@@ -519,6 +519,7 @@ import {
   getReportData,
   getCuratedMetadata,
   updateLocationData,
+  updateChoroData,
   findLocation,
   findPangolin,
   getLocationPrevalence
@@ -1066,9 +1067,12 @@ export default {
 
       })
     },
-    updateChoroWindow() {
+    updateChoroWindow(resetData) {
+      if(resetData){
+        this.choroNdays = null;
+      }
       console.log("wathc")
-      this.choroChangeSubscription = getLocationPrevalence(this.$genomicsurl, queryStr, this.loc, this.choroNdays).subscribe(results => {
+      this.choroChangeSubscription = updateChoroData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.choroNdays).subscribe(results => {
         this.choroData = results;
         this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
       })
