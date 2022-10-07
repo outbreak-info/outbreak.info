@@ -136,7 +136,8 @@ function getResourcesDateUpdated(apiurl) {
             count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (bioRxiv/medRxiv combined)` : null;
             break;
           case "zenodo":
-            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (Datasets/ComputationalTools combined)` : null;
+            count = `2,259 Records<sup>*</sup> (Datasets/ComputationalTools combined)`;
+            // count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (Datasets/ComputationalTools combined)` : null;
             break;
           case "clinical_trials":
             count = result[d]["stats"]["clinicaltrials"] ? `${result[d]["stats"]["clinicaltrials"].toLocaleString()} Records` : null;
