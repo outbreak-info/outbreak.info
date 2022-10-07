@@ -492,6 +492,18 @@ const state = {
       }
     },
     {
+      date: new Date("2022-10-07 0:0"),
+      category: "feature",
+      title: "Added windowed prevalences to Lineage | Mutation Reports",
+      description: 'Changed the default view of the prevalence of lineage or mutation across locations to be the estimated prevalence over the last 60 days. The user can change adjust this time window.',
+      route: {
+        name: "MutationReport",
+        query: {
+          muts: "S:E484A"
+        }
+      }
+    },
+    {
       date: new Date("2022-10-05 0:0"),
       category: "data",
       title: "Added bio.tools and Dockstore",
