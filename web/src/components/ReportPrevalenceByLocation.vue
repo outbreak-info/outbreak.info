@@ -16,7 +16,7 @@
 
     <div class="d-flex flex-wrap" :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
       <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
-        <h5 class="my-5 my-sm-4 my-md-2"><b>Cumulative Prevalence</b></h5>
+        <h5 class="my-5 my-sm-4 my-md-2"><b>Prevalence by location</b></h5>
 
         <!-- LEGEND -->
         <div class="d-flex align-items-center justify-content-between height-fixed">
@@ -33,7 +33,11 @@
         </div>
 
         <!-- LEFT: DOTPLOT -->
-        <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" v-if="y && y.domain().length">
+        <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
+          No {{mutationName}} detected
+        </div>
+
+        <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
         <!-- <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" :subtitle="subtitle"> -->
           <defs>
             <filter id="dropshadow" filterUnits="userSpaceOnUse">
@@ -52,9 +56,7 @@
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
           <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         </svg>
-        <div v-else class="fa-lg text-muted mt-3">
-          No {{mutationName}} detected
-        </div>
+
       </div>
 
       <!-- RIGHT: BARPLOT -->
@@ -78,16 +80,17 @@
         </div>
 
 
-        <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title" v-if="y && y.domain().length">
+        <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
+          No {{mutationName}} detected
+        </div>
+
+        <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
           <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top" :hidden="!data.length"></g>
           <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top" :hidden="!data.length"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
           <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         </svg>
 
-        <div v-else class="fa-lg text-muted mt-3">
-          No {{mutationName}} detected
-        </div>
       </div>
     </div>
   </div>
