@@ -65,16 +65,16 @@ export function getResources(
   } else if (!queryString && filterString) {
     // filters, but no query
     filterArr = filterString2Arr(filterString);
-    comboString = dateString ? `${filterArr2String(filterArr)} AND ${dateString}` : filterArr2String(filterArr);
+    comboString = dateString ? `()${filterArr2String(filterArr)}) AND ${dateString}` : filterArr2String(filterArr);
   } else if (!queryString && dateString) {
     // date filter, but no query or filter
     comboString = dateString;
   } else if (!filterString) {
     // query, but no filter
-    comboString = dateString ? `${queryString} AND ${dateString}` : queryString;
+    comboString = dateString ? `(${queryString}) AND ${dateString}` : queryString;
   } else {
     filterArr = filterString2Arr(filterString);
-    comboString = dateString ? `(${queryString}) AND ${filterArr2String(filterArr)} AND ${dateString}` : `(${queryString}) AND ${filterArr2String(filterArr)}`;
+    comboString = dateString ? `(${queryString}) AND (${filterArr2String(filterArr)}) AND ${dateString}` : `(${queryString}) AND (${filterArr2String(filterArr)})`;
   }
 
 
@@ -238,7 +238,7 @@ export function getResourceFacets(
   const facetString = facets.join(",");
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&size=0&facet_size=500&facets=${facetString}`, {
+      `${apiUrl}query?q=${queryString}&size=0&facet_size=1000&facets=${facetString}`, {
         headers: {
           "Content-Type": "application/json"
         }
