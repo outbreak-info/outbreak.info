@@ -238,7 +238,7 @@ export function getResourceFacets(
   const facetString = facets.join(",");
   return from(
     axios.get(
-      `${apiUrl}query?q=${queryString}&size=0&facet_size=500&facets=${facetString}`, {
+      `${apiUrl}query?q=${queryString}&size=0&facet_size=1000&facets=${facetString}`, {
         headers: {
           "Content-Type": "application/json"
         }
