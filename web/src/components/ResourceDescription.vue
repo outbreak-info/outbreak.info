@@ -50,7 +50,10 @@
                 ? author.name
                 : (author.givenName ? author.givenName + " " + author.familyName : "")
             }}</b>:
-          <template v-if="Array.isArray(author.affiliation)">
+          <template v-if="!author.affiliation">
+            N/A
+          </template>
+          <template v-else-if="Array.isArray(author.affiliation)">
             <span v-for="(affiliation, idx) in author.affiliation" :key="'author'+idx">{{ affiliation.name }}</span>
           </template>
           <template v-else>
@@ -197,6 +200,15 @@
           </router-link>
         </small>
       </template>
+
+      <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory.name}`" v-else-if="data.topicCategory.name">
+        <router-link :to="{
+        name: 'Resources',
+        query: { q: `&quot;${data.topicCategory.name}&quot;` }
+      }" class="no-underline">
+          {{ data.topicCategory.name }}
+        </router-link>
+      </small>
 
       <small class="topic uppercase px-2 py-1 mb-1 mr-1" :data-tippy-info="`search ${data.topicCategory}`" v-else>
         <router-link :to="{

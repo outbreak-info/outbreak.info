@@ -132,19 +132,19 @@ a.ClinicalTrial  {
 // $software-color: #76b7b2; // teal
 // $software-color: #edc949; // yellow
 $software-color: saturate(#9c755f, 10%); // brown
-.SoftwareSourceCode, .softwaresourcecode {
+.SoftwareSourceCode, .softwaresourcecode, .ComputationalTool, .computationaltool {
     color: $software-color;
     fill: $software-color;
 }
-.SoftwareSourceCode.dark {
+.SoftwareSourceCode.dark, .ComputationalTool.dark {
     fill: darken($software-color, 15%);
 }
 
-.SoftwareSourceCode.light {
+.SoftwareSourceCode.light, .ComputationalTool.light {
     fill: lighten($software-color, 20%);
 }
 
-a.SoftwareSourceCode  {
+a.SoftwareSourceCode, a.ComputationalTool  {
   &:hover {
     color: darken($software-color, 15%);
   }

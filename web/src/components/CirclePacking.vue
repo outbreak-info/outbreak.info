@@ -104,8 +104,8 @@ export default Vue.extend({
         this.$router.push({
           name: "Resources",
           query: {
-            q: this.query ? `curatedBy.name:"${d.data.term}" AND (${this.query})` : `curatedBy.name:"${d.data.term}"`,
-            filter: `@type:${d.parent.data.name}`,
+            q: this.query,
+            filter: `@type:${d.parent.data.name};curatedBy.name:${d.data.term}`,
             page: "0",
             size: "10",
             sort: "-date"
@@ -301,6 +301,14 @@ export default Vue.extend({
 }
 
 .SoftwareSourceCode.depth2 {
+    fill: $software-color;
+}
+
+.ComputationalTool.depth1 {
+    stroke: $software-color;
+}
+
+.ComputationalTool.depth2 {
     fill: $software-color;
 }
 

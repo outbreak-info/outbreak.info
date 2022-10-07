@@ -23,7 +23,7 @@
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />Updated {{ counts.dateModified }}
       </small>
 
-      <CirclePacking class="circle-packing" :data="counts.sources" />
+      <CirclePacking class="circle-packing mr-5" :data="counts.sources" />
     </div>
   </div>
 

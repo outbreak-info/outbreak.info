@@ -463,7 +463,7 @@ export function getSourceCounts(apiUrl, queryString) {
       })
       if (zenodo) {
         d["curatedBy.name"]["terms"].push({
-          name: "Zenodo",
+          name: "unknown",
           count: zenodo
         });
       }

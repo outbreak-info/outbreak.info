@@ -129,10 +129,14 @@ function getResourcesDateUpdated(apiurl) {
 
       sources.forEach(d => {
         let count;
+        let dateUpdated;
 
         switch (d) {
           case "biorxiv":
-            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (combined)` : null;
+            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (bioRxiv/medRxiv combined)` : null;
+            break;
+          case "zenodo":
+            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (Datasets/ComputationalTools combined)` : null;
             break;
           case "clinical_trials":
             count = result[d]["stats"]["clinicaltrials"] ? `${result[d]["stats"]["clinicaltrials"].toLocaleString()} Records` : null;
@@ -144,9 +148,17 @@ function getResourcesDateUpdated(apiurl) {
             count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records` : null;
         }
 
+        switch (d) {
+          case "covid19_LST_reports":
+            dateUpdated = "21 Oct 2021"
+            break;
+          default:
+            dateUpdated = cleanDate(result[d]["version"]);
+        }
+
         resultObj[d] = {
           "count": count,
-          "dateUpdated": cleanDate(result[d]["version"])
+          "dateUpdated": dateUpdated
         };
         return (resultObj)
       })
@@ -162,10 +174,11 @@ function getResourcesDateUpdated(apiurl) {
 }
 
 function cleanDate(result, dateFormat = "%Y-%m-%d-%H:%M") {
-  const today = new Date();
-  let lastUpdated;
-  const strictIsoParse = timeParse(dateFormat);
-  const dateUpdated = strictIsoParse(result); // ensure the time is parsed as PDT
+  let dateUpdated = timeParse(dateFormat)(result); // ensure the time is parsed as PDT
+  if(!dateUpdated) {
+    // check because outbreak/NDE tag dates separately
+    dateUpdated = timeParse("%Y-%m-%dT%H:%M:%S%Z")(result);
+  }
 
   const dateUpdatedStr = dateUpdated ? timeFormat("%d %b %Y")(dateUpdated) : null;
 
