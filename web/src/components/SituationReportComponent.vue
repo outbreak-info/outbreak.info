@@ -388,7 +388,7 @@
       <!-- GEOGRAPHIC PREVALENCE -->
       <section class="my-4 d-flex flex-column align-items-center" id="geographic">
         <div class="d-flex align-items-center">
-          <h4 class="mb-0 mr-3">Cumulative {{reportName}} prevalence</h4>
+          <h4 class="mb-0 mr-3">{{reportName}} prevalence</h4>
           <div id="location-buttons" class="d-flex flex-wrap align-items-center">
             <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethLocations" :key="cIdx" @click="switchLocation(location)">{{ location.label }}</button>
             <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
@@ -509,7 +509,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 
-library.add(faClock, faTrashAlt, faPlusCircle, faSpinner, faInfoCircle);
+import {
+  faArrowLeft
+} from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+
+import {
+  faSync
+} from "@fortawesome/free-solid-svg-icons/faSync";
+
+
+library.add(faClock, faTrashAlt, faPlusCircle, faSpinner, faInfoCircle, faArrowLeft, faSync);
 
 import {
   mapState
@@ -628,7 +637,7 @@ export default {
       return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)
     },
     choroLabel() {
-      return(`Est. ${ this.reportName } prevalence ${this.choroTimeFrame}`);
+      return (`Est. ${ this.reportName } prevalence ${this.choroTimeFrame}`);
     },
     choroTimeFrame() {
       return (this.choroNdays ? `last ${this.choroNdays} days` : "since identification")
@@ -1068,10 +1077,9 @@ export default {
       })
     },
     updateChoroWindow(resetData) {
-      if(resetData){
+      if (resetData) {
         this.choroNdays = null;
       }
-      console.log("wathc")
       this.choroChangeSubscription = updateChoroData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.choroNdays).subscribe(results => {
         this.choroData = results;
         this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
