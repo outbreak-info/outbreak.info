@@ -429,7 +429,7 @@ function parseStrQuery(query) {
 
 // Report data for a Situation Report page.
 // Returns: date updated, location dictionary metadata, characteristic mutations, lineage/sublineage totals, lineage/sublineage prevalences over time, subnational data for choropleths.
-export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, defaultLocations = ["USA", "USA_US-CA"]) {
+export function getReportData(apiurl, alias, locations, mutationArr, lineageString, location, totalThreshold, ndays, defaultLocations = ["USA", "USA_US-CA"]) {
   store.state.admin.reportloading = true;
 
   // clean up the locations data
@@ -476,7 +476,7 @@ export function getReportData(apiurl, alias, locations, mutationArr, lineageStri
     getSublineagePrevalence(apiurl, md, location),
     getPositiveLocations(apiurl, queryStr, "Worldwide"),
     getPositiveLocations(apiurl, queryStr, "USA"),
-    getLocationPrevalence(apiurl, queryStr, location)
+    getLocationPrevalence(apiurl, queryStr, location, ndays)
   ]).pipe(
     map(([dateUpdated, locations, characteristicMuts, mutationDetails, mutationsByLineage, locPrev, sublineagePrev, longitudinal, longitudinalSublineages, countries, states, choroData]) => {
       // attach names to cum prevalences
@@ -597,7 +597,7 @@ export function getSublineagePrevalence(apiurl, md, location) {
   return ( of ([]))
 }
 
-export function updateLocationData(apiurl, alias, mutationArr, lineageString, locations, location, totalThreshold) {
+export function updateLocationData(apiurl, alias, mutationArr, lineageString, locations, location, totalThreshold, ndays) {
   // lookup WHO name in curated dictionary
   const filtered = CURATED.filter(d => alias && d.label.toLowerCase() == alias.toLowerCase());
   var md;
@@ -629,7 +629,7 @@ export function updateLocationData(apiurl, alias, mutationArr, lineageString, lo
   return forkJoin([
     findAllLocationMetadata(apiurl, locations, location),
     getTemporalPrevalence(apiurl, location, queryStr, null),
-    getLocationPrevalence(apiurl, queryStr, location),
+    getLocationPrevalence(apiurl, queryStr, location, ndays),
     getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
     getSublineageTotals(apiurl, md, location),
     getSublineagePrevalence(apiurl, md, location)

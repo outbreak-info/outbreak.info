@@ -406,16 +406,28 @@
             <div class="d-flex flex-wrap">
               <!-- Legend -->
               <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
-                <ClassedLegend :colorScale="choroColorScale" :label="`Est. ${ reportName } prevalence since identification`" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
+                <ClassedLegend :colorScale="choroColorScale" :label="choroLabel" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
               </div>
-              <!-- Total count filter -->
-              <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
+
+              <div class="d-flex flex-column flex-wrap">
+                <!-- Total count filter -->
+                <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
+
+                <!-- Ndays filter -->
+                <div class="d-flex align-items-center flex-shrink-0">
+                  <small>Prevalence over the last</small>
+                  <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" @change="debounceChoroWindowChange()" v-model="choroNdays" placeholder="days">
+                  <small>days</small>
+                  <small><button class="btn btn-grey px-2 fa-sm ml-2 text-lowercase" @click="updateChoroWindow()">all time</button></small>
+                </div>
+              </div>
+
             </div>
 
             <ReportChoropleth :report="routeTo" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
           </template>
 
-          <ReportPrevalenceByLocation :data="choroData" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
+          <ReportPrevalenceByLocation :data="choroData" :label="choroLabel" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
         </div>
 
         <div class="text-muted my-5" v-else>
@@ -613,6 +625,12 @@ export default {
     },
     choroplethLocations() {
       return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)
+    },
+    choroLabel() {
+      return(`Est. ${ this.reportName } prevalence ${this.choroTimeFrame}`);
+    },
+    choroTimeFrame() {
+      return (this.choroNdays ? `last ${this.choroNdays} days` : "since identification")
     }
   },
   watch: {
@@ -666,6 +684,7 @@ export default {
       choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
       choroColorScale: null,
       choroCountThreshold: 25,
+      choroNdays: 60,
       totalThresh: 25, // threshold for "unreliable estimate" in the table
 
       // forms
@@ -722,6 +741,7 @@ export default {
   created: function() {
     this.debounceSetDims = debounce(this.setDims, 150);
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
+    this.debounceChoroWindowChange = debounce(this.updateChoroWindow, 700);
   },
   mounted() {
     this.sublineageOverlay = this.overlay === "true";
@@ -830,7 +850,7 @@ export default {
 
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh).subscribe(results => {
+        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh, this.choroNdays).subscribe(results => {
           this.hasData = true;
 
           // selected locations
@@ -1020,7 +1040,7 @@ export default {
       if (!this.selected) {
         this.selected = "Worldwide";
       }
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.selected, this.totalThresh).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.selected, this.totalThresh, this.choroNdays).subscribe(results => {
         // selected locations
         this.selectedLocations = results.locations;
         this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
@@ -1044,6 +1064,13 @@ export default {
         // sublineage breakdown
         this.sublineagePrev = results.sublineagePrev;
 
+      })
+    },
+    updateChoroWindow() {
+      console.log("wathc")
+      this.choroChangeSubscription = getLocationPrevalence(this.$genomicsurl, queryStr, this.loc, this.choroNdays).subscribe(results => {
+        this.choroData = results;
+        this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
       })
     },
     changeSublineageOverlay(selected) {

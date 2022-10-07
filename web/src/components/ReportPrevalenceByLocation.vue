@@ -21,7 +21,7 @@
         <!-- LEGEND -->
         <div class="d-flex align-items-center justify-content-between height-fixed">
           <!-- scale bar with gradient -->
-          <ClassedLegend :colorScale="colorScale" :horizontal="false" :includeNulls="false" :label="`Est. ${ mutationName } prevalence since identification`" :countThreshold="25" :mutationName="mutationName" nullColor="#EFEFEF" filteredColor="#A5A5A5" strokeColor="#2c3e50"
+          <ClassedLegend :colorScale="colorScale" :horizontal="false" :includeNulls="false" :label="label" :countThreshold="25" :mutationName="mutationName" nullColor="#EFEFEF" filteredColor="#A5A5A5" strokeColor="#2c3e50"
             maxCount="maxEstFormatted" />
 
           <div class="d-flex  align-items-center">
@@ -33,7 +33,7 @@
         </div>
 
         <!-- LEFT: DOTPLOT -->
-        <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
+        <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" v-if="y && y.domain().length">
         <!-- <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" :subtitle="subtitle"> -->
           <defs>
             <filter id="dropshadow" filterUnits="userSpaceOnUse">
@@ -52,6 +52,9 @@
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
           <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         </svg>
+        <div v-else class="fa-lg text-muted mt-3">
+          No {{mutationName}} detected
+        </div>
       </div>
 
       <!-- RIGHT: BARPLOT -->
@@ -75,12 +78,16 @@
         </div>
 
 
-        <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
+        <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title" v-if="y && y.domain().length">
           <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top" :hidden="!data.length"></g>
           <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top" :hidden="!data.length"></g>
           <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
           <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
         </svg>
+
+        <div v-else class="fa-lg text-muted mt-3">
+          No {{mutationName}} detected
+        </div>
       </div>
     </div>
   </div>
@@ -134,6 +141,7 @@ export default Vue.extend({
   props: {
     data: Array,
     mutationName: String,
+    label: String,
     location: String,
     locationName: String,
     colorScale: Function
@@ -326,6 +334,7 @@ export default Vue.extend({
       this.y = this.y
         .range([0, this.height])
         .domain(this.plottedData.map(d => d[this.yVariable]));
+
 
       this.xDotAxis = axisTop(this.xDot)
         .ticks(this.numXTicks)
