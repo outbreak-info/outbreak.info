@@ -1,66 +1,136 @@
 <template>
-<div class="col-sm-12 epidemiology-curves flex-column align-items-center" style="margin-bottom: 45px">
-  <!-- zoom btns -->
-  <div class="d-flex justify-content-end px-3" :style="{ width: width + 'px' }">
-    <button class="
+  <div
+    class="col-sm-12 epidemiology-curves flex-column align-items-center"
+    style="margin-bottom: 45px"
+  >
+    <!-- zoom btns -->
+    <div
+      class="d-flex justify-content-end px-3"
+      :style="{ width: width + 'px' }"
+    >
+      <button
+        class="
           btn btn-accent-flat
           text-highlight
           d-flex
           align-items-center
           m-0
           p-2
-        " @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="
+        "
+        @click="enableZoom"
+      >
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button
+        class="
           btn btn-accent-flat
           text-highlight
           d-flex
           align-items-center
           m-0
           p-2
-        " @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
-  </div>
+        "
+        @click="resetZoom"
+      >
+        <font-awesome-icon
+          class="text-right"
+          :icon="['fas', 'compress-arrows-alt']"
+        />
+      </button>
+    </div>
 
-  <svg :width="width" :height="height - 45" class="epi-curve" ref="svg" :name="title">
-    <g class="tooltip-cover" :transform="`translate(${margin.left}, ${margin.top})`">
-      <line class='mouse-line'></line>
-      <rect id="tooltip-cover-rect"></rect>
-    </g>
+    <svg
+      :width="width"
+      :height="height - 45"
+      class="epi-curve"
+      ref="svg"
+      :name="title"
+    >
+      <g
+        class="tooltip-cover"
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      >
+        <line class="mouse-line"></line>
+        <rect id="tooltip-cover-rect"></rect>
+      </g>
 
-    <defs>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`" class="epi-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g>
-    <g :transform="`translate(${margin.left},${margin.top})`" id="epi-curve" ref="epi_curve"></g>
-    <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{ hidden: !zoomAllowed }"></g>
-  </svg>
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="13"
+          markerHeight="10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
+        class="epi-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        class="epi-axis axis--y"
+        ref="yAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        id="epi-curve"
+        ref="epi_curve"
+      ></g>
+      <g
+        ref="brush"
+        class="brush"
+        id="brush-zoom"
+        :transform="`translate(${margin.left},${margin.top})`"
+        v-if="data"
+        :class="{ hidden: !zoomAllowed }"
+      ></g>
+    </svg>
 
-  <svg :width="width" :height="height" class="swoopy-arrow-group position-absolute" ref="svg_arrows">
-    <g ref="switchY" class="switch-y-button-group" transform="translate(5,0)" v-if="loggable">
-      <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
-      <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
-      <text class="switch-button" id="switch-y-btn-text"></text>
-    </g>
-  </svg>
-  <div class="tooltip p-2">
-    <p class="date m-0"></p>
-    <div v-for="line in plottedData" :key="line.key" :class="line.key">
-      <h6 class="country-name m-0"></h6>
-      <b class="count-avg m-0"></b>
+    <svg
+      :width="width"
+      :height="height"
+      class="swoopy-arrow-group position-absolute"
+      ref="svg_arrows"
+    >
+      <g
+        ref="switchY"
+        class="switch-y-button-group"
+        transform="translate(5,0)"
+        v-if="loggable"
+      >
+        <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
+        <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
+        <text class="switch-button" id="switch-y-btn-text"></text>
+      </g>
+    </svg>
+    <div class="tooltip p-2">
+      <p class="date m-0"></p>
+      <div v-for="line in plottedData" :key="line.key" :class="line.key">
+        <h6 class="country-name m-0"></h6>
+        <b class="count-avg m-0"></b>
+      </div>
+    </div>
+
+    <div v-if="plottedData && plottedData.length" class="mt-4">
+      <router-link
+        v-for="line in plottedData"
+        :key="line.key"
+        class="btn btn-main mr-2"
+        :to="{
+          name: 'LocationReports',
+          query: { loc: line.value[0].location_id },
+        }"
+      >
+        View {{ line.value[0].name }} Variant Report
+      </router-link>
     </div>
   </div>
-
-  <div v-if="plottedData && plottedData.length" class="mt-4">
-    <router-link v-for="line in plottedData" :key="line.key" class="btn btn-main mr-2" :to="{name: 'LocationReports', query: {loc: line.value[0].location_id}}">View {{line.value[0].name}} Variant Report</router-link>
-  </div>
-
-</div>
 </template>
 
 <script lang="js">
@@ -783,94 +853,96 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .tooltip {
-    position: fixed;
-    z-index: 1000;
-    background: #ffffffcf;
-    opacity: 0;
-    pointer-events: none;
+  position: fixed;
+  z-index: 1000;
+  background: #ffffffcf;
+  opacity: 0;
+  pointer-events: none;
 }
 .epi-axis text {
-    font-size: 12pt;
+  font-size: 12pt;
 }
 
 .epi-point {
-    // opacity: 0.4;
+  // opacity: 0.4;
 }
 
 .annotation--region-name {
-    dominant-baseline: middle;
-    stroke: none !important;
-    font-family: $font-family;
+  dominant-baseline: middle;
+  stroke: none !important;
+  font-family: $font-family;
 }
 
 .tooltip--text {
-    dominant-baseline: hanging;
-    stroke: none !important;
+  dominant-baseline: hanging;
+  stroke: none !important;
 }
 
 .tooltip--date {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 .tooltip--case-count {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .switch-button {
-    pointer-events: none;
-    dominant-baseline: text-after-edge;
-    // fill: $grey-90 !important;
-    font-weight: 300 !important;
-    font-size: 12.8px;
-    fill: $secondary-color;
+  pointer-events: none;
+  dominant-baseline: text-after-edge;
+  // fill: $grey-90 !important;
+  font-weight: 300 !important;
+  font-size: 12.8px;
+  fill: $secondary-color;
 
-    &:hover {}
+  &:hover {
+  }
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-    stroke: $grey-70;
-    fill: none;
-    stroke-width: 0.8;
+  stroke: $grey-70;
+  fill: none;
+  stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-    stroke-width: 1;
+  stroke-width: 1;
 }
 
 .switch-button-rect {
-    cursor: pointer;
-    fill: white;
-    rx: 5;
-    ry: 5;
-    stroke: $secondary-color;
-    stroke-width: 1;
-    shape-rendering: crispedges;
-    &:hover {
-        fill: $secondary-bright;
-    }
+  cursor: pointer;
+  fill: white;
+  rx: 5;
+  ry: 5;
+  stroke: $secondary-color;
+  stroke-width: 1;
+  shape-rendering: crispedges;
+  &:hover {
+    fill: $secondary-bright;
+  }
 }
 
-.switch-button-hover {}
+.switch-button-hover {
+}
 
 .epidemiology-curves line.case-def-changed-line {
-    stroke: $grey-60;
-    stroke-width: 0.75;
-    shape-rendering: crispedges;
-    stroke-dasharray: 6, 6;
+  stroke: $grey-60;
+  stroke-width: 0.75;
+  shape-rendering: crispedges;
+  stroke-dasharray: 6, 6;
 }
 .epidemiology-curves .case-def-changed text {
-    text-anchor: start;
+  text-anchor: start;
 }
 
 .x-axis-select {
-    // top: -29px;
-    // right: 20px;
+  // top: -29px;
+  // right: 20px;
 }
 
 .swoopy-arrow-group {
-    pointer-events: none;
-    & rect {
-        pointer-events: auto !important;
-    }
+  pointer-events: none;
+  & rect {
+    pointer-events: auto !important;
+  }
 }
 </style>

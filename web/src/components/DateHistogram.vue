@@ -1,23 +1,69 @@
 <template>
-<div class="donut-group d-flex flex-column" :id="`donut-${id}`">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" class="date-histogram">
-    <g :transform="`translate(${this.margin.left},${this.margin.top})`" ref="hist"></g>
-    <g class="axis axis--x" ref="axis_x" :transform="`translate(${margin.left},${height + margin.top})`"></g>
-  </svg>
-  <svg :hidden="!filterable" :width="width + margin.left + margin.right" height="38">
-    <g class="slider-handle pointer" v-if="x" :transform="`translate(${this.margin.left},${5})`">
-      <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
-        <line ref="slider_line" :x1="sliderLeft" :x2="sliderRight" :y1="4.1" :y2="4.1" stroke="#d6d6d6" stroke-width="4.5" />
-        <polygon id="slider_left" :transform="`translate(${sliderLeft},0)`" ref="slider_left" points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 " />
-        <polygon ref="slider_right" :transform="`translate(${sliderRight - 8},0)`" points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 " />
+  <div class="donut-group d-flex flex-column" :id="`donut-${id}`">
+    <svg
+      :width="width + margin.left + margin.right"
+      :height="height + margin.top + margin.bottom"
+      class="date-histogram"
+    >
+      <g
+        :transform="`translate(${this.margin.left},${this.margin.top})`"
+        ref="hist"
+      ></g>
+      <g
+        class="axis axis--x"
+        ref="axis_x"
+        :transform="`translate(${margin.left},${height + margin.top})`"
+      ></g>
+    </svg>
+    <svg
+      :hidden="!filterable"
+      :width="width + margin.left + margin.right"
+      height="38"
+    >
+      <g
+        class="slider-handle pointer"
+        v-if="x"
+        :transform="`translate(${this.margin.left},${5})`"
+      >
+        <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
+          <line
+            ref="slider_line"
+            :x1="sliderLeft"
+            :x2="sliderRight"
+            :y1="4.1"
+            :y2="4.1"
+            stroke="#d6d6d6"
+            stroke-width="4.5"
+          />
+          <polygon
+            id="slider_left"
+            :transform="`translate(${sliderLeft},0)`"
+            ref="slider_left"
+            points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 "
+          />
+          <polygon
+            ref="slider_right"
+            :transform="`translate(${sliderRight - 8},0)`"
+            points="0.1,4.1 4.1,-1.8 7.1,-1.8 8.1,-1.8 8.1,10.3 4.1,10.3 "
+          />
+        </g>
+        <g
+          transform="translate(0,13)"
+          dominant-baseline="hanging"
+          font-size="8"
+          font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;"
+          text-anchor="start"
+        >
+          <text :x="x(selectedMin)" :y="0">
+            &gt; {{ formatLimit(selectedMin) }}
+          </text>
+          <text :x="x(selectedMax)" :y="10" text-anchor="end">
+            &lt; {{ formatLimit(selectedMax) }}
+          </text>
+        </g>
       </g>
-      <g transform="translate(0,13)" dominant-baseline="hanging" font-size="8" font-family="'DM Sans', Avenir, Helvetica, Arial, sans-serif;" text-anchor="start">
-        <text :x="x(selectedMin)" :y="0">&gt; {{formatLimit(selectedMin)}}</text>
-        <text :x="x(selectedMax)" :y="10" text-anchor="end">&lt; {{formatLimit(selectedMax)}}</text>
-      </g>
-    </g>
-  </svg>
-</div>
+    </svg>
+  </div>
 </template>
 
 <script lang="js">
@@ -251,5 +297,4 @@ export default Vue.extend({
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
-</style>
+<style lang="scss"></style>

@@ -1,12 +1,20 @@
 <template>
-<div class="timeline-group d-flex flex-column text-left">
-  <h6 class="m-0">Results by publication date</h6>
-  <small class="text-accent text-right">7 day rolling average</small>
-  <svg :width="width" :height="height" class="epi-sparkline" ref="timeline">
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 3})`" class="resource-timeline-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="resource-timeline-axis axis--y" ref="yAxis"></g>
-  </svg>
-</div>
+  <div class="timeline-group d-flex flex-column text-left">
+    <h6 class="m-0">Results by publication date</h6>
+    <small class="text-accent text-right">7 day rolling average</small>
+    <svg :width="width" :height="height" class="epi-sparkline" ref="timeline">
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom + 3})`"
+        class="resource-timeline-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        class="resource-timeline-axis axis--y"
+        ref="yAxis"
+      ></g>
+    </svg>
+  </div>
 </template>
 
 <script lang="js">
@@ -174,35 +182,35 @@ export default Vue.extend({
 </script>
 <style lang="scss">
 .timeline-group .text-accent {
-    color: $warning-color;
-    margin-right: 20px;
+  color: $warning-color;
+  margin-right: 20px;
 }
 
 .resource-timeline path {
-    stroke: $warning-color;
-    stroke-width: 2;
-    fill: none;
+  stroke: $warning-color;
+  stroke-width: 2;
+  fill: none;
 }
 
 .resource-timeline-bar {
-    fill: $grey-45;
-    stroke: none;
+  fill: $grey-45;
+  stroke: none;
 }
 
 .resource-timeline-axis {
-    font-size: 16px;
+  font-size: 16px;
 }
 .resource-timeline-axis.axis--y {
-    font-size: 13px;
+  font-size: 13px;
 }
 
 .resource-timeline-axis.axis--y path {
-    display: none;
+  display: none;
 }
 
 .resource-timeline-axis.axis--y line {
-    stroke: $grey-60;
-    stroke-width: 0.5;
-    shape-rendering: crispedges;
+  stroke: $grey-60;
+  stroke-width: 0.5;
+  shape-rendering: crispedges;
 }
 </style>

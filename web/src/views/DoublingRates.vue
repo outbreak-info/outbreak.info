@@ -4,8 +4,7 @@
       :animate="false"
       class="mt-2"
       text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: rate of testing could confound the interpretation of doubling rates."
-    >
-    </Warning>
+    ></Warning>
     <div class="d-flex flex-wrap align-items-center mx-4">
       <div class="d-flex flex-column align-items-center mr-5">
         <h3 class="plot-title text-sec py-5" v-if="epi$">
@@ -28,8 +27,9 @@
             <router-link
               v-if="epi$"
               :to="{ name: 'Epidemiology', query: { location: locationID } }"
-              >{{ epi$.data[0].name }}</router-link
             >
+              {{ epi$.data[0].name }}
+            </router-link>
           </span>
         </h3>
         <h3 v-else class="pt-5">Select a location</h3>
@@ -59,41 +59,41 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { getDoubling, getAllDoubling } from "@/api/calc-doubling.js";
+import Vue from 'vue';
+import { getDoubling, getAllDoubling } from '@/api/calc-doubling.js';
 
-import DoublingCurve from "@/components/DoublingCurve.vue";
-import DoublingTable from "@/components/DoublingTable.vue";
-import Warning from "@/components/Warning.vue";
-import SearchBar from "@/components/SearchBar.vue";
+import DoublingCurve from '@/components/DoublingCurve.vue';
+import DoublingTable from '@/components/DoublingTable.vue';
+import Warning from '@/components/Warning.vue';
+import SearchBar from '@/components/SearchBar.vue';
 
 export default Vue.extend({
-  name: "DoublingRates",
+  name: 'DoublingRates',
   components: {
     DoublingCurve,
     DoublingTable,
     Warning,
-    SearchBar
+    SearchBar,
   },
   data() {
     return {
       locationID: null,
-      variable: "confirmed",
+      variable: 'confirmed',
       variableOptions: [
         {
-          label: "Cases",
-          value: "confirmed"
+          label: 'Cases',
+          value: 'confirmed',
         },
         {
-          label: "Deaths",
-          value: "dead"
-        }
+          label: 'Deaths',
+          value: 'dead',
+        },
       ],
       epi$: null,
       dataSubscription: null,
       toFit: null,
       fitting1: false,
-      fitting2: true
+      fitting2: true,
       // set up initial plot indices
       // (this.plottedData.length - this.numFit)
       // this.plottedData.length - this.numFit * 2 && i < this.plottedData.length - this.numFit)
@@ -106,12 +106,12 @@ export default Vue.extend({
       if (this.epi$) {
         return {
           id: this.epi$.data[0].location_id,
-          label: this.epi$.data[0].name
+          label: this.epi$.data[0].name,
         };
       } else {
         return null;
       }
-    }
+    },
   },
   methods: {
     changeFit: function(fitIdx) {
@@ -120,11 +120,11 @@ export default Vue.extend({
     changeParams: function(newVar) {
       this.updateData();
       this.$router.push({
-        path: "doubling-rates",
+        path: 'doubling-rates',
         query: {
           location: this.locationID,
-          variable: this.variable
-        }
+          variable: this.variable,
+        },
       });
     },
     executeFit: function(fitIdx) {
@@ -138,23 +138,23 @@ export default Vue.extend({
       this.dataSubscription = getDoubling(
         this.$apiurl,
         this.locationID,
-        this.variable
-      ).subscribe(results => {
+        this.variable,
+      ).subscribe((results) => {
         this.epi$ = results;
       });
-    }
+    },
   },
   mounted() {
     // getAllDoubling(this.$apiurl, this.variable).subscribe(d => console.log(d))
     this.locationID = this.$route.query.location;
     this.variable = this.$route.query.variable
       ? this.$route.query.variable
-      : "confirmed";
+      : 'confirmed';
 
     this.updateData();
   },
   beforeDestroy() {
     this.dataSubscription.unsubscribe();
-  }
+  },
 });
 </script>

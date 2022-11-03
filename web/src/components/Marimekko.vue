@@ -1,29 +1,30 @@
-<template><div>
-  <svg :width="width" :height="height" class="marimekko">
-    <defs>
-      <marker
-        id="arrow-start"
-        markerWidth="6"
-        markerHeight="4"
-        refX="1"
-        refY="2"
-        orient="auto"
-        markerUnits="strokeWidth"
-      >
-        <path d="M4,4 L1,2 L4,0" class="mari-arrowhead" />
-      </marker>
-      <marker
-        id="arrow-end"
-        markerWidth="6"
-        markerHeight="4"
-        refX="3"
-        refY="2"
-        orient="auto"
-        markerUnits="strokeWidth"
-      >
-        <path d="M0,4 L3,2 L0,0" class="mari-arrowhead" />
-      </marker>
-      <!-- <marker
+<template>
+  <div>
+    <svg :width="width" :height="height" class="marimekko">
+      <defs>
+        <marker
+          id="arrow-start"
+          markerWidth="6"
+          markerHeight="4"
+          refX="1"
+          refY="2"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M4,4 L1,2 L4,0" class="mari-arrowhead" />
+        </marker>
+        <marker
+          id="arrow-end"
+          markerWidth="6"
+          markerHeight="4"
+          refX="3"
+          refY="2"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M0,4 L3,2 L0,0" class="mari-arrowhead" />
+        </marker>
+        <!-- <marker
         id="arrow-end"
         markerWidth="13"
         markerHeight="10"
@@ -34,10 +35,14 @@
       >
         <path d="M5,0 L12,5 L5,10" class="mari-arrowhead" />
       </marker> -->
-    </defs>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" ref="marimekko"></g>
-  </svg>
-</div></template>
+      </defs>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        ref="marimekko"
+      ></g>
+    </svg>
+  </div>
+</template>
 
 <script lang="js">
 import Vue from "vue";
@@ -199,13 +204,13 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .marimekko-divider {
-    stroke-width: 1.5;
+  stroke-width: 1.5;
 }
 
 .mari-arrow,
 .mari-arrowhead {
-    stroke: #bbb;
-    fill: none;
-    stroke-width: 1;
+  stroke: #bbb;
+  fill: none;
+  stroke-width: 1;
 }
 </style>

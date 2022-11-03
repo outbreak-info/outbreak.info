@@ -43,19 +43,42 @@
         id="epi-curve"
       ></g>
     </svg>
-    <DataSource :ids="['NYT','JHU']" v-if="data" dataType="maps" figureRef="doubling-curve" :data="plottedData" />
+    <DataSource
+      :ids="['NYT', 'JHU']"
+      v-if="data"
+      dataType="maps"
+      figureRef="doubling-curve"
+      :data="plottedData"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import DataSource from "@/components/DataSource.vue";
-import Warning from "@/components/Warning.vue";
+import Vue from 'vue';
+import DataSource from '@/components/DataSource.vue';
+import Warning from '@/components/Warning.vue';
 
-import { select, selectAll, scaleTime, scaleLog, axisBottom, axisLeft, line, range, mouse, event, extent, max, format, timeFormat, transition, easeLinear } from "d3";
-import cloneDeep from "lodash/cloneDeep";
+import {
+  select,
+  selectAll,
+  scaleTime,
+  scaleLog,
+  axisBottom,
+  axisLeft,
+  line,
+  range,
+  mouse,
+  event,
+  extent,
+  max,
+  format,
+  timeFormat,
+  transition,
+  easeLinear,
+} from 'd3';
+import cloneDeep from 'lodash/cloneDeep';
 
-import store from "@/store";
+import store from '@/store';
 
 const width = 500;
 const height = 300;
@@ -64,20 +87,20 @@ const margin = {
   top: 15,
   right: 25,
   bottom: 75,
-  left: 95
+  left: 95,
 };
 const transitionDuration = 500;
 
 export default Vue.extend({
-  name: "DoublingCurve",
+  name: 'DoublingCurve',
   components: {
     DataSource,
-    Warning
+    Warning,
   },
   props: {
     data: Object,
     toFit: Number,
-    variable: String
+    variable: String,
   },
   data() {
     return {
@@ -109,7 +132,7 @@ export default Vue.extend({
       dots: null,
       switchBtn: null,
       // methods
-      line: null
+      line: null,
     };
   },
   watch: {
@@ -119,11 +142,11 @@ export default Vue.extend({
     },
     width() {
       this.updatePlot();
-    }
+    },
   },
   computed: {
     title() {
-      return(`Cumulative number of COVID-19 ${this.variable} in ${this.data.data[0].name}`)
+      return `Cumulative number of COVID-19 ${this.variable} in ${this.data.data[0].name}`;
     },
     fitIdx1() {
       return range(this.fit1.minIdx, this.fit1.maxIdx);
@@ -146,7 +169,7 @@ export default Vue.extend({
     },
     dataLength() {
       return this.plottedData.length;
-    }
+    },
   },
   mounted() {
     this.prepData();
@@ -154,7 +177,7 @@ export default Vue.extend({
     this.updatePlot();
   },
   destroyed() {
-    window.removeEventListener("resize", this.setPlotDims);
+    window.removeEventListener('resize', this.setPlotDims);
   },
   methods: {
     setPlotDims() {
@@ -213,81 +236,81 @@ export default Vue.extend({
       if (this.data) {
         // console.log(this.data)
         // console.log(this.plottedData)
-        this.plottedData = this.data.data.filter(d => d[this.variable]);
+        this.plottedData = this.data.data.filter((d) => d[this.variable]);
         this.fit1 = this.data.fit1;
         this.fit2 = this.data.fit2;
       }
     },
     drawRect() {
-      console.log("drawing rect");
+      console.log('drawing rect');
       // this.drawable = !this.drawable;
       // allow drawing of rects
       // based off https://bl.ocks.org/romsson/568e166d702b4a464347
       const mousedown = function(x, y, variable) {
         const mouseLoc = mouse(event.target);
-        select(".doubling-curve")
-          .append("rect")
-          .attr("class", "selection-box")
-          .attr("x", mouseLoc[0])
-          .attr("y", mouseLoc[1])
-          .attr("width", 0)
-          .attr("height", 0);
+        select('.doubling-curve')
+          .append('rect')
+          .attr('class', 'selection-box')
+          .attr('x', mouseLoc[0])
+          .attr('y', mouseLoc[1])
+          .attr('width', 0)
+          .attr('height', 0);
 
-        select(".doubling-curve").on("mousemove", () =>
-          mousemove(x, y, variable)
+        select('.doubling-curve').on('mousemove', () =>
+          mousemove(x, y, variable),
         );
       };
 
       const mouseup = function() {
-        select(".doubling-curve").on("mousemove", null);
+        select('.doubling-curve').on('mousemove', null);
       };
 
       const mousemove = function(x, y, variable) {
         const mouseLoc = mouse(event.target);
 
-        const rect = select(".doubling-curve").select(".selection-box");
+        const rect = select('.doubling-curve').select('.selection-box');
 
         const x1 = mouseLoc[0];
-        const x2 = +rect.attr("x");
+        const x2 = +rect.attr('x');
         const y1 = mouseLoc[1];
-        const y2 = +rect.attr("y");
+        const y2 = +rect.attr('y');
 
         rect
-          .attr("width", Math.max(0, x1 - x2))
-          .attr("height", Math.max(0, y1 - y2));
+          .attr('width', Math.max(0, x1 - x2))
+          .attr('height', Math.max(0, y1 - y2));
 
-        const circles = selectAll("circle").classed("highlight", d => {
+        const circles = selectAll('circle').classed('highlight', (d) => {
           return (
             d && d[variable] && y(d[variable]) <= y2 && y(d[variable]) >= y1
           );
         });
       };
 
-      this.svg = select("svg.doubling-curve")
-        .on("mousedown", () => mousedown(this.x, this.y, this.variable))
-        .on("mouseup", mouseup);
+      this.svg = select('svg.doubling-curve')
+        .on('mousedown', () => mousedown(this.x, this.y, this.variable))
+        .on('mouseup', mouseup);
     },
     executeFit: function() {
-      console.log("finishing fit");
-      this.$emit("executeFit", this.toFit);
+      console.log('finishing fit');
+      this.$emit('executeFit', this.toFit);
     },
     removeFit: function() {
-      console.log("removing fit");
-      this.chart.selectAll(".epi-line").style("opacity", 0.3);
+      console.log('removing fit');
+      this.chart.selectAll('.epi-line').style('opacity', 0.3);
       if (this.toFit === 2) {
-        this.chart.selectAll("circle").classed("penultimate-data", false);
-        this.chart.selectAll(".penultimate-fit").style("display", "none");
+        this.chart.selectAll('circle').classed('penultimate-data', false);
+        this.chart.selectAll('.penultimate-fit').style('display', 'none');
       }
       if (this.toFit === 1) {
-        this.chart.selectAll("circle").classed("recent-data", false);
-        this.chart.selectAll(".recent-fit").style("display", "none");
+        this.chart.selectAll('circle').classed('recent-data', false);
+        this.chart.selectAll('.recent-fit').style('display', 'none');
       }
     },
     setupPlot: function() {
       // Event listener for mobile responsiveness
       // $nextTick waits till DOM rendered
       this.$nextTick(function() {
-        window.addEventListener("resize", this.setPlotDims);
+        window.addEventListener('resize', this.setPlotDims);
         // set initial dimensions for the stacked area plots.
         this.setPlotDims();
       });
@@ -296,22 +319,22 @@ export default Vue.extend({
 
       this.prepData();
 
-      this.svg = select("svg.doubling-curve");
-      this.chart = select("#epi-curve");
-      this.dots = this.chart.append("g").attr("id", "confirmed-timepoints");
+      this.svg = select('svg.doubling-curve');
+      this.chart = select('#epi-curve');
+      this.dots = this.chart.append('g').attr('id', 'confirmed-timepoints');
 
       this.line = line()
         .x((d, i) => this.x(d.date))
-        .y(d => this.y());
+        .y((d) => this.y());
     },
     updateScales: function() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.plottedData.map(d => d.date)));
+        .domain(extent(this.plottedData.map((d) => d.date)));
 
       this.y = scaleLog()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([1, max(this.plottedData.map(d => d[this.variable]))]);
+        .domain([1, max(this.plottedData.map((d) => d[this.variable]))]);
 
       this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
 
@@ -321,16 +344,14 @@ export default Vue.extend({
         .ticks(this.numYTicks)
         .tickFormat((d, i) => {
           const log = Math.log10(d);
-          return Math.abs(Math.round(log) - log) < 1e-6
-            ? format(",")(d)
-            : "";
+          return Math.abs(Math.round(log) - log) < 1e-6 ? format(',')(d) : '';
         });
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
     drawDots: function() {
       const t1 = transition().duration(this.transitionDuration);
-      const formatDate = timeFormat("%d %b %Y");
+      const formatDate = timeFormat('%d %b %Y');
 
       // --- best-fit lines ---
       //       // y = -1222.7800       0.0672
@@ -344,7 +365,7 @@ export default Vue.extend({
         //Create a (random) dash pattern
         //The first number specifies the length of the visible part, the dash
         //The second number specifies the length of the invisible part
-        var dashing = "12,6";
+        var dashing = '12,6';
 
         //This returns the length of adding all of the numbers in dashing
         //(the length of one pattern in essence)
@@ -363,140 +384,140 @@ export default Vue.extend({
 
         //Create an array that holds the pattern as often
         //so it will fill the entire path
-        var newDashes = new Array(dashCount).join(dashing + " ");
+        var newDashes = new Array(dashCount).join(dashing + ' ');
 
         //Then add one more dash pattern, namely with a visible part
         //of length 0 (so nothing) and a white part
         //that is the same length as the entire path
-        var dashArray = newDashes + " 0, " + totalLength;
-        return totalLength + " " + totalLength;
+        var dashArray = newDashes + ' 0, ' + totalLength;
+        return totalLength + ' ' + totalLength;
         // return dashArray
       };
 
       const penultimateFitSelector = this.chart
-        .selectAll(".penultimate-fit")
+        .selectAll('.penultimate-fit')
         .data([this.fit1]);
 
       penultimateFitSelector.join(
-        enter =>
+        (enter) =>
           enter
-            .append("line")
-            .attr("class", "epi-line penultimate-fit")
-            .style("fill", "none")
-            .style("stroke-width", "2")
-            .style("stroke", "#59a14f")
+            .append('line')
+            .attr('class', 'epi-line penultimate-fit')
+            .style('fill', 'none')
+            .style('stroke-width', '2')
+            .style('stroke', '#59a14f')
             // .transition(t1)
-            .attr("x1", d => this.x(d.x1))
-            .attr("x2", d => this.x(d.x2))
-            .attr("y1", d => this.y(d.y1))
-            .attr("y2", d => this.y(d.y2))
-            .attr("stroke-dasharray", function() {
+            .attr('x1', (d) => this.x(d.x1))
+            .attr('x2', (d) => this.x(d.x2))
+            .attr('y1', (d) => this.y(d.y1))
+            .attr('y2', (d) => this.y(d.y2))
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr("stroke-dashoffset", function() {
+            .attr('stroke-dashoffset', function() {
               var totalLength = this.getTotalLength();
               return totalLength;
             })
-            .call(update =>
+            .call((update) =>
               update
                 .transition(t1)
                 .ease(easeLinear)
-                .attr("stroke-dashoffset", 0)
+                .attr('stroke-dashoffset', 0),
             ),
-        update =>
+        (update) =>
           update
-            .attr("x1", d => this.x(d.x1))
-            .attr("x2", d => this.x(d.x2))
-            .attr("y1", d => this.y(d.y1))
-            .attr("y2", d => this.y(d.y2))
-            .attr("stroke-dasharray", function() {
+            .attr('x1', (d) => this.x(d.x1))
+            .attr('x2', (d) => this.x(d.x2))
+            .attr('y1', (d) => this.y(d.y1))
+            .attr('y2', (d) => this.y(d.y2))
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr("stroke-dashoffset", function() {
+            .attr('stroke-dashoffset', function() {
               var totalLength = this.getTotalLength();
               return totalLength;
             })
-            .call(update =>
+            .call((update) =>
               update
                 .transition(t1)
                 .ease(easeLinear)
-                .attr("stroke-dashoffset", 0)
+                .attr('stroke-dashoffset', 0),
             ),
-        exit =>
-          exit.call(exit =>
+        (exit) =>
+          exit.call((exit) =>
             exit
               .transition()
               .duration(10)
-              .style("opacity", 1e-5)
-              .remove()
-          )
+              .style('opacity', 1e-5)
+              .remove(),
+          ),
       );
 
       // y = -313.6766 + 0.0176x
       const recentFitSelector = this.chart
-        .selectAll(".recent-fit")
+        .selectAll('.recent-fit')
         .data([this.fit2]);
 
       recentFitSelector.join(
-        enter =>
+        (enter) =>
           enter
-            .append("line")
-            .attr("class", "epi-line recent-fit")
-            .style("fill", "none")
-            .style("stroke-width", "2")
-            .style("stroke", "#f28e2c")
+            .append('line')
+            .attr('class', 'epi-line recent-fit')
+            .style('fill', 'none')
+            .style('stroke-width', '2')
+            .style('stroke', '#f28e2c')
             // .transition(t1)
-            .attr("x1", d => this.x(d.x1))
-            .attr("x2", d => this.x(d.x2))
-            .attr("y1", d => this.y(d.y1))
-            .attr("y2", d => this.y(d.y2))
-            .attr("stroke-dasharray", function() {
+            .attr('x1', (d) => this.x(d.x1))
+            .attr('x2', (d) => this.x(d.x2))
+            .attr('y1', (d) => this.y(d.y1))
+            .attr('y2', (d) => this.y(d.y2))
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr("stroke-dashoffset", function() {
+            .attr('stroke-dashoffset', function() {
               var totalLength = this.getTotalLength();
               return totalLength;
             })
-            .call(update =>
+            .call((update) =>
               update
                 .transition(t1)
                 .delay(this.transitionDuration + 50)
                 .ease(easeLinear)
-                .attr("stroke-dashoffset", 0)
+                .attr('stroke-dashoffset', 0),
             ),
-        update =>
+        (update) =>
           update
-            .attr("x1", d => this.x(d.x1))
-            .attr("x2", d => this.x(d.x2))
-            .attr("y1", d => this.y(d.y1))
-            .attr("y2", d => this.y(d.y2))
-            .attr("stroke-dasharray", function() {
+            .attr('x1', (d) => this.x(d.x1))
+            .attr('x2', (d) => this.x(d.x2))
+            .attr('y1', (d) => this.y(d.y1))
+            .attr('y2', (d) => this.y(d.y2))
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr("stroke-dashoffset", function() {
+            .attr('stroke-dashoffset', function() {
               var totalLength = this.getTotalLength();
               return totalLength;
             })
-            .call(update =>
+            .call((update) =>
               update
                 .transition(t1)
                 .delay(this.transitionDuration + 50)
                 .ease(easeLinear)
-                .attr("stroke-dashoffset", 0)
+                .attr('stroke-dashoffset', 0),
             ),
-        exit =>
-          exit.call(exit =>
+        (exit) =>
+          exit.call((exit) =>
             exit
               .transition()
               .duration(10)
-              .style("opacity", 1e-5)
-              .remove()
-          )
+              .style('opacity', 1e-5)
+              .remove(),
+          ),
       );
 
       // --- show cases as dot plot ---
       const dotGroups = this.dots
-        .selectAll(".circle-confirmed")
+        .selectAll('.circle-confirmed')
         .data(this.plottedData);
 
       // -- exit --
@@ -505,18 +526,24 @@ export default Vue.extend({
       // -- enter --
       const dotsEnter = dotGroups
         .enter()
-        .append("circle")
-        .attr("r", this.radius);
+        .append('circle')
+        .attr('r', this.radius);
       dotGroups
         .merge(dotsEnter)
-        .attr("id", d => d.id)
-        .attr("class", d => `circle-confirmed ${d.id}`)
-        .style("fill", d => this.fitIdx2.includes(d.idx) ? "#f28e2c" : (this.fitIdx1.includes(d.idx) ? "#59a14f" : "#bab0ab"))
-        .style("fill-opacity", 0.5)
-        .attr("cx", d => this.x(d.date))
-        .attr("cy", d => this.y(d[this.variable]))
-        .classed("recent-data", d => this.fitIdx2.includes(d.idx))
-        .classed("penultimate-data", d => this.fitIdx1.includes(d.idx));
+        .attr('id', (d) => d.id)
+        .attr('class', (d) => `circle-confirmed ${d.id}`)
+        .style('fill', (d) =>
+          this.fitIdx2.includes(d.idx)
+            ? '#f28e2c'
+            : this.fitIdx1.includes(d.idx)
+            ? '#59a14f'
+            : '#bab0ab',
+        )
+        .style('fill-opacity', 0.5)
+        .attr('cx', (d) => this.x(d.date))
+        .attr('cy', (d) => this.y(d[this.variable]))
+        .classed('recent-data', (d) => this.fitIdx2.includes(d.idx))
+        .classed('penultimate-data', (d) => this.fitIdx1.includes(d.idx));
 
       // --- tooltips ---
       // need to be outside the path/dot groups, so they're on top of all the curves.
@@ -611,8 +638,8 @@ export default Vue.extend({
       // selectAll("circle")
       //   .on("mouseover", d => this.tooltipOn(d))
       //   .on("mouseout", d => this.tooltipOff(d));
-    }
-  }
+    },
+  },
 });
 </script>
 

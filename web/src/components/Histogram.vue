@@ -1,17 +1,25 @@
 <template>
-<div class="d-flex flex-column">
-  <h5 class="text-muted">{{title}}</h5>
+  <div class="d-flex flex-column">
+    <h5 class="text-muted">{{ title }}</h5>
 
-  <svg :width="width" :height="height" id="generic-histogram" name="title">
-    <g ref="hist" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
-  </svg>
-</div>
+    <svg :width="width" :height="height" id="generic-histogram" name="title">
+      <g ref="hist" :transform="`translate(${margin.left}, ${margin.top})`"></g>
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`"
+        class="prevalence-axis total-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        class="prevalence-axis total-axis axis--y"
+        ref="yAxisLeft"
+      ></g>
+    </svg>
+  </div>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 import {
   select,
@@ -28,50 +36,50 @@ import {
   line,
   area,
   transition,
-  timeDay
-} from "d3";
+  timeDay,
+} from 'd3';
 
 export default Vue.extend({
-  name: "SequencingHistogram",
+  name: 'SequencingHistogram',
   props: {
     data: Array,
     median: Number,
     title: String,
     setWidth: {
       type: Number,
-      default: 500
+      default: 500,
     },
     height: {
       type: Number,
-      default: 400
+      default: 400,
     },
     margin: {
       type: Object,
       default: () => {
-        return ({
+        return {
           top: 10,
           bottom: 30,
           left: 50,
-          right: 10
-        })
-      }
+          right: 10,
+        };
+      },
     },
     fillColor: {
       type: String,
-      default: "#9edae5"
+      default: '#9edae5',
     },
     medianColor: {
       type: String,
-      default: "#114068"
-    }
+      default: '#114068',
+    },
   },
   watch: {
     data() {
-      this.updatePlot()
-    }
+      this.updatePlot();
+    },
   },
   data() {
-    return ({
+    return {
       // dims
       width: 500,
       // height: 400,
@@ -89,8 +97,8 @@ export default Vue.extend({
       numXTicks: 5,
       numYTicks: 5,
       // refs
-      chart: null
-    })
+      chart: null,
+    };
   },
   methods: {
     updatePlot() {
@@ -101,7 +109,7 @@ export default Vue.extend({
     },
     setupPlot() {
       this.$nextTick(function() {
-        window.addEventListener("resize", this.setDims);
+        window.addEventListener('resize', this.setDims);
 
         // set initial dimensions for the plots.
         this.setDims();
@@ -115,14 +123,14 @@ export default Vue.extend({
       }
     },
     updateAxes() {
-      const minVal = min(this.data, d => d.x0);
-      const maxVal = max(this.data, d => d.x1);
+      const minVal = min(this.data, (d) => d.x0);
+      const maxVal = max(this.data, (d) => d.x1);
 
       this.x = scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([minVal, maxVal])
+        .domain([minVal, maxVal]);
 
-      const maxCounts = max(this.data.map(d => d.length));
+      const maxCounts = max(this.data.map((d) => d.length));
       this.y = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, maxCounts]);
@@ -136,104 +144,117 @@ export default Vue.extend({
         .ticks(this.numYTicks)
         .tickSizeOuter(0);
       select(this.$refs.yAxisLeft).call(this.yAxis);
-
     },
     drawPlot() {
       const t1 = transition().duration(1500);
       const xGap = 1;
 
-
       if (this.median) {
         const medianSelector = this.chart
-          .selectAll(".median")
+          .selectAll('.median')
           .data([this.median]);
 
         medianSelector.join(
-          enter => {
-            const grp = enter.append("g")
-              .attr("class", "median");
+          (enter) => {
+            const grp = enter.append('g').attr('class', 'median');
 
-            grp.append("line")
-              .attr("class", "median-line")
-              .attr("x1", d => this.x(d))
-              .attr("x2", d => this.x(d))
-              .attr("y1", 0)
-              .attr("y2", this.height - this.margin.top - this.margin.bottom)
-              .style("stroke", this.medianColor)
-              .style("stroke-width", 1)
-              .style("stroke-dasharray", "4,4")
+            grp
+              .append('line')
+              .attr('class', 'median-line')
+              .attr('x1', (d) => this.x(d))
+              .attr('x2', (d) => this.x(d))
+              .attr('y1', 0)
+              .attr('y2', this.height - this.margin.top - this.margin.bottom)
+              .style('stroke', this.medianColor)
+              .style('stroke-width', 1)
+              .style('stroke-dasharray', '4,4');
 
-            grp.append("text")
-              .attr("class", "median-annotation")
-              .attr("x", d => this.x(d))
-              .attr("dx", 10)
-              .attr("y", this.margin.top)
-              .attr("dy", 5)
-              .text(d => `median: ${d} days`)
-              .style("fill", this.medianColor)
-              .style("font-size", 18)
-              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+            grp
+              .append('text')
+              .attr('class', 'median-annotation')
+              .attr('x', (d) => this.x(d))
+              .attr('dx', 10)
+              .attr('y', this.margin.top)
+              .attr('dy', 5)
+              .text((d) => `median: ${d} days`)
+              .style('fill', this.medianColor)
+              .style('font-size', 18)
+              .style(
+                'font-family',
+                "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
+              );
           },
-          update => {
+          (update) => {
             update
-              .select(".median-line")
-              .attr("y2", this.height - this.margin.top - this.margin.bottom)
+              .select('.median-line')
+              .attr('y2', this.height - this.margin.top - this.margin.bottom)
               .transition(t1)
-              .attr("x1", d => this.x(d))
-              .attr("x2", d => this.x(d))
-
+              .attr('x1', (d) => this.x(d))
+              .attr('x2', (d) => this.x(d));
 
             update
-              .select(".median-annotation")
-              .attr("y", this.margin.top)
-              .text(d => `median: ${d} days`)
+              .select('.median-annotation')
+              .attr('y', this.margin.top)
+              .text((d) => `median: ${d} days`)
               .transition(t1)
-              .attr("x", d => this.x(d))
+              .attr('x', (d) => this.x(d));
           },
-          exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-        )
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .duration(10)
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
       }
 
-      const histSelector = this.chart
-        .selectAll(".hist")
-        .data(this.data);
+      const histSelector = this.chart.selectAll('.hist').data(this.data);
 
       histSelector.join(
-        enter => {
-          enter.append("rect")
-            .attr("class", "hist")
-            .attr("x", d => this.x(d.x0) - xGap)
-            .attr("width", d => this.x(d.x1) - this.x(d.x0) - xGap * 2)
-            .attr("y", d => this.y(d.length))
-            .attr("height", d => this.y(0) - this.y(d.length))
-            .style("fill", this.fillColor);
+        (enter) => {
+          enter
+            .append('rect')
+            .attr('class', 'hist')
+            .attr('x', (d) => this.x(d.x0) - xGap)
+            .attr('width', (d) => this.x(d.x1) - this.x(d.x0) - xGap * 2)
+            .attr('y', (d) => this.y(d.length))
+            .attr('height', (d) => this.y(0) - this.y(d.length))
+            .style('fill', this.fillColor);
         },
-        update => {
+        (update) => {
           update
             .transition(t1)
-            .attr("x", d => this.x(d.x0) - xGap)
-            .attr("width", d => this.x(d.x1) - this.x(d.x0) - xGap * 2)
-            .attr("y", d => this.y(d.length))
-            .attr("height", d => this.y(0) - this.y(d.length));
+            .attr('x', (d) => this.x(d.x0) - xGap)
+            .attr('width', (d) => this.x(d.x1) - this.x(d.x0) - xGap * 2)
+            .attr('y', (d) => this.y(d.length))
+            .attr('height', (d) => this.y(0) - this.y(d.length));
         },
-        exit => exit.call(exit => exit.transition().duration(10).style("opacity", 1e-5).remove())
-      )
-    }
+        (exit) =>
+          exit.call((exit) =>
+            exit
+              .transition()
+              .duration(10)
+              .style('opacity', 1e-5)
+              .remove(),
+          ),
+      );
+    },
   },
   mounted() {
     this.setupPlot();
     this.updatePlot();
-  }
-})
+  },
+});
 </script>
 
 <style lang="scss">
 #generic-histogram {
-    .axis--x text,
-    .axis--y text {
-        font-size: 16px;
-        fill: $grey-90;
-
-    }
+  .axis--x text,
+  .axis--y text {
+    font-size: 16px;
+    fill: $grey-90;
+  }
 }
 </style>

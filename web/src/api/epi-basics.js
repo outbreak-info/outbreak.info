@@ -1,101 +1,96 @@
-import {
-  from,
-  of ,
-  forkJoin
-} from "rxjs";
-import axios from "axios";
+import { from, of, forkJoin } from 'rxjs';
+import axios from 'axios';
 import {
   tap,
   finalize,
   catchError,
   mergeMap,
   pluck,
-  map
-} from "rxjs/operators";
-import {
-  nest,
-  timeParse,
-  timeFormat,
-  sum
-} from "d3";
+  map,
+} from 'rxjs/operators';
+import { nest, timeParse, timeFormat, sum } from 'd3';
 
-import {
-  schemeYlGnBu
-} from "d3-scale-chromatic";
-import {
-  getSparklineTraces
-} from "@/api/epi-traces.js";
+import { schemeYlGnBu } from 'd3-scale-chromatic';
+import { getSparklineTraces } from '@/api/epi-traces.js';
 
-import {
-  getLocationTable
-} from "@/api/genomics.js";
+import { getLocationTable } from '@/api/genomics.js';
 
-import {
-  getAll
-} from "@/api/biothings.js";
+import { getAll } from '@/api/biothings.js';
 
-import CURATED from "@/assets/genomics/curated_lineages.json";
+import CURATED from '@/assets/genomics/curated_lineages.json';
 
-import store from "@/store";
+import store from '@/store';
 
 export function lookupEpiLocations(apiUrl, locationArr) {
   if (locationArr.length) {
     return from(
       axios.get(
-        `${apiUrl}query?q=mostRecent:true AND location_id:(${locationArr.join(" OR ")})&size=1000&fields=name,location_id,country_name,state_name`
-      )
+        `${apiUrl}query?q=mostRecent:true AND location_id:(${locationArr.join(
+          ' OR ',
+        )})&size=1000&fields=name,location_id,country_name,state_name`,
+      ),
     ).pipe(
-      pluck("data", "hits"),
-      map(results => {
-        results.forEach(d => {
-          d["label"] = d.state_name ? `${d.name}, ${d.state_name}` : d.country_name && d.country_name != d.name ? `${d.name}, ${d.country_name}` : d.name
-        })
+      pluck('data', 'hits'),
+      map((results) => {
+        results.forEach((d) => {
+          d['label'] = d.state_name
+            ? `${d.name}, ${d.state_name}`
+            : d.country_name && d.country_name != d.name
+            ? `${d.name}, ${d.country_name}`
+            : d.name;
+        });
 
         // ensure the sort order is same as what was given
-        results.sort((a, b) => locationArr.indexOf(a.location_id) - locationArr.indexOf(b.location_id));
+        results.sort(
+          (a, b) =>
+            locationArr.indexOf(a.location_id) -
+            locationArr.indexOf(b.location_id),
+        );
 
-        return (results)
+        return results;
       }),
-      catchError(e => {
-        console.log("%c Error in epi locations!", "color: red");
+      catchError((e) => {
+        console.log('%c Error in epi locations!', 'color: red');
         console.log(e);
         return from([]);
-      })
-    )
+      }),
+    );
   } else {
-    return ( of ([]))
+    return of([]);
   }
 }
 
 export function findEpiLocation(apiUrl, query, num2Return = 5) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,admin1,admin2,admin_level,country_name`
-    )
+      `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,admin1,admin2,admin_level,country_name`,
+    ),
   ).pipe(
-    pluck("data", "hits"),
-    map(results => {
-      results.forEach(d => {
+    pluck('data', 'hits'),
+    map((results) => {
+      results.forEach((d) => {
         let location_label = d.name;
         if (d.admin_level === 2 && d.admin2 && d.admin2 != 'None') {
-          location_label = d.name === "Kansas City" || d.name === "New York" ? `${d.name}, ${d.country_name}` : `${d.admin2} County, ${d.admin1}`;
-        } else if (d.admin_level === 1 && d.admin1 && d.admin1 != "None") {
+          location_label =
+            d.name === 'Kansas City' || d.name === 'New York'
+              ? `${d.name}, ${d.country_name}`
+              : `${d.admin2} County, ${d.admin1}`;
+        } else if (d.admin_level === 1 && d.admin1 && d.admin1 != 'None') {
           location_label = `${d.name}, ${d.country_name}`;
         } else if (d.admin_level === 1.5) {
           location_label = `${d.name} Metro, ${d.admin1}, ${d.country_name}`;
         }
 
-        d["label"] = location_label;
-
-      })
-      return (results)
+        d['label'] = location_label;
+      });
+      return results;
     }),
-    catchError(e => {
-      console.log("%c Error in epi locations!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in epi locations!', 'color: red');
       console.log(e);
       return from([]);
-    })
-  )
+    }),
+  );
 }
 
 export function getLocations(apiUrl) {
@@ -104,39 +99,39 @@ export function getLocations(apiUrl) {
   if (store.state.geo.allPlaces.length == 0) {
     return getAll(
       apiUrl,
-      `mostRecent:true&fields=location_id,name,country_name,admin1,wb_region,admin_level`
+      `mostRecent:true&fields=location_id,name,country_name,admin1,wb_region,admin_level`,
     ).pipe(
-      map(results => {
-        let places = results.map(d => {
+      map((results) => {
+        let places = results.map((d) => {
           return {
             label: getLabel(d),
             id: d.location_id,
-            admin_level: d.admin_level
+            admin_level: d.admin_level,
           };
         });
 
         // Add in groups of Admin 1's, Admin 0's
         const regions = nest()
-          .key(d => d.wb_region)
-          .rollup(values => values.map(d => d.location_id).join(";"))
-          .entries(results.filter(d => d.admin_level === 0));
+          .key((d) => d.wb_region)
+          .rollup((values) => values.map((d) => d.location_id).join(';'))
+          .entries(results.filter((d) => d.admin_level === 0));
 
-        regions.forEach(d => {
-          d["label"] = `${d.key} (all countries)`;
-          d["id"] = d.value;
-          d["admin_level"] = -0.5;
+        regions.forEach((d) => {
+          d['label'] = `${d.key} (all countries)`;
+          d['id'] = d.value;
+          d['admin_level'] = -0.5;
           delete d.key;
           delete d.value;
         });
         const countries = nest()
-          .key(d => d.country_name)
-          .rollup(values => values.map(d => d.location_id).join(";"))
-          .entries(results.filter(d => d.admin_level === 1));
+          .key((d) => d.country_name)
+          .rollup((values) => values.map((d) => d.location_id).join(';'))
+          .entries(results.filter((d) => d.admin_level === 1));
 
-        countries.forEach(d => {
-          d["label"] = `${d.key} (all states/provinces)`;
-          d["id"] = d.value;
-          d["admin_level"] = 0.5;
+        countries.forEach((d) => {
+          d['label'] = `${d.key} (all states/provinces)`;
+          d['id'] = d.value;
+          d['admin_level'] = 0.5;
           delete d.key;
           delete d.value;
         });
@@ -146,16 +141,16 @@ export function getLocations(apiUrl) {
         store.state.geo.allPlaces = places;
         return places;
       }),
-      catchError(e => {
-        console.log("%c Error in getting locations!", "color: red");
+      catchError((e) => {
+        console.log('%c Error in getting locations!', 'color: red');
         console.log(e);
         return from([]);
       }),
-      finalize(() => (store.state.admin.loading = false))
+      finalize(() => (store.state.admin.loading = false)),
     );
   } else {
     store.state.admin.loading = false;
-    return (from(store.state.geo.allPlaces))
+    return from(store.state.geo.allPlaces);
   }
 }
 
@@ -163,14 +158,14 @@ function getLabel(entry) {
   if (entry.admin_level === 0) {
     return entry.name;
   } else if (entry.admin_level === 1) {
-    return entry.country_name == "United States of America" ?
-      `${entry.name} State, USA` :
-      `${entry.name} Province, ${entry.country_name}`;
-  } else if (String(entry.admin_level) == "1.7") {
+    return entry.country_name == 'United States of America'
+      ? `${entry.name} State, USA`
+      : `${entry.name} Province, ${entry.country_name}`;
+  } else if (String(entry.admin_level) == '1.7') {
     return `${entry.name}`;
-  } else if (String(entry.admin_level) == "1.5") {
+  } else if (String(entry.admin_level) == '1.5') {
     return `${entry.name} Metropolitan Area`;
-  } else if (String(entry.admin_level) == "2") {
+  } else if (String(entry.admin_level) == '2') {
     return `${entry.name} County, ${entry.admin1}`;
   }
   return entry.name;
@@ -181,20 +176,20 @@ export function getMostCases(apiUrl, num2Return = 5) {
 
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}`
-    )
+      `${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}`,
+    ),
   ).pipe(
-    pluck("data", "hits"),
-    tap(results => {
+    pluck('data', 'hits'),
+    tap((results) => {
       store.state.epidata.mostCases = results;
       return results;
     }),
-    catchError(e => {
-      console.log("%c Error in getting highest case counts!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting highest case counts!', 'color: red');
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false))
+    finalize(() => (store.state.admin.loading = false)),
   );
 }
 
@@ -204,108 +199,107 @@ export function getSummary(apiUrl, caseThreshold) {
     getTotals(apiUrl),
     countCountries(apiUrl),
     getFirstCases(apiUrl),
-    getCasesAboveThresh(apiUrl, caseThreshold)
+    getCasesAboveThresh(apiUrl, caseThreshold),
   ]).pipe(
     map(([totals, numCountries, firstCases, highCases]) => {
-      totals["numCountries"] = numCountries;
-      totals["firstCases"] = firstCases;
-      totals["aboveThreshold"] = highCases;
+      totals['numCountries'] = numCountries;
+      totals['firstCases'] = firstCases;
+      totals['aboveThreshold'] = highCases;
       return totals;
     }),
-    catchError(e => {
-      console.log("%c Error in getting summary!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting summary!', 'color: red');
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false))
+    finalize(() => (store.state.admin.loading = false)),
   );
 }
 
 export function getTotals(apiUrl) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100`
-    )
+      `${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100`,
+    ),
   ).pipe(
-    pluck("data", "hits"),
-    map(results => {
+    pluck('data', 'hits'),
+    map((results) => {
       const totals = {
-        confirmed: sum(results, d => d.confirmed).toLocaleString(),
-        dead: sum(results, d => d.dead).toLocaleString()
+        confirmed: sum(results, (d) => d.confirmed).toLocaleString(),
+        dead: sum(results, (d) => d.dead).toLocaleString(),
       };
       return totals;
     }),
-    catchError(e => {
-      console.log("%c Error in getting totals!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting totals!', 'color: red');
       console.log(e);
       return from([]);
-    })
+    }),
   );
 }
 
 export function countCountries(apiUrl) {
-
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name`
-    )
+      `${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name`,
+    ),
   ).pipe(
-    pluck("data", "facets", "name", "terms"),
-    map(results => {
+    pluck('data', 'facets', 'name', 'terms'),
+    map((results) => {
       return results.length;
     }),
-    catchError(e => {
-      console.log("%c Error in getting number of countries!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting number of countries!', 'color: red');
       console.log(e);
       return from([]);
-    })
+    }),
   );
 }
 
 export function getFirstCases(apiUrl) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id`
-    )
+      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id`,
+    ),
   ).pipe(
-    pluck("data", "hits"),
-    map(results => {
+    pluck('data', 'hits'),
+    map((results) => {
       const summary = {};
       results.sort((a, b) => (a.name < b.name ? -1 : 1));
 
-      summary["count"] = results.length;
-      summary["names"] = results.map(d => d.name).join(", ");
-      summary["link"] = results.map(d => d.location_id).join(";");
+      summary['count'] = results.length;
+      summary['names'] = results.map((d) => d.name).join(', ');
+      summary['link'] = results.map((d) => d.location_id).join(';');
       return summary;
     }),
-    catchError(e => {
-      console.log("%c Error in getting cfirst cases!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting cfirst cases!', 'color: red');
       console.log(e);
       return from([]);
-    })
+    }),
   );
 }
 
 export function getCasesAboveThresh(apiUrl, threshold) {
   return from(
     axios.get(
-      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id`
-    )
+      `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id`,
+    ),
   ).pipe(
-    pluck("data", "hits"),
-    map(results => {
+    pluck('data', 'hits'),
+    map((results) => {
       const summary = {};
       results.sort((a, b) => (a.name < b.name ? -1 : 1));
 
-      summary["count"] = results.length;
-      summary["names"] = results.map(d => d.name).join(", ");
-      summary["link"] = results.map(d => d.location_id).join(";");
+      summary['count'] = results.length;
+      summary['names'] = results.map((d) => d.name).join(', ');
+      summary['link'] = results.map((d) => d.location_id).join(';');
       return summary;
     }),
-    catchError(e => {
-      console.log("%c Error in getting case counts!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting case counts!', 'color: red');
       console.log(e);
       return from([]);
-    })
+    }),
   );
 }

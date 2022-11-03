@@ -1,19 +1,41 @@
 <template>
-<div>
-  <svg :width="width" :height="height" class="report-stacked-bar" ref="stacked_bar" :name="title">
-    <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
-    </g>
-    <!-- <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g> -->
-    <g class="epi-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
-  </svg>
-  <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="stacked-seq-histogram" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts"
-    :title="`Sequences over last ${recentWindow} days`" />
+  <div>
+    <svg
+      :width="width"
+      :height="height"
+      class="report-stacked-bar"
+      ref="stacked_bar"
+      :name="title"
+    >
+      <g :transform="`translate(${margin.left},${margin.top})`" ref="chart"></g>
+      <!-- <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g> -->
+      <g
+        class="epi-axis axis--y"
+        ref="yAxis"
+        :transform="`translate(${margin.left},${margin.top})`"
+      ></g>
+    </svg>
+    <!-- Histogram of sequencing counts -->
+    <SequencingHistogram
+      :data="seqCounts"
+      :width="width"
+      :svgTitle="title"
+      :margin="marginHist"
+      :mutationName="null"
+      className="stacked-seq-histogram"
+      :onlyTotals="true"
+      notDetectedColor="#bab0ab"
+      v-if="seqCounts"
+      :title="`Sequences over last ${recentWindow} days`"
+    />
 
-  <DownloadReportData :data="data" figureRef="report-stacked-bar" dataType="Mutation Report Prevalence over Time" />
-</div>
+    <DownloadReportData
+      :data="data"
+      figureRef="report-stacked-bar"
+      dataType="Mutation Report Prevalence over Time"
+    />
+  </div>
 </template>
-
 
 <script lang="js">
 import Vue from "vue";
@@ -320,12 +342,12 @@ export default Vue.extend({
 
 <style lang="scss">
 .hover-underline:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .report-stacked-bar {
-    .axis--y text {
-        font-size: 14pt;
-    }
+  .axis--y text {
+    font-size: 14pt;
+  }
 }
 </style>

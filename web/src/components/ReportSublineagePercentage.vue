@@ -1,41 +1,94 @@
 <template>
-<div id="streamgraph">
-  <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
-    <h5 class="m-0">Lineage prevalence over time</h5>
-    <div class="d-flex justify-content-end">
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
-  </div>
-  </div>
-
-  <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
-    <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
-    </g>
-    <g class="stream-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
-    <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
-    <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-  </svg>
-
-  <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="null" className="lineages-by-location" :onlyTotals="true" notDetectedColor="#bab0ab" v-if="seqCounts && x" />
-
-  <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
-
-  <div ref="tooltip_streamgraph" class="tooltip-basic box-shadow" id="tooltip-streamgraph">
-    <h5 id="lineage" class="my-1"></h5>
-    <div class="d-flex align-items-center">
-      Prevalence in the last {{ recentWindow }} days:
-      <b id="proportion" class="ml-1"></b>
+  <div id="streamgraph">
+    <div
+      class="d-flex justify-content-between px-3"
+      :style="{ width: width + 'px' }"
+    >
+      <h5 class="m-0">Lineage prevalence over time</h5>
+      <div class="d-flex justify-content-end">
+        <button
+          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          @click="enableZoom"
+        >
+          <font-awesome-icon
+            class="text-right"
+            :icon="['fas', 'search-plus']"
+          />
+        </button>
+        <button
+          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          @click="resetZoom"
+        >
+          <font-awesome-icon
+            class="text-right"
+            :icon="['fas', 'compress-arrows-alt']"
+          />
+        </button>
+      </div>
     </div>
 
-  </div>
-</div>
-</template>
+    <svg
+      :width="width"
+      :height="height"
+      class="lineages-by-location"
+      ref="lineages_by_location"
+      :name="title"
+    >
+      <g :transform="`translate(${margin.left},${margin.top})`" ref="chart"></g>
+      <g
+        class="stream-axis axis--x"
+        ref="xAxis"
+        :transform="`translate(${margin.left},${height - margin.bottom})`"
+      ></g>
+      <g
+        class="stream-axis axis--y"
+        ref="yAxis"
+        :transform="`translate(${margin.left},${margin.top})`"
+      ></g>
+      <g
+        ref="brush"
+        class="brush"
+        id="brush-zoom"
+        :transform="`translate(${margin.left},${margin.top})`"
+        v-if="data"
+        :class="{ hidden: !zoomAllowed }"
+      ></g>
+    </svg>
 
+    <!-- Histogram of sequencing counts -->
+    <SequencingHistogram
+      :data="seqCounts"
+      :xInput="x"
+      :width="width"
+      :svgTitle="title"
+      :margin="marginHist"
+      :mutationName="null"
+      className="lineages-by-location"
+      :onlyTotals="true"
+      notDetectedColor="#bab0ab"
+      v-if="seqCounts && x"
+    />
+
+    <DownloadReportData
+      :data="data"
+      figureRef="lineages-by-location"
+      :isVertical="true"
+      dataType="Mutation Report Prevalence over Time"
+    />
+
+    <div
+      ref="tooltip_streamgraph"
+      class="tooltip-basic box-shadow"
+      id="tooltip-streamgraph"
+    >
+      <h5 id="lineage" class="my-1"></h5>
+      <div class="d-flex align-items-center">
+        Prevalence in the last {{ recentWindow }} days:
+        <b id="proportion" class="ml-1"></b>
+      </div>
+    </div>
+  </div>
+</template>
 
 <script lang="js">
 import Vue from "vue";
@@ -456,14 +509,14 @@ export default Vue.extend({
 
 <style lang="scss">
 .lineages-by-location {
-    .axis--x text {
-        font-size: 16pt;
-    }
-    .axis--y text {
-        font-size: 9pt;
-    }
-    .stream-axis.axis--y text {
-        font-size: 14pt;
-    }
+  .axis--x text {
+    font-size: 16pt;
+  }
+  .axis--y text {
+    font-size: 9pt;
+  }
+  .stream-axis.axis--y text {
+    font-size: 14pt;
+  }
 }
 </style>

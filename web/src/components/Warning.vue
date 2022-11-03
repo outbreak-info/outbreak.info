@@ -6,10 +6,14 @@
     <div
       class="d-flex justify-content-center align-items-center text-center ml-1"
     >
-      <font-awesome-icon class="pr-2 fa-2x" :icon="['fas', 'exclamation-circle']"/>
+      <font-awesome-icon
+        class="pr-2 fa-2x"
+        :icon="['fas', 'exclamation-circle']"
+      />
     </div>
     <div
-      class="d-flex justify-content-center align-items-center" :class="[ align_left ? 'text-left': 'text-center' ]" 
+      class="d-flex justify-content-center align-items-center"
+      :class="[align_left ? 'text-left' : 'text-center']"
     >
       <p class="m-0" v-html="text"></p>
     </div>
@@ -34,13 +38,13 @@ library.add(faExclamationCircle);
 
 export default Vue.extend({
   name: "Warning",
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     text: String,
     align_left: Boolean,
     animate: Boolean
-  },
-  components: {
-    FontAwesomeIcon
   }
 });
 </script>

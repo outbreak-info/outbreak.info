@@ -1,18 +1,31 @@
 <template>
-<div>
-  <svg :width="width" :height="height" ref="svg" class="locator-map-svg">
-    <defs>
-      <filter id="shadow">
-        <feDropShadow dx="0.6" dy="0.5" flood-color="#2c3e50" stdDeviation="0.2" />
-      </filter>
-    </defs>
+  <div>
+    <svg :width="width" :height="height" ref="svg" class="locator-map-svg">
+      <defs>
+        <filter id="shadow">
+          <feDropShadow
+            dx="0.6"
+            dy="0.5"
+            flood-color="#2c3e50"
+            stdDeviation="0.2"
+          />
+        </filter>
+      </defs>
 
-    <g ref="blank_map" class="blank-map-group"></g>
-    <circle :cx="coords[0]" :cy="coords[1]" :r="radius" :fill="fillColor" stroke="#2c3e50" stroke-width="0.5" filter="url(#shadow)" v-if="coords"></circle>
-  </svg>
-</div>
+      <g ref="blank_map" class="blank-map-group"></g>
+      <circle
+        :cx="coords[0]"
+        :cy="coords[1]"
+        :r="radius"
+        :fill="fillColor"
+        stroke="#2c3e50"
+        stroke-width="0.5"
+        filter="url(#shadow)"
+        v-if="coords"
+      ></circle>
+    </svg>
+  </div>
 </template>
-
 
 <script>
 import {
@@ -21,20 +34,20 @@ import {
   geoPath,
   select,
   selectAll,
-  min
-} from "d3";
+  min,
+} from 'd3';
 
-import worldMap from "@/assets/geo/countries_fused_simplified.json";
-import usMap from "@/assets/geo/US_states.json";
+import worldMap from '@/assets/geo/countries_fused_simplified.json';
+import usMap from '@/assets/geo/US_states.json';
 
 export default {
-  name: "MiniLocation",
+  name: 'MiniLocation',
   props: {
     lat: Number,
     lon: Number,
     colorScale: Function,
     partOfUSA: Boolean,
-    id: String
+    id: String,
   },
   data: function() {
     return {
@@ -47,21 +60,21 @@ export default {
       // methods
       path: geoPath(),
       // map data
-      blankMap: null
-    }
+      blankMap: null,
+    };
   },
   computed: {
     fillColor() {
-      return (this.colorScale(this.id))
+      return this.colorScale(this.id);
     },
     coords() {
-      return (this.projection ? this.projection([this.lon, this.lat]) : null)
-    }
+      return this.projection ? this.projection([this.lon, this.lat]) : null;
+    },
   },
   watch: {
     lat() {
       this.setupMap();
-    }
+    },
   },
   mounted() {
     this.setupMap();
@@ -94,36 +107,34 @@ export default {
         yscale = this.height / dy,
         scale = min([xscale, yscale]);
 
-      this.projection = this.projection
-        .scale(scale);
+      this.projection = this.projection.scale(scale);
 
       this.map
-        .selectAll("path")
+        .selectAll('path')
         .data(this.blankMap.features)
         .join(
-          enter => {
+          (enter) => {
             enter
-              .append("path")
-              .attr("class", "blank-outline")
-              .style("fill", "#d6d6d6")
-              .style("stroke", "#2c3e50")
-              .style("stroke-width", 0.2)
+              .append('path')
+              .attr('class', 'blank-outline')
+              .style('fill', '#d6d6d6')
+              .style('stroke', '#2c3e50')
+              .style('stroke-width', 0.2)
               // draw each region
-              .attr("d", this.path)
+              .attr('d', this.path);
           },
-          update => update.attr("d", this.path),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
-    }
-  }
-}
+          (update) => update.attr('d', this.path),
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
+    },
+  },
+};
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

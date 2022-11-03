@@ -1,14 +1,24 @@
 <template>
-<div>
-  <LocationReportComponent :loc="loc" :muts="muts" :pango="pango" :alias="alias" :variant="variant" :xmin="xmin" :xmax="xmax" :dark="dark" :selected="selected" />
-</div>
+  <div>
+    <LocationReportComponent
+      :loc="loc"
+      :muts="muts"
+      :pango="pango"
+      :alias="alias"
+      :variant="variant"
+      :xmin="xmin"
+      :xmax="xmax"
+      :dark="dark"
+      :selected="selected"
+    />
+  </div>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 export default {
-  name: "LocationReport",
+  name: 'LocationReport',
   props: {
     loc: String,
     muts: [Array, String],
@@ -19,18 +29,20 @@ export default {
     xmax: String,
     dark: {
       type: [String, Boolean],
-      default: true
+      default: true,
     },
     selected: {
       type: [Array, String],
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   components: {
-    LocationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/LocationReportComponent.vue")
-  }
-}
+    LocationReportComponent: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/LocationReportComponent.vue'
+      ),
+  },
+};
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

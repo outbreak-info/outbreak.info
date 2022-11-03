@@ -1,37 +1,63 @@
 <template>
-<div class="d-flex flex-wrap w-100 justify-content-end align-items-center text-muted mb-2">
-  <a :href="twitterUrl" target="_blank" rel="noreferrer" class="twitter-share-button" aria-label="twitter link">
-    <font-awesome-icon class="ml-3" :icon="['fab', 'twitter']" />
-  </a>
+  <div
+    class="d-flex flex-wrap w-100 justify-content-end align-items-center text-muted mb-2"
+  >
+    <a
+      :href="twitterUrl"
+      target="_blank"
+      rel="noreferrer"
+      class="twitter-share-button"
+      aria-label="twitter link"
+    >
+      <font-awesome-icon class="ml-3" :icon="['fab', 'twitter']" />
+    </a>
 
-  <a :href="facebookUrl" target="_blank" rel="noreferrer" class="facebook-share-button" aria-label="facebook link">
-    <font-awesome-icon class="ml-3" :icon="['fab', 'facebook-f']" />
-  </a>
+    <a
+      :href="facebookUrl"
+      target="_blank"
+      rel="noreferrer"
+      class="facebook-share-button"
+      aria-label="facebook link"
+    >
+      <font-awesome-icon class="ml-3" :icon="['fab', 'facebook-f']" />
+    </a>
 
-  <a :href="redditUrl" target="_blank" rel="noreferrer" class="reddit-share-button" aria-label="reddit link">
-    <font-awesome-icon class="ml-3" :icon="['fab', 'reddit-alien']" />
-  </a>
+    <a
+      :href="redditUrl"
+      target="_blank"
+      rel="noreferrer"
+      class="reddit-share-button"
+      aria-label="reddit link"
+    >
+      <font-awesome-icon class="ml-3" :icon="['fab', 'reddit-alien']" />
+    </a>
 
-  <a :href="linkedinUrl" target="_blank" rel="noreferrer" class="linkedin-share-button" aria-label="twitter link">
-    <font-awesome-icon class="ml-3" :icon="['fab', 'linkedin-in']" />
-  </a>
+    <a
+      :href="linkedinUrl"
+      target="_blank"
+      rel="noreferrer"
+      class="linkedin-share-button"
+      aria-label="twitter link"
+    >
+      <font-awesome-icon class="ml-3" :icon="['fab', 'linkedin-in']" />
+    </a>
 
-  <a :href="emailUrl" aria-label="email" target="_blank">
-    <font-awesome-icon class="ml-3" :icon="['fas', 'envelope']" />
-  </a>
+    <a :href="emailUrl" aria-label="email" target="_blank">
+      <font-awesome-icon class="ml-3" :icon="['fas', 'envelope']" />
+    </a>
 
-  <a @click="shareLink" v-if="canShare" aria-label="share">
-    <font-awesome-icon class="share-link ml-3" :icon="['fas', 'share']" />
-  </a>
+    <a @click="shareLink" v-if="canShare" aria-label="share">
+      <font-awesome-icon class="share-link ml-3" :icon="['fas', 'share']" />
+    </a>
 
-  <a @click="copy2Clipboard" aria-label="copy to clipboard">
-    <font-awesome-icon class="share-link ml-3" :icon="['fas', 'link']" />
-  </a>
+    <a @click="copy2Clipboard" aria-label="copy to clipboard">
+      <font-awesome-icon class="share-link ml-3" :icon="['fas', 'link']" />
+    </a>
 
-  <p :class="{ snackbar: true, show: showSnackbar }">
-    copied to clipboard
-  </p>
-</div>
+    <p :class="{ snackbar: true, show: showSnackbar }">
+      copied to clipboard
+    </p>
+  </div>
 </template>
 
 <script lang="js">
@@ -118,10 +144,10 @@ export default Vue.extend({
 
 <style lang="scss">
 .share-link {
-    color: $link-color !important;
-    cursor: pointer;
-    &:hover {
-        color: $link-hover !important;
-    }
+  color: $link-color !important;
+  cursor: pointer;
+  &:hover {
+    color: $link-hover !important;
+  }
 }
 </style>

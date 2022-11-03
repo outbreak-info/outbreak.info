@@ -1,540 +1,1091 @@
 <template>
-<div>
-  <div class="mt-1 mb-4 half-page text-left" :class="[smallScreen ? 'mx-2' : 'mx-5']">
-    <!-- LOADING -->
-    <div v-if="reportloading" class="loader">
-      <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
-    </div>
+  <div>
+    <div
+      class="mt-1 mb-4 half-page text-left"
+      :class="[smallScreen ? 'mx-2' : 'mx-5']"
+    >
+      <!-- LOADING -->
+      <div v-if="reportloading" class="loader">
+        <font-awesome-icon
+          class="fa-pulse fa-4x text-highlight"
+          :icon="['fas', 'spinner']"
+        />
+      </div>
 
-    <!-- CHANGE LOCATION MODAL -->
-    <div id="change-locations-modal" class="modal fade">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header border-secondary">
-            <h5 class="modal-title" id="exampleModalLabel">Select report locations</h5>
-            <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3 py-3 border-bottom border-secondary">
-              <h6 class="text-muted text-underline m-0">Current locations</h6>
-              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx2) in currentLocs" :key="lIdx2" @click="removeLocation(lIdx2)">
-                {{ location.label }}
-                <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+      <!-- CHANGE LOCATION MODAL -->
+      <div id="change-locations-modal" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header border-secondary">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Select report locations
+              </h5>
+              <button
+                type="button"
+                class="close font-size-2"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
               </button>
             </div>
-
-            <div class="py-3 border-bottom">
-              <div v-if="loc2Add.length" class="my-3">
-                <h6 class="text-sec text-underline m-0">Locations to add</h6>
-                <button class="btn btn-main-flat px-2 py-1 mr-2" v-for="(location, cIdx) in loc2Add" :key="cIdx" id="new-locations" @click="removeLoc2Add(cIdx)">
+            <div class="modal-body">
+              <div class="mb-3 py-3 border-bottom border-secondary">
+                <h6 class="text-muted text-underline m-0">Current locations</h6>
+                <button
+                  class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
+                  v-for="(location, lIdx2) in currentLocs"
+                  :key="lIdx2"
+                  @click="removeLocation(lIdx2)"
+                >
                   {{ location.label }}
-                  <font-awesome-icon class="fa-sm ml-1" :icon="['fas', 'trash-alt']" />
+                  <font-awesome-icon
+                    class="fa-sm ml-1"
+                    :icon="['fas', 'trash-alt']"
+                  />
                 </button>
               </div>
 
-              <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-                <TypeaheadSelect wrapperClass="w-100" :queryFunction="queryLocation" @selected="addLoc2Add" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Add location" totalLabel="total sequences" />
+              <div class="py-3 border-bottom">
+                <div v-if="loc2Add.length" class="my-3">
+                  <h6 class="text-sec text-underline m-0">Locations to add</h6>
+                  <button
+                    class="btn btn-main-flat px-2 py-1 mr-2"
+                    v-for="(location, cIdx) in loc2Add"
+                    :key="cIdx"
+                    id="new-locations"
+                    @click="removeLoc2Add(cIdx)"
+                  >
+                    {{ location.label }}
+                    <font-awesome-icon
+                      class="fa-sm ml-1"
+                      :icon="['fas', 'trash-alt']"
+                    />
+                  </button>
+                </div>
+
+                <div
+                  class="d-flex align-items-center justify-content-center my-3"
+                  id="select-location"
+                >
+                  <TypeaheadSelect
+                    wrapperClass="w-100"
+                    :queryFunction="queryLocation"
+                    @selected="addLoc2Add"
+                    :apiUrl="this.$genomicsurl"
+                    labelVariable="label"
+                    placeholder="Add location"
+                    totalLabel="total sequences"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-
-          <div class="modal-footer border-secondary">
-            <button type="button" class="btn" @click="clearNewLocations">Clear additions</button>
-            <button type="button" class="btn btn-accent" @click="selectNewLocations" data-dismiss="modal">Save changes</button>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CHANGE SELECTED LOCATION MODAL -->
-    <div id="change-selected-location" class="modal fade">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header border-secondary">
-            <h5 class="modal-title" id="exampleModalLabel">Change selected location</h5>
-            <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3 py-3 border-bottom border-secondary">
-              <h6 class="text-muted text-underline m-0">Current locations</h6>
-              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" @click="switchLocation()" data-dismiss="modal">
-                Worldwide
+            <div class="modal-footer border-secondary">
+              <button type="button" class="btn" @click="clearNewLocations">
+                Clear additions
               </button>
-              <button class="btn btn-accent-flat text-muted px-2 py-1 mr-2" v-for="(location, lIdx3) in currentLocs" :key="lIdx3" @click="switchLocation(location)" data-dismiss="modal">
-                {{ location.label }}
+              <button
+                type="button"
+                class="btn btn-accent"
+                @click="selectNewLocations"
+                data-dismiss="modal"
+              >
+                Save changes
               </button>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="d-flex align-items-center justify-content-center my-3" id="select-location">
-              <TypeaheadSelect wrapperClass="w-100" :queryFunction="queryLocation" @selected="updateSelectedLoc" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Change location" totalLabel="total sequences" />
+      <!-- CHANGE SELECTED LOCATION MODAL -->
+      <div id="change-selected-location" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header border-secondary">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Change selected location
+              </h5>
+              <button
+                type="button"
+                class="close font-size-2"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3 py-3 border-bottom border-secondary">
+                <h6 class="text-muted text-underline m-0">Current locations</h6>
+                <button
+                  class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
+                  @click="switchLocation()"
+                  data-dismiss="modal"
+                >
+                  Worldwide
+                </button>
+                <button
+                  class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
+                  v-for="(location, lIdx3) in currentLocs"
+                  :key="lIdx3"
+                  @click="switchLocation(location)"
+                  data-dismiss="modal"
+                >
+                  {{ location.label }}
+                </button>
+              </div>
+
+              <div
+                class="d-flex align-items-center justify-content-center my-3"
+                id="select-location"
+              >
+                <TypeaheadSelect
+                  wrapperClass="w-100"
+                  :queryFunction="queryLocation"
+                  @selected="updateSelectedLoc"
+                  :apiUrl="this.$genomicsurl"
+                  labelVariable="label"
+                  placeholder="Change location"
+                  totalLabel="total sequences"
+                />
+              </div>
+            </div>
+
+            <div class="modal-footer border-secondary">
+              <!-- <button type="button" class="btn btn-accent" @click="switchLocationSubmit" data-dismiss="modal">Save changes</button> -->
             </div>
           </div>
+        </div>
+      </div>
 
+      <!-- CHANGE PANGOLIN LINEAGE MODAL -->
+      <div id="change-pangolin-modal" class="modal fade">
+        <div
+          class="modal-dialog modal-dialog-centered modal-lg"
+          role="document"
+        >
+          <div class="modal-content">
+            <div class="modal-header border-secondary">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Generate Custom Mutation Report
+              </h5>
+              <button
+                type="button"
+                class="close font-size-2"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <CustomReportForm @exit="closeModal" />
+            </div>
 
-          <div class="modal-footer border-secondary">
-            <!-- <button type="button" class="btn btn-accent" @click="switchLocationSubmit" data-dismiss="modal">Save changes</button> -->
+            <div class="modal-footer border-secondary">
+              <button type="button" class="btn" data-dismiss="modal">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- CHANGE PANGOLIN LINEAGE MODAL -->
-    <div id="change-pangolin-modal" class="modal fade">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header border-secondary">
-            <h5 class="modal-title" id="exampleModalLabel">Generate Custom Mutation Report</h5>
-            <button type="button" class="close font-size-2" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+      <template v-if="hasData">
+        <!-- SOCIAL MEDIA SHARE, BACK BTN -->
+        <div class="d-flex align-items-center mb-2 mt-3" v-if="!embedded">
+          <router-link :to="{ name: 'SituationReports' }" class="no-underline">
+            <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
+              <font-awesome-icon
+                class="mr-2 fa-sm"
+                :icon="['fas', 'arrow-left']"
+              />
+              back
             </button>
-          </div>
-          <div class="modal-body">
-            <CustomReportForm @exit="closeModal" />
-          </div>
-
-          <div class="modal-footer border-secondary">
-            <button type="button" class="btn" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <template v-if="hasData">
-      <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-      <div class="d-flex align-items-center mb-2 mt-3" v-if="!embedded">
-        <router-link :to="{ name: 'SituationReports'}" class="no-underline">
-          <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
-            <font-awesome-icon class="mr-2 fa-sm" :icon="['fas', 'arrow-left']" />
-            back
+          </router-link>
+          <button
+            class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center"
+            data-toggle="modal"
+            data-target="#change-locations-modal"
+          >
+            <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
+            add locations
           </button>
-        </router-link>
-        <button class="btn py-0 px-2 flex-shrink-0 btn-grey-outline d-flex align-items-center" data-toggle="modal" data-target="#change-locations-modal">
-          <font-awesome-icon class="mr-2 fa-xs" :icon="['fas', 'plus']" />
-          add locations
-        </button>
-        <ShareReport title="title" url="url" />
-      </div>
+          <ShareReport title="title" url="url" />
+        </div>
 
-      <!-- REPORT HEADER -->
-      <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-if="!embedded">
-        <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex flex-column align-items-start">
+        <!-- REPORT HEADER -->
+        <div
+          class="d-flex flex-column text-light mutation-banner py-3"
+          :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
+          v-if="!embedded"
+        >
+          <h4 class="m-0 mt-n1 text-grey">
+            Lineage
+            <span class="mx-1">|</span>
+            Mutation Tracker
+          </h4>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex flex-column align-items-start">
+              <div class="d-flex align-items-end">
+                <div class="d-flex align-items-center">
+                  <h1 class="m-0 font-weight-bold mutation-header">
+                    {{ title }}
+                  </h1>
+                  <button
+                    class="btn py-1 px-2 ml-4 btn-grey flex-shrink-0"
+                    data-toggle="modal"
+                    data-target="#change-pangolin-modal"
+                  >
+                    <font-awesome-icon
+                      class="mr-2 font-size-small"
+                      :icon="['fas', 'sync']"
+                    />
+                    change mutation(s)
+                  </button>
+                </div>
+              </div>
+              <div class="d-flex my-1 align-items-center">
+                <small
+                  class="text-muted mr-3"
+                  v-if="
+                    reportMetadata &&
+                      reportMetadata.mutation_synonyms &&
+                      reportMetadata.mutation_synonyms.length > 1
+                  "
+                >
+                  <span>a.k.a.</span>
+                  <span
+                    v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms"
+                    :key="sIdx"
+                  >
+                    <b>{{ synonym }}</b>
+                    <span
+                      v-if="sIdx < reportMetadata.mutation_synonyms.length - 1"
+                    >
+                      ,
+                    </span>
+                  </span>
+                </small>
+                <small class="mutation-hyperlink" v-if="pangoLink">
+                  <a :href="pangoLink" target="_blank" rel="noreferrer">
+                    view on PANGO lineages
+                  </a>
+                </small>
 
-            <div class="d-flex align-items-end">
+                <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
+                  &bull;
+                </small>
+
+                <!-- link to Aquaria structures -->
+                <template v-if="aquariaLink">
+                  <small
+                    class="mutation-hyperlink"
+                    v-for="(link, lIdx) in aquariaLink"
+                    :key="lIdx"
+                  >
+                    <a :href="link.value.link" target="_blank" rel="noreferrer">
+                      view
+                      <b>
+                        {{ aquariaLink.length > 1 ? link.key + '-gene' : '' }}
+                      </b>
+                      {{ link.value.count === 1 ? 'mutation' : 'mutations' }} on
+                      3D structures (Aquaria)
+                    </a>
+                    <span
+                      class="text-grey mx-2"
+                      v-if="lIdx < aquariaLink.length - 1"
+                    >
+                      &bull;
+                    </span>
+                  </small>
+                </template>
+              </div>
               <div class="d-flex align-items-center">
-                <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
-                <button class="btn py-1 px-2 ml-4 btn-grey flex-shrink-0" data-toggle="modal" data-target="#change-pangolin-modal">
-                  <font-awesome-icon class="mr-2 font-size-small" :icon="['fas', 'sync']" />change mutation(s)
-                </button>
+                <small
+                  class="text-muted badge bg-grey__lightest mt-1"
+                  v-if="lastUpdated"
+                >
+                  <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
+                  Updated {{ lastUpdated }} ago
+                </small>
+                <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
+                  with
+                  <span class="text-light">{{ totalLineage }} sequences</span>
+                  from GISAID
+                </div>
               </div>
             </div>
-            <div class="d-flex my-1 align-items-center">
-              <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms && reportMetadata.mutation_synonyms.length > 1"><span>a.k.a. </span>
-                <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
-                  <b>{{ synonym }}</b>
-                  <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
-              </small>
-              <small class="mutation-hyperlink" v-if="pangoLink">
-                <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
-              </small>
+            <div
+              class="d-flex flex-column align-items-end justify-content-between flex-shrink-0"
+            >
+              <div class="d-flex align-items-center mb-1 fa-lg">
+                Enabled by data from
+                <a
+                  href="https://www.gisaid.org/"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <img
+                    src="@/assets/resources/gisaid.png"
+                    class="gisaid ml-2"
+                    alt="GISAID Initiative"
+                  />
+                </a>
+              </div>
+              <div class="d-flex align-items-center bright-hyperlink my-1">
+                <font-awesome-icon
+                  class="mr-2"
+                  :icon="['fas', 'info-circle']"
+                />
+                <router-link
+                  :to="{ name: 'SituationReportCaveats' }"
+                  class="bright-hyperlink"
+                >
+                  How to interpret these reports
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
 
-              <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
-                &bull;
-              </small>
+        <!-- Simplified form for embedded reports -->
+        <div
+          class="d-flex flex-column text-light mutation-banner py-3"
+          :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
+          v-else
+        >
+          <div class="d-flex align-items-center">
+            <h4 class="m-0 mt-n1 text-grey">
+              Lineage
+              <span class="mx-1">|</span>
+              Mutation Tracker
+            </h4>
+            <a
+              href="https://outbreak.info"
+              class="ml-4 navbar-brand no-underline text-light"
+            >
+              <img
+                src="@/assets/icon-01.svg"
+                width="30"
+                height="30"
+                class="d-inline-block align-top"
+                alt="Outbreak.info"
+              />
+              outbreak.info
+            </a>
+          </div>
 
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex flex-column align-items-start">
+              <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
 
-              <!-- link to Aquaria structures -->
-              <template v-if="aquariaLink">
-                <small class="mutation-hyperlink" v-for="(link, lIdx) in aquariaLink" :key="lIdx">
-                  <a :href="link.value.link" target="_blank" rel="noreferrer">
-                    view <b>{{aquariaLink.length > 1 ? link.key + "-gene" : ""}}</b> {{link.value.count === 1 ? "mutation" : "mutations"}} on 3D structures (Aquaria)</a>
-                  <span class="text-grey mx-2" v-if="lIdx < aquariaLink.length - 1">
-                    &bull;
+              <div class="d-flex my-1 align-items-center">
+                <small
+                  class="text-muted mr-3"
+                  v-if="
+                    reportMetadata &&
+                      reportMetadata.mutation_synonyms &&
+                      reportMetadata.mutation_synonyms.length > 1
+                  "
+                >
+                  <span>a.k.a.</span>
+                  <span
+                    v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms"
+                    :key="sIdx"
+                  >
+                    <b>{{ synonym }}</b>
+                    <span
+                      v-if="sIdx < reportMetadata.mutation_synonyms.length - 1"
+                    >
+                      ,
+                    </span>
                   </span>
                 </small>
-              </template>
-
-            </div>
-            <div class="d-flex align-items-center">
-              <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
-                <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
-              </small>
-              <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
-                with <span class="text-light">{{totalLineage}} sequences</span> from GISAID
-              </div>
-            </div>
-
-
-          </div>
-          <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-            <div class="d-flex align-items-center mb-1 fa-lg">
-              Enabled by data from
-              <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
-                <img src="@/assets/resources/gisaid.png" class="gisaid ml-2" alt="GISAID Initiative" />
-              </a>
-            </div>
-            <div class="d-flex align-items-center bright-hyperlink my-1">
-              <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
-              <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Simplified form for embedded reports -->
-      <div class="d-flex flex-column text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']" v-else>
-        <div class="d-flex align-items-center">
-          <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
-          <a href="https://outbreak.info" class="ml-4 navbar-brand no-underline text-light">
-            <img src="@/assets/icon-01.svg" width="30" height="30" class="d-inline-block align-top" alt="Outbreak.info" />
-            outbreak.info
-          </a>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex flex-column align-items-start">
-
-            <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
-
-            <div class="d-flex my-1 align-items-center">
-              <small class="text-muted mr-3" v-if="reportMetadata && reportMetadata.mutation_synonyms && reportMetadata.mutation_synonyms.length > 1"><span>a.k.a. </span>
-                <span v-for="(synonym, sIdx) in reportMetadata.mutation_synonyms" :key="sIdx">
-                  <b>{{ synonym }}</b>
-                  <span v-if="sIdx < reportMetadata.mutation_synonyms.length - 1">, </span></span>
-              </small>
-              <small class="mutation-hyperlink" v-if="pangoLink">
-                <a :href="pangoLink" target="_blank" rel="noreferrer">view on PANGO lineages</a>
-              </small>
-
-              <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
-                &bull;
-              </small>
-
-
-              <!-- link to Aquaria structures -->
-              <template v-if="aquariaLink">
-                <small class="mutation-hyperlink" v-for="(link, lIdx) in aquariaLink" :key="lIdx">
-                  <a :href="link.value.link" target="_blank" rel="noreferrer">
-                    view <b>{{aquariaLink.length > 1 ? link.key + "-gene" : ""}}</b> {{link.value.count === 1 ? "mutation" : "mutations"}} on 3D structures (Aquaria)</a>
-                  <span class="text-grey mx-2" v-if="lIdx < aquariaLink.length - 1">
-                    &bull;
-                  </span>
+                <small class="mutation-hyperlink" v-if="pangoLink">
+                  <a :href="pangoLink" target="_blank" rel="noreferrer">
+                    view on PANGO lineages
+                  </a>
                 </small>
-              </template>
 
-            </div>
-          </div>
-          <div class="d-flex flex-column align-items-end justify-content-between flex-shrink-0">
-            <div class="d-flex align-items-center">
-              <small class="text-muted badge bg-grey__lightest mt-1" v-if="lastUpdated">
-                <font-awesome-icon class="mr-1" :icon="['far', 'clock']" /> Updated {{ lastUpdated }} ago
-              </small>
-              <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
-                with <span class="text-light">{{totalLineage}} sequences</span> from GISAID
+                <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
+                  &bull;
+                </small>
+
+                <!-- link to Aquaria structures -->
+                <template v-if="aquariaLink">
+                  <small
+                    class="mutation-hyperlink"
+                    v-for="(link, lIdx) in aquariaLink"
+                    :key="lIdx"
+                  >
+                    <a :href="link.value.link" target="_blank" rel="noreferrer">
+                      view
+                      <b>
+                        {{ aquariaLink.length > 1 ? link.key + '-gene' : '' }}
+                      </b>
+                      {{ link.value.count === 1 ? 'mutation' : 'mutations' }} on
+                      3D structures (Aquaria)
+                    </a>
+                    <span
+                      class="text-grey mx-2"
+                      v-if="lIdx < aquariaLink.length - 1"
+                    >
+                      &bull;
+                    </span>
+                  </small>
+                </template>
               </div>
             </div>
-
-            <div class="d-flex align-items-center bright-hyperlink my-1">
-              <font-awesome-icon class="mr-2" :icon="['fas', 'info-circle']" />
-              <router-link :to="{name:'SituationReportCaveats'}" class="bright-hyperlink">How to interpret these reports</router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="warning" class="w-100 mt-3" v-if="(alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'">
-
-      </div>
-
-      <!-- Report Nav bar -->
-      <div class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center border-top border-bottom">
-        <div class="d-flex flex-wrap justify-content-center mx-3 py-2">
-          <a href="#longitudinal">
-            <button class="btn btn-grey mr-3">
-              <small>Daily prevalence</small>
-            </button>
-          </a>
-
-          <a href="#geographic">
-            <button class="btn btn-grey mx-3 py-2">
-              <small>Geographic prevalence</small>
-            </button>
-          </a>
-          <a href="#resources">
-            <button class="btn btn-grey mx-3 py-2">
-              <small>Publications</small>
-            </button>
-          </a>
-        </div>
-      </div>
-
-
-      <!-- REPORT -->
-      <div class="row">
-        <section id="intro" class="col-sm-6 col-md-7 pr-4">
-          <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
-            <div class="d-flex flex-wrap align-items-center justify-content-end">
-              <small class="mx-3 text-muted" v-if="reportMetadata.location_first_identified"><em>First identified in {{ reportMetadata.location_first_identified }}</em></small>
-              <div class="VOC" v-if="reportMetadata.variantType == 'Variant of Concern'">Variant of Concern</div>
-              <div class="VOI" v-if="reportMetadata.variantType == 'Variant of Interest'">Variant of Interest</div>
-              <div class="MOC" v-if="reportMetadata.variantType == 'Mutation of Concern'">Mutation of Concern</div>
-              <div class="MOI" v-if="reportMetadata.variantType == 'Mutation of Interest'">Mutation of Interest</div>
-            </div>
-
-          </div>
-
-          <!-- CHARACTERISTIC MUTATIONS -->
-          <div class="mt-4" id="definition">
-            <CharacteristicMutations :mutationName="reportName" :mutations="mutations" :reportType="reportType" :definitionLabel="definitionLabel" :additionalMutations="additionalMutations" :lineageName="lineageName" :sublineages="sublineageOptions"
-              :aquariaLink="aquariaLink" v-if="mutations" />
-          </div>
-
-          <!-- SUBLINEAGE BREAKDOWN -->
-          <SublineageTotals :routeTo="routeTo" :lineageName="lineageName" :location="selectedLocation.label" :data="sublineagePrev" v-if="sublineagePrev && sublineagePrev.length" />
-
-
-          <!-- BREAKDOWN BY PANGO LINEAGE -->
-          <div class="my-4" v-if="mutationsByLineage && mutationsByLineage.length">
-            <div v-if="reportType == 'lineage with added mutations'" class="mx-2 mb-1">
-              <button class="btn btn-main-outline btn-mut router-link px-1 collapsed" data-toggle="collapse" href="#collapsePangoBreakdown" aria-expanded="true" aria-controls="collapsePangoBreakdown">
-                <small><span class="if-collapsed">Show</span>
-                  <span class="if-not-collapsed">Hide</span>
-                  other lineages with {{ mutationName }}</small>
-              </button>
-            </div>
-
-            <div class="mx-3" :class="{'collapse' : reportType == 'lineage with added mutations'}" id="collapsePangoBreakdown">
-              <MutationsByLineage :routeTo="routeTo" :title="`Global prevalence of ${mutationName} per PANGO lineage`" subtitle="Since first identification" :lineage="lineageName" :mutationName="mutationName" :data="mutationsByLineage" />
-            </div>
-          </div>
-
-        </section>
-
-        <!-- RIGHT: SUMMARY BOX -->
-        <section id="summary" class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light">
-          <ReportSummary :dateUpdated="dateUpdated" :totalLineage="totalLineage" :smallScreen="smallScreen" :mutationName="reportName" :locationQueryParams="locationQueryParams" :reportType="reportType" :selected="selected"
-            :locationTotals="locationTotals" :countries="countries" :states="states" :routeTo="routeTo" />
-        </section>
-      </div>
-
-
-      <!-- DAILY PREVALENCE -->
-      <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal">
-        <h4 class="mb-0">Average daily {{reportName}} prevalence {{locationLabel}}</h4>
-        <small class="text-muted mb-2">Based on reported sample collection date</small>
-        <div id="location-buttons" class="d-flex flex-wrap">
-          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
-          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
-            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-          </button>
-        </div>
-        <ReportPrevalence :data="prevalence" :mutationName="reportName" :xmin="xmin" :xmax="xmax" :location="selectedLocation.label" :setWidth="width" :routeName="routeTo" />
-      </section>
-
-      <!-- DAILY SUBLINEAGE PREVALENCE -->
-      <section class="vis my-3 py-3 d-flex flex-column align-items-center" id="longitudinal-sublineage" v-if="lineagesByDay">
-        <h4 class="mb-0">Lineage breakdown of {{reportName}} by day {{locationLabel}}</h4>
-        <small class="text-muted mb-2">Based on reported sample collection date</small>
-
-        <!-- change location selectors for sublineage prevalences -->
-        <div id="location-buttons" class="d-flex flex-wrap align-items-center">
-          <button class="btn btn-tab my-2" :class="{'btn-active': location.isActive}" v-for="(location, lIdx) in selectedLocations" :key="lIdx" @click="switchLocation(location)">{{ location.label }}</button>
-          <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
-            <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-          </button>
-
-          <!-- change selection for streamgraph or overlay -->
-          <div id="sublineage-overlay-selector ml-4">
-            <div class="radio-item mr-3">
-              <input type="radio" id="stack" :value="false" v-model="sublineageOverlay" @change="changeSublineageOverlay">
-              <label for="stack">stack lineages</label>
-            </div>
-            <div class="radio-item mr-3">
-              <input type="radio" id="overlay" :value="true" v-model="sublineageOverlay" @change="changeSublineageOverlay">
-              <label for="overlay">overlay lineages</label>
-            </div>
-          </div>
-        </div>
-
-        <div id="sublinege-prevalence-overlay" v-if="sublineageOverlay">
-          <div class="d-flex flex-wrap justify-content-center mt-2">
-            <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in sublineageOptions" :key="option">
-              <small :style="`color: ${sublineageColorScale(option)}`" v-if="sublineageColorScale">{{option}}</small>
-              <input type="checkbox" :value="option" v-model.lazy="selectedSublineages" @change="debounceSelectSublineage" />
-              <div class="b-input" :style="[selectedSublineages.includes(option) ? {'background': sublineageColorScale(option), 'border-color': '#555'} : 'background:none']"></div>
-            </label>
-          </div>
-
-          <ReportPrevalenceOverlay :data="sublineageLongitudinal" :epi="[]" :routeName="routeTo" :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :setWidth="width" v-if="sublineageLongitudinal&& sublineageLongitudinal.length"
-            :xmin="xmin" :xmax="xmax" :locationID="selectedLocation.id" :locationName="selectedLocation.label" :setColorScale="sublineageColorScale" />
-        </div>
-
-        <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
-        <div id="sublineage-streamgraph" v-else>
-          <HorizontalCategoricalLegend :values="sublineageOptions" :colorScale="sublineageColorScale" class="p-2 pt-3 bg-grey__lightest justify-content-center" />
-
-          <LineagesByLocation :data="lineagesByDay" :recentData="sublineageTotalStacked" :xmin="xmin" :xmax="xmax" class="d-flex flex-column align-items-center" :routeName="routeTo" :setWidth="width" :location="selectedLocation.label"
-            :seqCounts="prevalence" :mutationName="reportName" :onlyTotals="false" :colorScale="sublineageColorScale" :tooltipTotal="true" :plotTitle="`Percentage of ${reportName} sequences by lineage`" />
-        </div>
-      </section>
-
-      <!-- GEOGRAPHIC PREVALENCE -->
-      <section class="my-4 d-flex flex-column align-items-center" id="geographic">
-        <div class="d-flex align-items-center">
-          <h4 class="mb-0 mr-3">{{reportName}} prevalence</h4>
-          <div id="location-buttons" class="d-flex flex-wrap align-items-center">
-            <button class="btn btn-tab" :class="{'btn-active': location.isActive }" v-for="(location, cIdx) in choroplethLocations" :key="cIdx" @click="switchLocation(location)">{{ location.label }}</button>
-            <button class="btn btn-main-outline d-flex align-items-center my-2" data-toggle="modal" data-target="#change-locations-modal">Change locations
-              <font-awesome-icon class="ml-2 font-size-small" :icon="['fas', 'sync']" />
-            </button>
-          </div>
-        </div>
-
-        <div v-if="selectedLocation && selectedLocation.admin_level < 2">
-          <template v-if="selectedLocation.admin_level < 1">
-            <div class="d-flex align-items-center justify-content-end mb-3 mt-2">
-              <router-link v-if="selectedLocation.id && selectedLocation.id != 'Worldwide'" class="btn btn-sec mr-3" :to="{name:'LocationReport', query:{loc: selectedLocation.id}}">View {{selectedLocation.label}} report</router-link>
-              <Warning text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>" />
-            </div>
-            <div class="d-flex flex-wrap">
-              <!-- Legend -->
-              <div class="d-flex flex-wrap justify-content-around align-items-center" id="choropleth-legend">
-                <ClassedLegend :colorScale="choroColorScale" :label="choroLabel" :countThreshold="choroCountThreshold" :mutationName="mutationName" />
-              </div>
-
-              <div class="d-flex flex-column flex-wrap">
-                <!-- Total count filter -->
-                <ThresholdSlider :countThreshold.sync="choroCountThreshold" :maxCount="choroMaxCount" />
-
-                <!-- Ndays filter -->
-                <div class="d-flex align-items-center flex-shrink-0">
-                  <small>Prevalence over the last</small>
-                  <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" @change="debounceChoroWindowChange()" v-model="choroNdays" placeholder="days">
-                  <small>days</small>
-                  <small><button class="btn btn-grey px-2 fa-sm ml-2 text-lowercase" @click="updateChoroWindow(true)">all time</button></small>
+            <div
+              class="d-flex flex-column align-items-end justify-content-between flex-shrink-0"
+            >
+              <div class="d-flex align-items-center">
+                <small
+                  class="text-muted badge bg-grey__lightest mt-1"
+                  v-if="lastUpdated"
+                >
+                  <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
+                  Updated {{ lastUpdated }} ago
+                </small>
+                <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
+                  with
+                  <span class="text-light">{{ totalLineage }} sequences</span>
+                  from GISAID
                 </div>
               </div>
 
+              <div class="d-flex align-items-center bright-hyperlink my-1">
+                <font-awesome-icon
+                  class="mr-2"
+                  :icon="['fas', 'info-circle']"
+                />
+                <router-link
+                  :to="{ name: 'SituationReportCaveats' }"
+                  class="bright-hyperlink"
+                >
+                  How to interpret these reports
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="warning"
+          class="w-100 mt-3"
+          v-if="
+            (alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'
+          "
+        ></div>
+
+        <!-- Report Nav bar -->
+        <div
+          class="d-flex flex-wrap my-3 py-3 align-items-center justify-content-center border-top border-bottom"
+        >
+          <div class="d-flex flex-wrap justify-content-center mx-3 py-2">
+            <a href="#longitudinal">
+              <button class="btn btn-grey mr-3">
+                <small>Daily prevalence</small>
+              </button>
+            </a>
+
+            <a href="#geographic">
+              <button class="btn btn-grey mx-3 py-2">
+                <small>Geographic prevalence</small>
+              </button>
+            </a>
+            <a href="#resources">
+              <button class="btn btn-grey mx-3 py-2">
+                <small>Publications</small>
+              </button>
+            </a>
+          </div>
+        </div>
+
+        <!-- REPORT -->
+        <div class="row">
+          <section id="intro" class="col-sm-6 col-md-7 pr-4">
+            <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
+              <div
+                class="d-flex flex-wrap align-items-center justify-content-end"
+              >
+                <small
+                  class="mx-3 text-muted"
+                  v-if="reportMetadata.location_first_identified"
+                >
+                  <em>
+                    First identified in
+                    {{ reportMetadata.location_first_identified }}
+                  </em>
+                </small>
+                <div
+                  class="VOC"
+                  v-if="reportMetadata.variantType == 'Variant of Concern'"
+                >
+                  Variant of Concern
+                </div>
+                <div
+                  class="VOI"
+                  v-if="reportMetadata.variantType == 'Variant of Interest'"
+                >
+                  Variant of Interest
+                </div>
+                <div
+                  class="MOC"
+                  v-if="reportMetadata.variantType == 'Mutation of Concern'"
+                >
+                  Mutation of Concern
+                </div>
+                <div
+                  class="MOI"
+                  v-if="reportMetadata.variantType == 'Mutation of Interest'"
+                >
+                  Mutation of Interest
+                </div>
+              </div>
             </div>
 
-            <ReportChoropleth :report="routeTo" class="mb-5" :data="choroData" :mutationName="reportName" :location="selectedLocation.label" :colorScale="choroColorScale" :countThreshold="choroCountThreshold" :setWidth="width" />
-          </template>
-
-          <div class="d-flex flex-column align-items-end">
-            <!-- Ndays filter -->
-            <div class="d-flex align-items-center flex-shrink-0">
-              <small>Prevalence over the last</small>
-              <input class="border p-1 mx-2" :style="{ 'border-color': '#bababa !important;', 'width': '40px'}" @change="debounceChoroWindowChange()" v-model="choroNdays" placeholder="days">
-              <small>days</small>
-              <small><button class="btn btn-grey px-2 fa-sm ml-2 text-lowercase" @click="updateChoroWindow(true)">all time</button></small>
+            <!-- CHARACTERISTIC MUTATIONS -->
+            <div class="mt-4" id="definition">
+              <CharacteristicMutations
+                :mutationName="reportName"
+                :mutations="mutations"
+                :reportType="reportType"
+                :definitionLabel="definitionLabel"
+                :additionalMutations="additionalMutations"
+                :lineageName="lineageName"
+                :sublineages="sublineageOptions"
+                :aquariaLink="aquariaLink"
+                v-if="mutations"
+              />
             </div>
 
-            <ReportPrevalenceByLocation :data="choroData" :label="choroLabel" :mutationName="reportName" :location="selected" :locationName="selectedLocation.label" class="mt-2" :colorScale="choroColorScale" />
+            <!-- SUBLINEAGE BREAKDOWN -->
+            <SublineageTotals
+              :routeTo="routeTo"
+              :lineageName="lineageName"
+              :location="selectedLocation.label"
+              :data="sublineagePrev"
+              v-if="sublineagePrev && sublineagePrev.length"
+            />
 
+            <!-- BREAKDOWN BY PANGO LINEAGE -->
+            <div
+              class="my-4"
+              v-if="mutationsByLineage && mutationsByLineage.length"
+            >
+              <div
+                v-if="reportType == 'lineage with added mutations'"
+                class="mx-2 mb-1"
+              >
+                <button
+                  class="btn btn-main-outline btn-mut router-link px-1 collapsed"
+                  data-toggle="collapse"
+                  href="#collapsePangoBreakdown"
+                  aria-expanded="true"
+                  aria-controls="collapsePangoBreakdown"
+                >
+                  <small>
+                    <span class="if-collapsed">Show</span>
+                    <span class="if-not-collapsed">Hide</span>
+                    other lineages with {{ mutationName }}
+                  </small>
+                </button>
+              </div>
+
+              <div
+                class="mx-3"
+                :class="{
+                  collapse: reportType == 'lineage with added mutations',
+                }"
+                id="collapsePangoBreakdown"
+              >
+                <MutationsByLineage
+                  :routeTo="routeTo"
+                  :title="
+                    `Global prevalence of ${mutationName} per PANGO lineage`
+                  "
+                  subtitle="Since first identification"
+                  :lineage="lineageName"
+                  :mutationName="mutationName"
+                  :data="mutationsByLineage"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- RIGHT: SUMMARY BOX -->
+          <section
+            id="summary"
+            class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light"
+          >
+            <ReportSummary
+              :dateUpdated="dateUpdated"
+              :totalLineage="totalLineage"
+              :smallScreen="smallScreen"
+              :mutationName="reportName"
+              :locationQueryParams="locationQueryParams"
+              :reportType="reportType"
+              :selected="selected"
+              :locationTotals="locationTotals"
+              :countries="countries"
+              :states="states"
+              :routeTo="routeTo"
+            />
+          </section>
+        </div>
+
+        <!-- DAILY PREVALENCE -->
+        <section
+          class="vis my-3 py-3 d-flex flex-column align-items-center"
+          id="longitudinal"
+        >
+          <h4 class="mb-0">
+            Average daily {{ reportName }} prevalence {{ locationLabel }}
+          </h4>
+          <small class="text-muted mb-2">
+            Based on reported sample collection date
+          </small>
+          <div id="location-buttons" class="d-flex flex-wrap">
+            <button
+              class="btn btn-tab my-2"
+              :class="{ 'btn-active': location.isActive }"
+              v-for="(location, lIdx) in selectedLocations"
+              :key="lIdx"
+              @click="switchLocation(location)"
+            >
+              {{ location.label }}
+            </button>
+            <button
+              class="btn btn-main-outline d-flex align-items-center my-2"
+              data-toggle="modal"
+              data-target="#change-locations-modal"
+            >
+              Change locations
+              <font-awesome-icon
+                class="ml-2 font-size-small"
+                :icon="['fas', 'sync']"
+              />
+            </button>
+          </div>
+          <ReportPrevalence
+            :data="prevalence"
+            :mutationName="reportName"
+            :xmin="xmin"
+            :xmax="xmax"
+            :location="selectedLocation.label"
+            :setWidth="width"
+            :routeName="routeTo"
+          />
+        </section>
+
+        <!-- DAILY SUBLINEAGE PREVALENCE -->
+        <section
+          class="vis my-3 py-3 d-flex flex-column align-items-center"
+          id="longitudinal-sublineage"
+          v-if="lineagesByDay"
+        >
+          <h4 class="mb-0">
+            Lineage breakdown of {{ reportName }} by day {{ locationLabel }}
+          </h4>
+          <small class="text-muted mb-2">
+            Based on reported sample collection date
+          </small>
+
+          <!-- change location selectors for sublineage prevalences -->
+          <div
+            id="location-buttons"
+            class="d-flex flex-wrap align-items-center"
+          >
+            <button
+              class="btn btn-tab my-2"
+              :class="{ 'btn-active': location.isActive }"
+              v-for="(location, lIdx) in selectedLocations"
+              :key="lIdx"
+              @click="switchLocation(location)"
+            >
+              {{ location.label }}
+            </button>
+            <button
+              class="btn btn-main-outline d-flex align-items-center my-2"
+              data-toggle="modal"
+              data-target="#change-locations-modal"
+            >
+              Change locations
+              <font-awesome-icon
+                class="ml-2 font-size-small"
+                :icon="['fas', 'sync']"
+              />
+            </button>
+
+            <!-- change selection for streamgraph or overlay -->
+            <div id="sublineage-overlay-selector ml-4">
+              <div class="radio-item mr-3">
+                <input
+                  type="radio"
+                  id="stack"
+                  :value="false"
+                  v-model="sublineageOverlay"
+                  @change="changeSublineageOverlay"
+                />
+                <label for="stack">stack lineages</label>
+              </div>
+              <div class="radio-item mr-3">
+                <input
+                  type="radio"
+                  id="overlay"
+                  :value="true"
+                  v-model="sublineageOverlay"
+                  @change="changeSublineageOverlay"
+                />
+                <label for="overlay">overlay lineages</label>
+              </div>
+            </div>
           </div>
 
+          <div id="sublinege-prevalence-overlay" v-if="sublineageOverlay">
+            <div class="d-flex flex-wrap justify-content-center mt-2">
+              <label
+                class="b-contain m-0 mr-3 mb-2 variant-checkbox"
+                v-for="option in sublineageOptions"
+                :key="option"
+              >
+                <small
+                  :style="`color: ${sublineageColorScale(option)}`"
+                  v-if="sublineageColorScale"
+                >
+                  {{ option }}
+                </small>
+                <input
+                  type="checkbox"
+                  :value="option"
+                  v-model.lazy="selectedSublineages"
+                  @change="debounceSelectSublineage"
+                />
+                <div
+                  class="b-input"
+                  :style="[
+                    selectedSublineages.includes(option)
+                      ? {
+                          background: sublineageColorScale(option),
+                          'border-color': '#555',
+                        }
+                      : 'background:none',
+                  ]"
+                ></div>
+              </label>
+            </div>
+
+            <ReportPrevalenceOverlay
+              :data="sublineageLongitudinal"
+              :epi="[]"
+              :routeName="routeTo"
+              :seqCounts="prevalence"
+              :mutationName="reportName"
+              :onlyTotals="false"
+              :setWidth="width"
+              v-if="sublineageLongitudinal && sublineageLongitudinal.length"
+              :xmin="xmin"
+              :xmax="xmax"
+              :locationID="selectedLocation.id"
+              :locationName="selectedLocation.label"
+              :setColorScale="sublineageColorScale"
+            />
+          </div>
+
+          <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
+          <div id="sublineage-streamgraph" v-else>
+            <HorizontalCategoricalLegend
+              :values="sublineageOptions"
+              :colorScale="sublineageColorScale"
+              class="p-2 pt-3 bg-grey__lightest justify-content-center"
+            />
+
+            <LineagesByLocation
+              :data="lineagesByDay"
+              :recentData="sublineageTotalStacked"
+              :xmin="xmin"
+              :xmax="xmax"
+              class="d-flex flex-column align-items-center"
+              :routeName="routeTo"
+              :setWidth="width"
+              :location="selectedLocation.label"
+              :seqCounts="prevalence"
+              :mutationName="reportName"
+              :onlyTotals="false"
+              :colorScale="sublineageColorScale"
+              :tooltipTotal="true"
+              :plotTitle="`Percentage of ${reportName} sequences by lineage`"
+            />
+          </div>
+        </section>
+
+        <!-- GEOGRAPHIC PREVALENCE -->
+        <section
+          class="my-4 d-flex flex-column align-items-center"
+          id="geographic"
+        >
+          <div class="d-flex align-items-center">
+            <h4 class="mb-0 mr-3">{{ reportName }} prevalence</h4>
+            <div
+              id="location-buttons"
+              class="d-flex flex-wrap align-items-center"
+            >
+              <button
+                class="btn btn-tab"
+                :class="{ 'btn-active': location.isActive }"
+                v-for="(location, cIdx) in choroplethLocations"
+                :key="cIdx"
+                @click="switchLocation(location)"
+              >
+                {{ location.label }}
+              </button>
+              <button
+                class="btn btn-main-outline d-flex align-items-center my-2"
+                data-toggle="modal"
+                data-target="#change-locations-modal"
+              >
+                Change locations
+                <font-awesome-icon
+                  class="ml-2 font-size-small"
+                  :icon="['fas', 'sync']"
+                />
+              </button>
+            </div>
+          </div>
+
+          <div v-if="selectedLocation && selectedLocation.admin_level < 2">
+            <template v-if="selectedLocation.admin_level < 1">
+              <div
+                class="d-flex align-items-center justify-content-end mb-3 mt-2"
+              >
+                <router-link
+                  v-if="
+                    selectedLocation.id && selectedLocation.id != 'Worldwide'
+                  "
+                  class="btn btn-sec mr-3"
+                  :to="{
+                    name: 'LocationReport',
+                    query: { loc: selectedLocation.id },
+                  }"
+                >
+                  View {{ selectedLocation.label }} report
+                </router-link>
+                <Warning
+                  text="Estimates are biased by sampling <a href='#methods' class='text-light text-underline'>(read more)</a>"
+                />
+              </div>
+              <div class="d-flex flex-wrap">
+                <!-- Legend -->
+                <div
+                  class="d-flex flex-wrap justify-content-around align-items-center"
+                  id="choropleth-legend"
+                >
+                  <ClassedLegend
+                    :colorScale="choroColorScale"
+                    :label="choroLabel"
+                    :countThreshold="choroCountThreshold"
+                    :mutationName="mutationName"
+                  />
+                </div>
+
+                <div class="d-flex flex-column flex-wrap">
+                  <!-- Total count filter -->
+                  <ThresholdSlider
+                    :countThreshold.sync="choroCountThreshold"
+                    :maxCount="choroMaxCount"
+                  />
+
+                  <!-- Ndays filter -->
+                  <div class="d-flex align-items-center flex-shrink-0">
+                    <small>Prevalence over the last</small>
+                    <input
+                      class="border p-1 mx-2"
+                      :style="{
+                        'border-color': '#bababa !important;',
+                        width: '40px',
+                      }"
+                      @change="debounceChoroWindowChange()"
+                      v-model="choroNdays"
+                      placeholder="days"
+                    />
+                    <small>days</small>
+                    <small>
+                      <button
+                        class="btn btn-grey px-2 fa-sm ml-2 text-lowercase"
+                        @click="updateChoroWindow(true)"
+                      >
+                        all time
+                      </button>
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <ReportChoropleth
+                :report="routeTo"
+                class="mb-5"
+                :data="choroData"
+                :mutationName="reportName"
+                :location="selectedLocation.label"
+                :colorScale="choroColorScale"
+                :countThreshold="choroCountThreshold"
+                :setWidth="width"
+              />
+            </template>
+
+            <div class="d-flex flex-column align-items-end">
+              <!-- Ndays filter -->
+              <div class="d-flex align-items-center flex-shrink-0">
+                <small>Prevalence over the last</small>
+                <input
+                  class="border p-1 mx-2"
+                  :style="{
+                    'border-color': '#bababa !important;',
+                    width: '40px',
+                  }"
+                  @change="debounceChoroWindowChange()"
+                  v-model="choroNdays"
+                  placeholder="days"
+                />
+                <small>days</small>
+                <small>
+                  <button
+                    class="btn btn-grey px-2 fa-sm ml-2 text-lowercase"
+                    @click="updateChoroWindow(true)"
+                  >
+                    all time
+                  </button>
+                </small>
+              </div>
+
+              <ReportPrevalenceByLocation
+                :data="choroData"
+                :label="choroLabel"
+                :mutationName="reportName"
+                :location="selected"
+                :locationName="selectedLocation.label"
+                class="mt-2"
+                :colorScale="choroColorScale"
+              />
+            </div>
+          </div>
+
+          <div class="text-muted my-5" v-else>
+            Geographic prevalence is not available for counties. Please select
+            worldwide, a country, or a division/state.
+          </div>
+        </section>
+
+        <!-- RESOURCES -->
+        <section id="resources">
+          <ReportResources
+            :mutationName="reportName"
+            :searchTerms="searchTerms"
+          />
+        </section>
+
+        <!-- METHODOLOGY -->
+        <section class="mt-3 mb-5" id="methods">
+          <h4>Methodology</h4>
+          <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
+          <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
+          <Warning class="mt-2" :text="disclaimer" />
+        </section>
+
+        <!-- CITATION -->
+        <GenomicsCitation
+          :title="title"
+          :mutationAuthors="mutationAuthors"
+          :genomicsCitation="genomicsCitation"
+          :url="url"
+          :today="today"
+        />
+
+        <!-- ACKNOWLEDGEMENTS -->
+        <ReportAcknowledgements class="border-top pt-3" />
+      </template>
+
+      <div
+        v-else-if="reportloading"
+        class="half-page"
+        :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
+      >
+        <div
+          class="mutation-banner py-3"
+          :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
+        >
+          <h4 class="m-0 mt-n1 text-grey">
+            Lineage
+            <span class="mx-1">|</span>
+            Mutation Tracker
+          </h4>
+          <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
         </div>
+        <p class="my-5">
+          Calculating prevalences for {{ title }}. Please be patient.
+        </p>
+      </div>
 
-        <div class="text-muted my-5" v-else>
-          Geographic prevalence is not available for counties. Please select worldwide, a country, or a division/state.
+      <div v-else>
+        <div
+          class="d-flex flex-column align-items-start text-light mutation-banner py-3"
+          :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
+        >
+          <h4 class="m-0 mt-n1 text-grey">
+            Lineage
+            <span class="mx-1">|</span>
+            Mutation Tracker
+          </h4>
+          <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
         </div>
-
-      </section>
-
-      <!-- RESOURCES -->
-      <section id="resources">
-        <ReportResources :mutationName="reportName" :searchTerms="searchTerms" />
-      </section>
-
-      <!-- METHODOLOGY -->
-      <section class="mt-3 mb-5" id="methods">
-        <h4>Methodology</h4>
-        <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
-        <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
-        <Warning class="mt-2" :text="disclaimer" />
-      </section>
-
-      <!-- CITATION -->
-      <GenomicsCitation :title="title" :mutationAuthors="mutationAuthors" :genomicsCitation="genomicsCitation" :url="url" :today="today" />
-
-      <!-- ACKNOWLEDGEMENTS -->
-      <ReportAcknowledgements class="border-top pt-3" />
-    </template>
-
-    <div v-else-if="reportloading" class="half-page" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
-      <div class="mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
-        <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
-        <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
+        <p class="my-5">
+          No data found for
+          <b>{{ title }}</b>
+          . Please check that you have specified the {{ reportType }} properly.
+        </p>
       </div>
-      <p class="my-5">
-        Calculating prevalences for {{title}}. Please be patient.
-      </p>
-    </div>
-
-    <div v-else>
-      <div class="d-flex flex-column align-items-start text-light mutation-banner py-3" :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']">
-        <h4 class="m-0 mt-n1 text-grey">Lineage <span class="mx-1">|</span> Mutation Tracker</h4>
-        <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
-      </div>
-      <p class="my-5">
-        No data found for <b>{{title}}</b>. Please check that you have specified the {{reportType}} properly.
-      </p>
     </div>
   </div>
-</div>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import uniq from "lodash/uniq";
-import isEqual from "lodash/isEqual";
-import debounce from "lodash/debounce";
+import uniq from 'lodash/uniq';
+import isEqual from 'lodash/isEqual';
+import debounce from 'lodash/debounce';
 
-import {
-  scaleOrdinal,
-  nest
-} from "d3";
+import { scaleOrdinal, nest } from 'd3';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 import {
   faTrashAlt,
   faPlusCircle,
   faSpinner,
-  faInfoCircle
-} from "@fortawesome/free-solid-svg-icons";
+  faInfoCircle,
+} from '@fortawesome/free-solid-svg-icons';
 
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 
-import {
-  faArrowLeft
-} from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
 
-import {
-  faSync
-} from "@fortawesome/free-solid-svg-icons/faSync";
+library.add(
+  faClock,
+  faTrashAlt,
+  faPlusCircle,
+  faSpinner,
+  faInfoCircle,
+  faArrowLeft,
+  faSync,
+);
 
-
-library.add(faClock, faTrashAlt, faPlusCircle, faSpinner, faInfoCircle, faArrowLeft, faSync);
-
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
 import {
   getReportData,
@@ -543,43 +1094,67 @@ import {
   updateChoroData,
   findLocation,
   findPangolin,
-  getLocationPrevalence
-} from "@/api/genomics.js";
+  getLocationPrevalence,
+} from '@/api/genomics.js';
 
-import {
-  timeFormat,
-  max,
-  scaleThreshold
-} from "d3";
+import { timeFormat, max, scaleThreshold } from 'd3';
 
-import {
-  schemeYlGnBu
-} from "d3-scale-chromatic";
+import { schemeYlGnBu } from 'd3-scale-chromatic';
 
 export default {
-  name: "SituationReportComponent",
+  name: 'SituationReportComponent',
   components: {
     FontAwesomeIcon,
-    CharacteristicMutations: () => import( /* webpackPrefetch: true */ "@/components/CharacteristicMutations.vue"),
-    ClassedLegend: () => import( /* webpackPrefetch: true */ "@/components/ClassedLegend.vue"),
-    CustomReportForm: () => import( /* webpackPrefetch: true */ "@/components/CustomReportForm.vue"),
-    GenomicsCitation: () => import( /* webpackPrefetch: true */ "@/components/GenomicsCitation.vue"),
-    HorizontalCategoricalLegend: () => import( /* webpackPrefetch: true */ "@/components/HorizontalCategoricalLegend.vue"),
-    LineagesByLocation: () => import( /* webpackPrefetch: true */ "@/components/LineagesByLocation.vue"),
-    MutationsByLineage: () => import( /* webpackPrefetch: true */ "@/components/MutationsByLineage.vue"),
-    ReportAcknowledgements: () => import( /* webpackPrefetch: true */ "@/components/ReportAcknowledgements.vue"),
-    ReportChoropleth: () => import( /* webpackPrefetch: true */ "@/components/ReportChoropleth.vue"),
-    ReportMethodology: () => import( /* webpackPrefetch: true */ "@/components/ReportMethodology.vue"),
-    ReportPrevalence: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalence.vue"),
-    ReportPrevalenceByLocation: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceByLocation.vue"),
-    ReportPrevalenceOverlay: () => import( /* webpackPrefetch: true */ "@/components/ReportPrevalenceOverlay.vue"),
-    ReportResources: () => import( /* webpackPrefetch: true */ "@/components/ReportResources.vue"),
-    ReportSummary: () => import( /* webpackPrefetch: true */ "@/components/ReportSummary.vue"),
-    ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue"),
-    SublineageTotals: () => import( /* webpackPrefetch: true */ "@/components/SublineageTotals.vue"),
-    ThresholdSlider: () => import( /* webpackPrefetch: true */ "@/components/ThresholdSlider.vue"),
-    TypeaheadSelect: () => import( /* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
-    Warning: () => import( /* webpackPrefetch: true */ "@/components/Warning.vue")
+    CharacteristicMutations: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/CharacteristicMutations.vue'
+      ),
+    ClassedLegend: () =>
+      import(/* webpackPrefetch: true */ '@/components/ClassedLegend.vue'),
+    CustomReportForm: () =>
+      import(/* webpackPrefetch: true */ '@/components/CustomReportForm.vue'),
+    GenomicsCitation: () =>
+      import(/* webpackPrefetch: true */ '@/components/GenomicsCitation.vue'),
+    HorizontalCategoricalLegend: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/HorizontalCategoricalLegend.vue'
+      ),
+    LineagesByLocation: () =>
+      import(/* webpackPrefetch: true */ '@/components/LineagesByLocation.vue'),
+    MutationsByLineage: () =>
+      import(/* webpackPrefetch: true */ '@/components/MutationsByLineage.vue'),
+    ReportAcknowledgements: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/ReportAcknowledgements.vue'
+      ),
+    ReportChoropleth: () =>
+      import(/* webpackPrefetch: true */ '@/components/ReportChoropleth.vue'),
+    ReportMethodology: () =>
+      import(/* webpackPrefetch: true */ '@/components/ReportMethodology.vue'),
+    ReportPrevalence: () =>
+      import(/* webpackPrefetch: true */ '@/components/ReportPrevalence.vue'),
+    ReportPrevalenceByLocation: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/ReportPrevalenceByLocation.vue'
+      ),
+    ReportPrevalenceOverlay: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/ReportPrevalenceOverlay.vue'
+      ),
+    ReportResources: () =>
+      import(/* webpackPrefetch: true */ '@/components/ReportResources.vue'),
+    ReportSummary: () =>
+      import(/* webpackPrefetch: true */ '@/components/ReportSummary.vue'),
+    ShareReport: () =>
+      import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
+    SublineageTotals: () =>
+      import(/* webpackPrefetch: true */ '@/components/SublineageTotals.vue'),
+    ThresholdSlider: () =>
+      import(/* webpackPrefetch: true */ '@/components/ThresholdSlider.vue'),
+    TypeaheadSelect: () =>
+      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
+    Warning: () =>
+      import(/* webpackPrefetch: true */ '@/components/Warning.vue'),
   },
   props: {
     alias: String,
@@ -590,74 +1165,102 @@ export default {
     xmax: String,
     overlay: {
       type: [String, Boolean],
-      default: "false"
+      default: 'false',
     },
     selected: {
       type: String,
-      default: "Worldwide"
+      default: 'Worldwide',
     },
     embedded: {
       type: Boolean,
-      default: false
+      default: false,
     },
     routeTo: {
       type: String,
-      default: "MutationReport"
-    }
+      default: 'MutationReport',
+    },
   },
   computed: {
-    ...mapState("admin", ["mutationAuthors", "genomicsCitation", "reportloading"]),
+    ...mapState('admin', [
+      'mutationAuthors',
+      'genomicsCitation',
+      'reportloading',
+    ]),
     smallScreen() {
-      return (window.innerWidth < 500)
+      return window.innerWidth < 500;
     },
     definitionLabel() {
-      return this.reportType == "lineage" ? "Characteristic mutations in lineage" :
-        this.reportType == "lineage with added mutations" ? "Characteristic mutations in variant" : "List of mutations";
+      return this.reportType == 'lineage'
+        ? 'Characteristic mutations in lineage'
+        : this.reportType == 'lineage with added mutations'
+        ? 'Characteristic mutations in variant'
+        : 'List of mutations';
     },
     locationLabel() {
       if (this.selectedLocation) {
-        return this.selectedLocation.label == "Worldwide" ? "globally" : `in ${this.selectedLocation.label}`;
+        return this.selectedLocation.label == 'Worldwide'
+          ? 'globally'
+          : `in ${this.selectedLocation.label}`;
       } else {
-        return (null)
+        return null;
       }
     },
     pangoLink() {
-      return this.lineageName ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}` : null
+      return this.lineageName
+        ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}`
+        : null;
     },
     aquariaLink() {
       if (this.additionalMutations && this.additionalMutations.length > 0) {
-        const aquariaStub = "https://aquaria.app/SARS-CoV-2/";
+        const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
         const mutationsByGene = nest()
-          .key(d => d.gene)
-          .rollup(values => {
-            return ({
-              link: values[0].gene.toLowerCase() === "orf1b" ?
-                // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-                // in general: gene?mutations, separated by &
-                `${aquariaStub}PP1ab?${values.map(d => this.calcORF1bLink(d)).join("&")}` : `${aquariaStub}${values[0].gene}?${values.map(d => d.mutation.replace(d.gene, "").replace(":", "")).join("&")}`,
-              count: values.length
-            })
+          .key((d) => d.gene)
+          .rollup((values) => {
+            return {
+              link:
+                values[0].gene.toLowerCase() === 'orf1b'
+                  ? // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+                    // in general: gene?mutations, separated by &
+                    `${aquariaStub}PP1ab?${values
+                      .map((d) => this.calcORF1bLink(d))
+                      .join('&')}`
+                  : `${aquariaStub}${values[0].gene}?${values
+                      .map((d) =>
+                        d.mutation.replace(d.gene, '').replace(':', ''),
+                      )
+                      .join('&')}`,
+              count: values.length,
+            };
           })
-          .entries(this.additionalMutations)
+          .entries(this.additionalMutations);
 
-        return (mutationsByGene)
+        return mutationsByGene;
       } else {
-        return (null)
+        return null;
       }
     },
     choroplethLocations() {
-      return (this.selectedLocations ? this.selectedLocations.filter(d => d.admin_level < 2) : null)
+      return this.selectedLocations
+        ? this.selectedLocations.filter((d) => d.admin_level < 2)
+        : null;
     },
     choroLabel() {
-      return (`Est. ${ this.reportName } prevalence ${this.choroTimeFrame}`);
+      return `Est. ${this.reportName} prevalence ${this.choroTimeFrame}`;
     },
     choroTimeFrame() {
-      return (this.choroNdays ? `last ${this.choroNdays} days` : "since identification")
-    }
+      return this.choroNdays
+        ? `last ${this.choroNdays} days`
+        : 'since identification';
+    },
   },
   watch: {
-    '$route': function(newVal, oldVal) {
-      if (!isEqual(newVal.query.pango, oldVal.query.pango) || !isEqual(newVal.params.alias, oldVal.params.alias) || !isEqual(newVal.query.alias, oldVal.query.alias) || !isEqual(newVal.query.muts, oldVal.query.muts)) {
+    $route: function(newVal, oldVal) {
+      if (
+        !isEqual(newVal.query.pango, oldVal.query.pango) ||
+        !isEqual(newVal.params.alias, oldVal.params.alias) ||
+        !isEqual(newVal.query.alias, oldVal.query.alias) ||
+        !isEqual(newVal.query.muts, oldVal.query.muts)
+      ) {
         this.newPangolin = null;
         this.lineageName = null;
         this.reportMetadata = null;
@@ -665,7 +1268,7 @@ export default {
       } else {
         this.updateLocations();
       }
-    }
+    },
   },
   data() {
     return {
@@ -717,7 +1320,7 @@ export default {
       selectedLocation: null,
       dateUpdated: null,
       reportMetadata: null,
-      choroLocation: "country",
+      choroLocation: 'country',
       choroData: null,
       choroMaxCount: null,
       countries: null,
@@ -730,26 +1333,26 @@ export default {
       lineagesByDay: null,
       sublineageColorScale: null,
       sublineageColorPalette: [
-        "#4E79A7", // dk blue
-        "#f28e2b", // orange
-        "#59a14f", // green
-        "#e15759", // red
-        "#499894", // teal
-        "#B6992D", // dk yellow
-        "#D37295", // dk pink
-        "#B07AA1", // dk purple
-        "#9D7660", // brown
-        "#aecBe8", // lt blue
-        "#FFBE7D", // lt. orange
-        "#8CD17D", // lt. green
-        "#FF9D9A", // lt. red
-        "#86BCB6", // lt. teal
-        "#F1CE63", // yellow
-        "#FABFD2", // lt. pink,
-        "#D4A6C8", // lt. purple
-        "#D7B5A6", // lt. brown
-        "#bcbd22", // puce
-        "#79706E", // grey
+        '#4E79A7', // dk blue
+        '#f28e2b', // orange
+        '#59a14f', // green
+        '#e15759', // red
+        '#499894', // teal
+        '#B6992D', // dk yellow
+        '#D37295', // dk pink
+        '#B07AA1', // dk purple
+        '#9D7660', // brown
+        '#aecBe8', // lt blue
+        '#FFBE7D', // lt. orange
+        '#8CD17D', // lt. green
+        '#FF9D9A', // lt. red
+        '#86BCB6', // lt. teal
+        '#F1CE63', // yellow
+        '#FABFD2', // lt. pink,
+        '#D4A6C8', // lt. purple
+        '#D7B5A6', // lt. brown
+        '#bcbd22', // puce
+        '#79706E', // grey
       ],
       sublineageOptions: [],
       selectedSublineages: [],
@@ -757,8 +1360,8 @@ export default {
       locationTotals: null,
       totalLineage: null,
       prevalence: [],
-      mutationsByLineage: []
-    }
+      mutationsByLineage: [],
+    };
   },
   created: function() {
     this.debounceSetDims = debounce(this.setDims, 150);
@@ -766,27 +1369,31 @@ export default {
     this.debounceChoroWindowChange = debounce(this.updateChoroWindow, 700);
   },
   mounted() {
-    this.sublineageOverlay = this.overlay === "true";
+    this.sublineageOverlay = this.overlay === 'true';
     this.setDims();
     this.queryLocation = findLocation;
     this.queryPangolin = findPangolin;
 
     // common color scale for choropleth
-    this.choroColorScale = scaleThreshold(schemeYlGnBu[this.choroColorDomain.length + 2])
-      .domain(this.choroColorDomain);
+    this.choroColorScale = scaleThreshold(
+      schemeYlGnBu[this.choroColorDomain.length + 2],
+    ).domain(this.choroColorDomain);
 
     // Get date for the citation object
-    const formatDate = timeFormat("%e %B %Y");
+    const formatDate = timeFormat('%e %B %Y');
     var currentTime = new Date();
     this.today = formatDate(currentTime);
 
     // set URL for sharing, etc.
     this.$nextTick(function() {
-      window.addEventListener("resize", this.debounceSetDims);
+      window.addEventListener('resize', this.debounceSetDims);
 
       const location = window.location;
-      this.url = location.search !== "" ? `${location.origin}${location.pathname}${location.search}` : `${location.origin}${location.pathname}`;
-    })
+      this.url =
+        location.search !== ''
+          ? `${location.origin}${location.pathname}${location.search}`
+          : `${location.origin}${location.pathname}`;
+    });
     this.setupReport();
   },
   methods: {
@@ -798,67 +1405,91 @@ export default {
     setLineageAndMutationStr() {
       // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
       if (this.alias) {
-        this.lineageName = this.alias.includes("*") ? this.alias.toUpperCase().replace("OMICRON", "Omicron") : this.$options.filters.capitalize(this.alias.toLowerCase());
+        this.lineageName = this.alias.includes('*')
+          ? this.alias.toUpperCase().replace('OMICRON', 'Omicron')
+          : this.$options.filters.capitalize(this.alias.toLowerCase());
         this.selectedMutationArr = null;
         this.title = `${this.lineageName} Variant Report`;
-        this.reportType = "combined lineage";
+        this.reportType = 'combined lineage';
         this.reportName = this.lineageName;
       } else {
-
         if (this.$route.query.pango) {
           if (this.$route.query.muts && this.$route.query.muts.length) {
             // Lineage + Mutation report
             this.lineageName = this.$route.query.pango.toUpperCase();
-            this.selectedMutationArr = typeof(this.$route.query.muts) == "string" ? [this.$route.query.muts] : this.$route.query.muts;
-            this.mutationName = typeof(this.$route.query.muts) == "string" ? this.$route.query.muts : this.$route.query.muts.join(", ");
+            this.selectedMutationArr =
+              typeof this.$route.query.muts == 'string'
+                ? [this.$route.query.muts]
+                : this.$route.query.muts;
+            this.mutationName =
+              typeof this.$route.query.muts == 'string'
+                ? this.$route.query.muts
+                : this.$route.query.muts.join(', ');
             this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
-            this.reportType = "lineage with added mutations";
-            this.searchTerms = [`${this.lineageName}" AND "${typeof(this.$route.query.muts) == "string" ? this.$route.query.muts.split(":").slice(-1) : this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')}`]
+            this.reportType = 'lineage with added mutations';
+            this.searchTerms = [
+              `${this.lineageName}" AND "${
+                typeof this.$route.query.muts == 'string'
+                  ? this.$route.query.muts.split(':').slice(-1)
+                  : this.$route.query.muts
+                      .map((d) => d.split(':').slice(-1)[0])
+                      .join('" AND "')
+              }`,
+            ];
             this.title = `${this.reportName} Report`;
-            const qParam = typeof(this.$route.query.muts) == "string" ? `${this.lineageName}|${this.$route.query.muts}` : `${this.lineageName}|${this.$route.query.muts.join(",")}`;
+            const qParam =
+              typeof this.$route.query.muts == 'string'
+                ? `${this.lineageName}|${this.$route.query.muts}`
+                : `${this.lineageName}|${this.$route.query.muts.join(',')}`;
             this.locationQueryParams = {
-              variant: [qParam]
+              variant: [qParam],
             };
           } else {
             // Lineage report
             this.lineageName = this.$route.query.pango.toUpperCase();
             this.reportName = this.lineageName;
             this.selectedMutationArr = null;
-            this.reportType = "lineage";
+            this.reportType = 'lineage';
             this.title = `${this.reportName} Lineage Report`;
             this.searchTerms = [this.lineageName];
             this.locationQueryParams = {
               pango: [this.lineageName],
-              selected: this.lineageName
+              selected: this.lineageName,
             };
           }
-
         } else {
-          if (typeof(this.$route.query.muts) == "string") {
+          if (typeof this.$route.query.muts == 'string') {
             // Single mutation report
             this.lineageName = null;
-            this.selectedMutationArr = this.$route.query.muts.split(",");
-            this.reportName = this.selectedMutationArr.join(", ");
+            this.selectedMutationArr = this.$route.query.muts.split(',');
+            this.reportName = this.selectedMutationArr.join(', ');
             this.mutationName = this.reportName;
-            this.reportType = "mutation";
-            this.searchTerms = [this.mutationName.split(":").slice(-1)];
+            this.reportType = 'mutation';
+            this.searchTerms = [this.mutationName.split(':').slice(-1)];
             this.locationQueryParams = {
-              muts: this.selectedMutationArr.join(" AND "),
-              selected: this.selectedMutationArr.join(" AND ")
+              muts: this.selectedMutationArr.join(' AND '),
+              selected: this.selectedMutationArr.join(' AND '),
             };
             this.title = `${this.reportName} Mutation Report`;
           } else {
             // Variant (multiple mutation) report
             this.lineageName = null;
-            this.reportName = this.$route.query.muts.join(", ");
+            this.reportName = this.$route.query.muts.join(', ');
             this.mutationName = this.reportName;
-            this.searchTerms = [this.$route.query.muts.map(d => d.split(":").slice(-1)[0]).join('" AND "')];
+            this.searchTerms = [
+              this.$route.query.muts
+                .map((d) => d.split(':').slice(-1)[0])
+                .join('" AND "'),
+            ];
             this.selectedMutationArr = this.$route.query.muts;
-            this.reportType = this.$route.query.muts.length === 1 ? "mutation" : "variant";
-            this.title = `${this.reportName} ${this.$options.filters.capitalize(this.reportType)} Report`;
+            this.reportType =
+              this.$route.query.muts.length === 1 ? 'mutation' : 'variant';
+            this.title = `${this.reportName} ${this.$options.filters.capitalize(
+              this.reportType,
+            )} Report`;
             this.locationQueryParams = {
-              muts: this.selectedMutationArr.join(" AND "),
-              selected: this.selectedMutationArr.join(" AND ")
+              muts: this.selectedMutationArr.join(' AND '),
+              selected: this.selectedMutationArr.join(' AND '),
             };
           }
         }
@@ -867,18 +1498,29 @@ export default {
     setupReport() {
       // set default, if needed.
       if (!this.selected) {
-        this.selected = "Worldwide";
+        this.selected = 'Worldwide';
       }
 
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
-        this.dataSubscription = getReportData(this.$genomicsurl, this.alias, this.loc, this.selectedMutationArr, this.lineageName, this.selected, this.totalThresh, this.choroNdays).subscribe(results => {
+        this.dataSubscription = getReportData(
+          this.$genomicsurl,
+          this.alias,
+          this.loc,
+          this.selectedMutationArr,
+          this.lineageName,
+          this.selected,
+          this.totalThresh,
+          this.choroNdays,
+        ).subscribe((results) => {
           this.hasData = true;
 
           // selected locations
           this.selectedLocations = results.locations;
-          this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
-          const selected = results.locations.filter(d => d.isActive);
+          this.currentLocs = results.locations.filter(
+            (d) => d.id != 'Worldwide',
+          );
+          const selected = results.locations.filter((d) => d.isActive);
           this.selectedLocation = selected.length === 1 ? selected[0] : null;
 
           // date updated
@@ -886,8 +1528,11 @@ export default {
           this.lastUpdated = results.dateUpdated.lastUpdated;
 
           // worldwide stats
-          const global = results.locPrev.filter(d => d.location_id == "Worldwide");
-          this.totalLineage = global.length === 1 ? global[0].lineage_count_formatted : null;
+          const global = results.locPrev.filter(
+            (d) => d.location_id == 'Worldwide',
+          );
+          this.totalLineage =
+            global.length === 1 ? global[0].lineage_count_formatted : null;
 
           // sublineagePrev
           this.sublineagePrev = results.sublineagePrev;
@@ -903,12 +1548,11 @@ export default {
           this.sublineageTotalStacked = results.sublineageTotalStacked;
           this.setSublineageColorScale();
 
-
           // // recent data by country & countries with that lineage.
           this.countries = results.countries;
           this.states = results.states;
           this.choroData = results.choroData;
-          this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
+          this.choroMaxCount = max(this.choroData, (d) => d.cum_total_count);
 
           // characteristic mutations
           this.mutations = results.mutations;
@@ -921,33 +1565,44 @@ export default {
 
           if (results.md) {
             this.reportMetadata = results.md;
-            this.searchTerms = this.reportType != "lineage with added mutations" && results.md.searchTerms ? results.md.searchTerms : [this.searchTerms];
-            this.disclaimer = results.md.disclaimer ? results.md.disclaimer : this.disclaimer;
+            this.searchTerms =
+              this.reportType != 'lineage with added mutations' &&
+              results.md.searchTerms
+                ? results.md.searchTerms
+                : [this.searchTerms];
+            this.disclaimer = results.md.disclaimer
+              ? results.md.disclaimer
+              : this.disclaimer;
           } else {
             this.searchTerms = [this.searchTerms];
           }
-        })
+        });
       }
     },
     selectSublineage() {
-      this.sublineageLongitudinal = this.sublineageLongitudinalAll.filter(d => this.selectedSublineages.includes(d.label));
+      this.sublineageLongitudinal = this.sublineageLongitudinalAll.filter((d) =>
+        this.selectedSublineages.includes(d.label),
+      );
     },
     setSublineageColorScale() {
       if (this.sublineagePrev) {
         this.sublineageOptions = this.sublineagePrev
-          .filter(d => d.lineage_count)
-          .map(d => d.mutation_string)
+          .filter((d) => d.lineage_count)
+          .map((d) => d.mutation_string)
           .slice(0, this.sublineageColorPalette.length);
 
         // only show the top 5 most prevalent sublineages
         if (!this.selectedSublineages.length) {
-          this.selectedSublineages = this.sublineageOptions.slice(0, this.sublineages2Plot);
+          this.selectedSublineages = this.sublineageOptions.slice(
+            0,
+            this.sublineages2Plot,
+          );
         }
         this.selectSublineage();
 
         this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)
           .domain(this.sublineageOptions)
-          .unknown("#bab0ab");
+          .unknown('#bab0ab');
       }
     },
     removeLocation(idx) {
@@ -959,7 +1614,7 @@ export default {
     updateSelectedLoc(selected) {
       this.selectedLocations.push(selected);
       this.closeLocModal();
-      this.switchLocation(selected)
+      this.switchLocation(selected);
     },
     removeLoc2Add(idx) {
       this.loc2Add.splice(idx, 1);
@@ -969,51 +1624,56 @@ export default {
     },
     // Add new locations
     selectNewLocations() {
-      let locationIDs = this.loc2Add.map(d => d.id);
+      let locationIDs = this.loc2Add.map((d) => d.id);
       const newSelected = locationIDs[0];
       // de-duplicate
-      locationIDs = uniq(this.currentLocs.map(d => d.id).concat(locationIDs).filter(d => d != "Worldwide"));
+      locationIDs = uniq(
+        this.currentLocs
+          .map((d) => d.id)
+          .concat(locationIDs)
+          .filter((d) => d != 'Worldwide'),
+      );
 
       // reset the fields.
       this.loc2Add = [];
 
-      if (this.routeTo == "MutationReport") {
+      if (this.routeTo == 'MutationReport') {
         this.$router.push({
-          name: "MutationReport",
+          name: 'MutationReport',
           params: {
-            alias: this.alias
+            alias: this.alias,
           },
           query: {
             pango: this.pango,
             muts: this.muts,
             selected: newSelected,
             loc: locationIDs,
-            overlay: this.sublineageOverlay
-          }
-        })
-      } else if (this.routeTo == "GenomicsEmbedVariant") {
+            overlay: this.sublineageOverlay,
+          },
+        });
+      } else if (this.routeTo == 'GenomicsEmbedVariant') {
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           query: {
-            type: "var",
+            type: 'var',
             alias: this.alias,
             pango: this.pango,
             muts: this.muts,
             selected: newSelected,
             loc: locationIDs,
-            overlay: this.sublineageOverlay
-          }
-        })
+            overlay: this.sublineageOverlay,
+          },
+        });
       }
     },
     // Select a location button on the longitudinal traces or choropleths
     switchLocation(location) {
-      this.selectedLocations.forEach(d => {
+      this.selectedLocations.forEach((d) => {
         d.isActive = false;
-      })
+      });
 
       if (!location) {
-        this.selectedLocation = "Worldwide";
+        this.selectedLocation = 'Worldwide';
       } else {
         location.isActive = true;
 
@@ -1021,52 +1681,62 @@ export default {
       }
 
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
-      const ids = this.selectedLocations.map(d => d.id).filter(d => d != "Worldwide");
+      const ids = this.selectedLocations
+        .map((d) => d.id)
+        .filter((d) => d != 'Worldwide');
 
-      if (this.routeTo == "MutationReport") {
+      if (this.routeTo == 'MutationReport') {
         this.$router.push({
-          name: "MutationReport",
+          name: 'MutationReport',
           query: {
             pango: this.pango,
             muts: this.muts,
             loc: ids,
             selected: this.selectedLocation,
-            overlay: this.sublineageOverlay
+            overlay: this.sublineageOverlay,
           },
           params: {
             alias: this.alias,
-            disableScroll: true
-          }
-        })
-      } else if (this.routeTo == "GenomicsEmbedVariant") {
+            disableScroll: true,
+          },
+        });
+      } else if (this.routeTo == 'GenomicsEmbedVariant') {
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           query: {
-            type: "var",
+            type: 'var',
             alias: this.alias,
             pango: this.pango,
             muts: this.muts,
             loc: ids,
             selected: this.selectedLocation,
-            overlay: this.sublineageOverlay
+            overlay: this.sublineageOverlay,
           },
           params: {
-            disableScroll: true
-          }
-        })
+            disableScroll: true,
+          },
+        });
       }
-
     },
     updateLocations() {
       // set default, if needed.
       if (!this.selected) {
-        this.selected = "Worldwide";
+        this.selected = 'Worldwide';
       }
-      this.locationChangeSubscription = updateLocationData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.loc, this.selected, this.totalThresh, this.choroNdays).subscribe(results => {
+      this.locationChangeSubscription = updateLocationData(
+        this.$genomicsurl,
+        this.alias,
+        this.selectedMutationArr,
+        this.lineageName,
+        this.loc,
+        this.selected,
+        this.totalThresh,
+        this.choroNdays,
+      ).subscribe((results) => {
         // selected locations
         this.selectedLocations = results.locations;
-        this.currentLocs = results.locations.filter(d => d.id != "Worldwide");
-        const selected = results.locations.filter(d => d.isActive);
+        this.currentLocs = results.locations.filter((d) => d.id != 'Worldwide');
+        const selected = results.locations.filter((d) => d.isActive);
         this.selectedLocation = selected.length === 1 ? selected[0] : null;
 
         // longitudinal data: prevalence over time
@@ -1085,22 +1755,28 @@ export default {
 
         // sublineage breakdown
         this.sublineagePrev = results.sublineagePrev;
-
-      })
+      });
     },
     updateChoroWindow(resetData) {
       if (resetData) {
         this.choroNdays = null;
       }
-      this.choroSubscription = updateChoroData(this.$genomicsurl, this.alias, this.selectedMutationArr, this.lineageName, this.selected, this.choroNdays).subscribe(results => {
+      this.choroSubscription = updateChoroData(
+        this.$genomicsurl,
+        this.alias,
+        this.selectedMutationArr,
+        this.lineageName,
+        this.selected,
+        this.choroNdays,
+      ).subscribe((results) => {
         this.choroData = results;
-        this.choroMaxCount = max(this.choroData, d => d.cum_total_count);
-      })
+        this.choroMaxCount = max(this.choroData, (d) => d.cum_total_count);
+      });
     },
     changeSublineageOverlay(selected) {
-      if (this.routeTo == "MutationReport") {
+      if (this.routeTo == 'MutationReport') {
         this.$router.push({
-          name: "MutationReport",
+          name: 'MutationReport',
           query: {
             pango: this.pango,
             muts: this.muts,
@@ -1108,18 +1784,18 @@ export default {
             selected: this.selected,
             xmin: this.xmin,
             xmax: this.xmax,
-            overlay: this.sublineageOverlay
+            overlay: this.sublineageOverlay,
           },
           params: {
             alias: this.alias,
-            disableScroll: true
-          }
-        })
-      } else if (this.routeTo == "GenomicsEmbedVariant") {
+            disableScroll: true,
+          },
+        });
+      } else if (this.routeTo == 'GenomicsEmbedVariant') {
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           query: {
-            type: "var",
+            type: 'var',
             alias: this.alias,
             pango: this.pango,
             muts: this.muts,
@@ -1127,12 +1803,12 @@ export default {
             selected: this.selected,
             xmin: this.xmin,
             xmax: this.xmax,
-            overlay: this.sublineageOverlay
+            overlay: this.sublineageOverlay,
           },
           params: {
-            disableScroll: true
-          }
-        })
+            disableScroll: true,
+          },
+        });
       }
     },
     updatePangolin(selected) {
@@ -1140,48 +1816,49 @@ export default {
     },
     selectNewPangolin() {
       // const queryParams = this.$route.query;
-      if (this.routeTo == "MutationReport") {
+      if (this.routeTo == 'MutationReport') {
         this.$router.push({
-          name: "MutationReport",
+          name: 'MutationReport',
           query: {
             loc: this.loc,
             pango: this.newPangolin,
             muts: this.muts,
             selected: this.selected,
-            overlay: this.sublineageOverlay
-          }
-        })
-      } else if (this.routeTo == "GenomicsEmbedVariant") {
+            overlay: this.sublineageOverlay,
+          },
+        });
+      } else if (this.routeTo == 'GenomicsEmbedVariant') {
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           query: {
-            type: "var",
+            type: 'var',
             alias: this.alias,
             loc: this.loc,
             pango: this.newPangolin,
             muts: this.muts,
             selected: this.selected,
-            overlay: this.sublineageOverlay
-          }
-        })
+            overlay: this.sublineageOverlay,
+          },
+        });
       }
     },
     closeLocModal() {
-      $("#change-selected-location").modal("hide");
+      $('#change-selected-location').modal('hide');
     },
     closeModal() {
-      $("#change-pangolin-modal").modal("hide");
+      $('#change-pangolin-modal').modal('hide');
     },
     calcORF1bLink(mutation) {
       const codonOffset = 4401;
       // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-      if (mutation.type == "substitution") {
-        return (`${mutation.ref_aa}${mutation.codon_num + codonOffset}${mutation.alt_aa}`)
-      } else if (mutation.type == "deletion") {
-        return (`${mutation}`)
+      if (mutation.type == 'substitution') {
+        return `${mutation.ref_aa}${mutation.codon_num + codonOffset}${
+          mutation.alt_aa
+        }`;
+      } else if (mutation.type == 'deletion') {
+        return `${mutation}`;
       }
-
-    }
+    },
   },
   destroyed() {
     if (this.dataSubscription) {
@@ -1199,27 +1876,27 @@ export default {
     if (this.locationChangeSubscription) {
       this.locationChangeSubscription.unsubscribe();
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .font-size-2 {
-    font-size: 1.25rem;
+  font-size: 1.25rem;
 }
 
 .font-size-small {
-    font-size: small;
+  font-size: small;
 }
 
 .btn-active {
-    background-color: $primary-color;
-    color: white;
+  background-color: $primary-color;
+  color: white;
 }
 
 .resource-type {
-    opacity: 0.6;
-    font-weight: 700;
-    text-transform: uppercase;
+  opacity: 0.6;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 </style>

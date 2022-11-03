@@ -1,59 +1,113 @@
 <template>
-<div style="min-height: 75vh;">
-  <div class="row m-0">
-    <div class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5">
-      <div class="container">
-        <h1>Contributing Data Resources</h1>
-        <p class="text-left">
-          Outbreak.info currently contains {{ types.length }} types of
-          resources:
-          <span v-for="(type, idx) in types" :key="idx">
-            <router-link :to="{ name: 'Resources', query: { filter: '@type:' + type.id } }">{{ type.label }}</router-link>
-            <span v-if="idx < types.length - 2">, </span>
-            <span v-if="idx == types.length - 2">, and </span>
-          </span>.
-          <router-link :to="{ name: 'Sources' }" class="text-left">Learn more about our data sources</router-link>.
-        </p>
-        <p class="text-left">
-          Since our resources come from so many different sources, we ensure
-          that their metadata (a description of what's contained within the
-          data source) complies to common schema to promote findability and
-          interoperability. Each resource's schema is based on schemas
-          developed by
-          <a href="https://schema.org" target="_blank" rel="noreferrer">schema.org</a>, a project which provides web standards to describe different
-          types of data.
-          <a href="https://discovery.biothings.io/view/outbreak/" target="_blank" rel="noreferrer">View our schemas</a>.
-        </p>
+  <div style="min-height: 75vh;">
+    <div class="row m-0">
+      <div
+        class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5"
+      >
+        <div class="container">
+          <h1>Contributing Data Resources</h1>
+          <p class="text-left">
+            Outbreak.info currently contains {{ types.length }} types of
+            resources:
+            <span v-for="(type, idx) in types" :key="idx">
+              <router-link
+                :to="{
+                  name: 'Resources',
+                  query: { filter: '@type:' + type.id },
+                }"
+              >
+                {{ type.label }}
+              </router-link>
+              <span v-if="idx < types.length - 2">,</span>
+              <span v-if="idx == types.length - 2">, and</span>
+            </span>
+            .
+            <router-link :to="{ name: 'Sources' }" class="text-left">
+              Learn more about our data sources
+            </router-link>
+            .
+          </p>
+          <p class="text-left">
+            Since our resources come from so many different sources, we ensure
+            that their metadata (a description of what's contained within the
+            data source) complies to common schema to promote findability and
+            interoperability. Each resource's schema is based on schemas
+            developed by
+            <a href="https://schema.org" target="_blank" rel="noreferrer">
+              schema.org
+            </a>
+            , a project which provides web standards to describe different types
+            of data.
+            <a
+              href="https://discovery.biothings.io/view/outbreak/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View our schemas
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="container">
-    <h4 class="text-left">How to contribute data</h4>
-    <p class="text-left">
-      The easiest way to contribute data is to deposit your analysis, clinical trial, dataset, protocol, or publication in one of the <router-link :to="{ name: 'Sources'}">sources from which we already harvest metadata</router-link>.  When you add your resources to any of these repositories, they will automatically be added to our resource database.
-    </p>
-    <p class="text-left">
-      To register metadata for a particular dataset, you can fill out a form in the <a href="https://discovery.biothings.io/guide/outbreak/dataset" target="_blank">Data Discovery Engine</a>.
-    </p>
-    <p class="text-left">
-      If you'd like to suggest a resource repository, you can create a
-      <a href="https://github.com/outbreak-info/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D" target="_blank" rel="noreferrer">
-        Github Issue</a> to request adding a new source or send an email to <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">help@outbreak.info</a>.
-    </p>
-  </div>
+    <div class="container">
+      <h4 class="text-left">How to contribute data</h4>
+      <p class="text-left">
+        The easiest way to contribute data is to deposit your analysis, clinical
+        trial, dataset, protocol, or publication in one of the
+        <router-link :to="{ name: 'Sources' }">
+          sources from which we already harvest metadata
+        </router-link>
+        . When you add your resources to any of these repositories, they will
+        automatically be added to our resource database.
+      </p>
+      <p class="text-left">
+        To register metadata for a particular dataset, you can fill out a form
+        in the
+        <a
+          href="https://discovery.biothings.io/guide/outbreak/dataset"
+          target="_blank"
+        >
+          Data Discovery Engine
+        </a>
+        .
+      </p>
+      <p class="text-left">
+        If you'd like to suggest a resource repository, you can create a
+        <a
+          href="https://github.com/outbreak-info/outbreak.info-resources/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Github Issue
+        </a>
+        to request adding a new source or send an email to
+        <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">
+          help@outbreak.info
+        </a>
+        .
+      </p>
+    </div>
 
-  <div class="container mt-5">
-    <h4 class="text-left">How to help curate data</h4>
-    <p class="text-left">
-      Keeping track of the growing list of COVID-19 and SARS-CoV-2 resources is a challenge, as is curating the information to make it more findable and discoverable.
-    </p>
-    <p class="text-left">
-      If you're interested in helping us add additional data sources and/or curating our existing database, please email <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">help@outbreak.info</a>.
-    </p>
-  </div>
+    <div class="container mt-5">
+      <h4 class="text-left">How to help curate data</h4>
+      <p class="text-left">
+        Keeping track of the growing list of COVID-19 and SARS-CoV-2 resources
+        is a challenge, as is curating the information to make it more findable
+        and discoverable.
+      </p>
+      <p class="text-left">
+        If you're interested in helping us add additional data sources and/or
+        curating our existing database, please email
+        <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">
+          help@outbreak.info
+        </a>
+        .
+      </p>
+    </div>
 
-  <!-- <div class="container">
+    <!-- <div class="container">
       <h4 class="text-left">How to contribute data</h4>
       <div class="row mb-2 d-flex">
         <router-link to="#curate" class="col-sm-4">
@@ -121,35 +175,32 @@
         </div>
       </div>
     </div> -->
-</div>
+  </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
 export default Vue.extend({
-  name: "Contributing",
+  name: 'Contributing',
   components: {},
   computed: {
-    ...mapState("admin", ["resources"])
+    ...mapState('admin', ['resources']),
   },
   data() {
     return {
       types: [
-
         {
-          label: "Clinical Trials",
-          description: "Publicly and privately funded human clinical studies",
-          id: "ClinicalTrial"
+          label: 'Clinical Trials',
+          description: 'Publicly and privately funded human clinical studies',
+          id: 'ClinicalTrial',
         },
         {
-          label: "Datasets",
-          description: "A collection of primary or secondary data",
-          id: "Dataset"
+          label: 'Datasets',
+          description: 'A collection of primary or secondary data',
+          id: 'Dataset',
         },
         // {
         //   label: "Analyses",
@@ -158,28 +209,30 @@ export default Vue.extend({
         //   id: "Analysis"
         // },
         {
-          label: "Protocols",
-          description: "A detailed series of instructions to perform an experimental technique and/or analysis",
-          id: "Protocol"
+          label: 'Protocols',
+          description:
+            'A detailed series of instructions to perform an experimental technique and/or analysis',
+          id: 'Protocol',
         },
 
         {
-          label: "Publications",
-          description: "A published report, set of results, or commentary, including preprints and blog posts",
-          id: "Publication"
-        }
-      ]
+          label: 'Publications',
+          description:
+            'A published report, set of results, or commentary, including preprints and blog posts',
+          id: 'Publication',
+        },
+      ],
     };
-  }
+  },
 });
 </script>
 
 <style lang="scss">
 .card-link {
-    background: $primary-color;
-    color: white;
+  background: $primary-color;
+  color: white;
 }
 .card-dde {
-    max-width: 200px;
+  max-width: 200px;
 }
 </style>

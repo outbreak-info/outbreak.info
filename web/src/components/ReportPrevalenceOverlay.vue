@@ -1,125 +1,295 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="location-report-prevalence">
-  <!-- zoom btns -->
-  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
-  </div>
+  <div
+    class="d-flex flex-column align-items-center w-100"
+    id="location-report-prevalence"
+  >
+    <!-- zoom btns -->
+    <div
+      class="d-flex justify-content-end px-3"
+      :style="{ width: width + 'px' }"
+    >
+      <button
+        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+        @click="enableZoom"
+      >
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button
+        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+        @click="resetZoom"
+      >
+        <font-awesome-icon
+          class="text-right"
+          :icon="['fas', 'compress-arrows-alt']"
+        />
+      </button>
+    </div>
 
-  <div class="d-flex flex-column">
-    <!-- SVGs -->
-    <div class="d-flex flex-column align-items-start">
-      <!-- TIME TRACE -->
-      <div class="d-flex w-100 justify-content-between">
-        <h5 class="p-0 m-0">{{title}}</h5>
-        <div>
-          <label class="b-contain m-auto pr-3">
-            <small>show confidence intervals</small>
-            <input type="checkbox" v-model="showCI" :value="showCI" @change="hideCIs" />
-            <div class="b-input"></div>
-          </label>
+    <div class="d-flex flex-column">
+      <!-- SVGs -->
+      <div class="d-flex flex-column align-items-start">
+        <!-- TIME TRACE -->
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="p-0 m-0">{{ title }}</h5>
+          <div>
+            <label class="b-contain m-auto pr-3">
+              <small>show confidence intervals</small>
+              <input
+                type="checkbox"
+                v-model="showCI"
+                :value="showCI"
+                @change="hideCIs"
+              />
+              <div class="b-input"></div>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <div class="d-flex">
-        <svg width="15" height="15" class="mr-2">
-          <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
-        </svg>
-        <small class="text-muted">7 day rolling average of percent sequences with mutation(s)</small>
-      </div>
-
-      <!-- legend: confidence interval -->
-      <div class="d-flex">
-        <div class="ci-legend mr-2" :style="{background: '#999'}">
-        </div>
-        <small class="text-muted">95% confidence interval</small>
-        <svg width="15" height="15" class="ml-4 mr-2">
-          <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
-        </svg>
-        <small class="text-muted">missing recent data</small>
-      </div>
-
-      <svg :width="width" :height="height" class="mutation-epi-prevalence" ref="svg" :name="title">
-        <defs>
-          <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
-            <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-          </marker>
-
-          <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-            <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
-            <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
-          </pattern>
-        </defs>
-
-        <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="mutation-axis axis--x" ref="xAxis"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="mutation-axis axis--y" ref="yAxis"></g>
-        <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        <g ref="brush2" class="brush" id="brush2-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-        <g id="no-data" v-if="noData">
-          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
-        </g>
-        <!-- <g id="no-data" v-if="data.length < lengthThreshold && data.length">
-          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
-          <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
-            sequencing data</text>
-        </g> -->
-        <g id="weird-last values" :hidden="data && data.length < lengthThreshold">
-          <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing
-            delays</text>
-          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
-        </g>
-      </svg>
-
-      <!-- Histogram of sequencing counts -->
-      <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="mutationName" :onlyTotals="onlyTotals" notDetectedColor="#bab0ab" detectedColor="#79706E"
-        className="mutation-epi-prevalence" v-if="seqCounts && seqCounts.length" />
-
-      <!-- zoom btns -->
-      <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}" :class="{'hidden' : !epi.length}">
-        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-          <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-        </button>
-        <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-          <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-        </button>
-      </div>
-
-      <!-- EPI TRACE -->
-      <div :class="{'hidden' : !epi.length}">
-        <h5 class="">Daily COVID-19 cases in <router-link :to="{name:'Epidemiology', query:{location: locationID}}">{{ locationName }}</router-link>
-        </h5>
         <div class="d-flex">
           <svg width="15" height="15" class="mr-2">
             <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
           </svg>
-          <small class="text-muted">7 day rolling average of confirmed cases</small>
+          <small class="text-muted">
+            7 day rolling average of percent sequences with mutation(s)
+          </small>
+        </div>
+
+        <!-- legend: confidence interval -->
+        <div class="d-flex">
+          <div class="ci-legend mr-2" :style="{ background: '#999' }"></div>
+          <small class="text-muted">95% confidence interval</small>
           <svg width="15" height="15" class="ml-4 mr-2">
-            <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
+            <rect
+              x="0"
+              y="0"
+              :width="15"
+              :height="15"
+              fill="url(#diagonalHatchLight)"
+            ></rect>
           </svg>
           <small class="text-muted">missing recent data</small>
         </div>
 
-        <svg :width="width" :height="epiHeight" class="mutation-epi-prevalence" ref="epi" :name="title">
-          <g :transform="`translate(${margin.left}, ${epiHeight - margin.bottom })`" class="epi-axis epi-x axis--x" ref="xEpiAxis"></g>
-          <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis epi-y axis--y" ref="yEpiAxis"></g>
-          <g ref="epiChart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-          <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
+        <svg
+          :width="width"
+          :height="height"
+          class="mutation-epi-prevalence"
+          ref="svg"
+          :name="title"
+        >
+          <defs>
+            <marker
+              id="arrow"
+              markerWidth="13"
+              markerHeight="10"
+              refX="10"
+              refY="5"
+              orient="auto"
+              markerUnits="strokeWidth"
+              stroke="#929292"
+              fill="none"
+            >
+              <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+            </marker>
+
+            <pattern
+              id="diagonalHatchLight"
+              width="7"
+              height="7"
+              patternTransform="rotate(45 0 0)"
+              patternUnits="userSpaceOnUse"
+            >
+              <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="25"
+                :style="`stroke:#CCC; stroke-width:4`"
+              />
+            </pattern>
+          </defs>
+
+          <g
+            :transform="`translate(${margin.left}, ${height - margin.bottom})`"
+            class="mutation-axis axis--x"
+            ref="xAxis"
+          ></g>
+          <g
+            :transform="`translate(${margin.left}, ${margin.top})`"
+            class="mutation-axis axis--y"
+            ref="yAxis"
+          ></g>
+          <g
+            ref="chart"
+            :transform="`translate(${margin.left}, ${margin.top})`"
+          ></g>
+          <g
+            ref="brush2"
+            class="brush"
+            id="brush2-zoom"
+            :transform="`translate(${margin.left},${margin.top})`"
+            v-if="data"
+            :class="{ hidden: !zoomAllowed }"
+          ></g>
+          <g id="no-data" v-if="noData">
+            <text
+              font-size="24px"
+              fill="#888888"
+              :x="width / 2"
+              :y="height / 2 - margin.top"
+              dominant-baseline="middle"
+              text-anchor="middle"
+            >
+              No sequences found
+            </text>
+          </g>
+          <!-- <g id="no-data" v-if="data.length < lengthThreshold && data.length">
+          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
+          <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
+            sequencing data</text>
+        </g> -->
+          <g
+            id="weird-last values"
+            :hidden="data && data.length < lengthThreshold"
+          >
+            <text
+              :x="width - margin.right"
+              :y="0"
+              fill="#929292"
+              font-size="14px"
+              dominant-baseline="hanging"
+              text-anchor="end"
+              :style="`font-family: ${fontFamily};`"
+            >
+              Latest dates are noisy due to fewer samples, or missing from
+              sequencing delays
+            </text>
+            <path
+              stroke="#BBBBBB"
+              fill="none"
+              :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`"
+              marker-end="url(#arrow)"
+            ></path>
+          </g>
         </svg>
+
+        <!-- Histogram of sequencing counts -->
+        <SequencingHistogram
+          :data="seqCounts"
+          :xInput="x"
+          :width="width"
+          :svgTitle="title"
+          :margin="marginHist"
+          :mutationName="mutationName"
+          :onlyTotals="onlyTotals"
+          notDetectedColor="#bab0ab"
+          detectedColor="#79706E"
+          className="mutation-epi-prevalence"
+          v-if="seqCounts && seqCounts.length"
+        />
+
+        <!-- zoom btns -->
+        <div
+          class="d-flex justify-content-end px-3"
+          :style="{ width: width + 'px' }"
+          :class="{ hidden: !epi.length }"
+        >
+          <button
+            class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+            @click="enableZoom"
+          >
+            <font-awesome-icon
+              class="text-right"
+              :icon="['fas', 'search-plus']"
+            />
+          </button>
+          <button
+            class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+            @click="resetZoom"
+          >
+            <font-awesome-icon
+              class="text-right"
+              :icon="['fas', 'compress-arrows-alt']"
+            />
+          </button>
+        </div>
+
+        <!-- EPI TRACE -->
+        <div :class="{ hidden: !epi.length }">
+          <h5 class="">
+            Daily COVID-19 cases in
+            <router-link
+              :to="{ name: 'Epidemiology', query: { location: locationID } }"
+            >
+              {{ locationName }}
+            </router-link>
+          </h5>
+          <div class="d-flex">
+            <svg width="15" height="15" class="mr-2">
+              <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+            </svg>
+            <small class="text-muted">
+              7 day rolling average of confirmed cases
+            </small>
+            <svg width="15" height="15" class="ml-4 mr-2">
+              <rect
+                x="0"
+                y="0"
+                :width="15"
+                :height="15"
+                fill="url(#diagonalHatchLight)"
+              ></rect>
+            </svg>
+            <small class="text-muted">missing recent data</small>
+          </div>
+
+          <svg
+            :width="width"
+            :height="epiHeight"
+            class="mutation-epi-prevalence"
+            ref="epi"
+            :name="title"
+          >
+            <g
+              :transform="
+                `translate(${margin.left}, ${epiHeight - margin.bottom})`
+              "
+              class="epi-axis epi-x axis--x"
+              ref="xEpiAxis"
+            ></g>
+            <g
+              :transform="`translate(${margin.left}, ${margin.top})`"
+              class="epi-axis epi-y axis--y"
+              ref="yEpiAxis"
+            ></g>
+            <g
+              ref="epiChart"
+              :transform="`translate(${margin.left}, ${margin.top})`"
+            ></g>
+            <g
+              ref="brush"
+              class="brush"
+              id="brush-zoom"
+              :transform="`translate(${margin.left},${margin.top})`"
+              v-if="data"
+              :class="{ hidden: !zoomAllowed }"
+            ></g>
+          </svg>
+        </div>
       </div>
-
     </div>
-  </div>
 
-  <!-- TOOLTIPS -->
-  <div ref="tooltip_mutations" class="tooltip-basic box-shadow" id="tooltip-mutations">
-    <h5 id="mutation" class="p-2 m-0"></h5>
-    <small id="sublineages" class="line-height-sm"></small>
-  </div>
-  <!-- <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
+    <!-- TOOLTIPS -->
+    <div
+      ref="tooltip_mutations"
+      class="tooltip-basic box-shadow"
+      id="tooltip-mutations"
+    >
+      <h5 id="mutation" class="p-2 m-0"></h5>
+      <small id="sublineages" class="line-height-sm"></small>
+    </div>
+    <!-- <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
     <h5 id="date"></h5>
     <div class="d-flex align-items-center">
       <b id="proportion" class="font-size-2"></b>
@@ -130,9 +300,13 @@
     <div id="sequencing-count-rolling"></div>
   </div> -->
 
-  <DownloadReportData :data="data" figureRef="mutation-epi-prevalence" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
-
-</div>
+    <DownloadReportData
+      :data="data"
+      figureRef="mutation-epi-prevalence"
+      :isVertical="true"
+      dataType="Mutation Report Prevalence over Time"
+    />
+  </div>
 </template>
 
 <script lang="js">
@@ -1036,44 +1210,44 @@ export default Vue.extend({
 
 <style lang="scss">
 #location-report-prevalence {
-    & .count-axis,
-    & .mutation-axis {
-        font-size: 16pt;
-        text {
-            fill: $grey-90;
-        }
+  & .count-axis,
+  & .mutation-axis {
+    font-size: 16pt;
+    text {
+      fill: $grey-90;
     }
+  }
 
-    & .epi-y {
-        font-size: 14pt;
-    }
+  & .epi-y {
+    font-size: 14pt;
+  }
 
-    & .epi-x {
-        font-size: 16pt;
-    }
+  & .epi-x {
+    font-size: 16pt;
+  }
 
-    & .axis--y text {
-        font-size: 12pt;
-    }
+  & .axis--y text {
+    font-size: 12pt;
+  }
 
-    & .mutation-axis.axis--y text {
-        font-size: 16pt;
-    }
+  & .mutation-axis.axis--y text {
+    font-size: 16pt;
+  }
 
-    & .axis--x line {
-        stroke: #555;
-        stroke-width: 0.25;
-    }
+  & .axis--x line {
+    stroke: #555;
+    stroke-width: 0.25;
+  }
 }
 
 .ci-legend {
-    width: 15px;
-    height: 15px;
-    opacity: 0.3;
+  width: 15px;
+  height: 15px;
+  opacity: 0.3;
 }
 
 .trace-legend {
-    stroke: #777;
-    stroke-width: 2.5;
+  stroke: #777;
+  stroke-width: 2.5;
 }
 </style>

@@ -1,91 +1,111 @@
 <template>
-<form autocomplete="off">
-  <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text bg-grey text-muted border-0" id="sb"><font-awesome-icon :icon="['fas', 'search']"/></span>
+  <form autocomplete="off">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text bg-grey text-muted border-0" id="sb">
+          <font-awesome-icon :icon="['fas', 'search']" />
+        </span>
+      </div>
+      <input
+        id="sBar"
+        class="form-control"
+        :class="[darkMode ? 'border-0' : 'border']"
+        :placeholder="placeholder"
+        aria-label="search"
+        aria-describedby="sb"
+        type="text"
+        v-model="search"
+        @input="onChange"
+        @keydown.down="onArrowDown"
+        @keydown.up="onArrowUp"
+        @keydown.enter.prevent="onEnter"
+        @keydown.delete="onBackspace"
+        @keydown.ctrl.65="onSelectAll"
+        @keydown.meta.65="onSelectAll"
+      />
+      <ul
+        id="autocomplete-results"
+        v-show="isOpen"
+        class="autocomplete-results bg-dark text-light"
+      >
+        <li class="loading" v-if="isLoading">
+          Loading results...
+        </li>
+        <li
+          v-else
+          v-for="(result, i) in results"
+          :key="i"
+          @click="setResult(result)"
+          class="autocomplete-result"
+          :class="{ 'is-active': i === arrowCounter }"
+        >
+          {{ result.label }}
+        </li>
+      </ul>
     </div>
-    <input id="sBar" class="form-control" :class="[darkMode ? 'border-0' : 'border']" :placeholder="placeholder" aria-label="search" aria-describedby="sb" type="text" v-model="search" @input="onChange" @keydown.down="onArrowDown"
-      @keydown.up="onArrowUp" @keydown.enter.prevent="onEnter" @keydown.delete="onBackspace" @keydown.ctrl.65="onSelectAll" @keydown.meta.65="onSelectAll" />
-    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results bg-dark text-light">
-      <li class="loading" v-if="isLoading">
-        Loading results...
-      </li>
-      <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }">
-        {{ result.label }}
-      </li>
-    </ul>
-  </div>
-</form>
+  </form>
 </template>
 
 <script lang="ts">
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
-import Vue from "vue";
-import {
-  mapState
-} from "vuex";
+import Vue from 'vue';
+import { mapState } from 'vuex';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faSearch
-} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSearch);
 
 // --- store / Vuex ---
-import store from "@/store";
-import { getLocations } from "@/api/epi-basics.js";
+import store from '@/store';
+import { getLocations } from '@/api/epi-basics.js';
 
 export default Vue.extend({
-  name: "SearchBar",
+  name: 'SearchBar',
   props: {
     items: {
       type: Array,
       required: false,
-      default: () => []
+      default: () => [],
     },
     isAsync: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
     placeholder: {
       type: String,
       required: false,
-      default: "Search"
+      default: 'Search',
     },
     routeTo: {
       type: String,
       required: false,
-      default: null
+      default: null,
     },
     darkMode: {
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   data() {
     return {
       isOpen: false,
       results: [],
-      search: "",
+      search: '',
       selected: null,
       isLoading: false,
-      arrowCounter: 0
+      arrowCounter: 0,
     };
   },
   computed: {
-    ...mapState("geo", ["allPlaces"])
+    ...mapState('geo', ['allPlaces']),
   },
   watch: {
     items: function(val, oldValue) {
@@ -94,16 +114,16 @@ export default Vue.extend({
         this.results = val;
         this.isLoading = false;
       }
-    }
+    },
   },
   mounted() {
-    getLocations(this.$apiurl).subscribe(_ => null);
-    document.addEventListener("click", this.handleClickOutside, {
-      passive: true
+    getLocations(this.$apiurl).subscribe((_) => null);
+    document.addEventListener('click', this.handleClickOutside, {
+      passive: true,
     });
   },
   destroyed() {
-    document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {
     onChange() {
@@ -118,7 +138,7 @@ export default Vue.extend({
     },
     filterResults() {
       // first uncapitalize all the things
-      this.results = this.allPlaces.filter(item => {
+      this.results = this.allPlaces.filter((item) => {
         return item.label.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       });
     },
@@ -126,16 +146,16 @@ export default Vue.extend({
       this.selected = result;
       this.isOpen = false;
       if (this.routeTo) {
-        this.search = "";
+        this.search = '';
         this.$router.push({
           path: this.routeTo,
           query: {
-            location: this.selected.id
-          }
+            location: this.selected.id,
+          },
         });
       } else {
         this.search = this.selected.label;
-        this.$emit("location", this.selected.id);
+        this.$emit('location', this.selected.id);
       }
     },
     onArrowDown(evt) {
@@ -150,34 +170,34 @@ export default Vue.extend({
     },
     onEnter() {
       // // Let's warn the parent that a change was made
-      const result = this.results[this.arrowCounter] ?
-        this.results[this.arrowCounter] :
-        this.search;
+      const result = this.results[this.arrowCounter]
+        ? this.results[this.arrowCounter]
+        : this.search;
       // this.$emit('input', result);
       this.selected = result;
-      this.$emit("input", this.selected);
-      this.search = "";
+      this.$emit('input', this.selected);
+      this.search = '';
       this.isOpen = false;
       this.arrowCounter = -1;
-      if (this.routeTo && this.routeTo !== "") {
+      if (this.routeTo && this.routeTo !== '') {
         this.$router.push({
           path: this.routeTo,
           query: {
-            location: this.selected.id
-          }
+            location: this.selected.id,
+          },
         });
       } else {
-        this.$emit("location", this.selected.id);
+        this.$emit('location', this.selected.id);
       }
     },
     onBackspace() {
-      if (this.search === "") {
+      if (this.search === '') {
         this.search = this.selected.pop();
       }
 
       if (this.isSelectAll) {
-        this.search = "";
-        this.$emit("selected", []);
+        this.search = '';
+        this.$emit('selected', []);
         this.isSelectAll = false;
       }
     },
@@ -190,8 +210,8 @@ export default Vue.extend({
         this.isOpen = false;
         this.arrowCounter = -1;
       }
-    }
-  }
+    },
+  },
 });
 </script>
 

@@ -1,35 +1,35 @@
 <template>
   <div class="d-flex flex-column w-100 align-items-center mt-3">
-  <h5 class="">{{ tableTitle }}</h5>
-<table>
-  <thead>
-    <tr class="border-bottom">
-      <th>
-        gene
-      </th>
-      <th>
-        amino acid
-      </th>
-    </tr>
-  </thead>
-  <tbody class="checkbook border-bottom">
-    <tr v-for="(mutation, mIdx) in sortedMutations" :key="mIdx">
-      <td>
-        {{mutation.gene}}
-      </td>
-      <td v-if="mutation.type == 'substitution'">
-        {{mutation.ref_aa}}{{mutation.codon_num}}{{mutation.alt_aa}}
-      </td>
-      <td v-else-if="mutation.type == 'deletion'">
-        {{ mutation.mutation.replace(/(.)*:/, "") }}
-        <!-- <span v-if="Array.isArray(mutation.codon_num)">&Delta;{{mutation.codon_num[0]}}-{{mutation.codon_num.slice(-1)[0]}}</span>
+    <h5 class="">{{ tableTitle }}</h5>
+    <table>
+      <thead>
+        <tr class="border-bottom">
+          <th>
+            gene
+          </th>
+          <th>
+            amino acid
+          </th>
+        </tr>
+      </thead>
+      <tbody class="checkbook border-bottom">
+        <tr v-for="(mutation, mIdx) in sortedMutations" :key="mIdx">
+          <td>
+            {{ mutation.gene }}
+          </td>
+          <td v-if="mutation.type == 'substitution'">
+            {{ mutation.ref_aa }}{{ mutation.codon_num }}{{ mutation.alt_aa }}
+          </td>
+          <td v-else-if="mutation.type == 'deletion'">
+            {{ mutation.mutation.replace(/(.)*:/, '') }}
+            <!-- <span v-if="Array.isArray(mutation.codon_num)">&Delta;{{mutation.codon_num[0]}}-{{mutation.codon_num.slice(-1)[0]}}</span>
         <span v-else>&Delta;{{mutation.codon_num}}
           </span> -->
-      </td>
-    </tr>
-  </tbody>
-</table>
-</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script lang="js">
@@ -68,10 +68,10 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .checkbook td {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
-.checkbook tr:nth-child(2n+1) {
-    background-color: $lightback;
+.checkbook tr:nth-child(2n + 1) {
+  background-color: $lightback;
 }
 </style>
 <!-- <template> -->
@@ -106,7 +106,6 @@ export default Vue.extend({
 <!-- import { -->
 <!--   mapState -->
 <!-- } from "vuex"; -->
-
 
 <!-- import cloneDeep from "lodash/cloneDeep"; -->
 
@@ -354,7 +353,6 @@ export default Vue.extend({
 <!--             .text(d => format(".0%")(d.prevalence)) -->
 <!--             .transition(t1) -->
 <!--             .attr("y", d => this.y(d.mutation) + this.y.bandwidth() / 2); -->
-
 
 <!--           update -->
 <!--             .filter(d => this.moi.map(d => d.toLowerCase()).includes(d.mutation)) -->

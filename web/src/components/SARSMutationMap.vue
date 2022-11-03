@@ -1,40 +1,50 @@
 <template>
-<div class="" id="mutation-map" ref="svg_wrapper">
-  <svg :width="width" :height="height" ref="svg" :class="[copyable ? 'mutation-map' : 'mutation_map']" :name="`${mutationKey} characteristic mutations`">
-    <g ref="gene_map" id="gene-map-group">
-      <g ref="genes" class="genes" id="gene-group"></g>
-      <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
-      <g ref="substitutions" class="mutations substitutions" id="substitution-group"></g>
-      <g ref="deletions" class="mutations deletions" id="deletion-group"></g>
-      <g ref="brush" class="brush" id="brush-zoom" v-if="mutationArr"></g>
-    </g>
-  </svg>
+  <div class="" id="mutation-map" ref="svg_wrapper">
+    <svg
+      :width="width"
+      :height="height"
+      ref="svg"
+      :class="[copyable ? 'mutation-map' : 'mutation_map']"
+      :name="`${mutationKey} characteristic mutations`"
+    >
+      <g ref="gene_map" id="gene-map-group">
+        <g ref="genes" class="genes" id="gene-group"></g>
+        <!-- <g ref="nucleotide_axis" class="axis axis--x"></g> -->
+        <g
+          ref="substitutions"
+          class="mutations substitutions"
+          id="substitution-group"
+        ></g>
+        <g ref="deletions" class="mutations deletions" id="deletion-group"></g>
+        <g ref="brush" class="brush" id="brush-zoom" v-if="mutationArr"></g>
+      </g>
+    </svg>
 
-  <div ref="tooltip_mutation" class="tooltip box-shadow" id="tooltip-mutation">
-    <h5>
-    </h5>
-  </div>
-  <div ref="tooltip_gene" class="tooltip box-shadow" id="tooltip-gene">
-    <h5>
-    </h5>
-    <div id="gene-mutations" class="m-0 mb-2">
-      <h6 class="m-0">
-        Mutations
-      </h6>
-      <em id="no-substitutions">none</em>
-      <ul id="mutation-list" class="m-0">
-      </ul>
+    <div
+      ref="tooltip_mutation"
+      class="tooltip box-shadow"
+      id="tooltip-mutation"
+    >
+      <h5></h5>
     </div>
-    <div id="gene-deletions">
-      <h6 class="m-0">
-        Deletions
-      </h6>
-      <em id="no-deletions">none</em>
-      <ul id="deletion-list" class="m-0">
-      </ul>
+    <div ref="tooltip_gene" class="tooltip box-shadow" id="tooltip-gene">
+      <h5></h5>
+      <div id="gene-mutations" class="m-0 mb-2">
+        <h6 class="m-0">
+          Mutations
+        </h6>
+        <em id="no-substitutions">none</em>
+        <ul id="mutation-list" class="m-0"></ul>
+      </div>
+      <div id="gene-deletions">
+        <h6 class="m-0">
+          Deletions
+        </h6>
+        <em id="no-deletions">none</em>
+        <ul id="deletion-list" class="m-0"></ul>
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <script lang="js">
@@ -766,17 +776,17 @@ export default Vue.extend({
 
 <style lang="scss">
 .gene rect {
-    stroke: $base-grey;
+  stroke: $base-grey;
 }
 
 #tooltip-gene,
 #tooltip-mutation {
-    background-color: #fff;
-    padding: 7px;
-    border: 1px solid;
-    border-radius: 3px;
-    opacity: 0.95;
-    position: absolute;
-    display: none;
+  background-color: #fff;
+  padding: 7px;
+  border: 1px solid;
+  border-radius: 3px;
+  opacity: 0.95;
+  position: absolute;
+  display: none;
 }
 </style>

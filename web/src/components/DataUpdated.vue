@@ -1,6 +1,7 @@
 <template>
-  <small class="text-muted badge bg-grey__lightest" v-if="lastUpdated$"
-    ><font-awesome-icon  class="mr-1" :icon="['far', 'clock']"/> Updated {{ lastUpdated$ }} ago
+  <small class="text-muted badge bg-grey__lightest" v-if="lastUpdated$">
+    <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
+    Updated {{ lastUpdated$ }} ago
   </small>
 </template>
 

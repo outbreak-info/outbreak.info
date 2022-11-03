@@ -1,22 +1,38 @@
 <template>
-<div class="mx-4">
-  <h3>Select location</h3>
-  <div class="d-flex align-items-center mt-3 mb-5">
-    <div class="input-group w-50">
-      <div class="input-group-prepend">
-        <span class="input-group-text bg-grey text-muted border-0" id="sb">
-          <font-awesome-icon :icon="['fas', 'search']" />
-        </span>
+  <div class="mx-4">
+    <h3>Select location</h3>
+    <div class="d-flex align-items-center mt-3 mb-5">
+      <div class="input-group w-50">
+        <div class="input-group-prepend">
+          <span class="input-group-text bg-grey text-muted border-0" id="sb">
+            <font-awesome-icon :icon="['fas', 'search']" />
+          </span>
+        </div>
+        <TypeaheadSelect
+          class="form-control mr-4"
+          :isStandalone="false"
+          :queryFunction="queryLocation"
+          @selected="updateLocation"
+          :apiUrl="this.$genomicsurl"
+          labelVariable="label"
+          placeholder="Select location"
+          totalLabel="total sequences"
+          :removeOnSelect="false"
+          @click.prevent="submitQuery"
+        />
       </div>
-      <TypeaheadSelect class="form-control mr-4" :isStandalone="false" :queryFunction="queryLocation" @selected="updateLocation" :apiUrl="this.$genomicsurl" labelVariable="label" placeholder="Select location" totalLabel="total sequences"
-        :removeOnSelect="false" @click.prevent="submitQuery" />
+      <button
+        :disabled="!location"
+        type="submit"
+        class="btn btn-accent btn-lg m-0"
+        @click="submitQuery"
+        v-if="!formValid"
+      >
+        Go
+      </button>
     </div>
-    <button :disabled="!location" type="submit" class="btn btn-accent btn-lg m-0" @click="submitQuery" v-if="!formValid">Go</button>
 
-  </div>
-
-
-  <!-- <div id="custom-variants" v-if="location">
+    <!-- <div id="custom-variants" v-if="location">
     <h3>Add optional lineages &amp; mutations to track<span v-if="location"> in {{ location.label }}</span></h3>
     <h6 class="text-muted"><em>Optional:</em> specify lineages and mutations to track in addition to the Variants of Concern and Interest</h6>
     <div class="d-flex flex-column align-items-start mb-3">
@@ -64,49 +80,47 @@
     </div>
 
   </div> -->
-</div>
+  </div>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import TypeaheadSelect from "@/components/TypeaheadSelect.vue";
+import TypeaheadSelect from '@/components/TypeaheadSelect.vue';
 // import VariantForm from "@/components/VariantForm.vue";
 
-import uniq from "lodash/uniq";
+import uniq from 'lodash/uniq';
 
-import {
-  findLocation
-} from "@/api/genomics.js";
+import { findLocation } from '@/api/genomics.js';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faSearch,
-  faTimesCircle
-} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSearch, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSearch, faTimesCircle);
 
 export default {
-  name: "CustomLocationForm",
+  name: 'CustomLocationForm',
   components: {
     TypeaheadSelect,
     // VariantForm,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   props: {
-    curated: Array
+    curated: Array,
   },
   computed: {
     formValid() {
-      return ((this.selectedMutations.length > 0 || this.selectedLineage || this.pango.length || this.variant.length || this.muts.length) && this.location)
-    }
+      return (
+        (this.selectedMutations.length > 0 ||
+          this.selectedLineage ||
+          this.pango.length ||
+          this.variant.length ||
+          this.muts.length) &&
+        this.location
+      );
+    },
   },
   methods: {
     clearSelection() {
@@ -114,24 +128,35 @@ export default {
     },
     addVariant() {
       if (this.selectedLineage && this.selectedMutations.length) {
-
         this.variant.push({
-          label: `${this.selectedLineage} + ${this.selectedMutations.map(d => d.mutation).join(", ")}`,
-          qParam: `${this.selectedLineage}|${this.selectedMutations.map(d => d.mutation).join(",")}`,
-          mutation_string: `(${this.selectedLineage}) AND (${this.selectedMutations.map(d => d.mutation).join(" AND ")})`
-        })
+          label: `${this.selectedLineage} + ${this.selectedMutations
+            .map((d) => d.mutation)
+            .join(', ')}`,
+          qParam: `${this.selectedLineage}|${this.selectedMutations
+            .map((d) => d.mutation)
+            .join(',')}`,
+          mutation_string: `(${
+            this.selectedLineage
+          }) AND (${this.selectedMutations
+            .map((d) => d.mutation)
+            .join(' AND ')})`,
+        });
       } else if (this.selectedLineage) {
         this.pango.push({
           label: this.selectedLineage,
           qParam: this.selectedLineage,
-          mutation_string: this.selectedLineage
-        })
+          mutation_string: this.selectedLineage,
+        });
       } else if (this.selectedMutations.length) {
         this.muts.push({
-          label: `${this.selectedMutations.map(d => d.mutation).join(", ")} ${this.selectedMutations.length === 1 ? "mutation" : "variant"}`,
-          qParam: this.selectedMutations.map(d => d.mutation).join(" AND "),
-          mutation_string: this.selectedMutations.map(d => d.mutation).join(" AND ")
-        })
+          label: `${this.selectedMutations.map((d) => d.mutation).join(', ')} ${
+            this.selectedMutations.length === 1 ? 'mutation' : 'variant'
+          }`,
+          qParam: this.selectedMutations.map((d) => d.mutation).join(' AND '),
+          mutation_string: this.selectedMutations
+            .map((d) => d.mutation)
+            .join(' AND '),
+        });
       }
 
       this.submitCount += 1;
@@ -141,26 +166,26 @@ export default {
     },
     submitQuery() {
       this.addVariant();
-      const pango = uniq(this.pango.map(d => d.qParam));
-      const variant = uniq(this.variant.map(d => d.qParam));
-      const muts = uniq(this.muts.map(d => d.qParam));
+      const pango = uniq(this.pango.map((d) => d.qParam));
+      const variant = uniq(this.variant.map((d) => d.qParam));
+      const muts = uniq(this.muts.map((d) => d.qParam));
 
       this.$router.push({
-        name: "LocationReport",
+        name: 'LocationReport',
         query: {
           loc: this.location.id,
           pango: pango,
           variant: variant,
           muts: muts,
-          selected: pango.concat(variant, muts).filter(d => d.length)
-        }
-      })
+          selected: pango.concat(variant, muts).filter((d) => d.length),
+        },
+      });
     },
     updateLocation(location) {
       if (location && location.id) {
         this.location = location;
       }
-    }
+    },
   },
   data() {
     return {
@@ -173,17 +198,17 @@ export default {
       muts: [],
       variantArr: [],
       submitLabel: null,
-      submitCount: 0
-    }
+      submitCount: 0,
+    };
   },
   mounted() {
     this.queryLocation = findLocation;
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .max-width-400 {
-    max-width: 400px !important;
+  max-width: 400px !important;
 }
 </style>

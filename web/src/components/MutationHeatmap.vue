@@ -1,49 +1,99 @@
 <template>
-<div class="overflow-auto" :class="{'w-75': isOverflow}">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg" class="mutation-heatmap" name="Mutations by lineage" :subtitle="gene" :style="{background: bgColor}">
-    <defs>
-      <pattern id="diagonalHatchDark" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-        <line x1="0" y1="0" x2="0" y2="10" :style="`stroke:${strokeColor}; stroke-width:0.75`" />
-      </pattern>
-      <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-        <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
-        <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
-      </pattern>
+  <div class="overflow-auto" :class="{ 'w-75': isOverflow }">
+    <svg
+      :width="width + margin.left + margin.right"
+      :height="height + margin.top + margin.bottom"
+      ref="svg"
+      class="mutation-heatmap"
+      name="Mutations by lineage"
+      :subtitle="gene"
+      :style="{ background: bgColor }"
+    >
+      <defs>
+        <pattern
+          id="diagonalHatchDark"
+          width="5"
+          height="5"
+          patternTransform="rotate(45 0 0)"
+          patternUnits="userSpaceOnUse"
+        >
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="10"
+            :style="`stroke:${strokeColor}; stroke-width:0.75`"
+          />
+        </pattern>
+        <pattern
+          id="diagonalHatchLight"
+          width="7"
+          height="7"
+          patternTransform="rotate(45 0 0)"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="25"
+            :style="`stroke:#CCC; stroke-width:4`"
+          />
+        </pattern>
+      </defs>
+      <g
+        ref="xAxisTop"
+        class="axis axis--x"
+        :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"
+      ></g>
+      <g
+        ref="xAxisBottom"
+        class="axis axis--x"
+        :transform="
+          `translate(${this.margin.left}, ${this.margin.top + this.height + 5})`
+        "
+      ></g>
+      <g
+        ref="heatmapBase"
+        id="heatmap-base"
+        :transform="`translate(${this.margin.left}, ${this.margin.top})`"
+      ></g>
+      <g
+        ref="heatmap"
+        id="heatmap"
+        :transform="`translate(${this.margin.left}, ${this.margin.top})`"
+      ></g>
+    </svg>
 
-
-    </defs>
-    <g ref="xAxisTop" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"></g>
-    <g ref="xAxisBottom" class="axis axis--x" :transform="`translate(${this.margin.left}, ${this.margin.top + this.height + 5})`"></g>
-    <g ref="heatmapBase" id="heatmap-base" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
-    <g ref="heatmap" id="heatmap" :transform="`translate(${this.margin.left}, ${this.margin.top})`"></g>
-  </svg>
-
-  <!-- TOOLTIPS -->
-  <div ref="tooltip_heatmap" class="tooltip-basic tooltip-dark box-shadow" id="tooltip-prevalence">
-    <div class="d-flex border-bottom align-items-center">
-      <div class="d-flex">
-        <h5 id="mutation"></h5>
-        <div class="fa-sm font-weight-bold" id="mutationOfInterest"></div>
+    <!-- TOOLTIPS -->
+    <div
+      ref="tooltip_heatmap"
+      class="tooltip-basic tooltip-dark box-shadow"
+      id="tooltip-prevalence"
+    >
+      <div class="d-flex border-bottom align-items-center">
+        <div class="d-flex">
+          <h5 id="mutation"></h5>
+          <div class="fa-sm font-weight-bold" id="mutationOfInterest"></div>
+        </div>
+        <span class="mx-2 text-muted">in</span>
+        <div class="d-flex">
+          <h5 id="lineage"></h5>
+          <div class="fa-sm font-weight-bold" id="lineageOfInterest"></div>
+        </div>
       </div>
-      <span class="mx-2 text-muted">in</span>
-      <div class="d-flex">
-        <h5 id="lineage"></h5>
-        <div class="fa-sm font-weight-bold" id="lineageOfInterest"></div>
+      <div class="d-flex align-items-center pt-2" id="prevalence">
+        <div id="value" class="fa-lg"></div>
+        <small class="ml-2 text-muted">of all sequences</small>
+      </div>
+      <div id="count"></div>
+      <div id="not-detected" class="text-muted">
+        not detected
       </div>
     </div>
-    <div class="d-flex align-items-center pt-2" id="prevalence">
-      <div id="value" class="fa-lg"></div> <small class="ml-2 text-muted">of all sequences</small>
-    </div>
-    <div id="count">
-    </div>
-    <div id="not-detected" class="text-muted">
-      not detected
-    </div>
-
   </div>
-</div>
 </template>
-
 
 <script lang="js">
 import Vue from "vue";
@@ -735,30 +785,30 @@ export default Vue.extend({
 })
 </script>
 
-<style lang = "scss">
+<style lang="scss">
 .mutation-heatmap .axis--x text,
 .mutation-heatmap .axis--y text {
-    /* fill: #efefef; */
-    /* fill: #555; */
+  /* fill: #efefef; */
+  /* fill: #555; */
 }
 
 .mutation-heatmap .axis--x text {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .mutation-heatmap .axis--y text {
-    font-size: 18px;
+  font-size: 18px;
 }
 
 .mutation-heatmap .axis path {
-    display: none;
+  display: none;
 }
 
 .mutation-heatmap .axis--y line {
-    display: none;
+  display: none;
 }
 
 .tooltip-dark {
-    background: #ffffffeb !important;
+  background: #ffffffeb !important;
 }
 </style>

@@ -20,7 +20,10 @@
         <th class="td-slope">
           slope
         </th>
-        <th class="td-r2">r<sup>2</sup></th>
+        <th class="td-r2">
+          r
+          <sup>2</sup>
+        </th>
       </tr>
       <tr class="tr-current">
         <th>
@@ -78,7 +81,7 @@
           colspan="2"
           :class="[change_time.worse ? 'worse' : 'better']"
         >
-          {{ change_time.worse ? "worse" : "better" }}
+          {{ change_time.worse ? 'worse' : 'better' }}
           <!-- <span v-if="change_time.nearZero"> (negligible rate of change)</span> -->
         </td>
       </tr>
