@@ -45,10 +45,7 @@
           {{ currentSummary$.aboveThreshold.count }} countries
         </router-link>
         have reported more than
-        <span class="text-highlight">
-          {{ caseThreshold.toLocaleString() }} new cases
-        </span>
-        .
+        <span class="text-highlight">{{ caseThreshold.toLocaleString() }} new cases</span>.
       </p>
 
       <p class="text-center">
@@ -67,7 +64,9 @@
     >
       <div class="d-flex justify-content-center align-items-center mb-2">
         <div>
-          <h5 class="at-a-glance-header m-0">At a glance</h5>
+          <h5 class="at-a-glance-header m-0">
+            At a glance
+          </h5>
           <p class="ml-3 mb-0">
             View the three locations with the largest increase in COVID-19 cases
             in the past day, or select your own locations
@@ -93,29 +92,33 @@
         />
 
         <div
-          class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main"
           v-if="summaryDeletable"
+          class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main"
         >
           <h6>Add locations</h6>
-          <SearchBar @location="addSummary" class="search-bar"></SearchBar>
+          <SearchBar
+            class="search-bar"
+            @location="addSummary"
+          />
         </div>
       </div>
     </section>
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
-import { mapState } from 'vuex';
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
-import GlanceSummary from '@/components/GlanceSummary';
-import SearchBar from '@/components/SearchBar';
+<script>
+import Vue from "vue";
+import { mapState } from "vuex";
+import tippy from "tippy.js";
+import "tippy.js/themes/light.css";
+import GlanceSummary from "@/components/GlanceSummary";
+import SearchBar from "@/components/SearchBar";
 
-import { timeFormat } from 'd3';
-import { getSummary } from '@/api/epi-basics.js';
-import { getGlanceSummary } from '@/api/genomics.js';
-import { getCurrentDate } from '@/api/biothings.js';
+import { timeFormat } from "d3";
+import { getSummary } from "@/api/epi-basics.js";
+import { getGlanceSummary } from "@/api/genomics.js";
+import { getCurrentDate } from "@/api/biothings.js";
+
 
 export default Vue.extend({
   name: 'CaseSummary',
@@ -150,8 +153,9 @@ export default Vue.extend({
         this.updatedSubscription = getGlanceSummary(
           this.$apiurl,
           this.$genomicsurl,
-          this.glanceLocations,
-        ).subscribe((d) => {
+          this.glanceLocations
+        ).subscribe(d => {
+
           this.glanceSummaries = this.sortSummaries(d);
         });
       } else {
@@ -164,8 +168,9 @@ export default Vue.extend({
       this.updatedSubscription = getGlanceSummary(
         this.$apiurl,
         this.$genomicsurl,
-        this.glanceLocations,
-      ).subscribe((d) => {
+        this.glanceLocations
+      ).subscribe(d => {
+
         this.glanceSummaries = this.sortSummaries(d);
       });
     },
@@ -199,8 +204,9 @@ export default Vue.extend({
     this.dataSubscription = getGlanceSummary(
       this.$apiurl,
       this.$genomicsurl,
-      this.glanceLocations,
-    ).subscribe((d) => {
+      this.glanceLocations
+    ).subscribe(d => {
+
       this.glanceSummaries = this.sortSummaries(d);
       this.glanceLocations = d.map((d) => d.location_id);
       Vue.$cookies.set('custom_locations', this.glanceLocations);

@@ -1,7 +1,10 @@
 <template>
   <div class="full-page py-5 bg-light">
     <!-- loading -->
-    <div v-if="loading" class="loader">
+    <div
+      v-if="loading"
+      class="loader"
+    >
       <font-awesome-icon
         class="fa-pulse fa-4x text-highlight"
         :icon="['fas', 'spinner']"
@@ -10,14 +13,14 @@
     <!-- autocomplete region selector -->
     <Autocomplete
       class="m-auto"
-      :toAdd="addable"
+      :to-add="addable"
       :selected="selectedPlaces"
       @selected="updateSelected"
     />
     <!-- too many to plot -->
     <div
-      class="flex-column too-many-warning"
       v-if="dataLength > lengthThreshold && !variable.includes('Increase')"
+      class="flex-column too-many-warning"
     >
       <div
         class="text-center m-auto p-2 bg-grey__lightest"
@@ -25,22 +28,28 @@
       >
         <label class="b-contain m-auto">
           <span>show more than {{ lengthThreshold }} curves</span>
-          <input type="checkbox" v-model="showAll" />
-          <div class="b-input"></div>
+          <input
+            v-model="showAll"
+            type="checkbox"
+          >
+          <div class="b-input" />
         </label>
       </div>
 
-      <div style="max-width:700px;" class="m-auto">
+      <div
+        style="max-width:700px;"
+        class="m-auto"
+      >
         <Warning
+          v-if="!showAll"
           :animate="true"
           class="mt-2"
-          v-if="!showAll"
           :text="
             'You have selected a lot of places. Showing the top ' +
               lengthThreshold +
               ' with the highest current case counts'
           "
-        ></Warning>
+        />
       </div>
     </div>
 
@@ -49,31 +58,46 @@
       class="text-center m-auto p-2 bg-grey__lightest d-flex"
       style="max-width:700px;"
     >
-      <label class="b-contain m-auto" v-if="variableObj.percapita !== false">
+      <label
+        v-if="variableObj.percapita !== false"
+        class="b-contain m-auto"
+      >
         <span>normalize to population</span>
-        <input type="checkbox" v-model="isPerCapita" />
-        <div class="b-input"></div>
+        <input
+          v-model="isPerCapita"
+          type="checkbox"
+        >
+        <div class="b-input" />
       </label>
       <label
-        class="b-contain m-auto"
         v-if="dataLength > 1 && variable.includes('Increase')"
+        class="b-contain m-auto"
       >
         <span>constant y-axis limits</span>
-        <input type="checkbox" v-model="isFixedY" />
-        <div class="b-input"></div>
+        <input
+          v-model="isFixedY"
+          type="checkbox"
+        >
+        <div class="b-input" />
       </label>
       <label
-        class="b-contain m-auto"
         v-if="dataLength > 1 && variable.includes('Increase')"
+        class="b-contain m-auto"
       >
         <span>overlay graphs</span>
-        <input type="checkbox" v-model="isOverlay" />
-        <div class="b-input"></div>
+        <input
+          v-model="isOverlay"
+          type="checkbox"
+        >
+        <div class="b-input" />
       </label>
     </div>
 
     <!-- title / drop down variable selector -->
-    <h4 class="plot-title pt-5 pb-3" v-if="location">
+    <h4
+      v-if="location"
+      class="plot-title pt-5 pb-3"
+    >
       Number of COVID-19
       <select
         v-model="variableObj"
@@ -82,16 +106,15 @@
       >
         <option
           v-for="option in variableOptions"
-          :value="option"
           :key="option.value"
+          :value="option"
         >
           {{ option.label }}
         </option>
       </select>
-      <span v-if="locationName">in {{ locationName }}</span>
+      <span v-if="locationName"> in {{ locationName }}</span>
       <span v-if="isPerCapita && variableObj.percapita !== false">
-        per 100,000 residents
-      </span>
+        per 100,000 residents</span>
     </h4>
 
     <template v-else>
@@ -99,18 +122,29 @@
         <h4 class="plot-title pt-5 pb-3 text-highlight">
           Please select a location
         </h4>
-        <button class="btn btn-main-outline" @click="lookupLocation">
+        <button
+          class="btn btn-main-outline"
+          @click="lookupLocation"
+        >
           Find nearest location
         </button>
       </template>
 
-      <h4 class="plot-title pt-5 pb-3 text-highlight" v-else>
+      <h4
+        v-else
+        class="plot-title pt-5 pb-3 text-highlight"
+      >
         Cannot find a nearby location. Please select a location.
       </h4>
     </template>
     <!-- metro subparts -->
-    <div v-if="subParts" class="mb-4">
-      <router-link :to="{ hash: '#sub_parts' }">
+    <div
+      v-if="subParts"
+      class="mb-4"
+    >
+      <router-link
+        :to="{ hash: '#sub_parts' }"
+      >
         View counties in metro area(s)
       </router-link>
     </div>
@@ -118,13 +152,13 @@
     <div class="d-flex row m-0 content-wrapper">
       <!-- bar graph -->
       <div
-        class="d-flex flex-column align-items-center"
         v-if="data$ && data$[0] && this.variable.includes('Increase')"
+        class="d-flex flex-column align-items-center"
       >
         <div
-          class="w-100 px-3 d-flex justify-content-center flex-wrap"
           id="bar-group"
           ref="bar_group"
+          class="w-100 px-3 d-flex justify-content-center flex-wrap"
         >
           <Bargraph
             v-for="(countryData, idx) in data$[0]"
@@ -132,20 +166,20 @@
             class="mr-3 mb-3"
             :data="countryData.value"
             :title="countryData.value[0].name"
-            :variableObj="variableObj"
-            :includeAxis="true"
+            :variable-obj="variableObj"
+            :include-axis="true"
             :width="bargraphWidth"
+            :id="String(idx)"
             :height="bargraphHeight"
-            :transformChart="bargraphTransform"
-            :tooltipIdx="'n-' + idx"
-            :includeTooltips="true"
+            :transform-chart="bargraphTransform"
+            :tooltip-idx="'n-' + idx"
+            :include-tooltips="true"
             :location="location"
             :log="isLogY"
             :percapita="isPerCapita"
-            :xVariableLim="xLim"
-            :fixedYMax="yMax"
+            :x-variable-lim="xLim"
+            :fixed-y-max="yMax"
             :animate="true"
-            :id="String(idx)"
             :color="colorScale(countryData.key)"
           />
         </div>
@@ -153,13 +187,13 @@
         <!-- source / download data -->
 
         <DataSource
+          v-if="data$"
           class="mx-3"
           :ids="variableObj.sources"
-          dataType="epidemiology"
-          figureRef="epi-bargraph"
-          :numSvgs="data$[0].length"
+          data-type="epidemiology"
+          figure-ref="epi-bargraph"
+          :num-svgs="data$[0].length"
           :data="data$[0]"
-          v-if="data$"
         />
       </div>
 
@@ -168,51 +202,53 @@
         v-if="plottedData && showCurves && !this.variable.includes('Increase')"
       >
         <EpiCurve
-          class="row"
           id="curveContainer"
+          class="row"
           :data="plottedData"
           :percapita="isPerCapita"
           :location="location"
-          :variableObj="variableObj"
+          :variable-obj="variableObj"
           :log="isLogY"
-          :loggable="variable != 'testing_positivity'"
-          :percent="variable == 'testing_positivity'"
+          :loggable="variable !== 'testing_positivity'"
+          :percent="variable === 'testing_positivity'"
+
           :xmin="xmin"
           :xmax="xmax"
-          :showAll="showAll"
+          :show-all="showAll"
         />
 
         <!-- source / download data -->
         <DataSource
+          v-if="data$"
           class="col-sm-12"
           :ids="variableObj.sources"
-          v-if="data$"
-          dataType="epidemiology"
-          figureRef="epi-curve"
+          data-type="epidemiology"
+          figure-ref="epi-curve"
           :data="data$[0]"
         />
       </template>
 
       <div
-        class="container my-4 border-top pt-3"
         v-if="subParts"
         id="sub_parts"
+        class="container my-4 border-top pt-3"
       >
         <div class="row">
           <small
-            class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3"
             v-for="(metro, mIdx) in subParts"
             :key="mIdx"
+            class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3"
           >
             <template v-if="metro.hasSubparts">
-              <b>{{ metro.key }}</b>
-              metro area includes:
+              <b>{{ metro.key }}</b> metro area includes:
+
               <span
                 v-for="(loc, idx) in metro.parts"
                 :key="idx"
                 class="line-height-1"
               >
                 <router-link
+                  v-if="variable"
                   :to="{
                     name: 'Epidemiology',
                     query: {
@@ -220,14 +256,13 @@
                       log: log,
                       variable: variable,
                       xVariable: xVariable,
-                      percapita: percapita,
-                    },
+                      percapita: percapita
+                    }
                   }"
-                  v-if="variable"
                 >
-                  {{ loc.county_name }}, {{ loc.admin1 }}
-                </router-link>
-                <span v-if="idx < metro.parts.length - 1">;</span>
+                  {{ loc.county_name }}, {{ loc.admin1 }}</router-link>
+                <span v-if="idx < metro.parts.length - 1">; </span>
+
               </span>
             </template>
           </small>
@@ -238,8 +273,8 @@
       <EpiTable
         class="row overflow-auto mx-5"
         :locations="selectedPlaces"
-        :colorScale="colorScale"
-        colorVar="location_id"
+        :color-scale="colorScale"
+        color-var="location_id"
       />
     </div>
   </div>
@@ -253,22 +288,22 @@ import Autocomplete from '@/components/Autocomplete.vue';
 import Warning from '@/components/Warning.vue';
 
 // --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  epiDataSubject,
+  epiTableSubject,
+  getEpiData
+} from "@/api/epi-traces.js";
+
+import { getLocation, processLocation } from "@/js/get-location.js";
+import store from "@/store";
+import { mapState } from "vuex";
+import { extent, max } from "d3";
 
 library.add(faSpinner);
 
-import {
-  getEpiData,
-  epiDataSubject,
-  epiTableSubject,
-} from '@/api/epi-traces.js';
-
-import { getLocation, processLocation } from '@/js/get-location.js';
-import store from '@/store';
-import { mapState } from 'vuex';
-import { extent, max } from 'd3';
 
 export default {
   name: 'Epidemiology',
@@ -276,9 +311,10 @@ export default {
     DataSource,
     Warning,
     EpiCurve: () =>
-      import(/* webpackPrefetch: true */ '@/components/EpiCurve.vue'),
+      import(/* webpackPrefetch: true */ "@/components/EpiCurve.vue"),
     Bargraph: () =>
-      import(/* webpackPrefetch: true */ '@/components/Bargraph.vue'),
+      import(/* webpackPrefetch: true */ "@/components/Bargraph.vue"),
+
     EpiTable,
     Autocomplete,
     FontAwesomeIcon,
@@ -328,10 +364,11 @@ export default {
       },
       variableOptions: [
         {
-          label: 'cumulative cases',
-          ttip: 'cases',
-          value: 'confirmed',
-          sources: ['NYT', 'JHU'],
+          label: "cumulative cases",
+          ttip: "cases",
+          value: "confirmed",
+          sources: ["NYT", "JHU"]
+
         },
         {
           label: 'cumulative recoveries',
@@ -376,8 +413,8 @@ export default {
     ...mapState('admin', ['loading']),
     ...mapState('geo', ['allPlaces']),
     colorScale: function() {
-      const scale = store.getters['colors/getColor'];
-      return scale;
+      return store.getters["colors/getColor"];
+
     },
     noData: function() {
       if (this.data$) {
@@ -407,16 +444,18 @@ export default {
     },
     subParts() {
       if (this.data$) {
-        const parts = this.data$[0].map((d) => {
+        const parts = this.data$[0].map(d => {
+
           return {
             key: d.value[0].name,
             parts: d.value[0].sub_parts,
             hasSubparts: d.value[0].sub_parts
               ? d.value[0].sub_parts.length > 0
-              : false,
+              : false
           };
         });
-        return parts.some((d) => d.hasSubparts) ? parts : null;
+        return parts.some(d => d.hasSubparts) ? parts : null;
+
       }
       return null;
     },
@@ -432,7 +471,7 @@ export default {
     },
   },
   watch: {
-    selectedPlaces: function(newValue, oldValue) {
+    selectedPlaces: (newValue, oldValue) => {
       const newLocation = newValue ? newValue.join(';') : '';
       if (this.$route.query.location !== newLocation) {
         this.$router.push({
@@ -451,21 +490,23 @@ export default {
       }
     },
     // route props
-    location: function(newLocation, oldLocation) {
+    location: (newLocation, oldLocation) => {
       this.setLocation(newLocation);
     },
     variable: {
       immediate: true,
       handler(newVal, oldVal) {
         this.variableObj = this.variableOptions.filter(
-          (d) => d.value == newVal,
+          d => d.value === newVal
+
         )[0];
       },
     },
     fixedY: function(newValue, oldValue) {
-      if (newValue === 'true') {
+      if (newValue === "true") {
         const varUsed = this.isPerCapita
-          ? this.variable + '_per_100k'
+          ? this.variable + "_per_100k"
+
           : this.variable;
         this.yMax = max(
           this.plottedData.flatMap((d) => d.value),
@@ -481,11 +522,8 @@ export default {
       this.changeVariable();
     },
     percapita: function(newValue, oldValue) {
-      if (newValue === 'true') {
-        this.isPerCapita = true;
-      } else {
-        this.isPerCapita = false;
-      }
+      this.isPerCapita = newValue === "true";
+
     },
     isPerCapita: function(newValue, oldValue) {
       this.changeVariable();
@@ -510,7 +548,7 @@ export default {
         });
       }
     },
-    showAll: function(newValue, oldValue) {
+    showAll: (newValue, oldValue) => {
       if (newValue) {
         this.addable = [];
         this.plottedData = this.data$ ? this.data$[0] : null;
@@ -519,8 +557,19 @@ export default {
       }
     },
   },
+  destroyed() {
+    window.removeEventListener('resize', this.setDims);
+  },
+  mounted() {
+    this.setLocation(this.location);
+    this.$nextTick(function() {
+      window.addEventListener('resize', this.setDims);
+      // set initial dimensions for the stacked area plots.
+      this.setDims();
+    });
+  },
   methods: {
-    setLocation: function(locationString, nullLocationHandler) {
+    setLocation: (locationString, nullLocationHandler) => {
       if (locationString && locationString !== '') {
         const locations = locationString.split(';').map((d) => d.trim());
         this.selectedPlaces = locations;
@@ -537,15 +586,16 @@ export default {
             this.data$[0].length > this.lengthThreshold
               ? this.hideExtra()
               : this.data$[0];
-          this.isFixedY = this.fixedY == 'true';
-          this.isPerCapita = this.percapita == 'true';
+          this.isFixedY = this.fixedY === "true";
+          this.isPerCapita = this.percapita === "true";
           const varUsed = this.isPerCapita
-            ? this.variable + '_per_100k'
+            ? this.variable + "_per_100k"
             : this.variable;
           this.yMax = this.isFixedY
             ? max(
-                this.plottedData.flatMap((d) => d.value),
-                (d) => d[varUsed],
+                this.plottedData.flatMap(d => d.value),
+                d => d[varUsed]
+
               )
             : null;
         });
@@ -554,7 +604,7 @@ export default {
         this.clearLocations();
       }
     },
-    clearLocations: function() {
+    clearLocations: () => {
       this.selectedPlaces = [];
       epiDataSubject.next([]);
       epiTableSubject.next([]);
@@ -564,12 +614,13 @@ export default {
 
       // update y-max
       const varUsed = this.isPerCapita
-        ? newVariable + '_per_100k'
+        ? newVariable + "_per_100k"
         : newVariable;
       this.yMax = this.isFixedY
         ? max(
-            this.plottedData.flatMap((d) => d.value),
-            (d) => d[varUsed],
+            this.plottedData.flatMap(d => d.value),
+            d => d[varUsed]
+
           )
         : null;
 
@@ -589,19 +640,20 @@ export default {
         },
       });
     },
-    updateSelected: function(selected) {
+    updateSelected: (selected) => {
       this.selectedPlaces = [...new Set(selected)];
     },
-    updateAddable: function(selected) {
+    updateAddable: (selected) => {
       this.addable = selected;
     },
-    setDims: function() {
+    setDims: () => {
       const minWidth = 550;
       const hwRatio = 0.75;
       const marginPadding = 80; // size of margin
       const framePadding = 16; // size of margin
-      const dimWidth = document.getElementById('bar-group')
-        ? document.getElementById('bar-group').offsetWidth
+      const dimWidth = document.getElementById("bar-group")
+        ? document.getElementById("bar-group").offsetWidth
+
         : minWidth;
       this.bargraphWidth = 650;
       if (window.innerWidth < 360) {
@@ -616,7 +668,7 @@ export default {
         this.bargraphTransform = 1;
       }
     },
-    hideExtra: function() {
+    hideExtra: () => {
       const selectedData = this.data$
         ? this.data$[0]
             .slice()
@@ -624,19 +676,20 @@ export default {
             .slice(0, this.lengthThreshold)
         : null;
 
-      const toAdd = this.data$[0]
+      this.addable = this.data$[0]
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)
         .slice(this.lengthThreshold)
-        .map((d) => d.key);
-      this.addable = toAdd;
+        .map(d => d.key);
+
       return selectedData;
     },
     lookupLocation() {
       store.state.admin.loading = true;
       getLocation(this.$apiurl).subscribe((nearestPlace) => {
         store.state.admin.loading = false;
-        if (nearestPlace != 'none') {
+        if (nearestPlace !== "none") {
+
           this.$router.push({
             name: 'Epidemiology',
             query: {
@@ -647,18 +700,8 @@ export default {
           this.nolocation = true;
         }
       });
-    },
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.setDims);
-  },
-  mounted() {
-    this.setLocation(this.location);
-    this.$nextTick(function() {
-      window.addEventListener('resize', this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims();
-    });
+    }
+
   },
 };
 </script>

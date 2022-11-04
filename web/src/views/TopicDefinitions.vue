@@ -11,6 +11,7 @@
       </p>
       <small>
         Suggest changes by submitting a
+
         <a
           href="https://github.com/outbreak-info/outbreak.info-resources/issues/new/choose"
           target="_blank"
@@ -18,6 +19,7 @@
         >
           Github issue
         </a>
+
         or creating a pull request on the
         <a
           href="https://github.com/outbreak-info/outbreak.info-resources/blob/master/covid_topic_categories.tsv"
@@ -71,15 +73,15 @@ export default Vue.extend({
       tsv(this.topicUrl).then(data => {
 
         this.topicArr = nest()
-          .key(d => d.category)
-          .rollup(values => {
-            return ({
-              description: values.filter(d => d.subcategory == "false")[0]["description"],
-              subcats: values.filter(d => d.subcategory == "true")
+            .key(d => d.category)
+            .rollup(values => {
+              return ({
+                description: values.filter(d => d.subcategory === "false")[0]["description"],
+                subcats: values.filter(d => d.subcategory === "true")
+              })
             })
-          })
-          .entries(data)
-          .sort((a, b) => a.key < b.key ? -1 : 1);
+            .entries(data)
+            .sort((a, b) => a.key < b.key ? -1 : 1);
       })
     }
   },

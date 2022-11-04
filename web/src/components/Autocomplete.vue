@@ -60,7 +60,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from 'vue';
 
@@ -69,11 +69,13 @@ import store from '@/store';
 
 import debounce from 'lodash/debounce';
 
-import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
+
+import { findEpiLocation, lookupEpiLocations } from "@/api/epi-basics.js";
 
 // --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+
 import {
   faTimesCircle,
   faPlusSquare,
@@ -146,9 +148,11 @@ export default Vue.extend({
     updateSelected() {
       this.lookupSubscription = lookupEpiLocations(
         this.$apiurl,
-        this.selected,
-      ).subscribe((results) => {
-        this.selectedItems = results.map((d) => {
+
+        this.selected
+      ).subscribe(results => {
+        this.selectedItems = results.map(d => {
+
           return {
             label: d.label,
             location_id: d.location_id,
@@ -181,8 +185,10 @@ export default Vue.extend({
       this.isSelectAll = false;
       this.querySubscription = findEpiLocation(
         this.$apiurl,
-        this.search,
-      ).subscribe((results) => {
+
+        this.search
+      ).subscribe(results => {
+
         this.results = results;
         this.isOpen = true;
       });

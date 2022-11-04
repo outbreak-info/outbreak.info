@@ -7,36 +7,46 @@
         <div class="radio-item-light text-light w-100 pt-2 pb-3">
           <div class="radio-item fa-lg">
             <input
-              type="radio"
               id="var"
-              value="var"
               v-model="selectedReportType"
+              type="radio"
+              value="var"
               @change="switchRadioBtn"
-            />
-            <label class="font-weight-bold" for="var">Lineage Report</label>
+            >
+            <label
+              class="font-weight-bold"
+              for="var"
+            >Lineage Report</label>
           </div>
         </div>
 
         <!-- lineage typeahead -->
-        <div id="search-lineage" v-if="selectedReportType == 'var'">
-          <form autocomplete="off" class="w-100" id="search-lineage-input">
+        <div
+          v-if="selectedReportType === 'var'"
+          id="search-lineage"
+        >
+          <form
+            id="search-lineage-input"
+            autocomplete="off"
+            class="w-100"
+          >
             <div class="input-group">
               <div class="input-group-prepend">
                 <span
-                  class="input-group-text bg-grey text-muted border-0"
                   id="sb"
+                  class="input-group-text bg-grey text-muted border-0"
                 >
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
               <TypeaheadSelect
-                :isStandalone="false"
+                :is-standalone="false"
                 class="form-control border"
-                :queryFunction="queryPangolin"
-                @selected="updatePangolin"
-                :apiUrl="this.$genomicsurl"
-                :removeOnSelect="true"
+                :query-function="queryPangolin"
+                :api-url="this.$genomicsurl"
+                :remove-on-select="true"
                 placeholder="Search PANGO lineage"
+                @selected="updatePangolin"
               />
             </div>
           </form>
@@ -49,11 +59,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { alias: 'omicron', type: 'var' },
+                  query: { alias: 'omicron', type: 'var' }
                 }"
                 class="text-light"
-              >
-                Omicron
+              >Omicron
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -61,11 +71,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { alias: 'delta', type: 'var' },
+                  query: { alias: 'delta', type: 'var' }
                 }"
                 class="text-light"
-              >
-                Delta
+              >Delta
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -73,11 +83,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { alias: 'alpha', type: 'var' },
+                  query: { alias: 'alpha', type: 'var' }
                 }"
                 class="text-light"
-              >
-                Alpha / B.1.1.7
+              >Alpha / B.1.1.7
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -91,46 +101,49 @@
         <div class="radio-item-light text-light w-100 pt-2">
           <div class="radio-item fa-lg">
             <input
-              type="radio"
               id="loc"
-              value="loc"
               v-model="selectedReportType"
+              type="radio"
+              value="loc"
               @change="switchRadioBtn"
-            />
-            <label class="font-weight-bold" for="loc">Location Report</label>
+            >
+            <label
+              class="font-weight-bold"
+              for="loc"
+            >Location Report</label>
           </div>
         </div>
 
         <!-- location typeahead -->
         <div
+          v-if="selectedReportType === 'loc'"
           id="search-variant-location"
           class="m-3 text-light"
-          v-if="selectedReportType == 'loc'"
         >
           <form
+            id="search-variant-location-input"
             autocomplete="off"
             class="w-100"
-            id="search-variant-location-input"
           >
             <div class="input-group">
               <div class="input-group-prepend">
                 <span
-                  class="input-group-text bg-grey text-muted border-0"
                   id="sb"
+                  class="input-group-text bg-grey text-muted border-0"
                 >
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
               <TypeaheadSelect
-                :isStandalone="false"
+                :is-standalone="false"
                 class="form-control border"
-                :queryFunction="queryLocation"
-                @selected="submitLocation"
-                :apiUrl="this.$genomicsurl"
-                labelVariable="label"
-                :removeOnSelect="false"
+                :query-function="queryLocation"
+                :api-url="this.$genomicsurl"
+                label-variable="label"
+                :remove-on-select="false"
                 placeholder="Select location"
-                totalLabel="total sequences"
+                total-label="total sequences"
+                @selected="submitLocation"
               />
             </div>
           </form>
@@ -143,11 +156,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'USA' },
+                  query: { type: 'loc', loc: 'USA' }
                 }"
                 class="text-light"
-              >
-                USA
+              >USA
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -155,11 +168,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'GBR' },
+                  query: { type: 'loc', loc: 'GBR' }
                 }"
                 class="text-light"
-              >
-                U.K.
+              >U.K.
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -167,11 +180,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'USA_US-NY' },
+                  query: { type: 'loc', loc: 'USA_US-NY' }
                 }"
                 class="text-light"
-              >
-                New York
+              >New York
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -179,11 +192,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'USA_US-CA_06073' },
+                  query: { type: 'loc', loc: 'USA_US-CA_06073' }
                 }"
                 class="text-light"
-              >
-                San Diego
+              >San Diego
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -197,15 +210,16 @@
         <div class="radio-item-light text-light w-100 pt-2">
           <div class="radio-item fa-lg">
             <input
-              type="radio"
               id="comp"
-              value="comp"
               v-model="selectedReportType"
+              type="radio"
+              value="comp"
               @change="switchRadioBtn"
-            />
-            <label class="font-weight-bold" for="comp">
-              Lineage Comparison
-            </label>
+            >
+            <label
+              class="font-weight-bold"
+              for="comp"
+            >Lineage Comparison</label>
           </div>
         </div>
       </div>
@@ -213,6 +227,7 @@
 
     <!-- Lineage report component -->
     <SituationReportComponent
+      v-if="selectedReportType === 'var' && (pango || alias || muts)"
       :embedded="true"
       :loc="loc"
       :muts="muts"
@@ -221,14 +236,14 @@
       :xmin="xmin"
       :xmax="xmax"
       :selected="selected"
-      routeTo="GenomicsEmbedVariant"
-      v-if="selectedReportType == 'var' && (pango || alias || muts)"
+      route-to="GenomicsEmbedVariant"
     />
 
     <!-- Location report component -->
     <LocationReportComponent
       :embedded="true"
       :loc="loc"
+      v-if="selectedReportType === 'loc' && loc"
       :dark="dark"
       :muts="muts"
       :pango="pango"
@@ -237,15 +252,14 @@
       :xmin="xmin"
       :xmax="xmax"
       :selected="selected"
-      routeTo="GenomicsEmbedLocation"
-      v-if="selectedReportType == 'loc' && loc"
+      route-to="GenomicsEmbedLocation"
     />
 
     <!-- Lineage comparison component -->
     <LineageComparisonComponent
+      v-if="selectedReportType === 'comp'"
       :embedded="true"
-      routeTo="GenomicsEmbed"
-      v-if="selectedReportType == 'comp'"
+      route-to="GenomicsEmbed"
     />
 
     <footer class="bg-main__darker">
@@ -262,7 +276,7 @@
             height="30"
             class="d-inline-block align-top"
             alt="Outbreak.info"
-          />
+          >
           outbreak.info
         </a>
       </div>
@@ -273,38 +287,39 @@
 <script>
 // @ is an alias to /src
 
-import { findPangolin, findLocation } from '@/api/genomics.js';
+import { findPangolin, findLocation } from "@/api/genomics.js";
 
 // --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faAngleDoubleRight,
-  faSearch,
-} from '@fortawesome/free-solid-svg-icons';
+  faSearch
+} from "@fortawesome/free-solid-svg-icons";
+import isEqual from "lodash/isEqual";
 
 library.add(faAngleDoubleRight, faSearch);
 
-import isEqual from 'lodash/isEqual';
 
 export default {
   name: 'GenomicsEmbed',
   components: {
     TypeaheadSelect: () =>
-      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
+      import(/* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
     SituationReportComponent: () =>
       import(
-        /* webpackPrefetch: true */ '@/components/SituationReportComponent.vue'
+        /* webpackPrefetch: true */ "@/components/SituationReportComponent.vue"
       ),
     LocationReportComponent: () =>
       import(
-        /* webpackPrefetch: true */ '@/components/LocationReportComponent.vue'
+        /* webpackPrefetch: true */ "@/components/LocationReportComponent.vue"
       ),
     LineageComparisonComponent: () =>
       import(
-        /* webpackPrefetch: true */ '@/components/LineageComparisonComponent.vue'
+        /* webpackPrefetch: true */ "@/components/LineageComparisonComponent.vue"
       ),
-    FontAwesomeIcon,
+    FontAwesomeIcon
+
   },
   props: {
     type: String,
@@ -328,24 +343,31 @@ export default {
       selectedReportType: null,
     };
   },
+  computed: {},
   watch: {
-    '$route.query': function(newVal, oldVal) {
+    "$route.query": function(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this.selectedReportType = this.type ? this.type : 'var';
       }
-    },
+    }
   },
-  computed: {},
+  mounted() {
+    this.selectedReportType = this.type ? this.type : 'var';
+    this.queryPangolin = findPangolin;
+    this.queryLocation = findLocation;
+  },
   methods: {
     switchRadioBtn() {
-      const newSelected = this.selectedReportType == 'loc' ? [] : null;
+      const newSelected = this.selectedReportType === "loc" ? [] : null;
+
 
       this.$router.push({
         name: 'GenomicsEmbed',
         query: {
           type: this.selectedReportType,
-          selected: newSelected,
-        },
+          selected: newSelected
+        }
+
       });
     },
     updatePangolin(selected) {
@@ -371,16 +393,12 @@ export default {
       this.$router.push({
         name: 'GenomicsEmbed',
         query: {
-          type: 'loc',
-          loc: selected.id,
-        },
+          type: "loc",
+          loc: selected.id
+        }
       });
-    },
-  },
-  mounted() {
-    this.selectedReportType = this.type ? this.type : 'var';
-    this.queryPangolin = findPangolin;
-    this.queryLocation = findLocation;
+    }
+
   },
 };
 </script>

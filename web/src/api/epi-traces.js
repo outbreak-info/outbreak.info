@@ -1,9 +1,10 @@
-import { from, forkJoin, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, from } from 'rxjs';
 import axios from 'axios';
-import { finalize, catchError, pluck, map, mergeMap } from 'rxjs/operators';
-import { nest, timeParse, format, sum } from 'd3';
+import { catchError, finalize, map, mergeMap, pluck } from 'rxjs/operators';
+import { format, nest, sum, timeParse } from 'd3';
 
 import { getAll } from '@/api/biothings.js';
+import store from '@/store';
 
 export const epiDataSubject = new BehaviorSubject([]);
 export const epiDataState$ = epiDataSubject.asObservable();
@@ -14,9 +15,14 @@ export const epiTableSubject = new BehaviorSubject({
 });
 export const epiTableState$ = epiTableSubject.asObservable();
 
-import store from '@/store';
-
-export function getEpiData(apiUrl, locations, adminLevels, sort, page, size) {
+export const getEpiData = (
+  apiUrl,
+  locations,
+  adminLevels,
+  sort,
+  page,
+  size,
+) => {
   store.state.admin.loading = true;
 
   return forkJoin([
@@ -30,12 +36,12 @@ export function getEpiData(apiUrl, locations, adminLevels, sort, page, size) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};
 
-export function getWorldDailyCases(
+export const getWorldDailyCases = (
   apiUrl,
   fields = 'wb_region,confirmed_numIncrease, confirmed_rolling, date, dead_numIncrease, dead_rolling',
-) {
+) => {
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
 
@@ -99,13 +105,13 @@ export function getWorldDailyCases(
       };
     }),
   );
-}
+};
 
-export function getEpiTraces(
+export const getEpiTraces = (
   apiUrl,
   locations,
   fields = 'location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,dead_doublingRate,confirmed_doublingRate,mostRecent,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k,sub_parts',
-) {
+) => {
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
   const locationString = `("${locations.join('" OR "')}")`;
@@ -151,9 +157,16 @@ export function getEpiTraces(
     }),
     // finalize(() => (store.state.admin.loading = false))
   );
-}
+};
 
-export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
+export const getEpiTable = (
+  apiUrl,
+  locations,
+  adminLevels,
+  sort,
+  size,
+  page,
+) => {
   store.state.admin.loading = true;
   return getTableData(apiUrl, locations, adminLevels, sort, size, page).pipe(
     mergeMap((tableData) =>
@@ -191,11 +204,18 @@ export function getEpiTable(apiUrl, locations, adminLevels, sort, size, page) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};
 
-export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
+export const getTableData = (
+  apiUrl,
+  locations,
+  adminLevels,
+  sort,
+  size,
+  page,
+) => {
   const parseDate = timeParse('%Y-%m-%d');
-  var queryString = locations
+  let queryString = locations
     ? `location_id:("${locations.join('" OR "')}")  AND mostRecent:true`
     : 'mostRecent:true';
 
@@ -267,13 +287,13 @@ export function getTableData(apiUrl, locations, adminLevels, sort, size, page) {
     }),
     // finalize(() => (store.state.admin.loading = false))
   );
-}
+};
 
-export function getSparklineTraces(
+export const getSparklineTraces = (
   apiUrl,
   locations,
   variableString = 'confirmed,recovered,dead',
-) {
+) => {
   if (locations) {
     const parseDate = timeParse('%Y-%m-%d');
     const queryString = `location_id:("${locations.join('" OR "')}")`;
@@ -291,13 +311,11 @@ export function getSparklineTraces(
         });
 
         results.sort((a, b) => a.date - b.date);
-
-        const nested = nest()
+        return nest()
           .key((d) => d.location_id)
           .rollup((values) => values)
-          .entries(results);
 
-        return nested;
+          .entries(results);
       }),
       catchError((e) => {
         console.log('%c Error in getting sparklines!', 'color: red');
@@ -309,9 +327,9 @@ export function getSparklineTraces(
   } else {
     return from([]);
   }
-}
+};
 
-const formatPercent = function(pct) {
+const formatPercent = (pct) => {
   if (!pct) {
     return 'none';
   }

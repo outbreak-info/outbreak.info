@@ -73,7 +73,8 @@
                   :style="{
                     visibility: region.display ? 'visible' : 'hidden',
                     left: region.x + 'px',
-                    top: region.y + 'px',
+                    top: region.y + 'px'
+
                   }"
                 >
                   <div>
@@ -94,7 +95,8 @@
                   :variable="selectedVariable"
                   :id="idx"
                   :style="{
-                    visibility: region.displayMore ? 'visible' : 'hidden',
+                    visibility: region.displayMore ? 'visible' : 'hidden'
+
                   }"
                   @regionSelected="handleTooltip"
                   class="tooltip-countries-detailed"
@@ -213,22 +215,24 @@
 
 <script>
 // @ is an alias to /src
-import EpiStacked from '@/components/EpiStacked.vue';
-import CountryBarGraph from '@/components/CountryBarGraph.vue';
-import DataSource from '@/components/DataSource.vue';
-import Bargraph from '@/components/Bargraph.vue';
-import { getStackedRegions } from '@/api/region-summary.js';
+import EpiStacked from "@/components/EpiStacked.vue";
+import CountryBarGraph from "@/components/CountryBarGraph.vue";
+import DataSource from "@/components/DataSource.vue";
+import Bargraph from "@/components/Bargraph.vue";
+import { getStackedRegions } from "@/api/region-summary.js";
 
-import { getWorldDailyCases } from '@/api/epi-traces.js';
+import { getWorldDailyCases } from "@/api/epi-traces.js";
 
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
+
 
 import store from '@/store';
 
 // --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 
 library.add(faSpinner);
 
@@ -261,17 +265,17 @@ export default {
       },
       totalOptions: [
         {
-          label: 'cases',
-          ttip: 'new cases',
-          value: 'confirmed_numIncrease',
-          sources: ['NYT', 'JHU'],
+          label: "cases",
+          ttip: "new cases",
+          value: "confirmed_numIncrease",
+          sources: ["NYT", "JHU"]
         },
         {
-          label: 'deaths',
-          ttip: 'new deaths',
-          value: 'dead_numIncrease',
-          sources: ['NYT', 'JHU'],
-        },
+          label: "deaths",
+          ttip: "new deaths",
+          value: "dead_numIncrease",
+          sources: ["NYT", "JHU"]
+        }
       ],
       variableOptions: [
         {
@@ -295,9 +299,10 @@ export default {
     ...mapState('geo', ['regionDict']),
     selectedVariableLabel() {
       return this.variableOptions.filter(
-        (d) => d.value == this.selectedVariable,
-      )[0]['label'];
-    },
+        d => d.value === this.selectedVariable
+      )[0]["label"];
+    }
+
   },
   methods: {
     changeVariable() {
@@ -345,7 +350,8 @@ export default {
       } else {
         this.bargraphTransform = 1;
       }
-    },
+    }
+
   },
   mounted() {
     this.dataSubscription = getStackedRegions(this.$apiurl).subscribe((d) => {

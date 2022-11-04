@@ -1,5 +1,6 @@
 import { from, forkJoin } from 'rxjs';
 import axios from 'axios';
+
 import {
   // finalize,
   catchError,
@@ -14,23 +15,25 @@ import { timeParse, timeFormat, format } from 'd3';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-function filterString2Arr(filterString) {
+const filterString2Arr = (filterString) => {
   return filterString.split(';').map((d) => {
     const filters = d.split(':');
+
     return {
       key: filters[0],
       values: filters[1].split(','),
     };
   });
-}
+};
 
-function filterArr2String(filterArr) {
+const filterArr2String = (filterArr) => {
   return filterArr
+
     .map((d) => `${d.key}:("${d.values.join('" OR "')}")`)
     .join(' AND ');
-}
+};
 
-export function getResources(
+export const getResources = (
   apiUrl,
   queryString,
   filterString,
@@ -38,13 +41,14 @@ export function getResources(
   size,
   page,
   dateMin,
+
   dateMax,
-) {
-  var comboString;
-  var filterArr = [];
+) => {
+  let comboString;
+  let filterArr = [];
 
   // create date range query
-  var dateString;
+  let dateString;
   if (dateMin && dateMax) {
     dateString = `date:[${dateMin} TO ${dateMax}]`;
   } else if (dateMin) {
@@ -91,11 +95,13 @@ export function getResources(
         all['filtered'] = cloneDeep(all.counts);
         all.filtered.map((obj) => {
           const current = currentFacets.find((curr) => curr.id === all.id);
-          var newval = current['counts'].find((item) => obj.term === item.term);
+          let newval = current['counts'].find((item) => obj.term === item.term);
+
           newval = newval
             ? newval
             : {
                 term: obj.term,
+
                 count: 0,
               };
           Object.assign(obj, newval);
@@ -107,8 +113,9 @@ export function getResources(
         return all;
       });
 
-      const dateIdx = facets.findIndex((d) => d.variable == 'date');
-      var dates = [];
+      const dateIdx = facets.findIndex((d) => d.variable === 'date');
+      let dates = [];
+
       if (dateIdx >= 0) {
         dates = facets.splice(dateIdx, dateIdx);
       }
@@ -126,9 +133,9 @@ export function getResources(
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};
 
-export function getMetadataArray(apiUrl, queryString, sort, size, page) {
+export const getMetadataArray = (apiUrl, queryString, sort, size, page) => {
   const maxDescriptionLength = 75;
 
   return from(
@@ -172,9 +179,9 @@ export function getMetadataArray(apiUrl, queryString, sort, size, page) {
     }),
     // finalize(() => (store.state.admin.loading = false))
   );
-}
+};
 
-export function getResourceMetadata(apiUrl, id) {
+export const getResourceMetadata = (apiUrl, id) => {
   store.state.admin.loading = true;
   const query = `_id:"${id}"`;
 
@@ -203,9 +210,9 @@ export function getResourceMetadata(apiUrl, id) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};
 
-export function getResourceFacets(
+export const getResourceFacets = (
   apiUrl,
   queryString,
   filterArr,
@@ -217,11 +224,12 @@ export function getResourceFacets(
     'topicCategory',
     'interventions.name',
     // "sponsor.name",
+
     'funding.funder.name',
     'measurementTechnique',
     'variableMeasured',
   ],
-) {
+) => {
   if (!queryString) {
     queryString = '__all__';
   }
@@ -255,14 +263,14 @@ export function getResourceFacets(
       const facets = Object.keys(results).map((key) => {
         // turn on check boxes for filters that have been selected.
         const filters = filterArr.filter(
-          (d) => d.key == key.replace('.keyword', ''),
+          (d) => d.key === key.replace('.keyword', ''),
         );
         results[key]['terms'].forEach((d) => {
           d['checked'] =
-            filters.length == 1 ? filters[0].values.includes(d.term) : false;
+            filters.length === 1 ? filters[0].values.includes(d.term) : false;
 
           // convert dates from strings to dates
-          if (key == 'date') {
+          if (key === 'date') {
             d['date'] = timeParse('%Y-%m-%dT00:00:00.000Z')(d['term']);
           }
         });
@@ -299,20 +307,21 @@ export function getResourceFacets(
       return from([]);
     }),
   );
-}
+};
 
-export function getMostRecent(
+export const getMostRecent = (
   apiUrl,
   queryString,
   filterString,
   sortVar = '-date',
   num2Return = 3,
+
   fields = ['@type', 'name', 'author', 'creator', 'date'],
-) {
+) => {
   const today = new Date();
   const fieldString = fields.join(',');
 
-  if (queryString != '__all__') {
+  if (queryString !== '__all__') {
     queryString = queryString
       ? filterString
         ? `(${queryString}) AND ${filterString}`
@@ -342,13 +351,19 @@ export function getMostRecent(
       return from([]);
     }),
   );
-}
+};
 
-export function getMostRecentGroup(apiUrl, queryString, sortVar, num2Return) {
+export const getMostRecentGroup = (
+  apiUrl,
+  queryString,
+  sortVar,
+  num2Return,
+) => {
   return forkJoin([
     getMostRecent(
       apiUrl,
       queryString,
+
       '@type:Publication',
       sortVar,
       num2Return,
@@ -368,13 +383,14 @@ export function getMostRecentGroup(apiUrl, queryString, sortVar, num2Return) {
         Publication: pubs,
         Dataset: datasets,
         ClinicalTrial: trials,
+
         Protocol: protocols,
       };
     }),
   );
-}
+};
 
-export function getQuerySummaries(queries, apiUrl) {
+export const getQuerySummaries = (queries, apiUrl) => {
   queries.forEach((d) => {
     d['query'] = encodeURIComponent(`("${d.terms.join('" OR "')}")`);
   });
@@ -391,14 +407,14 @@ export function getQuerySummaries(queries, apiUrl) {
       return results;
     }),
   );
-}
+};
 
-export function getQuerySummary(
+export const getQuerySummary = (
   queryString,
   apiUrl,
   fields = '@type,name,identifierSource,interventions,studyStatus,armGroup,studyLocation,studyDesign,date,journalName, journalNameAbbrev, author,keywords',
   facets = '@type, curatedBy.name,date',
-) {
+) => {
   return from(
     axios.get(
       // `${apiUrl}query?q=name:${queryString} OR description:${queryString}&size=100&fields=${fields}&facets=${facets}&facet_size=100`, {
@@ -414,7 +430,9 @@ export function getQuerySummary(
     map((results) => {
       results['types'] = results['facets']['@type']['terms'];
 
-      const dateParse = timeParse('%Y-%m-%dT00:00:00.000Z');
+      results['facets']['date']['terms'].forEach((d) => {
+        d['date'] = dateParse(d.term);
+      });
 
       results['facets']['date']['terms'].forEach((d) => {
         d['date'] = dateParse(d.term);
@@ -423,9 +441,9 @@ export function getQuerySummary(
       return results;
     }),
   );
-}
+};
 
-export function getCTSummary(apiUrl) {
+export const getCTSummary = (apiUrl) => {
   return from(
     axios.get(
       `${apiUrl}query?q=name:%22hydroxychloroquine%22%20OR%20description:%22hydroxychloroquine%22&fields=armGroup.name,armGroup.intervention,dateCreated,%20studyStatus&size=1000`,
@@ -441,9 +459,9 @@ export function getCTSummary(apiUrl) {
       return results;
     }),
   );
-}
+};
 
-export function getSourceSummary(apiUrl, query) {
+export const getSourceSummary = (apiUrl, query) => {
   return forkJoin([
     getSourceCounts(apiUrl, query),
     getResourcesMetadata(apiUrl),
@@ -453,9 +471,9 @@ export function getSourceSummary(apiUrl, query) {
       return results;
     }),
   );
-}
+};
 
-export function getResourceTotal(apiUrl) {
+export const getResourceTotal = (apiUrl) => {
   return from(
     axios.get(`${apiUrl}query?size=0`, {
       headers: {
@@ -472,9 +490,9 @@ export function getResourceTotal(apiUrl) {
       };
     }),
   );
-}
+};
 
-export function getSourceCounts(apiUrl, queryString) {
+export const getSourceCounts = (apiUrl, queryString) => {
   return from(
     axios.get(
       `${apiUrl}query?q=${queryString}&aggs=@type(curatedBy.name)&facet_size=100`,
@@ -511,6 +529,7 @@ export function getSourceCounts(apiUrl, queryString) {
         }
 
         source['children'] = d['curatedBy.name']['terms'];
+
         return source;
       });
       return {
@@ -522,10 +541,11 @@ export function getSourceCounts(apiUrl, queryString) {
       };
     }),
   );
-}
+};
 
-export function getResourcesMetadata(apiUrl) {
+export const getResourcesMetadata = (apiUrl) => {
   const formatDate = timeFormat('%d %B %Y');
+
   return from(axios.get(`${apiUrl}metadata`)).pipe(
     pluck('data', 'build_date'),
     map((metadata) => {
@@ -538,9 +558,9 @@ export function getResourcesMetadata(apiUrl) {
       }
     }),
   );
-}
+};
 
-export function getCTPublications(apiUrl, id) {
+export const getCTPublications = (apiUrl, id) => {
   return from(
     axios.get(`${apiUrl}query?q=${id} AND @type:Publication`, {
       headers: {
@@ -558,4 +578,4 @@ export function getCTPublications(apiUrl, id) {
       return from([]);
     }),
   );
-}
+};

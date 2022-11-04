@@ -7,7 +7,7 @@ import { getAll } from '@/api/biothings.js';
 
 import store from '@/store';
 
-export function getStackedRegions(apiUrl) {
+export const getStackedRegions = apiUrl => {
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
 
@@ -78,8 +78,9 @@ export function getStackedRegions(apiUrl) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
-export function getCountryData(apiUrl, region, variable) {
+};
+
+export const getCountryData = (apiUrl, region, variable) => {
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
 
@@ -135,4 +136,4 @@ export function getCountryData(apiUrl, region, variable) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};

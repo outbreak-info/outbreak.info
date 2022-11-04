@@ -4,43 +4,42 @@ const prefix = {
   svg: 'http://www.w3.org/2000/svg',
 };
 
-var canvas = document.createElement('canvas'),
+const canvas = document.createElement('canvas'),
   context = canvas.getContext('2d'),
   ratio = global.devicePixelRatio || 1;
 
-import { selectAll, select, max, sum, nest } from 'd3';
+import { max, nest, select, selectAll } from 'd3';
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
-export function getSvg(figureRef, sources, date, darkBg) {
+export const getSvg = (figureRef, sources, date, darkBg) => {
   // make sure no tooltips are active
   selectAll('path').style('opacity', 1);
   // selectAll("rect").style("opacity", 1);
   selectAll('text').style('opacity', 1);
 
   const refs = document.getElementsByClassName(figureRef);
-  var emptySvg = window.document.createElementNS(prefix.svg, 'svg');
+  const emptySvg = window.document.createElementNS(prefix.svg, 'svg');
   window.document.body.appendChild(emptySvg);
-  var emptySvgDeclarationComputed = getComputedStyle(emptySvg);
+  const emptySvgDeclarationComputed = getComputedStyle(emptySvg);
 
-  const svgObject = getSvgSources(
+  return getSvgSources(
     refs,
     emptySvgDeclarationComputed,
     sources,
     date,
     darkBg,
   );
-  return svgObject;
-}
+};
 
-function getSvgSources(
+const getSvgSources = (
   svgs,
   emptySvgDeclarationComputed,
   sources,
   date,
   darkBg,
-) {
-  var svgInfo = [];
-  var doctype =
+) => {
+  const svgInfo = [];
+  const doctype =
     '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
   // apparently nodes, while array-like, don't have a `forEach` property attached to them... hence this syntax
@@ -63,8 +62,8 @@ function getSvgSources(
     // necessary to nest styles inline
     setInlineStyles(svg, emptySvgDeclarationComputed);
 
-    var source = new XMLSerializer().serializeToString(svg);
-    var rect = svg.getBoundingClientRect();
+    const source = new XMLSerializer().serializeToString(svg);
+    const rect = svg.getBoundingClientRect();
 
     const title = svg.getAttribute('name');
     const subtitle = svg.getAttribute('subtitle');
@@ -101,9 +100,9 @@ function getSvgSources(
     });
   });
   return svgInfo;
-}
+};
 
-function getHeader(width, height, title, marginL = 5, darkBg = false) {
+const getHeader = (width, height, title, marginL = 5, darkBg = false) => {
   if (!title) {
     title = '';
   }
@@ -121,9 +120,9 @@ function getHeader(width, height, title, marginL = 5, darkBg = false) {
     .replace('&ge;', '\u2265')
     .replace('&', 'and')}</text>
   </svg>`;
-}
+};
 
-function getFooter(width, height, sources, date, footerHeight) {
+const getFooter = (width, height, sources, date, footerHeight) => {
   const fontSize = footerHeight * 0.225;
   const outbreakFontSize = fontSize * 1.5;
   const logoWidth = footerHeight * 0.7;
@@ -132,7 +131,7 @@ function getFooter(width, height, sources, date, footerHeight) {
     y: 30,
   };
   // lazy way to wrap
-  var sourceString;
+  let sourceString;
   if (width > 700) {
     sourceString = `<text x="0" y="0" style="dominant-baseline: middle;font-size: ${fontSize}px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">Source: ${sources}</text>`;
   } else {
@@ -141,6 +140,7 @@ function getFooter(width, height, sources, date, footerHeight) {
     sourceString = `<text x="0" y="0" style="dominant-baseline: middle;font-size: ${fontSize}px;fill: #6c757d;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">
     <tspan x="0" dy="0">Source: ${sourceArr.slice(0, half).join(' ')}</tspan>
     <tspan x="0" dy="1.1em" >${sourceArr.slice(half).join(' ')}</tspan>
+
     </text>`;
   }
 
@@ -207,16 +207,18 @@ function getFooter(width, height, sources, date, footerHeight) {
         <g id="sources" transform="translate(${logoWidth +
           margin.x / 2},${outbreakFontSize + margin.y})">
           ${sourceString}
+
         </g>
       </g>
     </svg>`;
-}
+};
 
 function setInlineStyles(svg, emptySvgDeclarationComputed) {
   function explicitlySetStyle(element) {
-    var cSSStyleDeclarationComputed = getComputedStyle(element);
-    var i, len, key, value;
-    var computedStyleStr = '';
+    const cSSStyleDeclarationComputed = getComputedStyle(element);
+    let i, len, key, value;
+    let computedStyleStr = '';
+
     for (i = 0, len = cSSStyleDeclarationComputed.length; i < len; i++) {
       key = cSSStyleDeclarationComputed[i];
       value = cSSStyleDeclarationComputed.getPropertyValue(key);
@@ -228,15 +230,15 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
   }
 
   function traverse(obj) {
-    var tree = [];
+    const tree = [];
     tree.push(obj);
     visit(obj);
 
     function visit(node) {
       if (node && node.hasChildNodes()) {
-        var child = node.firstChild;
+        let child = node.firstChild;
         while (child) {
-          if (child.nodeType === 1 && child.nodeName != 'SCRIPT') {
+          if (child.nodeType === 1 && child.nodeName !== 'SCRIPT') {
             tree.push(child);
             visit(child);
           }
@@ -244,11 +246,13 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
         }
       }
     }
+
     return tree;
   }
+
   // hardcode computed css styles inside svg
-  var allElements = traverse(svg);
-  var i = allElements.length;
+  const allElements = traverse(svg);
+  let i = allElements.length;
   while (i--) {
     explicitlySetStyle(allElements[i]);
   }
@@ -256,7 +260,7 @@ function setInlineStyles(svg, emptySvgDeclarationComputed) {
 
 // based on https://github.com/mbostock/svjimmy/blob/master/index.js
 // Thanks, Mike.
-export function getPng(
+export const getPng = (
   selector,
   sources,
   date,
@@ -264,7 +268,7 @@ export function getPng(
   darkBg = false,
   download = false,
   filename = 'outbreakinfo_visualization.png',
-) {
+) => {
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
   // make sure no tooltips are active
@@ -278,7 +282,7 @@ export function getPng(
     const headerFraction = 0.05;
     const subheaderFraction = headerFraction;
 
-    var document = global.document,
+    const document = global.document,
       body = document.body,
       forEach = Array.prototype.forEach,
       styles = document.querySelectorAll('style');
@@ -296,15 +300,15 @@ export function getPng(
       numAcross = 1;
     }
 
-    var canvasWidth = 0;
-    var canvasHeight = 0;
-    var dims = [];
-    var colCounter = 0;
-    var rowCounter = 0;
-    var header;
-    var headerHeight;
-    var subheader;
-    var footer;
+    let canvasWidth = 0;
+    let canvasHeight = 0;
+    const dims = [];
+    const colCounter = 0;
+    let rowCounter = 0;
+    let header;
+    let headerHeight;
+    let subheader;
+    let footer;
 
     forEach.call(svgs, function(svg, i) {
       if (svg.namespaceURI !== 'http://www.w3.org/2000/svg') return; // Not really an SVG.
@@ -314,6 +318,7 @@ export function getPng(
       if (
         !select(svg)
           .selectAll('style')
+
           .nodes().length
       ) {
         forEach.call(styles, function(style) {
@@ -321,7 +326,7 @@ export function getPng(
         });
       }
 
-      var title = svg.getAttribute('name'),
+      const title = svg.getAttribute('name'),
         subtitle = svg.getAttribute('subtitle'),
         rect = svg.getBoundingClientRect(),
         width = rect.width * ratio,
@@ -407,7 +412,7 @@ export function getPng(
       });
 
       // Add the footer
-      if (i == numSvgs - 1) {
+      if (i === numSvgs - 1) {
         // canvas width = max of the cols, summed.
         canvasWidth = nest()
           .key((d) => d.colI)
@@ -452,27 +457,27 @@ export function getPng(
       // console.log(dims)
 
       // Can't append new SVG objects to the DOM, b/c then they would appear on the page
-      var source = new XMLSerializer().serializeToString(svg);
+      const source = new XMLSerializer().serializeToString(svg);
 
-      var imageUrl = URL.createObjectURL(
+      let imageUrl = URL.createObjectURL(
         new Blob([source], {
           type: 'image/svg+xml',
         }),
       );
 
-      var headerUrl = URL.createObjectURL(
+      let headerUrl = URL.createObjectURL(
         new Blob([header], {
           type: 'image/svg+xml',
         }),
       );
 
-      var subheaderUrl = URL.createObjectURL(
+      let subheaderUrl = URL.createObjectURL(
         new Blob([subheader], {
           type: 'image/svg+xml',
         }),
       );
 
-      var footerUrl = URL.createObjectURL(
+      let footerUrl = URL.createObjectURL(
         new Blob([footer], {
           type: 'image/svg+xml',
         }),
@@ -482,6 +487,7 @@ export function getPng(
         setTimeout(function() {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
           const imageDims = dims.filter((d) => d.imageI === i);
+
           context.drawImage(
             image,
             imageDims[0].dx,
@@ -491,7 +497,7 @@ export function getPng(
           ); // everything else
 
           const subheaderDims = dims.filter(
-            (d) => d.role == 'subhead' && d.imageI === i,
+            (d) => d.role === 'subhead' && d.imageI === i,
           );
           if (subheaderDims.length === 1) {
             context.drawImage(
@@ -506,13 +512,15 @@ export function getPng(
           // only draw the footer on the last image
           if (i === numSvgs - 1) {
             // add headers
-            const headerDims = dims.filter((d) => d.role == 'header');
+            const headerDims = dims.filter((d) => d.role === 'header');
+
             context.drawImage(imageHeader, 0, 0, canvasWidth, headerDims[0].h);
             context.drawImage(
               imageFooter,
               0,
               canvasHeight - footerHeight - spacer,
               canvasWidth,
+
               footerHeight * ratio,
             );
           }
@@ -524,7 +532,7 @@ export function getPng(
               footerUrl = URL.revokeObjectURL(footerUrl);
 
               canvas.toBlob(function(blob) {
-                var a = document.createElement('a'),
+                let a = document.createElement('a'),
                   aUrl = URL.createObjectURL(blob);
                 a.download = filename;
                 a.href = aUrl;
@@ -549,7 +557,7 @@ export function getPng(
                 if (i === numSvgs - 1) {
                   // console.log("copied")
                   canvas.toBlob((blob) => {
-                    var data = [
+                    const data = [
                       new ClipboardItem({
                         'image/png': blob,
                       }),
@@ -596,4 +604,4 @@ export function getPng(
       imageFooter.src = footerUrl;
     });
   });
-}
+};

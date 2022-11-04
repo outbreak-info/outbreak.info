@@ -1,18 +1,20 @@
-import { from } from 'rxjs';
-import axios from 'axios';
-import { finalize, catchError, pluck, map } from 'rxjs/operators';
-import { nest, timeParse } from 'd3';
-import { linearRegression } from 'datalib';
-import store from '@/store';
+import { from } from "rxjs";
+import axios from "axios";
+import { finalize, catchError, pluck, map } from "rxjs/operators";
+import { nest, timeParse } from "d3";
+import { linearRegression } from "datalib";
+import store from "@/store";
+
 
 import { getAll } from '@/api/biothings.js';
 
-export function getDoubling(
+export const getDoubling = (
   apiUrl,
   location_id,
-  variable = 'confirmed',
-  fitLength = 5,
-) {
+  variable = "confirmed",
+  fitLength = 5
+) => {
+
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
 
@@ -62,9 +64,9 @@ export function getDoubling(
     // finalize(() => (store.state.admin.loading = false))
   );
   // axios.get(apiUrl, { query: {admin0: location  } }).then(d => {console.log(d )})
-}
+};
 
-export function fitExponential(data, minIdx, maxIdx, maxDate) {
+export const fitExponential = (data, minIdx, maxIdx, maxDate) => {
   data.sort((a, b) => a.date - b.date);
 
   data.forEach((d, i) => {
@@ -125,9 +127,9 @@ export function fitExponential(data, minIdx, maxIdx, maxDate) {
     y1: null,
     y2: null,
   };
-}
+};
 
-export function getAllDoubling(apiUrl, variable, fitLength = 5) {
+export const getAllDoubling = (apiUrl, variable, fitLength = 5) => {
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
   const url = `${apiUrl}query?q=__all__&size=1000&fields=location_id,name,admin0,admin1,date,${variable}`;
@@ -178,4 +180,4 @@ export function getAllDoubling(apiUrl, variable, fitLength = 5) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};

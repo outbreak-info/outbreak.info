@@ -1,22 +1,22 @@
-import { from, forkJoin } from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 
 import axios from 'axios';
-import { catchError, pluck, map } from 'rxjs/operators';
-import { timeParse, scaleQuantile, range, format } from 'd3';
+import { catchError, map, pluck } from 'rxjs/operators';
+import { format, range, scaleQuantile, timeParse } from 'd3';
 
 import { interpolateRdYlBu } from 'd3-scale-chromatic';
 
 import { getAll } from '@/api/biothings.js';
 import store from '@/store';
 
-export function getComparisonData(
+export const getComparisonData = (
   apiUrl,
   location,
   adminLevel,
   variable,
   variableLabel,
   date,
-) {
+) => {
   store.state.admin.dataloading = true;
 
   const queryString = location
@@ -59,18 +59,19 @@ export function getComparisonData(
       return from([]);
     }),
   );
-}
+};
 
-function getContextMaps(apiUrl, location, adminLevel) {
-  var queries = [];
+const getContextMaps = (apiUrl, location, adminLevel) => {
+  const queries = [];
+
   queries.push(getBlankMap(apiUrl, location, adminLevel));
   if (adminLevel !== '0' && adminLevel !== '1') {
     queries.push(getBlankMap(apiUrl, location, '1'));
   }
   return forkJoin(queries);
-}
+};
 
-function getBlankMap(apiUrl, location, adminLevel) {
+const getBlankMap = (apiUrl, location, adminLevel) => {
   const qString = location
     ? `mostRecent:true AND admin_level:"${adminLevel}" AND ${location}`
     : `mostRecent:true AND admin_level:"${adminLevel}"`;
@@ -98,10 +99,11 @@ function getBlankMap(apiUrl, location, adminLevel) {
       return from([]);
     }),
   );
-}
+};
 
-function getCurrentDate(apiUrl) {
+const getCurrentDate = (apiUrl) => {
   const parseDate = timeParse('%Y-%m-%d');
+
   return from(
     axios.get(
       `${apiUrl}query?q=mostRecent:true&size=1&sort=-date&fields="date"`,
@@ -109,8 +111,7 @@ function getCurrentDate(apiUrl) {
   ).pipe(
     pluck('data', 'hits'),
     map((results) => {
-      const today = parseDate(results[0].date);
-      return today;
+      return parseDate(results[0].date);
     }),
     catchError((e) => {
       console.log('%c Error in getting current date!', 'color: red');
@@ -118,9 +119,9 @@ function getCurrentDate(apiUrl) {
       return from([]);
     }),
   );
-}
+};
 
-export function getJenksBreaks(apiUrl, queryString, variable) {
+export const getJenksBreaks = (apiUrl, queryString, variable) => {
   const qString = `${queryString} AND mostRecent:true&fields=${variable}_breaks`;
   return from(axios.get(`${apiUrl}query?q=${qString}&size=1`)).pipe(
     pluck('data', 'hits'),
@@ -129,12 +130,13 @@ export function getJenksBreaks(apiUrl, queryString, variable) {
       // Breaks calculated in R, and centered around 0.
       const numColors = domain.length - 1;
       // color range
-      var colorRange;
+      let colorRange;
       // DIVERGING
       if (variable.includes('diff')) {
         // calculate colors
         colorRange = range(0, 1.01, 1 / (numColors - 1))
           .map((d) => interpolateRdYlBu(d))
+
           .reverse();
       } else {
         // SEQUENTIAL
@@ -158,9 +160,9 @@ export function getJenksBreaks(apiUrl, queryString, variable) {
       return from([]);
     }),
   );
-}
+};
 
-export function getCurrentData(apiUrl, queryString, variable, date) {
+export const getCurrentData = (apiUrl, queryString, variable, date) => {
   const parseDate = timeParse('%Y-%m-%d');
 
   const fields = 'date,location_id,name,admin1,iso3,geometry,' + variable;
@@ -187,4 +189,4 @@ export function getCurrentData(apiUrl, queryString, variable, date) {
       return from([]);
     }),
   );
-}
+};

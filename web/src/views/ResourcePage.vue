@@ -41,12 +41,15 @@
             v-if="data.publicationType && data.publicationType[0]"
           >
             <template v-if="Array.isArray(data.publicationType)">
-              <span v-for="(pub, idx) in data.publicationType" :key="idx">
-                {{ pub }}
-                <span v-if="idx < data.publicationType.length - 1" class="mx-2">
-                  &bull;
-                </span>
-              </span>
+              <span v-for="(pub, idx) in data.publicationType" :key="idx"
+                >{{ pub
+                }}<span
+                  v-if="idx < data.publicationType.length - 1"
+                  class="mx-2"
+                  >&bull;</span
+                ></span
+              >
+
             </template>
             <template v-else>{{ data.publicationType }}</template>
           </span>
@@ -103,36 +106,38 @@
                       <template v-if="Array.isArray(funding.funder)">
                         <div v-for="(funder, idx) in funding.funder" :key="idx">
                           <b v-if="funder.name">{{ funder.name }}</b>
-                          <span v-if="funder.name && funding.identifier">
-                            :&nbsp;
-                          </span>
-                          <span v-if="funding.identifier">
-                            {{ funding.identifier }}
-                          </span>
-                          <span v-if="funder.role">({{ funder.role }})</span>
+                          <span v-if="funder.name && funding.identifier"
+                            >:&nbsp;</span
+                          >
+                          <span v-if="funding.identifier">{{
+                            funding.identifier
+                          }}</span>
+                          <span v-if="funder.role"> ({{ funder.role }})</span>
+
                         </div>
                       </template>
 
                       <template v-else>
                         <div class="m-0">
-                          <b v-if="funding.funder && funding.funder.name">
-                            {{ funding.funder.name }}
-                          </b>
+                          <b v-if="funding.funder && funding.funder.name">{{
+                            funding.funder.name
+                          }}</b>
+
                           <span
                             v-if="
                               funding.funder &&
                                 funding.funder.name &&
                                 funding.identifier
                             "
+                            >:&nbsp;</span
                           >
-                            :&nbsp;
-                          </span>
-                          <span v-if="funding.identifier">
-                            {{ funding.identifier }}
-                          </span>
+                          <span v-if="funding.identifier">{{
+                            funding.identifier
+                          }}</span>
                           <span v-if="funding.funder && funding.funder.role">
-                            ({{ funding.funder.role }})
-                          </span>
+                            ({{ funding.funder.role }})</span
+                          >
+
                         </div>
                       </template>
                       <div v-if="funding.description" class="line-height-1">
@@ -148,13 +153,14 @@
                           :key="idx"
                         >
                           <b v-if="funder.name">{{ funder.name }}</b>
-                          <span v-if="funder.name && data.funding.identifier">
-                            :&nbsp;
-                          </span>
-                          <span v-if="data.funding.identifier">
-                            {{ data.funding.identifier }}
-                          </span>
-                          <span v-if="funder.role">({{ funder.role }})</span>
+                          <span v-if="funder.name && data.funding.identifier"
+                            >:&nbsp;</span
+                          >
+                          <span v-if="data.funding.identifier">{{
+                            data.funding.identifier
+                          }}</span>
+                          <span v-if="funder.role"> ({{ funder.role }})</span>
+
                         </div>
                       </template>
 
@@ -164,28 +170,29 @@
                             v-if="
                               data.funding.funder && data.funding.funder.name
                             "
+                            >{{ data.funding.funder.name }}</b
                           >
-                            {{ data.funding.funder.name }}
-                          </b>
+
                           <span
                             v-if="
                               data.funding.funder &&
                                 data.funding.funder.name &&
                                 data.funding.identifier
                             "
+                            >:&nbsp;</span
                           >
-                            :&nbsp;
-                          </span>
-                          <span v-if="data.funding.identifier">
-                            {{ data.funding.identifier }}
-                          </span>
+                          <span v-if="data.funding.identifier">{{
+                            data.funding.identifier
+                          }}</span>
+
                           <span
                             v-if="
                               data.funding.funder && data.funding.funder.role
                             "
                           >
-                            ({{ data.funding.funder.role }})
-                          </span>
+                            ({{ data.funding.funder.role }})</span
+                          >
+
                         </div>
                       </template>
                       <div
@@ -207,13 +214,14 @@
                       class="mb-3"
                     >
                       <b v-if="funder.name">{{ funder.name }}</b>
-                      <span v-if="funder.name && funder.identifier">
-                        :&nbsp;
-                      </span>
-                      <span v-if="funder.identifier">
-                        {{ funder.identifier }}
-                      </span>
-                      <span v-if="funder.role">({{ funder.role }})</span>
+                      <span v-if="funder.name && funder.identifier"
+                        >:&nbsp;</span
+                      >
+                      <span v-if="funder.identifier">{{
+                        funder.identifier
+                      }}</span>
+                      <span v-if="funder.role"> ({{ funder.role }})</span>
+
                     </li>
                   </ul>
                 </template>
@@ -222,13 +230,14 @@
                   <ul>
                     <li>
                       <b v-if="funder.name">{{ funder.name }}</b>
-                      <span v-if="funder.name && funder.identifier">
-                        :&nbsp;
-                      </span>
-                      <span v-if="funder.identifier">
-                        {{ funder.identifier }}
-                      </span>
-                      <span v-if="funder.role">({{ funder.role }})</span>
+                      <span v-if="funder.name && funder.identifier"
+                        >:&nbsp;</span
+                      >
+                      <span v-if="funder.identifier">{{
+                        funder.identifier
+                      }}</span>
+                      <span v-if="funder.role"> ({{ funder.role }})</span>
+
                     </li>
                   </ul>
                 </template>
@@ -255,7 +264,8 @@
                   <router-link
                     :to="{
                       name: 'Resource Page',
-                      params: { id: item.identifier },
+                      params: { id: item.identifier }
+
                     }"
                     class="btn btn-sec ml-3 mb-3"
                   >
@@ -290,8 +300,8 @@
                 v-if="data.license.startsWith('http')"
                 :href="data.license"
                 target="_blank"
-              >
-                {{ data.license }}
+                >{{ data.license }}
+
               </a>
               <span v-else v-html="data.license"></span>
             </div>
@@ -375,9 +385,9 @@
           `mailto:help@outbreak.info?subject=Missing metadata for id ${id}`
         "
         target="_blank"
+        >help@outbreak.info</a
       >
-        help@outbreak.info
-      </a>
+
     </div>
   </div>
 </template>
@@ -464,17 +474,17 @@ export default Vue.extend({
     next();
   },
   metaInfo() {
-    var metadata = null;
+    let metadata = null;
     // Based on https://scholar.google.com/intl/en/scholar/inclusion.html#indexing
     // Dublin Core ref: https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-4
-    var citationTags = [];
+    let citationTags = [];
     if (this.data) {
       metadata = cloneDeep(this.data);
 
       // phaseNumber causes problems
       if (metadata.studyDesign && metadata.studyDesign.phaseNumber) {
         delete metadata.studyDesign.phaseNumber;
-      };
+      }
       // [null] will have problems embedding...
       metadata.citedBy = metadata.citedBy ? metadata.citedBy.filter(d => d) : null;
 

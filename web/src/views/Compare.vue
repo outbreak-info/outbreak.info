@@ -1,7 +1,11 @@
 <template>
   <div class="full-page p-5 bg-light">
-    <!-- dataloading -->
-    <div v-if="dataloading" class="map-loader">
+    <!-- dataLoading -->
+
+    <div
+      v-if="dataloading"
+      class="map-loader"
+    >
       <font-awesome-icon
         class="fa-pulse fa-4x text-highlight"
         :icon="['fas', 'spinner']"
@@ -17,14 +21,17 @@
       >
         <option
           v-for="option in similarOptions"
-          :value="option.value"
           :key="option.value"
+          :value="option.value"
         >
           {{ option.label }}
         </option>
       </select>
-      <template v-if="locationData">
+      <template
+        v-if="locationData"
+      >
         to
+
         <router-link
           :to="{ name: 'Epidemiology', query: { location: locationData.key } }"
         >
@@ -35,36 +42,42 @@
 
     <SearchBar
       class="w-100 mb-3"
-      @location="changeLocation"
       :selected="selectedLocation"
       placeholder="Select location"
-    ></SearchBar>
+      @location="changeLocation"
+    />
 
-    <div id="admin-selector" class="d-flex align-items-center">
+    <div
+      id="admin-selector"
+      class="d-flex align-items-center"
+    >
       <small class="mr-1">include</small>
       <label
-        class="b-contain m-0 mr-2"
         v-for="option in adminOptions"
         :key="option"
+        class="b-contain m-0 mr-2"
       >
         <small>{{ option }}</small>
         <input
+          v-model.lazy="selectedAdminLevels"
           type="checkbox"
           :value="option"
-          v-model.lazy="selectedAdminLevels"
           @change="changeAdmin"
-        />
-        <div class="b-input"></div>
+        >
+        <div class="b-input" />
       </label>
     </div>
 
-    <div class="mt-5" v-if="similar && similar.length">
+    <div
+      v-if="similar && similar.length"
+      class="mt-5"
+    >
       <div class="legend d-flex justify-content-end my-3">
         <div class="mr-3 d-flex align-items-center">
           <div
             :style="{ background: '#d6d6d6' }"
             class="legend-rect mr-1"
-          ></div>
+          />
           <small>{{ locationData.name }}</small>
         </div>
 
@@ -76,7 +89,7 @@
           <div
             :style="{ background: colorScale(place.key) }"
             class="legend-rect mr-1"
-          ></div>
+          />
           <small>{{ place.name }}</small>
         </div>
       </div>
@@ -88,11 +101,11 @@
         >
           <td>
             <MiniLocation
+              :id="place.key"
               :lat="place.lat"
               :lon="place.lon"
-              :id="place.key"
-              :colorScale="colorScale"
-              :partOfUSA="place.partOfUSA"
+              :color-scale="colorScale"
+              :part-of-u-s-a="place.partOfUSA"
             />
           </td>
 
@@ -101,14 +114,15 @@
               <router-link
                 :to="{ name: 'Epidemiology', query: { location: place.key } }"
               >
-                <h4 class="m-0 border-bottom">{{ place.nameFormatted }}</h4>
+                <h4 class="m-0 border-bottom">
+                  {{ place.nameFormatted }}
+                </h4>
               </router-link>
               <div class="d-flex justify-content-between">
                 <div>
-                  {{ similarity }}:
-                  <b>{{ formatValue(place.similarValue) }}</b>
+                  {{ similarity }}: <b>{{ formatValue(place.similarValue) }}</b>
                 </div>
-                <div v-if="similarity != 'population'">
+                <div v-if="similarity !== 'population'">
                   population:
                   <b>{{ formatValue(place.values[0].population) }}</b>
                 </div>
@@ -119,7 +133,8 @@
                   {{ locationData.name }}:
                   <b>{{ formatValue(locationData.similarValue) }}</b>
                 </small>
-                <small v-if="similarity != 'population'">
+                <small v-if="similarity !== 'population'">
+
                   population:
                   <b>{{ formatValue(locationData.values[0].population) }}</b>
                 </small>
@@ -129,34 +144,37 @@
 
           <td>
             <LineComparison
+              v-if="place.values"
               :data="place.values"
               :control="locationData.values"
               variable="confirmed_rolling_per_100k"
-              :xDomain="xDomain"
-              :yMax="yMaxC"
-              :colorScale="colorScale"
+              :x-domain="xDomain"
+              :y-max="yMaxC"
+              :color-scale="colorScale"
               label="cases"
-              v-if="place.values"
             />
           </td>
           <td>
             <LineComparison
+              v-if="place.values"
               class="ml-3"
               :data="place.values"
               :control="locationData.values"
               variable="dead_rolling_per_100k"
-              :xDomain="xDomain"
-              :yMax="yMaxD"
-              :colorScale="colorScale"
+              :x-domain="xDomain"
+              :y-max="yMaxD"
+              :color-scale="colorScale"
               label="deaths"
-              v-if="place.values"
             />
           </td>
         </tr>
       </table>
     </div>
 
-    <div class="mt-5" v-else>
+    <div
+      v-else
+      class="mt-5"
+    >
       No similar locations found
     </div>
   </div>

@@ -83,6 +83,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
+
     component: () => import(/* webpackChunkName: "maps" */ '../views/Maps.vue'),
   },
   {
@@ -115,6 +116,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
+
     component: () => import(/* webpackChunkName: "data" */ '../views/Data.vue'),
   },
   {
@@ -253,6 +255,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
+
     component: () => import(/* webpackChunkName: "epi" */ '../views/Epi.vue'),
   },
   {
@@ -290,6 +293,7 @@ const routes = [
         next({
           name: 'MutationReport',
           params: to.params,
+
           query: to.query,
         });
       } else if (to.query && (to.query.pango || to.query.muts)) {
@@ -578,6 +582,7 @@ const routes = [
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',
+
     component: () =>
       import(
         /* webpackChunkName: "404" */
