@@ -111,18 +111,23 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
 export default Vue.extend({
-  name: "CiteUs",
+  name: 'CiteUs',
   components: {},
   computed: {
-    ...mapState("admin", ["genomicsCitation", "resourcesCitation", "sources", "geoSources", "resources", "genomicSources"])
-  }
+    ...mapState('admin', [
+      'genomicsCitation',
+      'resourcesCitation',
+      'sources',
+      'geoSources',
+      'resources',
+      'genomicSources',
+    ]),
+  },
 });
 </script>

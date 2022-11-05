@@ -89,23 +89,16 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 import cloneDeep from "lodash/cloneDeep";
-import {
-  format,
-  timeFormat
-} from "d3";
+import { format, timeFormat } from "d3";
 import DataUpdated from "@/components/DataUpdated.vue";
 import SlopeComparison from "@/components/SlopeComparison.vue";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
   faArrowDown,
@@ -152,42 +145,50 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {},
+    data: () => {},
     isFitting1: function(newValue) {
       this.fitting1 = !this.fitting1;
       this.$emit("changeFit", null);
     },
     isFitting2: function(newValue) {
       this.fitting2 = !this.fitting2;
-      this.$emit("changeFit", null)
+      this.$emit("changeFit", null);
     }
   },
   computed: {
-    fit1_time: function() {
-      return this.data.fit1.doublingTime || this.data.fit1.doublingTime === 0 ? format(",.1f")(this.data.fit1.doublingTime) : "NaN";
+    fit1_time: () => {
+      return this.data.fit1.doublingTime || this.data.fit1.doublingTime === 0
+        ? format(",.1f")(this.data.fit1.doublingTime)
+        : "NaN";
     },
-    fit2_time: function() {
-      return this.data.fit2.doublingTime || this.data.fit2.doublingTime === 0 ? format(",.1f")(this.data.fit2.doublingTime) : "NaN";
+    fit2_time: () => {
+      return this.data.fit2.doublingTime || this.data.fit2.doublingTime === 0
+        ? format(",.1f")(this.data.fit2.doublingTime)
+        : "NaN";
     },
-    change_time: function() {
+    change_time: () => {
       return this.calcDiff();
     },
-    fit1_dates: function() {
-      return `${formatDate(this.data.fit1.xstart)} - ${formatDate(this.data.fit1.xend)}`;
+    fit1_dates: () => {
+      return `${formatDate(this.data.fit1.xstart)} - ${formatDate(
+        this.data.fit1.xend
+      )}`;
     },
-    fit2_dates: function() {
-      return `${formatDate(this.data.fit2.xstart)} - ${formatDate(this.data.fit2.xend)}`;
+    fit2_dates: () => {
+      return `${formatDate(this.data.fit2.xstart)} - ${formatDate(
+        this.data.fit2.xend
+      )}`;
     },
-    fit1_slope: function() {
+    fit1_slope: () => {
       return format(".2f")(this.data.fit1.slope);
     },
-    fit2_slope: function() {
+    fit2_slope: () => {
       return format(".2f")(this.data.fit2.slope);
     },
-    fit1_r2: function() {
+    fit1_r2: () => {
       return format(".2f")(Math.pow(this.data.fit1.R, 2));
     },
-    fit2_r2: function() {
+    fit2_r2: () => {
       return format(".2f")(Math.pow(this.data.fit2.R, 2));
     }
   },
@@ -201,13 +202,19 @@ export default Vue.extend({
         // selection is finished; run calculation of new data.
         this.$emit("changeFit", null);
       } else {
-        this.$emit("changeFit", idx)
+        this.$emit("changeFit", idx);
       }
     },
     calcDiff() {
       const diff = this.data.fit2.doublingTime - this.data.fit1.doublingTime;
-      const label = diff ? format(",.1f")(diff) : "not enough points to fit in older data";
-      return({worse: diff < 0 || !this.data.fit1.doublingTime, label: label, nearZero: this.data.fit2.slope < 0.01})
+      const label = diff
+        ? format(",.1f")(diff)
+        : "not enough points to fit in older data";
+      return {
+        worse: diff < 0 || !this.data.fit1.doublingTime,
+        label: label,
+        nearZero: this.data.fit2.slope < 0.01
+      };
     },
     filterCases() {
       this.filteredCases = this.cases.slice(this.lowerLim, this.upperLim);

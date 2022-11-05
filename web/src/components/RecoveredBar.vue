@@ -35,12 +35,10 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
-import {
-  scaleLinear
-} from "d3";
+import { scaleLinear } from "d3";
 
 const width = 50;
 const height = 15;
@@ -53,22 +51,22 @@ export default Vue.extend({
     color: String
   },
   watch: {
-    data: function() {
+    data: () => {
       this.updateAxes();
     }
   },
   computed: {
-    recoveredWidth: function() {
-      if(this.x){
-      return(this.x(this.data.recovered));
-    }
-    return(null)
+    recoveredWidth: () => {
+      if (this.x) {
+        return this.x(this.data.recovered);
+      }
+      return null;
     },
-    deadWidth: function() {
-      if(this.x){
-      return(this.x(this.data.dead));
-    }
-    return(null)
+    deadWidth: () => {
+      if (this.x) {
+        return this.x(this.data.dead);
+      }
+      return null;
     }
   },
   data() {
@@ -76,19 +74,19 @@ export default Vue.extend({
       width,
       height,
       x: null
-    }
+    };
   },
   methods: {
-    updateAxes () {
+    updateAxes() {
       this.x = scaleLinear()
-      .range([0, this.width])
-      .domain([0, this.data.confirmed]);
+        .range([0, this.width])
+        .domain([0, this.data.confirmed]);
     }
   },
   mounted() {
     this.updateAxes();
   }
-})
+});
 </script>
 
 <style lang="scss">

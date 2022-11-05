@@ -7,7 +7,7 @@
           Mutations in at least {{ charMutThreshold }} of
           {{ mutationName }} sequences
           <router-link
-            v-if="reportType != 'mutation'"
+            v-if="reportType !== 'mutation'"
             :to="{
               name: 'SituationReportMethodology',
               hash: '#characteristic',
@@ -57,9 +57,9 @@
       class="fa-sm mt-2 mb-4"
       :align_left="true"
       v-if="
-        lineageName == 'omicron' ||
-          lineageName == 'Omicron' ||
-          lineageName == 'B.1.1.529'
+        lineageName === 'omicron' ||
+          lineageName === 'Omicron' ||
+          lineageName === 'B.1.1.529'
       "
     />
 
@@ -107,6 +107,7 @@
               src="@/assets/resources/aquaria.svg"
               style="width: 25px"
               class="ml-2"
+              alt="aquaria-svg"
             />
           </button>
         </a>

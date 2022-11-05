@@ -44,7 +44,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 
 import {
@@ -122,16 +122,16 @@ export default Vue.extend({
     };
   },
   computed: {
-    lightColor: function() {
+    lightColor: () => {
       const scale = store.getters['colors/getRegionColor'];
       return scale(this.region, 0.85);
     },
   },
   watch: {
-    data: function() {
+    data: () => {
       this.updatePlot();
     },
-    variable: function() {
+    variable: () => {
       this.updateData();
     },
   },
@@ -152,7 +152,7 @@ export default Vue.extend({
   },
   mounted() {
     this.setupPlot();
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('click', this.clickClose), { passive: true };
 
       document.addEventListener(
@@ -175,7 +175,7 @@ export default Vue.extend({
       const scale = store.getters['colors/getRegionColorPalette'];
       return scale(this.region, this.data.length, idx);
     },
-    handleClick: function() {
+    handleClick: () => {
       this.$emit('regionSelected', {
         region: 'all',
       });
@@ -215,7 +215,7 @@ export default Vue.extend({
         this.closeWindow();
       }
     },
-    closeWindow: function() {
+    closeWindow: () => {
       this.$emit('regionSelected', {
         region: this.region,
         display: false,
@@ -231,7 +231,7 @@ export default Vue.extend({
         this.data = data;
       });
     },
-    updatePlot: function() {
+    updatePlot: () => {
       if (this.data) {
         this.getHeight();
         this.updateScales();
@@ -239,7 +239,7 @@ export default Vue.extend({
         this.drawPlot();
       }
     },
-    getHeight: function() {
+    getHeight: () => {
       const idealHeight =
         this.barHeight * this.data.length +
         (this.data.length - 2) * this.innerPadding;
@@ -255,7 +255,7 @@ export default Vue.extend({
         this.height = idealHeight;
       }
     },
-    setupPlot: function() {
+    setupPlot: () => {
       this.svg = select(`#region-graphs-${this.id}`).select(
         'svg.region-country-counts',
       );
@@ -277,7 +277,7 @@ export default Vue.extend({
         .y0((d) => d.y0)
         .y1((d) => d.y);
     },
-    prepData: function() {
+    prepData: () => {
       this.data.forEach((d) => {
         const y = scaleLinear()
           .range([this.y.bandwidth() * 0.8, 0])
@@ -289,7 +289,7 @@ export default Vue.extend({
         });
       });
     },
-    updateScales: function() {
+    updateScales: () => {
       this.x = this.x.domain([0, max(this.data, (d) => d[this.variable])]);
 
       this.y = this.y
@@ -308,7 +308,7 @@ export default Vue.extend({
         .selectAll('text')
         .on('click', (d) => this.routeToLoc(d));
     },
-    drawPlot: function() {
+    drawPlot: () => {
       const t1 = transition().duration(1000);
 
       // --- group ---

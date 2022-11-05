@@ -15,16 +15,25 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import { select, selectAll, scaleLinear, scaleTime, event, pack, hierarchy, max } from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleTime,
+  event,
+  pack,
+  hierarchy,
+  max,
+} from 'd3';
 // from https://observablehq.com/@d3/marimekko-chart
 export default Vue.extend({
-  name: "CirclePacking",
+  name: 'CirclePacking',
   props: {
     data: Object,
-    query: String
+    query: String,
   },
   data() {
     return {
@@ -35,7 +44,7 @@ export default Vue.extend({
         top: 10,
         bottom: 10,
         right: 10,
-        left: 10
+        left: 10,
       },
       // axes
       y: scaleLinear(),
@@ -47,98 +56,90 @@ export default Vue.extend({
       // data
       nodes: null,
       // methods
-      pack: null
+      pack: null,
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.updatePlot();
-    }
+    },
   },
   methods: {
     tooltipOn(d) {
       select(this.$refs.circle_tooltip)
-        .classed("hidden", false)
-        .style("top", event.layerY + "px")
-        .style("left", event.layerX + "px")
-        .html(d.depth === 1 ? `Search ${d.data.name}s` : `Search ${d.data.name} ${d.parent.data.name}s`);
+        .classed('hidden', false)
+        .style('top', event.layerY + 'px')
+        .style('left', event.layerX + 'px')
+        .html(
+          d.depth === 1
+            ? `Search ${d.data.name}s`
+            : `Search ${d.data.name} ${d.parent.data.name}s`,
+        );
 
-      this.svg
-        .selectAll(".circle-group")
-        .style("opacity", 0.25);
+      this.svg.selectAll('.circle-group').style('opacity', 0.25);
 
-      this.svg
-        .selectAll(".annotation--type")
-        .style("opacity", 0.25);
+      this.svg.selectAll('.annotation--type').style('opacity', 0.25);
 
-      this.svg
-        .select(`.${d.data.name.replace(" ", "_")}`)
-        .style("opacity", 1);
+      this.svg.select(`.${d.data.name.replace(' ', '_')}`).style('opacity', 1);
 
       if (d.depth === 1) {
-        this.svg
-          .selectAll(`.${d.data.name}`)
-          .style("opacity", 1);
+        this.svg.selectAll(`.${d.data.name}`).style('opacity', 1);
       }
-
     },
     tooltipOff(d) {
-      select(this.$refs.circle_tooltip)
-        .classed("hidden", true);
+      select(this.$refs.circle_tooltip).classed('hidden', true);
 
-      this.svg
-        .selectAll(".annotation--type")
-        .style("opacity", 1);
+      this.svg.selectAll('.annotation--type').style('opacity', 1);
 
-      this.svg
-        .selectAll(".circle-group")
-        .style("opacity", 1);
+      this.svg.selectAll('.circle-group').style('opacity', 1);
     },
     searchResource(d) {
-      if (d.depth == 1) {
+      if (d.depth === 1) {
         this.$router.push({
-          name: "Resources",
+          name: 'Resources',
           query: {
             q: this.query,
             filter: `@type:${d.data.name}`,
-            page: "0",
-            size: "10",
-            sort: "-date"
-          }
+            page: '0',
+            size: '10',
+            sort: '-date',
+          },
         });
       } else {
         this.$router.push({
-          name: "Resources",
+          name: 'Resources',
           query: {
             q: this.query,
             filter: `@type:${d.parent.data.name};curatedBy.name:${d.data.term}`,
-            page: "0",
-            size: "10",
-            sort: "-date"
-          }
+            page: '0',
+            size: '10',
+            sort: '-date',
+          },
         });
       }
     },
     setupPlot() {
       this.svg = select(this.$refs.circle_packing);
 
-      this.svgDefs = this.svg
-        .select("defs");
+      this.svgDefs = this.svg.select('defs');
 
       this.pack = pack()
-        .size([this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom])
+        .size([
+          this.width - this.margin.left - this.margin.right,
+          this.height - this.margin.top - this.margin.bottom,
+        ])
         .padding(3);
     },
     prepData() {
-      this.data.children.forEach(source => {
+      this.data.children.forEach((source) => {
         source.children.sort((a, b) => b.count - a.count);
 
         source.children.forEach((d, i) => {
           d['idx'] = i / (source.children.length - 1);
-        })
-      })
+        });
+      });
       let root = hierarchy(this.data)
-        .sum(d => d.count)
+        .sum((d) => d.count)
         .sort(function(a, b) {
           return b.value - a.value;
         });
@@ -153,86 +154,105 @@ export default Vue.extend({
     },
     circle2Path(cx, cy, r) {
       r = r - 10;
-      return (r > 0 ? `M${cx-r},${cy}a${r},${r} 0 1,1 ${2*r},0a${r},${r} 0 1,1 -${2*r},0` : null)
+      return r > 0
+        ? `M${cx - r},${cy}a${r},${r} 0 1,1 ${2 * r},0a${r},${r} 0 1,1 -${2 *
+            r},0`
+        : null;
     },
     drawPlot() {
-      const dataMax = max(this.data.children.flatMap(d => d.children).flatMap(d => d.count));
+      const dataMax = max(
+        this.data.children.flatMap((d) => d.children).flatMap((d) => d.count),
+      );
       const textThresh = dataMax / 30;
       const typeThresh = dataMax / 40;
 
       const circles = this.svg
-        .selectAll("circle")
-        .data(this.nodes.filter(d => d.depth));
+        .selectAll('circle')
+        .data(this.nodes.filter((d) => d.depth));
 
+      circles.join((enter) => {
+        const grp = enter
+          .append('g')
+          .attr(
+            'class',
+            (d) => `circle-group pointer ${d.data.name.replace(' ', '_')}`,
+          );
 
-      circles.join(enter => {
-        const grp = enter.append("g")
-          .attr("class", d => `circle-group pointer ${d.data.name.replace(" ", "_")}`);
-
-        grp.append("circle")
-          .attr("cx", d => d.x)
-          .attr("cy", d => d.y)
-          .attr("r", d => d.r)
-          .attr("class", d => d.depth == 1 ? `resource-count ${d.data.name} depth${d.depth}` : `resource-count ${d.parent.data.name} depth${d.depth}`)
-          .attr("id", d => `circle-${d.data.name.replace(" ", "_")}`)
-          .attr("fill-opacity", d => this.opacity(d.data.idx))
-          .classed("tiny", d => d.value < 100)
-          .on("mouseenter", d => this.tooltipOn(d))
-          .on("mouseleave", d => this.tooltipOff())
-          .on("click", d => this.searchResource(d))
+        grp
+          .append('circle')
+          .attr('cx', (d) => d.x)
+          .attr('cy', (d) => d.y)
+          .attr('r', (d) => d.r)
+          .attr('class', (d) =>
+            d.depth === 1
+              ? `resource-count ${d.data.name} depth${d.depth}`
+              : `resource-count ${d.parent.data.name} depth${d.depth}`,
+          )
+          .attr('id', (d) => `circle-${d.data.name.replace(' ', '_')}`)
+          .attr('fill-opacity', (d) => this.opacity(d.data.idx))
+          .classed('tiny', (d) => d.value < 100)
+          .on('mouseenter', (d) => this.tooltipOn(d))
+          .on('mouseleave', (d) => this.tooltipOff())
+          .on('click', (d) => this.searchResource(d));
 
         // text annotation
-        grp.filter(d => d.depth == 2 && d.value > textThresh).append("text")
-          .attr("x", d => d.x)
-          .attr("y", d => d.y)
-          .append("tspan")
-          .text(d => d.data.name)
-          .attr("class", d => d.depth == 1 ? `annotation--source ${d.data.name} depth${d.depth}` : `annotation--source ${d.parent.data.name} depth${d.depth}`)
-          .append("tspan")
-          .text(d => d.value.toLocaleString())
-          .attr("x", d => d.x)
-          .attr("dy", "1.1em")
-          .attr("class", "annotation--count")
-          .on("mouseenter", d => this.tooltipOn(d))
-          .on("mouseleave", d => this.tooltipOff())
-          .on("click", d => this.searchResource(d));
-      })
-
+        grp
+          .filter((d) => d.depth === 2 && d.value > textThresh)
+          .append('text')
+          .attr('x', (d) => d.x)
+          .attr('y', (d) => d.y)
+          .append('tspan')
+          .text((d) => d.data.name)
+          .attr('class', (d) =>
+            d.depth === 1
+              ? `annotation--source ${d.data.name} depth${d.depth}`
+              : `annotation--source ${d.parent.data.name} depth${d.depth}`,
+          )
+          .append('tspan')
+          .text((d) => d.value.toLocaleString())
+          .attr('x', (d) => d.x)
+          .attr('dy', '1.1em')
+          .attr('class', 'annotation--count')
+          .on('mouseenter', (d) => this.tooltipOn(d))
+          .on('mouseleave', (d) => this.tooltipOff())
+          .on('click', (d) => this.searchResource(d));
+      });
 
       const text = this.svg
-        .selectAll(".annotation--type")
-        .data(this.nodes.filter(d => d.depth == 1 && d.value > typeThresh));
+        .selectAll('.annotation--type')
+        .data(this.nodes.filter((d) => d.depth === 1 && d.value > typeThresh));
 
       const textPaths = this.svgDefs
-        .selectAll("path")
-        .data(this.nodes.filter(d => d.depth == 1));
+        .selectAll('path')
+        .data(this.nodes.filter((d) => d.depth === 1));
 
-      textPaths.join(enter => {
-        enter.append("path")
-          .attr("d", d => this.circle2Path(d.x, d.y, d.r))
-          .attr("transform", d => `rotate(-90 ${d.x} ${d.y})`)
-          .attr("id", (d, i) => `textpath${i}`);
-      })
+      textPaths.join((enter) => {
+        enter
+          .append('path')
+          .attr('d', (d) => this.circle2Path(d.x, d.y, d.r))
+          .attr('transform', (d) => `rotate(-90 ${d.x} ${d.y})`)
+          .attr('id', (d, i) => `textpath${i}`);
+      });
 
-      text.join(enter => {
-        enter.append("text")
-          .append("textPath")
-          .attr("href", (d, i) => `#textpath${i}`)
+      text.join((enter) => {
+        enter
+          .append('text')
+          .append('textPath')
+          .attr('href', (d, i) => `#textpath${i}`)
           // .attr("textLength", 200)
-          .attr("startOffset", "50%")
-          .attr("class", d => `annotation--type pointer ${d.data.name}`)
-          .text(d => d.data.name.replace("ClinicalTrial", "Clinical Trial"))
-          .on("mouseover", d => this.tooltipOn(d))
-          .on("mouseout", d => this.tooltipOff())
-          .on("click", d => this.searchResource(d));
-      })
-
-    }
+          .attr('startOffset', '50%')
+          .attr('class', (d) => `annotation--type pointer ${d.data.name}`)
+          .text((d) => d.data.name.replace('ClinicalTrial', 'Clinical Trial'))
+          .on('mouseover', (d) => this.tooltipOn(d))
+          .on('mouseout', (d) => this.tooltipOff())
+          .on('click', (d) => this.searchResource(d));
+      });
+    },
   },
   mounted() {
     this.setupPlot();
     this.updatePlot();
-  }
+  },
 });
 </script>
 

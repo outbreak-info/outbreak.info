@@ -53,32 +53,29 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import DataSource from '@/components/DataSource.vue';
 import Warning from '@/components/Warning.vue';
 
 import {
-  select,
-  selectAll,
-  scaleTime,
-  scaleLog,
   axisBottom,
   axisLeft,
-  line,
-  range,
-  mouse,
+  easeLinear,
   event,
   extent,
-  max,
   format,
+  line,
+  max,
+  mouse,
+  range,
+  scaleLog,
+  scaleTime,
+  select,
+  selectAll,
   timeFormat,
   transition,
-  easeLinear,
 } from 'd3';
-import cloneDeep from 'lodash/cloneDeep';
-
-import store from '@/store';
 
 const width = 500;
 const height = 300;
@@ -136,7 +133,7 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.prepData();
       this.updatePlot();
     },
@@ -225,14 +222,14 @@ export default Vue.extend({
     //
     //   selectAll(`.epi-region`).style("opacity", 1);
     // },
-    updatePlot: function() {
+    updatePlot: () => {
       if (this.data) {
         this.prepData();
         this.updateScales();
         this.drawDots();
       }
     },
-    prepData: function() {
+    prepData: () => {
       if (this.data) {
         // console.log(this.data)
         // console.log(this.plottedData)
@@ -261,7 +258,7 @@ export default Vue.extend({
         );
       };
 
-      const mouseup = function() {
+      const mouseup = () => {
         select('.doubling-curve').on('mousemove', null);
       };
 
@@ -290,11 +287,11 @@ export default Vue.extend({
         .on('mousedown', () => mousedown(this.x, this.y, this.variable))
         .on('mouseup', mouseup);
     },
-    executeFit: function() {
+    executeFit: () => {
       console.log('finishing fit');
       this.$emit('executeFit', this.toFit);
     },
-    removeFit: function() {
+    removeFit: () => {
       console.log('removing fit');
       this.chart.selectAll('.epi-line').style('opacity', 0.3);
       if (this.toFit === 2) {
@@ -306,10 +303,10 @@ export default Vue.extend({
         this.chart.selectAll('.recent-fit').style('display', 'none');
       }
     },
-    setupPlot: function() {
+    setupPlot: () => {
       // Event listener for mobile responsiveness
       // $nextTick waits till DOM rendered
-      this.$nextTick(function() {
+      this.$nextTick(() => {
         window.addEventListener('resize', this.setPlotDims);
         // set initial dimensions for the stacked area plots.
         this.setPlotDims();
@@ -327,7 +324,7 @@ export default Vue.extend({
         .x((d, i) => this.x(d.date))
         .y((d) => this.y());
     },
-    updateScales: function() {
+    updateScales: () => {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.plottedData.map((d) => d.date)));
@@ -349,7 +346,7 @@ export default Vue.extend({
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
-    drawDots: function() {
+    drawDots: () => {
       const t1 = transition().duration(this.transitionDuration);
       const formatDate = timeFormat('%d %b %Y');
 
@@ -358,19 +355,19 @@ export default Vue.extend({
       //       dashed line animation from Nadieh Brehmer: https://www.visualcinnamon.com/2016/01/animating-dashed-line-d3.html
       const calcDashArray = function(selector) {
         //Get the total length of the path
-        var totalLength = selector.getTotalLength();
+        const totalLength = selector.getTotalLength();
 
         /////// Create the required stroke-dasharray to animate a dashed pattern ///////
 
         //Create a (random) dash pattern
         //The first number specifies the length of the visible part, the dash
         //The second number specifies the length of the invisible part
-        var dashing = '12,6';
+        const dashing = '12,6';
 
-        //This returns the length of adding all of the numbers in dashing
+        //This returns the length of adding all the numbers in dashing
         //(the length of one pattern in essence)
         //So for "6,6", for example, that would return 6+6 = 12
-        var dashLength = dashing
+        const dashLength = dashing
           .split(/[\s,]/)
           .map(function(a) {
             return parseFloat(a) || 0;
@@ -380,16 +377,16 @@ export default Vue.extend({
           });
 
         //How many of these dash patterns will fit inside the entire path?
-        var dashCount = Math.ceil(totalLength / dashLength);
+        const dashCount = Math.ceil(totalLength / dashLength);
 
         //Create an array that holds the pattern as often
         //so it will fill the entire path
-        var newDashes = new Array(dashCount).join(dashing + ' ');
+        const newDashes = new Array(dashCount).join(dashing + ' ');
 
         //Then add one more dash pattern, namely with a visible part
         //of length 0 (so nothing) and a white part
         //that is the same length as the entire path
-        var dashArray = newDashes + ' 0, ' + totalLength;
+        const dashArray = newDashes + ' 0, ' + totalLength;
         return totalLength + ' ' + totalLength;
         // return dashArray
       };
@@ -411,12 +408,11 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', function() {
+            .attr('stroke-dasharray', () => {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', function() {
-              var totalLength = this.getTotalLength();
-              return totalLength;
+            .attr('stroke-dashoffset', () => {
+              return this.getTotalLength();
             })
             .call((update) =>
               update
@@ -430,12 +426,11 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', function() {
+            .attr('stroke-dasharray', () => {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', function() {
-              var totalLength = this.getTotalLength();
-              return totalLength;
+            .attr('stroke-dashoffset', () => {
+              return this.getTotalLength();
             })
             .call((update) =>
               update
@@ -471,12 +466,11 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', function() {
+            .attr('stroke-dasharray', () => {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', function() {
-              var totalLength = this.getTotalLength();
-              return totalLength;
+            .attr('stroke-dashoffset', () => {
+              return this.getTotalLength();
             })
             .call((update) =>
               update
@@ -491,12 +485,11 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', function() {
+            .attr('stroke-dasharray', () => {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', function() {
-              var totalLength = this.getTotalLength();
-              return totalLength;
+            .attr('stroke-dashoffset', () => {
+              return this.getTotalLength();
             })
             .call((update) =>
               update

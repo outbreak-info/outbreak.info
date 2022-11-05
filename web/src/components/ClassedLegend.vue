@@ -74,7 +74,7 @@
               text-anchor="start"
               :fill="strokeColor"
               font-size="10px"
-              v-if="i == colorDomain.length - 1"
+              v-if="i === colorDomain.length - 1"
             >
               {{ color * 100 }}-100%
             </text>
@@ -229,7 +229,7 @@ export default {
     updateColorLegend() {
       if (this.colorScale) {
         this.colorDomain = this.colorScale.domain();
-        selectAll('.categorical-rect').each(function() {
+        selectAll('.categorical-rect').each(() => {
           const bbox = this.getBBox();
           select(this).attr('width', bbox.width + 1 < 18 ? 18 : bbox.width + 1);
 

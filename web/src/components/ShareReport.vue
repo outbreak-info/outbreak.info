@@ -60,7 +60,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 // --- font awesome --
@@ -123,14 +123,14 @@ export default Vue.extend({
     }
   },
   methods: {
-    copy2Clipboard: function() {
+    copy2Clipboard: () => {
       this.showSnackbar = true;
       setTimeout(() => {
         this.showSnackbar = false;
       }, 3000);
       navigator.clipboard.writeText(this.outbreakUrl);
     },
-    shareLink: function() {
+    shareLink: () => {
       if (navigator.share) {
         navigator.share({
           title: `outbreak.info Mutation Report`,

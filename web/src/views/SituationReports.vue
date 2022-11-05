@@ -1891,7 +1891,7 @@ export default {
       this.total = total;
     });
   },
-  created: function() {
+  created: () => {
     this.debounceSearch = debounce(this.filterName, 250);
   },
   updated() {

@@ -153,14 +153,14 @@ export default {
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.chooseMap();
       this.drawMap();
     },
-    countThreshold: function() {
+    countThreshold: () => {
       this.drawMap();
     },
-    width: function() {
+    width: () => {
       this.drawMap();
     },
   },
@@ -187,7 +187,7 @@ export default {
           ? `Prevalence over the last ${this.recentWindow} days in ${this.location}`
           : 'Estimated prevalence';
       }
-      return this.location == 'Worldwide'
+      return this.location === 'Worldwide'
         ? `${this.mutationName} cumulative prevalence by country`
         : `${this.mutationName} cumulative prevalence in ${this.location}`;
     },
@@ -198,12 +198,12 @@ export default {
       return null;
     },
   },
-  created: function() {
+  created: () => {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('resize', this.debounceSetDims);
 
       this.$root.$on('update:countThreshold', (newThreshold) => {
@@ -345,7 +345,7 @@ export default {
 
         this.filteredData.forEach((d) => {
           const filtered = this.data.filter(
-            (seq) => seq.name.toLowerCase() == d.properties.NAME.toLowerCase(),
+            (seq) => seq.name.toLowerCase() === d.properties.NAME.toLowerCase(),
           );
           if (filtered.length > 0) {
             filtered.sort((a, b) => b.cum_total_count - a.cum_total_count);
@@ -384,9 +384,11 @@ export default {
 
       if (this.filteredData) {
         const basemapData =
-          this.location == 'Worldwide' || this.location == 'United States'
+          this.location === 'Worldwide' || this.location === 'United States'
             ? []
-            : ADMIN0.features.filter((d) => d.properties.NAME != this.location);
+            : ADMIN0.features.filter(
+                (d) => d.properties.NAME !== this.location,
+              );
 
         this.basemap
           .selectAll('.basemap')
@@ -463,6 +465,7 @@ export default {
 
         // highlight where the data is 0.
         this.regions
+
           .selectAll('.zero-data')
           .data(
             this.filteredData.filter((d) => d.proportion === 0),
@@ -507,8 +510,8 @@ export default {
           .data(
             ADMIN0.features.filter(
               (d) =>
-                d.properties.NAME == this.location &&
-                d.properties.NAME != 'United States',
+                d.properties.NAME === this.location &&
+                d.properties.NAME !== 'United States',
             ),
             (d) => d.properties.location_id,
           )
@@ -577,6 +580,7 @@ export default {
           .classed('hidden', false);
 
         ttip
+
           .select('#confidence-interval')
           .text(`(95% CI: ${format('.0%')(d.lower)}-${format('.0%')(d.upper)})`)
           .classed('hidden', false);
@@ -613,7 +617,7 @@ export default {
         .style('stroke-opacity', 1);
     },
     route2Location(id) {
-      if (this.report == 'MutationReport') {
+      if (this.report === 'MutationReport') {
         const query = this.$route.query;
         const params = this.$route.params;
         let locs = query.loc
@@ -635,7 +639,7 @@ export default {
             loc: locs,
           },
         });
-      } else if (this.report == 'GenomicsEmbedVariant') {
+      } else if (this.report === 'GenomicsEmbedVariant') {
         const query = this.$route.query;
         let locs = query.loc
           ? typeof query.loc == 'string'
@@ -656,7 +660,7 @@ export default {
             loc: locs,
           },
         });
-      } else if (this.report == 'LocationReport') {
+      } else if (this.report === 'LocationReport') {
         const query = this.$route.query;
         this.$router.push({
           name: 'LocationReport',
@@ -672,7 +676,7 @@ export default {
             xmin: query.xmin,
           },
         });
-      } else if (this.report == 'GenomicsEmbedLocation') {
+      } else if (this.report === 'GenomicsEmbedLocation') {
         const query = this.$route.query;
         this.$router.push({
           name: 'GenomicsEmbed',
@@ -694,14 +698,14 @@ export default {
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
-      var timer = null;
-      return function() {
-        var context = this,
+      let timer = null;
+      return () => {
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(() => {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);

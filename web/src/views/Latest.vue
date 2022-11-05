@@ -97,57 +97,48 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import {
-  timeFormat
-} from "d3";
+import { timeFormat } from 'd3';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 library.add(faClock);
 
-import {
-  getSourcesUpdated
-} from "@/api/metadata.js";
-
+import { getSourcesUpdated } from '@/api/metadata.js';
 
 export default Vue.extend({
-  name: "Latest",
+  name: 'Latest',
   computed: {
-    ...mapState("admin", ["updates"])
+    ...mapState('admin', ['updates']),
   },
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   methods: {
     formatDate: function(date) {
-      const dateFormatter = timeFormat("%d %B %Y");
-      return dateFormatter(date)
-    }
+      const dateFormatter = timeFormat('%d %B %Y');
+      return dateFormatter(date);
+    },
   },
   data() {
-    return ({
+    return {
       updateSubscription: null,
-      lastUpdated: null
-    })
+      lastUpdated: null,
+    };
   },
   mounted() {
-    this.updateSubscription = getSourcesUpdated(this.$genomicsurl, this.$resourceurl, this.$apiurl).subscribe(results => {
+    this.updateSubscription = getSourcesUpdated(
+      this.$genomicsurl,
+      this.$resourceurl,
+      this.$apiurl,
+    ).subscribe((results) => {
       this.lastUpdated = results;
     });
 
@@ -157,7 +148,7 @@ export default Vue.extend({
     if (this.updateSubscription) {
       this.updateSubscription.unsubscribe();
     }
-  }
+  },
 });
 </script>
 

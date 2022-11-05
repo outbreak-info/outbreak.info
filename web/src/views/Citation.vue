@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import CiteUs from "@/components/CiteUs.vue";

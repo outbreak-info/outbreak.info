@@ -144,15 +144,16 @@ export default Vue.extend({
       },
     },
   },
+
   computed: {
-    lowerLim: function() {
+    lowerLim: () => {
       return this.selectedPage * this.numPerPage;
     },
-    upperLim: function() {
+    upperLim: () => {
       const upper = this.selectedPage * this.numPerPage + this.numPerPage;
       return upper > this.total ? this.total : upper;
     },
-    lastPage: function() {
+    lastPage: () => {
       return this.total ? Math.floor(this.total / this.numPerPage) : null;
     },
     queryString() {

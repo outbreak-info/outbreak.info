@@ -45,7 +45,10 @@
           {{ currentSummary$.aboveThreshold.count }} countries
         </router-link>
         have reported more than
-        <span class="text-highlight">{{ caseThreshold.toLocaleString() }} new cases</span>.
+        <span class="text-highlight">
+          {{ caseThreshold.toLocaleString() }} new cases
+        </span>
+        .
       </p>
 
       <p class="text-center">
@@ -96,10 +99,7 @@
           class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main"
         >
           <h6>Add locations</h6>
-          <SearchBar
-            class="search-bar"
-            @location="addSummary"
-          />
+          <SearchBar class="search-bar" @location="addSummary" />
         </div>
       </div>
     </section>
@@ -107,18 +107,17 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { mapState } from "vuex";
-import tippy from "tippy.js";
-import "tippy.js/themes/light.css";
-import GlanceSummary from "@/components/GlanceSummary";
-import SearchBar from "@/components/SearchBar";
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import tippy from 'tippy.js';
+import 'tippy.js/themes/light.css';
+import GlanceSummary from '@/components/GlanceSummary';
+import SearchBar from '@/components/SearchBar';
 
-import { timeFormat } from "d3";
-import { getSummary } from "@/api/epi-basics.js";
-import { getGlanceSummary } from "@/api/genomics.js";
-import { getCurrentDate } from "@/api/biothings.js";
-
+import { timeFormat } from 'd3';
+import { getSummary } from '@/api/epi-basics.js';
+import { getGlanceSummary } from '@/api/genomics.js';
+import { getCurrentDate } from '@/api/biothings.js';
 
 export default Vue.extend({
   name: 'CaseSummary',
@@ -141,36 +140,34 @@ export default Vue.extend({
   watch: {},
   computed: {
     ...mapState('epidata', ['mostCases']),
-    mostCasesNames: function() {
+    mostCasesNames: () => {
       return this.mostCases.map((d) => d.location_id).join(';');
     },
   },
   methods: {
-    removeSummary: function(idx) {
+    removeSummary: (idx) => {
       this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
       Vue.$cookies.set('custom_locations', this.glanceLocations);
       if (this.glanceLocations.length > 0) {
         this.updatedSubscription = getGlanceSummary(
           this.$apiurl,
           this.$genomicsurl,
-          this.glanceLocations
-        ).subscribe(d => {
-
+          this.glanceLocations,
+        ).subscribe((d) => {
           this.glanceSummaries = this.sortSummaries(d);
         });
       } else {
         this.glanceSummaries = [];
       }
     },
-    addSummary: function(location_id) {
+    addSummary: (location_id) => {
       this.glanceLocations = this.glanceLocations.concat(location_id);
       Vue.$cookies.set('custom_locations', this.glanceLocations);
       this.updatedSubscription = getGlanceSummary(
         this.$apiurl,
         this.$genomicsurl,
-        this.glanceLocations
-      ).subscribe(d => {
-
+        this.glanceLocations,
+      ).subscribe((d) => {
         this.glanceSummaries = this.sortSummaries(d);
       });
     },
@@ -204,9 +201,8 @@ export default Vue.extend({
     this.dataSubscription = getGlanceSummary(
       this.$apiurl,
       this.$genomicsurl,
-      this.glanceLocations
-    ).subscribe(d => {
-
+      this.glanceLocations,
+    ).subscribe((d) => {
       this.glanceSummaries = this.sortSummaries(d);
       this.glanceLocations = d.map((d) => d.location_id);
       Vue.$cookies.set('custom_locations', this.glanceLocations);

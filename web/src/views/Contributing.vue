@@ -9,24 +9,23 @@
           <p class="text-left">
             Outbreak.info currently contains {{ types.length }} types of
             resources:
-            <span
-              v-for="(type, idx) in types"
-              :key="idx"
-            >
+            <span v-for="(type, idx) in types" :key="idx">
               <router-link
                 :to="{
                   name: 'Resources',
-                  query: { filter: '@type:' + type.id }
+                  query: { filter: '@type:' + type.id },
                 }"
-              >{{ type.label }}</router-link>
-              <span v-if="idx < types.length - 2">, </span>
-              <span v-if="idx === types.length - 2">, and </span> </span>.
-            <router-link
-              :to="{ name: 'Sources' }"
-              class="text-left"
-            >
+              >
+                {{ type.label }}
+              </router-link>
+              <span v-if="idx < types.length - 2">,</span>
+              <span v-if="idx === types.length - 2">, and</span>
+            </span>
+            .
+            <router-link :to="{ name: 'Sources' }" class="text-left">
               Learn more about our data sources
-            </router-link>.
+            </router-link>
+            .
           </p>
           <p class="text-left">
             Since our resources come from so many different sources, we ensure
@@ -34,18 +33,20 @@
             data source) complies to common schema to promote findability and
             interoperability. Each resource's schema is based on schemas
             developed by
-            <a
-              href="https://schema.org"
-              target="_blank"
-              rel="noreferrer"
-            >schema.org</a>, a project which provides web standards to describe different
-            types of data.
+            <a href="https://schema.org" target="_blank" rel="noreferrer">
+              schema.org
+            </a>
+            , a project which provides web standards to describe different types
+            of data.
 
             <a
               href="https://discovery.biothings.io/view/outbreak/"
               target="_blank"
               rel="noreferrer"
-            >View our schemas</a>.
+            >
+              View our schemas
+            </a>
+            .
           </p>
         </div>
       </div>
@@ -58,12 +59,10 @@
       <p class="text-left">
         The easiest way to contribute data is to deposit your analysis, clinical
         trial, dataset, protocol, or publication in one of the
-        <router-link
-          :to="{ name: 'Sources' }"
-        >
+        <router-link :to="{ name: 'Sources' }">
           sources from which we already harvest metadata
-        </router-link>. When you add your resources to any of these repositories, they will
-
+        </router-link>
+        . When you add your resources to any of these repositories, they will
         automatically be added to our resource database.
       </p>
       <p class="text-left">
@@ -72,7 +71,10 @@
         <a
           href="https://discovery.biothings.io/guide/outbreak/dataset"
           target="_blank"
-        >Data Discovery Engine</a>.
+        >
+          Data Discovery Engine
+        </a>
+        .
       </p>
       <p class="text-left">
         If you'd like to suggest a resource repository, you can create a
@@ -81,12 +83,13 @@
           target="_blank"
           rel="noreferrer"
         >
-          Github Issue</a>
+          Github Issue
+        </a>
         to request adding a new source or send an email to
-        <a
-          href="mailto:help@outbreak.info?subject=Data Source"
-          target="_blank"
-        >help@outbreak.info</a>.
+        <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">
+          help@outbreak.info
+        </a>
+        .
       </p>
     </div>
 
@@ -102,10 +105,10 @@
       <p class="text-left">
         If you're interested in helping us add additional data sources and/or
         curating our existing database, please email
-        <a
-          href="mailto:help@outbreak.info?subject=Data Source"
-          target="_blank"
-        >help@outbreak.info</a>.
+        <a href="mailto:help@outbreak.info?subject=Data Source" target="_blank">
+          help@outbreak.info
+        </a>
+        .
       </p>
     </div>
 
@@ -180,9 +183,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
-import { mapState } from "vuex";
+
+import { mapState } from 'vuex';
 
 export default Vue.extend({
   name: 'Contributing',
@@ -207,20 +211,19 @@ export default Vue.extend({
         //   id: "Analysis"
         // },
         {
-          label: "Protocols",
+          label: 'Protocols',
           description:
-            "A detailed series of instructions to perform an experimental technique and/or analysis",
-          id: "Protocol"
+            'A detailed series of instructions to perform an experimental technique and/or analysis',
+          id: 'Protocol',
         },
 
         {
-          label: "Publications",
+          label: 'Publications',
           description:
-            "A published report, set of results, or commentary, including preprints and blog posts",
-          id: "Publication"
-        }
-      ]
-
+            'A published report, set of results, or commentary, including preprints and blog posts',
+          id: 'Publication',
+        },
+      ],
     };
   },
 

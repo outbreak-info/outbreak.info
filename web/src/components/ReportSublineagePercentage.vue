@@ -90,7 +90,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import uniq from "lodash/uniq";
@@ -155,11 +155,11 @@ export default Vue.extend({
     }
   },
   watch: {
-    width: function() {
+    width: () => {
       this.updateBrush();
       this.updatePlot();
     },
-    data: function() {
+    data: () => {
       this.updatePlot();
     }
   },
@@ -204,7 +204,7 @@ export default Vue.extend({
     })
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener("resize", this.debounceSetDims);
 
       this.updateBrush();
@@ -216,7 +216,7 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
-  created: function() {
+  created: () => {
     this.debounceSetDims = this.debounce(this.setDims, 150);
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
@@ -490,13 +490,13 @@ export default Vue.extend({
     },
     debounce(fn, delay) {
       var timer = null;
-      return function() {
+      return () => {
         var context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(() => {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);

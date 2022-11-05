@@ -42,7 +42,7 @@
           <span v-else>{{ grant.identifier }}</span>
           )
           <span v-if="idx < funding.length - 2">,</span>
-          <span v-if="idx == funding.length - 2">, and</span>
+          <span v-if="idx === funding.length - 2">, and</span>
         </span>
         .
       </div>
@@ -50,17 +50,15 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
 export default Vue.extend({
-  name: "ReportAcknowledgements",
+  name: 'ReportAcknowledgements',
   computed: {
-    ...mapState("admin", ["funding"])
-  }
-})
+    ...mapState('admin', ['funding']),
+  },
+});
 </script>

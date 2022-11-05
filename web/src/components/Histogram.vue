@@ -108,7 +108,7 @@ export default Vue.extend({
       }
     },
     setupPlot() {
-      this.$nextTick(function() {
+      this.$nextTick(() => {
         window.addEventListener('resize', this.setDims);
 
         // set initial dimensions for the plots.

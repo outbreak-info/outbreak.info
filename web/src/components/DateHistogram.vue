@@ -66,7 +66,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import {
@@ -132,7 +132,7 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       if (this.data) {
         if (this.filterable) {
           this.setSliders();
@@ -143,26 +143,26 @@ export default Vue.extend({
   },
   computed: {
     sliderRight() {
-      return ((this.x && this.selectedMax) ? this.x(this.selectedMax) : 8);
+      return this.x && this.selectedMax ? this.x(this.selectedMax) : 8;
     },
     sliderLeft() {
-      return ((this.x && this.selectedMin) ? this.x(this.selectedMin) : 0);
+      return this.x && this.selectedMin ? this.x(this.selectedMin) : 0;
     }
   },
   methods: {
     formatLimit(val) {
-      return (timeFormat("%d %b %Y")(val));
+      return timeFormat("%d %b %Y")(val);
     },
     formatDate(val) {
-      return (timeFormat("%Y-%m-%d")(val));
+      return timeFormat("%Y-%m-%d")(val);
     },
     parseDate(val) {
-      return (timeParse("%Y-%m-%d")(val));
+      return timeParse("%Y-%m-%d")(val);
     },
-    updateFilterLimits: function() {
+    updateFilterLimits: () => {
       this.selectedMin = new Date(2020, 3, 1);
       // selectedMax: new Date(2020,8,1),this.minVal ;
-      this.selectedMax = new Date(2020, 6, 1)
+      this.selectedMax = new Date(2020, 6, 1);
     },
     setupPlot() {
       this.svg = select(this.$refs.hist);
@@ -174,18 +174,22 @@ export default Vue.extend({
         this.drawPlot();
       }
     },
-    updateAxes: function() {
+    updateAxes: () => {
       const dateRange = extent(this.data, d => d.date);
 
       // x-axis
       // Add 1 week pad on either side of the histogram to pad the ends
       this.x = scaleTime()
         .range([0, this.width])
-        .domain([timeWeek.offset(dateRange[0], -1), timeWeek.offset(dateRange[1], 1)])
+        .domain([
+          timeWeek.offset(dateRange[0], -1),
+          timeWeek.offset(dateRange[1], 1)
+        ])
         .clamp(true);
 
-
-      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(2);
+      this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
+        .ticks(2);
       this.xAxisRef.call(this.xAxis);
 
       selectAll(".axis").call(this.xAxis);
@@ -195,18 +199,17 @@ export default Vue.extend({
       this.bins = nest()
         .key(d => timeWeek(d.date))
         .rollup(values => sum(values, d => d.count))
-        .entries(this.data)
+        .entries(this.data);
 
       // gotta reconvert dates from strings
       this.bins.forEach(d => {
-        d["date"] = isoParse(d.key)
-      })
+        d["date"] = isoParse(d.key);
+      });
 
       // // y-axis
       this.y = scaleLinear()
         .range([this.height, 0])
         .domain([0, max(this.bins, d => d.value)]);
-
     },
     changeFilters() {
       const route = this.$route.query;
@@ -228,60 +231,81 @@ export default Vue.extend({
       });
     },
     setSliders() {
-      this.selectedMin = this.$route.query.dateMin ? this.parseDate(this.$route.query.dateMin) : min(this.data.filter(d => d.count), x => x.date);
-      this.selectedMax = this.$route.query.dateMax ? this.parseDate(this.$route.query.dateMax) : max(this.data.filter(d => d.count), x => x.date);
+      this.selectedMin = this.$route.query.dateMin
+        ? this.parseDate(this.$route.query.dateMin)
+        : min(
+            this.data.filter(d => d.count),
+            x => x.date
+          );
+      this.selectedMax = this.$route.query.dateMax
+        ? this.parseDate(this.$route.query.dateMax)
+        : max(
+            this.data.filter(d => d.count),
+            x => x.date
+          );
     },
     setupDrag() {
       // draggable filters
-      select(this.$refs.slider_left)
-        .call(drag()
+      select(this.$refs.slider_left).call(
+        drag()
           .on("drag", () => this.updateDrag("left"))
           .on("end", () => this.changeFilters())
-        )
-      select(this.$refs.slider_right)
-        .call(drag()
+      );
+      select(this.$refs.slider_right).call(
+        drag()
           .on("drag", () => this.updateDrag("right"))
           .on("end", () => this.changeFilters())
-        )
+      );
     },
     updateDrag(side) {
       const newVal = this.x.invert(event.x);
-      if (side == "left") {
+      if (side === "left") {
         this.selectedMin = newVal;
-        select(this.$refs.slider_left)
-          .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
-
+        select(this.$refs.slider_left).attr(
+          "transform",
+          `translate(${this.x(this.selectedMin)},0)`
+        );
       } else {
         this.selectedMax = newVal;
 
-        select(this.$refs.slider_right)
-          .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
+        select(this.$refs.slider_right).attr(
+          "transform",
+          `translate(${this.x(this.selectedMax) - 8},0)`
+        );
       }
 
       // selectAll(".date-histogram")
       // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
     },
     drawPlot() {
-      const barSelector = this.svg
-        .selectAll("rect")
-        .data(this.bins);
+      const barSelector = this.svg.selectAll("rect").data(this.bins);
 
-      barSelector.join(enter => {
-          enter.append("rect")
+      barSelector.join(
+        enter => {
+          enter
+            .append("rect")
             .attr("class", "date-bar")
             .style("fill", "#66c2a5")
             // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
             .attr("x", d => this.x(d.date))
-            .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
+            .attr(
+              "width",
+              d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9
+            )
+            .attr("y", d => this.y(d.value))
+            .attr("height", d => this.y(0) - this.y(d.value));
+        },
+        update =>
+          update
+            .style("fill", "#66c2a5")
+            .attr("x", d => this.x(d.date))
+            .attr(
+              "width",
+              d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9
+            )
             .attr("y", d => this.y(d.value))
             .attr("height", d => this.y(0) - this.y(d.value))
-        },
-        update => update
-        .style("fill", "#66c2a5")
-        .attr("x", d => this.x(d.date))
-        .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
-        .attr("y", d => this.y(d.value))
-        .attr("height", d => this.y(0) - this.y(d.value)))
+      );
     }
   },
   mounted() {
@@ -289,9 +313,8 @@ export default Vue.extend({
     this.updatePlot();
     if (this.filterable) {
       this.setSliders();
-      this.$nextTick(() => this.setupDrag())
+      this.$nextTick(() => this.setupDrag());
     }
-
   }
 });
 </script>

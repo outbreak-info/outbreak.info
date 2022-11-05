@@ -150,10 +150,10 @@ export default {
   },
   computed: {
     ...mapState('admin', ['loading']),
-    types: function() {
+    types: () => {
       return this.results ? this.results.flatMap((d) => d.types) : null;
     },
-    queryString: function() {
+    queryString: () => {
       return this.query.map((d) => `"${d.terms.join('" "')}"`)[0];
     },
   },

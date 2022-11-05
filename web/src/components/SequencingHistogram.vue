@@ -194,10 +194,10 @@ export default Vue.extend({
     xInput() {
       this.updatePlot();
     },
-    width: function() {
+    width: () => {
       this.updatePlot();
     },
-    data: function() {
+    data: () => {
       this.updatePlot();
     },
   },

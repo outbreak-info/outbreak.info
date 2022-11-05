@@ -60,7 +60,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 export default Vue.extend({

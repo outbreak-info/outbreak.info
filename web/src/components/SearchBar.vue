@@ -46,7 +46,7 @@
   </form>
 </template>
 
-<script lang="ts">
+<script>
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from 'vue';
 import { mapState } from 'vuex';

@@ -200,7 +200,6 @@ import DataUpdated from '@/components/DataUpdated.vue';
 import Bargraph from '@/components/Bargraph.vue';
 import DotPlot from '@/components/DotPlot.vue';
 import { getSparklineTraces } from '@/api/epi-traces.js';
-
 import store from '@/store';
 
 export default {
@@ -226,7 +225,7 @@ export default {
     animate: Boolean,
   },
   watch: {
-    data: function() {
+    data: () => {
       this.drawMap();
     },
   },
@@ -303,11 +302,11 @@ export default {
         : this.variableLabel;
     },
   },
-  created: function() {
+  created: () => {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('resize', this.setDims);
       // set initial dimensions for the stacked area plots.
       this.setDims(false);
@@ -549,14 +548,14 @@ export default {
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
-      var timer = null;
-      return function() {
-        var context = this,
+      let timer = null;
+      return () => {
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(() => {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);

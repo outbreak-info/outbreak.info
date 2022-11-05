@@ -49,26 +49,20 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 library.add(faClock);
 
 export default Vue.extend({
-  name: "DataUsage",
+  name: 'DataUsage',
   components: {
-    FontAwesomeIcon
-  }
-})
+    FontAwesomeIcon,
+  },
+});
 </script>

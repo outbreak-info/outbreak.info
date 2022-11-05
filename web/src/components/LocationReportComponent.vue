@@ -817,11 +817,11 @@
                           choro.variantType.includes('Mutation')
                       "
                       :class="{
-                        VOC: choro.variantType == 'Variant of Concern',
-                        VOI: choro.variantType == 'Variant of Interest',
-                        VUM: choro.variantType == 'Variant under Monitoring',
-                        MOC: choro.variantType == 'Mutation of Concern',
-                        MOI: choro.variantType == 'Mutation of Interest',
+                        VOC: choro.variantType === 'Variant of Concern',
+                        VOI: choro.variantType === 'Variant of Interest',
+                        VUM: choro.variantType === 'Variant under Monitoring',
+                        MOC: choro.variantType === 'Mutation of Concern',
+                        MOI: choro.variantType === 'Mutation of Interest',
                       }"
                     >
                       {{ choro.variantType }}
@@ -1077,8 +1077,8 @@ export default {
     FontAwesomeIcon,
   },
   watch: {
-    '$route.query': function(newVal, oldVal) {
-      if (newVal.loc != oldVal.loc) {
+    '$route.query': (newVal, oldVal) => {
+      if (newVal.loc !== oldVal.loc) {
         this.newLocation = null;
         this.createReport();
         this.customMutations = this.grabCustomMutations();
@@ -1253,7 +1253,7 @@ export default {
       if (this.variant) {
         if (typeof this.variant == 'string') {
           const variant = this.variant.split('|');
-          if (variant.length == 2) {
+          if (variant.length === 2) {
             tracked.push({
               type: 'variant',
               label: `${variant[0]} + ${variant[1]}`,
@@ -1270,7 +1270,7 @@ export default {
         } else {
           this.variant.map((d) => {
             const variant = d.split('|');
-            if (variant.length == 2) {
+            if (variant.length === 2) {
               tracked.push({
                 type: 'variant',
                 label: `${variant[0]} + ${variant[1]}`,
@@ -1296,7 +1296,7 @@ export default {
   },
   mounted() {
     this.darkMode =
-      this.dark == 'true' || (!!this.dark && this.dark != 'false');
+      this.dark === 'true' || (!!this.dark && this.dark !== 'false');
 
     const ofInterest = getBadMutations(true);
     this.moc = ofInterest.moc;
@@ -1313,7 +1313,7 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       // resize listener
       window.addEventListener('resize', this.setDims);
       this.setDims;
@@ -1375,10 +1375,9 @@ export default {
         this.recentWindow,
       ).subscribe((results) => {
         this.lineagesByDay = results.lineagesByDay;
-        this.noRecentData =
+        this.noRecentData = !(
           results.mostRecentLineages && results.mostRecentLineages.length
-            ? false
-            : true;
+        );
 
         this.mostRecentLineages = results.mostRecentLineages;
         this.lineageDomain = results.lineageDomain;
@@ -1406,7 +1405,7 @@ export default {
       }
     },
     submitNewLocation() {
-      if (this.routeTo == 'GenomicsEmbedLocation') {
+      if (this.routeTo === 'GenomicsEmbedLocation') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1518,17 +1517,17 @@ export default {
         this.customMutations.push(this.newVariant);
       }
       let alias = this.customMutations
-        .filter((d) => d.type == 'alias')
+        .filter((d) => d.type === 'alias')
         .map((d) => d.qParam);
       let pango = this.customMutations
-        .filter((d) => d.type == 'pango')
+        .filter((d) => d.type === 'pango')
         .map((d) => d.qParam);
 
       const variant = this.customMutations
-        .filter((d) => d.type == 'variant')
+        .filter((d) => d.type === 'variant')
         .map((d) => d.qParam);
       const mutation = this.customMutations
-        .filter((d) => d.type == 'mutation')
+        .filter((d) => d.type === 'mutation')
         .map((d) => d.qParam);
 
       let selected = this.customMutations
@@ -1546,7 +1545,7 @@ export default {
       // clear new additions
       this.submitCount += 1;
 
-      if (this.routeTo == 'GenomicsEmbedLocation') {
+      if (this.routeTo === 'GenomicsEmbedLocation') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1576,7 +1575,7 @@ export default {
       }
     },
     routeDark() {
-      if (this.routeTo == 'GenomicsEmbedLocation') {
+      if (this.routeTo === 'GenomicsEmbedLocation') {
         this.$router.push({
           name: 'GenomicsEmbed',
           params: {

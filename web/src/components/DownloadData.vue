@@ -62,10 +62,10 @@
         <h2 class="my-3">Download</h2>
         <div
           v-if="
-            type == 'epidemiology' ||
-              type == 'regions' ||
-              type == 'maps' ||
-              type == 'report'
+            type === 'epidemiology' ||
+              type === 'regions' ||
+              type === 'maps' ||
+              type === 'report'
           "
           class="mb-4"
         >
@@ -187,11 +187,11 @@ export default {
       return this.formatDate(this.today, '%d %b %Y');
     },
     filename() {
-      if (this.data && this.data.length === 1 && this.type == 'epidemiology') {
+      if (this.data && this.data.length === 1 && this.type === 'epidemiology') {
         return `${this.data[0].key}_outbreakinfo_epidemiology_data_${this.todayFormatted}`;
-      } else if (this.type == 'resources') {
+      } else if (this.type === 'resources') {
         return `outbreakinfo_resources_metadata_${this.todayFormatted}`;
-      } else if (this.type == 'report') {
+      } else if (this.type === 'report') {
         return `outbreakinfo_mutation_report_data_${this.todayFormatted}`;
       } else {
         return `outbreakinfo_epidemiology_data_${this.todayFormatted}`;
@@ -248,7 +248,7 @@ export default {
       hiddenElement.click();
       this.showDialog = false;
 
-      setTimeout(function() {
+      setTimeout(() => {
         window.URL.revokeObjectURL(hiddenElement.href);
       }, 10);
     },
@@ -354,14 +354,14 @@ ${resourcesString}
         this.downloadable = cloneDeep(data);
 
         // clean up based on the type of data being exported
-        if (this.type == 'epidemiology') {
+        if (this.type === 'epidemiology') {
           this.downloadable = this.downloadable
             .flatMap((location) => location.value)
             .filter((d) => !d.calculated);
 
           this.downloadable.forEach((d) => {
             d['source'] =
-              d.country_name == 'United States of America' ||
+              d.country_name === 'United States of America' ||
               d.iso3 === 'USA' ||
               d.location_id === 'USA'
                 ? 'The New York Times, The COVID Tracking Project'
@@ -370,10 +370,10 @@ ${resourcesString}
             delete d._score;
             delete d.color;
           });
-        } else if (this.type == 'maps') {
+        } else if (this.type === 'maps') {
           this.downloadable.forEach((d) => {
             d['source'] =
-              d.country_name == 'United States of America' ||
+              d.country_name === 'United States of America' ||
               d.iso3 === 'USA' ||
               d.location_id === 'USA'
                 ? 'The New York Times'
@@ -382,13 +382,13 @@ ${resourcesString}
             delete d.datetime;
             delete d.fill;
           });
-        } else if (this.type == 'regions') {
+        } else if (this.type === 'regions') {
           this.downloadable.forEach((d) => {
             d['source'] = 'JHU COVID-19 Data Repository, The New York Times';
             d['date'] = this.formatDate(d.date);
             delete d._score;
           });
-        } else if (this.type == 'resources') {
+        } else if (this.type === 'resources') {
           this.downloadable.forEach((d) => {
             d['source'] = d.curatedBy ? d.curatedBy.name : null;
             delete d._score;
@@ -402,7 +402,7 @@ ${resourcesString}
           });
         }
 
-        if (fileType == 'tsv') {
+        if (fileType === 'tsv') {
           this.downloadTsv();
         } else {
           this.downloadJson();
@@ -414,7 +414,7 @@ ${resourcesString}
 
       let colnames = uniq(data.flatMap((d) => Object.keys(d)));
 
-      var dwnld_data = '';
+      let dwnld_data = '';
       dwnld_data += colnames.join(columnDelimiter);
       dwnld_data += lineDelimiter;
 
@@ -458,7 +458,7 @@ ${resourcesString}
       this.progress = progress;
     });
 
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       // window.addEventListener("click", this.closeDialogBox), { passive: true };
       // Close on escape
       document.addEventListener(

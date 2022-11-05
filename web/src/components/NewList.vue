@@ -32,24 +32,21 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  timeFormat,
-  timeParse
-} from "d3";
+import { timeFormat, timeParse } from 'd3';
 
 export default Vue.extend({
-  name: "NewList",
+  name: 'NewList',
   props: {
-    data: Array
+    data: Array,
   },
   methods: {
     format: function(dateStr) {
-      const parsed = timeParse("%Y-%m-%d")(dateStr);
-      return parsed ? timeFormat("%d %B %Y")(parsed) : null;
-    }
-  }
-})
+      const parsed = timeParse('%Y-%m-%d')(dateStr);
+      return parsed ? timeFormat('%d %B %Y')(parsed) : null;
+    },
+  },
+});
 </script>

@@ -38,54 +38,54 @@
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'pills']"
-                v-if="intervention.category == 'drug'"
+                v-if="intervention.category === 'drug'"
               />
               <!-- <i class="fas fa-prescription-bottle bright" v-if="intervention.category == 'drug'" /> -->
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'dna']"
-                v-if="intervention.category == 'genetic'"
+                v-if="intervention.category === 'genetic'"
               />
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'virus']"
-                v-if="intervention.category == 'biological'"
+                v-if="intervention.category === 'biological'"
               />
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'mortar-pestle']"
-                v-if="intervention.category == 'combination product'"
+                v-if="intervention.category === 'combination product'"
               />
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'notes-medical']"
-                v-if="intervention.category == 'behavioral'"
+                v-if="intervention.category === 'behavioral'"
               />
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'tablet-alt']"
-                v-if="intervention.category == 'device'"
+                v-if="intervention.category === 'device'"
               />
               <!-- <i class="fas fa-laptop-medical bright" v-if="intervention.category == 'device'" /> -->
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'vial']"
-                v-if="intervention.category == 'diagnostic test'"
+                v-if="intervention.category === 'diagnostic test'"
               />
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'capsules']"
-                v-if="intervention.category == 'dietary supplement'"
+                v-if="intervention.category === 'dietary supplement'"
               />
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'user-nurse']"
-                v-if="intervention.category == 'procedure'"
+                v-if="intervention.category === 'procedure'"
               />
               <font-awesome-icon
                 class="bright"
                 :icon="['fas', 'radiation']"
-                v-if="intervention.category == 'radiation'"
+                v-if="intervention.category === 'radiation'"
               />
               <SearchLink
                 :data="[intervention.name]"

@@ -42,21 +42,15 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 import CountryMap from "@/components/CountryMap.vue";
 import uniq from "lodash/uniq";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
 
 library.add(faClock);
 
@@ -83,7 +77,7 @@ export default Vue.extend({
   watch: {},
   mounted() {
     if (this.setWidth) {
-      this.mapWidth = this.setWidth
+      this.mapWidth = this.setWidth;
     } else {
       const targetWidth = this.$refs.map.clientWidth * 0.85;
       this.mapWidth = targetWidth > 600 ? 600 : targetWidth;
@@ -91,10 +85,14 @@ export default Vue.extend({
   },
   computed: {
     countries() {
-      return (uniq(this.locations.map(d => d.studyLocationCountry).sort((a, b) => a < b ? -1 : 1)));
+      return uniq(
+        this.locations
+          .map(d => d.studyLocationCountry)
+          .sort((a, b) => (a < b ? -1 : 1))
+      );
     }
   },
-  methods: {},
+  methods: {}
 });
 </script>
 

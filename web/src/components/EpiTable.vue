@@ -247,7 +247,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -441,10 +441,10 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.prepData();
     },
-    selectedAdminLevels: function() {
+    selectedAdminLevels: () => {
       this.updateData();
     },
   },
@@ -453,7 +453,7 @@ export default Vue.extend({
       this.prepData();
     }
 
-    // this.$nextTick(function() {
+    // this.$nextTick(() => {
     //   tippy(".correction-explanation", {
     //     content: null,
     //     maxWidth: "200px",
@@ -485,14 +485,14 @@ export default Vue.extend({
     }
   },
   computed: {
-    lowerLim: function() {
+    lowerLim: () => {
       return this.page * this.numPerPage;
     },
-    upperLim: function() {
+    upperLim: () => {
       const upper = this.page * this.numPerPage + this.numPerPage;
       return upper > this.total ? this.total : upper;
     },
-    lastPage: function() {
+    lastPage: () => {
       return this.total ?
         Math.floor(this.total / this.numPerPage) :
         null;

@@ -47,7 +47,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
@@ -196,7 +196,7 @@ export default Vue.extend({
       this.mutationArr = uniqBy(this.mutationArr, this.getMutation);
     },
     setupPlot() {
-      this.$nextTick(function() {
+      this.$nextTick(() => {
         window.addEventListener("resize", this.setDims);
 
         // set initial dimensions for the plots.

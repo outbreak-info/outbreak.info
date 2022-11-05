@@ -219,8 +219,8 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 import {
   select,
   selectAll,
@@ -240,30 +240,26 @@ import {
   line,
   area,
   transition,
-  timeDay
-} from "d3";
+  timeDay,
+} from 'd3';
 
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from 'lodash/cloneDeep';
 
-import DownloadReportData from "@/components/DownloadReportData.vue";
-import SequencingHistogram from "@/components/SequencingHistogram.vue";
+import DownloadReportData from '@/components/DownloadReportData.vue';
+import SequencingHistogram from '@/components/SequencingHistogram.vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSearchPlus,
-  faCompressArrowsAlt
-} from "@fortawesome/free-solid-svg-icons/";
+  faCompressArrowsAlt,
+} from '@fortawesome/free-solid-svg-icons/';
 
 library.add(faSearchPlus, faCompressArrowsAlt);
 
 export default Vue.extend({
-  name: "ReportPrevalence",
+  name: 'ReportPrevalence',
   props: {
     data: Array,
     mutationName: String,
@@ -273,25 +269,27 @@ export default Vue.extend({
     setWidth: Number,
     includeToday: {
       type: Boolean,
-      default: true
+      default: true,
     },
     routeName: {
       type: String,
-      default: "MutationReport"
-    }
+      default: 'MutationReport',
+    },
   },
   components: {
     SequencingHistogram,
     DownloadReportData,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   computed: {
     title() {
-      return (this.location == "Worldwide" ? `${this.mutationName} prevalence over time worldwide` : `${this.mutationName} prevalence over time in ${this.location}`)
+      return this.location === 'Worldwide'
+        ? `${this.mutationName} prevalence over time worldwide`
+        : `${this.mutationName} prevalence over time in ${this.location}`;
     },
     countTitle() {
-      return (`Total samples sequenced by collection date in ${this.location}`)
-    }
+      return `Total samples sequenced by collection date in ${this.location}`;
+    },
   },
   data() {
     return {
@@ -301,16 +299,16 @@ export default Vue.extend({
         top: 10,
         bottom: 40,
         left: 85,
-        right: 135
+        right: 135,
       },
       lengthThreshold: 5,
-      CIColor: "#df4ab7",
+      CIColor: '#df4ab7',
       fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
       // data
       plottedData: null,
       // variables
-      xVariable: "dateTime",
-      yVariable: "proportion",
+      xVariable: 'dateTime',
+      yVariable: 'proportion',
       // axes
       x: null,
       y: scaleLinear(),
@@ -327,42 +325,42 @@ export default Vue.extend({
       zoomAllowed: false,
       // refs
       brushRef: null,
-      chart: null
-    }
+      chart: null,
+    };
   },
   watch: {
-    width: function() {
+    width: () => {
       this.setXScale();
       this.updateBrush();
       this.updatePlot();
     },
-    setWidth: function() {
+    setWidth: () => {
       this.setDims();
     },
-    data: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+    data: () => {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmin: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+    xmin: () => {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmax: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+    xmax: () => {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
-    }
+    },
   },
   mounted() {
     if (!this.setWidth) {
-      this.$nextTick(function() {
-        window.addEventListener("resize", this.debounceSetDims);
-      })
+      this.$nextTick(() => {
+        window.addEventListener('resize', this.debounceSetDims);
+      });
       this.updateBrush();
     }
     // set initial dimensions for the plots.
@@ -370,7 +368,7 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
-  created: function() {
+  created: () => {
     this.debounceSetDims = this.debounce(this.setDims, 150);
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
@@ -409,8 +407,8 @@ export default Vue.extend({
     },
     setupPlot() {
       // read in the limits from the route params
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
 
       this.svg = select(this.$refs.svg);
       this.chart = select(this.$refs.chart);
@@ -418,14 +416,14 @@ export default Vue.extend({
 
       // estimate
       this.line = line()
-        .x(d => this.x(d[this.xVariable]))
-        .y(d => this.y(d[this.yVariable]));
+        .x((d) => this.x(d[this.xVariable]))
+        .y((d) => this.y(d[this.yVariable]));
 
       // confidence interval area method
       this.area = area()
-        .x(d => this.x(d[this.xVariable]))
-        .y0(d => this.y(d.proportion_ci_lower))
-        .y1(d => this.y(d.proportion_ci_upper))
+        .x((d) => this.x(d[this.xVariable]))
+        .y0((d) => this.y(d.proportion_ci_lower))
+        .y1((d) => this.y(d.proportion_ci_upper));
 
       this.setXScale();
     },
@@ -437,10 +435,10 @@ export default Vue.extend({
       } else {
         if (this.includeToday) {
           const today = new Date();
-          this.maxDate = max(this.data, d => d[this.xVariable]);
-          xDomain = [min(this.data, d => d[this.xVariable]), today];
+          this.maxDate = max(this.data, (d) => d[this.xVariable]);
+          xDomain = [min(this.data, (d) => d[this.xVariable]), today];
         } else {
-          xDomain = extent(this.data.map(d => d[this.xVariable]));
+          xDomain = extent(this.data.map((d) => d[this.xVariable]));
         }
 
         if (this.xMin && this.xMin < xDomain[1]) {
@@ -458,25 +456,28 @@ export default Vue.extend({
 
       this.plottedData = cloneDeep(this.data);
 
-      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1]);
+      this.plottedData = this.plottedData.filter(
+        (d) =>
+          d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1],
+      );
     },
     updateScales() {
-      const avgMax = max(this.plottedData, d => d[this.yVariable]);
-      const CIMax = max(this.plottedData, d => d.proportion_ci_upper);
+      const avgMax = max(this.plottedData, (d) => d[this.yVariable]);
+      const CIMax = max(this.plottedData, (d) => d.proportion_ci_upper);
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
-        .domain([0, (avgMax + CIMax) * 0.5])
+        .domain([0, (avgMax + CIMax) * 0.5]);
       // .domain([0, max(this.data, d => d[this.yVariable])])
 
-      this.xAxis = axisBottom(this.x)
-        .ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
       select(this.$refs.xAxis).call(this.xAxis);
 
-      const yTickFormat = this.y.domain()[1] < 0.02 ? ".1%" : ".0%";
+      const yTickFormat = this.y.domain()[1] < 0.02 ? '.1%' : '.0%';
 
-      this.yAxis = axisLeft(this.y).tickSizeOuter(0)
+      this.yAxis = axisLeft(this.y)
+        .tickSizeOuter(0)
         .ticks(this.numYTicks)
         .tickFormat(format(yTickFormat));
 
@@ -485,43 +486,59 @@ export default Vue.extend({
     tooltipOn() {
       const ttipShift = 20;
 
-      // find closest date
+      // find the closest date
       const selectedX = this.x.invert(event.offsetX - this.margin.left);
       const selectedDate = timeDay.round(selectedX);
-      const selected = this.plottedData.filter(d => Math.abs(d.dateTime - selectedDate) < 1e-12);
+      const selected = this.plottedData.filter(
+        (d) => Math.abs(d.dateTime - selectedDate) < 1e-12,
+      );
 
       if (selected.length) {
         // tooltip on
         const ttip = select(this.$refs.tooltip_prevalence);
 
         // edit text
-        ttip.select("h5").text(selected[0].date)
+        ttip.select('h5').text(selected[0].date);
 
-        ttip.select("#proportion").text(format(".0%")(selected[0].proportion))
-        ttip.select("#confidence-interval").text(`(95% CI: ${format(".0%")(selected[0].proportion_ci_lower)}-${format(".0%")(selected[0].proportion_ci_upper)})`)
-        ttip.select("#sequencing-count").text(`Number of cases: ${format(",")(selected[0].lineage_count)}/${format(",")(selected[0].total_count)}`)
-        ttip.select("#sequencing-count-rolling").text(`Rolling average: ${format(",.1f")(selected[0].lineage_count_rolling)}/${format(",.1f")(selected[0].total_count_rolling)}`)
+        ttip.select('#proportion').text(format('.0%')(selected[0].proportion));
+        ttip
+          .select('#confidence-interval')
+          .text(
+            `(95% CI: ${format('.0%')(
+              selected[0].proportion_ci_lower,
+            )}-${format('.0%')(selected[0].proportion_ci_upper)})`,
+          );
+        ttip
+          .select('#sequencing-count')
+          .text(
+            `Number of cases: ${format(',')(
+              selected[0].lineage_count,
+            )}/${format(',')(selected[0].total_count)}`,
+          );
+        ttip
+          .select('#sequencing-count-rolling')
+          .text(
+            `Rolling average: ${format(',.1f')(
+              selected[0].lineage_count_rolling,
+            )}/${format(',.1f')(selected[0].total_count_rolling)}`,
+          );
 
         // fix location
         ttip
-          .style("left", `${event.clientX + ttipShift}px`)
-          .style("top", `${event.clientY + ttipShift}px`)
-          .style("display", "block");
+          .style('left', `${event.clientX + ttipShift}px`)
+          .style('top', `${event.clientY + ttipShift}px`)
+          .style('display', 'block');
 
         // histogram off/on
-        selectAll(".raw-counts")
-          .style("opacity", 0.3);
+        selectAll('.raw-counts').style('opacity', 0.3);
 
-        selectAll(`#date${selected[0].date}`)
-          .style("opacity", 1);
+        selectAll(`#date${selected[0].date}`).style('opacity', 1);
       }
     },
     tooltipOff() {
-      select(this.$refs.tooltip_prevalence)
-        .style("display", "none");
+      select(this.$refs.tooltip_prevalence).style('display', 'none');
 
-      selectAll(".raw-counts")
-        .style("opacity", 1);
+      selectAll('.raw-counts').style('opacity', 1);
     },
     updatePlot() {
       const t1 = transition().duration(2500);
@@ -531,95 +548,117 @@ export default Vue.extend({
 
         // hash to highlight the gap between today
         if (this.includeToday) {
-          const noDataSelector = this.chart
-            .selectAll(".no-data")
-            .data([0]);
+          const noDataSelector = this.chart.selectAll('.no-data').data([0]);
 
           noDataSelector.join(
-            enter => {
-              enter.append("rect")
-                .attr("class", "no-data")
-                .attr("x", this.x(this.maxDate))
-                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
-                .attr("height", this.height - this.margin.top - this.margin.bottom)
-                .style("fill", "url(#diagonalHatchLight)")
+            (enter) => {
+              enter
+                .append('rect')
+                .attr('class', 'no-data')
+                .attr('x', this.x(this.maxDate))
+                .attr(
+                  'width',
+                  this.width -
+                    this.margin.left -
+                    this.margin.right -
+                    this.x(this.maxDate),
+                )
+                .attr(
+                  'height',
+                  this.height - this.margin.top - this.margin.bottom,
+                )
+                .style('fill', 'url(#diagonalHatchLight)');
             },
-            update => {
+            (update) => {
               update
-                .attr("height", this.height - this.margin.top - this.margin.bottom)
-                .style("fill", "url(#diagonalHatchLight)")
+                .attr(
+                  'height',
+                  this.height - this.margin.top - this.margin.bottom,
+                )
+                .style('fill', 'url(#diagonalHatchLight)')
                 .transition(100)
-                .attr("x", this.x(this.maxDate))
-                .attr("width", this.width - this.margin.left - this.margin.right - this.x(this.maxDate))
+                .attr('x', this.x(this.maxDate))
+                .attr(
+                  'width',
+                  this.width -
+                    this.margin.left -
+                    this.margin.right -
+                    this.x(this.maxDate),
+                );
             },
-            exit =>
-            exit.call(exit =>
-              exit
-              .transition()
-              .style("opacity", 1e-5)
-              .remove()
-            )
-          )
+            (exit) =>
+              exit.call((exit) =>
+                exit
+                  .transition()
+                  .style('opacity', 1e-5)
+                  .remove(),
+              ),
+          );
         }
 
         const CISelector = this.chart
-          .selectAll(".confidence-interval")
+          .selectAll('.confidence-interval')
           .data([this.plottedData]);
 
         CISelector.join(
-          enter => {
-            enter.append("path")
-              .attr("class", "confidence-interval")
-              .style("fill", this.CIColor)
-              .style("fill-opacity", 0.3)
-              .attr("d", this.area)
+          (enter) => {
+            enter
+              .append('path')
+              .attr('class', 'confidence-interval')
+              .style('fill', this.CIColor)
+              .style('fill-opacity', 0.3)
+              .attr('d', this.area);
           },
-          update => update
-          // .transition(t1)
-          .attr("d", this.area),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
+          (update) =>
+            update
+              // .transition(t1)
+              .attr('d', this.area),
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
 
         const pathSelector = this.chart
-          .selectAll(".prevalence-line")
+          .selectAll('.prevalence-line')
           .data([this.plottedData]);
 
         pathSelector.join(
-          enter => {
-            enter.append("path")
-              .attr("class", "prevalence-line")
-              .style("stroke", "#2c3e50")
-              .style("fill", "none")
-              .style("stroke-width", "2.5")
-              .datum(d => d)
-              .attr("d", this.line)
+          (enter) => {
+            enter
+              .append('path')
+              .attr('class', 'prevalence-line')
+              .style('stroke', '#2c3e50')
+              .style('fill', 'none')
+              .style('stroke-width', '2.5')
+              .datum((d) => d)
+              .attr('d', this.line);
           },
           // update
-          update => update
-          .datum(d => d)
-          // .transition(t1)
-          .attr("d", this.line),
+          (update) =>
+            update
+              .datum((d) => d)
+              // .transition(t1)
+              .attr('d', this.line),
 
           // exit
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
 
         // event listener for tooltips
-        this.chart.selectAll(".confidence-interval")
-          .on("mousemove", () => this.tooltipOn())
-          .on("mouseleave", () => this.tooltipOff())
+        this.chart
+          .selectAll('.confidence-interval')
+          .on('mousemove', () => this.tooltipOn())
+          .on('mouseleave', () => this.tooltipOff());
       }
     },
     updateBrush() {
@@ -627,13 +666,14 @@ export default Vue.extend({
       this.brush = brushX()
         .extent([
           [0, 0],
-          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+          [
+            this.width - this.margin.left - this.margin.right,
+            this.height - this.margin.top - this.margin.bottom,
+          ],
         ])
-        .on("end", () => this.debounceZoom(event));
+        .on('end', () => this.debounceZoom(event));
 
-      this.brushRef
-        .call(this.brush)
-        .on("dblclick", this.resetZoom);
+      this.brushRef.call(this.brush).on('dblclick', this.resetZoom);
     },
     zoom(evt, ref) {
       // reset domain to new coords
@@ -649,7 +689,9 @@ export default Vue.extend({
 
         // update plotted data
         this.plottedData = cloneDeep(this.data);
-        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
+        this.plottedData = this.plottedData.filter(
+          (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
+        );
 
         // move the brush
         this.brushRef.call(this.brush.move, null);
@@ -659,43 +701,41 @@ export default Vue.extend({
         // update route
         const queryParams = this.$route.query;
 
-        if (this.routeName == "MutationReport") {
+        if (this.routeName === 'MutationReport') {
           const params = this.$route.params;
           this.$router.push({
             name: this.routeName,
             params: {
               disableScroll: true,
-              alias: params.alias
+              alias: params.alias,
             },
             query: {
-              xmin: timeFormat("%Y-%m-%d")(newMin),
-              xmax: timeFormat("%Y-%m-%d")(newMax),
+              xmin: timeFormat('%Y-%m-%d')(newMin),
+              xmax: timeFormat('%Y-%m-%d')(newMax),
               loc: queryParams.loc,
               muts: queryParams.muts,
               pango: queryParams.pango,
-              selected: queryParams.selected
-            }
-          })
-        }
-
-        else if (this.routeName == "GenomicsEmbedVariant") {
+              selected: queryParams.selected,
+            },
+          });
+        } else if (this.routeName === 'GenomicsEmbedVariant') {
           const params = this.$route.params;
           this.$router.push({
-            name: "GenomicsEmbed",
+            name: 'GenomicsEmbed',
             params: {
-              disableScroll: true
+              disableScroll: true,
             },
             query: {
-              type: "var",
+              type: 'var',
               alias: queryParams.alias,
-              xmin: timeFormat("%Y-%m-%d")(newMin),
-              xmax: timeFormat("%Y-%m-%d")(newMax),
+              xmin: timeFormat('%Y-%m-%d')(newMin),
+              xmax: timeFormat('%Y-%m-%d')(newMax),
               loc: queryParams.loc,
               muts: queryParams.muts,
               pango: queryParams.pango,
-              selected: queryParams.selected
-            }
-          })
+              selected: queryParams.selected,
+            },
+          });
         }
       }
     },
@@ -708,36 +748,35 @@ export default Vue.extend({
       this.xMax = null;
       this.setXScale();
 
-      if (this.routeName == "MutationReport") {
+      if (this.routeName === 'MutationReport') {
         this.$router.push({
           name: this.routeName,
           params: {
             disableScroll: true,
-            alias: params.alias
+            alias: params.alias,
           },
           query: {
             loc: queryParams.loc,
             muts: queryParams.muts,
             pango: queryParams.pango,
-            selected: queryParams.selected
-          }
-        })
-      }
-      else if (this.routeName == "GenomicsEmbedVariant") {
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedVariant') {
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           params: {
-            disableScroll: true
+            disableScroll: true,
           },
           query: {
-            type: "var",
+            type: 'var',
             alias: queryParams.alias,
             loc: queryParams.loc,
             muts: queryParams.muts,
             pango: queryParams.pango,
-            selected: queryParams.selected
-          }
-        })
+            selected: queryParams.selected,
+          },
+        });
       }
 
       this.updatePlot();
@@ -746,22 +785,22 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     debounce(fn, delay) {
-      var timer = null;
-      return function() {
-        var context = this,
+      let timer = null;
+      return () => {
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(() => {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);
         }, delay);
       };
-    }
-  }
-})
+    },
+  },
+});
 </script>
 
 <style lang="scss">

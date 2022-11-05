@@ -46,21 +46,21 @@
           class="border-top border-bottom"
           :class="{
             custom: lineageGroup.key.includes('Custom'),
-            voc: lineageGroup.key == 'Variant of Concern',
-            moc: lineageGroup.key == 'Mutation of Concern',
-            vum: lineageGroup.key == 'Variant under Monitoring',
-            moi: lineageGroup.key == 'Mutation of Interest',
-            voi: lineageGroup.key == 'Variant of Interest',
+            voc: lineageGroup.key === 'Variant of Concern',
+            moc: lineageGroup.key === 'Mutation of Concern',
+            vum: lineageGroup.key === 'Variant under Monitoring',
+            moi: lineageGroup.key === 'Mutation of Interest',
+            voi: lineageGroup.key === 'Variant of Interest',
           }"
         >
           <td
             colspan="6"
             :class="{
-              voc: lineageGroup.key == 'Variant of Concern',
-              moc: lineageGroup.key == 'Mutation of Concern',
-              moi: lineageGroup.key == 'Mutation of Interest',
-              vum: lineageGroup.key == 'Variant under Monitoring',
-              voi: lineageGroup.key == 'Variant of Interest',
+              voc: lineageGroup.key === 'Variant of Concern',
+              moc: lineageGroup.key === 'Mutation of Concern',
+              moi: lineageGroup.key === 'Mutation of Interest',
+              vum: lineageGroup.key === 'Variant under Monitoring',
+              voi: lineageGroup.key === 'Variant of Interest',
             }"
           >
             {{ lineageGroup.key }}
@@ -87,7 +87,7 @@
               }"
               :data-tippy-info="lineage.tooltip"
               v-if="
-                routeTo == 'GenomicsEmbedLocation' &&
+                routeTo === 'GenomicsEmbedLocation' &&
                   lineage.params &&
                   lineage.params.alias
               "
@@ -106,7 +106,7 @@
                 },
               }"
               :data-tippy-info="lineage.tooltip"
-              v-else-if="routeTo == 'GenomicsEmbedLocation'"
+              v-else-if="routeTo === 'GenomicsEmbedLocation'"
             >
               {{ lineage.label }}
             </router-link>
@@ -129,13 +129,13 @@
           <td
             :class="{
               'text-muted':
-                lineage.proportion_formatted == 'no estimate' ||
-                lineage.proportion_formatted == 'not detected',
+                lineage.proportion_formatted === 'no estimate' ||
+                lineage.proportion_formatted === 'not detected',
             }"
           >
             <span
               :class="{
-                'no-estimate': lineage.proportion_formatted == 'no estimate',
+                'no-estimate': lineage.proportion_formatted === 'no estimate',
               }"
               :data-tippy-info="
                 `Prevalence estimates are unreliable since only ${

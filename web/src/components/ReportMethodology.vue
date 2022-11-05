@@ -4,6 +4,7 @@
     <div v-if="summary">
       <p>
         All SARS-CoV sequences are received via direct provision from the
+
         <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
           GISAID Initiative
         </a>
@@ -213,78 +214,70 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-
+<script>
+import Vue from 'vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons/faClock";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons/faClock';
 
 library.add(faClock);
 
-import Warning from "@/components/Warning.vue";
+import Warning from '@/components/Warning.vue';
 
 // --- store / Vuex ---
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import {
-  getDateUpdated
-} from "@/api/genomics.js";
+import { getDateUpdated } from '@/api/genomics.js';
 
-import {format} from "d3";
+import { format } from 'd3';
 
 export default {
-  name: "ReportMethodology",
+  name: 'ReportMethodology',
   props: {
     dateUpdated: String,
     summary: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   components: {
     Warning,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   computed: {
-    ...mapState("genomics", ["refSeq", "characteristicThreshold"]),
+    ...mapState('genomics', ['refSeq', 'characteristicThreshold']),
     charMutThreshold() {
-      return(format(".0%")(this.characteristicThreshold))
-    }
+      return format('.0%')(this.characteristicThreshold);
+    },
   },
   data() {
     return {
-      lastUpdated: "15 March 2021",
-      disclaimer: "SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
+      lastUpdated: '15 March 2021',
+      disclaimer:
+        "SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
       updated: null,
-      updatedSubscription: null
-    }
+      updatedSubscription: null,
+    };
   },
   mounted() {
     if (this.dateUpdated) {
       this.updated = this.dateUpdated;
     } else {
-      this.updatedSubscription = getDateUpdated(this.$genomicsurl).subscribe(result => {
-        this.updated = result.dateUpdated;
-      })
+      this.updatedSubscription = getDateUpdated(this.$genomicsurl).subscribe(
+        (result) => {
+          this.updated = result.dateUpdated;
+        },
+      );
     }
   },
   destroyed() {
     if (this.updatedSubscription) {
       this.updatedSubscription.unsubscribe();
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss">

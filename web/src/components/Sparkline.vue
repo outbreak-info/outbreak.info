@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import { select, selectAll, scaleLinear, scaleTime, extent, max, area } from "d3";
@@ -31,7 +31,7 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.updatePlot();
     }
   },

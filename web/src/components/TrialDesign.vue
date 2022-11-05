@@ -2,7 +2,7 @@
   <div class="mt-2">
     <!-- health condition -->
     <div id="condition" v-if="data.healthCondition">
-      {{ data.healthCondition.length == 1 ? 'Condition:' : 'Conditions' }}
+      {{ data.healthCondition.length === 1 ? 'Condition:' : 'Conditions' }}
       <SearchLink
         :data="data.healthCondition"
         tooltipLabel="trials"

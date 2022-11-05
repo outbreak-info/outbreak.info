@@ -96,7 +96,7 @@ export default {
       epi: null,
     };
   },
-  created: function() {
+  created: () => {
     this.debounceSelectMutation = debounce(this.selectMutation, 250);
   },
   mounted() {
@@ -118,7 +118,7 @@ export default {
   methods: {
     selectMutation() {
       const queryParams = this.$route.query;
-      if (this.routeTo == 'GenomicsEmbedLocation')
+      if (this.routeTo === 'GenomicsEmbedLocation')
         this.$router.push({
           name: 'GenomicsEmbed',
           params: {
@@ -160,7 +160,7 @@ export default {
       if (this.selected && this.selected.length) {
         this.selectedMutations =
           typeof this.selected == 'string'
-            ? this.options.filter((d) => this.selected == d.label)
+            ? this.options.filter((d) => this.selected === d.label)
             : this.options.filter((d) => uniq(this.selected).includes(d.label));
       } else {
         this.selectedMutations = this.options.slice(0, this.numPreselected);

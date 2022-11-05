@@ -58,7 +58,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import { getDoubling, getAllDoubling } from '@/api/calc-doubling.js';
 
@@ -134,7 +134,7 @@ export default Vue.extend({
       this.locationID = result;
       this.updateData();
     },
-    updateData: function() {
+    updateData: () => {
       this.dataSubscription = getDoubling(
         this.$apiurl,
         this.locationID,

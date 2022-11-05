@@ -79,7 +79,7 @@ export default {
         : null;
     },
   },
-  created: function() {
+  created: () => {
     this.debounceSearch = debounce(this.change, 250);
   },
   data() {
@@ -126,7 +126,7 @@ export default {
         ).subscribe((results) => {
           this.matches = results;
 
-          if (this.isOpen == false) {
+          if (this.isOpen === false) {
             this.isOpen = true;
             this.current = 0;
           }

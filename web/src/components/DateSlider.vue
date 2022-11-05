@@ -79,9 +79,8 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
-
 
 import {
   timeParse,
@@ -96,12 +95,8 @@ import {
 } from "d3";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faPlay,
   faPause,
@@ -111,7 +106,14 @@ import {
   faFastBackward
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faPlay, faPause, faStepForward, faFastForward, faStepBackward, faFastBackward);
+library.add(
+  faPlay,
+  faPause,
+  faStepForward,
+  faFastForward,
+  faStepBackward,
+  faFastBackward
+);
 
 export default Vue.extend({
   name: "DateSlider",
@@ -141,27 +143,27 @@ export default Vue.extend({
       x: null,
       xAxis: null,
       isPlaying: false
-    }
+    };
   },
   computed: {
     hideBack7() {
-      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 7)
+      return (this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 7;
     },
     hideBack1() {
-      return ((this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 1)
+      return (this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 1;
     },
     hideForward7() {
-      return ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 7)
+      return (this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 7;
     },
     hideForward1() {
-      return ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 1)
+      return (this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 1;
     },
     formattedDate() {
-      return (this.formatDate(this.selectedDate, "%d %B %Y"));
+      return this.formatDate(this.selectedDate, "%d %B %Y");
     }
   },
   watch: {
-    date: function() {
+    date: () => {
       this.updateAxis();
     }
   },
@@ -181,15 +183,18 @@ export default Vue.extend({
 
       if (this.isPlaying) {
         this.$gtag.event("map_play", {
-          'event_category': `map_play`,
-          'event_label': `playing map starting from [${this.$route.fullPath}])`
+          event_category: `map_play`,
+          event_label: `playing map starting from [${this.$route.fullPath}])`
         });
 
         this.start(dayGap);
       }
     },
     start(dayGap) {
-      if ((timeDay.offset(this.selectedDate, dayGap) <= this.max) && this.isPlaying) {
+      if (
+        timeDay.offset(this.selectedDate, dayGap) <= this.max &&
+        this.isPlaying
+      ) {
         setTimeout(() => {
           this.changeDate(dayGap, false);
           this.start(dayGap);
@@ -222,27 +227,31 @@ export default Vue.extend({
       });
     },
     parseDate(dateStr, format = "%Y-%m-%d") {
-      return (timeParse(format)(dateStr))
+      return timeParse(format)(dateStr);
     },
     formatDate(dateNum, format = "%Y-%m-%d") {
-      return (timeFormat(format)(dateNum))
+      return timeFormat(format)(dateNum);
     },
     setupDrag() {
-      select("#slider-date")
-        .call(drag()
+      select("#slider-date").call(
+        drag()
           // .on("start", this.dragstarted)
           .on("drag", this.dragged)
-          .on("end", this.dragended))
+          .on("end", this.dragended)
+      );
     },
     dragCallback() {
-      return drag()
-        // .on("start", this.dragstarted)
-        .on("drag", this.dragged)
-        .on("end", this.dragended);
+      return (
+        drag()
+          // .on("start", this.dragstarted)
+          .on("drag", this.dragged)
+          .on("end", this.dragended)
+      );
     },
     dragged(d) {
       // update position of circle
-      const newX = event.x < 0 ? 0 : (event.x > this.width ? this.width : event.x);
+      const newX =
+        event.x < 0 ? 0 : event.x > this.width ? this.width : event.x;
       select(this.$refs.drag_circle).attr("cx", newX);
       // update date displayed
       this.selectedDate = this.x.invert(event.x);
@@ -269,7 +278,9 @@ export default Vue.extend({
         .range([0, this.width])
         .domain([this.min, this.max]);
 
-      this.xAxis = axisBottom(this.x).ticks(2).tickSizeOuter(0);
+      this.xAxis = axisBottom(this.x)
+        .ticks(2)
+        .tickSizeOuter(0);
 
       select(this.$refs.xAxis).call(this.xAxis);
 
@@ -281,7 +292,7 @@ export default Vue.extend({
       this.xDate = this.x(this.selectedDate);
     }
   }
-})
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

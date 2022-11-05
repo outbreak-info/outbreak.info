@@ -53,7 +53,7 @@ export default {
     animate: Boolean,
   },
   watch: {
-    data: function() {
+    data: () => {
       this.drawPlot();
     },
   },
@@ -73,7 +73,7 @@ export default {
     };
   },
   computed: {
-    fullTitle: function() {
+    fullTitle: () => {
       return this.sortAsc ? 'Lowest' : 'Highest';
     },
     numberFormatter() {
@@ -275,10 +275,10 @@ export default {
         .data(this.plottedData, (d) => d.location_id);
 
       // Lazy trunction of too long names
-      function trimText(text, threshold) {
+      const trimText = (text, threshold) => {
         if (text.length <= threshold) return text;
         return text.substr(0, threshold).concat('...');
-      }
+      };
 
       const locationNameThresh = 8;
 
@@ -346,7 +346,6 @@ export default {
                 );
               }
             }),
-
         (exit) =>
           exit.call((exit) =>
             exit

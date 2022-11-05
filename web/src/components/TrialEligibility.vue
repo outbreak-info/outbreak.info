@@ -4,7 +4,7 @@
     <div id="gender-eligiblity">
       Gender:
       <span class="ml-2">
-        <template v-if="inclFemale || inclFemale == false">
+        <template v-if="inclFemale || inclFemale === false">
           <font-awesome-icon
             class="bright"
             :icon="['far', 'check-square']"
@@ -17,8 +17,7 @@
             :class="{ bright: inclFemale }"
           />
         </template>
-
-        <template v-if="inclMale || inclMale == false">
+        <template v-if="inclMale || inclMale === false">
           <font-awesome-icon
             class="bright"
             :icon="['far', 'check-square']"
@@ -92,8 +91,8 @@
       <small class="text-muted">
         Think something looks off with the inclusion/exclusion criteria?
         <a @click.prevent="showCriteria = !showCriteria" href="">
-          {{ showCriteria ? 'Hide criteria' : 'Show original criteria' }} before
-          parsing
+          {{ showCriteria ? 'Hide criteria' : 'Show original criteria' }}
+          before parsing
         </a>
         <font-awesome-icon
           :icon="['fas', 'angle-double-down']"

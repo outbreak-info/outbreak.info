@@ -33,7 +33,7 @@ export default {
     label: String,
     colorScale: Function,
   },
-  data: function() {
+  data: () => {
     return {
       margin: {
         top: 8,
@@ -318,7 +318,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped="true">
+<style lang="scss" scoped>
 .annotation {
   font-size: 0.7em;
   line-height: 1.1em;

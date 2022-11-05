@@ -280,14 +280,14 @@ export default {
     document.body.appendChild(altmetricsScript);
   },
   methods: {
-    copy2Clipboard: function() {
+    copy2Clipboard: () => {
       this.showSnackbar = true;
       setTimeout(() => {
         this.showSnackbar = false;
       }, 3000);
       navigator.clipboard.writeText(this.outbreakUrl);
     },
-    downloadCitation: function() {
+    downloadCitation: () => {
       const ris = formatRIS(this.data);
 
       if (ris) {
@@ -296,7 +296,7 @@ export default {
         this.$refs.risDownload.click();
       }
     },
-    shareLink: function() {
+    shareLink: () => {
       if (navigator.share) {
         navigator.share({
           title: `outbreak.info ${this.type}`,

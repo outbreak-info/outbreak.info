@@ -120,7 +120,6 @@
 
 <script>
 import Vue from 'vue';
-
 import { select, selectAll, scaleLinear, scaleBand, axisLeft, sum } from 'd3';
 
 // --- font awesome --
@@ -152,7 +151,7 @@ export default Vue.extend({
     routeTo: String,
     margin: {
       type: Object,
-      default: function() {
+      default: () => {
         return {
           left: 80,
           right: 100,
@@ -172,7 +171,7 @@ export default Vue.extend({
   },
   computed: {
     geographicName() {
-      return this.location == 'Worldwide'
+      return this.location === 'Worldwide'
         ? 'globally'
         : this.location
         ? `in ${this.location}`
@@ -212,7 +211,7 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.preprocessData();
       this.updatePlot();
     },
@@ -220,7 +219,7 @@ export default Vue.extend({
   methods: {
     handleLineageClick(lineage) {
       const queryParams = this.$route.query;
-      if (this.routeTo == 'GenomicsEmbedVariant') {
+      if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -250,7 +249,7 @@ export default Vue.extend({
 
       if (this.hideZeros) {
         this.processedData = this.processedData.filter((d) => d.lineage_count);
-        this.areZerosFiltered = this.data.length != this.processedData.length;
+        this.areZerosFiltered = this.data.length !== this.processedData.length;
       } else {
         this.areZerosFiltered = false;
       }
@@ -263,7 +262,7 @@ export default Vue.extend({
       this.svg = select(this.$refs.horizontal_bargraph);
       this.preprocessData();
     },
-    updatePlot: function() {
+    updatePlot: () => {
       this.updateAxes();
       this.drawBars();
     },
@@ -276,7 +275,7 @@ export default Vue.extend({
 
       select(this.$refs.yAxis)
         .selectAll('text')
-        .filter((axis_label) => axis_label == d[this.yVar])
+        .filter((axis_label) => axis_label === d[this.yVar])
         .style('opacity', 1);
 
       this.svg.select(`#${d.id}`).style('opacity', 1);

@@ -462,7 +462,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import tippy from "tippy.js";
@@ -541,7 +541,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState("admin", ["loading", "resources"]),
-    datePublished: function() {
+    datePublished: () => {
       return (this.formatDate(this.data.dateModified))
     },
     retractionText() {

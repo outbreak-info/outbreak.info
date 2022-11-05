@@ -30,8 +30,8 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
 import {
   select,
@@ -40,18 +40,18 @@ import {
   arc,
   scaleOrdinal,
   scaleBand,
-  schemeSet2
-} from "d3";
+  schemeSet2,
+} from 'd3';
 
 export default Vue.extend({
-  name: "Donut",
+  name: 'Donut',
   props: {
     data: Array,
     id: String,
     width: {
       type: Number,
-      default: 60
-    }
+      default: 60,
+    },
   },
   data() {
     return {
@@ -63,24 +63,24 @@ export default Vue.extend({
       // methods
       pie: null,
       arc: null,
-      colorScale: null
+      colorScale: null,
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.updatePlot();
-    }
+    },
   },
   methods: {
     setupPlot() {
       this.svg = select(this.$refs.pie);
 
       this.pie = pie()
-        .sort((a, b) => a.value > b.value ? -1 : 1)
-        .value(d => d.count);
+        .sort((a, b) => (a.value > b.value ? -1 : 1))
+        .value((d) => d.count);
 
       this.arc = arc()
-        .innerRadius(this.width / 2 * this.holeFrac)
+        .innerRadius((this.width / 2) * this.holeFrac)
         .outerRadius(this.width / 2 - 1);
     },
     updatePlot() {
@@ -91,45 +91,60 @@ export default Vue.extend({
     },
     updateScales() {},
     drawPlot() {
-      this.nonZero = this.data.filter(d => d.count);
+      this.nonZero = this.data.filter((d) => d.count);
       const arcs = this.pie(this.nonZero);
-      if (this.id == "Type") {
+      if (this.id === 'Type') {
         this.colorScale = scaleOrdinal()
-          .range(["#507ea3", // blue (Dataset)
-            "#f28e2c", // orange (WebSite)
-            "#e15759", // coral (Publication)
-            "#76b7b2", // teal (Analysis)
-            "#59a14f", // green (Protocol)
-            "#edc949", // yellow (ImageObject)
-            "#b475a3", // purple (ClinicalTrial)
-            "#ff98a8", // pink (Book)
-            "#a97252", // brown (ComputationalTool)
-            "#9c755f"
+          .range([
+            '#507ea3', // blue (Dataset)
+            '#f28e2c', // orange (WebSite)
+            '#e15759', // coral (Publication)
+            '#76b7b2', // teal (Analysis)
+            '#59a14f', // green (Protocol)
+            '#edc949', // yellow (ImageObject)
+            '#b475a3', // purple (ClinicalTrial)
+            '#ff98a8', // pink (Book)
+            '#a97252', // brown (ComputationalTool)
+            '#9c755f',
           ])
-          .domain(["Dataset", "WebSite", "Publication", "Analysis", "Protocol", "ImageObject", "ClinicalTrial", "Book", "ComputationalTool"])
-          .unknown("#bababa");
+          .domain([
+            'Dataset',
+            'WebSite',
+            'Publication',
+            'Analysis',
+            'Protocol',
+            'ImageObject',
+            'ClinicalTrial',
+            'Book',
+            'ComputationalTool',
+          ])
+          .unknown('#bababa');
       } else {
         this.colorScale = scaleOrdinal(schemeSet2)
-          .domain(this.nonZero.map(d => d.term).slice(0, 5))
-          .unknown("#bababa");
+          .domain(this.nonZero.map((d) => d.term).slice(0, 5))
+          .unknown('#bababa');
       }
 
-      const donutSelector = this.svg.selectAll("path").data(arcs);
+      const donutSelector = this.svg.selectAll('path').data(arcs);
 
-      donutSelector.join(enter => {
-          enter.append("path")
-            .attr("d", this.arc)
-            .style("fill", d => this.colorScale(d.data.term))
+      donutSelector.join(
+        (enter) => {
+          enter
+            .append('path')
+            .attr('d', this.arc)
+            .style('fill', (d) => this.colorScale(d.data.term));
         },
-        update => update
-        .attr("d", this.arc)
-        .style("fill", d => this.colorScale(d.data.term)))
-    }
+        (update) =>
+          update
+            .attr('d', this.arc)
+            .style('fill', (d) => this.colorScale(d.data.term)),
+      );
+    },
   },
   mounted() {
     this.setupPlot();
     this.updatePlot();
-  }
+  },
 });
 </script>
 

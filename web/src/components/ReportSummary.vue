@@ -264,7 +264,7 @@ export default {
   mounted() {
     this.setDims();
 
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('resize', this.setDims);
     });
 

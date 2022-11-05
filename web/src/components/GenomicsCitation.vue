@@ -29,20 +29,21 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
 export default Vue.extend({
-  name: "GenomicsCitation",
+  name: 'GenomicsCitation',
   components: {
-    ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue")
+    ShareReport: () =>
+      import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
   },
   props: {
     title: String,
     mutationAuthors: String,
     genomicsCitation: String,
     url: String,
-    today: String
-  }
-})
+    today: String,
+  },
+});
 </script>

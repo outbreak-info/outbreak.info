@@ -17,10 +17,10 @@
           <td>
             {{ mutation.gene }}
           </td>
-          <td v-if="mutation.type == 'substitution'">
+          <td v-if="mutation.type === 'substitution'">
             {{ mutation.ref_aa }}{{ mutation.codon_num }}{{ mutation.alt_aa }}
           </td>
-          <td v-else-if="mutation.type == 'deletion'">
+          <td v-else-if="mutation.type === 'deletion'">
             {{ mutation.mutation.replace(/(.)*:/, '') }}
             <!-- <span v-if="Array.isArray(mutation.codon_num)">&Delta;{{mutation.codon_num[0]}}-{{mutation.codon_num.slice(-1)[0]}}</span>
         <span v-else>&Delta;{{mutation.codon_num}}
@@ -32,38 +32,34 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-import cloneDeep from "lodash/cloneDeep";
-import NT_MAP from "@/assets/genomics/sarscov2_NC045512_genes_nt.json";
+<script>
+import Vue from 'vue';
+import cloneDeep from 'lodash/cloneDeep';
+import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 
 export default Vue.extend({
-  name: "MutationTable",
+  name: 'MutationTable',
   props: {
     mutations: Array,
-    tableTitle: String
+    tableTitle: String,
   },
   computed: {
     sortedMutations() {
       let sortedMutations = [];
       sortedMutations = cloneDeep(this.mutations);
-      function compare(a, b) {
-	if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP))
-	  return 0;
-	if (NT_MAP[a.gene].start < NT_MAP[b.gene].start)
-	  return -1;
-	if (NT_MAP[a.gene].start > NT_MAP[b.gene].start)
-	  return 0;
-	return (a.codon_num < b.codon_num ? -1 : 0);
-      }
+      const compare = (a, b) => {
+        if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP)) return 0;
+        if (NT_MAP[a.gene].start < NT_MAP[b.gene].start) return -1;
+        if (NT_MAP[a.gene].start > NT_MAP[b.gene].start) return 0;
+        return a.codon_num < b.codon_num ? -1 : 0;
+      };
 
       sortedMutations = sortedMutations.sort(compare);
 
       return sortedMutations;
-    }
-  }
-
-})
+    },
+  },
+});
 </script>
 
 <style lang="scss" scoped>
@@ -100,7 +96,7 @@ export default Vue.extend({
 <!-- </div> -->
 <!-- </template> -->
 
-<!-- <script lang="js"> -->
+<!-- <script> -->
 <!-- import Vue from "vue"; -->
 
 <!-- import { -->
@@ -141,7 +137,7 @@ export default Vue.extend({
 <!--     } -->
 <!--   }, -->
 <!--   watch: { -->
-<!--     data: function() { -->
+<!--     data: () => { -->
 <!--       this.updatePlot(); -->
 <!--     } -->
 <!--   }, -->
@@ -187,7 +183,7 @@ export default Vue.extend({
 <!--     setupPlot() { -->
 <!--       this.chart = select(this.$refs.mut_bars); -->
 <!--     }, -->
-<!--     updatePlot: function() { -->
+<!--     updatePlot: () => { -->
 <!--       if (this.data) { -->
 <!--         this.updateAxes(); -->
 <!--         this.drawPlot(); -->

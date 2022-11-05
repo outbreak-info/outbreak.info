@@ -156,10 +156,10 @@ export default {
     animate: Boolean,
   },
   watch: {
-    data: function() {
+    data: () => {
       this.updatePlot();
     },
-    variable: function() {
+    variable: () => {
       this.updatePlot();
     },
     minVal: {
@@ -230,7 +230,7 @@ export default {
         : format(',.0f');
     },
     filterString() {
-      var filter = null;
+      let filter = null;
       if (
         (this.minVal || this.minVal === 0) &&
         (this.maxVal || this.maxVal === 0)
@@ -254,11 +254,11 @@ export default {
     this.$nextTick(() => this.setupDrag());
   },
   methods: {
-    setupPlot: function() {
+    setupPlot: () => {
       this.chart = select(this.$refs.legend_bars);
       this.xAxisRef = select(this.$refs.x_axis);
     },
-    updateFilterLimits: function() {
+    updateFilterLimits: () => {
       this.selectedMin =
         this.minVal || this.minVal === 0
           ? this.minVal
@@ -270,7 +270,7 @@ export default {
           : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) /
             this.precision;
     },
-    updateAxes: function() {
+    updateAxes: () => {
       // x-axis
       this.x = scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])
@@ -341,7 +341,7 @@ export default {
     },
     updateDrag(side) {
       const newVal = this.x.invert(event.x);
-      if (side == 'left') {
+      if (side === 'left') {
         this.selectedMin = newVal;
         select(this.$refs.slider_left).attr(
           'transform',
@@ -392,7 +392,7 @@ export default {
         },
       });
     },
-    updatePlot: function() {
+    updatePlot: () => {
       if (this.data && this.colorScale) {
         this.updateAxes();
         this.updateFilterLimits();

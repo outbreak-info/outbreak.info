@@ -32,7 +32,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import VariantForm from "@/components/VariantForm.vue";
@@ -50,7 +50,7 @@ export default Vue.extend({
   },
   computed: {
     formValid() {
-      return (this.selectedMutations.length > 0 || this.selectedLineage)
+      return this.selectedMutations.length > 0 || this.selectedLineage;
     }
   },
   methods: {
@@ -77,7 +77,9 @@ export default Vue.extend({
           }
         });
       } else {
-        const selectedPango = this.selectedLineage ? this.selectedLineage.name : null;
+        const selectedPango = this.selectedLineage
+          ? this.selectedLineage.name
+          : null;
         this.$router.push({
           name: "MutationReport",
           query: {
@@ -97,7 +99,7 @@ export default Vue.extend({
       selectedLineage: null,
       submitCount: 0,
       submitLabel: null
-    }
+    };
   }
-})
+});
 </script>

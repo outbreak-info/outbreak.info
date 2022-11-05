@@ -45,7 +45,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 export default Vue.extend({
@@ -69,10 +69,10 @@ export default Vue.extend({
   watch: {},
   computed: {
     width() {
-      return (this.phaseWidth * 4 + this.spacer * 5)
+      return this.phaseWidth * 4 + this.spacer * 5;
     }
   },
-  methods: {},
+  methods: {}
 });
 </script>
 

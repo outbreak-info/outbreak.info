@@ -30,26 +30,22 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import {
-  timeFormat
-} from "d3";
+import { timeFormat } from 'd3';
 
 export default Vue.extend({
-  name: "Press",
+  name: 'Press',
   computed: {
-    ...mapState("press", ["press"])
+    ...mapState('press', ['press']),
   },
   mounted() {
-    this.press.sort((a,b) => a.order - b.order);
-  }
-})
+    this.press.sort((a, b) => a.order - b.order);
+  },
+});
 </script>
 
 <style lang="scss" scoped>

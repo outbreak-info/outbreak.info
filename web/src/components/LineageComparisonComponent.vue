@@ -956,12 +956,12 @@ export default {
       return window.innerWidth < 1000;
     },
     locationValid() {
-      return this.selectedLocation &&
+      return !!(
+        this.selectedLocation &&
         this.selectedOtherThreshold &&
         this.selectedOtherThreshold >= 0 &&
         this.selectedWindow > 0
-        ? true
-        : false;
+      );
     },
     mutationValid() {
       return (
@@ -977,12 +977,12 @@ export default {
   },
   watch: {
     countThreshold(newVal, oldVal) {
-      if (oldVal && newVal != oldVal) {
+      if (oldVal && newVal !== oldVal) {
         this.debounceCountThreshold();
       }
     },
     prevalenceThreshold(newVal, oldVal) {
-      if (oldVal && newVal != oldVal) {
+      if (oldVal && newVal !== oldVal) {
         this.debounceThreshold();
       }
     },
@@ -1050,9 +1050,9 @@ export default {
     this.today = formatDate(this.currentTime);
 
     this.darkMode =
-      this.dark == 'true' || (!!this.dark && this.dark != 'false');
+      this.dark === 'true' || (!!this.dark && this.dark !== 'false');
     this.includeSublineages =
-      this.sub == 'true' || (!!this.sub && this.sub != 'false');
+      this.sub === 'true' || (!!this.sub && this.sub !== 'false');
 
     this.prevalenceThreshold = +this.threshold;
     this.countThreshold = +this.nthresh;
@@ -1066,7 +1066,7 @@ export default {
         typeof this.pango === 'string' ? [this.pango] : this.pango;
     }
 
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       // set URL for sharing, etc.
       const location = window.location;
       this.url =
@@ -1136,7 +1136,7 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1184,7 +1184,7 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1220,7 +1220,7 @@ export default {
       this.getData();
     },
     updateGenes() {
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1255,7 +1255,7 @@ export default {
     },
     changeThreshold() {
       if (this.prevalenceThreshold) {
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1293,7 +1293,7 @@ export default {
     },
     changeCountThreshold() {
       if (this.countThreshold) {
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1343,7 +1343,7 @@ export default {
     },
     changeInclSublineages() {
       this.selectedPango = this.pango;
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1395,7 +1395,7 @@ export default {
       });
     },
     routeDark() {
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1471,7 +1471,7 @@ export default {
 
         this.prepResults(results);
 
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1526,7 +1526,7 @@ export default {
         }, 5000);
         this.prepResults(results);
 
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1586,7 +1586,7 @@ export default {
         this.showSnackbar = false;
       }, 5000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1630,7 +1630,7 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1667,7 +1667,7 @@ export default {
     },
     clearPango() {
       this.selectedPango = [];
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           query: {
@@ -1699,7 +1699,7 @@ export default {
     deletePango(idx) {
       this.selectedPango.splice(idx, 1);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {

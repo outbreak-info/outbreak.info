@@ -123,7 +123,7 @@ export default Vue.extend({
     routeTo: String,
     margin: {
       type: Object,
-      default: function() {
+      default: () => {
         return {
           left: 80,
           right: 30,
@@ -163,7 +163,7 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.setupPlot();
       this.updatePlot();
     },
@@ -175,7 +175,7 @@ export default Vue.extend({
     handleLineageClick(lineage) {
       const queryParams = this.$route.query;
 
-      if (this.routeTo == 'GenomicsEmbedVariant') {
+      if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: routePath,
           query: {
@@ -209,7 +209,7 @@ export default Vue.extend({
       this.otherExpanded = !this.otherExpanded;
     },
     preprocessData() {
-      var sortedData = cloneDeep(this.data).sort((a, b) => {
+      const sortedData = cloneDeep(this.data).sort((a, b) => {
         return b.proportion - a.proportion;
       });
 
@@ -239,7 +239,7 @@ export default Vue.extend({
       this.svg = select(this.$refs.horizontal_bargraph);
       this.preprocessData();
     },
-    updatePlot: function() {
+    updatePlot: () => {
       this.updateAxes();
       this.drawBars();
     },
@@ -298,7 +298,7 @@ export default Vue.extend({
         1,
       );
 
-      if (d.pangolin_lineage != 'other') {
+      if (d.pangolin_lineage !== 'other') {
         ttip.select('#other_data').classed('hidden', true);
         ttip.select('#lineage').text(d.pangolin_lineage);
         ttip
@@ -324,7 +324,7 @@ export default Vue.extend({
         .style('display', 'block');
     },
     tooltipYAxisOn(value) {
-      const d = this.processedData.filter((d) => d.pangolin_lineage == value);
+      const d = this.processedData.filter((d) => d.pangolin_lineage === value);
       const ttip = select(this.$refs.tooltip_by_lineage);
       const ttipShift = 20;
 
@@ -335,7 +335,7 @@ export default Vue.extend({
 
       ttip.select('#lineage').text(value);
 
-      if (d.length === 1 && value != 'other') {
+      if (d.length === 1 && value !== 'other') {
         ttip.select('#other_data').classed('hidden', true);
         ttip
           .select('#proportion')
@@ -386,7 +386,7 @@ export default Vue.extend({
             .attr('y', (d) => this.y(d.pangolin_lineage))
             .attr('height', (d) => this.y.bandwidth())
             .style('fill', (d) =>
-              d.pangolin_lineage == this.lineage ? '#df4ab7' : this.fill,
+              d.pangolin_lineage === this.lineage ? '#df4ab7' : this.fill,
             )
             .attr('width', (d) => this.x(d.proportion) - this.x(0));
         },

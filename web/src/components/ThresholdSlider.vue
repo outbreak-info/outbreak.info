@@ -150,7 +150,7 @@ export default {
     this.newThreshold = this.countThreshold;
     this.updateAxes();
 
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       // set up drag for threshold filter
       this.setupDrag();
     });

@@ -142,15 +142,15 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import SituationReportDefinitions from "@/components/SituationReportDefinitions.vue";
+import SituationReportDefinitions from '@/components/SituationReportDefinitions.vue';
 
 export default Vue.extend({
-  name: "SituationReportsCaveats",
+  name: 'SituationReportsCaveats',
   components: {
-    SituationReportDefinitions
-  }
-})
+    SituationReportDefinitions,
+  },
+});
 </script>

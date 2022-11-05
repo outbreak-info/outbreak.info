@@ -20,19 +20,13 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faExclamationCircle
-} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faExclamationCircle);
 

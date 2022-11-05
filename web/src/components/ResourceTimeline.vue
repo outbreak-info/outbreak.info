@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
 import { select, selectAll, scaleLinear, scaleBand, scaleTime, axisBottom, axisLeft, timeFormat, timeDay, timeWeek, extent, sum, min, max, line } from "d3";

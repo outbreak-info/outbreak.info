@@ -37,10 +37,23 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
-import { select, selectAll, scaleTime, scaleLinear, axisLeft, axisBottom, area, stack, stackOrderReverse, event, extent, max} from "d3";
+import {
+  select,
+  selectAll,
+  scaleTime,
+  scaleLinear,
+  axisLeft,
+  axisBottom,
+  area,
+  stack,
+  stackOrderReverse,
+  event,
+  extent,
+  max
+} from "d3";
 import store from "@/store";
 
 const margin = {
@@ -79,13 +92,13 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: function() {
+    data: () => {
       this.updatePlot();
     },
-    width: function() {
+    width: () => {
       this.updatePlot();
     },
-    height: function() {
+    height: () => {
       this.updatePlot();
     }
   },
@@ -137,19 +150,19 @@ export default Vue.extend({
       const scale = store.getters["colors/getRegionColor"];
       return scale(location);
     },
-    updatePlot: function() {
+    updatePlot: () => {
       if (this.data) {
         this.setupPlot();
         this.updateScales();
         this.drawPlot();
       }
     },
-    setupPlot: function() {
+    setupPlot: () => {
       this.svg = select(`#${this.id}`);
       this.chart = this.svg.select(".epi-summary");
       this.legend = this.svg.select(".legend");
     },
-    updateScales: function() {
+    updateScales: () => {
       const keys = Object.keys(this.data[0]).filter(d => d !== "date");
 
       this.series = stack()
@@ -159,9 +172,9 @@ export default Vue.extend({
         // .order(stackOrderAppearance)
         // .order(stackOrderNone)
         .order(stackOrderReverse)(
-          // .order(stackOrderInsideOut)
-          this.data
-        );
+        // .order(stackOrderInsideOut)
+        this.data
+      );
 
       this.x = this.x
         .domain(extent(this.data.map(d => d.date)))
@@ -186,10 +199,13 @@ export default Vue.extend({
         .call(this.xAxis);
 
       const numYTicks = this.height < 375 ? 5 : 8;
-      this.yAxis = axisLeft(this.y)
-        .ticks(numYTicks);
-        this.yAxis = this.yAxis
-        .tickFormat((d, i) => i === this.yAxis.scale().ticks().length - 1 ? d / 1e6 + " million" : d / 1e6)
+      this.yAxis = axisLeft(this.y).ticks(numYTicks);
+      this.yAxis = this.yAxis
+        .tickFormat((d, i) =>
+          i === this.yAxis.scale().ticks().length - 1
+            ? d / 1e6 + " million"
+            : d / 1e6
+        )
         .tickSizeOuter(0);
 
       this.svg
@@ -197,8 +213,7 @@ export default Vue.extend({
         .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
         .call(this.yAxis);
     },
-    drawPlot: function() {
-
+    drawPlot: () => {
       // --- annotations ---
       this.area = area()
         .x(d => this.x(d.data.date))
@@ -211,13 +226,11 @@ export default Vue.extend({
 
       areaSelector
         .join("path")
-        .style("fill", ({
-          key
-        }) => this.colorScale(key))
+        .style("fill", ({ key }) => this.colorScale(key))
         .attr(
           "class",
           d =>
-          `stacked-area-chart ${d.key
+            `stacked-area-chart ${d.key
               .replace(/\s/g, "_")
               .replace(/&/g, "_")
               .replace(/:/g, "_")
@@ -227,9 +240,7 @@ export default Vue.extend({
         )
         .attr("d", this.area)
         .append("title")
-        .text(({
-          key
-        }) => key);
+        .text(({ key }) => key);
 
       const legendRectWidth = 15;
 
@@ -243,7 +254,7 @@ export default Vue.extend({
         .attr(
           "class",
           d =>
-          `legend-group ${d.key
+            `legend-group ${d.key
               .replace(/\s/g, "_")
               .replace(/&/g, "_")
               .replace(/:/g, "_")
@@ -258,9 +269,7 @@ export default Vue.extend({
         .attr("x", 10)
         .attr("width", legendRectWidth)
         .attr("height", legendRectWidth)
-        .style("fill", ({
-          key
-        }) => this.colorScale(key));
+        .style("fill", ({ key }) => this.colorScale(key));
 
       legendEnter
         .append("text")
@@ -271,9 +280,7 @@ export default Vue.extend({
         .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
         .style("font-size", "10px")
         .style("dominant-baseline", "middle")
-        .text(({
-          key
-        }) => key);
+        .text(({ key }) => key);
 
       // --- tooltips ---
       this.chart

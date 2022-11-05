@@ -483,8 +483,8 @@ export const getPng = (
         }),
       );
 
-      image.onload = function() {
-        setTimeout(function() {
+      image.onload = () => {
+        setTimeout(() => {
           // if you combine into one image, they seem to ignore the translate functionality and the images are overlaid
           const imageDims = dims.filter((d) => d.imageI === i);
 
@@ -525,7 +525,7 @@ export const getPng = (
             );
           }
           if (download && i === numSvgs - 1) {
-            setTimeout(function() {
+            setTimeout(() => {
               imageUrl = URL.revokeObjectURL(imageUrl);
               headerUrl = URL.revokeObjectURL(headerUrl);
               subheaderUrl = URL.revokeObjectURL(subheaderUrl);
@@ -537,7 +537,7 @@ export const getPng = (
                 a.download = filename;
                 a.href = aUrl;
                 body.appendChild(a);
-                setTimeout(function() {
+                setTimeout(() => {
                   a.click();
                   aUrl = URL.revokeObjectURL(aUrl);
                   body.removeChild(a);
@@ -547,7 +547,7 @@ export const getPng = (
           }
           // copy
           else {
-            setTimeout(function() {
+            setTimeout(() => {
               imageUrl = URL.revokeObjectURL(imageUrl);
               headerUrl = URL.revokeObjectURL(headerUrl);
               subheaderUrl = URL.revokeObjectURL(subheaderUrl);
@@ -564,9 +564,9 @@ export const getPng = (
                     ];
 
                     navigator.clipboard.write(data).then(
-                      function() {
+                      () => {
                         // garbage collect
-                        setTimeout(function() {
+                        setTimeout(() => {
                           imageUrl = URL.revokeObjectURL(imageUrl);
                           headerUrl = URL.revokeObjectURL(headerUrl);
                           subheaderUrl = URL.revokeObjectURL(subheaderUrl);
@@ -575,9 +575,9 @@ export const getPng = (
 
                         resolve('copied to the clipboard');
                       },
-                      function() {
+                      () => {
                         // garbage collect
-                        setTimeout(function() {
+                        setTimeout(() => {
                           imageUrl = URL.revokeObjectURL(imageUrl);
                           headerUrl = URL.revokeObjectURL(headerUrl);
                           subheaderUrl = URL.revokeObjectURL(subheaderUrl);

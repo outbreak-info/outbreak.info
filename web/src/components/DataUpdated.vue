@@ -5,39 +5,33 @@
   </small>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-import { getDateUpdated } from "@/api/biothings.js";
+<script>
+import Vue from 'vue';
+import { getDateUpdated } from '@/api/biothings.js';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 library.add(faClock);
 
 export default Vue.extend({
-  name: "DataUpdated",
+  name: 'DataUpdated',
   props: {},
   data() {
     return {};
   },
   watch: {},
   components: {
-      FontAwesomeIcon
+    FontAwesomeIcon,
   },
   methods: {},
-  subscriptions () {
+  subscriptions() {
     return {
-      lastUpdated$: getDateUpdated(this.$apiurl)
-    }
-  }
+      lastUpdated$: getDateUpdated(this.$apiurl),
+    };
+  },
 });
 </script>
 

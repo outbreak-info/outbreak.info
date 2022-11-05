@@ -1363,7 +1363,7 @@ export default {
       mutationsByLineage: [],
     };
   },
-  created: function() {
+  created: () => {
     this.debounceSetDims = debounce(this.setDims, 150);
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
     this.debounceChoroWindowChange = debounce(this.updateChoroWindow, 700);
@@ -1385,7 +1385,7 @@ export default {
     this.today = formatDate(currentTime);
 
     // set URL for sharing, etc.
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('resize', this.debounceSetDims);
 
       const location = window.location;

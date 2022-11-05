@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { timeFormat, timeParse, nest } from 'd3';
+import { nest, timeFormat, timeParse } from 'd3';
 
 import TrialStatus from '@/components/TrialStatus.vue';
 
@@ -112,7 +112,7 @@ export default {
   computed: {
     locations() {
       if (this.data.studyLocation) {
-        const nested = nest()
+        return nest()
           .key((d) => d.studyLocationCountry)
           .entries(
             this.data.studyLocation
@@ -121,8 +121,6 @@ export default {
                 a.studyLocationCountry < b.studyLocationCountry ? -1 : 1,
               ),
           );
-
-        return nested;
       } else {
         return null;
       }

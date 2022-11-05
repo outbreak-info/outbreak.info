@@ -69,12 +69,11 @@ import store from '@/store';
 
 import debounce from 'lodash/debounce';
 
-
-import { findEpiLocation, lookupEpiLocations } from "@/api/epi-basics.js";
+import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
 
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
 import {
   faTimesCircle,
@@ -119,14 +118,14 @@ export default Vue.extend({
     };
   },
   watch: {
-    selected: function(val, oldValue) {
+    selected: (val, oldValue) => {
       this.updateSelected();
     },
-    colorScale: function(val, oldValue) {
+    colorScale: (val, oldValue) => {
       this.updateSelected();
     },
   },
-  created: function() {
+  created: () => {
     this.debounceSearch = debounce(this.onChange, 250);
   },
   mounted() {
@@ -149,10 +148,9 @@ export default Vue.extend({
       this.lookupSubscription = lookupEpiLocations(
         this.$apiurl,
 
-        this.selected
-      ).subscribe(results => {
-        this.selectedItems = results.map(d => {
-
+        this.selected,
+      ).subscribe((results) => {
+        this.selectedItems = results.map((d) => {
           return {
             label: d.label,
             location_id: d.location_id,
@@ -163,11 +161,11 @@ export default Vue.extend({
         });
       });
     },
-    lightColorScale: function(location) {
+    lightColorScale: (location) => {
       const scale = store.getters['colors/getLightColor'];
       return scale(location);
     },
-    colorScale: function(location) {
+    colorScale: (location) => {
       const scale = store.getters['colors/getDarkColor'];
       return scale(location);
     },
@@ -186,9 +184,8 @@ export default Vue.extend({
       this.querySubscription = findEpiLocation(
         this.$apiurl,
 
-        this.search
-      ).subscribe(results => {
-
+        this.search,
+      ).subscribe((results) => {
         this.results = results;
         this.isOpen = true;
       });

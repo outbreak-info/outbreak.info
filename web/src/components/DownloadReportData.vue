@@ -14,28 +14,17 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import Vue from "vue";
 
-import {
-  getPng
-} from "@/js/get_svg.js";
+import { getPng } from "@/js/get_svg.js";
 // import DownloadData from "@/components/DownloadData.vue";
-import {
-  timeFormat
-} from "d3";
-
+import { timeFormat } from "d3";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faCopy
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faCopy } from "@fortawesome/free-regular-svg-icons";
 
 library.add(faCopy);
 
@@ -77,10 +66,12 @@ export default Vue.extend({
   },
   computed: {
     copyable() {
-      return (this.numSvgs <= this.copyThreshold && typeof(ClipboardItem) == "function");
+      return (
+        this.numSvgs <= this.copyThreshold && typeof ClipboardItem == "function"
+      );
     },
     todayFormatted() {
-      return (this.formatDate())
+      return this.formatDate();
     }
   },
   data() {
@@ -95,29 +86,38 @@ export default Vue.extend({
     formatDate(formatString = "%d %b %Y") {
       const dateString = new Date();
       const formatDate = timeFormat(formatString);
-      return (formatDate(dateString))
+      return formatDate(dateString);
     },
     copyPng() {
       this.showSnackbar = true;
       this.snackbarText = "copying figure to the clipboard";
       this.$gtag.event("copy_vis", {
-        'event_category': `${this.dataType}_${this.figureRef}_vis`,
-        'event_label': `copying |${this.figureRef}| {vis} from [${this.$route.fullPath}]`
-      })
-
-      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormatted, this.isVertical, this.darkMode, null).then(msg => {
-        this.snackbarText = msg;
-        setTimeout(() => {
-          this.showSnackbar = false;
-        }, 3000);
-      }).catch((error) => {
-        console.log(error)
-        this.snackbarText = "Error copying image";
-        setTimeout(() => {
-          this.showSnackbar = false;
-        }, 3000);
-        console.log("Error: in copying that image")
+        event_category: `${this.dataType}_${this.figureRef}_vis`,
+        event_label: `copying |${this.figureRef}| {vis} from [${this.$route.fullPath}]`
       });
+
+      getPng(
+        `svg.${this.figureRef}`,
+        this.sourceString,
+        this.todayFormatted,
+        this.isVertical,
+        this.darkMode,
+        null
+      )
+        .then(msg => {
+          this.snackbarText = msg;
+          setTimeout(() => {
+            this.showSnackbar = false;
+          }, 3000);
+        })
+        .catch(error => {
+          console.log(error);
+          this.snackbarText = "Error copying image";
+          setTimeout(() => {
+            this.showSnackbar = false;
+          }, 3000);
+          console.log("Error: in copying that image");
+        });
     }
   }
 });
