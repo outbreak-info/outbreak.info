@@ -281,7 +281,7 @@ export default Vue.extend({
       return this.selectedMutations.length > 0 || this.selectedLineage;
     },
   },
-  created: () => {
+  created: function() {
     this.debounceBulk = debounce(this.changeBulk, 500);
   },
   mounted() {

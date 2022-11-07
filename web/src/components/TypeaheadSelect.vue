@@ -79,7 +79,7 @@ export default {
         : null;
     },
   },
-  created: () => {
+  created: function() {
     this.debounceSearch = debounce(this.change, 250);
   },
   data() {
@@ -118,7 +118,7 @@ export default {
     },
 
     //When the user changes input
-    change() {
+    change: function() {
       if (this.selected.length > 0) {
         this.querySubscription = this.queryFunction(
           this.apiUrl,
