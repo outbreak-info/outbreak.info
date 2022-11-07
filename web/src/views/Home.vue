@@ -88,7 +88,7 @@
               </router-link>
             </span>
             <span class="mr-3">
-              <router-link :to="{name: 'MutationReport', params: {alias: 'ba.2*'}} " class="text-light">BA.2*
+              <router-link :to="{name: 'MutationReport', params: {alias: 'ba.2* [omicron (ba.2.x)]'}} " class="text-light">BA.2*
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
