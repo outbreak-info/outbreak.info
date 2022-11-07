@@ -53,40 +53,39 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import {
-  tsv,
-  nest
-} from "d3";
+import { tsv, nest } from 'd3';
 
 export default Vue.extend({
-  name: "TopicDefinitions",
+  name: 'TopicDefinitions',
   data() {
-    return ({
-      topicUrl: "https://raw.githubusercontent.com/outbreak-info/outbreak.info-resources/master/covid_topic_categories.tsv",
-      topicArr: []
-    })
+    return {
+      topicUrl:
+        'https://raw.githubusercontent.com/outbreak-info/outbreak.info-resources/master/covid_topic_categories.tsv',
+      topicArr: [],
+    };
   },
   methods: {
     getTopics() {
-      tsv(this.topicUrl).then(data => {
-
+      tsv(this.topicUrl).then((data) => {
         this.topicArr = nest()
-            .key(d => d.category)
-            .rollup(values => {
-              return ({
-                description: values.filter(d => d.subcategory === "false")[0]["description"],
-                subcats: values.filter(d => d.subcategory === "true")
-              })
-            })
-            .entries(data)
-            .sort((a, b) => a.key < b.key ? -1 : 1);
-      })
-    }
+          .key((d) => d.category)
+          .rollup((values) => {
+            return {
+              description: values.filter((d) => d.subcategory === 'false')[0][
+                'description'
+              ],
+              subcats: values.filter((d) => d.subcategory === 'true'),
+            };
+          })
+          .entries(data)
+          .sort((a, b) => (a.key < b.key ? -1 : 1));
+      });
+    },
   },
   mounted() {
     this.getTopics();
-  }
+  },
 });
 </script>

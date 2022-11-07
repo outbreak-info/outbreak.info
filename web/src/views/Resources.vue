@@ -827,7 +827,7 @@ export default {
         });
       });
     },
-    expandDescription: function(item) {
+    expandDescription: item => {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
     getLogo(curator) {

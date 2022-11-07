@@ -10,14 +10,12 @@
 </template>
 
 <script>
-import Vue from "vue";
-
-import ReportMethodology from "@/components/ReportMethodology";
+import ReportMethodology from '@/components/ReportMethodology';
 
 export default {
-  name: "SituationReportMethodology",
+  name: 'SituationReportMethodology',
   components: {
-  ReportMethodology
-  }
-}
+    ReportMethodology,
+  },
+};
 </script>

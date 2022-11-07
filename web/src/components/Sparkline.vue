@@ -7,7 +7,15 @@
 <script>
 import Vue from "vue";
 
-import { select, selectAll, scaleLinear, scaleTime, extent, max, area } from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleTime,
+  extent,
+  max,
+  area
+} from "d3";
 
 export default Vue.extend({
   name: "Sparkline",
@@ -37,8 +45,9 @@ export default Vue.extend({
   },
   methods: {
     setupPlot() {
-      this.svg = select(`#sparkline-${this.id}-${this.variable}`)
-        .select("svg.epi-sparkline");
+      this.svg = select(`#sparkline-${this.id}-${this.variable}`).select(
+        "svg.epi-sparkline"
+      );
       this.chart = this.svg.select("#case-counts");
 
       this.chart = this.svg.append("g").attr("class", "sparkline");

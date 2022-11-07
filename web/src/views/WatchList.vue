@@ -12,6 +12,10 @@
           :icon="['fas', 'spinner']"
         />
       </div>
+      <section id="report-list" class="text-left">
+        <CustomLocationForm :includeMutations="false" />
+        <WatchListTable :location="location" />
+      </section>
 
       <div class="my-2">
         <img

@@ -96,12 +96,8 @@ import Vue from "vue";
 import uniq from "lodash/uniq";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faSearchPlus,
   faCompressArrowsAlt
@@ -132,7 +128,6 @@ import {
   format
 } from "d3";
 
-
 export default Vue.extend({
   name: "LineagesByLocation",
   components: {
@@ -151,7 +146,7 @@ export default Vue.extend({
   },
   computed: {
     title() {
-      return (`Lineage prevalence over time in ${this.location}`)
+      return `Lineage prevalence over time in ${this.location}`;
     }
   },
   watch: {
@@ -164,7 +159,7 @@ export default Vue.extend({
     }
   },
   data() {
-    return ({
+    return {
       // dimensions
       margin: {
         top: 18,
@@ -201,7 +196,7 @@ export default Vue.extend({
       brushRef: null,
       // controls
       zoomAllowed: false
-    })
+    };
   },
   mounted() {
     this.$nextTick(() => {
@@ -210,8 +205,7 @@ export default Vue.extend({
       this.updateBrush();
       // set initial dimensions for the plots.
       this.debounceSetDims();
-    })
-
+    });
 
     this.setupPlot();
     this.updatePlot();
@@ -226,21 +220,25 @@ export default Vue.extend({
       this.brush = brushX()
         .extent([
           [0, 0],
-          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+          [
+            this.width - this.margin.left - this.margin.right,
+            this.height - this.margin.top - this.margin.bottom
+          ]
         ])
         .on("end", () => this.debounceZoom(event));
 
-      this.brushRef
-        .call(this.brush)
-        .on("dblclick", this.resetZoom);
+      this.brushRef.call(this.brush).on("dblclick", this.resetZoom);
     },
     setDims() {
-      const svgContainer = document.getElementById('most-recent-lineages');
+      const svgContainer = document.getElementById("most-recent-lineages");
       let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
-      const pageContainer = document.getElementById('location-report')
+      const pageContainer = document.getElementById("location-report");
       let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
-      const idealWidth = (maxWidth - containerWidth)*0.95;
-      this.width = idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
+      const idealWidth = (maxWidth - containerWidth) * 0.95;
+      this.width =
+        idealWidth < this.minWidth || idealWidth > maxWidth
+          ? maxWidth * 0.95
+          : idealWidth;
 
       this.numXTicks = this.width < 500 ? 2 : 5;
     },
@@ -267,22 +265,21 @@ export default Vue.extend({
         .nice()
         .domain([0, 1]);
 
-      this.lineages = Object.keys(this.data[0]).filter(d => d != "date_time");
+      this.lineages = Object.keys(this.data[0]).filter(d => d !== "date_time");
 
-      this.xAxis = axisBottom(this.x)
-        .ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
 
       select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = axisLeft(this.y).tickSizeOuter(0)
+      this.yAxis = axisLeft(this.y)
+        .tickSizeOuter(0)
         .ticks(this.numYTicks)
         .tickFormat(format(".0%"));
 
       // stacking
       this.series = stack()
         .keys(this.lineages)
-        .order(stackOrderInsideOut)
-        (this.data)
+        .order(stackOrderInsideOut)(this.data);
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
@@ -300,28 +297,26 @@ export default Vue.extend({
         .style("stroke", "#BBB")
         .style("fill-opacity", 0.2);
 
-      selectAll(".stacked-bar-chart")
-        .style("fill-opacity", 0.2);
+      selectAll(".stacked-bar-chart").style("fill-opacity", 0.2);
 
       // turn on the selected region
-      this.chart.select(`#area_${key.replace(/\./g, "-")}`)
+      this.chart
+        .select(`#area_${key.replace(/\./g, "-")}`)
         .style("fill-opacity", 1);
 
-      select(`#${key.replace(/\./g, "-")}`)
-        .style("fill-opacity", 1);
+      select(`#${key.replace(/\./g, "-")}`).style("fill-opacity", 1);
 
       const ttip = select(this.$refs.tooltip_streamgraph);
 
-      ttip.select("#lineage")
-        .text(key)
+      ttip.select("#lineage").text(key);
 
       const recentPrev = this.recentData[key];
       if (recentPrev) {
-        ttip.select("#proportion")
-          .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+        ttip
+          .select("#proportion")
+          .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev));
       } else {
-        ttip.select("#proportion")
-          .text('Grouped into "other" category')
+        ttip.select("#proportion").text('Grouped into "other" category');
       }
 
       // fix location
@@ -336,11 +331,9 @@ export default Vue.extend({
         .style("stroke", "#555")
         .style("fill-opacity", 1);
 
-      selectAll(".stacked-bar-chart")
-        .style("fill-opacity", 1);
+      selectAll(".stacked-bar-chart").style("fill-opacity", 1);
 
-      select(this.$refs.tooltip_streamgraph)
-        .style("display", "none");
+      select(this.$refs.tooltip_streamgraph).style("display", "none");
     },
     zoom(evt) {
       // reset domain to new coords
@@ -356,8 +349,7 @@ export default Vue.extend({
           .clamp(true);
 
         // reset the axis
-        this.xAxis = axisBottom(this.x)
-          .ticks(this.numXTicks);
+        this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
 
         select(this.$refs.xAxis).call(this.xAxis);
 
@@ -366,7 +358,6 @@ export default Vue.extend({
         this.zoomAllowed = false;
         this.drawPlot();
       }
-
     },
     resetZoom() {
       this.x = this.x.domain(extent(this.data.map(d => d.date_time)));
@@ -381,38 +372,31 @@ export default Vue.extend({
         .selectAll(".stacked-area-chart")
         .data(this.series);
 
-      areaSelector
-        .join(enter => {
-            const selector = enter.append("path")
-              .attr("fill", ({
-                key
-              }) => this.colorScale(key))
-              .attr("class", "stacked-area-chart")
-              .attr("id", ({
-                key
-              }) => `area_${key.replace(/\./g, "-")}`)
-              .attr("d", this.area)
-              .style("stroke", "#555")
-              .style("stroke-width", 0.5)
-          },
-          update => {
-            update
-              .attr("fill", ({
-                key
-              }) => this.colorScale(key))
-              .attr("id", ({
-                key
-              }) => `area_${key.replace(/\./g, "-")}`)
-              .attr("d", this.area);
-          },
-          exit =>
+      areaSelector.join(
+        enter => {
+          const selector = enter
+            .append("path")
+            .attr("fill", ({ key }) => this.colorScale(key))
+            .attr("class", "stacked-area-chart")
+            .attr("id", ({ key }) => `area_${key.replace(/\./g, "-")}`)
+            .attr("d", this.area)
+            .style("stroke", "#555")
+            .style("stroke-width", 0.5);
+        },
+        update => {
+          update
+            .attr("fill", ({ key }) => this.colorScale(key))
+            .attr("id", ({ key }) => `area_${key.replace(/\./g, "-")}`)
+            .attr("d", this.area);
+        },
+        exit =>
           exit.call(exit =>
             exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
           )
-        )
+      );
 
       // annotation for the most recent date
       const recentSelector = this.chart
@@ -423,10 +407,10 @@ export default Vue.extend({
 
       recentSelector.join(
         enter => {
-          const grp = enter.append("g")
-            .attr("class", "recent-date-annotation");
+          const grp = enter.append("g").attr("class", "recent-date-annotation");
 
-          grp.append("line")
+          grp
+            .append("line")
             .attr("class", "annotation-line")
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
@@ -435,63 +419,73 @@ export default Vue.extend({
             .style("stroke", "white")
             .style("stroke-dasharray", "6,6");
 
-          grp.append("line")
+          grp
+            .append("line")
             .attr("class", "text-line")
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d))
             .attr("y1", 0)
             .attr("y2", -5)
-            .style("stroke", "#2c3e50")
+            .style("stroke", "#2c3e50");
 
-          grp.append("text")
+          grp
+            .append("text")
             .attr("x", d => this.x(d))
             .attr("y", 0)
             .attr("dy", -8)
             .text(`${this.recentWindow} days`)
-            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
-            .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+            .style("text-anchor", d =>
+              this.x(d) > this.width / 2 ? "end" : "start"
+            )
+            .style(
+              "font-family",
+              "'DM Sans', Avenir, Helvetica, Arial, sans-serif"
+            )
             .style("dominant-baseline", "text-top")
             .style("font-size", "9pt");
         },
         update => {
-          update.select(".annotation-line")
+          update
+            .select(".annotation-line")
             .attr("y1", 0)
             .attr("y2", this.height)
             .transition(t1)
             .attr("x1", d => this.x(d))
             .attr("x2", d => this.x(d));
 
-          update.select(".text-line")
+          update
+            .select(".text-line")
             .transition(t1)
             .attr("x1", d => this.x(d))
-            .attr("x2", d => this.x(d))
+            .attr("x2", d => this.x(d));
 
-          update.select("text")
+          update
+            .select("text")
             .text(`${this.recentWindow} days`)
-            .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+            .style("text-anchor", d =>
+              this.x(d) > this.width / 2 ? "end" : "start"
+            )
             .transition(t1)
             .attr("x", d => this.x(d));
         },
         exit =>
-        exit.call(exit =>
-          exit
-          .transition()
-          .style("opacity", 1e-5)
-          .remove()
-        )
-      )
+          exit.call(exit =>
+            exit
+              .transition()
+              .style("opacity", 1e-5)
+              .remove()
+          )
+      );
 
       this.chart
         .selectAll(".stacked-area-chart")
-        .on("mousemove", ({
-          key
-        }) => this.tooltipOn(key))
-        .on("mouseleave", this.tooltipOff)
+        .on("mousemove", ({ key }) => this.tooltipOn(key))
+        .on("mouseleave", this.tooltipOff);
     },
     debounce(fn, delay) {
-      var timer = null;
+      let timer = null;
       return () => {
-        var context = this,
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
@@ -504,7 +498,7 @@ export default Vue.extend({
       };
     }
   }
-})
+});
 </script>
 
 <style lang="scss">

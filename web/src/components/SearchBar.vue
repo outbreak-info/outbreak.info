@@ -55,12 +55,10 @@ import { mapState } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+// --- store / Vuex ---
+import { getLocations } from '@/api/epi-basics.js';
 
 library.add(faSearch);
-
-// --- store / Vuex ---
-import store from '@/store';
-import { getLocations } from '@/api/epi-basics.js';
 
 export default Vue.extend({
   name: 'SearchBar',
@@ -108,7 +106,7 @@ export default Vue.extend({
     ...mapState('geo', ['allPlaces']),
   },
   watch: {
-    items: function(val, oldValue) {
+    items: (val, oldValue) => {
       // actually compare them
       if (val.length !== oldValue.length) {
         this.results = val;
@@ -131,7 +129,7 @@ export default Vue.extend({
       if (this.isAsync) {
         this.isLoading = true;
       } else {
-        // Let's  our flat array
+        // Let us  our flat array
         this.filterResults();
         this.isOpen = true;
       }
@@ -170,11 +168,10 @@ export default Vue.extend({
     },
     onEnter() {
       // // Let's warn the parent that a change was made
-      const result = this.results[this.arrowCounter]
+      // this.$emit('input', result);
+      this.selected = this.results[this.arrowCounter]
         ? this.results[this.arrowCounter]
         : this.search;
-      // this.$emit('input', result);
-      this.selected = result;
       this.$emit('input', this.selected);
       this.search = '';
       this.isOpen = false;

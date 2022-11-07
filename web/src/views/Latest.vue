@@ -122,7 +122,7 @@ export default Vue.extend({
     FontAwesomeIcon,
   },
   methods: {
-    formatDate: function(date) {
+    formatDate: (date) => {
       const dateFormatter = timeFormat('%d %B %Y');
       return dateFormatter(date);
     },

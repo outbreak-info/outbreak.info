@@ -114,10 +114,10 @@ export default Vue.extend({
     },
   },
   methods: {
-    changeFit: function(fitIdx) {
+    changeFit: fitIdx => {
       this.toFit = fitIdx;
     },
-    changeParams: function(newVar) {
+    changeParams: newVar => {
       this.updateData();
       this.$router.push({
         path: 'doubling-rates',
@@ -127,10 +127,10 @@ export default Vue.extend({
         },
       });
     },
-    executeFit: function(fitIdx) {
+    executeFit: fitIdx => {
       this[`fitting${fitIdx}`] = !this[`fitting${fitIdx}`];
     },
-    setLocation: function(result) {
+    setLocation: result => {
       this.locationID = result;
       this.updateData();
     },

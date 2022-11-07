@@ -310,7 +310,7 @@ export default Vue.extend({
             .split(/(\d+)/g)
             .filter((d) => d !== '');
           if (mutationType === 'substitution') {
-            if (changeSplitted.length == 3) {
+            if (changeSplitted.length === 3) {
               return {
                 mutation: d,
                 gene: splitted[0],

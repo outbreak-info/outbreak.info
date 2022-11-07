@@ -20,7 +20,23 @@
 <script>
 import Vue from "vue";
 
-import { select, selectAll, scaleLinear, scaleBand, scaleTime, axisBottom, axisLeft, timeFormat, timeDay, timeWeek, extent, sum, min, max, line } from "d3";
+import {
+  select,
+  selectAll,
+  scaleLinear,
+  scaleBand,
+  scaleTime,
+  axisBottom,
+  axisLeft,
+  timeFormat,
+  timeDay,
+  timeWeek,
+  extent,
+  sum,
+  min,
+  max,
+  line
+} from "d3";
 
 export default Vue.extend({
   name: "ResourceTimeline",
@@ -38,38 +54,52 @@ export default Vue.extend({
   },
   methods: {
     prepData() {
-      function movingAverage(date, values, firstDate, lastDate, N = 3) {
+      const movingAverage = (date, values, firstDate, lastDate, N = 3) => {
         const lowDate = Math.max(timeDay.offset(date, -1 * N), firstDate);
         const highDate = Math.min(timeDay.offset(date, N), lastDate);
-        const filtered = values.filter(d => d.date <= highDate && d.date >= lowDate);
-        const daySpan = Math.round((highDate - lowDate) / (24 * 3600 * 1000)) + 1;
-        return (sum(filtered, d => d.count) / daySpan)
-      }
+        const filtered = values.filter(
+          d => d.date <= highDate && d.date >= lowDate
+        );
+        const daySpan =
+          Math.round((highDate - lowDate) / (24 * 3600 * 1000)) + 1;
+        return sum(filtered, d => d.count) / daySpan;
+      };
 
-      function weeklySum(date, values, N = 3) {
-        const dateRange = timeDay.range(timeWeek.floor(date), timeWeek.ceil(date));
+      const weeklySum = (date, values, N = 3) => {
+        const dateRange = timeDay.range(
+          timeWeek.floor(date),
+          timeWeek.ceil(date)
+        );
         const lowDate = dateRange[0];
         const highDate = dateRange[1];
-        const filtered = values.filter(d => d.date <= highDate && d.date >= lowDate);
-        return (sum(filtered, d => d.count))
-      }
+        const filtered = values.filter(
+          d => d.date <= highDate && d.date >= lowDate
+        );
+        return sum(filtered, d => d.count);
+      };
 
-      const firstDate = min(this.data, d => d.date)
+      const firstDate = min(this.data, d => d.date);
       const lastDate = max(this.data, d => d.date);
 
       this.data.forEach(d => {
-        d["avg"] = movingAverage(d.date, this.data, firstDate, lastDate)
-      })
+        d["avg"] = movingAverage(d.date, this.data, firstDate, lastDate);
+      });
 
       this.data.sort((a, b) => a.date - b.date);
 
       // Filter out ridiculous dates
-      this.plotted = this.data.filter(d => d.date > new Date("2019-12-01"))
+      this.plotted = this.data.filter(d => d.date > new Date("2019-12-01"));
     },
     setupPlot() {
       this.svg = select(this.$refs.timeline);
 
-      this.chart = this.svg.append("g").attr("class", "resource-timeline").attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+      this.chart = this.svg
+        .append("g")
+        .attr("class", "resource-timeline")
+        .attr(
+          "transform",
+          `translate(${this.margin.left}, ${this.margin.top})`
+        );
 
       // this.line = area()
       //   .x(d => this.x(d.date))
@@ -102,7 +132,6 @@ export default Vue.extend({
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, max(this.plotted, d => d.count)]);
 
-
       this.xAxis = axisBottom(this.x)
         .tickSizeOuter(0)
         .ticks(4)
@@ -126,19 +155,21 @@ export default Vue.extend({
         .selectAll(".sparkline")
         .data([this.plotted]);
 
-      const barSelector = this.chart.append("g")
+      const barSelector = this.chart
+        .append("g")
         .attr("class", "timeline-count-group")
         .selectAll("rect")
         .data(this.plotted);
 
       barSelector.join(enter => {
-        enter.append("rect")
+        enter
+          .append("rect")
           .attr("class", "resource-timeline-bar")
           .attr("x", d => this.xBand(d.date))
           .attr("y", d => this.y(d.count))
           .attr("width", this.xBand.bandwidth())
-          .attr("height", d => this.y(0) - this.y(d.count))
-      })
+          .attr("height", d => this.y(0) - this.y(d.count));
+      });
 
       const sparkEnter = sparkSelector
         .enter()
@@ -176,9 +207,9 @@ export default Vue.extend({
       chart: null,
       // methods
       area: null
-    }
+    };
   }
-})
+});
 </script>
 <style lang="scss">
 .timeline-group .text-accent {

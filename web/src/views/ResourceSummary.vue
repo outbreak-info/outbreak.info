@@ -39,7 +39,8 @@
           v-if="counts.dateModified"
         >
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
-          Updated {{ counts.dateModified }}
+          Updated
+          {{ counts.dateModified }}
         </small>
 
         <CirclePacking class="circle-packing mr-5" :data="counts.sources" />

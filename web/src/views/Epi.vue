@@ -462,7 +462,7 @@ export default {
         )[0];
       },
     },
-    fixedY: function(newValue, oldValue) {
+    fixedY: (newValue, oldValue) => {
       if (newValue === 'true') {
         const varUsed = this.isPerCapita
           ? this.variable + '_per_100k'
@@ -477,16 +477,16 @@ export default {
         this.isFixedY = false;
       }
     },
-    isFixedY: function(newValue, oldValue) {
+    isFixedY: (newValue, oldValue) => {
       this.changeVariable();
     },
-    percapita: function(newValue, oldValue) {
+    percapita: (newValue, oldValue) => {
       this.isPerCapita = newValue === 'true';
     },
-    isPerCapita: function(newValue, oldValue) {
+    isPerCapita: (newValue, oldValue) => {
       this.changeVariable();
     },
-    isOverlay: function(newValue, oldValue) {
+    isOverlay: (newValue, oldValue) => {
       if (newValue) {
         this.isOverlay = false;
 

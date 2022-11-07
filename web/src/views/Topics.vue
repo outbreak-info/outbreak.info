@@ -35,7 +35,6 @@ export default {
       this.drugs,
       this.$resourceurl,
     ).subscribe((results) => {
-      console.log(results);
       this.results = results;
     });
 

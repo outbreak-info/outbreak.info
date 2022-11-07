@@ -264,8 +264,8 @@ export default Vue.extend({
             .attr('class', 'lineage')
             .text((d) => d.key)
             .style('font-weight', '700')
-            .classed('pointer', (d) => d.key.toLowerCase() != 'other')
-            .classed('hover-underline', (d) => d.key.toLowerCase() != 'other')
+            .classed('pointer', (d) => d.key.toLowerCase() !== 'other')
+            .classed('hover-underline', (d) => d.key.toLowerCase() !== 'other')
             .on('click', (d) => this.route2Lineage(d.key));
 
           tspan
@@ -292,8 +292,8 @@ export default Vue.extend({
             .select('text')
             .select('.lineage')
             .text((d) => d.key)
-            .classed('pointer', (d) => d.key.toLowerCase() != 'other')
-            .classed('hover-underline', (d) => d.key.toLowerCase() != 'other')
+            .classed('pointer', (d) => d.key.toLowerCase() !== 'other')
+            .classed('hover-underline', (d) => d.key.toLowerCase() !== 'other')
             .on('click', (d) => this.route2Lineage(d.key));
 
           update
@@ -311,8 +311,8 @@ export default Vue.extend({
       );
     },
     route2Lineage(pango) {
-      if (pango.toLowerCase() != 'other') {
-        if (this.routeTo == 'GenomicsEmbedLocation') {
+      if (pango.toLowerCase() !== 'other') {
+        if (this.routeTo === 'GenomicsEmbedLocation') {
           this.$router.push({
             name: 'GenomicsEmbed',
             query: {
@@ -335,9 +335,9 @@ export default Vue.extend({
       }
     },
     debounce(fn, delay) {
-      var timer = null;
+      let timer = null;
       return () => {
-        var context = this,
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here

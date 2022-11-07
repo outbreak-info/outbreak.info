@@ -476,7 +476,8 @@
           id="warning"
           class="w-100 mt-3"
           v-if="
-            (alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'
+            (alias && alias.toLowerCase() === 'omicron') ||
+              pango === 'B.1.1.529'
           "
         ></div>
 
@@ -522,25 +523,25 @@
                 </small>
                 <div
                   class="VOC"
-                  v-if="reportMetadata.variantType == 'Variant of Concern'"
+                  v-if="reportMetadata.variantType === 'Variant of Concern'"
                 >
                   Variant of Concern
                 </div>
                 <div
                   class="VOI"
-                  v-if="reportMetadata.variantType == 'Variant of Interest'"
+                  v-if="reportMetadata.variantType === 'Variant of Interest'"
                 >
                   Variant of Interest
                 </div>
                 <div
                   class="MOC"
-                  v-if="reportMetadata.variantType == 'Mutation of Concern'"
+                  v-if="reportMetadata.variantType === 'Mutation of Concern'"
                 >
                   Mutation of Concern
                 </div>
                 <div
                   class="MOI"
-                  v-if="reportMetadata.variantType == 'Mutation of Interest'"
+                  v-if="reportMetadata.variantType === 'Mutation of Interest'"
                 >
                   Mutation of Interest
                 </div>
@@ -577,7 +578,7 @@
               v-if="mutationsByLineage && mutationsByLineage.length"
             >
               <div
-                v-if="reportType == 'lineage with added mutations'"
+                v-if="reportType === 'lineage with added mutations'"
                 class="mx-2 mb-1"
               >
                 <button
@@ -598,7 +599,7 @@
               <div
                 class="mx-3"
                 :class="{
-                  collapse: reportType == 'lineage with added mutations',
+                  collapse: reportType === 'lineage with added mutations',
                 }"
                 id="collapsePangoBreakdown"
               >
@@ -863,7 +864,7 @@
               >
                 <router-link
                   v-if="
-                    selectedLocation.id && selectedLocation.id != 'Worldwide'
+                    selectedLocation.id && selectedLocation.id !== 'Worldwide'
                   "
                   class="btn btn-sec mr-3"
                   :to="{
@@ -1052,28 +1053,37 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import uniq from 'lodash/uniq';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { scaleOrdinal, nest } from 'd3';
+import { max, nest, scaleOrdinal, scaleThreshold, timeFormat } from 'd3';
 
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import {
-  faTrashAlt,
+  faInfoCircle,
   faPlusCircle,
   faSpinner,
-  faInfoCircle,
+  faTrashAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 
 import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
+import { mapState } from 'vuex';
+
+import {
+  findLocation,
+  findPangolin,
+  getReportData,
+  updateChoroData,
+  updateLocationData,
+} from '@/api/genomics.js';
+
+import { schemeYlGnBu } from 'd3-scale-chromatic';
 
 library.add(
   faClock,
@@ -1084,22 +1094,6 @@ library.add(
   faArrowLeft,
   faSync,
 );
-
-import { mapState } from 'vuex';
-
-import {
-  getReportData,
-  getCuratedMetadata,
-  updateLocationData,
-  updateChoroData,
-  findLocation,
-  findPangolin,
-  getLocationPrevalence,
-} from '@/api/genomics.js';
-
-import { timeFormat, max, scaleThreshold } from 'd3';
-
-import { schemeYlGnBu } from 'd3-scale-chromatic';
 
 export default {
   name: 'SituationReportComponent',
@@ -1190,15 +1184,15 @@ export default {
       return window.innerWidth < 500;
     },
     definitionLabel() {
-      return this.reportType == 'lineage'
+      return this.reportType === 'lineage'
         ? 'Characteristic mutations in lineage'
-        : this.reportType == 'lineage with added mutations'
+        : this.reportType === 'lineage with added mutations'
         ? 'Characteristic mutations in variant'
         : 'List of mutations';
     },
     locationLabel() {
       if (this.selectedLocation) {
-        return this.selectedLocation.label == 'Worldwide'
+        return this.selectedLocation.label === 'Worldwide'
           ? 'globally'
           : `in ${this.selectedLocation.label}`;
       } else {
@@ -1213,7 +1207,7 @@ export default {
     aquariaLink() {
       if (this.additionalMutations && this.additionalMutations.length > 0) {
         const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
-        const mutationsByGene = nest()
+        return nest()
           .key((d) => d.gene)
           .rollup((values) => {
             return {
@@ -1233,8 +1227,6 @@ export default {
             };
           })
           .entries(this.additionalMutations);
-
-        return mutationsByGene;
       } else {
         return null;
       }
@@ -1381,7 +1373,7 @@ export default {
 
     // Get date for the citation object
     const formatDate = timeFormat('%e %B %Y');
-    var currentTime = new Date();
+    let currentTime = new Date();
     this.today = formatDate(currentTime);
 
     // set URL for sharing, etc.
@@ -1518,7 +1510,7 @@ export default {
           // selected locations
           this.selectedLocations = results.locations;
           this.currentLocs = results.locations.filter(
-            (d) => d.id != 'Worldwide',
+            (d) => d.id !== 'Worldwide',
           );
           const selected = results.locations.filter((d) => d.isActive);
           this.selectedLocation = selected.length === 1 ? selected[0] : null;
@@ -1529,7 +1521,7 @@ export default {
 
           // worldwide stats
           const global = results.locPrev.filter(
-            (d) => d.location_id == 'Worldwide',
+            (d) => d.location_id === 'Worldwide',
           );
           this.totalLineage =
             global.length === 1 ? global[0].lineage_count_formatted : null;
@@ -1566,7 +1558,7 @@ export default {
           if (results.md) {
             this.reportMetadata = results.md;
             this.searchTerms =
-              this.reportType != 'lineage with added mutations' &&
+              this.reportType !== 'lineage with added mutations' &&
               results.md.searchTerms
                 ? results.md.searchTerms
                 : [this.searchTerms];
@@ -1631,13 +1623,13 @@ export default {
         this.currentLocs
           .map((d) => d.id)
           .concat(locationIDs)
-          .filter((d) => d != 'Worldwide'),
+          .filter((d) => d !== 'Worldwide'),
       );
 
       // reset the fields.
       this.loc2Add = [];
 
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           params: {
@@ -1651,7 +1643,7 @@ export default {
             overlay: this.sublineageOverlay,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1683,9 +1675,9 @@ export default {
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations
         .map((d) => d.id)
-        .filter((d) => d != 'Worldwide');
+        .filter((d) => d !== 'Worldwide');
 
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           query: {
@@ -1700,7 +1692,7 @@ export default {
             disableScroll: true,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1735,7 +1727,9 @@ export default {
       ).subscribe((results) => {
         // selected locations
         this.selectedLocations = results.locations;
-        this.currentLocs = results.locations.filter((d) => d.id != 'Worldwide');
+        this.currentLocs = results.locations.filter(
+          (d) => d.id !== 'Worldwide',
+        );
         const selected = results.locations.filter((d) => d.isActive);
         this.selectedLocation = selected.length === 1 ? selected[0] : null;
 
@@ -1774,7 +1768,7 @@ export default {
       });
     },
     changeSublineageOverlay(selected) {
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           query: {
@@ -1791,7 +1785,7 @@ export default {
             disableScroll: true,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1816,7 +1810,7 @@ export default {
     },
     selectNewPangolin() {
       // const queryParams = this.$route.query;
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           query: {
@@ -1827,7 +1821,7 @@ export default {
             overlay: this.sublineageOverlay,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1851,11 +1845,11 @@ export default {
     calcORF1bLink(mutation) {
       const codonOffset = 4401;
       // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-      if (mutation.type == 'substitution') {
+      if (mutation.type === 'substitution') {
         return `${mutation.ref_aa}${mutation.codon_num + codonOffset}${
           mutation.alt_aa
         }`;
-      } else if (mutation.type == 'deletion') {
+      } else if (mutation.type === 'deletion') {
         return `${mutation}`;
       }
     },

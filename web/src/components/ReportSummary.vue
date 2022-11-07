@@ -5,13 +5,13 @@
       <span class="font-size-2">
         <span v-if="dateUpdated">As of {{ dateUpdated }},</span>
         <b>{{ totalLineage }}</b>
-        <span v-if="reportType == 'lineage'">
+        <span v-if="reportType === 'lineage'">
           sequences in the
           <b>{{ mutationName }}</b>
           {{ reportType }} have been detected since the {{ reportType }} was
           identified:
         </span>
-        <span v-else-if="reportType == 'lineage with added mutations'">
+        <span v-else-if="reportType === 'lineage with added mutations'">
           sequences with the
           <b>{{ mutationName }}</b>
           have been detected since the lineage was identified:
@@ -74,7 +74,7 @@
           <tr
             v-for="(location, lIdx) in locationTotals"
             :key="lIdx"
-            :class="{ 'font-weight-bold': location.location_id == selected }"
+            :class="{ 'font-weight-bold': location.location_id === selected }"
           >
             <td>
               <router-link
@@ -88,8 +88,8 @@
                   },
                 }"
                 v-if="
-                  location.name != 'Worldwide' &&
-                    routeTo == 'GenomicsEmbedVariant'
+                  location.name !== 'Worldwide' &&
+                    routeTo === 'GenomicsEmbedVariant'
                 "
               >
                 {{ location.name }}
@@ -100,7 +100,7 @@
                   name: 'LocationReport',
                   query: { loc: location.location_id, ...locationQueryParams },
                 }"
-                v-else-if="location.name != 'Worldwide'"
+                v-else-if="location.name !== 'Worldwide'"
               >
                 {{ location.name }}
               </router-link>
@@ -112,7 +112,8 @@
             <td class="text-center">
               <span
                 :class="{
-                  'no-estimate': location.proportion_formatted == 'no estimate',
+                  'no-estimate':
+                    location.proportion_formatted === 'no estimate',
                 }"
                 :data-tippy-info="
                   `Prevalence estimates are unreliable since only ${
@@ -185,9 +186,9 @@
       <div>
         The
         {{
-          reportType == 'mutation'
+          reportType === 'mutation'
             ? 'mutation has'
-            : reportType == 'variant'
+            : reportType === 'variant'
             ? 'mutations have'
             : 'strain has'
         }}

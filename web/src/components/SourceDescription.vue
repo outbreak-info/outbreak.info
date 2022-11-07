@@ -41,7 +41,7 @@
               <router-link
                 :to="{ name: 'SituationReports' }"
                 class="text-muted badge bg-grey__lightest ml-3 fa-xs mt-1"
-                v-else-if="source.id == 'gisaid'"
+                v-else-if="source.id === 'gisaid'"
               >
                 <font-awesome-icon class="mr-1" :icon="['far', 'file']" />
                 <span v-html="metadata[source.api_id].count"></span>
@@ -50,7 +50,7 @@
               <router-link
                 :to="{ name: 'Epidemiology' }"
                 class="text-muted badge bg-grey__lightest ml-3 fa-xs mt-1"
-                v-else-if="source.id == 'JHU'"
+                v-else-if="source.id === 'JHU'"
               >
                 <font-awesome-icon class="mr-1" :icon="['far', 'file']" />
                 <span v-html="metadata[source.api_id].count"></span>
@@ -115,32 +115,24 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons/faClock";
-import {
-  faFile
-} from "@fortawesome/free-regular-svg-icons/faFile";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons/faClock';
+import { faFile } from '@fortawesome/free-regular-svg-icons/faFile';
 
 library.add(faClock, faFile);
 
 export default Vue.extend({
-  name: "SourceDescription",
+  name: 'SourceDescription',
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   props: {
     sources: Array,
-    metadata: Object
-  }
+    metadata: Object,
+  },
 });
 </script>

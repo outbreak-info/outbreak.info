@@ -99,34 +99,41 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import SourceDescription from "@/components/SourceDescription.vue";
-import DownloadData from "@/components/DownloadData.vue";
+import SourceDescription from '@/components/SourceDescription.vue';
+import DownloadData from '@/components/DownloadData.vue';
 
-import {getIndivSourcesUpdated} from "@/api/metadata.js";
+import { getIndivSourcesUpdated } from '@/api/metadata.js';
 
 export default Vue.extend({
-  name: "Sources",
+  name: 'Sources',
   components: {
     SourceDescription,
-    DownloadData
+    DownloadData,
   },
   computed: {
-    ...mapState("admin", ["sources", "geoSources", "genomicSources", "resources"])
+    ...mapState('admin', [
+      'sources',
+      'geoSources',
+      'genomicSources',
+      'resources',
+    ]),
   },
   data() {
-    return ({
+    return {
       metadataSubscription: null,
-      sourceMetadata: null
-    })
+      sourceMetadata: null,
+    };
   },
   mounted() {
-    this.metadataSubscription = getIndivSourcesUpdated(this.$genomicsurl, this.$resourceurl, this.$apiurl).subscribe(results => {
+    this.metadataSubscription = getIndivSourcesUpdated(
+      this.$genomicsurl,
+      this.$resourceurl,
+      this.$apiurl,
+    ).subscribe((results) => {
       this.sourceMetadata = results;
     });
   },
@@ -134,7 +141,7 @@ export default Vue.extend({
     if (this.metadataSubscription) {
       this.metadataSubscription.unsubscribe();
     }
-  }
+  },
 });
 </script>
 

@@ -395,31 +395,18 @@
 <script>
 import Vue from "vue";
 
-import {
-  timeFormat,
-  timeParse
-} from "d3";
+import { timeFormat, timeParse } from "d3";
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from "vuex";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faSpinner
-} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faSpinner);
 
-import {
-  getResourceMetadata
-} from "@/api/resources.js";
+import { getResourceMetadata } from "@/api/resources.js";
 
 import cloneDeep from "lodash/cloneDeep";
 
@@ -438,16 +425,45 @@ export default Vue.extend({
     FontAwesomeIcon
   },
   data() {
-    return ({
+    return {
       type: null,
       data: null,
       id: null,
       anchors: {
-        default: ["authors", "description", "downloads", "license", "funder", "based on", "cited by", "related"],
-        Publication: ["authors", "description", "funder", "corrections", "based on", "cited by", "related"],
-        ClinicalTrial: ["authors", "description", "design", "interventions", "eligibility", "outcome", "status", "funder", "publications", "based on", "related"]
+        default: [
+          "authors",
+          "description",
+          "downloads",
+          "license",
+          "funder",
+          "based on",
+          "cited by",
+          "related"
+        ],
+        Publication: [
+          "authors",
+          "description",
+          "funder",
+          "corrections",
+          "based on",
+          "cited by",
+          "related"
+        ],
+        ClinicalTrial: [
+          "authors",
+          "description",
+          "design",
+          "interventions",
+          "eligibility",
+          "outcome",
+          "status",
+          "funder",
+          "publications",
+          "based on",
+          "related"
+        ]
       }
-    })
+    };
   },
   methods: {
     formatDate(dateStr) {
@@ -456,7 +472,10 @@ export default Vue.extend({
       return dateStr ? formatDate(parseDate(dateStr)) : null;
     },
     getData(id) {
-      this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+      this.resultsSubscription = getResourceMetadata(
+        this.$resourceurl,
+        id
+      ).subscribe(results => {
         this.data = results;
         if (this.data) {
           this.type = this.data["@type"];
@@ -465,7 +484,7 @@ export default Vue.extend({
           this.type = null;
           this.dateModified = null;
         }
-      })
+      });
     }
   },
   beforeRouteUpdate(to, from, next) {
@@ -486,19 +505,22 @@ export default Vue.extend({
         delete metadata.studyDesign.phaseNumber;
       }
       // [null] will have problems embedding...
-      metadata.citedBy = metadata.citedBy ? metadata.citedBy.filter(d => d) : null;
+      metadata.citedBy = metadata.citedBy
+        ? metadata.citedBy.filter(d => d)
+        : null;
 
       metadata["includedInDataCatalog"] = {
         "@type": "DataCatalog",
         name: "outbreak.info",
-        description: "During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research. outbreak.info is a resource to aggregate all this information into a single location.",
+        description:
+          "During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research. outbreak.info is a resource to aggregate all this information into a single location.",
         url: "https://outbreak.info/resources",
         publisher: {
           "@type": "Organization",
           name: "outbreak.info",
           url: "https://outbreak.info/"
         }
-      }
+      };
 
       citationTags.push({
         title: "DC.type",
@@ -578,51 +600,58 @@ export default Vue.extend({
 
       if (this.data.author) {
         if (Array.isArray(this.data.author)) {
-          citationTags = citationTags.concat(this.data.author.map(d => {
-            return ({
-              title: "citation_author",
-              content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
-              vmid: "citation_author"
+          citationTags = citationTags.concat(
+            this.data.author.map(d => {
+              return {
+                title: "citation_author",
+                content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
+                vmid: "citation_author"
+              };
             })
-          }))
+          );
         } else {
           citationTags = citationTags.concat({
             title: "citation_author",
-            content: this.data.author.name ? this.data.author.name : `${this.data.author.givenName} ${this.data.author.familyName}`,
+            content: this.data.author.name
+              ? this.data.author.name
+              : `${this.data.author.givenName} ${this.data.author.familyName}`,
             vmid: "citation_author"
-          })
+          });
         }
       }
 
       if (this.data.creator) {
-        citationTags = citationTags.concat(this.data.creator.map(d => {
-          return ({
-            title: "DC.creator",
-            content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
-            vmid: "DC.creator"
+        citationTags = citationTags.concat(
+          this.data.creator.map(d => {
+            return {
+              title: "DC.creator",
+              content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
+              vmid: "DC.creator"
+            };
           })
-        }))
+        );
       }
-
     }
 
     if (metadata) {
       return {
-        script: [{
-          type: 'application/ld+json',
-          json: metadata
-        }],
+        script: [
+          {
+            type: "application/ld+json",
+            json: metadata
+          }
+        ],
         meta: citationTags
-      }
+      };
     }
   },
   computed: {
     ...mapState("admin", ["loading"]),
     anchorsArr() {
       if (Object.keys(this.anchors).includes(this.type)) {
-        return (this.anchors[this.type])
+        return this.anchors[this.type];
       }
-      return (this.anchors["default"])
+      return this.anchors["default"];
     }
   },
   mounted() {

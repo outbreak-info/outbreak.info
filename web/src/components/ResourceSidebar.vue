@@ -69,7 +69,7 @@
         <!-- COVID-19 LST -->
         <div
           id="covid19-lst"
-          v-if="evaluation.name == 'covid19LST'"
+          v-if="evaluation.name === 'covid19LST'"
           class="py-3 border-bottom d-flex flex-column"
         >
           <span class="sidebar-header">Level of Evidence in Study</span>
@@ -80,7 +80,7 @@
               v-for="(rating, dIdx) in 5"
               :key="dIdx"
               :class="[
-                rating == evaluation.ratingValue
+                rating === evaluation.ratingValue
                   ? 'rating-selected'
                   : 'rating-unselected',
               ]"
@@ -111,7 +111,9 @@
             <a
               href="https://www.cebm.ox.ac.uk/resources/levels-of-evidence/explanation-of-the-2011-ocebm-levels-of-evidence"
               target="_blank"
-              v-if="evaluation.reviewAspect == 'Oxford 2011 Levels of Evidence'"
+              v-if="
+                evaluation.reviewAspect === 'Oxford 2011 Levels of Evidence'
+              "
             >
               {{ evaluation.reviewAspect }}
             </a>
@@ -146,7 +148,7 @@
 
     <div
       class="py-3 border-bottom d-flex flex-column"
-      v-else-if="data.curatedBy && data.curatedBy.name == 'ClinicalTrials.gov'"
+      v-else-if="data.curatedBy && data.curatedBy.name === 'ClinicalTrials.gov'"
     >
       <span class="sidebar-header">
         <a
@@ -254,7 +256,7 @@ export default {
       return window.location.href;
     },
     resourceLinkLabel() {
-      if (this.type == 'Publication') {
+      if (this.type === 'Publication') {
         return this.data.journalName
           ? this.data.journalName
           : this.data.journalNameAbbrev
@@ -267,7 +269,7 @@ export default {
       }
     },
     canShare() {
-      return navigator.share ? true : false;
+      return !!navigator.share;
     },
   },
   mounted() {

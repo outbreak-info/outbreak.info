@@ -306,11 +306,11 @@ export default {
     handleTooltip(selected) {
       store.commit('geo/setRegionTooltip', selected);
     },
-    regionColorScale: function(location) {
+    regionColorScale: (location) => {
       const scale = store.getters['colors/getRegionColorFromLocation'];
       return scale(location);
     },
-    lightColor: function(region) {
+    lightColor: (region) => {
       const scale = store.getters['colors/getRegionColor'];
       return scale(region, 0.85);
     },

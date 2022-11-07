@@ -64,15 +64,9 @@
 import Vue from "vue";
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
 import {
   faLink,
   faShare,
@@ -80,10 +74,21 @@ import {
   faSync
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  faTwitter, faFacebookF, faRedditAlien, faLinkedinIn
+  faTwitter,
+  faFacebookF,
+  faRedditAlien,
+  faLinkedinIn
 } from "@fortawesome/free-brands-svg-icons";
 
-library.add(faLink, faShare, faEnvelope, faTwitter, faFacebookF, faRedditAlien, faLinkedinIn);
+library.add(
+  faLink,
+  faShare,
+  faEnvelope,
+  faTwitter,
+  faFacebookF,
+  faRedditAlien,
+  faLinkedinIn
+);
 
 export default Vue.extend({
   name: "ShareReport",
@@ -111,16 +116,16 @@ export default Vue.extend({
       return `https://www.linkedin.com/sharing/share-offsite/?url=${this.outbreakUrl}`;
     },
     emailUrl() {
-      return `mailto:?subject=outbreak.info%20Mutation%20Report&body=${this.outbreakUrl}`
+      return `mailto:?subject=outbreak.info%20Mutation%20Report&body=${this.outbreakUrl}`;
     },
     canShare() {
-      return navigator.share ? true : false;
+      return !!navigator.share;
     }
   },
   data() {
     return {
       showSnackbar: false
-    }
+    };
   },
   methods: {
     copy2Clipboard: () => {
@@ -139,7 +144,7 @@ export default Vue.extend({
       }
     }
   }
-})
+});
 </script>
 
 <style lang="scss">

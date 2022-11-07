@@ -74,15 +74,15 @@
 </template>
 
 <script>
-import Vue from "vue";
-import DataUsage from "@/components/DataUsage.vue";
-import CiteUs from "@/components/CiteUs.vue";
+import Vue from 'vue';
+import DataUsage from '@/components/DataUsage.vue';
+import CiteUs from '@/components/CiteUs.vue';
 
 export default Vue.extend({
-  name: "Terms",
+  name: 'Terms',
   components: {
     DataUsage,
-    CiteUs
-  }
+    CiteUs,
+  },
 });
 </script>

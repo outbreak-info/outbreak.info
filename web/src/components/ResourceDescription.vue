@@ -41,11 +41,11 @@
             </span>
             <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
             <span
-              v-if="idx == data.author.length - 2 && data.author.length == 2"
+              v-if="idx === data.author.length - 2 && data.author.length === 2"
               v-html="'&nbsp;and&nbsp;'"
             ></span>
             <span
-              v-if="idx == data.author.length - 2 && data.author.length > 2"
+              v-if="idx === data.author.length - 2 && data.author.length > 2"
               v-html="',&nbsp;and&nbsp;'"
             ></span>
           </div>
@@ -170,11 +170,11 @@
           </span>
           <span v-if="idx < data.creator.length - 2" v-html="',&nbsp;'"></span>
           <span
-            v-if="idx == data.creator.length - 2 && !data.creator.length == 2"
+            v-if="idx === data.creator.length - 2 && !data.creator.length === 2"
             v-html="',&nbsp;and&nbsp;'"
           ></span>
           <span
-            v-if="idx == data.creator.length - 2 && data.creator.length == 2"
+            v-if="idx === data.creator.length - 2 && data.creator.length === 2"
             v-html="'&nbsp;and&nbsp;'"
           ></span>
         </div>
@@ -243,7 +243,7 @@
 
     <!-- mini-citation -->
     <div
-      v-if="data['@type'] && data['@type'] == 'Publication'"
+      v-if="data['@type'] && data['@type'] === 'Publication'"
       class="text-muted fa-lg line-height-1 mb-4"
     >
       <span v-if="data.journalName" class="font-italic">
@@ -365,7 +365,7 @@
       </small>
     </div>
 
-    <ClinicalTrialSummary :data="data" v-if="type == 'ClinicalTrial'" />
+    <ClinicalTrialSummary :data="data" v-if="type === 'ClinicalTrial'" />
 
     <!-- topics -->
     <div class="keyword-container flex flex-wrap align-items-center mt-4">
@@ -434,7 +434,7 @@
       >
         <small
           class="keyword px-2 py-1"
-          v-if="keyword != ''"
+          v-if="keyword !== ''"
           :data-tippy-info="`search ${keyword}`"
         >
           <router-link
@@ -463,134 +463,148 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import tippy from "tippy.js";
-import "tippy.js/themes/light.css";
+import tippy from 'tippy.js';
+import 'tippy.js/themes/light.css';
 
-import {
-  timeFormat,
-  timeParse
-} from "d3";
+import { timeFormat, timeParse } from 'd3';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import {
-  getResourceMetadata
-} from "@/api/resources.js";
+import { getResourceMetadata } from '@/api/resources.js';
 
-import ClinicalTrialSummary from "@/components/ClinicalTrialSummary.vue";
-import Warning from "@/components/Warning.vue";
+import ClinicalTrialSummary from '@/components/ClinicalTrialSummary.vue';
+import Warning from '@/components/Warning.vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 import {
   faAngleDoubleDown,
-  faAngleDoubleUp
-} from "@fortawesome/free-solid-svg-icons";
+  faAngleDoubleUp,
+} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faClock, faAngleDoubleDown, faAngleDoubleUp);
 
 export default Vue.extend({
-  name: "ResourceDescription",
+  name: 'ResourceDescription',
   props: {
     data: Object,
-    type: String
+    type: String,
   },
   components: {
     ClinicalTrialSummary,
     Warning,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   data() {
-    return ({
-      showAffiliation: false
-    })
+    return {
+      showAffiliation: false,
+    };
   },
   methods: {
     getLogo(curator) {
-      const source = this.resources.flatMap(d => d.sources).filter(d => d.id === curator.toLowerCase() || d.name.toLowerCase() === curator.toLowerCase());
-      return source.length == 1 ? source[0].img : null;
+      const source = this.resources
+        .flatMap((d) => d.sources)
+        .filter(
+          (d) =>
+            d.id === curator.toLowerCase() ||
+            d.name.toLowerCase() === curator.toLowerCase(),
+        );
+      return source.length === 1 ? source[0].img : null;
     },
     formatDate(dateStr) {
-      const parseDate = timeParse("%Y-%m-%d");
-      const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f");
-      const formatDate = timeFormat("%d %B %Y");
+      const parseDate = timeParse('%Y-%m-%d');
+      const strictIsoParse = timeParse('%Y-%m-%dT%H:%M:%S.%f');
+      const formatDate = timeFormat('%d %B %Y');
       if (dateStr) {
         let parsed = parseDate(dateStr);
         if (parsed) {
-          return formatDate(parsed)
+          return formatDate(parsed);
         } else {
           parsed = strictIsoParse(dateStr);
           return parsed ? formatDate(parsed) : null;
         }
       } else {
-        return (null)
+        return null;
       }
-    }
+    },
   },
   computed: {
-    ...mapState("admin", ["loading", "resources"]),
+    ...mapState('admin', ['loading', 'resources']),
     datePublished: () => {
-      return (this.formatDate(this.data.dateModified))
+      return this.formatDate(this.data.dateModified);
     },
     retractionText() {
-      if (this.data.correction && this.data.correction.some(d => d.correctionType == "retraction in")) {
-        const retraction = this.data.correction.filter(d => d.correctionType == "retraction in")
-        const retractionLink = retraction.map(d => `<a class="text-white" href="${d.url}" target="_blank">Retraction Notice </a>`);
-        return (`This ${this.data['@type']} has been retracted. <span class="ml-3">View ${retractionLink}</span>`)
+      if (
+        this.data.correction &&
+        this.data.correction.some((d) => d.correctionType === 'retraction in')
+      ) {
+        const retraction = this.data.correction.filter(
+          (d) => d.correctionType === 'retraction in',
+        );
+        const retractionLink = retraction.map(
+          (d) =>
+            `<a class="text-white" href="${d.url}" target="_blank">Retraction Notice </a>`,
+        );
+        return `This ${this.data['@type']} has been retracted. <span class="ml-3">View ${retractionLink}</span>`;
       }
-      if (this.data.correction && this.data.correction.some(d => d.correctionType == "retraction of")) {
-        const retraction = this.data.correction.filter(d => d.correctionType == "retraction of");
-        const retractionLink = retraction.map(d => `<a class="text-white" href="${d.url}" target="_blank">${d.identifier.toUpperCase()} </a>`);
-        return (`Retraction of ${retractionLink}`)
+      if (
+        this.data.correction &&
+        this.data.correction.some((d) => d.correctionType === 'retraction of')
+      ) {
+        const retraction = this.data.correction.filter(
+          (d) => d.correctionType === 'retraction of',
+        );
+        const retractionLink = retraction.map(
+          (d) =>
+            `<a class="text-white" href="${
+              d.url
+            }" target="_blank">${d.identifier.toUpperCase()} </a>`,
+        );
+        return `Retraction of ${retractionLink}`;
       }
-      if (this.data.publicationType && this.data.publicationType.includes("Retracted Publication")) {
-        return (`This ${this.data['@type']} has been retracted.`)
+      if (
+        this.data.publicationType &&
+        this.data.publicationType.includes('Retracted Publication')
+      ) {
+        return `This ${this.data['@type']} has been retracted.`;
       } else {
-        return (null)
+        return null;
       }
-    }
+    },
   },
   mounted() {
     const id = this.$route.params.id;
 
     // console.log(this.data)
 
-    tippy(".topic", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
+    tippy('.topic', {
+      content: 'Loading...',
+      maxWidth: '200px',
+      placement: 'bottom',
+      animation: 'fade',
+      theme: 'light',
       onShow(instance) {
         let info = instance.reference.dataset.tippyInfo;
         instance.setContent(info);
-      }
+      },
     });
 
-    tippy(".keyword", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
+    tippy('.keyword', {
+      content: 'Loading...',
+      maxWidth: '200px',
+      placement: 'bottom',
+      animation: 'fade',
+      theme: 'light',
       onShow(instance) {
         let info = instance.reference.dataset.tippyInfo;
         instance.setContent(info);
-      }
+      },
     });
-  }
+  },
 });
 </script>
 

@@ -72,7 +72,7 @@ export default {
     ...mapState('admin', ['loading']),
   },
   methods: {
-    regionColorScale: function(location) {
+    regionColorScale: (location) => {
       const scale = store.getters['colors/getRegionColorFromLocation'];
       return scale(location);
     },

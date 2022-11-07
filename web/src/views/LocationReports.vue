@@ -12,6 +12,9 @@
           :icon="['fas', 'spinner']"
         />
       </div>
+      <section id="report-list" class="text-left">
+        <CustomLocationForm :curated="curated" />
+      </section>
 
       <div class="my-2">
         <img src="@/assets/map_stylized.svg" alt="map" class="bg-image" />
@@ -81,7 +84,6 @@
       <section id="report-list" class="text-left">
         <CustomLocationForm :curated="curated" />
       </section>
-
       <ReportAcknowledgements />
     </div>
   </div>

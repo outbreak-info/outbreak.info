@@ -52,11 +52,11 @@
           </span>
           <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
           <span
-            v-if="idx >= data.author.length - 2 && data.author.length == 2"
+            v-if="idx >= data.author.length - 2 && data.author.length === 2"
             v-html="'&nbsp;and&nbsp;'"
           ></span>
           <span
-            v-if="idx == data.author.length - 2 && data.author.length > 2"
+            v-if="idx === data.author.length - 2 && data.author.length > 2"
             v-html="',&nbsp;and&nbsp;'"
           ></span>
         </span>
@@ -105,48 +105,38 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import {
-  timeFormat,
-  timeParse
-} from "d3";
+import { timeFormat, timeParse } from 'd3';
 
-import StripeAccent from "@/components/StripeAccent.vue";
+import StripeAccent from '@/components/StripeAccent.vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 library.add(faClock);
 
-
 export default Vue.extend({
-  name: "Citation",
+  name: 'Citation',
   props: {
-    data: Object
+    data: Object,
   },
   components: {
     StripeAccent,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   methods: {
     formatDate(dateStr) {
-      const parseDate = timeParse("%Y-%m-%d");
-      const formatDate = timeFormat("%d %B %Y");
+      const parseDate = timeParse('%Y-%m-%d');
+      const formatDate = timeFormat('%d %B %Y');
       if (dateStr) {
         const parsed = parseDate(dateStr);
         return parsed ? formatDate(parsed) : dateStr;
       }
-      return (null)
-    }
-  }
-})
+      return null;
+    },
+  },
+});
 </script>
