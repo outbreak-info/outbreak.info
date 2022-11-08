@@ -32,8 +32,17 @@ module.exports = {
       splitChunks: {
         chunks: 'async',
         minSize: 10000,
-        maxSize: 250000,
-      },
+        maxSize: 250000
+      }
     },
-  },
+    module: {
+      rules: [
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: "javascript/auto"
+        }
+      ]
+    }
+  }
 };
