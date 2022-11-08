@@ -1,32 +1,32 @@
 <template>
   <div
-    class="d-flex flex-wrap justify-content-center align-items-center"
-    ref="map_container"
     id="map_container"
+    ref="map_container"
+    class="d-flex flex-wrap justify-content-center align-items-center"
   >
     <div class="d-flex flex-column align-items-center">
-      <h4 ref="date"></h4>
+      <h4 ref="date" />
       <svg
+        ref="svg"
         :width="width"
         :height="height"
-        ref="svg"
         class="epi-map-svg"
         :subtitle="title"
       >
-        <g ref="blank_map" class="blank-map-group"></g>
-        <g ref="regions" class="region-group"></g>
-        <g ref="overlay" class="overlay-map-group"></g>
+        <g ref="blank_map" class="blank-map-group" />
+        <g ref="regions" class="region-group" />
+        <g ref="overlay" class="overlay-map-group" />
       </svg>
     </div>
     <div
-      class="tooltip choropleth-tooltip box-shadow p-2"
       ref="choropleth_tooltip"
+      class="tooltip choropleth-tooltip box-shadow p-2"
     >
-      <h6 class="country-name m-0"></h6>
-      <p class="value m-0"></p>
+      <h6 class="country-name m-0" />
+      <p class="value m-0" />
       <small
-        class="m-0 text-right d-block mb-2"
         v-if="variable.includes('_rolling')"
+        class="m-0 text-right d-block mb-2"
       >
         (average over last {{ rollLength }} days)
       </small>
@@ -36,15 +36,15 @@
           <div class="d-flex flex-column">
             <small class="">new cases per day</small>
             <Bargraph
+              id="time-trace"
               :data="timeTrace"
               :date1="date1"
-              :include2Week="isDiff"
-              :variableObj="{ value: 'confirmed_numIncrease' }"
+              :include2week="isDiff"
+              :variable-obj="{ value: 'confirmed_numIncrease' }"
               :width="100"
               :height="40"
-              id="time-trace"
               :color="'#9f9f9f'"
-              colorAverage="#2c3e50"
+              color-average="#2c3e50"
             />
           </div>
           <div class="d-flex flex-column ml-3">
@@ -86,15 +86,15 @@
           <div class="d-flex flex-column">
             <small class="">new deaths per day</small>
             <Bargraph
+              id="time-trace"
               :data="timeTrace"
               :date1="date1"
-              :include2Week="isDiff"
-              :variableObj="{ value: 'dead_numIncrease' }"
+              :include2week="isDiff"
+              :variable-obj="{ value: 'dead_numIncrease' }"
               :width="100"
               :height="40"
-              id="time-trace"
               :color="'#9f9f9f'"
-              colorAverage="#2c3e50"
+              color-average="#2c3e50"
             />
           </div>
           <div class="d-flex flex-column ml-3">
@@ -136,41 +136,41 @@
     <div class="d-flex flex-column">
       <HistogramLegend
         class="ml-2"
+        v-if="this.data && this.data.length"
         :data="data"
         :animate="animate"
         :transition1="transition1"
-        :minVal="selectedMin"
-        :maxVal="selectedMax"
+        :min-val="selectedMin"
+        :max-val="selectedMax"
         :width="widthLegend"
         :variable="variable"
-        :variableLabel="variableLabel"
-        :colorScale="colorScale"
-        v-if="this.data && this.data.length"
+        :variable-label="variableLabel"
+        :color-scale="colorScale"
       />
-      <div class="d-flex justify-content-between mt-4" v-if="filteredData">
+      <div v-if="filteredData" class="d-flex justify-content-between mt-4">
         <DotPlot
           :data="filteredData"
           :variable="variable"
           :animate="animate"
           :transition1="transition1"
-          :colorScale="colorScale"
-          :sortAsc="false"
+          :color-scale="colorScale"
+          :sort-asc="false"
           :title="variableLabel"
           :width="widthLegend / 2 - 5"
-          :rightAlign="rightAlignDesc"
-          :varMax="varMax"
+          :right-align="rightAlignDesc"
+          :var-max="varMax"
         />
         <DotPlot
           :data="filteredData"
           :variable="variable"
           :animate="animate"
           :transition1="transition1"
-          :colorScale="colorScale"
-          :sortAsc="true"
+          :color-scale="colorScale"
+          :sort-asc="true"
           :title="variableLabel"
           :width="widthLegend / 2 - 5"
-          :rightAlign="rightAlignAsc"
-          :varMax="varMax"
+          :right-align="rightAlignAsc"
+          :var-max="varMax"
         />
       </div>
       <DataUpdated />
@@ -223,11 +223,6 @@ export default {
     colorScale: Function,
     adminLevel: String,
     animate: Boolean,
-  },
-  watch: {
-    data: () => {
-      this.drawMap();
-    },
   },
   data() {
     return {
@@ -302,7 +297,12 @@ export default {
         : this.variableLabel;
     },
   },
-  created: () => {
+  watch: {
+    data() {
+      this.drawMap();
+    },
+  },
+  created() {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
   },
   mounted() {

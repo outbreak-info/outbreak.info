@@ -57,7 +57,8 @@
                 <router-link
                   :to="{ name: 'Epidemiology', query: { location: 'BRA' } }"
                   class="text-light"
-                  >Brazil
+                >
+                  Brazil
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -67,10 +68,11 @@
                 <router-link
                   :to="{
                     name: 'Epidemiology',
-                    query: { location: 'USA_US-CA' }
+                    query: { location: 'USA_US-CA' },
                   }"
                   class="text-light"
-                  >California
+                >
+                  California
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -79,10 +81,11 @@
               <router-link
                 :to="{
                   name: 'Epidemiology',
-                  query: { location: 'USA_US-KS-28140' }
+                  query: { location: 'USA_US-KS-28140' },
                 }"
                 class="text-light"
-                >Kansas City metro area
+              >
+                Kansas City metro area
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -160,7 +163,8 @@
                 <router-link
                   :to="{ name: 'MutationReport', params: { alias: 'omicron' } }"
                   class="text-light"
-                  >Omicron
+                >
+                  Omicron
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -169,10 +173,11 @@
                 <router-link
                   :to="{
                     name: 'MutationReport',
-                    params: { alias: 'ba.2* [omicron (ba.2.x)]' }
+                    params: { alias: 'ba.2* [omicron (ba.2.x)]' },
                   }"
                   class="text-light"
-                  >BA.2*
+                >
+                  BA.2*
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -181,10 +186,11 @@
                 <router-link
                   :to="{
                     name: 'MutationReport',
-                    query: { pango: 'BA.2.12.1' }
+                    query: { pango: 'BA.2.12.1' },
                   }"
                   class="text-light"
-                  >BA.2.12.1
+                >
+                  BA.2.12.1
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -193,7 +199,8 @@
                 <router-link
                   :to="{ name: 'MutationReport', query: { pango: 'BA.2.75' } }"
                   class="text-light"
-                  >BA.2.75
+                >
+                  BA.2.75
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -202,7 +209,8 @@
                 <router-link
                   :to="{ name: 'MutationReport', query: { pango: 'BA.4' } }"
                   class="text-light"
-                  >BA.4
+                >
+                  BA.4
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -211,7 +219,8 @@
                 <router-link
                   :to="{ name: 'MutationReport', params: { alias: 'BA.5*' } }"
                   class="text-light"
-                  >BA.5*
+                >
+                  BA.5*
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -256,7 +265,8 @@
                 <router-link
                   :to="{ name: 'LocationReport', query: { loc: 'USA' } }"
                   class="text-light"
-                  >USA
+                >
+                  USA
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -265,7 +275,8 @@
                 <router-link
                   :to="{ name: 'LocationReport', query: { loc: 'GBR' } }"
                   class="text-light"
-                  >U.K.
+                >
+                  U.K.
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -274,7 +285,8 @@
                 <router-link
                   :to="{ name: 'LocationReport', query: { loc: 'USA_US-NY' } }"
                   class="text-light"
-                  >New York
+                >
+                  New York
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -283,10 +295,11 @@
                 <router-link
                   :to="{
                     name: 'LocationReport',
-                    query: { loc: 'USA_US-CA_06073' }
+                    query: { loc: 'USA_US-CA_06073' },
                   }"
                   class="text-light"
-                  >San Diego
+                >
+                  San Diego
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -345,7 +358,8 @@
                 <router-link
                   :to="{ name: 'Resources', query: { q: 'E484K' } }"
                   class="text-light"
-                  >E484K
+                >
+                  E484K
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -354,7 +368,8 @@
                 <router-link
                   :to="{ name: 'Resources', query: { q: 'Moderna' } }"
                   class="text-light"
-                  >Moderna
+                >
+                  Moderna
 
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
@@ -363,12 +378,13 @@
                 <router-link
                   :to="{ name: 'Resources', query: { q: 'remdesivir' } }"
                   class="text-light"
-                  >remdesivir
+                >
+                  remdesivir
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
-              <router-link :to="{ name: 'NIAID' }" class="text-light"
-                >NIAID-funded
+              <router-link :to="{ name: 'NIAID' }" class="text-light">
+                NIAID-funded
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -392,9 +408,14 @@
               href="https://www.scripps.edu/faculty/hughes/"
               rel="noreferrer"
               target="_blank"
-              >Hughes</a
-            >, <a href="http://sulab.org/" target="_blank">Su</a>,
-            <a href="https://wulab.io/" target="_blank">Wu</a>, and
+            >
+              Hughes
+            </a>
+            ,
+            <a href="http://sulab.org/" target="_blank">Su</a>
+            ,
+            <a href="https://wulab.io/" target="_blank">Wu</a>
+            , and
 
             <a href="https://andersen-lab.com/" target="_blank">Andersen</a>
             labs at Scripps Research to unify COVID-19 and SARS-CoV-2
@@ -577,15 +598,9 @@
           transmissibility, virulence, and/or decreased efficacy of vaccines and
           therapeutics and have been associated with resurgences of COVID-19
           cases and deaths across the world. Our Variant Reports are
-<<<<<<< HEAD
           <b>real-time surveillance reports</b>
           to track the prevalence of these variants or any arbitrary combination
           of mutations to understand how they're changing.
-=======
-          <b>real-time surveillance reports</b> to track the prevalence of these
-          variants or any arbitrary combination of mutations to understand how
-          they're changing.
-
         </p>
         <div class="row">
           <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
@@ -616,9 +631,10 @@
                   aria-controls="lineage-report-questions"
                   role="button"
                   class="line-height-1 mt-3 mb-0"
-                  >What questions can I answer with Lineage | Mutation Tracker
-                  Reports?</a
                 >
+                  What questions can I answer with Lineage | Mutation Tracker
+                  Reports?
+                </a>
 
                 <ul
                   class="collapse text-highlight fa-sm line-height-1 mt-2"
@@ -689,8 +705,9 @@
                   aria-controls="location-report-questions"
                   role="button"
                   class="line-height-1 mt-3 mb-0"
-                  >What questions can I answer with Location Tracker Reports?</a
                 >
+                  What questions can I answer with Location Tracker Reports?
+                </a>
 
                 <ul
                   class="collapse text-highlight fa-sm line-height-1 mt-2"
@@ -744,10 +761,9 @@
                   aria-controls="compare-lineage-questions"
                   role="button"
                   class="line-height-1 mt-3 mb-0"
-                  >What questions can I answer with the Lineage Comparison
-                  Tool?</a
                 >
-
+                  What questions can I answer with the Lineage Comparison Tool?
+                </a>
 
                 <ul
                   class="collapse text-highlight fa-sm line-height-1 mt-2"
@@ -897,25 +913,23 @@ import SearchBar from '@/components/SearchBar.vue';
 import CustomReportForm from '@/components/CustomReportForm';
 import TypeaheadSelect from '@/components/TypeaheadSelect';
 
-import Vue from "vue";
-import { mapState } from "vuex";
-
+import Vue from 'vue';
+import { mapState } from 'vuex';
 
 import store from '@/store';
 
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
 import {
   faAngleDoubleRight,
   faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { findPangolin, findLocation } from "@/api/genomics.js";
+import { findPangolin, findLocation } from '@/api/genomics.js';
 
 library.add(faAngleDoubleRight, faSearch);
-
 
 export default {
   name: 'Home',
@@ -937,19 +951,17 @@ export default {
   },
   methods: {
     videoClick() {
-      this.$gtag.event("video_play", {
+      this.$gtag.event('video_play', {
         event_category: `video_play`,
-        event_label: `outbreak.info homepage overview`
-
+        event_label: `outbreak.info homepage overview`,
       });
     },
     submitLocation(selected) {
       this.$router.push({
         name: 'LocationReport',
         query: {
-          loc: selected.id
-        }
-
+          loc: selected.id,
+        },
       });
     },
     submitSearch() {
@@ -983,8 +995,7 @@ export default {
 
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;
-  }
-
+  },
 };
 </script>
 

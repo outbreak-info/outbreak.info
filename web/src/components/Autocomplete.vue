@@ -12,24 +12,24 @@
       </div>
       <div class="d-flex flex-wrap">
         <button
-          class="chip"
           v-for="(item, idx) in selectedItems"
           :key="idx"
+          class="chip"
           :class="{ 'to-add': item.addable, 'all-selected': isSelectAll }"
+          :style="{ background: item.lightColor }"
           @click="updateChip(item)"
-          v-bind:style="{ background: item.lightColor }"
         >
           {{ item.label }}
           <font-awesome-icon
+            v-if="!item.addable"
             class="remove-btn"
             :icon="['far', 'times-circle']"
-            v-bind:style="{ color: item.darkColor }"
-            v-if="!item.addable"
+            :style="{ color: item.darkColor }"
           />
         </button>
         <input
-          type="text"
           v-model="search"
+          type="text"
           placeholder="Type here"
           @input="onChange"
           @keydown.down="onArrowDown"
@@ -42,17 +42,17 @@
       </div>
     </div>
 
-    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
-      <li class="loading" v-if="isLoading">
+    <ul v-show="isOpen" id="autocomplete-results" class="autocomplete-results">
+      <li v-if="isLoading" class="loading">
         Loading results...
       </li>
       <li
-        v-else
         v-for="(result, i) in results"
+        v-else
         :key="i"
-        @click="setResult(result)"
         class="autocomplete-result"
         :class="{ 'is-active': i === arrowCounter }"
+        @click="setResult(result)"
       >
         {{ result.label }}
       </li>
@@ -84,6 +84,9 @@ library.add(faTimesCircle, faPlusSquare);
 
 export default Vue.extend({
   name: 'Autocomplete',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     selected: {
       type: Array,
@@ -101,9 +104,6 @@ export default Vue.extend({
       default: false,
     },
   },
-  components: {
-    FontAwesomeIcon,
-  },
   data() {
     return {
       isOpen: false,
@@ -118,14 +118,14 @@ export default Vue.extend({
     };
   },
   watch: {
-    selected: (val, oldValue) => {
+    selected(val, oldValue) {
       this.updateSelected();
     },
-    colorScale: (val, oldValue) => {
+    colorScale(val, oldValue) {
       this.updateSelected();
     },
   },
-  created: () => {
+  created() {
     this.debounceSearch = debounce(this.onChange, 250);
   },
   mounted() {

@@ -248,54 +248,54 @@
 </template>
 
 <script>
-import Vue from "vue";
-import cloneDeep from "lodash/cloneDeep";
-import {
-  format,
-  timeFormat
-} from "d3";
-import Sparkline from "@/components/Sparkline.vue";
-import tippy from "tippy.js";
-import "tippy.js/themes/light.css";
+import Vue from 'vue';
+import cloneDeep from 'lodash/cloneDeep';
+import { format, timeFormat } from 'd3';
+import Sparkline from '@/components/Sparkline.vue';
+import tippy from 'tippy.js';
+import 'tippy.js/themes/light.css';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowUp,
   faArrowDown,
   faArrowLeft,
   faArrowRight,
   faSort,
-  faChevronRight
-} from "@fortawesome/free-solid-svg-icons";
+  faChevronRight,
+} from '@fortawesome/free-solid-svg-icons';
 
-library.add(faArrowUp, faArrowDown, faArrowLeft, faArrowRight, faSort, faChevronRight);
+library.add(
+  faArrowUp,
+  faArrowDown,
+  faArrowLeft,
+  faArrowRight,
+  faSort,
+  faChevronRight,
+);
 
-import store from "@/store";
+import store from '@/store';
 import {
   epiTableState$,
   getEpiTable,
-  getSparklineTraces
-} from "@/api/epi-traces.js";
+  getSparklineTraces,
+} from '@/api/epi-traces.js';
 
-const formatDate = timeFormat("%a %d %b %Y");
+const formatDate = timeFormat('%a %d %b %Y');
 
 export default Vue.extend({
-  name: "EpiTable",
+  name: 'EpiTable',
   components: {
     FontAwesomeIcon,
-    Sparkline
+    Sparkline,
   },
   props: {
     locations: Array,
     routable: Boolean,
     colorScale: Function,
-    colorVar: String
+    colorVar: String,
   },
   data() {
     return {
@@ -306,145 +306,149 @@ export default Vue.extend({
       changeDataSubscription: null,
       sparksSubscription: null,
       selectedAdminLevels: [0, 1, 1.5, 2],
-      mergedColumns: [{
-          label: "",
-          colspan: 1
-        }, {
-          label: "",
-          colspan: 1
+      mergedColumns: [
+        {
+          label: '',
+          colspan: 1,
         },
         {
-          label: "",
-          colspan: 1
+          label: '',
+          colspan: 1,
         },
         {
-          label: "CASES",
-          colspan: 5
+          label: '',
+          colspan: 1,
         },
         {
-          label: "",
-          colspan: 1
-        }, {
-          label: "DEATHS",
-          colspan: 5
-        }
+          label: 'CASES',
+          colspan: 5,
+        },
+        {
+          label: '',
+          colspan: 1,
+        },
+        {
+          label: 'DEATHS',
+          colspan: 5,
+        },
       ],
-      columns: [{
-          label: "location",
-          value: "name",
-          sort_id: "name",
+      columns: [
+        {
+          label: 'location',
+          value: 'name',
+          sort_id: 'name',
           sorted: 0,
-          essential: true
+          essential: true,
         },
         {
-          label: "country",
-          value: "country_name",
-          sort_id: "country_name",
+          label: 'country',
+          value: 'country_name',
+          sort_id: 'country_name',
           sorted: 0,
-          essential: false
+          essential: false,
         },
         {
-          label: "",
-          value: "",
+          label: '',
+          value: '',
           sorted: null,
-          essential: false
+          essential: false,
         },
         {
-          group: "cases",
-          label: "total",
-          value: "confirmed_cases",
-          sort_id: "confirmed",
+          group: 'cases',
+          label: 'total',
+          value: 'confirmed_cases',
+          sort_id: 'confirmed',
           sorted: -1,
-          essential: true
+          essential: true,
         },
         {
-          group: "cases",
-          label: "new today",
-          value: "confirmed_increase",
-          sort_id: "confirmed_numIncrease",
+          group: 'cases',
+          label: 'new today',
+          value: 'confirmed_increase',
+          sort_id: 'confirmed_numIncrease',
           sorted: 0,
-          essential: false
+          essential: false,
         },
         {
-          group: "cases",
-          label: "increase today",
-          value: "confirmed_pctIncrease",
-          sort_id: "confirmed_pctIncrease",
+          group: 'cases',
+          label: 'increase today',
+          value: 'confirmed_pctIncrease',
+          sort_id: 'confirmed_pctIncrease',
           sorted: 0,
-          essential: true
+          essential: true,
         },
         {
-          group: "cases",
-          label: "per capita",
-          value: "confirmed_percapita",
+          group: 'cases',
+          label: 'per capita',
+          value: 'confirmed_percapita',
           sorted: null,
-          essential: false
+          essential: false,
         },
         {
-          group: "cases",
-          label: "change over time",
-          value: "confirmed_sparkline",
+          group: 'cases',
+          label: 'change over time',
+          value: 'confirmed_sparkline',
           sorted: null,
-          essential: true
+          essential: true,
         },
         {
-          label: "",
-          value: "",
+          label: '',
+          value: '',
           sorted: null,
-          essential: false
+          essential: false,
         },
         {
-          group: "deaths",
-          label: "total",
-          value: "dead_cases",
-          sort_id: "dead",
+          group: 'deaths',
+          label: 'total',
+          value: 'dead_cases',
+          sort_id: 'dead',
           sorted: 0,
-          essential: true
+          essential: true,
         },
         {
-          group: "deaths",
-          label: "new today",
-          value: "dead_increase",
-          sort_id: "dead_numIncrease",
+          group: 'deaths',
+          label: 'new today',
+          value: 'dead_increase',
+          sort_id: 'dead_numIncrease',
           sorted: 0,
-          essential: false
+          essential: false,
         },
         {
-          group: "deaths",
-          label: "increase today",
-          value: "dead_pctIncrease",
-          sort_id: "dead_pctIncrease",
+          group: 'deaths',
+          label: 'increase today',
+          value: 'dead_pctIncrease',
+          sort_id: 'dead_pctIncrease',
           sorted: 0,
-          essential: true
+          essential: true,
         },
         {
-          group: "deaths",
-          label: "per capita",
-          value: "dead_percapita",
+          group: 'deaths',
+          label: 'per capita',
+          value: 'dead_percapita',
           sorted: null,
-          essential: false
+          essential: false,
         },
         {
-          group: "deaths",
-          label: "change over time",
-          value: "dead_sparkline",
+          group: 'deaths',
+          label: 'change over time',
+          value: 'dead_sparkline',
           sorted: null,
-          essential: true
-        }
+          essential: true,
+        },
       ],
-      searchInput: "",
+      searchInput: '',
       filteredCases: null,
-      sortVar: "-confirmed",
+      sortVar: '-confirmed',
       page: 0,
       numPerPage: 10,
-      pageOpts: [5, 10, 50, 100]
+      pageOpts: [5, 10, 50, 100],
     };
   },
   watch: {
-    data: () => {
+    data() {
       this.prepData();
     },
-    selectedAdminLevels: () => {
+    selectedAdminLevels() {
       this.updateData();
     },
   },
@@ -472,10 +476,10 @@ export default Vue.extend({
   created() {
     // set up subscription here; listen for changes and execute in the watch.
     // Strangely, w/o the watch, the subscription doesn't seem to update...
-    this.dataSubscription = epiTableState$.subscribe(data => {
-      this.data = data["data"];
-      this.total = data["total"];
-    })
+    this.dataSubscription = epiTableState$.subscribe((data) => {
+      this.data = data['data'];
+      this.total = data['total'];
+    });
   },
   beforeDestroy() {
     this.dataSubscription.unsubscribe();
@@ -485,23 +489,21 @@ export default Vue.extend({
     }
   },
   computed: {
-    lowerLim: () => {
+    lowerLim() {
       return this.page * this.numPerPage;
     },
-    upperLim: () => {
+    upperLim() {
       const upper = this.page * this.numPerPage + this.numPerPage;
       return upper > this.total ? this.total : upper;
     },
-    lastPage: () => {
-      return this.total ?
-        Math.floor(this.total / this.numPerPage) :
-        null;
-    }
+    lastPage() {
+      return this.total ? Math.floor(this.total / this.numPerPage) : null;
+    },
   },
   methods: {
     sortColumn(variable) {
       // reset other sorting funcs for arrow affordances
-      const idx = this.columns.findIndex(d => d.sort_id === variable);
+      const idx = this.columns.findIndex((d) => d.sort_id === variable);
 
       if (this.columns[idx].sorted || this.columns[idx].sorted === 0) {
         // if the sort variable is the same, switch it.
@@ -518,14 +520,24 @@ export default Vue.extend({
           } else {
             d.sorted = d.sorted || d.sorted === 0 ? 0 : null;
           }
-        })
+        });
 
         this.updateData();
       }
     },
     updateData() {
-      this.sparksSubscription = getSparklineTraces(this.$apiurl, this.locations).subscribe(_ => null);
-      this.changeDataSubscription = getEpiTable(this.$apiurl, this.locations, this.selectedAdminLevels, this.sortVar, this.numPerPage, this.numPerPage * this.page).subscribe(_ => null);
+      this.sparksSubscription = getSparklineTraces(
+        this.$apiurl,
+        this.locations,
+      ).subscribe((_) => null);
+      this.changeDataSubscription = getEpiTable(
+        this.$apiurl,
+        this.locations,
+        this.selectedAdminLevels,
+        this.sortVar,
+        this.numPerPage,
+        this.numPerPage * this.page,
+      ).subscribe((_) => null);
     },
     changePage(step) {
       this.page += step;
@@ -537,13 +549,12 @@ export default Vue.extend({
     },
     prepData() {
       if (this.data) {
-        this.data.forEach(d => {
-          d["color"] = this.colorScale(d[this.colorVar]);
+        this.data.forEach((d) => {
+          d['color'] = this.colorScale(d[this.colorVar]);
         });
       }
-
-    }
-  }
+    },
+  },
 });
 </script>
 

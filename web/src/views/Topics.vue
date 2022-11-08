@@ -58,7 +58,7 @@ export default {
     this.resultSubscription.unsubscribe();
   },
   computed: {
-    types: () => {
+    types() {
       return this.results ? this.results.flatMap((d) => d.types) : null;
     },
   },

@@ -61,24 +61,24 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 import {
   faLink,
   faShare,
   faEnvelope,
-  faSync
-} from "@fortawesome/free-solid-svg-icons";
+  faSync,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   faTwitter,
   faFacebookF,
   faRedditAlien,
-  faLinkedinIn
-} from "@fortawesome/free-brands-svg-icons";
+  faLinkedinIn,
+} from '@fortawesome/free-brands-svg-icons';
 
 library.add(
   faLink,
@@ -87,17 +87,17 @@ library.add(
   faTwitter,
   faFacebookF,
   faRedditAlien,
-  faLinkedinIn
+  faLinkedinIn,
 );
 
 export default Vue.extend({
-  name: "ShareReport",
+  name: 'ShareReport',
   props: {
     title: String,
-    url: String
+    url: String,
   },
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   computed: {
     outbreakUrl() {
@@ -120,30 +120,30 @@ export default Vue.extend({
     },
     canShare() {
       return !!navigator.share;
-    }
+    },
   },
   data() {
     return {
-      showSnackbar: false
+      showSnackbar: false,
     };
   },
   methods: {
-    copy2Clipboard: () => {
+    copy2Clipboard() {
       this.showSnackbar = true;
       setTimeout(() => {
         this.showSnackbar = false;
       }, 3000);
       navigator.clipboard.writeText(this.outbreakUrl);
     },
-    shareLink: () => {
+    shareLink() {
       if (navigator.share) {
         navigator.share({
           title: `outbreak.info Mutation Report`,
-          url: this.outbreakUrl
+          url: this.outbreakUrl,
         });
       }
-    }
-  }
+    },
+  },
 });
 </script>
 

@@ -376,10 +376,10 @@ export default {
   computed: {
     ...mapState('admin', ['loading']),
     ...mapState('geo', ['allPlaces']),
-    colorScale: () => {
+    colorScale() {
       return store.getters['colors/getColor'];
     },
-    noData: () => {
+    noData() {
       if (this.data$) {
         return !this.data$[0]
           .flatMap((d) => d.value)
@@ -389,7 +389,7 @@ export default {
         return false;
       }
     },
-    isLogY: () => {
+    isLogY() {
       return this.log === 'true';
     },
     dataLength() {
@@ -432,7 +432,7 @@ export default {
     },
   },
   watch: {
-    selectedPlaces: (newValue, oldValue) => {
+    selectedPlaces(newValue, oldValue) {
       const newLocation = newValue ? newValue.join(';') : '';
       if (this.$route.query.location !== newLocation) {
         this.$router.push({
@@ -451,7 +451,7 @@ export default {
       }
     },
     // route props
-    location: (newLocation, oldLocation) => {
+    location(newLocation, oldLocation) {
       this.setLocation(newLocation);
     },
     variable: {
@@ -462,7 +462,7 @@ export default {
         )[0];
       },
     },
-    fixedY: (newValue, oldValue) => {
+    fixedY() {
       if (newValue === 'true') {
         const varUsed = this.isPerCapita
           ? this.variable + '_per_100k'
@@ -477,16 +477,16 @@ export default {
         this.isFixedY = false;
       }
     },
-    isFixedY: (newValue, oldValue) => {
+    isFixedY() {
       this.changeVariable();
     },
-    percapita: (newValue, oldValue) => {
+    percapita() {
       this.isPerCapita = newValue === 'true';
     },
-    isPerCapita: (newValue, oldValue) => {
+    isPerCapita() {
       this.changeVariable();
     },
-    isOverlay: (newValue, oldValue) => {
+    isOverlay() {
       if (newValue) {
         this.isOverlay = false;
 
@@ -506,7 +506,7 @@ export default {
         });
       }
     },
-    showAll: (newValue, oldValue) => {
+    showAll() {
       if (newValue) {
         this.addable = [];
         this.plottedData = this.data$ ? this.data$[0] : null;
@@ -527,7 +527,7 @@ export default {
     });
   },
   methods: {
-    setLocation: (locationString, nullLocationHandler) => {
+    setLocation(locationString, nullLocationHandler) {
       if (locationString && locationString !== '') {
         const locations = locationString.split(';').map((d) => d.trim());
         this.selectedPlaces = locations;
@@ -561,7 +561,7 @@ export default {
         this.clearLocations();
       }
     },
-    clearLocations: () => {
+    clearLocations() {
       this.selectedPlaces = [];
       epiDataSubject.next([]);
       epiTableSubject.next([]);
@@ -596,13 +596,13 @@ export default {
         },
       });
     },
-    updateSelected: (selected) => {
+    updateSelected(selected) {
       this.selectedPlaces = [...new Set(selected)];
     },
     updateAddable: (selected) => {
       this.addable = selected;
     },
-    setDims: () => {
+    setDims() {
       const minWidth = 550;
       const hwRatio = 0.75;
       const marginPadding = 80; // size of margin
@@ -623,7 +623,7 @@ export default {
         this.bargraphTransform = 1;
       }
     },
-    hideExtra: () => {
+    hideExtra() {
       const selectedData = this.data$
         ? this.data$[0]
             .slice()

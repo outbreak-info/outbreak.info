@@ -137,7 +137,7 @@ export default Vue.extend({
 <!--     } -->
 <!--   }, -->
 <!--   watch: { -->
-<!--     data: () => { -->
+<!--     data() { -->
 <!--       this.updatePlot(); -->
 <!--     } -->
 <!--   }, -->
@@ -183,7 +183,7 @@ export default Vue.extend({
 <!--     setupPlot() { -->
 <!--       this.chart = select(this.$refs.mut_bars); -->
 <!--     }, -->
-<!--     updatePlot: () => { -->
+<!--     updatePlot() { -->
 <!--       if (this.data) { -->
 <!--         this.updateAxes(); -->
 <!--         this.drawPlot(); -->

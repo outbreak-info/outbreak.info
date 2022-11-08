@@ -204,7 +204,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    width: () => {
+    width() {
       this.setXScale();
       this.updateBrush();
       this.updatePlot();

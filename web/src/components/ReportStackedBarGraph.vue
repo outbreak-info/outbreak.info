@@ -96,7 +96,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    width: () => {
+    width() {
       this.updatePlot();
     },
     data: () => {

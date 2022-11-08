@@ -49,7 +49,7 @@ export default {
     partOfUSA: Boolean,
     id: String,
   },
-  data: () => {
+  data() {
     return {
       width: 150,
       height: 75,

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 import {
   select,
@@ -52,19 +52,19 @@ import {
   stackOrderReverse,
   event,
   extent,
-  max
-} from "d3";
-import store from "@/store";
+  max,
+} from 'd3';
+import store from '@/store';
 
 const margin = {
   top: 10,
   right: 50,
   bottom: 25,
-  left: 90
+  left: 90,
 };
 
 export default Vue.extend({
-  name: "EpiStacked",
+  name: 'EpiStacked',
   components: {},
   props: {
     id: String,
@@ -72,7 +72,7 @@ export default Vue.extend({
     data: Array,
     width: Number,
     height: Number,
-    includeChinaAnnot: Boolean
+    includeChinaAnnot: Boolean,
   },
   data() {
     return {
@@ -88,82 +88,82 @@ export default Vue.extend({
       chart: null,
       legend: null,
       // methods
-      area: null
+      area: null,
     };
   },
   watch: {
-    data: () => {
+    data() {
       this.updatePlot();
     },
-    width: () => {
+    width() {
       this.updatePlot();
     },
-    height: () => {
+    height() {
       this.updatePlot();
-    }
+    },
   },
   mounted() {
     this.updatePlot();
   },
   methods: {
     handleClick: function(key) {
-      this.$emit("regionSelected", {
+      this.$emit('regionSelected', {
         region: key,
         display: false,
-        displayMore: true
+        displayMore: true,
       });
     },
     handleMouseover: function(d) {
-      selectAll(".legend-group").style("opacity", 0.4);
+      selectAll('.legend-group').style('opacity', 0.4);
 
-      selectAll(".stacked-area-chart").style("opacity", 0.4);
+      selectAll('.stacked-area-chart').style('opacity', 0.4);
 
       selectAll(
         `.${d.key
-          .replace(/\s/g, "_")
-          .replace(/\//g, "_")
-          .replace(/&/g, "_")
-          .replace(/:/g, "_")
-          .replace(/\(/g, "_")
-          .replace(/\)/g, "_")}`
-      ).style("opacity", 1);
+          .replace(/\s/g, '_')
+          .replace(/\//g, '_')
+          .replace(/&/g, '_')
+          .replace(/:/g, '_')
+          .replace(/\(/g, '_')
+          .replace(/\)/g, '_')}`,
+      ).style('opacity', 1);
 
-      this.$emit("regionSelected", {
+      this.$emit('regionSelected', {
         region: d.key,
         display: true,
         currentCases: d.slice(-1)[0].data[d.key],
         x: event.x + 10,
-        y: event.y + 10
+        y: event.y + 10,
       });
     },
     handleMouseout: function(key) {
-      selectAll(".legend-group").style("opacity", 1);
+      selectAll('.legend-group').style('opacity', 1);
 
-      selectAll(".stacked-area-chart").style("opacity", 1);
+      selectAll('.stacked-area-chart').style('opacity', 1);
 
-      this.$emit("regionSelected", {
+      this.$emit('regionSelected', {
         region: key,
-        display: false
+        display: false,
       });
     },
     colorScale: function(location) {
-      const scale = store.getters["colors/getRegionColor"];
+      const scale = store.getters['colors/getRegionColor'];
       return scale(location);
     },
-    updatePlot: () => {
+    updatePlot() {
       if (this.data) {
         this.setupPlot();
         this.updateScales();
         this.drawPlot();
       }
     },
-    setupPlot: () => {
+    setupPlot() {
       this.svg = select(`#${this.id}`);
-      this.chart = this.svg.select(".epi-summary");
-      this.legend = this.svg.select(".legend");
+      this.chart = this.svg.select('.epi-summary');
+      this.legend = this.svg.select('.legend');
     },
-    updateScales: () => {
-      const keys = Object.keys(this.data[0]).filter(d => d !== "date");
+    updateScales() {
+      const keys = Object.keys(this.data[0]).filter((d) => d !== 'date');
 
       this.series = stack()
         .keys(keys)
@@ -173,28 +173,28 @@ export default Vue.extend({
         // .order(stackOrderNone)
         .order(stackOrderReverse)(
         // .order(stackOrderInsideOut)
-        this.data
+        this.data,
       );
 
       this.x = this.x
-        .domain(extent(this.data.map(d => d.date)))
+        .domain(extent(this.data.map((d) => d.date)))
         .range([0, this.width - this.margin.left - this.margin.right]);
 
       this.y = this.y
         .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, max(this.series, d => max(d, d => d[1]))])
+        .domain([0, max(this.series, (d) => max(d, (d) => d[1]))])
         .nice();
 
       const numXTicks = this.width < 575 ? 2 : 4;
       this.xAxis = axisBottom(this.x).ticks(numXTicks);
 
       this.svg
-        .select(".axis--x")
+        .select('.axis--x')
         .attr(
-          "transform",
+          'transform',
           `translate(${this.margin.left}, ${this.height -
             this.margin.bottom +
-            2})`
+            2})`,
         )
         .call(this.xAxis);
 
@@ -203,99 +203,99 @@ export default Vue.extend({
       this.yAxis = this.yAxis
         .tickFormat((d, i) =>
           i === this.yAxis.scale().ticks().length - 1
-            ? d / 1e6 + " million"
-            : d / 1e6
+            ? d / 1e6 + ' million'
+            : d / 1e6,
         )
         .tickSizeOuter(0);
 
       this.svg
-        .select(".axis--y")
-        .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
+        .select('.axis--y')
+        .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
         .call(this.yAxis);
     },
-    drawPlot: () => {
+    drawPlot() {
       // --- annotations ---
       this.area = area()
-        .x(d => this.x(d.data.date))
-        .y0(d => this.y(d[0]))
-        .y1(d => this.y(d[1]));
+        .x((d) => this.x(d.data.date))
+        .y0((d) => this.y(d[0]))
+        .y1((d) => this.y(d[1]));
 
       const areaSelector = this.chart
-        .selectAll(".stacked-area-chart")
+        .selectAll('.stacked-area-chart')
         .data(this.series);
 
       areaSelector
-        .join("path")
-        .style("fill", ({ key }) => this.colorScale(key))
+        .join('path')
+        .style('fill', ({ key }) => this.colorScale(key))
         .attr(
-          "class",
-          d =>
+          'class',
+          (d) =>
             `stacked-area-chart ${d.key
-              .replace(/\s/g, "_")
-              .replace(/&/g, "_")
-              .replace(/:/g, "_")
-              .replace(/\//g, "_")
-              .replace(/\(/g, "_")
-              .replace(/\)/g, "_")}`
+              .replace(/\s/g, '_')
+              .replace(/&/g, '_')
+              .replace(/:/g, '_')
+              .replace(/\//g, '_')
+              .replace(/\(/g, '_')
+              .replace(/\)/g, '_')}`,
         )
-        .attr("d", this.area)
-        .append("title")
+        .attr('d', this.area)
+        .append('title')
         .text(({ key }) => key);
 
       const legendRectWidth = 15;
 
       const legendData = this.legend
-        .selectAll(".legend-group")
+        .selectAll('.legend-group')
         .data(this.series);
 
       const legendEnter = legendData
         .enter()
-        .append("g")
+        .append('g')
         .attr(
-          "class",
-          d =>
+          'class',
+          (d) =>
             `legend-group ${d.key
-              .replace(/\s/g, "_")
-              .replace(/&/g, "_")
-              .replace(/:/g, "_")
-              .replace(/\//g, "_")
-              .replace(/\(/g, "_")
-              .replace(/\)/g, "_")}`
+              .replace(/\s/g, '_')
+              .replace(/&/g, '_')
+              .replace(/:/g, '_')
+              .replace(/\//g, '_')
+              .replace(/\(/g, '_')
+              .replace(/\)/g, '_')}`,
         );
 
       legendEnter
-        .append("rect")
-        .attr("y", (d, i) => i * (legendRectWidth + 4) + legendRectWidth)
-        .attr("x", 10)
-        .attr("width", legendRectWidth)
-        .attr("height", legendRectWidth)
-        .style("fill", ({ key }) => this.colorScale(key));
+        .append('rect')
+        .attr('y', (d, i) => i * (legendRectWidth + 4) + legendRectWidth)
+        .attr('x', 10)
+        .attr('width', legendRectWidth)
+        .attr('height', legendRectWidth)
+        .style('fill', ({ key }) => this.colorScale(key));
 
       legendEnter
-        .append("text")
-        .attr("y", (d, i) => i * (legendRectWidth + 4) + legendRectWidth * 1.5)
-        .attr("x", 10 + legendRectWidth)
-        .attr("dx", 8)
-        .attr("class", "legend-name")
-        .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-        .style("font-size", "10px")
-        .style("dominant-baseline", "middle")
+        .append('text')
+        .attr('y', (d, i) => i * (legendRectWidth + 4) + legendRectWidth * 1.5)
+        .attr('x', 10 + legendRectWidth)
+        .attr('dx', 8)
+        .attr('class', 'legend-name')
+        .style('font-family', "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+        .style('font-size', '10px')
+        .style('dominant-baseline', 'middle')
         .text(({ key }) => key);
 
       // --- tooltips ---
       this.chart
-        .selectAll("path.stacked-area-chart")
-        .on("mouseover", d => this.handleMouseover(d))
-        .on("mouseout", d => this.handleMouseout(d.key))
-        .on("click", d => this.handleClick(d.key));
+        .selectAll('path.stacked-area-chart')
+        .on('mouseover', (d) => this.handleMouseover(d))
+        .on('mouseout', (d) => this.handleMouseout(d.key))
+        .on('click', (d) => this.handleClick(d.key));
 
       this.legend
-        .selectAll(".legend-group")
-        .on("mouseover", d => this.handleMouseover(d))
-        .on("mouseout", d => this.handleMouseout(d.key))
-        .on("click", d => this.handleClick(d.key));
-    }
-  }
+        .selectAll('.legend-group')
+        .on('mouseover', (d) => this.handleMouseover(d))
+        .on('mouseout', (d) => this.handleMouseout(d.key))
+        .on('click', (d) => this.handleClick(d.key));
+    },
+  },
 });
 </script>
 

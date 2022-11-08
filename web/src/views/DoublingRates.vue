@@ -114,10 +114,10 @@ export default Vue.extend({
     },
   },
   methods: {
-    changeFit: fitIdx => {
+    changeFit: (fitIdx) => {
       this.toFit = fitIdx;
     },
-    changeParams: newVar => {
+    changeParams: (newVar) => {
       this.updateData();
       this.$router.push({
         path: 'doubling-rates',
@@ -127,14 +127,14 @@ export default Vue.extend({
         },
       });
     },
-    executeFit: fitIdx => {
+    executeFit: (fitIdx) => {
       this[`fitting${fitIdx}`] = !this[`fitting${fitIdx}`];
     },
-    setLocation: result => {
+    setLocation: (result) => {
       this.locationID = result;
       this.updateData();
     },
-    updateData: () => {
+    updateData() {
       this.dataSubscription = getDoubling(
         this.$apiurl,
         this.locationID,

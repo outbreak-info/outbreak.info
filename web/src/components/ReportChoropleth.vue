@@ -153,14 +153,14 @@ export default {
     };
   },
   watch: {
-    data: () => {
+    data() {
       this.chooseMap();
       this.drawMap();
     },
-    countThreshold: () => {
+    countThreshold() {
       this.drawMap();
     },
-    width: () => {
+    width() {
       this.drawMap();
     },
   },
@@ -198,7 +198,7 @@ export default {
       return null;
     },
   },
-  created: () => {
+  created() {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },

@@ -748,7 +748,7 @@ export default {
     dateMin: String,
     dateMax: String,
   },
-  created: () => {
+  created() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
     this.debounceSearchText = debounce(this.onEnter, 500);
   },
@@ -827,7 +827,7 @@ export default {
         });
       });
     },
-    expandDescription: item => {
+    expandDescription: (item) => {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
     getLogo(curator) {
@@ -1054,22 +1054,22 @@ export default {
   },
   computed: {
     ...mapState('admin', ['loading', 'resources']),
-    lowerLim: () => {
+    lowerLim() {
       return this.selectedPage * this.numPerPage;
     },
-    upperLim: () => {
+    upperLim() {
       const upper = this.selectedPage * this.numPerPage + this.numPerPage;
       return upper > this.numResults ? this.numResults : upper;
     },
-    lastPage: () => {
+    lastPage() {
       return this.numResults
         ? Math.floor(this.numResults / this.numPerPage)
         : null;
     },
-    quotedSearch: () => {
+    quotedSearch() {
       return `"${this.searchInput}"`;
     },
-    showSearchHelper: () => {
+    showSearchHelper() {
       return this.searchInput
         ? this.searchInput.includes(' ') && !this.searchInput.includes('"')
         : false;

@@ -1,7 +1,7 @@
 <template>
   <div
-    class="doubling-table my-3 d-flex flex-column align-items-center"
     v-if="data"
+    class="doubling-table my-3 d-flex flex-column align-items-center"
   >
     <h4>Doubling rates</h4>
     <SlopeComparison
@@ -13,7 +13,7 @@
 
     <table class="m-auto">
       <tr>
-        <th class="td-days"></th>
+        <th class="td-days" />
         <th class="td-doubling">
           doubling time (days)
         </th>
@@ -66,14 +66,14 @@
         <td :class="[change_time.worse ? 'worse' : 'better']">
           {{ change_time.label }}
           <font-awesome-icon
+            v-if="!change_time.worse"
             class="better"
             :icon="['fas', 'arrow-up']"
-            v-if="!change_time.worse"
           />
           <font-awesome-icon
+            v-if="change_time.worse"
             class="worse"
             :icon="['fas', 'arrow-down']"
-            v-if="change_time.worse"
           />
         </td>
         <td
@@ -90,40 +90,40 @@
 </template>
 
 <script>
-import Vue from "vue";
-import cloneDeep from "lodash/cloneDeep";
-import { format, timeFormat } from "d3";
-import DataUpdated from "@/components/DataUpdated.vue";
-import SlopeComparison from "@/components/SlopeComparison.vue";
+import Vue from 'vue';
+import cloneDeep from 'lodash/cloneDeep';
+import { format, timeFormat } from 'd3';
+import DataUpdated from '@/components/DataUpdated.vue';
+import SlopeComparison from '@/components/SlopeComparison.vue';
 
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowUp,
   faArrowDown,
-  faSort
-} from "@fortawesome/free-solid-svg-icons";
+  faSort,
+} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faArrowUp);
 library.add(faArrowDown);
 library.add(faSort);
 
-import store from "@/store";
+import store from '@/store';
 
-const formatDate = timeFormat("%d %b %Y");
+const formatDate = timeFormat('%d %b %Y');
 
 export default Vue.extend({
-  name: "EpiTable",
+  name: 'EpiTable',
   components: {
     FontAwesomeIcon,
     DataUpdated,
-    SlopeComparison
+    SlopeComparison,
   },
   props: {
     data: Object,
     isFitting1: Boolean,
-    isFitting2: Boolean
+    isFitting2: Boolean,
   },
   data() {
     return {
@@ -133,7 +133,7 @@ export default Vue.extend({
       customFit1: false,
       customFit2: false,
       cases: null,
-      searchInput: "",
+      searchInput: '',
       filteredCases: null,
       locationSort: null,
       newSort: null,
@@ -141,56 +141,56 @@ export default Vue.extend({
       totalSort: null,
       page: 0,
       numPerPage: 10,
-      pageOpts: [5, 10, 50, 100]
+      pageOpts: [5, 10, 50, 100],
     };
   },
-  watch: {
-    data: () => {},
-    isFitting1: function(newValue) {
-      this.fitting1 = !this.fitting1;
-      this.$emit("changeFit", null);
-    },
-    isFitting2: function(newValue) {
-      this.fitting2 = !this.fitting2;
-      this.$emit("changeFit", null);
-    }
-  },
   computed: {
-    fit1_time: () => {
+    fit1_time() {
       return this.data.fit1.doublingTime || this.data.fit1.doublingTime === 0
-        ? format(",.1f")(this.data.fit1.doublingTime)
-        : "NaN";
+        ? format(',.1f')(this.data.fit1.doublingTime)
+        : 'NaN';
     },
-    fit2_time: () => {
+    fit2_time() {
       return this.data.fit2.doublingTime || this.data.fit2.doublingTime === 0
-        ? format(",.1f")(this.data.fit2.doublingTime)
-        : "NaN";
+        ? format(',.1f')(this.data.fit2.doublingTime)
+        : 'NaN';
     },
-    change_time: () => {
+    change_time() {
       return this.calcDiff();
     },
-    fit1_dates: () => {
+    fit1_dates() {
       return `${formatDate(this.data.fit1.xstart)} - ${formatDate(
-        this.data.fit1.xend
+        this.data.fit1.xend,
       )}`;
     },
-    fit2_dates: () => {
+    fit2_dates() {
       return `${formatDate(this.data.fit2.xstart)} - ${formatDate(
-        this.data.fit2.xend
+        this.data.fit2.xend,
       )}`;
     },
-    fit1_slope: () => {
-      return format(".2f")(this.data.fit1.slope);
+    fit1_slope() {
+      return format('.2f')(this.data.fit1.slope);
     },
-    fit2_slope: () => {
-      return format(".2f")(this.data.fit2.slope);
+    fit2_slope() {
+      return format('.2f')(this.data.fit2.slope);
     },
-    fit1_r2: () => {
-      return format(".2f")(Math.pow(this.data.fit1.R, 2));
+    fit1_r2() {
+      return format('.2f')(Math.pow(this.data.fit1.R, 2));
     },
-    fit2_r2: () => {
-      return format(".2f")(Math.pow(this.data.fit2.R, 2));
-    }
+    fit2_r2() {
+      return format('.2f')(Math.pow(this.data.fit2.R, 2));
+    },
+  },
+  watch: {
+    data() {},
+    isFitting1(newValue) {
+      this.fitting1 = !this.fitting1;
+      this.$emit('changeFit', null);
+    },
+    isFitting2(newValue) {
+      this.fitting2 = !this.fitting2;
+      this.$emit('changeFit', null);
+    },
   },
   methods: {
     selectPoints(idx) {
@@ -200,20 +200,20 @@ export default Vue.extend({
 
       if (isSelecting) {
         // selection is finished; run calculation of new data.
-        this.$emit("changeFit", null);
+        this.$emit('changeFit', null);
       } else {
-        this.$emit("changeFit", idx);
+        this.$emit('changeFit', idx);
       }
     },
     calcDiff() {
       const diff = this.data.fit2.doublingTime - this.data.fit1.doublingTime;
       const label = diff
-        ? format(",.1f")(diff)
-        : "not enough points to fit in older data";
+        ? format(',.1f')(diff)
+        : 'not enough points to fit in older data';
       return {
         worse: diff < 0 || !this.data.fit1.doublingTime,
         label: label,
-        nearZero: this.data.fit2.slope < 0.01
+        nearZero: this.data.fit2.slope < 0.01,
       };
     },
     filterCases() {
@@ -221,31 +221,31 @@ export default Vue.extend({
     },
     filterHits() {
       this.filteredCases = this.cases
-        .filter(d =>
-          d.locationName.toLowerCase().includes(this.searchInput.toLowerCase())
+        .filter((d) =>
+          d.locationName.toLowerCase().includes(this.searchInput.toLowerCase()),
         )
         .slice(this.lowerLim, this.upperLim);
     },
     formatPercent(pct) {
       if (!pct) {
-        return "none";
+        return 'none';
       }
 
       if (pct < 0) {
-        return "case count corrected";
+        return 'case count corrected';
       }
 
       if (pct < 0.005) {
-        return "< 1%";
+        return '< 1%';
       }
 
       if (!isFinite(pct)) {
-        return "* first reported case *";
+        return '* first reported case *';
       }
 
-      return format(".0%")(pct);
-    }
-  }
+      return format('.0%')(pct);
+    },
+  },
 });
 </script>
 

@@ -1,13 +1,17 @@
 <template>
   <div>
-    <h5 class="m-0">Data usage policy</h5>
+    <h5 class="m-0">
+      Data usage policy
+    </h5>
     <span class="badge bg-grey__lightest my-2 text-dark">
       <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
       updated June 2020
     </span>
     <p>
       outbreak.info combines together data and metadata from a large number of
-      <router-link :to="{ name: 'Sources' }">data sources</router-link>
+      <router-link :to="{ name: 'Sources' }">
+        data sources
+      </router-link>
       , and we abide by their data usage licenses.
     </p>
 
@@ -30,9 +34,13 @@
       , which states that you can copy, modify, distribute and perform the work,
       even for commercial purposes, all without asking permission. However,
       consistent with scientific norms, we ask that you cite
-      <router-link to="/">outbreak.info</router-link>
+      <router-link to="/">
+        outbreak.info
+      </router-link>
       in any tools or publications that use
-      <router-link to="/">outbreak.info</router-link>
+      <router-link to="/">
+        outbreak.info
+      </router-link>
       .
     </p>
 

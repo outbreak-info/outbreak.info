@@ -4,29 +4,29 @@
     <div class="d-flex align-items-center mt-3 mb-5">
       <div class="input-group w-50">
         <div class="input-group-prepend">
-          <span class="input-group-text bg-grey text-muted border-0" id="sb">
+          <span id="sb" class="input-group-text bg-grey text-muted border-0">
             <font-awesome-icon :icon="['fas', 'search']" />
           </span>
         </div>
         <TypeaheadSelect
           class="form-control mr-4"
-          :isStandalone="false"
-          :queryFunction="queryLocation"
-          @selected="updateLocation"
-          :apiUrl="this.$genomicsurl"
-          labelVariable="label"
+          :is-standalone="false"
+          :query-function="queryLocation"
+          :api-url="this.$genomicsurl"
+          label-variable="label"
           placeholder="Select location"
-          totalLabel="total sequences"
-          :removeOnSelect="false"
+          total-label="total sequences"
+          :remove-on-select="false"
+          @selected="updateLocation"
           @click.prevent="submitQuery"
         />
       </div>
       <button
+        v-if="!formValid"
         :disabled="!location"
         type="submit"
         class="btn btn-accent btn-lg m-0"
         @click="submitQuery"
-        v-if="!formValid"
       >
         Go
       </button>
@@ -110,6 +110,20 @@ export default {
   props: {
     curated: Array,
   },
+  data() {
+    return {
+      queryLocation: null,
+      location: null,
+      selectedLineage: null,
+      selectedMutations: [],
+      pango: [],
+      variant: [],
+      muts: [],
+      variantArr: [],
+      submitLabel: null,
+      submitCount: 0,
+    };
+  },
   computed: {
     formValid() {
       return (
@@ -121,6 +135,9 @@ export default {
         this.location
       );
     },
+  },
+  mounted() {
+    this.queryLocation = findLocation;
   },
   methods: {
     clearSelection() {
@@ -186,23 +203,6 @@ export default {
         this.location = location;
       }
     },
-  },
-  data() {
-    return {
-      queryLocation: null,
-      location: null,
-      selectedLineage: null,
-      selectedMutations: [],
-      pango: [],
-      variant: [],
-      muts: [],
-      variantArr: [],
-      submitLabel: null,
-      submitCount: 0,
-    };
-  },
-  mounted() {
-    this.queryLocation = findLocation;
   },
 };
 </script>

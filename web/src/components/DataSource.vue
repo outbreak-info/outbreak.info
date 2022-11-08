@@ -19,19 +19,19 @@
     <DataUpdated />
     <div class="btn ml-3 py-0 px-2 btn-main-outline">
       <font-awesome-icon
+        v-if="copyable"
         :icon="['far', 'copy']"
         @click="copyPng"
-        v-if="copyable"
       />
     </div>
     <DownloadData
-      class="ml-3"
-      id="download-btn"
       v-if="data"
+      id="download-btn"
+      class="ml-3"
       :type="dataType"
-      :figureRef="figureRef"
+      :figure-ref="figureRef"
       :data="data"
-      :sourceString="sourceString"
+      :source-string="sourceString"
     />
 
     <p :class="{ snackbar: true, show: showSnackbar }">
@@ -58,6 +58,11 @@ library.add(faCopy);
 
 export default Vue.extend({
   name: 'DataSource',
+  components: {
+    DownloadData,
+    DataUpdated,
+    FontAwesomeIcon,
+  },
   props: {
     ids: Array,
     data: Array,
@@ -67,11 +72,6 @@ export default Vue.extend({
       default: 1,
     },
     figureRef: String,
-  },
-  components: {
-    DownloadData,
-    DataUpdated,
-    FontAwesomeIcon,
   },
   computed: {
     ...mapState('admin', ['sources']),

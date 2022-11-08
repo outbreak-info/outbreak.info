@@ -17,7 +17,7 @@
     <div v-if="data.studyStatus">
       <TrialStatus
         :status="data.studyStatus"
-        :includeDate="true"
+        :include-date="true"
         :locations="data.studyLocation"
       />
     </div>
@@ -34,13 +34,13 @@ import 'tippy.js/themes/light.css';
 
 export default {
   name: 'ClinicalTrialSummary',
-  props: {
-    data: Object,
-  },
   components: {
     TrialPhase,
     TrialStatus,
     TrialType,
+  },
+  props: {
+    data: Object,
   },
   data() {
     return {};

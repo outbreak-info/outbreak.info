@@ -268,25 +268,25 @@ export default Vue.extend({
     },
   },
   watch: {
-    dataUpdated: () => {
+    dataUpdated() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmin: () => {
+    xmin() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmax: () => {
+    xmax() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    variable: () => {
+    variable() {
       this.setXScale();
       this.updatePlot();
     },
@@ -300,7 +300,7 @@ export default Vue.extend({
     this.updateBrush();
     this.updatePlot();
   },
-  created: () => {
+  created() {
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
   destroyed() {
@@ -344,11 +344,11 @@ export default Vue.extend({
       return scale(location, 0.7);
     },
 
-    changeYScale: () => {
+    changeYScale() {
       this.isLogY = !this.isLogY;
       this.changeScale();
     },
-    changeScale: () => {
+    changeScale() {
       this.$router.replace({
         path: 'epidemiology',
         name: 'Epidemiology',
@@ -491,7 +491,7 @@ export default Vue.extend({
       selectAll(`.epi-line`).style('opacity', 1);
     },
 
-    mouseOn: () => {
+    mouseOn() {
       const ttip = selectAll('.tooltip')
         .style('pointer-events', 'none')
         .style('top', event.y + 'px')
@@ -528,19 +528,19 @@ export default Vue.extend({
           .text(`${format(',.1f')(dat[this.selectedVariable])}`);
       });
     },
-    mouseOff: () => {
+    mouseOff() {
       selectAll('.tooltip').style('opacity', 0);
       selectAll('.mouse-line').style('opacity', 0);
     },
 
-    updatePlot: () => {
+    updatePlot() {
       if (this.data && this.chart) {
         // create slice, so you create a copy, and sorting doesn't lead to an infinite update callback loop
         this.updateScales();
         this.drawPlot();
       }
     },
-    prepData: () => {
+    prepData() {
       this.loggable = this.selectedVariable !== 'testing_positivity';
       this.isLogY = this.loggable && this.log;
 
@@ -570,7 +570,7 @@ export default Vue.extend({
         });
       }
     },
-    setupPlot: () => {
+    setupPlot() {
       // Event listener for mobile responsiveness
       // $nextTick waits till DOM rendered
       this.$nextTick(() => {
@@ -616,7 +616,7 @@ export default Vue.extend({
 
       this.prepData();
     },
-    updateScales: () => {
+    updateScales() {
       if (this.isLogY && this.loggable) {
         this.y = scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])

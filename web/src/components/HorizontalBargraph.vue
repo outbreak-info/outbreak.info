@@ -64,7 +64,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    filtered: () => {
+    filtered() {
       if (this.data) {
         return this.data.slice(0, this.num2Show);
       } else {
@@ -76,7 +76,7 @@ export default Vue.extend({
     setupPlot() {
       this.svg = select(this.$refs.horizontal_bargraph);
     },
-    updatePlot: () => {
+    updatePlot() {
       if (this.filtered) {
         this.updateAxes();
         this.drawBars();

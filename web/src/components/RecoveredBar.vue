@@ -36,44 +36,44 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import { scaleLinear } from "d3";
+import { scaleLinear } from 'd3';
 
 const width = 50;
 const height = 15;
 
 export default Vue.extend({
-  name: "RecoveredBar",
+  name: 'RecoveredBar',
   components: {},
   props: {
     data: Object,
-    color: String
+    color: String,
   },
   watch: {
-    data: () => {
+    data() {
       this.updateAxes();
-    }
+    },
   },
   computed: {
-    recoveredWidth: () => {
+    recoveredWidth() {
       if (this.x) {
         return this.x(this.data.recovered);
       }
       return null;
     },
-    deadWidth: () => {
+    deadWidth() {
       if (this.x) {
         return this.x(this.data.dead);
       }
       return null;
-    }
+    },
   },
   data() {
     return {
       width,
       height,
-      x: null
+      x: null,
     };
   },
   methods: {
@@ -81,11 +81,11 @@ export default Vue.extend({
       this.x = scaleLinear()
         .range([0, this.width])
         .domain([0, this.data.confirmed]);
-    }
+    },
   },
   mounted() {
     this.updateAxes();
-  }
+  },
 });
 </script>
 

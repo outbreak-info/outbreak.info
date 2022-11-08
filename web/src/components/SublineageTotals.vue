@@ -211,7 +211,7 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: () => {
+    data() {
       this.preprocessData();
       this.updatePlot();
     },
@@ -262,7 +262,7 @@ export default Vue.extend({
       this.svg = select(this.$refs.horizontal_bargraph);
       this.preprocessData();
     },
-    updatePlot: () => {
+    updatePlot() {
       this.updateAxes();
       this.drawBars();
     },

@@ -156,10 +156,10 @@ export default {
     animate: Boolean,
   },
   watch: {
-    data: () => {
+    data() {
       this.updatePlot();
     },
-    variable: () => {
+    variable() {
       this.updatePlot();
     },
     minVal: {
@@ -254,11 +254,11 @@ export default {
     this.$nextTick(() => this.setupDrag());
   },
   methods: {
-    setupPlot: () => {
+    setupPlot() {
       this.chart = select(this.$refs.legend_bars);
       this.xAxisRef = select(this.$refs.x_axis);
     },
-    updateFilterLimits: () => {
+    updateFilterLimits() {
       this.selectedMin =
         this.minVal || this.minVal === 0
           ? this.minVal
@@ -270,7 +270,7 @@ export default {
           : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) /
             this.precision;
     },
-    updateAxes: () => {
+    updateAxes() {
       // x-axis
       this.x = scaleLinear()
         .range([0, this.width - this.margin.left - this.margin.right])

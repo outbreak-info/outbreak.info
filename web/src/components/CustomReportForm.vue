@@ -2,9 +2,9 @@
   <div>
     <VariantForm
       :minimalistic="minimalistic"
-      :selectedLineage.sync="selectedLineage"
-      :submitLabel.sync="submitLabel"
-      :selectedMutations.sync="selectedMutations"
+      :selected-lineage.sync="selectedLineage"
+      :submit-label.sync="submitLabel"
+      :selected-mutations.sync="selectedMutations"
       :submitted="submitCount"
     />
 
@@ -33,25 +33,33 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import VariantForm from "@/components/VariantForm.vue";
+import VariantForm from '@/components/VariantForm.vue';
 
 export default Vue.extend({
-  name: "CustomReportForm",
+  name: 'CustomReportForm',
+  components: {
+    VariantForm,
+  },
   props: {
     minimalistic: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  components: {
-    VariantForm
+  data() {
+    return {
+      selectedMutations: [],
+      selectedLineage: null,
+      submitCount: 0,
+      submitLabel: null,
+    };
   },
   computed: {
     formValid() {
       return this.selectedMutations.length > 0 || this.selectedLineage;
-    }
+    },
   },
   methods: {
     clearQuery() {
@@ -59,47 +67,39 @@ export default Vue.extend({
       this.submitCount += 1;
     },
     submitQuery() {
-      this.$emit("exit", true);
+      this.$emit('exit', true);
       const routeQuery = this.$route.query;
 
       this.submitCount += 1;
       if (this.selectedLineage && this.selectedLineage.alias) {
         this.$router.push({
-          name: "MutationReport",
+          name: 'MutationReport',
           params: {
-            alias: this.selectedLineage.name
+            alias: this.selectedLineage.name,
           },
           query: {
-            muts: this.selectedMutations.map(d => d.mutation),
+            muts: this.selectedMutations.map((d) => d.mutation),
             loc: routeQuery.loc,
             overlay: routeQuery.overlay,
-            selected: routeQuery.selected
-          }
+            selected: routeQuery.selected,
+          },
         });
       } else {
         const selectedPango = this.selectedLineage
           ? this.selectedLineage.name
           : null;
         this.$router.push({
-          name: "MutationReport",
+          name: 'MutationReport',
           query: {
             pango: selectedPango,
-            muts: this.selectedMutations.map(d => d.mutation),
+            muts: this.selectedMutations.map((d) => d.mutation),
             loc: routeQuery.loc,
             overlay: routeQuery.overlay,
-            selected: routeQuery.selected
-          }
+            selected: routeQuery.selected,
+          },
         });
       }
-    }
+    },
   },
-  data() {
-    return {
-      selectedMutations: [],
-      selectedLineage: null,
-      submitCount: 0,
-      submitLabel: null
-    };
-  }
 });
 </script>

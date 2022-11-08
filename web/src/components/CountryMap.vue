@@ -1,14 +1,14 @@
 <template>
   <div class="d-flex flex-column">
     <svg
+      ref="svg"
       :width="width + margin.left + margin.right"
       :height="height + margin.top + margin.bottom"
-      ref="svg"
     >
-      <g ref="countries" class="country-group"></g>
+      <g ref="countries" class="country-group" />
     </svg>
-    <div class="country-container d-flex flex-wrap" v-if="showNames">
-      <small class="m-0 mr-1" v-for="(country, idx) in countries" :key="idx">
+    <div v-if="showNames" class="country-container d-flex flex-wrap">
+      <small v-for="(country, idx) in countries" :key="idx" class="m-0 mr-1">
         {{ country }}
         <span v-if="idx < countries.length - 1">,</span>
       </small>
@@ -44,15 +44,6 @@ export default Vue.extend({
       default: true,
     },
   },
-  watch: {
-    countries: () => {
-      this.drawMetro();
-    },
-    width: () => {
-      this.height = this.width * 0.5;
-      this.drawMetro();
-    },
-  },
   data() {
     return {
       margin: {
@@ -66,6 +57,15 @@ export default Vue.extend({
       regions: null,
       height: null,
     };
+  },
+  watch: {
+    countries() {
+      this.drawMetro();
+    },
+    width() {
+      this.height = this.width * 0.5;
+      this.drawMetro();
+    },
   },
   mounted() {
     this.setupChoro();

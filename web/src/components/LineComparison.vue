@@ -33,7 +33,7 @@ export default {
     label: String,
     colorScale: Function,
   },
-  data: () => {
+  data() {
     return {
       margin: {
         top: 8,

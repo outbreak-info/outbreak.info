@@ -1,10 +1,10 @@
 <template>
-  <div class="donut-group d-flex" :id="`donut-${id}`">
+  <div :id="`donut-${id}`" class="donut-group d-flex">
     <svg :width="width" :height="width" class="donut">
       <g
-        :transform="`translate(${this.width / 2},${this.width / 2})`"
         ref="pie"
-      ></g>
+        :transform="`translate(${this.width / 2},${this.width / 2})`"
+      />
     </svg>
     <div class="ml-2" style="max-width: 150px;">
       <div
@@ -13,8 +13,8 @@
         class="line-height-sm text-left text-break"
       >
         <small
-          :style="{ color: colorScale(d.term) }"
           v-if="colorScale && idx < 5"
+          :style="{ color: colorScale(d.term) }"
         >
           {{ d.term }}
         </small>
@@ -67,9 +67,13 @@ export default Vue.extend({
     };
   },
   watch: {
-    data: () => {
+    data() {
       this.updatePlot();
     },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   },
   methods: {
     setupPlot() {
@@ -140,10 +144,6 @@ export default Vue.extend({
             .style('fill', (d) => this.colorScale(d.data.term)),
       );
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

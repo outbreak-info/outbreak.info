@@ -2,7 +2,9 @@
   <div>
     <div class="d-flex align-items-center justify-content-between mb-1 mr-4">
       <div class="d-flex flex-column">
-        <h4 class="mb-0">{{ definitionLabel }}</h4>
+        <h4 class="mb-0">
+          {{ definitionLabel }}
+        </h4>
         <small class="text-muted">
           Mutations in at least {{ charMutThreshold }} of
           {{ mutationName }} sequences
@@ -19,10 +21,10 @@
         </small>
       </div>
 
-      <div class="d-flex flex-column align-items-end" v-if="lineageName">
+      <div v-if="lineageName" class="d-flex flex-column align-items-end">
         <router-link
-          class="mt-n1"
           v-if="sublineages.length > 1"
+          class="mt-n1"
           :to="{
             name: 'SituationReportComparison',
             query: { pango: lineageName, sub: true },
@@ -53,22 +55,22 @@
 
     <!-- OMICRON INSERTION WARNING -->
     <Warning
-      text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
-      class="fa-sm mt-2 mb-4"
-      :align_left="true"
       v-if="
         lineageName === 'omicron' ||
           lineageName === 'Omicron' ||
           lineageName === 'B.1.1.529'
       "
+      text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
+      class="fa-sm mt-2 mb-4"
+      :align_left="true"
     />
 
     <SARSMutationMap
-      :mutationKey="mutationName"
-      :lineageMutations="mutations"
-      :additionalMutations="additionalMutations"
-      class="mb-3"
       v-if="mutations || additionalMutations"
+      :mutation-key="mutationName"
+      :lineage-mutations="mutations"
+      :additional-mutations="additionalMutations"
+      class="mb-3"
       :copyable="true"
     />
 
@@ -90,11 +92,11 @@
       <!-- link to structures on aquaria -->
       <template v-if="aquariaLink">
         <a
+          v-for="(link, lIdx) in aquariaLink"
+          :key="lIdx"
           :href="link.value.link"
           target="_blank"
           class="px-1 flex-shrink-0"
-          v-for="(link, lIdx) in aquariaLink"
-          :key="lIdx"
         >
           <button class="btn btn-main-outline btn-mut router-link">
             <small>
@@ -115,27 +117,27 @@
 
       <DownloadReportData
         :data="mutations"
-        figureRef="mutation-map"
-        dataType="Mutation Map"
-        :fullWidth="false"
+        figure-ref="mutation-map"
+        data-type="Mutation Map"
+        :full-width="false"
       />
     </div>
 
-    <div class="collapse ml-2" id="mutation-table">
+    <div id="mutation-table" class="collapse ml-2">
       <div class="row">
-        <div class="col" v-if="lineageName">
+        <div v-if="lineageName" class="col">
           <MutationTable
             :mutations="mutations"
-            :tableTitle="`Characteristic mutations of ${lineageName}`"
+            :table-title="`Characteristic mutations of ${lineageName}`"
           />
         </div>
         <div
-          class="col"
           v-if="additionalMutations && additionalMutations.length > 0"
+          class="col"
         >
           <MutationTable
             :mutations="additionalMutations"
-            tableTitle="Additional Mutations"
+            table-title="Additional Mutations"
           />
         </div>
       </div>
@@ -170,11 +172,11 @@ import { getBadMutations } from '@/api/genomics.js';
 
 export default {
   name: 'CharacteristicMutations',
-  computed: {
-    ...mapState('genomics', ['characteristicThreshold']),
-    charMutThreshold() {
-      return format('.0%')(this.characteristicThreshold);
-    },
+  components: {
+    SARSMutationMap,
+    MutationTable,
+    Warning,
+    DownloadReportData,
   },
   props: {
     mutations: Array,
@@ -185,12 +187,6 @@ export default {
     reportType: String,
     aquariaLink: Array,
     additionalMutations: Array,
-  },
-  components: {
-    SARSMutationMap,
-    MutationTable,
-    Warning,
-    DownloadReportData,
   },
   data() {
     return {
@@ -214,6 +210,12 @@ export default {
         '#bab0ab',
       ],
     };
+  },
+  computed: {
+    ...mapState('genomics', ['characteristicThreshold']),
+    charMutThreshold() {
+      return format('.0%')(this.characteristicThreshold);
+    },
   },
   mounted() {
     const ofInterest = getBadMutations();

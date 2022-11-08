@@ -74,10 +74,10 @@ export default Vue.extend({
     };
   },
   watch: {
-    slope1: () => {
+    slope1() {
       this.updatePlot();
     },
-    slope2: () => {
+    slope2() {
       this.updatePlot();
     },
   },
@@ -86,15 +86,15 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
-    updatePlot: () => {
+    updatePlot() {
       this.updateScales();
       this.drawSlopes();
     },
-    setupPlot: () => {
+    setupPlot() {
       this.svg = select('svg.slope-comparison');
       this.chart = this.svg.select('.slopes');
     },
-    updateScales: () => {
+    updateScales() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, 1]);
@@ -113,7 +113,7 @@ export default Vue.extend({
 
       // select(this.$refs.yAxis).call(this.yAxis);
     },
-    drawSlopes: () => {
+    drawSlopes() {
       // --- poly fill and swoopy arrow ---
       this.chart
         .selectAll('.fit-diff')

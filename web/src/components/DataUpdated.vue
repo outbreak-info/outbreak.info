@@ -1,5 +1,5 @@
 <template>
-  <small class="text-muted badge bg-grey__lightest" v-if="lastUpdated$">
+  <small v-if="lastUpdated$" class="text-muted badge bg-grey__lightest">
     <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
     Updated {{ lastUpdated$ }} ago
   </small>
@@ -18,14 +18,14 @@ library.add(faClock);
 
 export default Vue.extend({
   name: 'DataUpdated',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {},
   data() {
     return {};
   },
   watch: {},
-  components: {
-    FontAwesomeIcon,
-  },
   methods: {},
   subscriptions() {
     return {

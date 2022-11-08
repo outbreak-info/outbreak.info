@@ -1,32 +1,34 @@
 <template>
   <div
-    class="bargraph-group d-flex flex-column bargraph-group-margin"
     :id="`bargraph-${id}-${variable}`"
+    class="bargraph-group d-flex flex-column bargraph-group-margin"
     :style="{ transform: `scale(${transformChart})` }"
   >
-    <h4 v-if="title">{{ title }}</h4>
+    <h4 v-if="title">
+      {{ title }}
+    </h4>
     <div class="position-relative">
       <div
-        :style="{ transform: `translate(${margin.left}px,${margin.top}px)` }"
         id="barchart-wrapper"
         ref="barchart_wrapper"
+        :style="{ transform: `translate(${margin.left}px,${margin.top}px)` }"
       >
         <div :class="tooltipIdx">
           <div class="tooltip  p-2">
-            <h6 class="country-name m-0"></h6>
-            <p class="date m-0"></p>
-            <p class="count m-0"></p>
-            <b class="count-avg m-0"></b>
+            <h6 class="country-name m-0" />
+            <p class="date m-0" />
+            <p class="count m-0" />
+            <b class="count-avg m-0" />
           </div>
         </div>
       </div>
       <svg
+        ref="svg"
         :width="width + margin.left + margin.right"
         :height="height + margin.top + margin.bottom"
         class="epi-bargraph"
         :name="plotTitle"
         :subtitle="title"
-        ref="svg"
       >
         <defs>
           <marker
@@ -54,29 +56,29 @@
         </defs>
 
         <g
+          id="xAxis"
+          ref="xAxis"
           :transform="`translate(${margin.left}, ${height + margin.top + 2})`"
           class="epi-axis axis--x axis-font"
-          ref="xAxis"
-          id="xAxis"
-        ></g>
+        />
         <g
+          id="yAxis"
+          ref="yAxis"
           :transform="`translate(${margin.left - 5}, ${margin.top})`"
           class="epi-axis axis--y axis-font"
-          ref="yAxis"
-          id="yAxis"
-        ></g>
+        />
         <g
-          :transform="`translate(${margin.left},${margin.top})`"
           id="case-counts"
-          class="bargraph"
           ref="case_counts"
-        ></g>
-        <g
           :transform="`translate(${margin.left},${margin.top})`"
-          id="rolling-average"
           class="bargraph"
+        />
+        <g
+          id="rolling-average"
           ref="rolling_average"
-        ></g>
+          :transform="`translate(${margin.left},${margin.top})`"
+          class="bargraph"
+        />
         <g class="annotations" :class="{ hidden: noRollingAvg }">
           <line
             :style="{ stroke: this.colorAverage, 'stroke-width': 2.5 }"
@@ -84,7 +86,7 @@
             :x2="margin.left + 20"
             :y1="margin.top + 6"
             :y2="margin.top + 6"
-          ></line>
+          />
           <text
             class="annotation--rolling-average"
             :x="margin.left + 25"
@@ -101,25 +103,25 @@
         </g>
       </svg>
       <svg
+        ref="svg_arrows"
         :width="width + margin.left + margin.right"
         :height="height + margin.top + margin.bottom"
         style="left:0; bottom:0"
         class="epi-bargraph-arrows position-absolute"
-        ref="svg_arrows"
       >
         <g
+          v-if="includeAxis && loggable"
+          ref="switch_btn"
           class="switch-button-group"
           transform="translate(5,0)"
-          ref="switch_btn"
-          v-if="includeAxis && loggable"
         >
-          <rect class="switch-button-rect"></rect>
+          <rect class="switch-button-rect" />
           <path
-            class="swoopy-arrow"
             id="switch-btn-swoopy-arrow"
+            class="swoopy-arrow"
             marker-end="url(#arrow)"
-          ></path>
-          <text class="switch-button" x="5"></text>
+          />
+          <text class="switch-button" x="5" />
         </g>
       </svg>
     </div>
@@ -245,7 +247,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    data: () => {
+    data() {
       this.updatePlot();
       this.drawBarchart();
     },
@@ -263,10 +265,10 @@ export default Vue.extend({
         this.drawBarchart();
       },
     },
-    // variable: () => {
+    // variable() {
     //   this.updatePlot()
     // },
-    fixedYMax: () => {
+    fixedYMax() {
       this.updatePlot();
       this.drawBarchart();
     },
@@ -287,14 +289,28 @@ export default Vue.extend({
         }
       },
     },
-    width: () => {
+    width() {
       this.updatePlot();
       this.drawBarchart();
     },
-    height: () => {
+    height() {
       this.updatePlot();
       this.drawBarchart();
     },
+  },
+  mounted() {
+    if (!this.includeAxis) {
+      this.margin = {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+      };
+    }
+
+    this.setupPlot();
+    this.setupBarChart();
+    this.updatePlot();
   },
   methods: {
     setupPlot() {
@@ -322,7 +338,7 @@ export default Vue.extend({
         this.drawBarchart();
       }
     },
-    prepData: () => {
+    prepData() {
       this.location_id =
         this.data && this.data.length && this.data[0].admin_level >= 0
           ? this.data[0].location_id
@@ -750,7 +766,7 @@ export default Vue.extend({
       }
     },
 
-    changeScale: () => {
+    changeScale() {
       this.isLogY = !this.isLogY;
       this.$router.replace({
         path: 'epidemiology',
@@ -770,20 +786,6 @@ export default Vue.extend({
       this.updatePlot();
       this.drawBarchart();
     },
-  },
-  mounted() {
-    if (!this.includeAxis) {
-      this.margin = {
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-      };
-    }
-
-    this.setupPlot();
-    this.setupBarChart();
-    this.updatePlot();
   },
 });
 </script>

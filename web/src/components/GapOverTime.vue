@@ -57,7 +57,7 @@ export default Vue.extend({
     },
     margin: {
       type: Object,
-      default: () => {
+      default() {
         return {
           top: 10,
           bottom: 30,

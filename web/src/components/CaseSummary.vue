@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container py-3" v-if="currentSummary$">
+    <div v-if="currentSummary$" class="container py-3">
       <p class="case-summary focustext">
         {{ currentDate$ ? `As of ${currentDate$}` : 'Currently' }}, there are
         <span class="text-highlight">{{ currentSummary$['confirmed'] }}</span>
@@ -140,46 +140,8 @@ export default Vue.extend({
   watch: {},
   computed: {
     ...mapState('epidata', ['mostCases']),
-    mostCasesNames: () => {
+    mostCasesNames() {
       return this.mostCases.map((d) => d.location_id).join(';');
-    },
-  },
-  methods: {
-    removeSummary: (idx) => {
-      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
-      Vue.$cookies.set('custom_locations', this.glanceLocations);
-      if (this.glanceLocations.length > 0) {
-        this.updatedSubscription = getGlanceSummary(
-          this.$apiurl,
-          this.$genomicsurl,
-          this.glanceLocations,
-        ).subscribe((d) => {
-          this.glanceSummaries = this.sortSummaries(d);
-        });
-      } else {
-        this.glanceSummaries = [];
-      }
-    },
-    addSummary: (location_id) => {
-      this.glanceLocations = this.glanceLocations.concat(location_id);
-      Vue.$cookies.set('custom_locations', this.glanceLocations);
-      this.updatedSubscription = getGlanceSummary(
-        this.$apiurl,
-        this.$genomicsurl,
-        this.glanceLocations,
-      ).subscribe((d) => {
-        this.glanceSummaries = this.sortSummaries(d);
-      });
-    },
-    sortSummaries(data) {
-      if (this.glanceLocations && this.glanceLocations.length > 0) {
-        data.sort(
-          (a, b) =>
-            this.glanceLocations.indexOf(a.location_id) -
-            this.glanceLocations.indexOf(b.location_id),
-        );
-      }
-      return data;
     },
   },
   destroyed() {
@@ -187,12 +149,6 @@ export default Vue.extend({
     if (this.updatedSubscription) {
       this.updatedSubscription.unsubscribe();
     }
-  },
-  subscriptions() {
-    return {
-      currentSummary$: getSummary(this.$apiurl, this.caseThreshold),
-      currentDate$: getCurrentDate(this.$apiurl),
-    };
   },
   mounted() {
     const locations = Vue.$cookies.get('custom_locations');
@@ -242,6 +198,50 @@ export default Vue.extend({
         },
       });
     });
+  },
+  methods: {
+    removeSummary(idx) {
+      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
+      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      if (this.glanceLocations.length > 0) {
+        this.updatedSubscription = getGlanceSummary(
+          this.$apiurl,
+          this.$genomicsurl,
+          this.glanceLocations,
+        ).subscribe((d) => {
+          this.glanceSummaries = this.sortSummaries(d);
+        });
+      } else {
+        this.glanceSummaries = [];
+      }
+    },
+    addSummary(location_id) {
+      this.glanceLocations = this.glanceLocations.concat(location_id);
+      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      this.updatedSubscription = getGlanceSummary(
+        this.$apiurl,
+        this.$genomicsurl,
+        this.glanceLocations,
+      ).subscribe((d) => {
+        this.glanceSummaries = this.sortSummaries(d);
+      });
+    },
+    sortSummaries(data) {
+      if (this.glanceLocations && this.glanceLocations.length > 0) {
+        data.sort(
+          (a, b) =>
+            this.glanceLocations.indexOf(a.location_id) -
+            this.glanceLocations.indexOf(b.location_id),
+        );
+      }
+      return data;
+    },
+  },
+  subscriptions() {
+    return {
+      currentSummary$: getSummary(this.$apiurl, this.caseThreshold),
+      currentDate$: getCurrentDate(this.$apiurl),
+    };
   },
 });
 </script>

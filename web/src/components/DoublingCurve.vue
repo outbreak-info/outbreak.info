@@ -1,11 +1,11 @@
 <template>
   <div class="doubling-curves d-flex flex-column align-items-center">
-    <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
+    <div v-if="drawable" style="max-width:700px;" class="m-auto d-flex">
       <Warning
         :animate="true"
         class="mt-2"
         text="Click on the graph to select new points"
-      ></Warning>
+      />
       <div
         class="alert done-btn p-2 row m-0 rounded-0 mt-2 scale-in-center"
         @click="executeFit"
@@ -29,25 +29,25 @@
         </marker>
       </defs>
       <g
+        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
         class="epi-axis axis--x"
-        ref="xAxis"
-      ></g>
+      />
       <g
+        ref="yAxis"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="epi-axis axis--y"
-        ref="yAxis"
-      ></g>
+      />
       <g
-        :transform="`translate(${margin.left},${margin.top})`"
         id="epi-curve"
-      ></g>
+        :transform="`translate(${margin.left},${margin.top})`"
+      />
     </svg>
     <DataSource
-      :ids="['NYT', 'JHU']"
       v-if="data"
-      dataType="maps"
-      figureRef="doubling-curve"
+      :ids="['NYT', 'JHU']"
+      data-type="maps"
+      figure-ref="doubling-curve"
       :data="plottedData"
     />
   </div>
@@ -132,15 +132,6 @@ export default Vue.extend({
       line: null,
     };
   },
-  watch: {
-    data: () => {
-      this.prepData();
-      this.updatePlot();
-    },
-    width() {
-      this.updatePlot();
-    },
-  },
   computed: {
     title() {
       return `Cumulative number of COVID-19 ${this.variable} in ${this.data.data[0].name}`;
@@ -166,6 +157,15 @@ export default Vue.extend({
     },
     dataLength() {
       return this.plottedData.length;
+    },
+  },
+  watch: {
+    data() {
+      this.prepData();
+      this.updatePlot();
+    },
+    width() {
+      this.updatePlot();
     },
   },
   mounted() {
@@ -222,14 +222,14 @@ export default Vue.extend({
     //
     //   selectAll(`.epi-region`).style("opacity", 1);
     // },
-    updatePlot: () => {
+    updatePlot() {
       if (this.data) {
         this.prepData();
         this.updateScales();
         this.drawDots();
       }
     },
-    prepData: () => {
+    prepData() {
       if (this.data) {
         // console.log(this.data)
         // console.log(this.plottedData)
@@ -287,11 +287,11 @@ export default Vue.extend({
         .on('mousedown', () => mousedown(this.x, this.y, this.variable))
         .on('mouseup', mouseup);
     },
-    executeFit: () => {
+    executeFit() {
       console.log('finishing fit');
       this.$emit('executeFit', this.toFit);
     },
-    removeFit: () => {
+    removeFit() {
       console.log('removing fit');
       this.chart.selectAll('.epi-line').style('opacity', 0.3);
       if (this.toFit === 2) {
@@ -303,7 +303,7 @@ export default Vue.extend({
         this.chart.selectAll('.recent-fit').style('display', 'none');
       }
     },
-    setupPlot: () => {
+    setupPlot() {
       // Event listener for mobile responsiveness
       // $nextTick waits till DOM rendered
       this.$nextTick(() => {
@@ -324,7 +324,7 @@ export default Vue.extend({
         .x((d, i) => this.x(d.date))
         .y((d) => this.y());
     },
-    updateScales: () => {
+    updateScales() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(extent(this.plottedData.map((d) => d.date)));
@@ -346,7 +346,7 @@ export default Vue.extend({
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
-    drawDots: () => {
+    drawDots() {
       const t1 = transition().duration(this.transitionDuration);
       const formatDate = timeFormat('%d %b %Y');
 

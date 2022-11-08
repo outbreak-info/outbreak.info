@@ -96,7 +96,7 @@ export default {
       epi: null,
     };
   },
-  created: () => {
+  created() {
     this.debounceSelectMutation = debounce(this.selectMutation, 250);
   },
   mounted() {
