@@ -1,239 +1,385 @@
-
 <template>
-<div class="d-flex py-2 m-2">
-  <!-- loading -->
-  <div v-if="loading" class="loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']" />
-  </div>
+  <div class="d-flex py-2 m-2">
+    <!-- loading -->
+    <div v-if="loading" class="loader">
+      <font-awesome-icon
+        class="fa-pulse fa-4x text-highlight"
+        :icon="['fas', 'spinner']"
+      />
+    </div>
 
-  <div class="row w-100 m-0" v-if="data">
+    <div class="row w-100 m-0" v-if="data">
+      <div class="col-sm-12 text-left">
+        <!-- mini-nav for resource types -->
+        <section class="d-flex justify-content-end w-100 bg-grey__lighter my-4">
+          <div class="row d-flex justify-content-center w-100">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+              <ul class="navbar-nav">
+                <li
+                  class="nav-item text-light mr-4"
+                  v-for="(anchor, idx) in anchorsArr"
+                  :key="idx"
+                >
+                  <router-link
+                    class="nav-link no-underline p-0"
+                    :to="`#${anchor.replace(' ', '_')}`"
+                  >
+                    {{ anchor }}
+                  </router-link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </section>
 
-    <div class="col-sm-12 text-left">
+        <!-- type label -->
+        <div :class="type.replace(/\s/g, '')" v-if="type">
+          <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
+          {{ type }}
+          <span
+            class="pub-type mx-3"
+            v-if="data.publicationType && data.publicationType[0]"
+          >
+            <template v-if="Array.isArray(data.publicationType)">
+              <span v-for="(pub, idx) in data.publicationType" :key="idx">
+                {{ pub }}
+                <span v-if="idx < data.publicationType.length - 1" class="mx-2">
+                  &bull;
+                </span>
+              </span>
+            </template>
+            <template v-else>{{ data.publicationType }}</template>
+          </span>
+        </div>
+      </div>
 
-      <!-- mini-nav for resource types -->
-      <section class="d-flex justify-content-end w-100 bg-grey__lighter my-4">
-        <div class="row d-flex justify-content-center w-100">
-          <nav class="navbar navbar-expand-lg navbar-dark">
-            <ul class="navbar-nav">
-              <li class="nav-item text-light mr-4" v-for="(anchor, idx) in anchorsArr" :key="idx">
-                <router-link class="nav-link no-underline p-0" :to="`#${anchor.replace(' ', '_')}`">
-                  {{ anchor }}
-                </router-link>
+      <div class="col-md-9 my-3 pr-5">
+        <!-- description -->
+        <ResourceDescription
+          :data="data"
+          :type="type"
+          class="border-bottom pb-3"
+        />
+
+        <!-- special clinical trials description -->
+        <ClinicalTrialDescription :data="data" v-if="type == 'ClinicalTrial'" />
+
+        <div class="mr-5">
+          <!-- downloads -->
+          <div
+            id="downloads"
+            class="text-left border-bottom text-muted py-3 my-3"
+            v-if="anchorsArr.includes('downloads')"
+          >
+            <h6 class="m-0">Downloads</h6>
+            <ul v-if="data.distribution" id="download-list">
+              <li v-for="(item, idx) in data.distribution" :key="idx">
+                <a :href="item.contentUrl" target="_blank" rel="noreferrer">
+                  {{ item.name ? item.name : item.contentUrl }}
+                </a>
               </li>
             </ul>
-          </nav>
-        </div>
-      </section>
-
-      <!-- type label -->
-      <div :class="type.replace(/\s/g, '')" v-if="type">
-        <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
-        {{ type }}
-        <span class="pub-type mx-3" v-if="data.publicationType && data.publicationType[0]">
-          <template v-if="Array.isArray(data.publicationType)">
-            <span v-for="(pub, idx) in data.publicationType" :key="idx">{{ pub }}<span v-if="idx < data.publicationType.length - 1" class="mx-2">&bull;</span></span>
-
-          </template>
-          <template v-else>{{ data.publicationType }}</template>
-        </span>
-      </div>
-
-    </div>
-
-    <div class="col-md-9 my-3 pr-5">
-
-      <!-- description -->
-      <ResourceDescription :data="data" :type="type" class="border-bottom pb-3" />
-
-      <!-- special clinical trials description -->
-      <ClinicalTrialDescription :data="data" v-if="type == 'ClinicalTrial'" />
-
-      <div class="mr-5">
-        <!-- downloads -->
-        <div id="downloads" class="text-left border-bottom text-muted py-3 my-3" v-if="anchorsArr.includes('downloads')">
-          <h6 class="m-0">Downloads</h6>
-          <ul v-if="data.distribution" id="download-list">
-            <li v-for="(item, idx) in data.distribution" :key="idx">
-              <a :href="item.contentUrl" target="_blank" rel="noreferrer">
-                {{ item.name ? item.name : item.contentUrl }}
-              </a>
-            </li>
-          </ul>
-          <div v-else>
-            <small>not specified</small>
-          </div>
-        </div>
-
-
-        <!-- funding info -->
-        <div id="funder" class="text-left border-bottom text-muted py-3 mb-3" v-if="anchorsArr.includes('funder')">
-          <h6 class="m-0">Funder</h6>
-          <div v-if="data.funding || data.funder">
-            <div v-if="data.funding">
-              <ul>
-                <template v-if="Array.isArray(data.funding)">
-                  <li v-for="(funding, idx) in data.funding" :key="idx" class="mb-3">
-                    <template v-if="Array.isArray(funding.funder)">
-                      <div v-for="(funder, idx) in funding.funder" :key="idx">
-                        <b v-if="funder.name">{{funder.name}}</b>
-                        <span v-if="funder.name && funding.identifier">:&nbsp;</span>
-                        <span v-if="funding.identifier">{{funding.identifier}}</span>
-                        <span v-if="funder.role"> ({{funder.role}})</span>
-                      </div>
-                    </template>
-
-                    <template v-else>
-                      <div class="m-0">
-                        <b v-if="funding.funder && funding.funder.name">{{funding.funder.name}}</b>
-                        <span v-if="funding.funder && funding.funder.name && funding.identifier">:&nbsp;</span>
-                        <span v-if="funding.identifier">{{funding.identifier}}</span>
-                        <span v-if="funding.funder && funding.funder.role"> ({{funding.funder.role}})</span>
-                      </div>
-                    </template>
-                    <div v-if="funding.description" class="line-height-1">
-                      {{funding.description}}
-                    </div>
-                  </li>
-                </template>
-                <template v-else>
-                  <li class="mb-3">
-                    <template v-if="Array.isArray(data.funding.funder)">
-                      <div v-for="(funder, idx) in data.funding.funder" :key="idx">
-                        <b v-if="funder.name">{{funder.name}}</b>
-                        <span v-if="funder.name && data.funding.identifier">:&nbsp;</span>
-                        <span v-if="data.funding.identifier">{{data.funding.identifier}}</span>
-                        <span v-if="funder.role"> ({{funder.role}})</span>
-                      </div>
-                    </template>
-
-                    <template v-else>
-                      <div class="m-0">
-                        <b v-if="data.funding.funder && data.funding.funder.name">{{data.funding.funder.name}}</b>
-                        <span v-if="data.funding.funder && data.funding.funder.name && data.funding.identifier">:&nbsp;</span>
-                        <span v-if="data.funding.identifier">{{data.funding.identifier}}</span>
-                        <span v-if="data.funding.funder && data.funding.funder.role"> ({{data.funding.funder.role}})</span>
-                      </div>
-                    </template>
-                    <div v-if="data.funding.description" class="line-height-1">
-                      {{data.funding.description}}
-                    </div>
-                  </li>
-                </template>
-
-              </ul>
+            <div v-else>
+              <small>not specified</small>
             </div>
-            <template v-if="data.funder">
-
-              <template v-if="Array.isArray(data.funder)">
-                <ul>
-                  <li v-for="(funder, idx) in data.funder" :key="idx" class="mb-3">
-                    <b v-if="funder.name">{{funder.name}}</b>
-                    <span v-if="funder.name && funder.identifier">:&nbsp;</span>
-                    <span v-if="funder.identifier">{{funder.identifier}}</span>
-                    <span v-if="funder.role"> ({{funder.role}})</span>
-                  </li>
-                </ul>
-              </template>
-
-              <template v-else>
-                <ul>
-                  <li>
-                    <b v-if="funder.name">{{funder.name}}</b>
-                    <span v-if="funder.name && funder.identifier">:&nbsp;</span>
-                    <span v-if="funder.identifier">{{funder.identifier}}</span>
-                    <span v-if="funder.role"> ({{funder.role}})</span>
-                  </li>
-                </ul>
-              </template>
-
-            </template>
           </div>
-          <div v-else>
-            <small>not specified</small>
-          </div>
-        </div>
 
-        <!-- corrections -->
-        <div id="corrections" class="text-left border-bottom text-muted py-1 my-3" v-if="anchorsArr.includes('corrections')">
-          <h6 class="m-0">Corrections</h6>
-          <ul v-if="data.correction" id="correction-list">
-            <li v-for="(item, idx) in data.correction" :key="idx">
-                {{ item.correctionType[0].toUpperCase() }}{{ item.correctionType.slice(1) }}: {{item.identifier.toUpperCase()}}
+          <!-- funding info -->
+          <div
+            id="funder"
+            class="text-left border-bottom text-muted py-3 mb-3"
+            v-if="anchorsArr.includes('funder')"
+          >
+            <h6 class="m-0">Funder</h6>
+            <div v-if="data.funding || data.funder">
+              <div v-if="data.funding">
+                <ul>
+                  <template v-if="Array.isArray(data.funding)">
+                    <li
+                      v-for="(funding, idx) in data.funding"
+                      :key="idx"
+                      class="mb-3"
+                    >
+                      <template v-if="Array.isArray(funding.funder)">
+                        <div v-for="(funder, idx) in funding.funder" :key="idx">
+                          <b v-if="funder.name">{{ funder.name }}</b>
+                          <span v-if="funder.name && funding.identifier">
+                            :&nbsp;
+                          </span>
+                          <span v-if="funding.identifier">
+                            {{ funding.identifier }}
+                          </span>
+                          <span v-if="funder.role">({{ funder.role }})</span>
+                        </div>
+                      </template>
+
+                      <template v-else>
+                        <div class="m-0">
+                          <b v-if="funding.funder && funding.funder.name">
+                            {{ funding.funder.name }}
+                          </b>
+                          <span
+                            v-if="
+                              funding.funder &&
+                                funding.funder.name &&
+                                funding.identifier
+                            "
+                          >
+                            :&nbsp;
+                          </span>
+                          <span v-if="funding.identifier">
+                            {{ funding.identifier }}
+                          </span>
+                          <span v-if="funding.funder && funding.funder.role">
+                            ({{ funding.funder.role }})
+                          </span>
+                        </div>
+                      </template>
+                      <div v-if="funding.description" class="line-height-1">
+                        {{ funding.description }}
+                      </div>
+                    </li>
+                  </template>
+                  <template v-else>
+                    <li class="mb-3">
+                      <template v-if="Array.isArray(data.funding.funder)">
+                        <div
+                          v-for="(funder, idx) in data.funding.funder"
+                          :key="idx"
+                        >
+                          <b v-if="funder.name">{{ funder.name }}</b>
+                          <span v-if="funder.name && data.funding.identifier">
+                            :&nbsp;
+                          </span>
+                          <span v-if="data.funding.identifier">
+                            {{ data.funding.identifier }}
+                          </span>
+                          <span v-if="funder.role">({{ funder.role }})</span>
+                        </div>
+                      </template>
+
+                      <template v-else>
+                        <div class="m-0">
+                          <b
+                            v-if="
+                              data.funding.funder && data.funding.funder.name
+                            "
+                          >
+                            {{ data.funding.funder.name }}
+                          </b>
+                          <span
+                            v-if="
+                              data.funding.funder &&
+                                data.funding.funder.name &&
+                                data.funding.identifier
+                            "
+                          >
+                            :&nbsp;
+                          </span>
+                          <span v-if="data.funding.identifier">
+                            {{ data.funding.identifier }}
+                          </span>
+                          <span
+                            v-if="
+                              data.funding.funder && data.funding.funder.role
+                            "
+                          >
+                            ({{ data.funding.funder.role }})
+                          </span>
+                        </div>
+                      </template>
+                      <div
+                        v-if="data.funding.description"
+                        class="line-height-1"
+                      >
+                        {{ data.funding.description }}
+                      </div>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+              <template v-if="data.funder">
+                <template v-if="Array.isArray(data.funder)">
+                  <ul>
+                    <li
+                      v-for="(funder, idx) in data.funder"
+                      :key="idx"
+                      class="mb-3"
+                    >
+                      <b v-if="funder.name">{{ funder.name }}</b>
+                      <span v-if="funder.name && funder.identifier">
+                        :&nbsp;
+                      </span>
+                      <span v-if="funder.identifier">
+                        {{ funder.identifier }}
+                      </span>
+                      <span v-if="funder.role">({{ funder.role }})</span>
+                    </li>
+                  </ul>
+                </template>
+
+                <template v-else>
+                  <ul>
+                    <li>
+                      <b v-if="funder.name">{{ funder.name }}</b>
+                      <span v-if="funder.name && funder.identifier">
+                        :&nbsp;
+                      </span>
+                      <span v-if="funder.identifier">
+                        {{ funder.identifier }}
+                      </span>
+                      <span v-if="funder.role">({{ funder.role }})</span>
+                    </li>
+                  </ul>
+                </template>
+              </template>
+            </div>
+            <div v-else>
+              <small>not specified</small>
+            </div>
+          </div>
+
+          <!-- corrections -->
+          <div
+            id="corrections"
+            class="text-left border-bottom text-muted py-1 my-3"
+            v-if="anchorsArr.includes('corrections')"
+          >
+            <h6 class="m-0">Corrections</h6>
+            <ul v-if="data.correction" id="correction-list">
+              <li v-for="(item, idx) in data.correction" :key="idx">
+                {{ item.correctionType[0].toUpperCase()
+                }}{{ item.correctionType.slice(1) }}:
+                {{ item.identifier.toUpperCase() }}
                 <small>
-              <router-link :to="{name: 'Resource Page', params: {id: item.identifier}}" class="btn btn-sec ml-3 mb-3">
-                View record on outbreak.info
-              </router-link>
-              </small>
-              <small>
-              <a target="_blank" :href="item.url" class="btn btn-sec ml-3 mb-3">
-                View record on source
+                  <router-link
+                    :to="{
+                      name: 'Resource Page',
+                      params: { id: item.identifier },
+                    }"
+                    class="btn btn-sec ml-3 mb-3"
+                  >
+                    View record on outbreak.info
+                  </router-link>
+                </small>
+                <small>
+                  <a
+                    target="_blank"
+                    :href="item.url"
+                    class="btn btn-sec ml-3 mb-3"
+                  >
+                    View record on source
+                  </a>
+                </small>
+              </li>
+            </ul>
+            <div v-else>
+              <small>none</small>
+            </div>
+          </div>
+
+          <!-- license -->
+          <div
+            id="license"
+            class="text-left border-bottom text-muted pb-3 mb-3"
+            v-if="anchorsArr.includes('license')"
+          >
+            <h6 class="m-0">License</h6>
+            <div v-if="data.license">
+              <a
+                v-if="data.license.startsWith('http')"
+                :href="data.license"
+                target="_blank"
+              >
+                {{ data.license }}
               </a>
-              </small>
-            </li>
-          </ul>
-          <div v-else>
-            <small>none</small>
+              <span v-else v-html="data.license"></span>
+            </div>
+            <div v-else>
+              <small>not specified</small>
+            </div>
+          </div>
+
+          <!-- based on -->
+          <div
+            id="based_on"
+            class="text-left border-bottom text-muted pb-3 mb-3"
+            v-if="anchorsArr.includes('based on')"
+          >
+            <h6 class="m-0 mb-2">Based on</h6>
+            <div v-if="data.isBasedOn && data.isBasedOn.length">
+              <ResourceCitation
+                :data="item"
+                v-for="(item, idx) in data.isBasedOn"
+                :key="idx"
+              />
+            </div>
+            <div v-else>
+              <small>not specified</small>
+            </div>
+          </div>
+
+          <!-- cited by -->
+          <div
+            id="cited_by"
+            class="text-left border-bottom text-muted pb-3 mb-3"
+            v-if="anchorsArr.includes('cited by')"
+          >
+            <h6 class="m-0 mb-2">Cited by</h6>
+            <div v-if="data.citedBy && data.citedBy.length">
+              <ResourceCitation
+                :data="item"
+                v-for="(item, idx) in data.citedBy"
+                :key="idx"
+              />
+            </div>
+            <div v-else>
+              <small>not specified</small>
+            </div>
+          </div>
+
+          <!-- related -->
+          <div
+            id="related"
+            class="text-left border-bottom text-muted pb-3 mb-3"
+            v-if="anchorsArr.includes('related')"
+          >
+            <h6 class="m-0 mb-2">Related resources</h6>
+            <div v-if="data.relatedTo && data.relatedTo.length">
+              <ResourceCitation
+                :data="item"
+                v-for="(item, idx) in data.relatedTo"
+                :key="idx"
+              />
+            </div>
+            <div v-else>
+              <small>not specified</small>
+            </div>
           </div>
         </div>
-
-        <!-- license -->
-        <div id="license" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('license')">
-          <h6 class="m-0">License</h6>
-          <div v-if="data.license">
-            <a v-if="data.license.startsWith('http')" :href="data.license" target="_blank">{{ data.license }}
-            </a>
-            <span v-else v-html="data.license"></span>
-          </div>
-          <div v-else>
-            <small>not specified</small>
-          </div>
-        </div>
-
-        <!-- based on -->
-        <div id="based_on" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('based on')">
-          <h6 class="m-0 mb-2">Based on</h6>
-          <div v-if="data.isBasedOn && data.isBasedOn.length">
-            <ResourceCitation :data="item" v-for="(item, idx) in data.isBasedOn" :key="idx" />
-          </div>
-          <div v-else>
-            <small>not specified</small>
-          </div>
-        </div>
-
-        <!-- cited by -->
-        <div id="cited_by" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('cited by')">
-          <h6 class="m-0 mb-2">Cited by</h6>
-          <div v-if="data.citedBy && data.citedBy.length">
-            <ResourceCitation :data="item" v-for="(item, idx) in data.citedBy" :key="idx" />
-          </div>
-          <div v-else>
-            <small>not specified</small>
-          </div>
-        </div>
-
-        <!-- related -->
-        <div id="related" class="text-left border-bottom text-muted pb-3 mb-3" v-if="anchorsArr.includes('related')">
-          <h6 class="m-0 mb-2">Related resources</h6>
-          <div v-if="data.relatedTo && data.relatedTo.length">
-            <ResourceCitation :data="item" v-for="(item, idx) in data.relatedTo" :key="idx" />
-          </div>
-          <div v-else>
-            <small>not specified</small>
-          </div>
-        </div>
-
-
+      </div>
+      <!-- RIGHT SIDE -->
+      <div class="col-md-3 my-3">
+        <ResourceSidebar
+          :data="data"
+          :date="dateModified"
+          :type="data['@type']"
+          v-if="data"
+        />
       </div>
     </div>
-    <!-- RIGHT SIDE -->
-    <div class="col-md-3 my-3">
-      <ResourceSidebar :data="data" :date="dateModified" :type="data['@type']" v-if="data" />
+    <div v-else class="min-height">
+      Sorry, data on {{ id }} is not found. Let us know at
+      <a
+        :href="
+          `mailto:help@outbreak.info?subject=Missing metadata for id ${id}`
+        "
+        target="_blank"
+      >
+        help@outbreak.info
+      </a>
     </div>
   </div>
-  <div v-else class="min-height">
-    Sorry, data on {{id}} is not found. Let us know at <a :href="`mailto:help@outbreak.info?subject=Missing metadata for id ${id}`" target="_blank">help@outbreak.info</a>
-  </div>
-</div>
 </template>
 
 <script lang="js">
@@ -479,17 +625,17 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .pub-type {
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 .helper {
-    line-height: 1.2em;
+  line-height: 1.2em;
 }
 
 .section-header {
-    text-transform: uppercase;
+  text-transform: uppercase;
 }
 .min-height {
-    min-height: 72vh;
+  min-height: 72vh;
 }
 </style>

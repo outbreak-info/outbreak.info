@@ -28,21 +28,21 @@
 
 <script>
 export default {
-  name: "StripeAccent",
+  name: 'StripeAccent',
   props: {
     width: {
       type: Number,
-      default: 6
+      default: 6,
     },
     height: {
       type: Number,
-      default: 25
+      default: 25,
     },
-    className: String
+    className: String,
   },
   data() {
     return {};
-  }
+  },
 };
 </script>
 

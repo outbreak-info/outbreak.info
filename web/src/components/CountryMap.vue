@@ -1,14 +1,19 @@
 <template>
-<div class="d-flex flex-column">
-  <svg :width="width + margin.left + margin.right" :height="height + margin.top + margin.bottom" ref="svg">
-    <g ref="countries" class="country-group"></g>
-  </svg>
-  <div class="country-container d-flex flex-wrap" v-if="showNames">
-    <small class="m-0 mr-1" v-for="(country, idx) in countries" :key="idx">
-      {{ country }}<span v-if="idx < countries.length - 1">,</span>
-    </small>
+  <div class="d-flex flex-column">
+    <svg
+      :width="width + margin.left + margin.right"
+      :height="height + margin.top + margin.bottom"
+      ref="svg"
+    >
+      <g ref="countries" class="country-group"></g>
+    </svg>
+    <div class="country-container d-flex flex-wrap" v-if="showNames">
+      <small class="m-0 mr-1" v-for="(country, idx) in countries" :key="idx">
+        {{ country }}
+        <span v-if="idx < countries.length - 1">,</span>
+      </small>
+    </div>
   </div>
-</div>
 </template>
 
 <script lang="js">
@@ -124,11 +129,11 @@ export default Vue.extend({
 
 <style lang="scss">
 .region {
-    // fill: mix($grey-40, $grey-30);
-    stroke-width: 0.5;
+  // fill: mix($grey-40, $grey-30);
+  stroke-width: 0.5;
 }
 
 .country-container {
-    color: saturate($clinical-trial-color, 15%);
+  color: saturate($clinical-trial-color, 15%);
 }
 </style>

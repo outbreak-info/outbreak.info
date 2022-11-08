@@ -1,18 +1,35 @@
 <template>
-<div>
-  <VariantForm :minimalistic="minimalistic" :selectedLineage.sync="selectedLineage" :submitLabel.sync="submitLabel" :selectedMutations.sync="selectedMutations" :submitted="submitCount" />
-
   <div>
-    <div class="d-flex align-items-center my-4 w-100">
-      <div>
-        <button type="submit" class="btn btn-outline-secondary mx-5" @click="clearQuery">Clear selection</button>
-        <button :disabled="!formValid" type="submit" class="btn btn-accent" @click="submitQuery">Go</button>
-      </div>
+    <VariantForm
+      :minimalistic="minimalistic"
+      :selectedLineage.sync="selectedLineage"
+      :submitLabel.sync="submitLabel"
+      :selectedMutations.sync="selectedMutations"
+      :submitted="submitCount"
+    />
 
+    <div>
+      <div class="d-flex align-items-center my-4 w-100">
+        <div>
+          <button
+            type="submit"
+            class="btn btn-outline-secondary mx-5"
+            @click="clearQuery"
+          >
+            Clear selection
+          </button>
+          <button
+            :disabled="!formValid"
+            type="submit"
+            class="btn btn-accent"
+            @click="submitQuery"
+          >
+            Go
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-
-</div>
 </template>
 
 <script lang="js">

@@ -1,37 +1,82 @@
 <template>
-<div id="dateSlider" class="d-flex flex-column">
-  {{this.formattedDate}}
-  <div class="d-flex align-items-start">
-    <div class="d-flex">
-      <div class="btn btn-main-outline px-2 py-1" style="font-size: 0.85em" @click="changeDate(-7)" :class="{disabled: hideBack7}">
-        <font-awesome-icon :icon="['fas', 'fast-backward']" />
+  <div id="dateSlider" class="d-flex flex-column">
+    {{ this.formattedDate }}
+    <div class="d-flex align-items-start">
+      <div class="d-flex">
+        <div
+          class="btn btn-main-outline px-2 py-1"
+          style="font-size: 0.85em"
+          @click="changeDate(-7)"
+          :class="{ disabled: hideBack7 }"
+        >
+          <font-awesome-icon :icon="['fas', 'fast-backward']" />
+        </div>
+        <div
+          class="btn btn-main-outline ml-1 px-2 py-1 d-flex align-items-center"
+          style="font-size: 0.7em"
+          @click="changeDate(-1)"
+          :class="{ disabled: hideBack1 }"
+        >
+          <font-awesome-icon :icon="['fas', 'step-backward']" />
+        </div>
       </div>
-      <div class="btn btn-main-outline ml-1 px-2 py-1 d-flex align-items-center" style="font-size: 0.7em" @click="changeDate(-1)" :class="{disabled: hideBack1}">
-        <font-awesome-icon :icon="['fas', 'step-backward']" />
-      </div>
-    </div>
-    <svg :width="width + margin.left + margin.bottom" :height="height + radius + margin.bottom + margin.top" class="mr-3 ml-3">
-      <rect id="slider" x="0" y="0" :width="width + margin.left + margin.right" :height="height" :transform="`translate(0, ${radius})`"></rect>
-      <circle fill="#D13B62" :transform="`translate(${margin.left}, ${height/2 + radius})`" id="slider-date" :cx="xDate" :cy="0" :r="radius" ref="drag_circle"></circle>
-      <g :transform="`translate(${margin.left}, ${height + margin.top})`" class="slider-axis axis--x" ref="xAxis"></g>
-    </svg>
-    <div class="d-flex">
-      <div class="btn btn-main-outline mr-1 px-2 py-1 d-flex align-items-center" :class="{disabled: hideForward1}" @click="changeDate(1)" style="font-size: 0.7em">
-        <font-awesome-icon :icon="['fas', 'step-forward']" />
-      </div>
-      <div class="btn btn-main-outline px-2 py-1" style="font-size: 0.85em" :class="{disabled: hideForward7}" @click="changeDate(7)">
-        <font-awesome-icon :icon="['fas', 'fast-forward']" />
+      <svg
+        :width="width + margin.left + margin.bottom"
+        :height="height + radius + margin.bottom + margin.top"
+        class="mr-3 ml-3"
+      >
+        <rect
+          id="slider"
+          x="0"
+          y="0"
+          :width="width + margin.left + margin.right"
+          :height="height"
+          :transform="`translate(0, ${radius})`"
+        ></rect>
+        <circle
+          fill="#D13B62"
+          :transform="`translate(${margin.left}, ${height / 2 + radius})`"
+          id="slider-date"
+          :cx="xDate"
+          :cy="0"
+          :r="radius"
+          ref="drag_circle"
+        ></circle>
+        <g
+          :transform="`translate(${margin.left}, ${height + margin.top})`"
+          class="slider-axis axis--x"
+          ref="xAxis"
+        ></g>
+      </svg>
+      <div class="d-flex">
+        <div
+          class="btn btn-main-outline mr-1 px-2 py-1 d-flex align-items-center"
+          :class="{ disabled: hideForward1 }"
+          @click="changeDate(1)"
+          style="font-size: 0.7em"
+        >
+          <font-awesome-icon :icon="['fas', 'step-forward']" />
+        </div>
+        <div
+          class="btn btn-main-outline px-2 py-1"
+          style="font-size: 0.85em"
+          :class="{ disabled: hideForward7 }"
+          @click="changeDate(7)"
+        >
+          <font-awesome-icon :icon="['fas', 'fast-forward']" />
+        </div>
       </div>
 
-    </div>
-
-    <div class="btn btn-main-outline px-2 py-1 ml-2" style="font-size: 0.85em" @click="play()">
-      <font-awesome-icon :icon="['fas', 'pause']" v-if="isPlaying" />
-      <font-awesome-icon :icon="['fas', 'play']" v-else />
+      <div
+        class="btn btn-main-outline px-2 py-1 ml-2"
+        style="font-size: 0.85em"
+        @click="play()"
+      >
+        <font-awesome-icon :icon="['fas', 'pause']" v-if="isPlaying" />
+        <font-awesome-icon :icon="['fas', 'play']" v-else />
+      </div>
     </div>
   </div>
-
-</div>
 </template>
 
 <script lang="js">
@@ -242,16 +287,16 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 #slider {
-    fill: #bababa;
-    rx: 3;
-    ry: 3;
+  fill: #bababa;
+  rx: 3;
+  ry: 3;
 }
 
 #slider-date {
-    cursor: ew-resize;
+  cursor: ew-resize;
 }
 
 .slider-axis path {
-    display: none;
+  display: none;
 }
 </style>

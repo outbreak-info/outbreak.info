@@ -1,93 +1,223 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="report-prevalence">
-  <!-- zoom btns -->
-  <div class="d-flex justify-content-end px-3" :style="{width: width + 'px'}">
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-    </button>
-    <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-      <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-    </button>
-  </div>
+  <div
+    class="d-flex flex-column align-items-center w-100"
+    id="report-prevalence"
+  >
+    <!-- zoom btns -->
+    <div
+      class="d-flex justify-content-end px-3"
+      :style="{ width: width + 'px' }"
+    >
+      <button
+        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+        @click="enableZoom"
+      >
+        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
+      </button>
+      <button
+        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+        @click="resetZoom"
+      >
+        <font-awesome-icon
+          class="text-right"
+          :icon="['fas', 'compress-arrows-alt']"
+        />
+      </button>
+    </div>
 
-  <div class="d-flex flex-column">
-    <!-- LEGEND -->
-    <div class="d-flex flex-column ml-5 mt-3" id="legend">
-      <!-- legend: rolling average -->
-      <div class="d-flex">
-        <svg width="15" height="15" class="mr-2">
-          <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
-        </svg>
-        <small class="text-muted">7 day rolling average of percent of {{ mutationName }}-positive sequences</small>
+    <div class="d-flex flex-column">
+      <!-- LEGEND -->
+      <div class="d-flex flex-column ml-5 mt-3" id="legend">
+        <!-- legend: rolling average -->
+        <div class="d-flex">
+          <svg width="15" height="15" class="mr-2">
+            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+          </svg>
+          <small class="text-muted">
+            7 day rolling average of percent of {{ mutationName }}-positive
+            sequences
+          </small>
+        </div>
+
+        <!-- legend: confidence interval -->
+        <div class="d-flex align-items-center">
+          <div class="ci-legend mr-2" :style="{ background: CIColor }"></div>
+          <small class="text-muted">95% confidence interval</small>
+          <svg width="15" height="15" class="ml-4 mr-2">
+            <rect
+              x="0"
+              y="0"
+              :width="15"
+              :height="15"
+              fill="url(#diagonalHatchLight)"
+            ></rect>
+          </svg>
+          <small class="text-muted">missing recent data</small>
+        </div>
       </div>
 
-      <!-- legend: confidence interval -->
+      <!-- SVGs -->
+      <div
+        class="d-flex flex-column align-items-start mt-2"
+        id="report-prevalence-svg"
+      >
+        <!-- TIME TRACE -->
+        <svg
+          :width="width"
+          :height="height"
+          class="prevalence-curve"
+          ref="svg"
+          :name="title"
+        >
+          <defs>
+            <marker
+              id="arrow"
+              markerWidth="13"
+              markerHeight="10"
+              refX="10"
+              refY="5"
+              orient="auto"
+              markerUnits="strokeWidth"
+              stroke="#929292"
+              fill="none"
+            >
+              <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+            </marker>
+
+            <pattern
+              id="diagonalHatchLight"
+              width="7"
+              height="7"
+              patternTransform="rotate(45 0 0)"
+              patternUnits="userSpaceOnUse"
+            >
+              <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="25"
+                :style="`stroke:#CCC; stroke-width:4`"
+              />
+            </pattern>
+          </defs>
+
+          <g
+            :transform="`translate(${margin.left}, ${height - margin.bottom})`"
+            class="prevalence-axis axis--x"
+            ref="xAxis"
+          ></g>
+          <g
+            :transform="`translate(${margin.left}, ${margin.top})`"
+            class="prevalence-axis axis--y"
+            ref="yAxis"
+          ></g>
+          <g
+            ref="chart"
+            :transform="`translate(${margin.left}, ${margin.top})`"
+          ></g>
+          <g id="no-data" v-if="!data.length">
+            <text
+              font-size="24px"
+              fill="#888888"
+              :x="width / 2"
+              :y="height / 2 - margin.top"
+              dominant-baseline="middle"
+              text-anchor="middle"
+            >
+              No sequences found
+            </text>
+          </g>
+          <g id="no-data" v-if="data.length < lengthThreshold && data.length">
+            <text
+              font-size="24px"
+              fill="#888888"
+              :x="width / 2"
+              :y="height / 2 - margin.top"
+              dominant-baseline="middle"
+              text-anchor="middle"
+            >
+              Two points may make a line, but it's not very informative.
+            </text>
+            <text
+              font-size="24px"
+              fill="#888888"
+              transform="translate(0, 28)"
+              :x="width / 2"
+              :y="height / 2 - margin.top"
+              dominant-baseline="middle"
+              text-anchor="middle"
+            >
+              {{ location }} only has {{ data.length }}
+              {{ data.length === 1 ? 'date' : 'dates' }} with sequencing data
+            </text>
+          </g>
+          <g id="weird-last values" :hidden="data.length < lengthThreshold">
+            <text
+              :x="width - margin.right"
+              :y="0"
+              fill="#929292"
+              font-size="14px"
+              dominant-baseline="hanging"
+              text-anchor="end"
+              :style="`font-family: ${fontFamily};`"
+            >
+              Latest dates are noisy due to fewer samples, or missing from
+              sequencing delays
+            </text>
+            <path
+              stroke="#BBBBBB"
+              fill="none"
+              :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`"
+              marker-end="url(#arrow)"
+            ></path>
+          </g>
+          <g
+            ref="brush"
+            class="brush"
+            id="brush-zoom"
+            :transform="`translate(${margin.left},${margin.top})`"
+            v-if="data"
+            :class="{ hidden: !zoomAllowed }"
+          ></g>
+        </svg>
+
+        <SequencingHistogram
+          :data="data"
+          :xInput="x"
+          :width="width"
+          :svgTitle="title"
+          :margin="margin"
+          :mutationName="mutationName"
+          className="prevalence-curve prevalence-curve-counts"
+        />
+      </div>
+    </div>
+
+    <!-- TOOLTIPS -->
+    <div
+      ref="tooltip_prevalence"
+      class="tooltip-basic box-shadow"
+      id="tooltip-prevalence"
+    >
+      <h5 id="date"></h5>
       <div class="d-flex align-items-center">
-        <div class="ci-legend mr-2" :style="{background: CIColor}"></div>
-        <small class="text-muted">95% confidence interval</small>
-        <svg width="15" height="15" class="ml-4 mr-2">
-          <rect x="0" y="0" :width="15" :height="15" fill="url(#diagonalHatchLight)"></rect>
-        </svg>
-        <small class="text-muted">missing recent data</small>
+        <b id="proportion" class="font-size-2"></b>
+        <span id="confidence-interval" class="text-muted ml-2"></span>
       </div>
+
+      <div id="sequencing-count"></div>
+      <div id="sequencing-count-rolling"></div>
     </div>
 
-    <!-- SVGs -->
-    <div class="d-flex flex-column align-items-start mt-2" id="report-prevalence-svg">
-      <!-- TIME TRACE -->
-      <svg :width="width" :height="height" class="prevalence-curve" ref="svg" :name="title">
-        <defs>
-          <marker id="arrow" markerWidth="13" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth" stroke="#929292" fill="none">
-            <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-          </marker>
-
-          <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-            <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
-            <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
-          </pattern>
-        </defs>
-
-        <g :transform="`translate(${margin.left}, ${height - margin.bottom })`" class="prevalence-axis axis--x" ref="xAxis"></g>
-        <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis axis--y" ref="yAxis"></g>
-        <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        <g id="no-data" v-if="!data.length">
-          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">No sequences found</text>
-        </g>
-        <g id="no-data" v-if="data.length < lengthThreshold && data.length">
-          <text font-size="24px" fill="#888888" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">Two points may make a line, but it's not very informative.</text>
-          <text font-size="24px" fill="#888888" transform="translate(0, 28)" :x="width/2" :y="height/2 - margin.top" dominant-baseline="middle" text-anchor="middle">{{location}} only has {{data.length}} {{data.length === 1 ? "date" : "dates"}} with
-            sequencing data</text>
-        </g>
-        <g id="weird-last values" :hidden="data.length < lengthThreshold">
-          <text :x="width - margin.right" :y="0" fill="#929292" font-size="14px" dominant-baseline="hanging" text-anchor="end" :style="`font-family: ${fontFamily};`">Latest dates are noisy due to fewer samples, or missing from sequencing
-            delays</text>
-          <path stroke="#BBBBBB" fill="none" :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`" marker-end="url(#arrow)"></path>
-        </g>
-        <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-      </svg>
-
-      <SequencingHistogram :data="data" :xInput="x" :width="width" :svgTitle="title" :margin="margin" :mutationName="mutationName" className="prevalence-curve prevalence-curve-counts" />
-
-    </div>
+    <DownloadReportData
+      :data="data"
+      figureRef="prevalence-curve"
+      :isVertical="true"
+      dataType="Mutation Report Prevalence over Time"
+    />
   </div>
-
-  <!-- TOOLTIPS -->
-  <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
-    <h5 id="date"></h5>
-    <div class="d-flex align-items-center">
-      <b id="proportion" class="font-size-2"></b>
-      <span id="confidence-interval" class="text-muted ml-2"></span>
-    </div>
-
-    <div id="sequencing-count"></div>
-    <div id="sequencing-count-rolling"></div>
-  </div>
-
-  <DownloadReportData :data="data" figureRef="prevalence-curve" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
-
-</div>
 </template>
-
 
 <script lang="js">
 import Vue from "vue";
@@ -636,28 +766,28 @@ export default Vue.extend({
 
 <style lang="scss">
 #report-prevalence-svg {
-    & .mutation-axis,
-    & .prevalence-axis {
-        font-size: 16pt !important;
-        text {
-            fill: $grey-90;
-        }
+  & .mutation-axis,
+  & .prevalence-axis {
+    font-size: 16pt !important;
+    text {
+      fill: $grey-90;
     }
+  }
 }
 
 .ci-legend {
-    width: 15px;
-    height: 15px;
-    opacity: 0.3;
+  width: 15px;
+  height: 15px;
+  opacity: 0.3;
 }
 
 .no-data-legend {
-    width: 15px;
-    height: 15px;
-    opacity: 0.3;
+  width: 15px;
+  height: 15px;
+  opacity: 0.3;
 }
 .trace-legend {
-    stroke: $base-grey;
-    stroke-width: 2.5;
+  stroke: $base-grey;
+  stroke-width: 2.5;
 }
 </style>

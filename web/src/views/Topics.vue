@@ -1,40 +1,41 @@
 <template>
-<div class="mx-3 my-5">
-  <div id="treatments" class="text-left">
-    <h3>Resources related to treatments</h3>
-    <Marimekko :data="types" v-if="types" />
-    <div v-for="(treatment, idx) in results" :key="idx" class="mb-4">
-      <router-link :to="{name:'Resources', query:{ q: treatment.key.query}}">
-        <h6 class="m-0">{{treatment.key.name}}</h6>
-      </router-link>
-      <small class="text-muted m-0">
-        {{treatment.key.label}}
-      </small>
+  <div class="mx-3 my-5">
+    <div id="treatments" class="text-left">
+      <h3>Resources related to treatments</h3>
+      <Marimekko :data="types" v-if="types" />
+      <div v-for="(treatment, idx) in results" :key="idx" class="mb-4">
+        <router-link
+          :to="{ name: 'Resources', query: { q: treatment.key.query } }"
+        >
+          <h6 class="m-0">{{ treatment.key.name }}</h6>
+        </router-link>
+        <small class="text-muted m-0">
+          {{ treatment.key.label }}
+        </small>
+      </div>
     </div>
   </div>
-
-</div>
 </template>
 
 <script>
-import {
-  getQuerySummaries,
-  getCTSummary
-} from "@/api/resources.js";
+import { getQuerySummaries, getCTSummary } from '@/api/resources.js';
 
-import Marimekko from "@/components/Marimekko.vue";
+import Marimekko from '@/components/Marimekko.vue';
 
-import tippy from "tippy.js";
-import "tippy.js/themes/light.css";
+import tippy from 'tippy.js';
+import 'tippy.js/themes/light.css';
 
 export default {
-  name: "Topics",
+  name: 'Topics',
   components: {
-    Marimekko
+    Marimekko,
   },
   mounted() {
-    this.resultSubscription = getQuerySummaries(this.drugs, this.$resourceurl).subscribe(results => {
-      console.log(results)
+    this.resultSubscription = getQuerySummaries(
+      this.drugs,
+      this.$resourceurl,
+    ).subscribe((results) => {
+      console.log(results);
       this.results = results;
     });
 
@@ -59,46 +60,91 @@ export default {
   },
   computed: {
     types: function() {
-      return this.results ? this.results.flatMap(d => d.types) : null;
-    }
+      return this.results ? this.results.flatMap((d) => d.types) : null;
+    },
   },
   data() {
     return {
       resultSubscription: null,
       results: null,
-      drugs: [{
-          name: "hydroxychloroquine",
-          label: "Malaria treatment",
+      drugs: [
+        {
+          name: 'hydroxychloroquine',
+          label: 'Malaria treatment',
           // synonyms from PubChem / Google
-          terms: ["hydroxychloroquine", "Plaquenil", "Quineprox", "hydroxy chloroquine", "Oxichloroquine", "Oxychlorochin", "Oxychloroquine", "Oxichlorochinum", "Hidroxicloroquina", "Hydroxychloroquinum", "Idrossiclorochina", "oxichlorochine",
-            "Hidroxicloroquina", "Hydroxychloroquinum", "Quensyl", "Hydroxychlorochin", "Idrossiclorochina", "Polirreumin", "Dolquine"
-          ]
+          terms: [
+            'hydroxychloroquine',
+            'Plaquenil',
+            'Quineprox',
+            'hydroxy chloroquine',
+            'Oxichloroquine',
+            'Oxychlorochin',
+            'Oxychloroquine',
+            'Oxichlorochinum',
+            'Hidroxicloroquina',
+            'Hydroxychloroquinum',
+            'Idrossiclorochina',
+            'oxichlorochine',
+            'Hidroxicloroquina',
+            'Hydroxychloroquinum',
+            'Quensyl',
+            'Hydroxychlorochin',
+            'Idrossiclorochina',
+            'Polirreumin',
+            'Dolquine',
+          ],
         },
         {
-          name: "azithromycin",
-          label: "Anti-bacterial agent typically used to treat pneumonia of bacterial origin",
+          name: 'azithromycin',
+          label:
+            'Anti-bacterial agent typically used to treat pneumonia of bacterial origin',
           // synonyms from PubChem / Google
-          terms: ["azithromycin", "Azithramycine", "Azasite", "Zithromax", "Zitromax", "AzaSite", "Zmax"]
+          terms: [
+            'azithromycin',
+            'Azithramycine',
+            'Azasite',
+            'Zithromax',
+            'Zitromax',
+            'AzaSite',
+            'Zmax',
+          ],
         },
         {
-          name: "tocilizumab",
-          label: "Immunosuppressive drug approved to treat rhuematoid arthritis",
+          name: 'tocilizumab',
+          label:
+            'Immunosuppressive drug approved to treat rhuematoid arthritis',
           // synonyms from PubChem / Google
-          terms: ["tocilizumab", "Actemra", "R-1569", "RG-1569", "RHPM-1", "RoActemra", "GTPL6881"]
+          terms: [
+            'tocilizumab',
+            'Actemra',
+            'R-1569',
+            'RG-1569',
+            'RHPM-1',
+            'RoActemra',
+            'GTPL6881',
+          ],
         },
         {
-          name: "lopinavir/ritonavir",
-          label: "HIV protease inhibitor cocktail",
+          name: 'lopinavir/ritonavir',
+          label: 'HIV protease inhibitor cocktail',
           // synonyms from PubChem / Google
-          terms: ["lopinavir/ritonavir", "lopinavir-ritonavir", "lopinavir and ritonavir", "lopinavir & ritonavir", "Aluvia", "Kaletra", "Lopimune"]
+          terms: [
+            'lopinavir/ritonavir',
+            'lopinavir-ritonavir',
+            'lopinavir and ritonavir',
+            'lopinavir & ritonavir',
+            'Aluvia',
+            'Kaletra',
+            'Lopimune',
+          ],
         },
         {
-          name: "convalescent plasma",
-          label: "Convalescent plasma",
-          terms: ["convalescent plasma"]
-        }
-      ]
-    }
-  }
-}
+          name: 'convalescent plasma',
+          label: 'Convalescent plasma',
+          terms: ['convalescent plasma'],
+        },
+      ],
+    };
+  },
+};
 </script>

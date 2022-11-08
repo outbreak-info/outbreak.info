@@ -1,13 +1,19 @@
 <template>
-<div class="position-relative">
-  <svg :width="width" :height="height" class="circle-packing" ref="circle_packing">
-    <defs></defs>
-  </svg>
-  <div ref="circle_tooltip" class="circle-pack-tooltip box-shadow rounded hidden position-absolute  px-3 py-2">
+  <div class="position-relative">
+    <svg
+      :width="width"
+      :height="height"
+      class="circle-packing"
+      ref="circle_packing"
+    >
+      <defs></defs>
+    </svg>
+    <div
+      ref="circle_tooltip"
+      class="circle-pack-tooltip box-shadow rounded hidden position-absolute  px-3 py-2"
+    ></div>
   </div>
-</div>
 </template>
-
 
 <script lang="js">
 import Vue from "vue";
@@ -233,138 +239,138 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .resource-count {
-    fill: $other-color;
+  fill: $other-color;
 }
 
 .depth1 {
-    fill: none !important;
-    stroke: $other-color;
-    stroke-width: 1;
-    stroke-dasharray: 6,4;
+  fill: none !important;
+  stroke: $other-color;
+  stroke-width: 1;
+  stroke-dasharray: 6, 4;
 }
 
 .tiny {
-    stroke-dasharray: 1,0 !important;
-    stroke-width: 1 !important;
+  stroke-dasharray: 1, 0 !important;
+  stroke-width: 1 !important;
 }
 
 .Publication.depth1 {
-    stroke: $publication-color;
+  stroke: $publication-color;
 }
 
 .Publication.depth2 {
-    fill: $publication-color;
+  fill: $publication-color;
 }
 
 .ClinicalTrial.depth1 {
-    stroke: $clinical-trial-color;
+  stroke: $clinical-trial-color;
 }
 
 .ClinicalTrial.depth2 {
-    fill: $clinical-trial-color;
+  fill: $clinical-trial-color;
 }
 
 .Dataset.depth1 {
-    stroke: $dataset-color;
+  stroke: $dataset-color;
 }
 
 .Dataset.depth2 {
-    fill: $dataset-color;
+  fill: $dataset-color;
 }
 
 .Protocol.depth1 {
-    stroke: $protocol-color;
+  stroke: $protocol-color;
 }
 
 .Protocol.depth2 {
-    fill: $protocol-color;
+  fill: $protocol-color;
 }
 
 .Book.depth1 {
-    stroke: $book-color;
+  stroke: $book-color;
 }
 
 .Book.depth2 {
-    fill: $book-color;
+  fill: $book-color;
 }
 
 .Website.depth1 {
-    stroke: $website-color;
+  stroke: $website-color;
 }
 
 .Website.depth2 {
-    fill: $website-color;
+  fill: $website-color;
 }
 
 .SoftwareSourceCode.depth1 {
-    stroke: $software-color;
+  stroke: $software-color;
 }
 
 .SoftwareSourceCode.depth2 {
-    fill: $software-color;
+  fill: $software-color;
 }
 
 .ComputationalTool.depth1 {
-    stroke: $software-color;
+  stroke: $software-color;
 }
 
 .ComputationalTool.depth2 {
-    fill: $software-color;
+  fill: $software-color;
 }
 
 .Analysis.depth1 {
-    stroke: $analysis-color;
+  stroke: $analysis-color;
 }
 
 .Analysis.depth2 {
-    fill: $analysis-color;
+  fill: $analysis-color;
 }
 
 .ImageObject.depth1 {
-    stroke: $image-color;
+  stroke: $image-color;
 }
 
 .ImageObject.depth2 {
-    fill: $image-color;
+  fill: $image-color;
 }
 
 .annotation--source,
 .annotation--type {
-    text-anchor: middle;
-    dominant-baseline: central;
-    font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-weight: 700;
 }
 
 .annotation--source {
-    fill: $base-grey !important;
-    pointer-events: none;
+  fill: $base-grey !important;
+  pointer-events: none;
 }
 
 .annotation--type {
-    text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .annotation--type.Publication {
-    font-size: 1.15em;
-    fill: darken($publication-color, 25%);
+  font-size: 1.15em;
+  fill: darken($publication-color, 25%);
 }
 
 .annotation--type.ClinicalTrial {
-    font-size: 1em;
-    fill: darken($clinical-trial-color, 25%);
+  font-size: 1em;
+  fill: darken($clinical-trial-color, 25%);
 }
 
 .annotation--type.Dataset {
-    fill: darken($dataset-color, 15%);
+  fill: darken($dataset-color, 15%);
 }
 
 .annotation--count {
-    text-anchor: middle;
-    dominant-baseline: central;
-    font-weight: 400;
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-weight: 400;
 }
 
 .circle-pack-tooltip {
-    background: white;
+  background: white;
 }
 </style>

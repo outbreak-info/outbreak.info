@@ -1,15 +1,33 @@
 <template>
-<div class="donut-group d-flex" :id="`donut-${id}`">
-  <svg :width="width" :height="width" class="donut">
-    <g :transform="`translate(${this.width/2},${this.width/2})`" ref="pie"></g>
-  </svg>
-  <div class="ml-2" style="max-width: 150px;">
-    <div v-for="(d, idx) in nonZero" :key="idx" class="line-height-sm text-left text-break">
-      <small :style="{color: colorScale(d.term)}" v-if="colorScale && idx < 5">{{d.term}}</small>
+  <div class="donut-group d-flex" :id="`donut-${id}`">
+    <svg :width="width" :height="width" class="donut">
+      <g
+        :transform="`translate(${this.width / 2},${this.width / 2})`"
+        ref="pie"
+      ></g>
+    </svg>
+    <div class="ml-2" style="max-width: 150px;">
+      <div
+        v-for="(d, idx) in nonZero"
+        :key="idx"
+        class="line-height-sm text-left text-break"
+      >
+        <small
+          :style="{ color: colorScale(d.term) }"
+          v-if="colorScale && idx < 5"
+        >
+          {{ d.term }}
+        </small>
+      </div>
+      <small
+        v-if="nonZero.length > 5"
+        style="color: #bababa"
+        class="line-height-sm text-left d-block"
+      >
+        other
+      </small>
     </div>
-    <small v-if="nonZero.length > 5" style="color: #bababa"  class="line-height-sm text-left d-block">other</small>
   </div>
-</div>
 </template>
 
 <script lang="js">

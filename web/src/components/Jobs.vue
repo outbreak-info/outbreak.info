@@ -1,26 +1,47 @@
 <template>
-<div class="d-flex flex-wrap justify-content-center row">
-  <div class="card w-30 py-2 px-4 text-left mr-4 mb-4 col-sm-11 col-md-5 col-lg-3" v-for="(job, jIdx) in jobs" :key="jIdx">
-    <div class="border-bottom pt-3 pb-1 mb-2">
-      <h5>{{job.title}}</h5>
-      <span class="vc_sep_holder vc_sep_holder_r">
-        <span class="vc_sep_line"></span>
-      </span>
-    </div>
-    <div class="wpb_text_column wpb_content_element ">
-      <div class="wpb_wrapper">
-        <p v-for="(paragraph, pIdx) in job.content" :key="pIdx" v-html="paragraph"></p>
-        <p v-if="job.content">For further details, please contact <a :href="`mailto:${job.contact}`">{{job.contact}}</a>.</p>
-        <p v-if="Array.isArray(job.url)">Read more and apply
-          <span v-for="(link, lIdx) in job.url" :key="lIdx">
-          <a :href="link" target="_blank" rel="noopener noreferrer">here</a>
-          <span v-if="lIdx < job.url.length - 1"> and </span>
-          </span>. Qualification: {{job.qualifications}}.</p>
-        <p v-else>Read more and apply <a :href="job.url" target="_blank" rel="noopener noreferrer">here</a>. Qualification: {{job.qualifications}}.</p>
+  <div class="d-flex flex-wrap justify-content-center row">
+    <div
+      class="card w-30 py-2 px-4 text-left mr-4 mb-4 col-sm-11 col-md-5 col-lg-3"
+      v-for="(job, jIdx) in jobs"
+      :key="jIdx"
+    >
+      <div class="border-bottom pt-3 pb-1 mb-2">
+        <h5>{{ job.title }}</h5>
+        <span class="vc_sep_holder vc_sep_holder_r">
+          <span class="vc_sep_line"></span>
+        </span>
+      </div>
+      <div class="wpb_text_column wpb_content_element ">
+        <div class="wpb_wrapper">
+          <p
+            v-for="(paragraph, pIdx) in job.content"
+            :key="pIdx"
+            v-html="paragraph"
+          ></p>
+          <p v-if="job.content">
+            For further details, please contact
+            <a :href="`mailto:${job.contact}`">{{ job.contact }}</a>
+            .
+          </p>
+          <p v-if="Array.isArray(job.url)">
+            Read more and apply
+            <span v-for="(link, lIdx) in job.url" :key="lIdx">
+              <a :href="link" target="_blank" rel="noopener noreferrer">here</a>
+              <span v-if="lIdx < job.url.length - 1">and</span>
+            </span>
+            . Qualification: {{ job.qualifications }}.
+          </p>
+          <p v-else>
+            Read more and apply
+            <a :href="job.url" target="_blank" rel="noopener noreferrer">
+              here
+            </a>
+            . Qualification: {{ job.qualifications }}.
+          </p>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script lang="js">

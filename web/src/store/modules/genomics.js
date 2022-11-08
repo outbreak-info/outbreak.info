@@ -1,7 +1,8 @@
 const state = {
   refSeq: {
-    url: "https://github.com/cov-lineages/pangolin/blob/master/pangolin/data/reference.fasta",
-    name: "Pangolin"
+    url:
+      'https://github.com/cov-lineages/pangolin/blob/master/pangolin/data/reference.fasta',
+    name: 'Pangolin',
   },
   characteristicThreshold: 0.75,
   // loading indicators
@@ -12,7 +13,7 @@ const state = {
   locationLoading5: false,
   locationLoading6: false,
   locationLoading7: false,
-}
+};
 
 // getters
 const getters = {};
@@ -28,5 +29,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

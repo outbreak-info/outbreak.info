@@ -1,94 +1,92 @@
-import {
-  from,
-  of ,
-  forkJoin
-} from "rxjs";
-import axios from "axios";
+import { from, of, forkJoin } from 'rxjs';
+import axios from 'axios';
 import {
   tap,
   finalize,
   catchError,
   mergeMap,
   pluck,
-  map
-} from "rxjs/operators";
-import {
-  timeParse,
-  timeFormat
-} from "d3";
+  map,
+} from 'rxjs/operators';
+import { timeParse, timeFormat } from 'd3';
 
-axios.interceptors.request.use(function(config) {
-  // Pass GISAID param to API via headers
-  // * BEFORE COMPLIATION, YOU NEED to run `export VUE_APP_API_ACCESS={key}`*
-  config.headers.Authorization = `Bearer ${process.env.VUE_APP_API_ACCESS}`;
-  return config;
-}, function(error) {
-  return Promise.reject(error);
-});
+axios.interceptors.request.use(
+  function(config) {
+    // Pass GISAID param to API via headers
+    // * BEFORE COMPLIATION, YOU NEED to run `export VUE_APP_API_ACCESS={key}`*
+    config.headers.Authorization = `Bearer ${process.env.VUE_APP_API_ACCESS}`;
+    return config;
+  },
+  function(error) {
+    return Promise.reject(error);
+  },
+);
 
-const formatDateTime = timeFormat("%e %B %Y %I:%M %p");
-
+const formatDateTime = timeFormat('%e %B %Y %I:%M %p');
 
 export function getSourcesUpdated(genomicsurl, resourcesurl, epiurl) {
   return forkJoin([
     getLastUpdated(genomicsurl),
     getLastUpdated(resourcesurl),
-    getLastUpdated(epiurl)
+    getLastUpdated(epiurl),
   ]).pipe(
     map(([genomics, resources, epi]) => {
-      return ({
+      return {
         epi: epi,
         genomics: genomics,
-        resources: resources
-      })
-    })
-  )
+        resources: resources,
+      };
+    }),
+  );
 }
 
 export function getIndivSourcesUpdated(genomicsurl, resourcesurl, epiurl) {
   return forkJoin([
-    getDateUpdated(genomicsurl, "Sequences"),
+    getDateUpdated(genomicsurl, 'Sequences'),
     getResourcesDateUpdated(resourcesurl),
-    getDateUpdated(epiurl)
+    getDateUpdated(epiurl),
   ]).pipe(
     map(([genomics, resources, epi]) => {
-      return ({
+      return {
         epi: {
-          epi: epi
+          epi: epi,
         },
         genomics: {
-          genomics: genomics
+          genomics: genomics,
         },
-        resources: resources
-      })
-    })
-  )
+        resources: resources,
+      };
+    }),
+  );
 }
 
-function getDateUpdated(apiurl, label = "Records") {
+function getDateUpdated(apiurl, label = 'Records') {
   const url = `${apiurl}metadata`;
   return from(
     axios.get(url, {
       headers: {
-        "Content-Type": "application/json"
-      }
-    })
-  ).pipe(
-    pluck("data"),
-    map(result => {
-      const dateUpdated = cleanDate(result.build_date, "%Y-%m-%dT%H:%M:%S.%f%Z");
-      const count = `${result.stats.total.toLocaleString()} ${label}`;
-      return ({
-        count: count,
-        dateUpdated: dateUpdated
-      })
+        'Content-Type': 'application/json',
+      },
     }),
-    catchError(e => {
-      console.log("%c Error in getting date updated!", "color: red");
+  ).pipe(
+    pluck('data'),
+    map((result) => {
+      const dateUpdated = cleanDate(
+        result.build_date,
+        '%Y-%m-%dT%H:%M:%S.%f%Z',
+      );
+      const count = `${result.stats.total.toLocaleString()} ${label}`;
+      return {
+        count: count,
+        dateUpdated: dateUpdated,
+      };
+    }),
+    catchError((e) => {
+      console.log('%c Error in getting date updated!', 'color: red');
       console.log(e);
-      return ( of ([]));
-    })
-  )
+      return of([]);
+    }),
+  );
 }
 
 function getLastUpdated(apiurl) {
@@ -96,21 +94,21 @@ function getLastUpdated(apiurl) {
   return from(
     axios.get(url, {
       headers: {
-        "Content-Type": "application/json"
-      }
-    })
-  ).pipe(
-    pluck("data", "build_date"),
-    map(result => {
-      const dateUpdated = cleanDateElapsed(result);
-      return (dateUpdated)
+        'Content-Type': 'application/json',
+      },
     }),
-    catchError(e => {
-      console.log("%c Error in getting date updated!", "color: red");
+  ).pipe(
+    pluck('data', 'build_date'),
+    map((result) => {
+      const dateUpdated = cleanDateElapsed(result);
+      return dateUpdated;
+    }),
+    catchError((e) => {
+      console.log('%c Error in getting date updated!', 'color: red');
       console.log(e);
-      return ( of ([]));
-    })
-  )
+      return of([]);
+    }),
+  );
 }
 
 function getResourcesDateUpdated(apiurl) {
@@ -118,78 +116,94 @@ function getResourcesDateUpdated(apiurl) {
   return from(
     axios.get(url, {
       headers: {
-        "Content-Type": "application/json"
-      }
-    })
+        'Content-Type': 'application/json',
+      },
+    }),
   ).pipe(
-    pluck("data", "src"),
-    map(result => {
+    pluck('data', 'src'),
+    map((result) => {
       const sources = Object.keys(result);
       let resultObj = {};
 
-      sources.forEach(d => {
+      sources.forEach((d) => {
         let count;
         let dateUpdated;
 
         switch (d) {
-          case "biorxiv":
-            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (bioRxiv/medRxiv combined)` : null;
+          case 'biorxiv':
+            count = result[d]['stats'][d]
+              ? `${result[d]['stats'][
+                  d
+                ].toLocaleString()} Records<sup>*</sup> (bioRxiv/medRxiv combined)`
+              : null;
             break;
-          case "zenodo":
+          case 'zenodo':
             count = `2,259 Records<sup>*</sup> (Datasets/ComputationalTools combined)`;
             // count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records<sup>*</sup> (Datasets/ComputationalTools combined)` : null;
             break;
-          case "clinical_trials":
-            count = result[d]["stats"]["clinicaltrials"] ? `${result[d]["stats"]["clinicaltrials"].toLocaleString()} Records` : null;
+          case 'clinical_trials':
+            count = result[d]['stats']['clinicaltrials']
+              ? `${result[d]['stats'][
+                  'clinicaltrials'
+                ].toLocaleString()} Records`
+              : null;
             break;
-          case "covid_who_clinical_trials":
-            count = result[d]["stats"]["clinicaltrialswho"] ? `${result[d]["stats"]["clinicaltrialswho"].toLocaleString()} Records` : null;
+          case 'covid_who_clinical_trials':
+            count = result[d]['stats']['clinicaltrialswho']
+              ? `${result[d]['stats'][
+                  'clinicaltrialswho'
+                ].toLocaleString()} Records`
+              : null;
             break;
           default:
-            count = result[d]["stats"][d] ? `${result[d]["stats"][d].toLocaleString()} Records` : null;
+            count = result[d]['stats'][d]
+              ? `${result[d]['stats'][d].toLocaleString()} Records`
+              : null;
         }
 
         switch (d) {
-          case "covid19_LST_reports":
-            dateUpdated = "21 Oct 2021"
+          case 'covid19_LST_reports':
+            dateUpdated = '21 Oct 2021';
             break;
           default:
-            dateUpdated = cleanDate(result[d]["version"]);
+            dateUpdated = cleanDate(result[d]['version']);
         }
 
         resultObj[d] = {
-          "count": count,
-          "dateUpdated": dateUpdated
+          count: count,
+          dateUpdated: dateUpdated,
         };
-        return (resultObj)
-      })
+        return resultObj;
+      });
 
-      return (resultObj)
+      return resultObj;
     }),
-    catchError(e => {
-      console.log("%c Error in getting resources date updated!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting resources date updated!', 'color: red');
       console.log(e);
-      return ( of ([]));
-    })
-  )
+      return of([]);
+    }),
+  );
 }
 
-function cleanDate(result, dateFormat = "%Y-%m-%d-%H:%M") {
+function cleanDate(result, dateFormat = '%Y-%m-%d-%H:%M') {
   let dateUpdated = timeParse(dateFormat)(result); // ensure the time is parsed as PDT
-  if(!dateUpdated) {
+  if (!dateUpdated) {
     // check because outbreak/NDE tag dates separately
-    dateUpdated = timeParse("%Y-%m-%dT%H:%M:%S%Z")(result);
+    dateUpdated = timeParse('%Y-%m-%dT%H:%M:%S%Z')(result);
   }
 
-  const dateUpdatedStr = dateUpdated ? timeFormat("%d %b %Y")(dateUpdated) : null;
+  const dateUpdatedStr = dateUpdated
+    ? timeFormat('%d %b %Y')(dateUpdated)
+    : null;
 
-  return (dateUpdatedStr)
+  return dateUpdatedStr;
 }
 
 function cleanDateElapsed(result) {
   const today = new Date();
   let lastUpdated;
-  const strictIsoParse = timeParse("%Y-%m-%dT%H:%M:%S.%f%Z");
+  const strictIsoParse = timeParse('%Y-%m-%dT%H:%M:%S.%f%Z');
   const dateUpdated = strictIsoParse(result); // ensure the time is parsed as PDT
   if (dateUpdated) {
     const updatedDiff = (today - dateUpdated) / (60 * 60 * 1000);
@@ -203,5 +217,5 @@ function cleanDateElapsed(result) {
     }
   }
 
-  return (lastUpdated)
+  return lastUpdated;
 }

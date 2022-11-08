@@ -1,7 +1,10 @@
 <template>
   <div class="data flex-column align-left">
     <div v-if="loading" class="loader">
-      <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
+      <font-awesome-icon
+        class="fa-pulse fa-4x text-highlight"
+        :icon="['fas', 'spinner']"
+      />
     </div>
     <section class="case-data-table p-1">
       <EpiTable
@@ -15,34 +18,28 @@
 </template>
 <script>
 // @ is an alias to /src
-import DataSource from "@/components/DataSource.vue";
-import EpiTable from "@/components/EpiTable.vue";
+import DataSource from '@/components/DataSource.vue';
+import EpiTable from '@/components/EpiTable.vue';
 
-import { getEpiTable } from "@/api/epi-traces.js";
+import { getEpiTable } from '@/api/epi-traces.js';
 
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 
-import store from "@/store";
+import store from '@/store';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faSpinner
-} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSpinner);
 
 export default {
-  name: "Home",
+  name: 'Home',
   components: {
     DataSource,
     EpiTable,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   data() {
     return {
@@ -52,47 +49,47 @@ export default {
       dataSubscription: null,
       tableSubscription: null,
       nestedData: null,
-      selectedVariable: "confirmed",
+      selectedVariable: 'confirmed',
       variableOptions: [
         {
-          label: "Cases",
-          value: "confirmed"
+          label: 'Cases',
+          value: 'confirmed',
         },
         {
-          label: "Recoveries",
-          value: "recovered"
+          label: 'Recoveries',
+          value: 'recovered',
         },
         {
-          label: "Deaths",
-          value: "dead"
-        }
+          label: 'Deaths',
+          value: 'dead',
+        },
       ],
-      searchQuery: ""
+      searchQuery: '',
     };
   },
   watch: {},
   computed: {
-    ...mapState("admin", ["loading"])
+    ...mapState('admin', ['loading']),
   },
   methods: {
     regionColorScale: function(location) {
-      const scale = store.getters["colors/getRegionColorFromLocation"];
+      const scale = store.getters['colors/getRegionColorFromLocation'];
       return scale(location);
-    }
+    },
   },
   mounted() {
     this.tableSubscription = getEpiTable(
       this.$apiurl,
       null,
       [0, 1, 2],
-      "-confirmed",
+      '-confirmed',
       10,
-      0
-    ).subscribe(_ => null);
+      0,
+    ).subscribe((_) => null);
   },
   destroyed() {
     this.tableSubscription.unsubscribe();
-  }
+  },
 };
 </script>
 

@@ -1,12 +1,12 @@
-import { from } from "rxjs";
-import { finalize, catchError, map } from "rxjs/operators";
-import { timeParse } from "d3";
+import { from } from 'rxjs';
+import { finalize, catchError, map } from 'rxjs/operators';
+import { timeParse } from 'd3';
 
-import store from "@/store";
-import { getAll } from "@/api/biothings.js";
+import store from '@/store';
+import { getAll } from '@/api/biothings.js';
 
 export function getMapData(apiUrl) {
-  const parseDate = timeParse("%Y-%m-%d");
+  const parseDate = timeParse('%Y-%m-%d');
 
   store.state.admin.loading = true;
   // Choosing one specific date, since all dates contain the current info.
@@ -21,20 +21,20 @@ export function getMapData(apiUrl) {
   dead_pctIncrease,
   recovered,
   recovered_numIncrease,
-  recovered_pctIncrease`
+  recovered_pctIncrease`,
   ).pipe(
-    map(results => {
-      results.forEach(d => {
-        d["coord"] = [d.lat, d.long];
-        d["date"] = parseDate(d["date"]);
+    map((results) => {
+      results.forEach((d) => {
+        d['coord'] = [d.lat, d.long];
+        d['date'] = parseDate(d['date']);
       });
       return results;
     }),
-    catchError(e => {
-      console.log("%c Error in getting map data!", "color: red");
+    catchError((e) => {
+      console.log('%c Error in getting map data!', 'color: red');
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false))
+    finalize(() => (store.state.admin.loading = false)),
   );
 }

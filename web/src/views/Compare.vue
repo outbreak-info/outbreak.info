@@ -1,97 +1,165 @@
 <template>
-<div class="full-page p-5 bg-light">
-  <!-- dataloading -->
-  <div v-if="dataloading" class="map-loader">
-    <font-awesome-icon class="fa-pulse fa-4x text-highlight" :icon="['fas', 'spinner']"/>
-  </div>
-
-  <h2>Places similar in
-    <select v-model="selectedSimilarity" class="select-dropdown mr-2" @change="changeSimilarity">
-      <option v-for="option in similarOptions" :value="option.value" :key="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-    <template v-if="locationData">to
-      <router-link :to="{name: 'Epidemiology', query: {location: locationData.key}} ">
-        {{locationData.name}}
-      </router-link>
-    </template>
-  </h2>
-
-  <SearchBar class="w-100 mb-3" @location="changeLocation" :selected="selectedLocation" placeholder="Select location"></SearchBar>
-
-  <div id="admin-selector" class="d-flex align-items-center">
-    <small class="mr-1">include</small>
-    <label class="b-contain m-0 mr-2" v-for="option in adminOptions" :key="option">
-      <small>{{option}}</small>
-      <input type="checkbox" :value="option" v-model.lazy="selectedAdminLevels" @change="changeAdmin" />
-      <div class="b-input"></div>
-    </label>
-
-  </div>
-
-  <div class="mt-5" v-if="similar  && similar.length">
-    <div class="legend d-flex justify-content-end my-3">
-      <div class="mr-3 d-flex align-items-center">
-        <div :style="{background: '#d6d6d6'}" class="legend-rect mr-1">
-        </div>
-        <small>{{locationData.name}}</small>
-      </div>
-
-      <div v-for="(place, idx) in similar" :key="idx" class="mr-3 d-flex align-items-center">
-        <div :style="{background: colorScale(place.key)}" class="legend-rect mr-1">
-        </div>
-        <small>{{place.name}}</small>
-      </div>
+  <div class="full-page p-5 bg-light">
+    <!-- dataloading -->
+    <div v-if="dataloading" class="map-loader">
+      <font-awesome-icon
+        class="fa-pulse fa-4x text-highlight"
+        :icon="['fas', 'spinner']"
+      />
     </div>
-    <table>
-      <tr v-for="(place, idx) in similar" :key="idx" class="d-flex align-items-center text-left mb-5">
-        <td>
-          <MiniLocation :lat="place.lat" :lon="place.lon" :id="place.key" :colorScale="colorScale" :partOfUSA = "place.partOfUSA" />
-        </td>
 
-        <td class="location-name">
-          <div class="d-flex flex-column ml-3 mr-5">
-            <router-link :to="{name: 'Epidemiology', query: {location: place.key}} ">
-              <h4 class="m-0 border-bottom">{{place.nameFormatted}}</h4>
-            </router-link>
-            <div class="d-flex justify-content-between">
-              <div>
-              {{similarity}}: <b>{{formatValue(place.similarValue)}}</b>
+    <h2>
+      Places similar in
+      <select
+        v-model="selectedSimilarity"
+        class="select-dropdown mr-2"
+        @change="changeSimilarity"
+      >
+        <option
+          v-for="option in similarOptions"
+          :value="option.value"
+          :key="option.value"
+        >
+          {{ option.label }}
+        </option>
+      </select>
+      <template v-if="locationData">
+        to
+        <router-link
+          :to="{ name: 'Epidemiology', query: { location: locationData.key } }"
+        >
+          {{ locationData.name }}
+        </router-link>
+      </template>
+    </h2>
+
+    <SearchBar
+      class="w-100 mb-3"
+      @location="changeLocation"
+      :selected="selectedLocation"
+      placeholder="Select location"
+    ></SearchBar>
+
+    <div id="admin-selector" class="d-flex align-items-center">
+      <small class="mr-1">include</small>
+      <label
+        class="b-contain m-0 mr-2"
+        v-for="option in adminOptions"
+        :key="option"
+      >
+        <small>{{ option }}</small>
+        <input
+          type="checkbox"
+          :value="option"
+          v-model.lazy="selectedAdminLevels"
+          @change="changeAdmin"
+        />
+        <div class="b-input"></div>
+      </label>
+    </div>
+
+    <div class="mt-5" v-if="similar && similar.length">
+      <div class="legend d-flex justify-content-end my-3">
+        <div class="mr-3 d-flex align-items-center">
+          <div
+            :style="{ background: '#d6d6d6' }"
+            class="legend-rect mr-1"
+          ></div>
+          <small>{{ locationData.name }}</small>
+        </div>
+
+        <div
+          v-for="(place, idx) in similar"
+          :key="idx"
+          class="mr-3 d-flex align-items-center"
+        >
+          <div
+            :style="{ background: colorScale(place.key) }"
+            class="legend-rect mr-1"
+          ></div>
+          <small>{{ place.name }}</small>
+        </div>
+      </div>
+      <table>
+        <tr
+          v-for="(place, idx) in similar"
+          :key="idx"
+          class="d-flex align-items-center text-left mb-5"
+        >
+          <td>
+            <MiniLocation
+              :lat="place.lat"
+              :lon="place.lon"
+              :id="place.key"
+              :colorScale="colorScale"
+              :partOfUSA="place.partOfUSA"
+            />
+          </td>
+
+          <td class="location-name">
+            <div class="d-flex flex-column ml-3 mr-5">
+              <router-link
+                :to="{ name: 'Epidemiology', query: { location: place.key } }"
+              >
+                <h4 class="m-0 border-bottom">{{ place.nameFormatted }}</h4>
+              </router-link>
+              <div class="d-flex justify-content-between">
+                <div>
+                  {{ similarity }}:
+                  <b>{{ formatValue(place.similarValue) }}</b>
+                </div>
+                <div v-if="similarity != 'population'">
+                  population:
+                  <b>{{ formatValue(place.values[0].population) }}</b>
+                </div>
               </div>
-              <div v-if="similarity != 'population'">
-                population: <b>{{formatValue(place.values[0].population)}}</b>
+
+              <div class="d-flex justify-content-between text-muted">
+                <small>
+                  {{ locationData.name }}:
+                  <b>{{ formatValue(locationData.similarValue) }}</b>
+                </small>
+                <small v-if="similarity != 'population'">
+                  population:
+                  <b>{{ formatValue(locationData.values[0].population) }}</b>
+                </small>
               </div>
             </div>
+          </td>
 
-            <div class="d-flex justify-content-between text-muted">
-              <small>
-                {{locationData.name}}: <b>{{formatValue(locationData.similarValue)}}</b>
-              </small>
-              <small v-if="similarity != 'population'">
-                population: <b>{{formatValue(locationData.values[0].population)}}</b>
-              </small>
-            </div>
+          <td>
+            <LineComparison
+              :data="place.values"
+              :control="locationData.values"
+              variable="confirmed_rolling_per_100k"
+              :xDomain="xDomain"
+              :yMax="yMaxC"
+              :colorScale="colorScale"
+              label="cases"
+              v-if="place.values"
+            />
+          </td>
+          <td>
+            <LineComparison
+              class="ml-3"
+              :data="place.values"
+              :control="locationData.values"
+              variable="dead_rolling_per_100k"
+              :xDomain="xDomain"
+              :yMax="yMaxD"
+              :colorScale="colorScale"
+              label="deaths"
+              v-if="place.values"
+            />
+          </td>
+        </tr>
+      </table>
+    </div>
 
-          </div>
-        </td>
-
-        <td>
-          <LineComparison :data="place.values" :control="locationData.values" variable="confirmed_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxC" :colorScale="colorScale" label="cases" v-if="place.values" />
-        </td>
-        <td>
-          <LineComparison class="ml-3" :data="place.values" :control="locationData.values" variable="dead_rolling_per_100k" :xDomain="xDomain" :yMax="yMaxD" :colorScale="colorScale" label="deaths" v-if="place.values" />
-
-        </td>
-      </tr>
-    </table>
+    <div class="mt-5" v-else>
+      No similar locations found
+    </div>
   </div>
-
-  <div class="mt-5" v-else>
-    No similar locations found
-  </div>
-
-</div>
 </template>
 
 <script lang="js">
@@ -263,26 +331,26 @@ export default Vue.extend({
 $check-scale: 0.85;
 $legend-size: 15px;
 .location-name {
-    width: 350px;
+  width: 350px;
 }
 
 .b-contain,
 .b-input {
-    /* Double-sized Checkboxes */
-    -ms-transform: scale($check-scale);
-    /* IE */
-    -moz-transform: scale($check-scale);
-    /* FF */
-    -webkit-transform: scale($check-scale);
-    /* Safari and Chrome */
-    -o-transform: scale($check-scale);
-    /* Opera */
-    margin: auto;
+  /* Double-sized Checkboxes */
+  -ms-transform: scale($check-scale);
+  /* IE */
+  -moz-transform: scale($check-scale);
+  /* FF */
+  -webkit-transform: scale($check-scale);
+  /* Safari and Chrome */
+  -o-transform: scale($check-scale);
+  /* Opera */
+  margin: auto;
 }
 
 .legend-rect {
-    width: $legend-size;
-    height: $legend-size;
-    border: 1px solid $base-grey;
+  width: $legend-size;
+  height: $legend-size;
+  border: 1px solid $base-grey;
 }
 </style>

@@ -1,51 +1,67 @@
 <template>
-<div>
-  <div class="d-flex flex-wrap justify-content-center mt-2">
-    <label class="b-contain m-0 mr-3 mb-2 variant-checkbox" v-for="option in options" :key="option.label" :data-tippy-info="option.tooltip">
-      <small>{{option.label}}</small>
-      <input type="checkbox" :value="option" v-model.lazy="selectedMutations" @change="debounceSelectMutation" />
-      <div class="b-input"></div>
-    </label>
-    <font-awesome-icon class="fa-lg text-sec pointer" :icon="['far', 'plus-square']" data-toggle="modal" data-target="#change-mutations-modal" />
+  <div>
+    <div class="d-flex flex-wrap justify-content-center mt-2">
+      <label
+        class="b-contain m-0 mr-3 mb-2 variant-checkbox"
+        v-for="option in options"
+        :key="option.label"
+        :data-tippy-info="option.tooltip"
+      >
+        <small>{{ option.label }}</small>
+        <input
+          type="checkbox"
+          :value="option"
+          v-model.lazy="selectedMutations"
+          @change="debounceSelectMutation"
+        />
+        <div class="b-input"></div>
+      </label>
+      <font-awesome-icon
+        class="fa-lg text-sec pointer"
+        :icon="['far', 'plus-square']"
+        data-toggle="modal"
+        data-target="#change-mutations-modal"
+      />
+    </div>
+    <ReportPrevalenceOverlay
+      :routeName="routeTo"
+      :data="prevalences"
+      :seqCounts="seqCounts"
+      :epi="epi"
+      :xmin="xmin"
+      :xmax="xmax"
+      v-if="prevalences && epi"
+      :locationID="locationID"
+      :locationName="locationName"
+    />
   </div>
-  <ReportPrevalenceOverlay :routeName="routeTo" :data="prevalences" :seqCounts="seqCounts" :epi="epi" :xmin="xmin" :xmax="xmax" v-if="prevalences && epi" :locationID="locationID" :locationName="locationName" />
-
-</div>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 import {
   getEpiMutationPrevalence,
-  getAllTemporalPrevalences
-} from "@/api/genomics.js";
-import {
-  getEpiTraces
-} from "@/api/epi-traces.js";
-import ReportPrevalenceOverlay from "@/components/ReportPrevalenceOverlay.vue";
+  getAllTemporalPrevalences,
+} from '@/api/genomics.js';
+import { getEpiTraces } from '@/api/epi-traces.js';
+import ReportPrevalenceOverlay from '@/components/ReportPrevalenceOverlay.vue';
 
-import uniq from "lodash/uniq";
-import debounce from "lodash/debounce";
+import uniq from 'lodash/uniq';
+import debounce from 'lodash/debounce';
 
-import tippy from "tippy.js";
-import "tippy.js/themes/light.css";
+import tippy from 'tippy.js';
+import 'tippy.js/themes/light.css';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faPlusSquare
-} from "@fortawesome/free-regular-svg-icons/faPlusSquare";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlusSquare } from '@fortawesome/free-regular-svg-icons/faPlusSquare';
 
 library.add(faPlusSquare);
 
 export default {
-  name: "OverlayLineagePrevalence",
+  name: 'OverlayLineagePrevalence',
   props: {
     options: Array,
     routeTo: String,
@@ -54,11 +70,11 @@ export default {
     locationName: String,
     xmin: String,
     xmax: String,
-    selected: [Array, String]
+    selected: [Array, String],
   },
   components: {
     ReportPrevalenceOverlay,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   watch: {
     locationID() {
@@ -68,17 +84,17 @@ export default {
     selected() {
       this.setMutations();
       this.updateMutations();
-    }
+    },
   },
   data() {
-    return ({
+    return {
       // filters
       numPreselected: 3,
       selectedMutations: [],
       // data
       prevalences: null,
-      epi: null
-    })
+      epi: null,
+    };
   },
   created: function() {
     this.debounceSelectMutation = debounce(this.selectMutation, 250);
@@ -87,29 +103,29 @@ export default {
     this.setMutations();
     this.updateData();
 
-    tippy(".variant-checkbox", {
-      content: "Loading...",
-      maxWidth: "200px",
-      placement: "bottom",
-      animation: "fade",
-      theme: "light",
+    tippy('.variant-checkbox', {
+      content: 'Loading...',
+      maxWidth: '200px',
+      placement: 'bottom',
+      animation: 'fade',
+      theme: 'light',
       onShow(instance) {
         let info = instance.reference.dataset.tippyInfo;
         instance.setContent(info);
-      }
+      },
     });
   },
   methods: {
     selectMutation() {
       const queryParams = this.$route.query;
-      if (this.routeTo == "GenomicsEmbedLocation")
+      if (this.routeTo == 'GenomicsEmbedLocation')
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           params: {
-            disableScroll: true
+            disableScroll: true,
           },
           query: {
-            type: "loc",
+            type: 'loc',
             loc: this.locationID,
             xmin: queryParams.xmin,
             xmax: queryParams.xmax,
@@ -117,14 +133,14 @@ export default {
             alias: queryParams.alias,
             pango: queryParams.pango,
             variant: queryParams.variant,
-            selected: this.selectedMutations.map(d => d.label)
-          }
-        })
+            selected: this.selectedMutations.map((d) => d.label),
+          },
+        });
       else {
         this.$router.push({
           name: this.routeTo,
           params: {
-            disableScroll: true
+            disableScroll: true,
           },
           query: {
             loc: this.locationID,
@@ -134,30 +150,42 @@ export default {
             alias: queryParams.alias,
             pango: queryParams.pango,
             variant: queryParams.variant,
-            selected: this.selectedMutations.map(d => d.label)
-          }
-        })
+            selected: this.selectedMutations.map((d) => d.label),
+          },
+        });
       }
       // this.updateMutations();
     },
     setMutations() {
       if (this.selected && this.selected.length) {
-        this.selectedMutations = typeof(this.selected) == "string" ? this.options.filter(d => this.selected == d.label) : this.options.filter(d => uniq(this.selected).includes(d.label));
+        this.selectedMutations =
+          typeof this.selected == 'string'
+            ? this.options.filter((d) => this.selected == d.label)
+            : this.options.filter((d) => uniq(this.selected).includes(d.label));
       } else {
         this.selectedMutations = this.options.slice(0, this.numPreselected);
       }
     },
     updateMutations() {
-      this.prevalenceSubscription = getAllTemporalPrevalences(this.$genomicsurl, this.locationID, this.selectedMutations).subscribe(results => {
+      this.prevalenceSubscription = getAllTemporalPrevalences(
+        this.$genomicsurl,
+        this.locationID,
+        this.selectedMutations,
+      ).subscribe((results) => {
         this.prevalences = results;
-      })
+      });
     },
     updateData() {
-      this.prevalenceSubscription = getEpiMutationPrevalence(this.$genomicsurl, this.$apiurl, this.locationID, this.selectedMutations).subscribe(results => {
+      this.prevalenceSubscription = getEpiMutationPrevalence(
+        this.$genomicsurl,
+        this.$apiurl,
+        this.locationID,
+        this.selectedMutations,
+      ).subscribe((results) => {
         this.epi = results.epi;
         this.prevalences = results.mutations;
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>

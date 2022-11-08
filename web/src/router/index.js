@@ -1,77 +1,76 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
-import store from "@/store";
+import store from '@/store';
 
 Vue.use(VueRouter);
 
-const routes = [{
-    path: "/",
-    name: "Home",
-    component: () =>
-      import( /* webpackChunkName: "home" */ "../views/Home.vue")
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
   },
   {
-    path: "/privacy",
-    name: "Privacy",
+    path: '/privacy',
+    name: 'Privacy',
     component: () =>
-      import( /* webpackChunkName: "privacy" */ "../views/Privacy.vue")
+      import(/* webpackChunkName: "privacy" */ '../views/Privacy.vue'),
   },
   {
-    path: "/faq",
-    name: "FAQ",
-    component: () =>
-      import( /* webpackChunkName: "faq" */ "../views/Faq.vue")
+    path: '/faq',
+    name: 'FAQ',
+    component: () => import(/* webpackChunkName: "faq" */ '../views/Faq.vue'),
   },
   {
-    path: "/terms",
-    name: "Terms",
+    path: '/terms',
+    name: 'Terms',
     component: () =>
-      import( /* webpackChunkName: "terms" */ "../views/Terms.vue")
+      import(/* webpackChunkName: "terms" */ '../views/Terms.vue'),
   },
   {
-    path: "/license",
-    name: "License",
+    path: '/license',
+    name: 'License',
     component: () =>
-      import( /* webpackChunkName: "license" */ "../views/License.vue")
+      import(/* webpackChunkName: "license" */ '../views/License.vue'),
   },
   {
-    path: "/videos",
-    name: "Videos",
+    path: '/videos',
+    name: 'Videos',
     component: () =>
-      import( /* webpackChunkName: "videos" */ "../views/Videos.vue")
+      import(/* webpackChunkName: "videos" */ '../views/Videos.vue'),
   },
   {
-    path: "/citation",
-    name: "Citation",
+    path: '/citation',
+    name: 'Citation',
     component: () =>
-      import( /* webpackChunkName: "citation" */ "../views/Citation.vue")
+      import(/* webpackChunkName: "citation" */ '../views/Citation.vue'),
   },
   {
-    path: "/about",
-    name: "About",
+    path: '/about',
+    name: 'About',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "about" */ "../views/About.vue")
+      import(/* webpackChunkName: "about" */ '../views/About.vue'),
   },
   {
-    path: "/regions",
-    name: "Regions",
+    path: '/regions',
+    name: 'Regions',
     component: () =>
-      import( /* webpackChunkName: "regions" */ "../views/Regions.vue")
+      import(/* webpackChunkName: "regions" */ '../views/Regions.vue'),
   },
   {
-    path: "/schema",
-    name: "Schema",
+    path: '/schema',
+    name: 'Schema',
     component: () =>
-      import( /* webpackChunkName: "schema" */ "../views/Schema.vue")
+      import(/* webpackChunkName: "schema" */ '../views/Schema.vue'),
   },
   {
-    path: "/maps",
-    name: "Maps",
-    props: route => ({
+    path: '/maps',
+    name: 'Maps',
+    props: (route) => ({
       admin_level: route.query.admin_level,
       location: route.query.location,
       variable: route.query.variable,
@@ -79,141 +78,147 @@ const routes = [{
       date: route.query.date,
       min: route.query.min,
       max: route.query.max,
-      animate: route.animate
+      animate: route.animate,
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import( /* webpackChunkName: "maps" */ "../views/Maps.vue")
+    component: () => import(/* webpackChunkName: "maps" */ '../views/Maps.vue'),
   },
   {
-    path: "/compare",
-    name: "Compare",
-    props: route => ({
+    path: '/compare',
+    name: 'Compare',
+    props: (route) => ({
       admin_levels: route.query.admin_levels,
       location: route.query.location,
       variable: route.query.variable,
-      similarity: route.query.similarity
+      similarity: route.query.similarity,
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "compare" */ "../views/Compare.vue")
+      import(/* webpackChunkName: "compare" */ '../views/Compare.vue'),
   },
   {
-    path: "/latest",
-    name: "Latest",
+    path: '/latest',
+    name: 'Latest',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "latest" */ "../views/Latest.vue")
+      import(/* webpackChunkName: "latest" */ '../views/Latest.vue'),
   },
   {
-    path: "/data",
-    name: "Data",
+    path: '/data',
+    name: 'Data',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "data" */ "../views/Data.vue")
+    component: () => import(/* webpackChunkName: "data" */ '../views/Data.vue'),
   },
   {
-    path: "/press",
-    name: "Press",
-    component: () => import( /* webpackChunkName: "press" */ "../views/Press.vue")
-  },
-  {
-    path: "/sources",
-    name: "Sources",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: '/press',
+    name: 'Press',
     component: () =>
-      import( /* webpackChunkName: "sources" */ "../views/Sources.vue")
+      import(/* webpackChunkName: "press" */ '../views/Press.vue'),
   },
   {
-    path: "/contributing-data",
-    name: "Contributing",
+    path: '/sources',
+    name: 'Sources',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "contributing" */ "../views/Contributing.vue")
+      import(/* webpackChunkName: "sources" */ '../views/Sources.vue'),
   },
   {
-    path: "/topics",
-    name: "Topics",
+    path: '/contributing-data',
+    name: 'Contributing',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "topics" */ "../views/Topics.vue")
+      import(
+        /* webpackChunkName: "contributing" */ '../views/Contributing.vue'
+      ),
   },
   {
-    path: "/niaid",
-    name: "NIAID",
+    path: '/topics',
+    name: 'Topics',
     component: () =>
-      import( /* webpackChunkName: "topics-niaid" */ "../views/NIAID.vue")
+      import(/* webpackChunkName: "topics" */ '../views/Topics.vue'),
   },
   {
-    path: "/topics/definitions",
-    name: "Topic Definitions",
+    path: '/niaid',
+    name: 'NIAID',
     component: () =>
-      import( /* webpackChunkName: "topic-definitions" */ "../views/TopicDefinitions.vue")
+      import(/* webpackChunkName: "topics-niaid" */ '../views/NIAID.vue'),
   },
   {
-    path: "/resources",
-    name: "Resource Summary",
+    path: '/topics/definitions',
+    name: 'Topic Definitions',
     component: () =>
-      import( /* webpackChunkName: "resource-summary" */ "../views/ResourceSummary.vue")
+      import(
+        /* webpackChunkName: "topic-definitions" */ '../views/TopicDefinitions.vue'
+      ),
   },
   {
-    path: "/resources/search",
-    name: "Resources",
-    props: route => ({
+    path: '/resources',
+    name: 'Resource Summary',
+    component: () =>
+      import(
+        /* webpackChunkName: "resource-summary" */ '../views/ResourceSummary.vue'
+      ),
+  },
+  {
+    path: '/resources/search',
+    name: 'Resources',
+    props: (route) => ({
       q: route.query.q,
       page: route.query.page,
       size: route.query.size,
       filter: route.query.filter,
       sort: route.query.sort,
       dateMin: route.query.dateMin,
-      dateMax: route.query.dateMax
+      dateMax: route.query.dateMax,
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import( /* webpackChunkName: "resources" */ "../views/Resources.vue")
+      import(/* webpackChunkName: "resources" */ '../views/Resources.vue'),
   },
   {
-    path: "/resources/:id",
-    name: "Resource Page",
+    path: '/resources/:id',
+    name: 'Resource Page',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(
         /* webpackChunkName: "resources-types" */
-        "../views/ResourcePage.vue"
-      )
+        '../views/ResourcePage.vue'
+      ),
   },
 
   {
-    path: "/summary",
-    name: "Summary",
-    props: route => ({
-      location: route.query.location
+    path: '/summary',
+    name: 'Summary',
+    props: (route) => ({
+      location: route.query.location,
     }),
     meta: {
-      hideNavigation: true
+      hideNavigation: true,
     },
     component: () =>
-      import( /* webpackChunkName: "summary" */ "../views/Summary.vue")
+      import(/* webpackChunkName: "summary" */ '../views/Summary.vue'),
   },
   // embeddable iframe, stripped down combined location/variant reports
   {
-    path: "/genomics/embed",
-    name: "GenomicsEmbed",
-    props: route => ({
+    path: '/genomics/embed',
+    name: 'GenomicsEmbed',
+    props: (route) => ({
       type: route.query.type,
       loc: route.query.loc,
       pango: route.query.pango,
@@ -226,55 +231,57 @@ const routes = [{
     }),
     meta: {
       hideNavigation: true,
-      includeGISAIDLogo: true
+      includeGISAIDLogo: true,
     },
     component: () =>
-      import( /* webpackChunkName: "genomics-embed" */ "../views/GenomicsEmbed.vue")
+      import(
+        /* webpackChunkName: "genomics-embed" */ '../views/GenomicsEmbed.vue'
+      ),
   },
   {
-    path: "/epidemiology",
-    name: "Epidemiology",
-    props: route => ({
+    path: '/epidemiology',
+    name: 'Epidemiology',
+    props: (route) => ({
       location: route.query.location,
       variable: route.query.variable,
       log: route.query.log,
       xmin: route.query.xmin,
       xmax: route.query.xmax,
       fixedY: route.query.fixedY,
-      percapita: route.query.percapita
+      percapita: route.query.percapita,
     }),
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "epi" */ "../views/Epi.vue")
+    component: () => import(/* webpackChunkName: "epi" */ '../views/Epi.vue'),
   },
   {
-    path: "/doubling-rates",
-    name: "Doubling Rates",
-    props: route => ({
+    path: '/doubling-rates',
+    name: 'Doubling Rates',
+    props: (route) => ({
       location: route.query.location,
-      variable: route.query.variable
+      variable: route.query.variable,
     }),
     component: () =>
       import(
         /* webpackChunkName: "doubling-rates" */
-        "../views/DoublingRates.vue"
-      )
+        '../views/DoublingRates.vue'
+      ),
   },
   {
-    path: "/situation-reports",
-    name: "SituationReports",
-    props: route => ({
+    path: '/situation-reports',
+    name: 'SituationReports',
+    props: (route) => ({
       voc: route.query.voc,
       voi: route.query.voi,
       moc: route.query.moc,
       moi: route.query.moi,
-      name: route.query.name
+      name: route.query.name,
     }),
     component: () =>
       import(
         /* webpackChunkName: "situation-reports" */
-        "../views/SituationReports.vue"
+        '../views/SituationReports.vue'
       ),
     // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
@@ -283,17 +290,16 @@ const routes = [{
         next({
           name: 'MutationReport',
           params: to.params,
-          query: to.query
-        })
-      } else if (to.query && ((to.query.pango) || (to.query.muts))) {
+          query: to.query,
+        });
+      } else if (to.query && (to.query.pango || to.query.muts)) {
         // redirect to route below
         next({
           name: 'MutationReport',
-          query: to.query
-        })
-      } else
-        next()
-    }
+          query: to.query,
+        });
+      } else next();
+    },
   },
   // {
   //   path: "/situation-reports",
@@ -311,158 +317,158 @@ const routes = [{
   //     )
   // },
   {
-    path: "/situation-reports/methods",
-    name: "SituationReportMethodology",
+    path: '/situation-reports/methods',
+    name: 'SituationReportMethodology',
     component: () =>
       import(
         /* webpackChunkName: "situation-reports-methods" */
-        "../views/SituationReportMethodology.vue"
-      )
+        '../views/SituationReportMethodology.vue'
+      ),
   },
   {
-    path: "/situation-reports/status",
-    name: "SituationReportStatus",
-    props: route => ({
+    path: '/situation-reports/status',
+    name: 'SituationReportStatus',
+    props: (route) => ({
       loc: route.query.loc,
-      var: route.query.var
+      var: route.query.var,
     }),
     component: () =>
       import(
         /* webpackChunkName: "situation-reports-status" */
-        "../views/SituationReportStatus.vue"
-      )
+        '../views/SituationReportStatus.vue'
+      ),
   },
   {
-    path: "/compare-lineages",
-    name: "SituationReportComparison",
-    props: route => ({
+    path: '/compare-lineages',
+    name: 'SituationReportComparison',
+    props: (route) => ({
       location: route.query.location,
       pango: route.query.pango,
       gene: route.query.gene,
       dark: route.query.dark,
       sub: route.query.sub,
       threshold: route.query.threshold,
-      nthresh: route.query.nthresh
+      nthresh: route.query.nthresh,
     }),
     component: () =>
       import(
         /* webpackChunkName: "situation-reports-comparison" */
-        "../views/SituationReportComparison.vue"
-      )
+        '../views/SituationReportComparison.vue'
+      ),
   },
   {
-    path: "/situation-reports/caveats",
-    name: "SituationReportCaveats",
+    path: '/situation-reports/caveats',
+    name: 'SituationReportCaveats',
     component: () =>
       import(
         /* webpackChunkName: "situation-reports-caveats" */
-        "../views/SituationReportsCaveats.vue"
-      )
+        '../views/SituationReportsCaveats.vue'
+      ),
   },
   // redirect old reports
   {
-    path: "/situation-reports/B-1-1-7",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/B-1-1-7',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        pango: "B.1.1.7"
-      }
-    })
+        pango: 'B.1.1.7',
+      },
+    }),
   },
   {
-    path: "/situation-reports/B.1.1.7",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/B.1.1.7',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        pango: "B.1.1.7"
-      }
-    })
+        pango: 'B.1.1.7',
+      },
+    }),
   },
   {
-    path: "/situation-reports/B-1-429",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/B-1-429',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        pango: "B.1.429"
-      }
-    })
+        pango: 'B.1.429',
+      },
+    }),
   },
   {
-    path: "/situation-reports/S-W152C",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/S-W152C',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        muts: "S:W152C"
-      }
-    })
+        muts: 'S:W152C',
+      },
+    }),
   },
   {
-    path: "/situation-reports/S-N501Y",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/S-N501Y',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        muts: "S:N501Y"
-      }
-    })
+        muts: 'S:N501Y',
+      },
+    }),
   },
   {
-    path: "/situation-reports/S-S13I",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/S-S13I',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        muts: "S:S13I"
-      }
-    })
+        muts: 'S:S13I',
+      },
+    }),
   },
   {
-    path: "/situation-reports/ORF1b-D1183Y",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/ORF1b-D1183Y',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        muts: "ORF1b:D1183Y"
-      }
-    })
+        muts: 'ORF1b:D1183Y',
+      },
+    }),
   },
   {
-    path: "/situation-reports/S-L452R",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/S-L452R',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        muts: "S:L452R"
-      }
-    })
+        muts: 'S:L452R',
+      },
+    }),
   },
   {
-    path: "/situation-reports/S-P681H",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/S-P681H',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        muts: "S:P681H"
-      }
-    })
+        muts: 'S:P681H',
+      },
+    }),
   },
   {
-    path: "/situation-reports/S-E484K",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/S-E484K',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        muts: "S:E484K"
-      }
-    })
+        muts: 'S:E484K',
+      },
+    }),
   },
   {
-    path: "/situation-reports/CA%20VUI1",
-    redirect: to => ({
-      name: "MutationReport",
+    path: '/situation-reports/CA%20VUI1',
+    redirect: (to) => ({
+      name: 'MutationReport',
       query: {
-        pango: "B.1.429"
-      }
-    })
+        pango: 'B.1.429',
+      },
+    }),
   },
   {
-    path: "/situation-reports/:alias?",
-    name: "MutationReport",
-    props: route => ({
+    path: '/situation-reports/:alias?',
+    name: 'MutationReport',
+    props: (route) => ({
       alias: route.params.alias,
       overlay: route.query.overlay,
       xmin: route.query.xmin,
@@ -470,57 +476,60 @@ const routes = [{
       loc: route.query.loc,
       muts: route.query.muts,
       pango: route.query.pango,
-      selected: route.query.selected
+      selected: route.query.selected,
     }),
     component: () =>
       import(
         /* webpackChunkName: "combined-lineage-report" */
-        "../views/SituationReport.vue"
-      )
+        '../views/SituationReport.vue'
+      ),
   },
   {
-    path: "/situation-reports-demo",
-    redirect: "/situation-reports"
+    path: '/situation-reports-demo',
+    redirect: '/situation-reports',
   },
   {
-    path: "/blog",
+    path: '/blog',
     beforeEnter(to, from, next) {
       // redirect to blog.outbreak.info to account for nginx config change.
-      if(Object.keys(to.query).length) {
-        window.location.replace(`https://blog.outbreak.info${to.fullPath.replace("/blog", "")}`)
+      if (Object.keys(to.query).length) {
+        window.location.replace(
+          `https://blog.outbreak.info${to.fullPath.replace('/blog', '')}`,
+        );
       } else {
-      window.location.replace("https://blog.outbreak.info")
+        window.location.replace('https://blog.outbreak.info');
       }
-
-    }
+    },
   },
   {
-    path: "/blog/:id",
+    path: '/blog/:id',
     beforeEnter(to, from, next) {
-      console.log(to)
+      console.log(to);
       // redirect to blog.outbreak.info to account for nginx config change.
-      window.location.replace(`https://blog.outbreak.info/${to.params.id}`)
-    }
+      window.location.replace(`https://blog.outbreak.info/${to.params.id}`);
+    },
   },
   {
-    path: "/author/:name",
+    path: '/author/:name',
     beforeEnter(to, from, next) {
-      console.log(to)
+      console.log(to);
       // redirect to blog.outbreak.info to account for nginx config change.
-      window.location.replace(`https://blog.outbreak.info/author/${to.params.name}`)
-    }
+      window.location.replace(
+        `https://blog.outbreak.info/author/${to.params.name}`,
+      );
+    },
   },
   {
-    path: "/situation-report-demo",
-    redirect: "/situation-reports"
+    path: '/situation-report-demo',
+    redirect: '/situation-reports',
   },
   {
-    path: "/location-reports",
-    name: "LocationReports",
+    path: '/location-reports',
+    name: 'LocationReports',
     component: () =>
       import(
         /* webpackChunkName: "location-reports" */
-        "../views/LocationReports.vue"
+        '../views/LocationReports.vue'
       ),
     // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
@@ -528,16 +537,15 @@ const routes = [{
         // redirect to route below
         next({
           name: 'LocationReport',
-          query: to.query
-        })
-      } else
-        next()
-    }
+          query: to.query,
+        });
+      } else next();
+    },
   },
   {
-    path: "/location-reports",
-    name: "LocationReport",
-    props: route => ({
+    path: '/location-reports',
+    name: 'LocationReport',
+    props: (route) => ({
       alias: route.query.alias,
       loc: route.query.loc,
       muts: route.query.muts,
@@ -546,66 +554,66 @@ const routes = [{
       selected: route.query.selected,
       dark: route.query.dark,
       xmax: route.query.xmax,
-      xmin: route.query.xmin
+      xmin: route.query.xmin,
     }),
     component: () =>
       import(
         /* webpackChunkName: "location-report" */
-        "../views/LocationReport.vue"
-      )
+        '../views/LocationReport.vue'
+      ),
   },
   {
-    path: "/watch-list",
-    name: "WatchList",
-    props: route => ({
+    path: '/watch-list',
+    name: 'WatchList',
+    props: (route) => ({
       country: route.query.country,
-      division: route.query.division
+      division: route.query.division,
     }),
     component: () =>
       import(
         /* webpackChunkName: "watch-list" */
-        "../views/WatchList.vue"
-      )
+        '../views/WatchList.vue'
+      ),
   },
   {
     path: '/:catchAll(.*)',
-    name: "NotFound",
+    name: 'NotFound',
     component: () =>
       import(
         /* webpackChunkName: "404" */
-        "../views/PageNotFound.vue"
-      )
-  }
+        '../views/PageNotFound.vue'
+      ),
+  },
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
-  linkExactActiveClass: "active",
+  linkExactActiveClass: 'active',
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {
-        selector: to.hash
+        selector: to.hash,
       };
     }
     if (!to.params.disableScroll) {
       return {
         x: 0,
-        y: 0
+        y: 0,
       };
     }
-  }
+  },
 });
 
 // add loading icon between routes
 router.beforeEach((to, from, next) => {
-  store.commit("admin/setLoading", true);
+  store.commit('admin/setLoading', true);
   next();
-})
+});
 router.afterEach((to, from) => {
-  store.commit("admin/setLoading", false);
-})
+  store.commit('admin/setLoading', false);
+});
 
 router.onError((error) => {
   const pattern = /Loading chunk (\d) failed/g;
@@ -613,7 +621,7 @@ router.onError((error) => {
   const targetPath = router.history.pending.fullPath;
 
   if (isChunkLoadFailed) {
-    console.log("Router detected error!");
+    console.log('Router detected error!');
     console.error(error);
     // history.replaceState("", "", targetPath);
   } else {

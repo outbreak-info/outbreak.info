@@ -3,19 +3,28 @@
     <div class="col-sm-12 my-5 text-left">
       <div class="container half-page">
         <h1 class="text-highlight">Privacy Policy</h1>
-        <small>Privacy policy extended from
-          <a href="https://andersen-lab.com/privacy-policy/" rel="noreferrer" target="_blank">Andersen Lab</a>.</small>
+        <small>
+          Privacy policy extended from
+          <a
+            href="https://andersen-lab.com/privacy-policy/"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Andersen Lab
+          </a>
+          .
+        </small>
         <p>
-          This page informs you of our policies regarding the collection, use and
-          disclosure of personal data when you use our Service and the choices you
-          have associated with that data.
+          This page informs you of our policies regarding the collection, use
+          and disclosure of personal data when you use our Service and the
+          choices you have associated with that data.
         </p>
         <p>
           We use your data to provide and improve the Service. By using the
           Service, you agree to the collection and use of information in
           accordance with this policy. Unless otherwise defined in this Privacy
-          Policy, the terms used in this Privacy Policy have the same meanings as
-          in our Terms and Conditions, accessible from https://outbreak.info/
+          Policy, the terms used in this Privacy Policy have the same meanings
+          as in our Terms and Conditions, accessible from https://outbreak.info/
         </p>
         <h3 class="my-3">Tracking & Cookies Data</h3>
         <p>
@@ -25,14 +34,14 @@
         <p>
           Cookies are files with a small amount of data which may include an
           anonymous unique identifier. Cookies are sent to your browser from a
-          website and stored on your device. Other tracking technologies are also
-          used such as beacons, tags and scripts to collect and track information
-          and to improve and analyse our Service.
+          website and stored on your device. Other tracking technologies are
+          also used such as beacons, tags and scripts to collect and track
+          information and to improve and analyse our Service.
         </p>
         <p>
-          You can instruct your browser to refuse all cookies or to indicate when
-          a cookie is being sent. However, if you do not accept cookies, you may
-          not be able to use some portions of our Service.
+          You can instruct your browser to refuse all cookies or to indicate
+          when a cookie is being sent. However, if you do not accept cookies,
+          you may not be able to use some portions of our Service.
         </p>
         <h3 class="my-3">Transfer of Data</h3>
         <p>
@@ -47,8 +56,8 @@
           Personal Data, to United States and process it there.
         </p>
         <p>
-          Your consent to this Privacy Policy followed by your submission of such
-          information represents your agreement to that transfer.
+          Your consent to this Privacy Policy followed by your submission of
+          such information represents your agreement to that transfer.
         </p>
         <p>
           Outbreak.info will take all the steps reasonably necessary to ensure
@@ -59,8 +68,8 @@
         </p>
         <h3 class="my-3">Legal Disclosure</h3>
         <p>
-          This site may disclose your Personal Data in the good faith belief that
-          such action is necessary to:
+          This site may disclose your Personal Data in the good faith belief
+          that such action is necessary to:
         </p>
         <ul>
           <li>
@@ -82,10 +91,11 @@
         </ul>
         <h3 class="my-3">Security</h3>
         <p>
-          The security of your data is important to us but remember that no method
-          of transmission over the Internet or method of electronic storage is
-          100% secure. While we strive to use commercially acceptable means to
-          protect your Personal Data, we cannot guarantee its absolute security.
+          The security of your data is important to us but remember that no
+          method of transmission over the Internet or method of electronic
+          storage is 100% secure. While we strive to use commercially acceptable
+          means to protect your Personal Data, we cannot guarantee its absolute
+          security.
         </p>
         <h3 class="my-3">Service Providers</h3>
         <p>
@@ -101,19 +111,19 @@
         </p>
         <h3 class="my-3">Analytics</h3>
         <p>
-          We may use third-party Service Providers to monitor and analyse the use
-          of our Service.
+          We may use third-party Service Providers to monitor and analyse the
+          use of our Service.
         </p>
         <p>
           Google Analytics is a web analytics service offered by Google that
           tracks and reports website traffic. Google uses the data collected to
-          track and monitor the use of our Service. This data is shared with other
-          Google services. Google may use the collected data to contextualise and
-          personalise the ads of its own advertising network.
+          track and monitor the use of our Service. This data is shared with
+          other Google services. Google may use the collected data to
+          contextualise and personalise the ads of its own advertising network.
         </p>
         <p>
-          You can opt-out of having made your activity on the Service available to
-          Google Analytics by installing the Google Analytics opt-out browser
+          You can opt-out of having made your activity on the Service available
+          to Google Analytics by installing the Google Analytics opt-out browser
           add-on. The add-on prevents the Google Analytics JavaScript (ga.js,
           analytics.js and dc.js) from sharing information with Google Analytics
           about visits activity.
@@ -121,15 +131,21 @@
         <p>
           For more information on the privacy practices of Google, please visit
           the Google's
-          <a href="https://policies.google.com/privacy?hl=en" rel="noreferrer" target="_blank">Privacy Terms</a>
+          <a
+            href="https://policies.google.com/privacy?hl=en"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Privacy Terms
+          </a>
           page.
         </p>
         <h3 class="my-3">Links To Other Sites</h3>
         <p>
           Our Service may contain links to other sites that are not operated by
-          us. If you click a third party link, you will be directed to that third
-          party’s site. We strongly advise you to review the Privacy Policy of
-          every site you visit.
+          us. If you click a third party link, you will be directed to that
+          third party’s site. We strongly advise you to review the Privacy
+          Policy of every site you visit.
         </p>
         <p>
           We have no control over and assume no responsibility for the content,
@@ -141,11 +157,11 @@
         </p>
         <p>
           We do not knowingly collect personally identifiable information from
-          anyone under the age of 18. If you are a parent or guardian and you are
-          aware that your Child has provided us with Personal Data, please contact
-          us. If we become aware that we have collected Personal Data from
-          children without verification of parental consent, we take steps to
-          remove that information from our servers.
+          anyone under the age of 18. If you are a parent or guardian and you
+          are aware that your Child has provided us with Personal Data, please
+          contact us. If we become aware that we have collected Personal Data
+          from children without verification of parental consent, we take steps
+          to remove that information from our servers.
         </p>
         <h3 class="my-3">Changes to This Privacy Policy</h3>
         <p>
@@ -160,19 +176,19 @@
         <h3 class="my-3">Contact Us</h3>
         <p>
           If you have any questions about this Privacy Policy, please
-          <a href="mailto:help@outbreak.info" target="_blank"> Contact Us </a>.
+          <a href="mailto:help@outbreak.info" target="_blank">Contact Us</a>
+          .
         </p>
       </div>
-
     </div>
-</div>
+  </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue from 'vue';
 
 export default Vue.extend({
-  name: "Privacy",
-  components: {}
+  name: 'Privacy',
+  components: {},
 });
 </script>

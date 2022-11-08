@@ -1,115 +1,223 @@
 <template>
-<div class="d-flex flex-column align-items-center w-100" id="report-cum-totals">
-  <div class="">
-    <div class="d-flex align-items-center justify-content-end">
-      <router-link v-if="location != 'Worldwide'" class="mr-3 btn btn-sec" :to="{name:'LocationReport', query:{loc: location}}">View {{locationName}} report</router-link>
-      <button class="btn btn-main-outline px-2 py-1 mr-3" @click="includeNotDetected = !includeNotDetected"><small>{{includeNotDetected ? "hide" : "show"}} not detected</small></button>
+  <div
+    class="d-flex flex-column align-items-center w-100"
+    id="report-cum-totals"
+  >
+    <div class="">
       <div class="d-flex align-items-center justify-content-end">
-        sort by
-        <select v-model="sortVar" class="ml-2">
-          <option value="proportion">prevalence</option>
-          <option value="cum_total_count">total sequenced</option>
-          <option value="country">name</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="d-flex flex-wrap" :class="[stacked ? 'justify-content-center' : 'justify-content-center']">
-      <div class="d-flex flex-column" :class="{'mr-5': !stacked}">
-        <h5 class="my-5 my-sm-4 my-md-2"><b>Prevalence by location</b></h5>
-
-        <!-- LEGEND -->
-        <div class="d-flex align-items-center justify-content-between height-fixed">
-          <!-- scale bar with gradient -->
-          <ClassedLegend :colorScale="colorScale" :horizontal="false" :includeNulls="false" :label="label" :countThreshold="25" :mutationName="mutationName" nullColor="#EFEFEF" filteredColor="#A5A5A5" strokeColor="#2c3e50"
-            maxCount="maxEstFormatted" />
-
-          <div class="d-flex  align-items-center">
-            <svg id="legend" width="15" height="15" class="mr-2">
-              <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
-            </svg>
-            <small class="text-muted">95% confidence interval</small>
-          </div>
+        <router-link
+          v-if="location != 'Worldwide'"
+          class="mr-3 btn btn-sec"
+          :to="{ name: 'LocationReport', query: { loc: location } }"
+        >
+          View {{ locationName }} report
+        </router-link>
+        <button
+          class="btn btn-main-outline px-2 py-1 mr-3"
+          @click="includeNotDetected = !includeNotDetected"
+        >
+          <small>{{ includeNotDetected ? 'hide' : 'show' }} not detected</small>
+        </button>
+        <div class="d-flex align-items-center justify-content-end">
+          sort by
+          <select v-model="sortVar" class="ml-2">
+            <option value="proportion">prevalence</option>
+            <option value="cum_total_count">total sequenced</option>
+            <option value="country">name</option>
+          </select>
         </div>
-
-        <!-- LEFT: DOTPLOT -->
-        <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
-          No {{mutationName}} detected
-        </div>
-
-        <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title">
-        <!-- <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" :subtitle="subtitle"> -->
-          <defs>
-            <filter id="dropshadow" filterUnits="userSpaceOnUse">
-              <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
-              <feFlood flood-color="#222222" flood-opacity="0.5" result="offsetColor" />
-              <feGaussianBlur result="blurOut" in="offOut" stdDeviation="1.5" />
-              <feComposite in="offsetColor" in2="offsetBlur" operator="in" result="offsetBlur" />
-              <feMerge>
-                <feMergeNode />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <g :transform="`translate(${margin.left}, ${25})`" class="prevalence-axis axis--x" ref="xAxis" id="dot-axis-top" :hidden="!data.length"></g>
-          <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="prevalence-axis axis--x" ref="xAxis2" id="dot-axis-bottom" :hidden="!data.length"></g>
-          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis prevalence-axis axis--y" ref="yAxis"></g>
-          <g ref="dotplot" id="dotplot" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        </svg>
-
       </div>
 
-      <!-- RIGHT: BARPLOT -->
-      <div class="d-flex flex-column">
-        <h5 class="my-5 my-sm-4 my-md-2"><b>Number of samples sequenced</b></h5>
+      <div
+        class="d-flex flex-wrap"
+        :class="[stacked ? 'justify-content-center' : 'justify-content-center']"
+      >
+        <div class="d-flex flex-column" :class="{ 'mr-5': !stacked }">
+          <h5 class="my-5 my-sm-4 my-md-2"><b>Prevalence by location</b></h5>
 
-        <div class="d-flex flex-column height-fixed">
-          <div class="d-flex align-items-center">
-            <div class="rect-legend mr-2" :style="{background: accentColor}">
+          <!-- LEGEND -->
+          <div
+            class="d-flex align-items-center justify-content-between height-fixed"
+          >
+            <!-- scale bar with gradient -->
+            <ClassedLegend
+              :colorScale="colorScale"
+              :horizontal="false"
+              :includeNulls="false"
+              :label="label"
+              :countThreshold="25"
+              :mutationName="mutationName"
+              nullColor="#EFEFEF"
+              filteredColor="#A5A5A5"
+              strokeColor="#2c3e50"
+              maxCount="maxEstFormatted"
+            />
 
+            <div class="d-flex  align-items-center">
+              <svg id="legend" width="15" height="15" class="mr-2">
+                <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
+              </svg>
+              <small class="text-muted">95% confidence interval</small>
             </div>
-            <small class="text-muted">{{ mutationName }}-positive samples</small>
           </div>
 
-          <div class="d-flex align-items-center">
-            <div class="rect-legend mr-2" :style="{background: baseColor}">
+          <!-- LEFT: DOTPLOT -->
+          <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
+            No {{ mutationName }} detected
+          </div>
 
+          <svg
+            :width="width"
+            :height="height + margin.bottom + margin.top"
+            class="dotplot-prevalence prevalence-by-location"
+            ref="svg_dot"
+            :name="title"
+          >
+            <!-- <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" :subtitle="subtitle"> -->
+            <defs>
+              <filter id="dropshadow" filterUnits="userSpaceOnUse">
+                <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
+                <feFlood
+                  flood-color="#222222"
+                  flood-opacity="0.5"
+                  result="offsetColor"
+                />
+                <feGaussianBlur
+                  result="blurOut"
+                  in="offOut"
+                  stdDeviation="1.5"
+                />
+                <feComposite
+                  in="offsetColor"
+                  in2="offsetBlur"
+                  operator="in"
+                  result="offsetBlur"
+                />
+                <feMerge>
+                  <feMergeNode />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g
+              :transform="`translate(${margin.left}, ${25})`"
+              class="prevalence-axis axis--x"
+              ref="xAxis"
+              id="dot-axis-top"
+              :hidden="!data.length"
+            ></g>
+            <g
+              :transform="
+                `translate(${margin.left}, ${height + margin.top + 5})`
+              "
+              class="prevalence-axis axis--x"
+              ref="xAxis2"
+              id="dot-axis-bottom"
+              :hidden="!data.length"
+            ></g>
+            <g
+              :transform="`translate(${margin.left}, ${margin.top})`"
+              class="prevalence-location-axis prevalence-axis axis--y"
+              ref="yAxis"
+            ></g>
+            <g
+              ref="dotplot"
+              id="dotplot"
+              :transform="`translate(${margin.left}, ${margin.top})`"
+            ></g>
+          </svg>
+        </div>
+
+        <!-- RIGHT: BARPLOT -->
+        <div class="d-flex flex-column">
+          <h5 class="my-5 my-sm-4 my-md-2">
+            <b>Number of samples sequenced</b>
+          </h5>
+
+          <div class="d-flex flex-column height-fixed">
+            <div class="d-flex align-items-center">
+              <div
+                class="rect-legend mr-2"
+                :style="{ background: accentColor }"
+              ></div>
+              <small class="text-muted">
+                {{ mutationName }}-positive samples
+              </small>
             </div>
-            <small class="text-muted">all sequenced samples</small>
+
+            <div class="d-flex align-items-center">
+              <div
+                class="rect-legend mr-2"
+                :style="{ background: baseColor }"
+              ></div>
+              <small class="text-muted">all sequenced samples</small>
+            </div>
           </div>
+
+          <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
+            No {{ mutationName }} detected
+          </div>
+
+          <svg
+            :width="barWidth"
+            :height="height + margin.bottom + margin.top"
+            class="sequencing-count prevalence-by-location"
+            ref="svg_count"
+            :name="title"
+          >
+            <g
+              :transform="`translate(${margin.left}, ${25})`"
+              class="count-axis axis--x"
+              ref="xAxisBar"
+              id="bar-axis-top"
+              :hidden="!data.length"
+            ></g>
+            <g
+              :transform="
+                `translate(${margin.left}, ${height + margin.top + 5})`
+              "
+              class="count-axis axis--x"
+              ref="xAxisBar2"
+              id="bar-axis-top"
+              :hidden="!data.length"
+            ></g>
+            <g
+              :transform="`translate(${margin.left}, ${margin.top})`"
+              class="prevalence-location-axis count-axis axis--y"
+              ref="yAxisBar"
+            ></g>
+            <g
+              ref="bargraph"
+              id="bargraph"
+              :transform="`translate(${margin.left}, ${margin.top})`"
+            ></g>
+          </svg>
         </div>
-
-
-        <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
-          No {{mutationName}} detected
-        </div>
-
-        <svg :width="barWidth" :height="height + margin.bottom + margin.top" class="sequencing-count prevalence-by-location" ref="svg_count" :name="title">
-          <g :transform="`translate(${margin.left}, ${25})`" class="count-axis axis--x" ref="xAxisBar" id="bar-axis-top" :hidden="!data.length"></g>
-          <g :transform="`translate(${margin.left}, ${height + margin.top + 5})`" class="count-axis axis--x" ref="xAxisBar2" id="bar-axis-top" :hidden="!data.length"></g>
-          <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-location-axis count-axis axis--y" ref="yAxisBar"></g>
-          <g ref="bargraph" id="bargraph" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-        </svg>
-
       </div>
     </div>
-  </div>
 
-  <div ref="tooltip_chart" class="tooltip-basic box-shadow" id="tooltip_chart">
-    <h5 id="location-name"></h5>
-    <em id="no-sequencing">No reported sequencing</em>
-    <div class="d-flex align-items-center">
-      <b id="proportion" class="font-size-2"></b>
-      <span id="confidence-interval" class="text-muted ml-2"></span>
+    <div
+      ref="tooltip_chart"
+      class="tooltip-basic box-shadow"
+      id="tooltip_chart"
+    >
+      <h5 id="location-name"></h5>
+      <em id="no-sequencing">No reported sequencing</em>
+      <div class="d-flex align-items-center">
+        <b id="proportion" class="font-size-2"></b>
+        <span id="confidence-interval" class="text-muted ml-2"></span>
+      </div>
+      <div id="sequencing-count"></div>
     </div>
-    <div id="sequencing-count"></div>
+
+    <DownloadReportData
+      :data="data"
+      figureRef="prevalence-by-location"
+      class="mt-2"
+      dataType="Mutation Prevelance by Location Dot Plot"
+    />
   </div>
-
-  <DownloadReportData :data="data" figureRef="prevalence-by-location" class="mt-2" dataType="Mutation Prevelance by Location Dot Plot" />
-
-</div>
 </template>
-
 
 <script lang="js">
 import Vue from "vue";
@@ -598,48 +706,47 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-
 .prevalence-location-axis {
   font-size: 16px;
 }
 
 .prevalence-location-axis.axis--y g.tick line,
 .prevalence-location-axis.axis--y path {
-    display: none;
+  display: none;
 }
 
 .dotplot-prevalence,
 .sequencing-count {
-    background: white;
+  background: white;
 }
 
 .count-axis line {
-    // stroke: #aaa;
-    // stroke-width: 0.25;
+  // stroke: #aaa;
+  // stroke-width: 0.25;
 }
 .height-fixed {
-    // border: 1px solid $base-grey;
-    background: white;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
+  // border: 1px solid $base-grey;
+  background: white;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
 
-    height: 50px !important;
+  height: 50px !important;
 }
 
 .circle-legend {
-    stroke: #2c3e50;
-    stroke-width: 0.25;
-    fill: #BBB;
+  stroke: #2c3e50;
+  stroke-width: 0.25;
+  fill: #bbb;
 }
 
 .ci-legend {
-    stroke: #CCCCCC;
-    stroke-width: 7;
-    opacity: 0.5;
+  stroke: #cccccc;
+  stroke-width: 7;
+  opacity: 0.5;
 }
 
 .rect-legend {
-    width: 15px;
-    height: 15px;
+  width: 15px;
+  height: 15px;
 }
 </style>

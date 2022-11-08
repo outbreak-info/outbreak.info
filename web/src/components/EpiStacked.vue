@@ -1,20 +1,40 @@
 <template>
-<div class="epidemiology-area">
-  <svg :width="width" :height="height" class="epi-summary-svg" :id="id" :name="title">
-    <defs>
-      <marker id="arrow" markerWidth="13" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-        <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
-      </marker>
-    </defs>
-    <g :transform="`translate(${margin.left},${margin.top})`" class="epi-summary">
-      <g class="annotation-group case-def-changed"></g>
-    </g>
-    <g class="epi-axis axis--x"></g>
-    <g class="epi-axis axis--y"></g>
+  <div class="epidemiology-area">
+    <svg
+      :width="width"
+      :height="height"
+      class="epi-summary-svg"
+      :id="id"
+      :name="title"
+    >
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="13"
+          markerHeight="10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M5,0 L12,5 L5,10" class="swoopy-arrowhead" />
+        </marker>
+      </defs>
+      <g
+        :transform="`translate(${margin.left},${margin.top})`"
+        class="epi-summary"
+      >
+        <g class="annotation-group case-def-changed"></g>
+      </g>
+      <g class="epi-axis axis--x"></g>
+      <g class="epi-axis axis--y"></g>
 
-    <g :transform="`translate(${margin.left},${-margin.top})`" class="legend"></g>
-  </svg>
-</div>
+      <g
+        :transform="`translate(${margin.left},${-margin.top})`"
+        class="legend"
+      ></g>
+    </svg>
+  </div>
 </template>
 
 <script lang="js">
@@ -275,41 +295,41 @@ export default Vue.extend({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .legend-name {
-    &:hover {
-        text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .epi-axis text {
-    font-size: 12pt;
+  font-size: 12pt;
 }
 
 .annotation--region-name {
-    dominant-baseline: middle;
+  dominant-baseline: middle;
 }
 
 .legend-group,
 path.stacked-area-chart {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .stacked-area-title {
-    margin: 0.5em 0 0;
+  margin: 0.5em 0 0;
 }
 
 .case-def-changed {
-    font-size: 0.85em;
-    text-anchor: middle;
-    fill: $grey-60;
+  font-size: 0.85em;
+  text-anchor: middle;
+  fill: $grey-60;
 }
 
 .swoopy-arrow,
 .swoopy-arrowhead {
-    stroke: $grey-60;
-    fill: none;
-    stroke-width: 0.8;
+  stroke: $grey-60;
+  fill: none;
+  stroke-width: 0.8;
 }
 .swoopy-arrowhead {
-    stroke-width: 1;
+  stroke-width: 1;
 }
 </style>

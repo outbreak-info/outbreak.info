@@ -1,17 +1,28 @@
 <template>
-<div>
-<SituationReportComponent :alias="alias" :loc="loc" :muts="muts" :pango="pango"
-:xmin="xmin" :xmax="xmax" :overlay="overlay" :selected="selected" />
-</div>
+  <div>
+    <SituationReportComponent
+      :alias="alias"
+      :loc="loc"
+      :muts="muts"
+      :pango="pango"
+      :xmin="xmin"
+      :xmax="xmax"
+      :overlay="overlay"
+      :selected="selected"
+    />
+  </div>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 export default {
-  name: "SituationReport",
+  name: 'SituationReport',
   components: {
-    SituationReportComponent: () => import( /* webpackPrefetch: true */ "@/components/SituationReportComponent.vue")
+    SituationReportComponent: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/SituationReportComponent.vue'
+      ),
   },
   props: {
     alias: String,
@@ -22,12 +33,12 @@ export default {
     xmax: String,
     overlay: {
       type: [String, Boolean],
-      default: "false"
+      default: 'false',
     },
     selected: {
       type: String,
-      default: "Worldwide"
-    }
-  }
-}
+      default: 'Worldwide',
+    },
+  },
+};
 </script>

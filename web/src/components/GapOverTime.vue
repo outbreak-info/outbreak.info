@@ -1,16 +1,27 @@
 <template>
-<div class="d-flex flex-column">
-  <h5 class="text-muted">{{title}}</h5>
-  <svg :width="width" :height="height" id="gap-over-time" :name="title">
-    <g ref="chart" :transform="`translate(${margin.left}, ${margin.top})`"></g>
-    <g :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`" class="prevalence-axis total-axis axis--x" ref="xAxis"></g>
-    <g :transform="`translate(${margin.left}, ${margin.top})`" class="prevalence-axis total-axis axis--y" ref="yAxisLeft"></g>
-  </svg>
-</div>
+  <div class="d-flex flex-column">
+    <h5 class="text-muted">{{ title }}</h5>
+    <svg :width="width" :height="height" id="gap-over-time" :name="title">
+      <g
+        ref="chart"
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`"
+        class="prevalence-axis total-axis axis--x"
+        ref="xAxis"
+      ></g>
+      <g
+        :transform="`translate(${margin.left}, ${margin.top})`"
+        class="prevalence-axis total-axis axis--y"
+        ref="yAxisLeft"
+      ></g>
+    </svg>
+  </div>
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 import {
   select,
@@ -28,50 +39,52 @@ import {
   line,
   area,
   transition,
-  timeDay
-} from "d3";
+  timeDay,
+} from 'd3';
 
 export default Vue.extend({
-  name: "SequencingHistogram",
+  name: 'SequencingHistogram',
   props: {
     data: Array,
     location: String,
     setWidth: {
       type: Number,
-      default: 1000
+      default: 1000,
     },
     height: {
       type: Number,
-      default: 400
+      default: 400,
     },
     margin: {
       type: Object,
       default: () => {
-        return ({
+        return {
           top: 10,
           bottom: 30,
           left: 50,
-          right: 10
-        })
-      }
+          right: 10,
+        };
+      },
     },
     fillColor: {
       type: String,
-      default: "#9edae5"
-    }
+      default: '#9edae5',
+    },
   },
   watch: {
     data() {
-      this.updatePlot()
-    }
+      this.updatePlot();
+    },
   },
   computed: {
     title() {
-      return this.location ? `Weekly median difference between sample collection and sequence submission in days ${this.location}` : "Weekly median difference between sample collection and sequence submission in days"
-    }
+      return this.location
+        ? `Weekly median difference between sample collection and sequence submission in days ${this.location}`
+        : 'Weekly median difference between sample collection and sequence submission in days';
+    },
   },
   data() {
-    return ({
+    return {
       // dims
       width: 1000,
       // axes
@@ -83,14 +96,14 @@ export default Vue.extend({
       numYTicks: 5,
       // variables
       radius: 7,
-      xVariable: "maxDate",
-      yVariable: "median",
+      xVariable: 'maxDate',
+      yVariable: 'median',
       // refs
       chart: null,
       // methods
       line: null,
-      area: null
-    })
+      area: null,
+    };
   },
   methods: {
     updatePlot() {
@@ -101,7 +114,7 @@ export default Vue.extend({
     },
     setupPlot() {
       this.$nextTick(function() {
-        window.addEventListener("resize", this.setDims);
+        window.addEventListener('resize', this.setDims);
 
         // set initial dimensions for the plots.
         this.setDims();
@@ -111,14 +124,14 @@ export default Vue.extend({
 
       // line method
       this.line = line()
-        .x(d => this.x(d[this.xVariable]))
-        .y(d => this.y(d[this.yVariable]));
+        .x((d) => this.x(d[this.xVariable]))
+        .y((d) => this.y(d[this.yVariable]));
       // area method
 
       this.area = area()
-        .x(d => this.x(d[this.xVariable]))
-        .y0(d => this.y(d.quartile25))
-        .y1(d => this.y(d.quartile75));
+        .x((d) => this.x(d[this.xVariable]))
+        .y0((d) => this.y(d.quartile25))
+        .y1((d) => this.y(d.quartile75));
     },
     setDims() {
       if (this.setWidth) {
@@ -128,9 +141,9 @@ export default Vue.extend({
     updateAxes() {
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data, d => d[this.xVariable]))
+        .domain(extent(this.data, (d) => d[this.xVariable]));
 
-      const maxCounts = max(this.data.map(d => d.quartile25));
+      const maxCounts = max(this.data.map((d) => d.quartile25));
       // const maxCounts = max(this.data.map(d => d[this.yVariable]));
       this.y = scaleLinear()
         .range([this.height - this.margin.top - this.margin.bottom, 0])
@@ -145,82 +158,78 @@ export default Vue.extend({
         .ticks(this.numYTicks)
         .tickSizeOuter(0);
       select(this.$refs.yAxisLeft).call(this.yAxis);
-
     },
     drawPlot() {
       const t1 = transition().duration(1500);
 
       const areaSelector = this.chart
-        .selectAll(".quartile-trace")
+        .selectAll('.quartile-trace')
         .data([this.data]);
 
       areaSelector.join(
-        enter => {
-          enter.append("path")
-            .attr("class", "quartile-trace")
-            .attr("d", this.area)
-            .style("stroke", this.fillColor)
-            .style("fill", this.fillColor)
-            .style("fill-opacity", 0.15)
-            .style("stroke-width", 1)
-            .style("stroke-dasharray", "4,4")
+        (enter) => {
+          enter
+            .append('path')
+            .attr('class', 'quartile-trace')
+            .attr('d', this.area)
+            .style('stroke', this.fillColor)
+            .style('fill', this.fillColor)
+            .style('fill-opacity', 0.15)
+            .style('stroke-width', 1)
+            .style('stroke-dasharray', '4,4');
         },
-        update => {
-          update
-            .transition(t1)
-            .attr("d", this.area)
+        (update) => {
+          update.transition(t1).attr('d', this.area);
         },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition(10)
-          .style("opacity", 1e-5)
-          .remove()
-        )
-      )
+        (exit) =>
+          exit.call((exit) =>
+            exit
+              .transition(10)
+              .style('opacity', 1e-5)
+              .remove(),
+          ),
+      );
 
       const lineSelector = this.chart
-        .selectAll(".time-trace")
+        .selectAll('.time-trace')
         .data([this.data]);
 
       lineSelector.join(
-        enter => {
-          enter.append("path")
-            .attr("class", "time-trace")
-            .attr("d", this.line)
-            .style("stroke", this.fillColor)
-            .style("fill", "none")
-            .style("stroke-width", "2.5")
+        (enter) => {
+          enter
+            .append('path')
+            .attr('class', 'time-trace')
+            .attr('d', this.line)
+            .style('stroke', this.fillColor)
+            .style('fill', 'none')
+            .style('stroke-width', '2.5');
         },
-        update => {
-          update
-            .transition(t1)
-            .attr("d", this.line)
+        (update) => {
+          update.transition(t1).attr('d', this.line);
         },
-        exit =>
-        exit.call(exit =>
-          exit
-          .transition(10)
-          .style("opacity", 1e-5)
-          .remove()
-        )
-      )
-    }
+        (exit) =>
+          exit.call((exit) =>
+            exit
+              .transition(10)
+              .style('opacity', 1e-5)
+              .remove(),
+          ),
+      );
+    },
   },
   mounted() {
     this.setupPlot();
     this.updatePlot();
-  }
-})
+  },
+});
 </script>
 
 <style lang="scss">
 #gap-over-time {
-    .axis--x text,
-    .axis--y text {
-        font-size: 16px;
-        fill: $grey-90;
-
-    }
+  .axis--x text,
+  .axis--y text {
+    font-size: 16px;
+    fill: $grey-90;
+  }
 }
 </style>

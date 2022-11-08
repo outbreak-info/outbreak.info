@@ -1,54 +1,119 @@
 <template>
-<div id="streamgraph">
-  <div class="d-flex justify-content-between px-3" :style="{width: width + 'px'}">
-    <h5 class="m-0">{{plotTitle}}</h5>
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="enableZoom">
-        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-      </button>
-      <button class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2" @click="resetZoom">
-        <font-awesome-icon class="text-right" :icon="['fas', 'compress-arrows-alt']" />
-      </button>
+  <div id="streamgraph">
+    <div
+      class="d-flex justify-content-between px-3"
+      :style="{ width: width + 'px' }"
+    >
+      <h5 class="m-0">{{ plotTitle }}</h5>
+      <div class="d-flex justify-content-end">
+        <button
+          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          @click="enableZoom"
+        >
+          <font-awesome-icon
+            class="text-right"
+            :icon="['fas', 'search-plus']"
+          />
+        </button>
+        <button
+          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          @click="resetZoom"
+        >
+          <font-awesome-icon
+            class="text-right"
+            :icon="['fas', 'compress-arrows-alt']"
+          />
+        </button>
+      </div>
+    </div>
+
+    <svg
+      :width="width"
+      :height="height"
+      class="lineages-by-location"
+      ref="lineages_by_location"
+      :name="title"
+    >
+      <defs>
+        <pattern
+          id="diagonalHatchLight"
+          width="7"
+          height="7"
+          patternTransform="rotate(45 0 0)"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="25"
+            :style="`stroke:#CCC; stroke-width:4`"
+          />
+        </pattern>
+      </defs>
+
+      <g :transform="`translate(${margin.left},${margin.top})`" ref="chart"></g>
+
+      <g
+        class="stream-axis axis--x"
+        ref="xAxis"
+        :transform="`translate(${margin.left},${height - margin.bottom})`"
+      ></g>
+      <g
+        class="stream-axis axis--y"
+        ref="yAxis"
+        :transform="`translate(${margin.left},${margin.top})`"
+      ></g>
+      <g
+        ref="brush"
+        class="brush"
+        id="brush-zoom"
+        :transform="`translate(${margin.left},${margin.top})`"
+        v-if="data"
+        :class="{ hidden: !zoomAllowed }"
+      ></g>
+    </svg>
+
+    <!-- Histogram of sequencing counts -->
+    <SequencingHistogram
+      :data="seqCounts"
+      :xInput="x"
+      :width="width"
+      :svgTitle="title"
+      :margin="marginHist"
+      :mutationName="mutationName"
+      className="lineages-by-location"
+      :onlyTotals="onlyTotals"
+      detectedColor="#79706E"
+      notDetectedColor="#bab0ab"
+      v-if="seqCounts && seqCounts.length && x"
+    />
+
+    <DownloadReportData
+      :data="data"
+      figureRef="lineages-by-location"
+      :isVertical="true"
+      dataType="Mutation Report Prevalence over Time"
+    />
+
+    <div
+      ref="tooltip_streamgraph"
+      class="tooltip-basic box-shadow"
+      id="tooltip-streamgraph"
+    >
+      <h5 id="lineage" class="my-1"></h5>
+      <div class="d-flex align-items-center" v-if="tooltipTotal">
+        Total found:
+        <b id="proportion" class="ml-1"></b>
+      </div>
+      <div class="d-flex align-items-center" v-else>
+        Prevalence in the last {{ recentWindow }} days:
+        <b id="proportion" class="ml-1"></b>
+      </div>
     </div>
   </div>
-
-  <svg :width="width" :height="height" class="lineages-by-location" ref="lineages_by_location" :name="title">
-    <defs>
-      <pattern id="diagonalHatchLight" width="7" height="7" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-        <rect x="-2" y="-2" width="10" height="10" fill="#efefef" />
-        <line x1="0" y1="0" x2="0" y2="25" :style="`stroke:#CCC; stroke-width:4`" />
-      </pattern>
-    </defs>
-
-    <g :transform="`translate(${margin.left},${margin.top})`" ref="chart">
-    </g>
-
-    <g class="stream-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g>
-    <g class="stream-axis axis--y" ref="yAxis" :transform="`translate(${margin.left},${margin.top})`"></g>
-    <g ref="brush" class="brush" id="brush-zoom" :transform="`translate(${margin.left},${margin.top})`" v-if="data" :class="{hidden: !zoomAllowed}"></g>
-  </svg>
-
-  <!-- Histogram of sequencing counts -->
-  <SequencingHistogram :data="seqCounts" :xInput="x" :width="width" :svgTitle="title" :margin="marginHist" :mutationName="mutationName" className="lineages-by-location" :onlyTotals="onlyTotals" detectedColor="#79706E" notDetectedColor="#bab0ab"
-    v-if="seqCounts && seqCounts.length && x" />
-
-  <DownloadReportData :data="data" figureRef="lineages-by-location" :isVertical="true" dataType="Mutation Report Prevalence over Time" />
-
-  <div ref="tooltip_streamgraph" class="tooltip-basic box-shadow" id="tooltip-streamgraph">
-    <h5 id="lineage" class="my-1"></h5>
-    <div class="d-flex align-items-center" v-if="tooltipTotal">
-      Total found:
-      <b id="proportion" class="ml-1"></b>
-    </div>
-    <div class="d-flex align-items-center" v-else>
-      Prevalence in the last {{ recentWindow }} days:
-      <b id="proportion" class="ml-1"></b>
-    </div>
-
-  </div>
-</div>
 </template>
-
 
 <script lang="js">
 import Vue from "vue";
@@ -782,14 +847,14 @@ export default Vue.extend({
 
 <style lang="scss">
 .lineages-by-location {
-    .axis--x text {
-        font-size: 16pt !important;
-    }
-    .axis--y text {
-        font-size: 9pt;
-    }
-    .stream-axis.axis--y text {
-        font-size: 14pt;
-    }
+  .axis--x text {
+    font-size: 16pt !important;
+  }
+  .axis--y text {
+    font-size: 9pt;
+  }
+  .stream-axis.axis--y text {
+    font-size: 14pt;
+  }
 }
 </style>

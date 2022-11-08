@@ -41,3 +41,6 @@ web/src/assets/sequencing.ai
 curated_reports_prep/curated_tester.ipynb
 *.ipynb
 *.log
+
+#.idea
+.idea
