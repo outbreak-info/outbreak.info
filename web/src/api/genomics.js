@@ -341,7 +341,7 @@ export function getCuratedList(
 ) {
   const query = CURATED.filter((d) => d.showOnHomepage).map((d) => d.char_muts_parent_query);
 
-
+// 2022-11-08: maybe temp: remove the characteristic mutations breakdowns to just show totals
   return forkJoin(
     ...query.map((d) =>
     getCumPrevalence(
