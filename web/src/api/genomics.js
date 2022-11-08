@@ -226,7 +226,6 @@ export function getCuratedMutations(apiurl, prevalenceThreshold) {
         mutation['lineages'] = lineagesByMutation[mutation.mutation_name].map(
           (d) => d.pangolin_lineage,
         );
-        console.log(mutation);
         mutation[
           'aquaria'
         ] = `https://aquaria.app/SARS-CoV-2/${mutation.mutation_name.replace(
@@ -340,46 +339,34 @@ export function getCuratedList(
   prevalenceThreshold,
   sMutationsOnly = true,
 ) {
-  const query = CURATED.filter((d) => d.showOnHomepage).map((d) => d.label);
+  const query = CURATED.filter((d) => d.showOnHomepage).map((d) => d.char_muts_parent_query);
+
 
   return forkJoin(
     ...query.map((d) =>
-      getCharacteristicMutations(
-        apiurl,
-        d,
-        store.state.genomics.characteristicThreshold,
-        false,
-      ),
+    getCumPrevalence(
+      apiurl,
+      `pangolin_lineage=${d}`,
+      'Worldwide',
+      0),
     ),
   ).pipe(
-    map((charMuts) => {
-      // flatten array of objects to a single object.
-      charMuts = Object.assign(...charMuts);
+    map((totals) => {
+
+      totals = totals.flatMap(d => d);
 
       // pull out the characteristic mutations and bind to the curated list.
       let curated = orderBy(CURATED, ['variantType']);
       // loop over each curated report; attach the associated lineages / characteristic mutations with it.
       curated.forEach((report) => {
         report['showSublineages'] = false;
-        report['mutations'] = Object.keys(charMuts).includes(
-          report.char_muts_parent_query,
-        )
-          ? charMuts[report.char_muts_parent_query]
-          : [];
-        report['mutationsYDomain'] = uniq(
-          report.mutations.map((d) => d.pangolin_lineage),
-        );
-        report['lineage_count'] = report.mutations[0]
-          ? report.mutations[0].lineage_count.toLocaleString()
-          : null;
+        report['mutations'] = [];
+        report['mutationsYDomain'] = [];
 
-        if (sMutationsOnly) {
-          report.mutations = report.mutations.filter((d) => d.gene == 'S');
-        }
+        const total = totals.filter(d => d.mutation_string === report.char_muts_parent_query);
 
-        // const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-        // report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
-      });
+        report['lineage_count'] = total.length === 1 ? total[0].lineage_count.toLocaleString() : null;
+      })
 
       curated = nest()
         .key((d) => d.variantType)
@@ -407,6 +394,72 @@ export function getCuratedList(
       };
     }),
   );
+
+  // return forkJoin(
+  //   ...query.map((d) =>
+  //     getCharacteristicMutations(
+  //       apiurl,
+  //       d,
+  //       store.state.genomics.characteristicThreshold,
+  //       false,
+  //     ),
+  //   ),
+  // ).pipe(
+  //   map((charMuts) => {
+  //     // flatten array of objects to a single object.
+  //     charMuts = Object.assign(...charMuts);
+  //
+  //     // pull out the characteristic mutations and bind to the curated list.
+  //     let curated = orderBy(CURATED, ['variantType']);
+  //     // loop over each curated report; attach the associated lineages / characteristic mutations with it.
+  //     curated.forEach((report) => {
+  //       report['showSublineages'] = false;
+  //       report['mutations'] = Object.keys(charMuts).includes(
+  //         report.char_muts_parent_query,
+  //       )
+  //         ? charMuts[report.char_muts_parent_query]
+  //         : [];
+  //       report['mutationsYDomain'] = uniq(
+  //         report.mutations.map((d) => d.pangolin_lineage),
+  //       );
+  //       report['lineage_count'] = report.mutations[0]
+  //         ? report.mutations[0].lineage_count.toLocaleString()
+  //         : null;
+  //
+  //       if (sMutationsOnly) {
+  //         report.mutations = report.mutations.filter((d) => d.gene == 'S');
+  //       }
+  //
+  //       // const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
+  //       // report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
+  //     });
+  //
+  //     curated = nest()
+  //       .key((d) => d.variantType)
+  //       .entries(curated);
+  //
+  //     curated.forEach((d) => {
+  //       d['id'] =
+  //         d.key == 'Variant of Concern'
+  //           ? 'voc'
+  //           : d.key == 'Variant of Interest'
+  //           ? 'voi'
+  //           : d.key == 'Variant under Monitoring'
+  //           ? 'vum'
+  //           : d.key == 'Previously Circulating Variant of Concern'
+  //           ? 'previous_voc'
+  //           : d.key == 'De-escalated'
+  //           ? 'deescalated'
+  //           : 'unknown';
+  //     });
+  //
+  //     curated = orderBy(curated, [reportTypeSorter], ['asc']);
+  //
+  //     return {
+  //       md: curated,
+  //     };
+  //   }),
+  // );
 }
 
 export function getReportList(

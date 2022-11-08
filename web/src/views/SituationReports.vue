@@ -366,10 +366,10 @@
                     <th>
                       total
                     </th>
-                    <th>
+                    <!-- <th>
                       S-gene Mutations
                       <sup>*</sup>
-                    </th>
+                    </th> -->
                   </tr>
                 </thead>
 
@@ -753,7 +753,7 @@
                       </td>
 
                       <!-- s-gene mutations heatmap -->
-                      <td>
+                      <!-- <td>
                         <div class="d-flex flex-column align-items-center">
                           <MutationHeatmap
                             :data="report.mutations"
@@ -794,7 +794,7 @@
                             </router-link>
                           </div>
                         </div>
-                      </td>
+                      </td> -->
                     </tr>
                   </template>
                 </tbody>
@@ -805,7 +805,7 @@
                   class="mt-2 d-flex justify-content-between align-items-center"
                 >
                   <div>
-                    <div class="border-bottom pb-2">
+                    <!-- <div class="border-bottom pb-2">
                       <sup class="text-muted mr-1">*</sup>
                       <small class="text-muted line-height-1">
                         S-gene mutations appearing in at least
@@ -831,7 +831,7 @@
                         </a>
                         .
                       </small>
-                    </div>
+                    </div> -->
                     <div
                       v-for="(variant, vIdx) in variantTypes"
                       :key="vIdx"
@@ -847,7 +847,7 @@
                     </div>
                   </div>
 
-                  <DownloadReportData
+                  <!-- <DownloadReportData
                     :fullWidth="false"
                     :data="group.values"
                     dataType="Curated Variant List"
@@ -855,7 +855,7 @@
                     :downloadLabel="`${group.id} list`"
                     :numSvgs="1000"
                     class="mt-3"
-                  />
+                  /> -->
                 </div>
               </div>
             </template>
@@ -1242,7 +1242,7 @@
                 </tbody>
               </table>
 
-              <div
+              <!-- <div
                 class="mt-2 d-flex justify-content-between align-items-center"
               >
                 <div class="flex-shrink-0">
@@ -1261,7 +1261,7 @@
                   :numSvgs="1000"
                   class="mt-3"
                 />
-              </div>
+              </div> -->
             </template>
             <div class="d-flex align-items-center my-3" v-else>
               <h5 class="text-muted m-0">No {{ group.key }} reports found</h5>
@@ -1313,8 +1313,8 @@ import Vue from 'vue';
 import ReportCard from '@/components/ReportCard.vue';
 import CustomReportForm from '@/components/CustomReportForm.vue';
 import ReportAcknowledgements from '@/components/ReportAcknowledgements.vue';
-import MutationHeatmap from '@/components/MutationHeatmap.vue';
-import DownloadReportData from '@/components/DownloadReportData.vue';
+// import MutationHeatmap from '@/components/MutationHeatmap.vue';
+// import DownloadReportData from '@/components/DownloadReportData.vue';
 // import Warning from "@/components/Warning.vue";
 
 import tippy from 'tippy.js';
@@ -1359,19 +1359,19 @@ export default {
     name: String,
   },
   components: {
-    DownloadReportData,
+    // DownloadReportData,
     CustomReportForm,
     ReportAcknowledgements,
     FontAwesomeIcon,
-    MutationHeatmap,
+    // MutationHeatmap,
     // Warning
   },
   computed: {
     ...mapState('admin', ['reportloading']),
-    ...mapState('genomics', ['characteristicThreshold']),
-    charMutThreshold() {
-      return format('.0%')(this.characteristicThreshold);
-    },
+    // ...mapState('genomics', ['characteristicThreshold']),
+    // charMutThreshold() {
+    //   return format('.0%')(this.characteristicThreshold);
+    // },
   },
   methods: {
     clearFilters() {
